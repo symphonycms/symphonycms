@@ -51,7 +51,7 @@
 
 		}
 
-		public function execute(&$param_pool) {
+		public function execute(array &$param_pool = null) {
 			$author_ids = array();
 
 			if(is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){

@@ -73,7 +73,6 @@
 		 */
 		const HTTP_STATUS_NOT_FOUND = 404;
 
-
 		/**
 		 * Refers to the HTTP status code, 500 Internal Server Error
 		 *
@@ -82,14 +81,13 @@
 		 */
 		const HTTP_STATUS_ERROR = 500;
 
-
 		/**
 		 * Keyed array of all the string
 		 *
 		 * @since Symphony 2.3.2
 		 * @var array
 		 */
-		private static $HTTP_STATUSES = array (
+		public static $HTTP_STATUSES = array(
 			// 200
 			HTTP_STATUS_OK => 'OK',
 			// 300
@@ -104,6 +102,31 @@
 			// 500
 			HTTP_STATUS_ERROR => 'Internal Server Error',
 		);
+
+		/**
+		 * The HTTP status code of the page using the `HTTP_STATUSES` constants
+		 *
+		 * @deprecated @since Symphony 2.3.2
+		 * @see $this->setHttpStatus and self::$HTTP_STATUSES
+		 *
+		 * @var integer
+		 */
+		protected $_status = NULL;
+
+		/**
+		 * This stores the headers that will be sent when this page is
+		 * generated as an associative array of header=>value.
+		 *
+		 * @var array
+		 */
+		protected $_headers = array();
+
+		/**
+		 * Initialises the Page object by setting the headers to empty
+		 */
+		public function __construct(){
+			$this->_headers = array();
+		}
 
 		/**
 		 *
@@ -122,7 +145,7 @@
 		 */
 		public static final function getHttpStatusValue($status_code=NULL) {
 			if (!$status_code) {
-				self::$HTTP_STATUSES;
+				return self::$HTTP_STATUSES;
 			}
 			return self::$HTTP_STATUSES[$status_code];
 		}
@@ -168,31 +191,6 @@
 			else {
 				// Throw error ?
 			}
-		}
-
-		/**
-		 * The HTTP status code of the page using the `HTTP_STATUSES` constants
-		 *
-		 * @deprecated @since Symphony 2.3.2
-		 * @see $this->setHttpStatus and self::$HTTP_STATUSES
-		 *
-		 * @var integer
-		 */
-		protected $_status = NULL;
-
-		/**
-		 * This stores the headers that will be sent when this page is
-		 * generated as an associative array of header=>value.
-		 *
-		 * @var array
-		 */
-		protected $_headers = array();
-
-		/**
-		 * Initialises the Page object by setting the headers to empty
-		 */
-		public function __construct(){
-			$this->_headers = array();
 		}
 
 		/**
@@ -273,7 +271,7 @@
 		 *
 		 * @see __renderHeaders()
 		 */
-		public function generate(){
+		public function generate($page = null) {
 			$this->__renderHeaders();
 		}
 

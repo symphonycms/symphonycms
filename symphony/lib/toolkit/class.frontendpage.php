@@ -154,7 +154,7 @@
 		 * The page source after the XSLT has transformed this page's XML. This would be
 		 * exactly the same as the 'view-source' from your browser
 		 */
-		public function generate($page) {
+		public function generate($page = null) {
 			$full_generate = true;
 			$devkit = null;
 			$output = null;

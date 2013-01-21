@@ -361,7 +361,7 @@
 			}
 		}
 
-		public function execute(array &$param_pool) {
+		public function execute(array &$param_pool = null) {
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 			$this->_param_pool = $param_pool;
 			$where = null;

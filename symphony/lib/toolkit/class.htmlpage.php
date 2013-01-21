@@ -86,9 +86,9 @@
 		 *
 		 * @return string
 		 */
-		public function generate(){
+		public function generate($page = null){
 			$this->__build();
-			parent::generate();
+			parent::generate($page);
 			return $this->Html->generate(true);
 		}
 

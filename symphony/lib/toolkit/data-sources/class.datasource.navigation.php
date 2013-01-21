@@ -60,7 +60,7 @@
 			return $oPage;
 		}
 
-		public function execute(&$param_pool) {
+		public function execute(array &$param_pool = null) {
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 			$type_sql = $parent_sql = null;
 

@@ -144,7 +144,7 @@
 		 *  Symphony 2.3.1, please use `execute()` instead.
 		 * @see execute()
 		 */
-		public function grab(array &$param_pool=NULL) {
+		public function grab(array &$param_pool = null) {
 			return $this->execute($param_pool);
 		}
 
@@ -159,7 +159,7 @@
 		 * @return XMLElement
 		 *  The XMLElement to add into the XML for a page.
 		 */
-		public function execute(array &$param_pool=NULL) {
+		public function execute(array &$param_pool = null) {
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 
 			try{

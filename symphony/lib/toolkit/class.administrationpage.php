@@ -497,7 +497,7 @@
 		 * @see core.HTMLPage#generate()
 		 * @return string
 		 */
-		public function generate() {
+		public function generate($page = null) {
 			$this->Wrapper->appendChild($this->Header);
 
 			// Add horizontal drawers (inside #context)
@@ -524,7 +524,7 @@
 			$this->__appendBodyId();
 			$this->__appendBodyClass($this->_context);
 
-			return parent::generate();
+			return parent::generate($page);
 		}
 
 		/**
