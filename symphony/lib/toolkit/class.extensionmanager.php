@@ -394,7 +394,9 @@
 				$obj->uninstall();
 			}
 			catch(SymphonyErrorPage $ex) {
-				if($ex->getHeading() !== 'Symphony Extension Missing Error') {
+				// Create a consistant key
+				$key = str_replace('-', '_', $ex->getTemplateName());
+				if($key !== 'missing_extension') {
 					throw $ex;
 				}
 			}
@@ -450,6 +452,7 @@
 		 * @see toolkit.ExtensionManager#cleanupDatabase()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
+		 * @return boolean
 		 */
 		public static function removeDelegates($name){
 			$classname = self::__getClassName($name);
@@ -722,7 +725,7 @@
 						$label[$key] = $key;
 					}
 
-					array_multisort($name, $order, $label, SORT_ASC, $extensions);
+					array_multisort($name, $order, $label, $order, $extensions);
 				}
 
 			}
@@ -779,11 +782,13 @@
 					}
 				}
 				catch (Exception $ex) {
-					throw new SymphonyErrorPage(__('The %1$s file for the %2$s extension is not valid XML: %3$s', array(
-						'<code>extension.meta.xml</code>',
-						'<code>' . $name . '</code>',
-						'<br /><code>' . $ex->getMessage() . '</code>'
-					)));
+					Symphony::instance()->throwCustomError(
+						__('The %1$s file for the %2$s extension is not valid XML: %3$s', array(
+							'<code>extension.meta.xml</code>',
+							'<code>' . $name . '</code>',
+							'<br /><code>' . $ex->getMessage() . '</code>'
+						))
+					);
 				}
 
 				// Load <extension>
@@ -887,13 +892,14 @@
 				$path = self::__getDriverPath($name);
 
 				if(!is_file($path)) {
-					throw new SymphonyErrorPage(
+					Symphony::instance()->throwCustomError(
 						__('Could not find extension %s at location %s.', array(
 							'<code>' . $name . '</code>',
 							'<code>' . $path . '</code>'
 						)),
-						'Symphony Extension Missing Error',
-						'missing_extension', array(
+						__('Symphony Extension Missing Error'),
+						'missing_extension',
+						array(
 							'name' => $name,
 							'path' => $path
 						)
@@ -922,6 +928,7 @@
 			if(is_array($rows) && !empty($rows)){
 				foreach($rows as $r){
 					$name = $r['name'];
+					$status = isset($r['status']) ? $r['status'] : null;
 
 					// Grab the install location
 					$path = self::__getClassPath($name);
@@ -932,7 +939,7 @@
 						Symphony::Database()->delete("tbl_extensions_delegates", " `extension_id` = $existing_id ");
 						Symphony::Database()->delete('tbl_extensions', " `id` = '$existing_id' LIMIT 1");
 					}
-					elseif ($r['status'] == 'disabled') {
+					elseif ($status == 'disabled') {
 						Symphony::Database()->delete("tbl_extensions_delegates", " `extension_id` = $existing_id ");
 					}
 				}

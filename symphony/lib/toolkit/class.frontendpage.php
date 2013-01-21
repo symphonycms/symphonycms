@@ -154,10 +154,15 @@
 		 * The page source after the XSLT has transformed this page's XML. This would be
 		 * exactly the same as the 'view-source' from your browser
 		 */
-		public function generate($page) {
+		public function generate($page = null) {
 			$full_generate = true;
 			$devkit = null;
 			$output = null;
+
+			$this->addHeaderToPage('Cache-Control', 'no-cache, must-revalidate, max-age=0');
+			$this->addHeaderToPage('Expires', 'Mon, 12 Dec 1982 06:14:00 GMT');
+			$this->addHeaderToPage('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
+			$this->addHeaderToPage('Pragma', 'no-cache');
 
 			if ($this->is_logged_in) {
 				/**
@@ -213,10 +218,10 @@
 					}
 
 					if(in_array('404', $this->_pageData['type'])){
-						$this->addHeaderToPage('Status', '404 Not Found', 404);
+						$this->setHttpStatus(self::HTTP_STATUS_NOT_FOUND);
 					}
-					elseif(in_array('403', $this->_pageData['type'])){
-						$this->addHeaderToPage('Status', '403 Forbidden', 403);
+					else if(in_array('403', $this->_pageData['type'])){
+						$this->setHttpStatus(self::HTTP_STATUS_FORBIDDEN);
 					}
 				}
 
@@ -228,7 +233,10 @@
 				 */
 				Symphony::ExtensionManager()->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
 
+				$backup_param = $this->_param;
+				$this->_param['current-query-string'] = General::wrapInCDATA($this->_param['current-query-string']);
 				$output = parent::generate();
+				$this->_param = $backup_param;
 
 				/**
 				 * Immediately after generating the page. Provided with string containing page source
@@ -249,8 +257,13 @@
 						$errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . PHP_EOL;
 					}
 
-					GenericExceptionHandler::$enabled = true;
-					throw new SymphonyErrorPage(trim($errstr), NULL, 'xslt', array('proc' => clone $this->Proc));
+					Frontend::instance()->throwCustomError(
+						trim($errstr),
+						__('XSLT Processing Error'),
+						Page::HTTP_STATUS_ERROR,
+						'xslt',
+						array('proc' => clone $this->Proc)
+					);
 				}
 
 				Symphony::Profiler()->sample('Page creation complete');
@@ -322,14 +335,15 @@
 			// Get max upload size from php and symphony config then choose the smallest
 			$upload_size_php = ini_size_to_bytes(ini_get('upload_max_filesize'));
 			$upload_size_sym = Symphony::Configuration()->get('max_upload_size','admin');
+			$date = new DateTime();
 
 			$this->_param = array(
-				'today' => DateTimeObj::get('Y-m-d'),
-				'current-time' => DateTimeObj::get('H:i'),
-				'this-year' => DateTimeObj::get('Y'),
-				'this-month' => DateTimeObj::get('m'),
-				'this-day' => DateTimeObj::get('d'),
-				'timezone' => DateTimeObj::get('P'),
+				'today' => $date->format('Y-m-d'),
+				'current-time' => $date->format('H:i'),
+				'this-year' => $date->format('Y'),
+				'this-month' => $date->format('m'),
+				'this-day' => $date->format('d'),
+				'timezone' => $date->format('P'),
 				'website-name' => Symphony::Configuration()->get('sitename', 'general'),
 				'page-title' => $page['title'],
 				'root' => URL,
@@ -339,7 +353,7 @@
 				'current-page-id' => $page['id'],
 				'current-path' => ($current_path == '') ? '/' : $current_path,
 				'parent-path' => '/' . $page['path'],
-				'current-query-string' => '<![CDATA[' . self::sanitizeParameter($querystring) . ']]>',
+				'current-query-string' => self::sanitizeParameter($querystring),
 				'current-url' => URL . $current_path,
 				'upload-limit' => min($upload_size_php, $upload_size_sym),
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
@@ -375,8 +389,8 @@
 				}
 			}
 
-			if(is_array($_COOKIE[__SYM_COOKIE_PREFIX_]) && !empty($_COOKIE[__SYM_COOKIE_PREFIX_])){
-				foreach($_COOKIE[__SYM_COOKIE_PREFIX_] as $key => $val){
+			if(is_array($_COOKIE[__SYM_COOKIE_PREFIX__]) && !empty($_COOKIE[__SYM_COOKIE_PREFIX__])){
+				foreach($_COOKIE[__SYM_COOKIE_PREFIX__] as $key => $val){
 					$this->_param['cookie-' . $key] = $val;
 				}
 			}
@@ -476,7 +490,7 @@
 					$param->setValue(General::sanitize($value[0]));
 				}
 				else if($key == 'current-query-string') {
-					$param->setValue($value);
+					$param->setValue(General::wrapInCDATA($value));
 				}
 				else {
 					$param->setValue(General::sanitize($value));
@@ -605,12 +619,10 @@
 				$row = PageManager::fetchPageByType('403');
 
 				if(empty($row)){
-					GenericExceptionHandler::$enabled = true;
-					throw new SymphonyErrorPage(
+					Frontend::instance()->throwCustomError(
 						__('Please login to view this page.') . ' <a href="' . SYMPHONY_URL . '/login/">' . __('Take me to the login page') . '</a>.',
 						__('Forbidden'),
-						'generic',
-						array('header' => 'HTTP/1.0 403 Forbidden')
+						Page::HTTP_STATUS_FORBIDDEN
 					);
 				}
 
@@ -790,14 +802,21 @@
 
 			foreach ($dsOrder as $handle) {
 				Symphony::Profiler()->seed();
-
 				$queries = Symphony::Database()->queryCount();
 
-				$ds = $pool[$handle];
-				$ds->processParameters(array('env' => $this->_env, 'param' => $this->_param));
-
 				// default to no XML
-				$xml = NULL;
+				$xml = null;
+				$ds = $pool[$handle];
+
+				// Handle redirect on empty setting correctly RE: #1539
+				try {
+					$ds->processParameters(array('env' => $this->_env, 'param' => $this->_param));
+				}
+				catch(FrontendPageNotFoundException $e){
+					// Work around. This ensures the 404 page is displayed and
+					// is not picked up by the default catch() statement below
+					FrontendPageNotFoundExceptionHandler::render($e);
+				}
 
 				/**
 				 * Allows extensions to execute the data source themselves (e.g. for caching)
@@ -859,9 +878,7 @@
 				}
 
 				$queries = Symphony::Database()->queryCount() - $queries;
-
 				Symphony::Profiler()->sample($handle, PROFILE_LAP, 'Datasource', $queries);
-
 				unset($ds);
 			}
 		}
@@ -995,3 +1012,4 @@
 		}
 
 	}
+

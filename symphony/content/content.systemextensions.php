@@ -154,19 +154,49 @@
 				))
 			);
 
-			$tableActions->appendChild(Widget::Apply($options));
-			$this->Form->appendChild($tableActions);
+			/**
+			 * Allows an extension to modify the existing options for this page's
+			 * With Selected menu. If the `$options` parameter is an empty array,
+			 * the 'With Selected' menu will not be rendered.
+			 *
+			 * @delegate AddCustomActions
+			 * @since Symphony 2.3.2
+			 * @param string $context
+			 * '/system/extensions/'
+			 * @param array $options
+			 *  An array of arrays, where each child array represents an option
+			 *  in the With Selected menu. Options should follow the same format
+			 *  expected by `Widget::__SelectBuildOption`. Passed by reference.
+			 */
+			Symphony::ExtensionManager()->notifyMembers('AddCustomActions', '/system/extensions/', array(
+				'options' => &$options
+			));
 
+			if(!empty($options)) {
+				$tableActions->appendChild(Widget::Apply($options));
+				$this->Form->appendChild($tableActions);
+			}
 		}
 
-		public function __actionIndex(){
+		public function __actionIndex() {
+			/**
+			 * Extensions can listen for any custom actions that were added
+			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+			 * delegates.
+			 *
+			 * @delegate CustomActions
+			 * @since Symphony 2.3.2
+			 * @param string $context
+			 * '/system/extensions/'
+			 */
+			Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/extensions/');
+
 			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
 
-			if(isset($_POST['with-selected']) && is_array($checked) && !empty($checked)){
+			if(isset($_POST['with-selected']) && is_array($checked) && !empty($checked)) {
 
 				try{
-					switch($_POST['with-selected']){
-
+					switch($_POST['with-selected']) {
 						case 'enable':
 
 							/**
@@ -227,7 +257,7 @@
 
 					redirect(Administration::instance()->getCurrentPageURL());
 				}
-				catch(Exception $e){
+				catch(Exception $e) {
 					$this->pageAlert($e->getMessage(), Alert::ERROR);
 				}
 			}

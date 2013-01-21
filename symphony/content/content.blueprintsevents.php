@@ -69,7 +69,8 @@
 			}
 
 			$isEditing = ($readonly ? true : false);
-			$fields = array();
+			$fields = array("name"=>null, "filters"=>null);
+			$about = array("name"=>null);
 			$providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::EVENT);
 
 			if(isset($_POST['fields'])) {
@@ -140,11 +141,13 @@
 				$label = Widget::Label(__('Source'));
 				$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 				$options = array();
+				$section_options = array();
+				$source = isset($fields['source']) ? $fields['source'] : null;
 
 				if(is_array($sections) && !empty($sections)) {
-					$section_options = array('label' => __('Sections'), 'data-label' => 'Sections', 'options' => array());
+					$section_options = array('label' => __('Sections'), 'options' => array());
 					foreach($sections as $s) {
-						$section_options['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
+						$section_options['options'][] = array($s->get('id'), $source == $s->get('id'), General::sanitize($s->get('name')));
 					}
 				}
 
@@ -183,13 +186,11 @@
 				$fieldset->appendChild($group);
 				$this->Form->appendChild($fieldset);
 
-			// Filters
-				$div = new XMLElement('div');
-				$div->setAttribute('id', 'Sections');
-				$div->setAttribute('class', 'pickable');
-
+				// Filters
 				$fieldset = new XMLElement('fieldset');
-				$fieldset->setAttribute('class', 'settings');
+				$fieldset->setAttribute('id', 'sections');
+				$fieldset->setAttribute('class', 'settings pickable');
+				$fieldset->setAttribute('data-relation', 'event-context');
 				$fieldset->appendChild(new XMLElement('legend', __('Filters')));
 				$p = new XMLElement('p',
 					__('Event Filters add additional conditions or actions to an event.')
@@ -197,7 +198,7 @@
 				$p->setAttribute('class', 'help');
 				$fieldset->appendChild($p);
 
-				$filters = is_array($fields['filters']) ? $fields['filters'] : array();
+				$filters = isset($fields['filters']) ? $fields['filters'] : array();
 				$options = array(
 					array('admin-only', in_array('admin-only', $filters), __('Admin Only')),
 					array('send-email', in_array('send-email', $filters), __('Send Notification Email')),
@@ -221,9 +222,8 @@
 				));
 
 				$fieldset->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
-				$div->appendChild($fieldset);
 
-				$this->Form->appendChild($div);
+				$this->Form->appendChild($fieldset);
 
 			// Providers
 				if(!empty($providers)) {
@@ -366,7 +366,7 @@
 
 			if(trim($fields['name']) == '') $this->_errors['name'] = __('This is a required field');
 			if(trim($fields['source']) == '') $this->_errors['source'] = __('This is a required field');
-			$filters = (is_array($fields['filters'])) ? $fields['filters'] : array();
+			$filters = isset($fields['filters']) ? $fields['filters'] : array();
 
 			// See if a Provided Datasource is saved
 			if (!empty($providers)) {

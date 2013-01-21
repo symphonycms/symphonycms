@@ -12,7 +12,7 @@
 	 * It should not be used when writing new password-related features.
 	 */
 	Class MD5 extends Cryptography{
-		
+
 		/**
 		 * Uses `MD5` to create a hash based on some input
 		 *
@@ -39,7 +39,7 @@
 		}
 
 		/**
-		 * Compares a given hash with a cleantext password. 	
+		 * Compares a given hash with a cleantext password.
 		 *
 		 * @param string $input
 		 * the cleartext password
@@ -48,7 +48,7 @@
 		 * @return bool
 		 * the result of the comparison
 		 */
-		public static function compare($input, $hash){
+		public static function compare($input, $hash, $isHash=false){
 			return ($hash == self::hash($input));
 		}
 	}

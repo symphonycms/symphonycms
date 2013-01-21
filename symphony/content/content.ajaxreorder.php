@@ -31,7 +31,7 @@
 				case self::kREORDER_PAGES:
 					foreach($items as $id => $position) {
 						if(!PageManager::edit($id, array('sortorder' => $position))) {
-							$this->_status = self::STATUS_ERROR;
+							$this->setHttpStatus(self::HTTP_STATUS_ERROR);
 							$this->_Result->setValue(__('A database error occurred while attempting to reorder.'));
 							break;
 						}
@@ -41,7 +41,7 @@
 				case self::kREORDER_SECTIONS:
 					foreach($items as $id => $position) {
 						if(!SectionManager::edit($id, array('sortorder' => $position))) {
-							$this->_status = self::STATUS_ERROR;
+							$this->setHttpStatus(self::HTTP_STATUS_ERROR);
 							$this->_Result->setValue(__('A database error occurred while attempting to reorder.'));
 							break;
 						}
@@ -54,7 +54,7 @@
 
 				case self::kREORDER_UNKNOWN:
 				default:
-					$this->_status = self::STATUS_BAD;
+					$this->setHttpStatus(self::HTTP_STATUS_BAD_REQUEST);
 					break;
 
 			}

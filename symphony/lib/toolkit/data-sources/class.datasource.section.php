@@ -13,6 +13,9 @@
 	 * @since Symphony 2.3
 	 * @link http://symphony-cms.com/learn/concepts/view/data-sources/
 	 */
+
+	require_once(TOOLKIT . '/class.entrymanager.php');
+
 	Class SectionDatasource extends Datasource {
 
 		/**
@@ -307,7 +310,7 @@
 
 				if(!is_array($filter)) {
 					$filter_type = $this->__determineFilterType($filter);
-					$value = preg_split('/'.($filter_type == DS_FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
+					$value = preg_split('/'.($filter_type == DataSource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
 					$value = array_map('trim', $value);
 					$value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
 				}
@@ -329,14 +332,21 @@
 						$c = 'NOT IN';
 					}
 
-					$where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
+					// Cast all ID's to integers.
+					$value = array_map(create_function('$x', 'return (int)$x;'),$value);
+					$value = array_filter($value);
+
+					// If there are no ID's, no need to filter. RE: #1567
+					if(!empty($value)) {
+						$where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
+					}
 				}
 				else if($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
 					require_once(TOOLKIT . '/fields/field.date.php');
 					$date_joins = '';
 					$date_where = '';
 					$date = new fieldDate();
-					$date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == DS_FILTER_AND ? true : false));
+					$date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == DataSource::FILTER_AND ? true : false));
 
 					// Replace the date field where with the `creation_date` or `modification_date`.
 					$date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
@@ -345,21 +355,18 @@
 				else {
 					// For deprecated reasons, call the old, typo'd function name until the switch to the
 					// properly named buildDSRetrievalSQL function.
-					if(!self::$_fieldPool[$field_id]->buildDSRetrivalSQL($value, $joins, $where, ($filter_type == DS_FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
+					if(!self::$_fieldPool[$field_id]->buildDSRetrivalSQL($value, $joins, $where, ($filter_type == DataSource::FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
 					if(!$group) $group = self::$_fieldPool[$field_id]->requiresSQLGrouping();
 				}
 			}
 		}
 
-		public function execute(array &$param_pool) {
+		public function execute(array &$param_pool = null) {
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 			$this->_param_pool = $param_pool;
-
-			$where = NULL;
-			$joins = NULL;
+			$where = null;
+			$joins = null;
 			$group = false;
-
-			include_once(TOOLKIT . '/class.entrymanager.php');
 
 			if(!$section = SectionManager::fetch((int)$this->getSource())){
 				$about = $this->about();
@@ -452,7 +459,7 @@
 			));
 
 			if(($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || $this->dsParamSTARTPAGE == '0'){
-				if($this->dsParamREDIRECTONEMPTY == 'yes'){
+				if($this->dsParamREDIRECTONEMPTY == 'yes') {
 					throw new FrontendPageNotFoundException;
 				}
 				$this->_force_empty_result = false;

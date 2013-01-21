@@ -76,6 +76,13 @@
 		private static $namespace = false;
 
 		/**
+		 * A previous exception that has been fired. Defaults to null.
+		 * @since Symphony 2.3.2
+		 * @var Exception
+		 */
+		private $exception = null;
+
+		/**
 		 * An instance of the Cookie class
 		 * @var Cookie
 		 */
@@ -229,6 +236,14 @@
 		 * function on the current URL to set a cookie using the cookie_prefix
 		 * defined in the Symphony configuration. The cookie will last two
 		 * weeks.
+		 *
+		 * This function also defines two constants, `__SYM_COOKIE_PATH__`
+		 * and `__SYM_COOKIE_PREFIX__`.
+		 *
+		 * @deprecated Prior to Symphony 2.3.2, the constant `__SYM_COOKIE_PREFIX_`
+		 *  had a typo where it was missing the second underscore. Symphony will
+		 *  support both constants, `__SYM_COOKIE_PREFIX_` and `__SYM_COOKIE_PREFIX__`
+		 *  until Symphony 2.5
 		 */
 		public function initialiseCookie(){
 			$cookie_path = @parse_url(URL, PHP_URL_PATH);
@@ -236,8 +251,9 @@
 
 			define_safe('__SYM_COOKIE_PATH__', $cookie_path);
 			define_safe('__SYM_COOKIE_PREFIX_', self::Configuration()->get('cookie_prefix', 'symphony'));
+			define_safe('__SYM_COOKIE_PREFIX__', self::Configuration()->get('cookie_prefix', 'symphony'));
 
-			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX_, TWO_WEEKS, __SYM_COOKIE_PATH__);
+			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);
 		}
 
 		/**
@@ -251,7 +267,7 @@
 			self::$ExtensionManager = new ExtensionManager;
 
 			if(!(self::$ExtensionManager instanceof ExtensionManager)){
-				throw new SymphonyErrorPage('Error creating Symphony extension manager.');
+				$this->throwCustomError(__('Error creating Symphony extension manager.'));
 			}
 		}
 
@@ -320,9 +336,10 @@
 				elseif(self::Configuration()->get('query_caching', 'database') == 'on') self::Database()->enableCaching();
 			}
 			catch(DatabaseException $e){
-				throw new SymphonyErrorPage(
+				$this->throwCustomError(
 					$e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
-					'Symphony Database Error',
+					__('Symphony Database Error'),
+					Page::HTTP_STATUS_ERROR,
 					'database',
 					array(
 						'error' => $e,
@@ -508,7 +525,9 @@
 		/**
 		 * A wrapper for throwing a new Symphony Error page.
 		 *
-		 * @see core.SymphonyErrorPage
+		 * @deprecated @since Symphony 2.3.2
+		 *
+		 * @see `throwCustomError`
 		 * @param string $heading
 		 *  A heading for the error page
 		 * @param string|XMLElement $message
@@ -523,8 +542,55 @@
 		 *  that the template may want to expose, such as custom Headers etc.
 		 */
 		public function customError($heading, $message, $template='generic', array $additional=array()){
+			$this->throwCustomError($message, $heading, Page::HTTP_STATUS_ERROR, $template, $additional);
+		}
+
+		/**
+		 * A wrapper for throwing a new Symphony Error page.
+		 *
+		 * This methods sets the `GenericExceptionHandler::$enabled` value to `true`.
+		 *
+		 * @see core.SymphonyErrorPage
+		 * @param string|XMLElement $message
+		 *  A description for this error, which can be provided as a string
+		 *  or as an XMLElement.
+		 * @param string $heading
+		 *  A heading for the error page
+		 * @param integer $status
+		 *  Properly sets the HTTP status code for the response. Defaults to
+		 *  `Page::HTTP_STATUS_ERROR`. Use `Page::HTTP_STATUS_XXX` to set this value.
+		 * @param string $template
+		 *  A string for the error page template to use, defaults to 'generic'. This
+		 *  can be the name of any template file in the `TEMPLATES` directory.
+		 *  A template using the naming convention of `tpl.*.php`.
+		 * @param array $additional
+		 *  Allows custom information to be passed to the Symphony Error Page
+		 *  that the template may want to expose, such as custom Headers etc.
+		 */
+		public function throwCustomError($message, $heading='Symphony Fatal Error', $status=Page::HTTP_STATUS_ERROR, $template='generic', array $additional=array()){
 			GenericExceptionHandler::$enabled = true;
-			throw new SymphonyErrorPage($message, $heading, $template, $additional);
+			throw new SymphonyErrorPage($message, $heading, $template, $additional, $status);
+		}
+
+		/**
+		 * Setter accepts a previous Exception. Useful for determining the context
+		 * of a current exception (ie. detecting recursion).
+		 *
+		 * @since Symphony 2.3.2
+		 * @param Exception $ex
+		 */
+		public function setException(Exception $ex) {
+			$this->exception = $ex;
+		}
+
+		/**
+		 * Accessor for `$this->exception`.
+		 *
+		 * @since Symphony 2.3.2
+		 * @return Exception|null
+		 */
+		public function getException() {
+			return $this->exception;
 		}
 
 		/**
@@ -641,13 +707,14 @@
 		 * template for this exception otherwise it reverts to using the default
 		 * `usererror.generic.php`
 		 *
-		 * @param SymphonyErrorPage $e
+		 * @param Exception $e
 		 *  The Exception object
 		 * @return string
 		 *  An HTML string
 		 */
 		public static function render(Exception $e){
 			if($e->getTemplate() === false){
+				Page::renderStatusCode($e->getHttpStatusCode());
 				if(isset($e->getAdditional()->header)) header($e->getAdditional()->header);
 
 				echo '<h1>Symphony Fatal Error</h1><p>'.$e->getMessage().'</p>';
@@ -675,13 +742,6 @@
 		private $_heading;
 
 		/**
-		 * A description for this error, which can be provided as a string
-		 * or as an `XMLElement`.
-		 * @var string|XMLElement
-		 */
-		private $_message;
-
-		/**
 		 * A string for the error page template to use, defaults to 'generic'. This
 		 * can be the name of any template file in the `TEMPLATES` directory.
 		 * A template using the naming convention of `usererror.*.php`.
@@ -704,6 +764,13 @@
 		private $_additional = null;
 
 		/**
+		 * A simple container for the response status code.
+		 * Full value is setted usign `$Page->setHttpStatus()`
+		 * in the template.
+		 */
+		private $_status = Page::HTTP_STATUS_ERROR;
+
+		/**
 		 * Constructor for SymphonyErrorPage sets it's class variables
 		 *
 		 * @param string|XMLElement $message
@@ -718,8 +785,11 @@
 		 * @param array $additional
 		 *  Allows custom information to be passed to the Symphony Error Page
 		 *  that the template may want to expose, such as custom Headers etc.
+		 * @param integer $status
+		 *  Properly sets the HTTP status code for the response. Defaults to
+		 *  `Page::HTTP_STATUS_ERROR`
 		 */
-		public function __construct($message, $heading='Symphony Fatal Error', $template='generic', array $additional=NULL){
+		public function __construct($message, $heading='Symphony Fatal Error', $template='generic', array $additional=array(), $status=Page::HTTP_STATUS_ERROR){
 
 			if($message instanceof XMLElement){
 				$this->_messageObject = $message;
@@ -731,6 +801,7 @@
 			$this->_heading = $heading;
 			$this->_template = $template;
 			$this->_additional = (object)$additional;
+			$this->_status = $status;
 		}
 
 		/**
@@ -761,6 +832,16 @@
 		}
 
 		/**
+		 * Accessor for `$_status`
+		 *
+		 * @since Symphony 2.3.2
+		 * @return integer
+		 */
+		public function getHttpStatusCode() {
+			return $this->_status;
+		}
+
+		/**
 		 * Returns the path to the current template by looking at the
 		 * `WORKSPACE/template/` directory, then at the `TEMPLATES`
 		 * directory for the convention `usererror.*.php`. If the template
@@ -780,6 +861,17 @@
 			else
 				return false;
 		}
+
+		/**
+		 * A simple getter to the template name in order to be able
+		 * to identify which type of exception this is.
+		 *
+		 * @since Symphony 2.3.2
+		 * @return string
+		 */
+		public function getTemplateName() {
+			return $this->_template;
+		}
 	}
 
 	/**
@@ -793,27 +885,24 @@
 		 * The render function will take a `DatabaseException` and output a
 		 * HTML page.
 		 *
-		 * @param DatabaseException $e
+		 * @param Exception $e
 		 *  The Exception object
 		 * @return string
 		 *  An HTML string
 		 */
-		public static function render(Exception $e){
-
-			$trace = NULL;
+		public static function render(Exception $e) {
+			$trace = $queries = null;
 
 			foreach($e->getTrace() as $t){
 				$trace .= sprintf(
 					'<li><code><em>[%s:%d]</em></code></li><li><code>&#160;&#160;&#160;&#160;%s%s%s();</code></li>',
 					$t['file'],
 					$t['line'],
-					(isset($t['class']) ? $t['class'] : NULL),
-					(isset($t['type']) ? $t['type'] : NULL),
+					(isset($t['class']) ? $t['class'] : null),
+					(isset($t['type']) ? $t['type'] : null),
 					$t['function']
 				);
 			}
-
-			$queries = NULL;
 
 			if(is_object(Symphony::Database())){
 				$debug = Symphony::Database()->debug();
@@ -821,7 +910,7 @@
 				if(!empty($debug)) foreach($debug as $query){
 					$queries .= sprintf(
 						'<li><em>[%01.4f]</em><code> %s;</code> </li>',
-						(isset($query['execution_time']) ? $query['execution_time'] : NULL),
+						(isset($query['execution_time']) ? $query['execution_time'] : null),
 						htmlspecialchars($query['query'])
 					);
 				}

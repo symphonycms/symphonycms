@@ -278,9 +278,9 @@
 		 *
 		 * @throws EmailValidationException
 		 * @param array $configuration
-		 * @since 2.3.1
+		 * @since Symphony 2.3.1
 		 *  All configuration entries stored in a single array. The array should have the format of the $_POST array created by the preferences HTML.
-		 * @return void
+		 * @return boolean
 		 */
 		public function setConfiguration($config){
 			return true;

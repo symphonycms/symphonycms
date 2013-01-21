@@ -386,7 +386,6 @@
 
 		private static function __install(){
 			$fields = $_POST['fields'];
-			$errors = array();
 			$start = time();
 
 			Symphony::Log()->writeToLog(PHP_EOL . '============================================', true);

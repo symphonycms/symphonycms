@@ -33,7 +33,7 @@
 				content:			'.content',
 				ignore:				'.ignore',
 				save_state:			true,
-				storage: 			'symphony.collapsible.' + window.location.href.split(Symphony.Context.get('root') + '/')[1].replace(/\//g, '.')
+				storage:			'symphony.collapsible.' + window.location.href.split(Symphony.Context.get('root') + '/')[1].replace(/\/(edit|new|created|saved)/g, '').replace(/\//g, '.')
 			};
 
 		$.extend(settings, options);
@@ -178,4 +178,4 @@
 		return objects;
 	};
 
-})(jQuery.noConflict());
+})(window.jQuery);

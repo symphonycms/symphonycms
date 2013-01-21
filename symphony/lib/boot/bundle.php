@@ -19,7 +19,7 @@
 	}
 
 	if (PHP_VERSION_ID >= 50300){
-		error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
+		error_reporting(E_ALL & ~E_NOTICE);
 	}
 	else{
 		error_reporting(E_ALL & ~E_NOTICE);
@@ -31,13 +31,15 @@
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
 
 	if (!file_exists(CONFIG)) {
+		
+		$bInsideInstaller = (bool)preg_match('%/install/index.php$%', $_SERVER['SCRIPT_FILENAME']);
 
-		if (file_exists(DOCROOT . '/install/index.php')) {
+		if (!$bInsideInstaller && file_exists(DOCROOT . '/install/index.php')) {
 			header(sprintf('Location: %s/install/', URL));
 			exit;
 		}
-
-		die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
+		
+		elseif(!$bInsideInstaller){
+			die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
+		}
 	}
-
-	include(CONFIG);

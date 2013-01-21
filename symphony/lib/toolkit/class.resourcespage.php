@@ -43,7 +43,7 @@
 
 			// If `?unsort` is appended to the URL, then sorting information are reverted
 			// to their defaults
-			if($params['unsort']) {
+			if(isset($params['unsort'])) {
 				ResourceManager::setSortingField($type, 'name', false);
 				ResourceManager::setSortingOrder($type, 'asc');
 
@@ -146,7 +146,7 @@
 			else {
 				foreach($resources as $r) {
 					// Resource name
-					$action = ($r['can_parse'] ? 'edit' : 'info');
+					$action = isset($r['can_parse']) && $r['can_parse'] === true ? 'edit' : 'info';
 					$name = Widget::TableData(
 						Widget::Anchor(
 							$r['name'],
@@ -156,7 +156,7 @@
 					);
 
 					// Resource type/source
-					if(isset($r['source']['id'])) {
+					if(isset($r['source'], $r['source']['id'])) {
 						$section = Widget::TableData(
 							Widget::Anchor(
 								$r['source']['name'],
@@ -165,11 +165,11 @@
 							)
 						);
 					}
-					else if(class_exists($r['source']['name']) && method_exists($r['source']['name'], 'getSourceColumn')) {
+					else if(isset($r['source']) && class_exists($r['source']['name']) && method_exists($r['source']['name'], 'getSourceColumn')) {
 						$class = call_user_func(array($manager, '__getClassName'), $r['handle']);
 						$section = Widget::TableData(call_user_func(array($class, 'getSourceColumn'), $r['handle']));
 					}
-					else if(isset($r['source']['name'])){
+					else if(isset($r['source'], $r['source']['name'])) {
 						$section = Widget::TableData($r['source']['name']);
 					}
 					else {
@@ -255,8 +255,28 @@
 			$options[] = $group_attach;
 			$options[] = $group_detach;
 
-			$tableActions->appendChild(Widget::Apply($options));
-			$this->Form->appendChild($tableActions);
+			/**
+			 * Allows an extension to modify the existing options for this page's
+			 * With Selected menu. If the `$options` parameter is an empty array,
+			 * the 'With Selected' menu will not be rendered.
+			 *
+			 * @delegate AddCustomActions
+			 * @since Symphony 2.3.2
+			 * @param string $context
+			 * '/blueprints/datasources/' or '/blueprints/events/'
+			 * @param array $options
+			 *  An array of arrays, where each child array represents an option
+			 *  in the With Selected menu. Options should follow the same format
+			 *  expected by `Widget::__SelectBuildOption`. Passed by reference.
+			 */
+			Symphony::ExtensionManager()->notifyMembers('AddCustomActions', $_REQUEST['symphony-page'], array(
+				'options' => &$options
+			));
+
+			if(!empty($options)) {
+				$tableActions->appendChild(Widget::Apply($options));
+				$this->Form->appendChild($tableActions);
+			}
 		}
 
 		/**
@@ -273,6 +293,18 @@
 		 */
 		public function __actionIndex($resource_type){
 			$manager = ResourceManager::getManagerFromType($resource_type);
+
+			/**
+			 * Extensions can listen for any custom actions that were added
+			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+			 * delegates.
+			 *
+			 * @delegate CustomActions
+			 * @since Symphony 2.3.2
+			 * @param string $context
+			 * '/blueprints/datasources/' or '/blueprints/events/'
+			 */
+			Symphony::ExtensionManager()->notifyMembers('CustomActions', $_REQUEST['symphony-page']);
 
 			if (isset($_POST['action']) && is_array($_POST['action'])) {
 				$checked = ($_POST['items']) ? @array_keys($_POST['items']) : NULL;

@@ -57,7 +57,7 @@
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `file` varchar(255) default NULL,
 				  `size` int(11) unsigned NULL,
-				  `mimetype` varchar(50) default NULL,
+				  `mimetype` varchar(100) default NULL,
 				  `meta` varchar(255) default NULL,
 				  PRIMARY KEY  (`id`),
 				  UNIQUE KEY `entry_id` (`entry_id`),
@@ -183,7 +183,7 @@
 				));
 			}
 
-			else if ($flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/') === false) {
+			else if ($flagWithError && is_writable(DOCROOT . $this->get('destination') . '/') === false) {
 				$flagWithError = __('Destination folder is not writable.')
 					. ' '
 					. __('Please check permissions on %s.', array(
@@ -474,7 +474,7 @@
 			if (strlen(trim($data['type'])) == 0) {
 				$data['type'] = (
 					function_exists('mime_content_type')
-						? mime_content_type($file)
+						? mime_content_type(WORKSPACE . $file)
 						: 'application/octet-stream'
 				);
 			}
@@ -548,15 +548,25 @@
 		Import:
 	-------------------------------------------------------------------------*/
 
-		/**
-		 * Give the field some data and ask it to return a value.
-		 *
-		 * @param mixed $data
-		 * @param integer $entry_id
-		 * @return array|null
-		 */
-		public function prepareImportValue($data, $entry_id = null) {
-			return $this->processRawFieldData($data, $status, $message, false, $entry_id);
+		public function getImportModes() {
+			return array(
+				'getValue' =>		ImportableField::STRING_VALUE,
+				'getPostdata' =>	ImportableField::ARRAY_VALUE
+			);
+		}
+
+		public function prepareImportValue($data, $mode, $entry_id = null) {
+			$message = $status = null;
+			$modes = (object)$this->getImportModes();
+
+			if($mode === $modes->getValue) {
+				return $data;
+			}
+			else if($mode === $modes->getPostdata) {
+				return $this->processRawFieldData($data, $status, $message, true, $entry_id);
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------
@@ -570,9 +580,9 @@
 		 */
 		public function getExportModes() {
 			return array(
-				'getFilename' =>		ExportableField::VALUE,
-				'getObject' =>			ExportableField::OBJECT,
-				'getPostdata' =>		ExportableField::POSTDATA
+				'getFilename' =>	ExportableField::VALUE,
+				'getObject' =>		ExportableField::OBJECT,
+				'getPostdata' =>	ExportableField::POSTDATA
 			);
 		}
 

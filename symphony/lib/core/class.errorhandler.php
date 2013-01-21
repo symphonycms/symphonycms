@@ -29,7 +29,7 @@
 		/**
 		 * Initialise will set the error handler to be the `__CLASS__::handler` function.
 		 *
-		 * @param Log|null $log
+		 * @param Log $log
 		 *  An instance of a Symphony Log object to write errors to
 		 */
 		public static function initialise(Log $Log = null){
@@ -86,37 +86,29 @@
 				}
 
 				// Exceptions should be logged if they are not caught.
-				if(self::$_Log instanceof Log){
-					self::$_Log->pushToLog(sprintf(
-							'%s %s - %s%s%s',
-							$class,
-							$e->getCode(),
-							$e->getMessage(),
-							($e->getFile() ? " in file " .  $e->getFile() : null),
-							($e->getLine() ? " on line " . $e->getLine() : null)
-						),
-						$e->getCode(), true
-					);
+				if(self::$_Log instanceof Log) {
+					self::$_Log->pushExceptionToLog($e, true);
+				}
+
+				if(!headers_sent()) {
+					Page::renderStatusCode(Page::HTTP_STATUS_ERROR);
+					header('Content-Type: text/html; charset=utf-8');
 				}
 
 				$output = call_user_func(array($class, 'render'), $e);
-
-				if(!headers_sent()) {
-					header('Content-Type: text/html; charset=utf-8');
-					header(sprintf('Content-Length: %d', strlen($output)));
-				}
 
 				echo $output;
 				exit;
 			}
 			catch(Exception $e){
 				try {
-					$output = call_user_func(array('GenericExceptionHandler', 'render'), $e);
 
 					if(!headers_sent()) {
+						Page::renderStatusCode(Page::HTTP_STATUS_ERROR);
 						header('Content-Type: text/html; charset=utf-8');
-						header(sprintf('Content-Length: %d', strlen($output)));
 					}
+
+					$output = call_user_func(array('GenericExceptionHandler', 'render'), $e);
 
 					echo $output;
 					exit;
@@ -299,7 +291,7 @@
 		 * @return boolean
 		 */
 		public static function isEnabled(){
-			return (bool)error_reporting() AND self::$enabled;
+			return (bool)error_reporting() && self::$enabled;
 		}
 
 		/**
@@ -325,8 +317,8 @@
 			if(!self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$_Log instanceof Log){
 				self::$_Log->pushToLog(
 					sprintf(
-						'%s %s - %s%s%s',
-						__CLASS__, $code, $message, ($file ? " in file $file" : null), ($line ? " on line $line" : null)
+						'%s %s: %s%s%s',
+						__CLASS__, $code, $message, ($line ? " on line $line" : null), ($file ? " of file $file" : null)
 					), $code, true
 				);
 			}
