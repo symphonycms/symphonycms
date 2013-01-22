@@ -782,8 +782,9 @@
 			$this->Form->appendChild($fieldset);
 
 		// Dynamic XML
-
-			$fields['dynamic_xml'] = array('url'=>null, 'xpath'=>null, 'namespace'=>null, 'cache'=>null, 'timeout'=>null);
+			if(!isset($fields['dynamic_xml'])) {
+				$fields['dynamic_xml'] = array('url'=>null, 'xpath'=>null, 'namespace'=>null, 'cache'=>null, 'timeout'=>null);
+			}
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual dynamic_xml');
@@ -889,7 +890,6 @@
 			$this->Form->appendChild($fieldset);
 
 		// Static XML
-
 			if(!isset($fields['static_xml'])) {
 				$fields['static_xml'] = null;
 			}
@@ -1221,6 +1221,8 @@
 
 						case 'dynamic_xml':
 							$extends = 'DynamicXMLDatasource';
+
+							var_dump($data);
 							// Automatically detect namespaces
 							if(isset($data)) {
 								preg_match_all('/xmlns:([a-z][a-z-0-9\-]*)="([^\"]+)"/i', $data, $matches);
