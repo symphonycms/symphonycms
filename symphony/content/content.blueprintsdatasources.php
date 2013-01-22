@@ -1222,7 +1222,6 @@
 						case 'dynamic_xml':
 							$extends = 'DynamicXMLDatasource';
 
-							var_dump($data);
 							// Automatically detect namespaces
 							if(isset($data)) {
 								preg_match_all('/xmlns:([a-z][a-z-0-9\-]*)="([^\"]+)"/i', $data, $matches);
