@@ -163,12 +163,18 @@
 							break;
 
 						case 'static_xml':
-							$existing->grab();
-							if (!isset($existing->dsParamSTATIC))
-								$fields['static_xml'] = trim($existing->dsSTATIC);
-							else
+							// Symphony 2.3+
+							if (isset($existing->dsParamSTATIC)) {
 								$fields['static_xml'] = trim($existing->dsParamSTATIC);
-							break;
+							}
+							// Handle Symphony 2.2.2 to 2.3 DS's
+							else if(isset($existing->dsSTATIC)) {
+								$fields['static_xml'] = trim($existing->dsSTATIC);
+							}
+							// Handle pre Symphony 2.2.1 Static DS's
+							else {
+								$fields['static_xml'] = trim($existing->grab());
+							}
 							break;
 
 						default:
@@ -884,7 +890,9 @@
 
 		// Static XML
 
-			$fields['static_xml'] = null;
+			if(!isset($fields['static_xml'])) {
+				$fields['static_xml'] = null;
+			}
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual static_xml');
@@ -1269,7 +1277,7 @@
 
 							$params['static'] = sprintf(
 								'%s',
-								addslashes(trim($fields['static_xml']))
+								trim($fields['static_xml'])
 							);
 							break;
 
