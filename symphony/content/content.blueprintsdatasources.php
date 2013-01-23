@@ -942,7 +942,10 @@
 			$about = $datasource->about();
 
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($about['name'], __('Data Source'), __('Symphony'))));
-			$this->appendSubheading($about['name']);
+			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
+			$this->insertBreadcrumbs(array(
+				Widget::Anchor(__('Data Sources'), SYMPHONY_URL . '/blueprints/datasources/'),
+			));
 			$this->Form->setAttribute('id', 'controller');
 
 			$link = $about['author']['name'];
