@@ -334,7 +334,16 @@
 
 					// Cast all ID's to integers.
 					$value = array_map(create_function('$x', 'return (int)$x;'),$value);
+					$count = array_sum($value);
 					$value = array_filter($value);
+
+					// If the ID was cast to 0, then we need to filter on 'id' = 0,
+					// which will of course return no results, but without it the
+					// Datasource will return ALL results, which is not the
+					// desired behaviour. RE: #1619
+					if($count === 0) {
+						$value[] = '0';
+					}
 
 					// If there are no ID's, no need to filter. RE: #1567
 					if(!empty($value)) {
