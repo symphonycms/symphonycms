@@ -11,7 +11,7 @@
 	 */
 
 	require_once(TOOLKIT . '/class.event.php');
-	require_once(TOOLKIT . '/class.datasourcemanager.php');
+	require_once(FACE . '/interface.fileresource.php');
 
 	Class EventManager implements FileResource {
 

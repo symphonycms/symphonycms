@@ -16,6 +16,7 @@
 	require_once(CORE . '/interface.singleton.php');
 
 	require_once(TOOLKIT . '/class.page.php');
+	require_once(TOOLKIT . '/class.ajaxpage.php');
 	require_once(TOOLKIT . '/class.xmlelement.php');
 	require_once(TOOLKIT . '/class.widget.php');
 	require_once(TOOLKIT . '/class.general.php');
@@ -25,10 +26,16 @@
 	require_once(TOOLKIT . '/class.email.php');
 	require_once(TOOLKIT . '/class.mysql.php');
 
-	require_once(TOOLKIT . '/class.authormanager.php');
 	require_once(TOOLKIT . '/class.extensionmanager.php');
-	require_once(TOOLKIT . '/class.emailgatewaymanager.php');
 	require_once(TOOLKIT . '/class.pagemanager.php');
+	require_once(TOOLKIT . '/class.authormanager.php');
+	require_once(TOOLKIT . '/class.emailgatewaymanager.php');
+	require_once(TOOLKIT . '/class.entrymanager.php');
+	require_once(TOOLKIT . '/class.fieldmanager.php');
+	require_once(TOOLKIT . '/class.sectionmanager.php');
+	require_once(TOOLKIT . '/class.textformattermanager.php');
+	require_once(TOOLKIT . '/class.datasourcemanager.php');
+	require_once(TOOLKIT . '/class.eventmanager.php');
 
 	Abstract Class Symphony implements Singleton{
 

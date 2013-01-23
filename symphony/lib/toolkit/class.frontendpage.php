@@ -5,7 +5,7 @@
 	 */
 
 	/**
-	 * The FrontendPage class represents a page of the website that is powered
+	 * The `FrontendPage` class represents a page of the website that is powered
 	 * by Symphony. It takes the current URL and resolves it to a page as specified
 	 * in Symphony which involves deducing the parameters from the URL, ensuring
 	 * this page is accessible and exists, setting the correct Content-Type for the page
@@ -16,9 +16,6 @@
 	 */
 
 	require_once(TOOLKIT . '/class.xsltpage.php');
-	require_once(TOOLKIT . '/class.datasourcemanager.php');
-	require_once(TOOLKIT . '/class.eventmanager.php');
-	require_once(TOOLKIT . '/class.extensionmanager.php');
 
 	Class FrontendPage extends XSLTPage {
 

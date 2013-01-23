@@ -4,7 +4,7 @@
 	 * @package toolkit
 	 */
 	/**
-	 * The FieldManager class is responsible for managing all fields types in Symphony.
+	 * The `FieldManager` class is responsible for managing all fields types in Symphony.
 	 * Fields are stored on the file system either in the `/fields` folder of `TOOLKIT` or
 	 * in a `fields` folder in an extension directory.
 	 */

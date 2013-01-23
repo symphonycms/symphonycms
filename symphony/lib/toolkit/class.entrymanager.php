@@ -4,7 +4,7 @@
 	 * @package toolkit
 	 */
 	/**
-	 * The EntryManager is responsible for all Entry objects in Symphony.
+	 * The `EntryManager` is responsible for all `Entry` objects in Symphony.
 	 * Entries are stored in the database in a cluster of tables. There is a
 	 * parent entry row stored in `tbl_entries` and then each field's data is
 	 * stored in a separate table, `tbl_entries_data_{field_id}`. Where Field ID
@@ -12,9 +12,7 @@
 	 * add, edit, delete and fetching methods for Entries.
 	 */
 
-	include_once(TOOLKIT . '/class.sectionmanager.php');
-	include_once(TOOLKIT . '/class.textformattermanager.php');
-	include_once(TOOLKIT . '/class.entry.php');
+	require_once(TOOLKIT . '/class.entry.php');
 
 	Class EntryManager {
 

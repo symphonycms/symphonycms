@@ -12,8 +12,6 @@
 	 */
 	require_once(CORE . '/class.symphony.php');
 	require_once(TOOLKIT . '/class.htmlpage.php');
-	require_once(TOOLKIT . '/class.ajaxpage.php');
-	require_once(TOOLKIT . '/class.sectionmanager.php');
 
 	Class Administration extends Symphony{
 

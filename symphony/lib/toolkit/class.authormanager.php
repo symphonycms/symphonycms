@@ -10,6 +10,8 @@
 	 * (edit) and deleted (delete).
 	 */
 
+	require_once(TOOLKIT . '/class.author.php');
+
 	Class AuthorManager {
 
 		/**
