@@ -343,7 +343,7 @@
 			$value = null;
 
 			// New entry
-			if(is_null($data) && is_null($flagWithError) && $this->get('pre_populate') == 'yes') {
+			if((is_null($data) || empty($data)) && is_null($flagWithError) && $this->get('pre_populate') == 'yes') {
 				$value = DateTimeObj::format('now', DateTimeObj::getSetting('datetime_format'));
 			}
 
