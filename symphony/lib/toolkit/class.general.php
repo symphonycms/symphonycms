@@ -301,10 +301,10 @@
 				return $email->send();
 			}
 			catch(EmailGatewayException $e){
-				Symphony::instance()->throwCustomError('Error sending email. ' . $e->getMessage());
+				Symphony::Engine()->throwCustomError('Error sending email. ' . $e->getMessage());
 			}
 			catch(EmailException $e){
-				Symphony::instance()->throwCustomError('Error sending email. ' . $e->getMessage());
+				Symphony::Engine()->throwCustomError('Error sending email. ' . $e->getMessage());
 			}
 		}
 

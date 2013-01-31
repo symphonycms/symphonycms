@@ -53,7 +53,7 @@
 		public function __construct(){
 
 			if(!XsltProcess::isXSLTProcessorAvailable()) {
-				Symphony::instance()->throwCustomError(__('No suitable XSLT processor was found.'));
+				Symphony::Engine()->throwCustomError(__('No suitable XSLT processor was found.'));
 			}
 
 			$this->Proc = new XsltProcess;
