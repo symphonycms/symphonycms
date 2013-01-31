@@ -68,10 +68,10 @@
 		 * @param XMLElement $result
 		 * @param array $fields
 		 * @param array $errors
-		 * @param array $post_values
+		 * @param object $post_values
 		 * @return XMLElement
 		 */
-		public static function appendErrors(XMLElement $result, array $fields, $errors, $post_values = array()) {
+		public static function appendErrors(XMLElement $result, array $fields, $errors, $post_values) {
 			$result->setAttribute('result', 'error');
 			$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
 
@@ -304,14 +304,14 @@
 			// checkPostFieldData function. If the return of the function is `__ENTRY_FIELD_ERROR__`
 			// then abort the event, adding the error messages to the `$result`.
 			if(__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))) {
-				$result = self::appendErrors($result, $fields, $errors);
+				$result = self::appendErrors($result, $fields, $errors, $post_values);
 				return false;
 			}
 
 			// If the data is good, process the data, almost ready to save it to the
 			// Database. If processing fails, abort the event and display the errors
 			else if(__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors, false, ($entry->get('id') ? true : false))) {
-				$result = self::appendErrors($result, $fields, $errors);
+				$result = self::appendErrors($result, $fields, $errors, $post_values);
 				return false;
 			}
 
@@ -555,6 +555,8 @@
 		 *  This Section for this event
 		 * @param Section $section
 		 *  This current Entry that has just been updated or created
+		 * @return XMLElement
+		 *  The modified `$result` with the results of the filter.
 		 */
 		public function processSendMailFilter(XMLElement $result, array $send_email, array &$fields, Section $section, Entry $entry) {
 			$fields['recipient']		= self::replaceFieldToken($send_email['recipient'], $fields);
