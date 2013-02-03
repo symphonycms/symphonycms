@@ -954,7 +954,7 @@
 		 * @param string $where
 		 *  A string containing the WHERE conditions for the current SQL fragment. This
 		 *  is passed by reference and is expected to be used to add additional conditions
-		 *  specifc to this field
+		 *  specific to this field
 		 * @param boolean $andOperation (optional)
 		 *  This parameter defines whether the `$data` provided should be treated as
 		 *  AND or OR conditions. This parameter will be set to true if $data used a

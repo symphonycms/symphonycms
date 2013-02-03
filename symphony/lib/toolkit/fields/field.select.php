@@ -38,11 +38,7 @@
 			if ($this->get('dynamic_options') != '') $this->findAndAddDynamicOptions($values);
 
 			$values = array_map('trim', $values);
-			$states = array();
-
-			foreach ($values as $value) {
-				$states[$value] = $value;
-			}
+			$states = array_combine($values, $values);
 
 			if($this->get('sort_options') == 'yes') {
 				natsort($states);
