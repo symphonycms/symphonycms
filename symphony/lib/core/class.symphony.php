@@ -392,7 +392,7 @@
 					$this->Author = current($author);
 
 					// Only migrate hashes if there is no update available as the update might change the tbl_authors table.
-					if(!Administration::instance()->isUpgradeAvailable() && Cryptography::requiresMigration($this->Author->get('password'))){
+					if($this->isUpgradeAvailable() === false && Cryptography::requiresMigration($this->Author->get('password'))){
 						$this->Author->set('password', Cryptography::hash($password));
 						self::Database()->update(array('password' => $this->Author->get('password')), 'tbl_authors', " `id` = '" . $this->Author->get('id') . "'");
 					}
@@ -527,6 +527,55 @@
 				$this->Cookie->expire();
 				return false;
 			}
+		}
+
+		/**
+		 * Returns the most recent version found in the `/install/migrations` folder.
+		 * Returns a version string to be used in `version_compare()` if an updater
+		 * has been found. Returns `FALSE` otherwise.
+		 *
+		 * @since Symphony 2.3.1
+		 * @return mixed
+		 */
+		public function getMigrationVersion(){
+			if($this->isInstallerAvailable()){
+				$migration_file = end(scandir(DOCROOT . '/install/migrations'));
+				include_once(DOCROOT . '/install/lib/class.migration.php');
+				include_once(DOCROOT . '/install/migrations/' . $migration_file);
+
+				$migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
+				return call_user_func(array($migration_class, 'getVersion'));
+			}
+			else{
+				return FALSE;
+			}
+		}
+
+		/**
+		 * Checks if an update is available and applicable for the current installation.
+		 *
+		 * @since Symphony 2.3.1
+		 * @return boolean
+		 */
+		public function isUpgradeAvailable(){
+			if($this->isInstallerAvailable()){
+				$migration_version = $this->getMigrationVersion();
+				$current_version = Symphony::Configuration()->get('version', 'symphony');
+				return version_compare($current_version, $migration_version, '<');
+			}
+			else{
+				return FALSE;
+			}
+		}
+
+		/**
+		 * Checks if the installer/upgrader is available.
+		 *
+		 * @since Symphony 2.3.1
+		 * @return boolean
+		 */
+		public function isInstallerAvailable(){
+			return file_exists(DOCROOT . '/install/index.php');
 		}
 
 		/**
