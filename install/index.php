@@ -15,7 +15,9 @@
 	}
 
 	// Defines some constants
-	$clean_url = rtrim($_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']), '/\\');
+	$clean_url = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : NULL;
+	$clean_url = dirname(rtrim($_SERVER['PHP_SELF'], $clean_url));
+	$clean_url = rtrim($_SERVER['HTTP_HOST'] . $clean_url, '/\\');
 	$clean_url = preg_replace(array('/\/{2,}/i', '/install$/i'), array('/', NULL), $clean_url);
 	$clean_url = rtrim($clean_url, '/\\');
 	define('DOMAIN', $clean_url);
