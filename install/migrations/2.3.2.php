@@ -23,7 +23,7 @@
 		}
 
 		static function getVersion(){
-			return '2.3.2beta1';
+			return '2.3.2beta2';
 		}
 
 		static function getReleaseNotes(){
@@ -55,6 +55,12 @@
 			else {
 				return true;
 			}
+		}
+
+		static function preUpdateNotes(){
+			return array(
+				__("This release fixes a bug with the 'Redirect to 404 page when no results are found' setting on the Sections Datasource. Unfortunately you will need to resave your datasources to activate this fix.")
+			);
 		}
 
 	}
