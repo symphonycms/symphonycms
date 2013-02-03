@@ -141,7 +141,7 @@
 
 			foreach($data as $field_id => $values) {
 				if(!isset(self::$_fieldPool[$field_id]) || !is_object(self::$_fieldPool[$field_id])) {
-					self::$_fieldPool[$field_id] =& FieldManager::fetch($field_id);
+					self::$_fieldPool[$field_id] = FieldManager::fetch($field_id);
 				}
 
 				$this->processOutputParameters($entry, $field_id, $values);
@@ -511,7 +511,7 @@
 
 					// If the datasource require's GROUPING
 					if(isset($this->dsParamGROUP)) {
-						self::$_fieldPool[$this->dsParamGROUP] =& FieldManager::fetch($this->dsParamGROUP);
+						self::$_fieldPool[$this->dsParamGROUP] = FieldManager::fetch($this->dsParamGROUP);
 						$groups = self::$_fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);
 
 						foreach($groups as $element => $group){

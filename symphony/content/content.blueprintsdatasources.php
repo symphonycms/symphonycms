@@ -96,7 +96,7 @@
 			else if($this->_context[0] == 'edit'){
 				$isEditing = true;
 				$handle = $this->_context[1];
-				$existing =& DatasourceManager::create($handle, array(), false);
+				$existing = DatasourceManager::create($handle, array(), false);
 				$order = isset($existing->dsParamORDER) ? $existing->dsParamORDER : 'asc';
 
 				if (!$existing->allowEditorToParse()) redirect(SYMPHONY_URL . '/blueprints/datasources/info/' . $handle . '/');

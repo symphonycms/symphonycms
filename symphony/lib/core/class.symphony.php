@@ -539,7 +539,8 @@
 		 */
 		public function getMigrationVersion(){
 			if($this->isInstallerAvailable()){
-				$migration_file = end(scandir(DOCROOT . '/install/migrations'));
+				$migrations = scandir(DOCROOT . '/install/migrations');
+				$migration_file = end($migrations);
 				include_once(DOCROOT . '/install/lib/class.migration.php');
 				include_once(DOCROOT . '/install/migrations/' . $migration_file);
 

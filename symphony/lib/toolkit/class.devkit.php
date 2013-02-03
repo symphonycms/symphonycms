@@ -79,8 +79,11 @@
 		/**
 		 * This function will build the `<title>` element and create a default
 		 * `<h1>` with an anchor to this query string
+		 *
+		 * @param XMLElement $wrapper
+		 *	The parent `XMLElement` to add the header to
 		 */
-		protected function buildHeader($wrapper) {
+		protected function buildHeader(XMLElement $wrapper) {
 			$this->setTitle(__(
 				'%1$s &ndash; %2$s &ndash; %3$s',
 				array(

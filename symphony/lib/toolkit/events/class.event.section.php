@@ -285,7 +285,7 @@
 			// Entry object to the delegate meaning extensions don't have to
 			// do that step.
 			if(isset($entry_id)) {
-				$entry =& EntryManager::fetch($entry_id);
+				$entry = EntryManager::fetch($entry_id);
 				$entry = $entry[0];
 
 				if(!is_object($entry)){
@@ -296,7 +296,7 @@
 			}
 			// `$entry_id` wasn't provided, create a new Entry object.
 			else{
-				$entry =& EntryManager::create();
+				$entry = EntryManager::create();
 				$entry->set('section_id', $this->getSource());
 			}
 

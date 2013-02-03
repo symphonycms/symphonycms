@@ -831,7 +831,7 @@
 			if (isset($_POST['fields'])) {
 				$fields = $_POST['fields'];
 
-				$entry =& EntryManager::create();
+				$entry = EntryManager::create();
 				$entry->set('id', $entry_id);
 				$entry->set('author_id', $existingEntry->get('author_id'));
 				$entry->set('section_id', $existingEntry->get('section_id'));

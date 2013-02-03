@@ -80,7 +80,7 @@
 			else if($this->_context[0] == 'edit' || $this->_context[0] == 'info') {
 				$isEditing = true;
 				$handle = $this->_context[1];
-				$existing =& EventManager::create($handle);
+				$existing = EventManager::create($handle);
 				$about = $existing->about();
 
 				if ($this->_context[0] == 'edit' && !$existing->allowEditorToParse()) {

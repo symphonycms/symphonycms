@@ -791,7 +791,7 @@
 			$dependencies = array();
 
 			foreach ($datasources as $handle) {
-				$pool[$handle] =& DatasourceManager::create($handle, array(), false);
+				$pool[$handle] = DatasourceManager::create($handle, array(), false);
 				$dependencies[$handle] = $pool[$handle]->getDependencies();
 			}
 
@@ -896,9 +896,9 @@
 
 			foreach($dependenciesList as $handle => $dependencies) {
 				foreach($dependencies as $i => $dependency) {
-					$dependenciesList[$handle][$i] = reset(explode('.',$dependency));
+					$dependency = explode('.',$dependency);
+					$dependenciesList[$handle][$i] = reset($dependency);
 				}
-
 			}
 
 			$orderedList = array();
@@ -907,7 +907,6 @@
 			// 1. First do a cleanup of each dependency list, removing non-existant DS's and find
 			//	  the ones that have no dependencies, removing them from the list
 			foreach($dependenciesList as $handle => $dependencies){
-
 				$dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
 
 				if(empty($dependenciesList[$handle])){
@@ -921,7 +920,6 @@
 			//	  or there are circular dependencies (list doesn't change between iterations
 			//	  of the while loop)
 			do{
-
 				$last_count = count($dependenciesList);
 
 				foreach($dependenciesList as $handle => $dependencies){
@@ -930,10 +928,12 @@
 						unset($dependenciesList[$handle]);
 					}
 				}
+			}
+			while(!empty($dependenciesList) && $last_count > count($dependenciesList));
 
-			}while(!empty($dependenciesList) && $last_count > count($dependenciesList));
-
-			if(!empty($dependenciesList)) $orderedList = array_merge($orderedList, array_keys($dependenciesList));
+			if(!empty($dependenciesList)) {
+				$orderedList = array_merge($orderedList, array_keys($dependenciesList));
+			}
 
 			return array_map(create_function('$a', "return str_replace('-', '_', \$a);"), $orderedList);
 		}
