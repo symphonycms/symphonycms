@@ -599,7 +599,7 @@
 						FROM tbl_entries_data_%d AS `ed`
 						WHERE entry_id = e.id
 					) %s',
-					'`ed`.value',
+					'`ed`.date',
 					$this->get('id'),
 					$order
 				);
