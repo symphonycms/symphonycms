@@ -632,7 +632,12 @@
 				$options[0]['options'][] = array(
 					$p,
 					($fields['source'] == 'authors' && in_array($p, $fields['param'])),
-					$prefix . $p
+					$prefix . $p,
+					null,
+					null,
+					array(
+						'data-handle' => $p
+					)
 				);
 			}
 
@@ -643,7 +648,12 @@
 					$option = array(
 						'system:' . $p,
 						($fields['source'] == $section_id && in_array('system:' . $p, $fields['param'])),
-						$prefix . 'system-' . $p
+						$prefix . 'system-' . $p,
+						null,
+						null,
+						array(
+							'data-handle' => 'system-' . $p
+						)
 					);
 
 					// Handle 'system:date' as an output paramater (backwards compatibility)
@@ -666,7 +676,12 @@
 						$optgroup['options'][] = array(
 							$input->get('element_name'),
 							($fields['source'] == $section_id && in_array($input->get('element_name'), $fields['param'])),
-							$prefix . $input->get('element_name')
+							$prefix . $input->get('element_name'),
+							null,
+							null,
+							array(
+								'data-handle' => $input->get('element_name')
+							)
 						);
 					}
 				}

@@ -578,7 +578,7 @@
 				if(parseInt(dsName.attr('data-updated')) !== 0) {
 					params.find('option').each(function updateDsParam() {
 						var param = $(this),
-							field = param.val();
+							field = param.attr('data-handle');
 						
 						// Set parameter
 						param.text('$ds-' + handle + '.' + field);
