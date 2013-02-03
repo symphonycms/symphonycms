@@ -590,10 +590,10 @@
 
 				// Check for duplicate section handle
 				elseif($edit) {
+					$s = SectionManager::fetchIDFromHandle(Lang::createHandle($meta['name']));
 					if(
-						$meta['name'] != $existing_section->get('name')
-						&& $s = SectionManager::fetchIDFromHandle(Lang::createHandle($meta['name']))
-						&& !is_null($s) && $s != $section_id
+						$meta['name'] !== $existing_section->get('name')
+						&& !is_null($s) && $s !== $section_id
 					) {
 						$this->_errors['name'] = __('A Section with the name %s already exists', array('<code>' . $meta['name'] . '</code>'));
 						$canProceed = false;
