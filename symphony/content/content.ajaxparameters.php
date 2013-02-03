@@ -46,7 +46,7 @@
 			$this->_Result = json_encode($params);
 		}
 
-		public function generate(){
+		public function generate($page = null){
 			header('Content-Type: application/json');
 			echo $this->_Result;
 			exit;

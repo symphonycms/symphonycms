@@ -19,7 +19,7 @@
 			$this->_Result = json_encode(Lang::createHandle($string, 255, '-', true));
 		}
 
-		public function generate(){
+		public function generate($page = null){
 			header('Content-Type: application/json');
 			echo $this->_Result;
 			exit;
