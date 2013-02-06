@@ -132,14 +132,20 @@
 		 * Accessor function for properties in the `$_SESSION` array
 		 *
 		 * @param string $name
-		 *  The name of the property to retrieve
+		 *  The name of the property to retrieve (optional)
 		 * @return string|null
-		 *  The value of the property, or null if it does not exist
+		 *  The value of the property, or null if it does not exist. If
+		 *  no `$name` is provided, return the entire Cookie.
 		 */
-		public function get($name) {
+		public function get($name = null) {
+			if(is_null($name) && isset($_SESSION[$this->_index])) {
+				return $_SESSION[$this->_index];
+			}
+
 			if (is_array($_SESSION[$this->_index]) && array_key_exists($name, $_SESSION[$this->_index])) {
 				return $_SESSION[$this->_index][$name];
 			}
+
 			return null;
 		}
 
