@@ -178,68 +178,6 @@
 		// Duplicators
 		contents.find('.filters-duplicator').symphonyDuplicator();
 
-		// Field editor
-		contents.find('#fields-duplicator')
-			.symphonyDuplicator({
-				orderable: true,
-				collapsible: true,
-				preselect: 'input'
-			})
-			.on('blur.admin input.admin', '.instance input[name*="[label]"]', function(event) {
-				var label = $(this),
-					value = label.val();
-
-				// Empty label
-				if(value == '') {
-					value = Symphony.Language.get('Untitled Field');
-				}
-
-				// Update title
-				label.parents('.instance').find('header strong').text(value);
-
-				return false;
-			})
-			.on('change.admin', '.instance select[name*="[location]"]', function(event) {
-				var select = $(this);
-
-				// Set location
-				select.parents('.instance').find('header').removeClass('main').removeClass('sidebar').addClass(select.val());
-			})
-			.on('destructstart.duplicator', function(event) {
-				var item = $(event.target).clone(),
-					title = item.find('header strong').text(),
-					type = item.find('header span').text(),
-					id = new Date().getTime();
-
-				// Offer undo option after removing a field
-				header.find('div.notifier').trigger('attach.notify', [
-					Symphony.Language.get('The field “{$title}” ({$type}) has been removed.', {
-						title: title,
-						type: type
-					}) + '<a id="' + id + '">' + Symphony.Language.get('Undo?') + '</a>', 'protected']
-				);
-
-				// Prepare field recovery
-				$('#' + id).data('field', item).on('click.admin', function() {
-					var undo = $(this),
-						message = undo.parent(),
-						field = undo.data('field').hide(),
-						list = $('#fields-duplicator'),
-						duplicator = list.parent().removeClass('empty');
-
-					// Add field
-					field.trigger('constructstart.duplicator');
-					list.prepend(field);
-					field.trigger('constructshow.duplicator');
-					field.slideDown('fast', function() {
-						field.trigger('constructstop.duplicator');
-					});
-
-					// Clear system message
-					message.trigger('detach.notify');
-				});
-			});
-
 		// Highlight instances with the same location when ordering fields
 		contents.find('div.duplicator')
 			.on('orderstart.orderable', function(event, item) {
@@ -389,6 +327,77 @@
 	--------------------------------------------------------------------------*/
 
 		if(body.is('#blueprints-sections')) {
+		
+			// Field editor
+			contents.find('#fields-duplicator')
+				.symphonyDuplicator({
+					orderable: true,
+					collapsible: true,
+					preselect: 'input'
+				})
+				.on('blur.admin input.admin', '.instance input[name*="[label]"]', function(event) {
+					var label = $(this),
+						value = label.val();
+	
+					// Empty label
+					if(value == '') {
+						value = Symphony.Language.get('Untitled Field');
+					}
+	
+					// Update title
+					label.parents('.instance').find('header strong').text(value);
+	
+					return false;
+				})
+				.on('change.admin', '.instance select[name*="[location]"]', function(event) {
+					var select = $(this);
+	
+					// Set location
+					select.parents('.instance').find('header').removeClass('main').removeClass('sidebar').addClass(select.val());
+				})
+				.on('destructstart.duplicator', function(event) {
+					var target = $(event.target);
+						item = target.clone(),
+						title = item.find('header strong').text(),
+						type = item.find('header span').text(),
+						index = target.index();
+						id = new Date().getTime();
+	
+					// Offer undo option after removing a field
+					header.find('div.notifier').trigger('attach.notify', [
+						Symphony.Language.get('The field “{$title}” ({$type}) has been removed.', {
+							title: title,
+							type: type
+						}) + '<a id="' + id + '">' + Symphony.Language.get('Undo?') + '</a>', 'protected undo']
+					);
+	
+					// Prepare field recovery
+					$('#' + id).data('field', item).data('preceding', index - 1).on('click.admin', function() {
+						var undo = $(this),
+							message = undo.parent(),
+							field = undo.data('field').hide(),
+							list = $('#fields-duplicator'),
+							duplicator = list.parent().removeClass('empty');
+	
+						// Add field
+						field.trigger('constructstart.duplicator');
+						list.find('.instance:eq(' + undo.data('preceding') + ')').after(field);
+						field.trigger('constructshow.duplicator');
+						field.slideDown('fast', function() {
+							field.trigger('constructstop.duplicator');
+						});
+	
+						// Clear system message
+						message.trigger('detach.notify');
+					});
+				})
+				
+			// Discard undo options because the field context changed
+			contents.find('.duplicator').on('orderstop.orderable', function(event) {
+				header.find('.undo').trigger('detach.notify');
+			});
+
+			// Field legend
 			var fieldLegend = contents.find('#fields legend'),
 				fieldExpand = $('<a />', {
 					class: 'expand',
@@ -405,9 +414,9 @@
 
 			// Add toggle controls
 			fieldLegend.after(fieldToggle);
-			// Check if there is DOM Element
-			// This prevents a bug in the section page
-			// since offset will return null on empty selections
+			
+			/* Check if there is DOM Element:
+			 * This prevents a bug in the section page since offset will return null on empty selections */
 			fieldLegendTop = !!fieldLegend.length ? fieldLegend.offset().top : 0;
 			fieldToggleTop = !!fieldToggle.length ? fieldToggle.offset().top : 0;
 			
@@ -437,7 +446,7 @@
 				else {
 					fields.trigger('collapse.collapsible');
 				}	
-			});
+			});			
 		}
 
 	/*--------------------------------------------------------------------------
