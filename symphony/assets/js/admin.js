@@ -206,9 +206,11 @@
 				select.parents('.instance').find('header').removeClass('main').removeClass('sidebar').addClass(select.val());
 			})
 			.on('destructstart.duplicator', function(event) {
-				var item = $(event.target).clone(),
+				var target = $(event.target);
+					item = target.clone(),
 					title = item.find('header strong').text(),
 					type = item.find('header span').text(),
+					index = target.index();
 					id = new Date().getTime();
 
 				// Offer undo option after removing a field
@@ -220,7 +222,7 @@
 				);
 
 				// Prepare field recovery
-				$('#' + id).data('field', item).on('click.admin', function() {
+				$('#' + id).data('field', item).data('preceding', index - 1).on('click.admin', function() {
 					var undo = $(this),
 						message = undo.parent(),
 						field = undo.data('field').hide(),
@@ -229,7 +231,7 @@
 
 					// Add field
 					field.trigger('constructstart.duplicator');
-					list.prepend(field);
+					list.find('.instance:eq(' + undo.data('preceding') + ')').after(field);
 					field.trigger('constructshow.duplicator');
 					field.slideDown('fast', function() {
 						field.trigger('constructstop.duplicator');
