@@ -332,7 +332,7 @@
 			contents.find('#fields-duplicator')
 				.symphonyDuplicator({
 					orderable: true,
-					collapsible: true,
+					collapsible: (Symphony.Context.get('env')[0] !== 'new'),
 					preselect: 'input'
 				})
 				.on('blur.admin input.admin', '.instance input[name*="[label]"]', function(event) {
