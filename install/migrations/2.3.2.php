@@ -45,6 +45,10 @@
 				}
 			}
 
+			// Reapply increase length of password field to accomodate longer hashes
+			// fix as it looks like we created an error in the 2.3.1 migration. RE #1648
+			Symphony::Database()->query("ALTER TABLE `tbl_authors` CHANGE `password` `password` VARCHAR( 150 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL");
+
 			// Update the version information
 			Symphony::Configuration()->set('version', self::getVersion(), 'symphony');
 			Symphony::Configuration()->set('useragent', 'Symphony/' . self::getVersion(), 'general');
