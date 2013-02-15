@@ -385,18 +385,18 @@ fieldset.settings fieldset legend {
 	fieldset.settings {
 		padding-left: 0;
 	}
-	
+
 	fieldset.settings:first-of-type {
 		margin: 15px 18px 10px;
 		border-top: 1px solid rgba(0, 0, 0, 0.1);
 	}
-	
+
 	fieldset.settings > legend {
 		position: relative;
 		text-indent: 0;
 		padding: 0 10px 0 0;
 	}
-	
+
 	fieldset.settings > legend + .help {
 		position: relative;
 		margin: 0 0 15px;
@@ -631,6 +631,11 @@ div.field-checkbox:first-child {
 .file a {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
+}
+
+.file a,
+.file a:hover {
+	color: #3f69a5;
 }
 
 .file em {

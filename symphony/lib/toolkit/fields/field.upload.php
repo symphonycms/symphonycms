@@ -197,6 +197,14 @@
 
 			$span = new XMLElement('span', NULL, array('class' => 'frame'));
 			if ($data['file']) {
+				// Check to see if the file exists without a user having to
+				// attempt to save the entry. RE: #1649
+				$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)\.\./%'), '/', $data['file']);
+
+				if (file_exists($file) === false || !is_readable($file)) {
+					$flagWithError = __('The file uploaded is no longer available. Please check that it exists, and is readable.');
+				}
+
 				$span->appendChild(new XMLElement('span', Widget::Anchor('/workspace' . preg_replace("![^a-z0-9]+!i", "$0&#8203;", $data['file']), URL . '/workspace' . $data['file'])));
 			}
 
