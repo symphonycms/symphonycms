@@ -830,6 +830,12 @@
 					$required_max_version = $xpath->evaluate('string(@max)', $release);
 					$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
 
+					// Munge the version number so that it makes sense in the backend.
+					// Consider, 2.3.x. As the min version, this means 2.3 onwards,
+					// for the max it implies any 2.3 release. RE: #1019
+					$required_min_version = str_replace('.x', '', $required_min_version);
+					$required_max_version = str_replace('.x', 'p', $required_max_version);
+
 					// Min version
 					if(!empty($required_min_version) &&
 						version_compare($current_symphony_version, $required_min_version, '<')
