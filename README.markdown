@@ -54,14 +54,14 @@ Before installation, see the [notes on file permissions](#file-permissions).
 
 	The following repositories are included as submodules:
 
-		- [Markdown](http://github.com/symphonycms/markdown)
-		- [Maintenance Mode](http://github.com/symphonycms/maintenance_mode)
-		- [Select Box Link Field](http://github.com/symphonycms/selectbox_link_field)
-		- [JIT Image Manipulation](http://github.com/symphonycms/jit_image_manipulation)
-		- [Export Ensemble](http://github.com/symphonycms/export_ensemble)
-		- [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)
-		- [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)
-		- [XSS Filter](http://github.com/symphonycms/xssfilter/tree/master)
+	- [Markdown](http://github.com/symphonycms/markdown)
+	- [Maintenance Mode](http://github.com/symphonycms/maintenance_mode)
+	- [Select Box Link Field](http://github.com/symphonycms/selectbox_link_field)
+	- [JIT Image Manipulation](http://github.com/symphonycms/jit_image_manipulation)
+	- [Export Ensemble](http://github.com/symphonycms/export_ensemble)
+	- [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)
+	- [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)
+	- [XSS Filter](http://github.com/symphonycms/xssfilter/tree/master)
 
 3. Run the following command to ensure the submodules are cloned:
 
@@ -83,11 +83,11 @@ details for establishing a database connection and about your server environment
 
 1. This step assumes you downloaded a zip archive from the [Symphony website](http://getsymphony.com). Upload the following files and directories to the root directory of your website:
 
-		- index.php
-		- /install
-		- /symphony
-		- /workspace
-		- /extensions
+	- index.php
+	- /install
+	- /symphony
+	- /workspace
+	- /extensions
 
 2. Point your web browser at <http://example.com/install/> and provide
 details on establishing a database connection and your server environment.
