@@ -341,6 +341,7 @@
 			$this->Html->setAttribute('lang', Lang::get());
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 0);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge,chrome=1')), 1);
+			$this->addElementToHead(new XMLElement('meta', NULL, array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1')), 2);
 
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.css', 'screen', 30);
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.legacy.css', 'screen', 31);
