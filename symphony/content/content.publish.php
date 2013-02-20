@@ -815,6 +815,8 @@
 			$section = SectionManager::fetch($section_id);
 			$entry_id = intval($this->_context['entry_id']);
 			$base = '/publish/'.$this->_context['section_handle'] . '/';
+			$new_link = $base . 'new/';
+			$filter_link = $base;
 
 			EntryManager::setFetchSorting('id', 'DESC');
 
@@ -866,27 +868,26 @@
 				'fields' => $fields
 			));
 
-			if(isset($this->_context['flag'])) {
-				$new_link = $base . 'new/';
-				$filter_link = $base;
-
-				list($flag, $field_id, $value) = array_pad(preg_split('/:/i', $this->_context['flag'], 3), 3, null);
-
-				if(isset($_REQUEST['prepopulate'])){
-					$new_link .= '?';
-					$filter_link .= '?';
-					foreach($_REQUEST['prepopulate'] as $field_id => $value) {
-						$new_link .= "prepopulate[$field_id]=$value&amp;";
-						$field_name = FieldManager::fetchHandleFromID($field_id);
-						$filter_link .= "filter[$field_name]=$value&amp;";
-					}
-					$new_link = preg_replace("/&amp;$/", '', $new_link);
-					$filter_link = preg_replace("/&amp;$/", '', $filter_link);
+			// Iterate over the `prepopulate` parameters to build a URL
+			// to remember this state for Create New, View all Entries and
+			// Breadcrumb links. If `prepopulate` doesn't exist, this will
+			// just use the standard pages (ie. no filtering)
+			if(isset($_REQUEST['prepopulate'])){
+				$new_link .= '?';
+				$filter_link .= '?';
+				foreach($_REQUEST['prepopulate'] as $field_id => $value) {
+					$new_link .= "prepopulate[$field_id]=$value&amp;";
+					$field_name = FieldManager::fetchHandleFromID($field_id);
+					$filter_link .= "filter[$field_name]=$value&amp;";
 				}
+				$new_link = preg_replace("/&amp;$/", '', $new_link);
+				$filter_link = preg_replace("/&amp;$/", '', $filter_link);
+			}
 
+			if(isset($this->_context['flag'])) {
 				// These flags are only relevant if there are no errors
 				if(empty($this->_errors)) {
-					switch($flag){
+					switch($this->_context['flag']) {
 						case 'saved':
 							$this->pageAlert(
 								__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
