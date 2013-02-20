@@ -77,6 +77,10 @@ details for establishing a database connection and about your server environment
 
 1. Chuckle villainously and tap your fingertips together (or pet a cat) as your installation completes.
 
+1. Remove installer files:
+
+	`rm -rf install/ workspace/install.sql`
+
 ### Via the old-fashioned way
 
 **Note:** You can leave `/workspace` out if you do not want the default theme.
@@ -89,10 +93,14 @@ details for establishing a database connection and about your server environment
 	`/workspace`  
 	`/extensions`
 
-2. Point your web browser at <http://example.com/install/> and provide
+1. Point your web browser at <http://example.com/install/> and provide
 details on establishing a database connection and your server environment.
 
-3. Pose like you’re being filmed for a dramatic close-up while your installation completes.
+1. Pose like you’re being filmed for a dramatic close-up while your installation completes.
+
+1. Remove installer files:
+
+	`rm -rf install/ workspace/install.sql`
 
 ### File permissions
 
@@ -102,10 +110,6 @@ details on establishing a database connection and your server environment.
 	`chmod -R 777 .`
 
 1. Once Symphony is successfully installed, you should change file permissions to something tighter for security reasons. Symphony recommends `755` for directories and `644` for files as a good default, but this may need to be changed depending on your server’s users and groups configuration. For example, you may need to change directories and files that Symphony needs to subsequently write to to `775` and `664` respectively.
-
-2. Remove installer files:
-
-	`rm -rf install/ workspace/install.sql`
 
 #### Useful commands
 
