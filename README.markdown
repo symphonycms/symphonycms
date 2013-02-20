@@ -54,28 +54,28 @@ Before installation, see the [notes on file permissions](#file-permissions).
 
 	The following repositories are included as submodules:
 
-	- [Markdown](http://github.com/symphonycms/markdown)
-	- [Maintenance Mode](http://github.com/symphonycms/maintenance_mode)
-	- [Select Box Link Field](http://github.com/symphonycms/selectbox_link_field)
-	- [JIT Image Manipulation](http://github.com/symphonycms/jit_image_manipulation)
-	- [Export Ensemble](http://github.com/symphonycms/export_ensemble)
-	- [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)
-	- [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)
-	- [XSS Filter](http://github.com/symphonycms/xssfilter/tree/master)
+	[Markdown](http://github.com/symphonycms/markdown)  
+	[Maintenance Mode](http://github.com/symphonycms/maintenance_mode)  
+	[Select Box Link Field](http://github.com/symphonycms/selectbox_link_field)  
+	[JIT Image Manipulation](http://github.com/symphonycms/jit_image_manipulation)  
+	[Export Ensemble](http://github.com/symphonycms/export_ensemble)  
+	[Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)  
+	[Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)  
+	[XSS Filter](http://github.com/symphonycms/xssfilter/tree/master)
 
-3. Run the following command to ensure the submodules are cloned:
+1. Run the following command to ensure the submodules are cloned:
 
 		git submodule update --init --recursive
 
-4. _(Optional)_ If you would like the [default ensemble](http://github.com/symphonycms/workspace/tree) installed as well,
+1. _(Optional)_ If you would like the [default ensemble](http://github.com/symphonycms/workspace/tree) installed as well,
 you will need to use the following command from within the Symphony 2 folder you just created:
 
 		git clone git://github.com/symphonycms/workspace.git
 
-5. Point your web browser at <http://example.com/install/> and provide
+1. Point your web browser at <http://example.com/install/> and provide
 details for establishing a database connection and about your server environment.
 
-6. Chuckle villainously and tap your fingertips together (or pet a cat) as your installation completes.
+1. Chuckle villainously and tap your fingertips together (or pet a cat) as your installation completes.
 
 ### Via the old-fashioned way
 
@@ -83,11 +83,11 @@ details for establishing a database connection and about your server environment
 
 1. This step assumes you downloaded a zip archive from the [Symphony website](http://getsymphony.com). Upload the following files and directories to the root directory of your website:
 
-	- index.php
-	- /install
-	- /symphony
-	- /workspace
-	- /extensions
+	`index.php`  
+	`/install`  
+	`/symphony`  
+	`/workspace`  
+	`/extensions`
 
 2. Point your web browser at <http://example.com/install/> and provide
 details on establishing a database connection and your server environment.
@@ -98,7 +98,7 @@ details on establishing a database connection and your server environment.
 
 1. Symphony’s installer will inform you if it needs write access to files that it doesn’t already have, but you can ensure it has the access it needs by temporarily setting files to world-writeable.
 
-	`cd /your/site/root`
+	`cd /your/site/root`  
 	`chmod -R 777 .`
 
 1. Once Symphony is successfully installed, you should change file permissions to something tighter for security reasons. Symphony recommends `755` for directories and `644` for files as a good default, but this may need to be changed depending on your server’s users and groups configuration. For example, you may need to change directories and files that Symphony needs to subsequently write to to `775` and `664` respectively.
@@ -135,11 +135,13 @@ Symphony `2.2` introduces numerous improvements that may affect extension compat
 
 #### Versions prior to 2.1
 
-As of version `2.1`, Symphony stores passwords using the more secure [SHA1](http://php.net/sha1) algorithm (previous versions used MD5). When updating to `2.1`, the primary user’s login password will be reset (the new password will be displayed by the updater—please note it). **Please also note that all other users’ passwords will no longer be valid and will require a manual reset through Symphony’s forgotten password feature.** Alternatively, as an administrator, you can also change your users’ passwords on their behalf.
+As of version `2.1`, Symphony stores passwords using the more secure [SHA1](http://php.net/sha1) algorithm (previous versions used MD5). When updating to `2.1`, the primary user’s login password will be reset (the new password will be displayed by the updater—please note it).
+
+Please also note that all other users’ passwords will no longer be valid and will require a manual reset through Symphony’s forgotten password feature. Alternatively, as an administrator, you can also change your users’ passwords on their behalf.
 
 We are now using [GitHub’s organisations feature](http://github.com/blog/674-introducing-organizations). As a result, all submodules—as well as the main Symphony 2 repo—are forks owned by the [Symphony CMS organisation](http://github.com/symphonycms/).
 
-To fully update your Git-based installation, please **edit your `.git/config` and the `.git/config` of each core extension** (`debugdevkit`, `profiledevkit`, `markdown`, `maintenance_mode`, `selectbox_link_field`, `jit_image_manipulation` and `export_ensemble`) and change the URL of the remote repo from `symphony` or `pointybeard` to be `symphonycms`.
+To fully update your Git-based installation, please edit your `.git/config` and the `.git/config` of each core extension (`debugdevkit`, `profiledevkit`, `markdown`, `maintenance_mode`, `selectbox_link_field`, `jit_image_manipulation` and `export_ensemble`) and change the URL of the remote repo from `symphony` or `pointybeard` to be `symphonycms`.
 
 For example:
 
@@ -157,15 +159,15 @@ Version `2.0.5` introduced multiple includable elements in the Data Source Edito
 
 1. Pull from the master branch at `git://github.com/symphonycms/symphony-2.git`
 
-2. Use the following command to bring extensions up to date:
+1. Use the following command to bring extensions up to date:
 
 		git submodule update --init --recursive
 
-3. If updating from a version older than `2.0.5`, enable the [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master) and [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master) extensions.
+1. If updating from a version older than `2.0.5`, enable the [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master) and [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master) extensions.
 
-3. Go to `http://example.com/install/` to complete the update process.
+1. Go to `http://example.com/install/` to complete the update process.
 
-4. You and your website are now in the future. Buy yourself a silver jumpsuit.
+1. You and your website are now in the future. Buy yourself a silver jumpsuit.
 
 ### Updating via the old-fashioned way
 
@@ -175,11 +177,11 @@ Follow the instructions below if you are updating from Symphony 2.0 (not from Gi
 
 1. Upload `/symphony`, `/install` & `index.php`, replacing what is already on your server.
 
-2. If you are updating from a version older than 2.0.5, download and install the Debug DevKit and Profile DevKit:
+1. If you are updating from a version older than 2.0.5, download and install the Debug DevKit and Profile DevKit:
 
-	- [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)
-	- [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)
+	[Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)  
+	[Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)
 
-3. Go to `http://example.com/install/` to complete the update process.
+1. Go to `http://example.com/install/` to complete the update process.
 
-4. Call a friend and brag that your copy of Symphony is newer than theirs.
+1. Call a friend and brag that your copy of Symphony is newer than theirs.
