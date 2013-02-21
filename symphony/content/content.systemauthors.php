@@ -520,7 +520,7 @@
 				$this->_Author->set('first_name', General::sanitize($fields['first_name']));
 				$this->_Author->set('last_name', General::sanitize($fields['last_name']));
 				$this->_Author->set('last_seen', NULL);
-				$this->_Author->set('password', (trim($fields['password']) == '' ? '' : Cryptography::hash($fields['password'])));
+				$this->_Author->set('password', (trim($fields['password']) == '' ? '' : Cryptography::hash(Symphony::Database()->cleanValue($fields['password']))));
 				$this->_Author->set('default_area', $fields['default_area']);
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
 				$this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
@@ -577,7 +577,7 @@
 				if($fields['email'] != $this->_Author->get('email')) $changing_email = true;
 
 				// Check the old password was correct
-				if(isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && Cryptography::compare(trim($fields['old-password']), $this->_Author->get('password'))) {
+				if(isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && Cryptography::compare(Symphony::Database()->cleanValue(trim($fields['old-password'])), $this->_Author->get('password'))) {
 					$authenticated = true;
 				}
 				// Developers don't need to specify the old password, unless it's their own account
@@ -601,7 +601,7 @@
 				$this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
 
 				if(trim($fields['password']) != ''){
-					$this->_Author->set('password', Cryptography::hash($fields['password']));
+					$this->_Author->set('password', Cryptography::hash(Symphony::Database()->cleanValue($fields['password'])));
 					$changing_password = true;
 				}
 
