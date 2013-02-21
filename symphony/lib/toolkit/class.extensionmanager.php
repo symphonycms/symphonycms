@@ -904,6 +904,7 @@
 							'<code>' . $path . '</code>'
 						)),
 						__('Symphony Extension Missing Error'),
+						Page::HTTP_STATUS_ERROR,
 						'missing_extension',
 						array(
 							'name' => $name,
