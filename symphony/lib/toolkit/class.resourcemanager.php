@@ -39,15 +39,15 @@
 		 *
 		 * @param integer $type
 		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
-		 * @return object
-		 *  An object representing the Manager class that handles the resource.
+		 * @return string
+		 *  An string representing the name of the Manager class that handles the resource.
 		 */
 		public static function getManagerFromType($type) {
 			switch($type) {
 				case RESOURCE_TYPE_EVENT:
-					return EventManager;
+					return 'EventManager';
 				case RESOURCE_TYPE_DS:
-					return DatasourceManager;
+					return 'DatasourceManager';
 			}
 		}
 
@@ -144,7 +144,7 @@
 
 			foreach($resources as &$r){
 				// If source is numeric, it's considered to be a Symphony Section
-				if($r['source'] > 0){
+				if(isset($r['source']) && $r['source'] > 0) {
 					$section = SectionManager::fetch($r['source']);
 
 					if($section !== false){
@@ -253,7 +253,10 @@
 			preg_match('/^extensions\/(.*)\/' . $type . '/', call_user_func(array($manager, '__getClassPath'), $r_handle), $data);
 
 			$data = array_splice($data, 1);
-			return $data[0];
+			if(empty($data))
+				return NULL;
+			else
+				return $data[0];
 		}
 
 		/**
@@ -289,6 +292,7 @@
 		 *  The handle of the resource.
 		 * @param integer $page_id
 		 *  The ID of the page.
+		 * @return boolean
 		 */
 		public static function attach($type, $r_handle, $page_id) {
 			$col = self::getColumnFromType($type);
@@ -324,6 +328,7 @@
 		 *  The handle of the resource.
 		 * @param integer $page_id
 		 *  The ID of the page.
+		 * @return boolean
 		 */
 		public static function detach($type, $r_handle, $page_id) {
 			$col = self::getColumnFromType($type);

@@ -86,11 +86,11 @@
 						$htaccess = str_replace('### SECURITY - Protect crucial files.*### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"', $security, $htaccess);
 						file_put_contents(DOCROOT . '/.htaccess', $htaccess);
 					}
-
-					// Increase length of password field to accomodate longer hashes
-					Symphony::Database()->query("ALTER TABLE `tbl_authors` CHANGE `password` `password` VARCHAR( 150 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL");
 				}
 				catch (Exception $ex) {}
+
+				// Increase length of password field to accomodate longer hashes
+				Symphony::Database()->query("ALTER TABLE `tbl_authors` CHANGE `password` `password` VARCHAR( 150 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL");
 			}
 
 			// Update the version information

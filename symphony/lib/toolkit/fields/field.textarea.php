@@ -53,6 +53,8 @@
 	-------------------------------------------------------------------------*/
 
 		protected function __applyFormatting($data, $validate=false, &$errors=NULL){
+			$result = '';
+
 			if($this->get('formatter')) {
 				$formatter = TextformatterManager::create($this->get('formatter'));
 				$result = $formatter->run($data);
@@ -130,7 +132,8 @@
 			$label = Widget::Label($this->get('label'));
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
-			$textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (int)$this->get('size'), 50, (strlen($data['value']) != 0 ? General::sanitize($data['value']) : NULL));
+			$value = isset($data['value']) ? $data['value'] : null;
+			$textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (int)$this->get('size'), 50, (strlen($value) != 0 ? General::sanitize($value) : null));
 
 			if($this->get('formatter') != 'none') $textarea->setAttribute('class', $this->get('formatter'));
 
@@ -241,24 +244,25 @@
 		Import:
 	-------------------------------------------------------------------------*/
 
-		/**
-		 * Give the field some data and ask it to return a value.
-		 *
-		 * @param mixed $data
-		 * @param integer $entry_id
-		 * @return array
-		 */
-		public function prepareImportValue($data, $entry_id = null) {
-			$result = array(
-				'value' =>				$data,
-				'value_formatted' =>	$this->__applyFormatting($data, true, $errors)
+		public function getImportModes() {
+			return array(
+				'getValue' =>		ImportableField::STRING_VALUE,
+				'getPostdata' =>	ImportableField::ARRAY_VALUE
 			);
+		}
 
-			if ($result['value_formatted'] === false) {
-				$result['value_formatted'] = General::sanitize($this->__applyFormatting($data));
+		public function prepareImportValue($data, $mode, $entry_id = null) {
+			$message = $status = null;
+			$modes = (object)$this->getImportModes();
+
+			if($mode === $modes->getValue) {
+				return $data;
+			}
+			else if($mode === $modes->getPostdata) {
+				return $this->processRawFieldData($data, $status, $message, true, $entry_id);
 			}
 
-			return $result;
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------

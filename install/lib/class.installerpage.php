@@ -23,20 +23,25 @@
 			$this->_page_title = __('Install Symphony');
 		}
 
-		public function generate(){
+		public function generate($page = null) {
 			$this->Html->setDTD('<!DOCTYPE html>');
 			$this->Html->setAttribute('lang', Lang::get());
+
+			$this->addHeaderToPage('Cache-Control', 'no-cache, must-revalidate, max-age=0');
+			$this->addHeaderToPage('Expires', 'Mon, 12 Dec 1982 06:14:00 GMT');
+			$this->addHeaderToPage('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
+			$this->addHeaderToPage('Pragma', 'no-cache');
 
 			$this->setTitle($this->_page_title);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 1);
 
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.css', 'screen', 30);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.grids.css', 'screen', 31);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.forms.css', 'screen', 32);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/symphony.frames.css', 'screen', 33);
-			$this->addStylesheetToHead(SYMPHONY_URL . '/assets/css/installer.css', 'screen', 40);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.css', 'screen', 30);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.grids.css', 'screen', 31);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.forms.css', 'screen', 32);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.frames.css', 'screen', 33);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/installer.css', 'screen', 40);
 
-			return parent::generate();
+			return parent::generate($page);
 		}
 
 		protected function __build($version = VERSION, XMLElement $extra = null) {

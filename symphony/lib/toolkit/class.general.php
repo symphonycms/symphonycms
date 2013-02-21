@@ -293,17 +293,18 @@
 				$email->sender_name = $from_name;
 				$email->sender_email_address = $from_email;
 
-				$email->recipients = $email->setRecipients($to_email);
+				$email->setRecipients($to_email);
+
 				$email->text_plain = $message;
 				$email->subject = $subject;
 
 				return $email->send();
 			}
 			catch(EmailGatewayException $e){
-				throw new SymphonyErrorPage('Error sending email. ' . $e->getMessage());
+				Symphony::Engine()->throwCustomError('Error sending email. ' . $e->getMessage());
 			}
 			catch(EmailException $e){
-				throw new SymphonyErrorPage('Error sending email. ' . $e->getMessage());
+				Symphony::Engine()->throwCustomError('Error sending email. ' . $e->getMessage());
 			}
 		}
 
@@ -594,7 +595,7 @@
 
 							if(!is_array($result[$handle][$index])) $result[$handle][$index] = array();
 
-							if(!is_array($pair)) $result[$handle][$index][] = $pair;
+							if(!is_array($pair)) $result[$handle][$index][$key] = $pair;
 							else $result[$handle][$index][array_pop(array_keys($pair))][$key] = array_pop(array_values($pair));
 						}
 					}
@@ -826,7 +827,10 @@
 		 *  required permissions set. false, otherwise.
 		 */
 		public static function writeFile($file, $data, $perm = 0644, $mode = 'w'){
-			if((!is_writable(dirname($file)) || !is_readable(dirname($file))) && (!is_readable($file) || !is_writable($file))) {
+			if(
+				(!is_writable(dirname($file)) || !is_readable(dirname($file))) // Folder
+				|| (file_exists($file) && (!is_readable($file) || !is_writable($file))) // File
+			) {
 				return false;
 			}
 
@@ -999,6 +1003,9 @@
 			if($prefix != "" && substr($prefix, -1) != "/") {
 				$prefix .= "/";
 			}
+
+			$files['dirlist'] = array();
+			$files['filelist'] = array();
 
 			foreach(scandir($dir) as $file) {
 				if (
@@ -1324,4 +1331,18 @@
 
 			}
 		}
+
+		/**
+		 * Wrap a value in CDATA tags for XSL output of non encoded data
+		 *
+		 * @since Symphony 2.3.2
+		 * @param string @value
+		 *	The string to wrap in CDATA
+		 * @return string
+		 *	The wrapped string
+		 */
+		public static function wrapInCDATA($value) {
+			return (!empty($value)) ? '<![CDATA[' . $value . ']]>' : $value;
+		}
+
 	}

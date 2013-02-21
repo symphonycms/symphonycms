@@ -4,7 +4,7 @@
 	 * @package toolkit
 	 */
 	/**
-	 * The FieldManager class is responsible for managing all fields types in Symphony.
+	 * The `FieldManager` class is responsible for managing all fields types in Symphony.
 	 * Fields are stored on the file system either in the `/fields` folder of `TOOLKIT` or
 	 * in a `fields` folder in an extension directory.
 	 */
@@ -182,7 +182,7 @@
 			Symphony::Database()->delete('tbl_fields_'.$existing->handle(), " `field_id` = '$id'");
 			SectionManager::removeSectionAssociation($id);
 
-			Symphony::Database()->query('DROP TABLE `tbl_entries_data_'.$id.'`');
+			Symphony::Database()->query('DROP TABLE IF EXISTS `tbl_entries_data_'.$id.'`');
 
 			return true;
 		}

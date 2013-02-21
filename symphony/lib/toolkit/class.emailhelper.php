@@ -230,7 +230,7 @@
 		 * @author Michael Eichelsdoerfer
 		 * @param string $data
 		 * @param integer $length
-		 * @return void
+		 * @return string
 		 */
 		public static function base64ContentTransferEncode($data, $length=76) {
 			return chunk_split(base64_encode($data), $length);

@@ -8,8 +8,6 @@
 
 	Class UpdaterPage extends InstallerPage {
 
-		// @todo We need a method to allow a user to remove the updater (from the
-		// Alert in the backend, it's update.php?remove in 2.2.x
 		public function __construct($template, $params = array()) {
 			parent::__construct($template, $params);
 
@@ -17,7 +15,7 @@
 			$this->_page_title = __('Update Symphony');
 		}
 
-		protected function __build() {
+		protected function __build($version = VERSION, XMLElement $extra = null) {
 			parent::__build(
 				// Replace the installed version with the updated version
 				isset($this->_params['version'])
@@ -27,7 +25,8 @@
 
 			// Add Release Notes for the latest migration
 			if(isset($this->_params['release-notes'])){
-				$h1 = end($this->Form->getChildrenByName('h1'));
+				$nodeset = $this->Form->getChildrenByName('h1');
+				$h1 = end($nodeset);
 				if($h1 instanceof XMLElement) {
 					$h1->appendChild(
 						new XMLElement(
@@ -125,7 +124,6 @@
 			$submit->appendChild(Widget::input('submit', __('Complete'), 'submit'));
 
 			$this->Form->appendChild($submit);
-
 		}
 
 	}

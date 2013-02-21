@@ -30,10 +30,6 @@ select[multiple] {
 	font-family: inherit;
 }
 
-select[multiple] {
-	font-size: 1em;
-}
-
 input[type=text] {
 	height: 22px;
 }
@@ -62,9 +58,15 @@ select {
 }
 
 select[multiple] {
+	font-size: 1em;
 	width: 100%;
 	height: 10em;
 	padding: 0;
+}
+
+select[size] {
+	height: auto;
+	max-height: 10em;
 }
 
 input[size],
@@ -164,10 +166,10 @@ input[type=submit].selected,
 button.selected,
 .button.selected {
 	background-image: -webkit-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
-	background-image:    -moz-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
-	background-image:     -ms-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
-	background-image:      -o-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
-	background-image:         linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
+	background-image:	 -moz-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
+	background-image:	  -ms-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
+	background-image:	   -o-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
+	background-image:		  linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
 	-webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.3);
 	box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.3);
 	cursor: pointer;
@@ -205,10 +207,10 @@ button.create,
 .button.create {
 	background-color: #83b340;
 	background-image: -webkit-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
-	background-image:    -moz-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
-	background-image:     -ms-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
-	background-image:      -o-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
-	background-image:   linear-gradient(to bottom, #92c44d 0%, #92c44d) 30%, #78a737 100%);
+	background-image:	 -moz-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
+	background-image:	  -ms-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
+	background-image:	   -o-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
+	background-image:	linear-gradient(to bottom, #92c44d 0%, #92c44d 30%, #78a737 100%);
 	border-color: rgba(50, 70, 23, 0.3);
 	border-bottom-color: rgba(50, 70, 23, 0.5);
 	color: rgba(255, 255, 255, 0.9);
@@ -374,3 +376,51 @@ fieldset .button {
 	margin-left: 0;
 	margin-right: 10px;
 }
+
+/*--------------------------------------------------------------------------
+	Dropdowns
+--------------------------------------------------------------------------*/
+
+.suggestions {
+	overflow: visible;
+}
+
+ul.suggestionlist {
+	position: absolute;
+	border-radius: 0 0 4px 4px;
+	border: 1px solid #c0c0c0;
+	border-top: none;
+	margin: 0;
+	width: 100%;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+	z-index: 10000;
+	max-height: 240px;
+	overflow: auto;
+	-webkit-transition: max-height .25s ease-out;
+	-moz-transition: max-height .25s ease-out;
+	-ms-transition: max-height .25s ease-out;
+	-o-transition: max-height .25s ease-out;
+	transition: max-height .25s ease-out;
+	background: #fff;
+}
+
+ul.suggestionlist li {
+	height: 22px;
+	padding: 2px 5px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	border-bottom: 1px solid #f3f3f3;
+}
+
+ul.suggestionlist li:last-of-type {
+	border-bottom: none;
+}
+
+ul.suggestionlist li.active {
+	background: #668ABE;
+	color: #fff;
+	cursor: pointer;
+}
+

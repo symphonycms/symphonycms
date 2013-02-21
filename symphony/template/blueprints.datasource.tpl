@@ -2,7 +2,7 @@
 
 	require_once(TOOLKIT . '/class.datasource.php');
 
-	Class datasource<!-- CLASS NAME --> extends <!-- CLASS EXTENDS -->{
+	Class datasource<!-- CLASS NAME --> extends <!-- CLASS EXTENDS --> {
 
 		<!-- VAR LIST -->
 
@@ -10,12 +10,12 @@
 
 		<!-- INCLUDED ELEMENTS -->
 
-		public function __construct($env=NULL, $process_params=true){
+		public function __construct($env=NULL, $process_params=true) {
 			parent::__construct($env, $process_params);
 			$this->_dependencies = array(<!-- DS DEPENDENCY LIST -->);
 		}
 
-		public function about(){
+		public function about() {
 			return array(
 				'name' => '<!-- NAME -->',
 				'author' => array(
@@ -27,12 +27,33 @@
 			);
 		}
 
-		public function getSource(){
+		public function getSource() {
 			return '<!-- SOURCE -->';
 		}
 
-		public function allowEditorToParse(){
+		public function allowEditorToParse() {
 			return true;
+		}
+
+		public function execute(array &$param_pool = null) {
+			$result = new XMLElement($this->dsParamROOTELEMENT);
+
+			try{
+				$result = parent::execute($param_pool);
+			}
+			catch(FrontendPageNotFoundException $e){
+				// Work around. This ensures the 404 page is displayed and
+				// is not picked up by the default catch() statement below
+				FrontendPageNotFoundExceptionHandler::render($e);
+			}
+			catch(Exception $e){
+				$result->appendChild(new XMLElement('error', $e->getMessage()));
+				return $result;
+			}
+
+			if($this->_force_empty_result) $result = $this->emptyXMLSet();
+
+			return $result;
 		}
 
 	}
