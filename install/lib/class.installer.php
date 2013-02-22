@@ -1,6 +1,7 @@
 <?php
 
 	require_once(CORE . '/class.administration.php');
+	require_once(TOOLKIT . '/class.cryptography.php');
 	require_once(TOOLKIT . '/class.lang.php');
 
 	require_once(INSTALL . '/lib/class.installerpage.php');
@@ -434,7 +435,7 @@
 				Symphony::Database()->insert(array(
 					'id' 					=> 1,
 					'username' 				=> Symphony::Database()->cleanValue($fields['user']['username']),
-					'password' 				=> sha1(Symphony::Database()->cleanValue($fields['user']['password'])),
+					'password' 				=> Cryptography::hash(Symphony::Database()->cleanValue($fields['user']['password'])),
 					'first_name' 			=> Symphony::Database()->cleanValue($fields['user']['firstname']),
 					'last_name' 			=> Symphony::Database()->cleanValue($fields['user']['lastname']),
 					'email' 				=> Symphony::Database()->cleanValue($fields['user']['email']),
