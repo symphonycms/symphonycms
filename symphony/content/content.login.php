@@ -155,10 +155,7 @@
 
 				// Login Attempted
 				if($action == 'login'):
-					$username = Symphony::Database()->cleanValue($_POST['username']);
-					$password = Symphony::Database()->cleanValue($_POST['password']);
-
-					if(empty($username) || empty($password) || !Administration::instance()->login($username, $password)) {
+					if(empty($_POST['username']) || empty($_POST['password']) || !Administration::instance()->login($_POST['username'], $_POST['password'])) {
 						/**
 						 * A failed login attempt into the Symphony backend
 						 *
@@ -169,7 +166,7 @@
 						 * @param string $username
 						 *  The username of the Author who attempted to login.
 						 */
-						Symphony::ExtensionManager()->notifyMembers('AuthorLoginFailure', '/login/', array('username' => $username));
+						Symphony::ExtensionManager()->notifyMembers('AuthorLoginFailure', '/login/', array('username' => Symphony::Database()->cleanValue($username)));
 						$this->failedLoginAttempt = true;
 					}
 
@@ -184,7 +181,7 @@
 						 * @param string $username
 						 *  The username of the Author who logged in.
 						 */
-						Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => $username));
+						Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => Symphony::Database()->cleanValue($username)));
 
 						isset($_POST['redirect']) ? redirect($_POST['redirect']) : redirect(SYMPHONY_URL);
 					}
