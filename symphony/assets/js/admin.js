@@ -302,7 +302,7 @@
 	--------------------------------------------------------------------------*/
 
 		// Confirm actions
-		contents.on('click.admin', 'button.confirm', function() {
+		contents.add(context).on('click.admin', 'button.confirm', function() {
 			var button = $(this),
 				name = document.title.split(/[\u2013]\s*/g)[2],
 				message = button.attr('data-message') || Symphony.Language.get('Are you sure you want to proceed?');
