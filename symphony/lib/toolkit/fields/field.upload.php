@@ -474,7 +474,7 @@
 			// File has been replaced:
 			if (
 				isset($existing_file)
-				&& strtolower($existing_file) != strtolower($file)
+				&& $existing_file !== $file
 				&& is_file(WORKSPACE . $existing_file)
 			) {
 				General::deleteFile(WORKSPACE . $existing_file);
