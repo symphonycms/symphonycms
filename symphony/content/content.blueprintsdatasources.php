@@ -34,6 +34,7 @@
 
 		public function __form(){
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
+
 			if($formHasErrors) {
 				$this->pageAlert(
 					__('An error occurred while processing this form. See below for details.')
@@ -90,6 +91,10 @@
 
 				if(!isset($fields['xml_elements']) || !is_array($fields['xml_elements'])) {
 					$fields['xml_elements'] = array();
+				}
+
+				if($this->_context[0] == 'edit') {
+					$isEditing = true;
 				}
 			}
 
@@ -199,9 +204,17 @@
 				$fields['associated_entry_counts'] = NULL;
 			}
 
+			// Handle name on edited changes, or from reading an edited datasource
+			if(isset($about['name'])) {
+				$name = $about['name'];
+			}
+			else if(isset($fields['name'])) {
+				$name = $fields['name'];
+			}
+
 			$this->setPageType('form');
-			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($about['name'], __('Data Sources'), __('Symphony'))));
-			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
+			$this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($name, __('Data Sources'), __('Symphony'))));
+			$this->appendSubheading(($isEditing ? $name : __('Untitled')));
 			$this->insertBreadcrumbs(array(
 				Widget::Anchor(__('Data Sources'), SYMPHONY_URL . '/blueprints/datasources/'),
 			));
