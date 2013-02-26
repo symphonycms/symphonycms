@@ -643,17 +643,21 @@
 
 			// Once pagination is disabled, dsMaxRecords and dsPageNumber are disabled too
 			contents.find('input[name*=paginate_results]').on('change.admin', function(event) {
+				// Look within the existing context to ensure that these actions only fire
+				// on the active Datasource type
+				var $paginate_results = $(this),
+					$paging_container = $paginate_results.closest('label'),
+					$dsMaxRecords = $paging_container.find('input[name*=max_records]'),
+					$dsPageNumber = $paging_container.find('input[name*=page_number]');
 
 				// Turn on pagination
 				if($(this).is(':checked')) {
-					dsMaxRecord.attr('disabled', false);
-					dsPageNumber.attr('disabled', false);
+					$dsMaxRecords.add($dsPageNumber).prop('disabled', false);
 				}
 
 				// Turn off pagination
 				else {
-					dsMaxRecord.attr('disabled', true);
-					dsPageNumber.attr('disabled', true);
+					$dsMaxRecords.add($dsPageNumber).prop('disabled', true);
 				}
 			}).trigger('change.admin');
 
@@ -664,8 +668,7 @@
 
 			// Enabled fields on submit
 			form.on('submit.admin', function() {
-				dsMaxRecord.attr('disabled', false);
-				dsPageNumber.attr('disabled', false);
+				dsMaxRecord.add(dsPageNumber).prop('disabled', false);
 			});
 
 			// Enable parameter suggestions
