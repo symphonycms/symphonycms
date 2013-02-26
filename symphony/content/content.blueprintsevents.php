@@ -75,6 +75,10 @@
 
 			if(isset($_POST['fields'])) {
 				$fields = $_POST['fields'];
+
+				if($this->_context[0] == 'edit') {
+					$isEditing = true;
+				}
 			}
 
 			else if($this->_context[0] == 'edit' || $this->_context[0] == 'info') {
@@ -106,6 +110,14 @@
 						$fields['filters'] = $existing->eParamFILTERS;
 					}
 				}
+			}
+
+			// Handle name on edited changes, or from reading an edited datasource
+			if(isset($about['name'])) {
+				$name = $about['name'];
+			}
+			else if(isset($fields['name'])) {
+				$name = $fields['name'];
 			}
 
 			$this->setPageType('form');
