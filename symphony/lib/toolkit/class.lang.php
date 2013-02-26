@@ -284,10 +284,12 @@
 				)));
 
 				// Load extension translations
-				foreach(self::$_languages[$code]['extensions'] as $extension) {
-					self::load(vsprintf('%s/%s/lang/lang.%s.php', array(
-						EXTENSIONS, $extension, $code
-					)));
+				if(is_array(self::$_languages[$code]['extensions'])) {
+					foreach(self::$_languages[$code]['extensions'] as $extension) {
+						self::load(vsprintf('%s/%s/lang/lang.%s.php', array(
+							EXTENSIONS, $extension, $code
+						)));
+					}
 				}
 			}
 
