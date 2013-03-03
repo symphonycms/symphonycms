@@ -465,25 +465,29 @@
 		}
 
 		public function __actionIndex() {
-			/**
-			 * Extensions can listen for any custom actions that were added
-			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
-			 * delegates.
-			 *
-			 * @delegate CustomActions
-			 * @since Symphony 2.3.2
-			 * @param string $context
-			 * '/publish/'
-			 */
-			Symphony::ExtensionManager()->notifyMembers('CustomActions', '/publish/');
-
 			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
 
 			if(is_array($checked) && !empty($checked)){
+				/**
+				 * Extensions can listen for any custom actions that were added
+				 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+				 * delegates.
+				 *
+				 * @delegate CustomActions
+				 * @since Symphony 2.3.2
+				 * @param string $context
+				 *  '/publish/'
+				 * @param array $checked
+				 *  An array of the selected rows. The value is usually the ID of the
+				 *  the associated object.
+				 */
+				Symphony::ExtensionManager()->notifyMembers('CustomActions', '/publish/', array(
+					'checked' => $checked
+				));
+
 				switch($_POST['with-selected']) {
 
 					case 'delete':
-
 						/**
 						 * Prior to deletion of entries. An array of Entry ID's is provided which
 						 * can be manipulated. This delegate was renamed from `Delete` to `EntryPreDelete`

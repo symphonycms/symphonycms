@@ -169,35 +169,38 @@
 		}
 
 		public function __actionIndex(){
-			/**
-			 * Extensions can listen for any custom actions that were added
-			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
-			 * delegates.
-			 *
-			 * @delegate CustomActions
-			 * @since Symphony 2.3.2
-			 * @param string $context
-			 * '/system/authors/'
-			 */
-			Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/authors/');
+			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
 
-			if($_POST['with-selected'] == 'delete' && is_array($_POST['items'])){
-
-				$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
-
-				if(!empty($checked)) {
-
+			if(is_array($checked) && !empty($checked)){
 				/**
-				* Prior to deleting an author, provided with an array of Author ID's.
-				*
-				* @delegate AuthorPreDelete
-				* @since Symphony 2.2
-				* @param string $context
-				* '/system/authors/'
-				* @param array $author_ids
-				*  An array of Author ID that are about to be removed
-				*/
-				Symphony::ExtensionManager()->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_ids' => $checked));
+				 * Extensions can listen for any custom actions that were added
+				 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+				 * delegates.
+				 *
+				 * @delegate CustomActions
+				 * @since Symphony 2.3.2
+				 * @param string $context
+				 *  '/system/authors/'
+				 * @param array $checked
+				 *  An array of the selected rows. The value is usually the ID of the
+				 *  the associated object.
+				 */
+				Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/authors/', array(
+					'checked' => $checked
+				));
+
+				if($_POST['with-selected'] == 'delete') {
+					/**
+					* Prior to deleting an author, provided with an array of Author ID's.
+					*
+					* @delegate AuthorPreDelete
+					* @since Symphony 2.2
+					* @param string $context
+					* '/system/authors/'
+					* @param array $author_ids
+					*  An array of Author ID that are about to be removed
+					*/
+					Symphony::ExtensionManager()->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_ids' => $checked));
 
 					foreach($checked as $author_id) {
 						$a = AuthorManager::fetchByID($author_id);
@@ -205,9 +208,9 @@
 							AuthorManager::delete($author_id);
 						}
 					}
-				}
 
-				redirect(SYMPHONY_URL . '/system/authors/');
+					redirect(SYMPHONY_URL . '/system/authors/');
+				}
 			}
 		}
 

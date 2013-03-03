@@ -293,24 +293,27 @@
 		 */
 		public function __actionIndex($resource_type){
 			$manager = ResourceManager::getManagerFromType($resource_type);
-
-			/**
-			 * Extensions can listen for any custom actions that were added
-			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
-			 * delegates.
-			 *
-			 * @delegate CustomActions
-			 * @since Symphony 2.3.2
-			 * @param string $context
-			 * '/blueprints/datasources/' or '/blueprints/events/'
-			 */
-			Symphony::ExtensionManager()->notifyMembers('CustomActions', $_REQUEST['symphony-page']);
+			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : NULL;
 
 			if (isset($_POST['action']) && is_array($_POST['action'])) {
-				$checked = ($_POST['items']) ? @array_keys($_POST['items']) : NULL;
+				/**
+				 * Extensions can listen for any custom actions that were added
+				 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+				 * delegates.
+				 *
+				 * @delegate CustomActions
+				 * @since Symphony 2.3.2
+				 * @param string $context
+				 *  '/blueprints/datasources/' or '/blueprints/events/'
+				 * @param array $checked
+				 *  An array of the selected rows. The value is usually the ID of the
+				 *  the associated object.
+				 */
+				Symphony::ExtensionManager()->notifyMembers('CustomActions', $_REQUEST['symphony-page'], array(
+					'checked' => $checked
+				));
 
 				if (is_array($checked) && !empty($checked)) {
-
 					if ($_POST['with-selected'] == 'delete') {
 						$canProceed = true;
 

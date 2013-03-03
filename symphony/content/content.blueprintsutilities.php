@@ -208,21 +208,26 @@
 		}
 
 		public function __actionIndex(){
-			/**
-			 * Extensions can listen for any custom actions that were added
-			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
-			 * delegates.
-			 *
-			 * @delegate CustomActions
-			 * @since Symphony 2.3.2
-			 * @param string $context
-			 * '/blueprints/utilities/'
-			 */
-			Symphony::ExtensionManager()->notifyMembers('CustomActions', '/blueprints/utilities/');
-
-			$checked = ($_POST['items']) ? @array_keys($_POST['items']) : NULL;
+			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
 
 			if(is_array($checked) && !empty($checked)){
+				/**
+				 * Extensions can listen for any custom actions that were added
+				 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+				 * delegates.
+				 *
+				 * @delegate CustomActions
+				 * @since Symphony 2.3.2
+				 * @param string $context
+				 *  '/blueprints/utilities/'
+				 * @param array $checked
+				 *  An array of the selected rows. The value is usually the ID of the
+				 *  the associated object. 
+				 */
+				Symphony::ExtensionManager()->notifyMembers('CustomActions', '/blueprints/utilities/', array(
+					'checked' => $checked
+				));
+
 				switch($_POST['with-selected']) {
 
 					case 'delete':

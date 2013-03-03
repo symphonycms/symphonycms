@@ -179,6 +179,8 @@
 		}
 
 		public function __actionIndex() {
+			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
+
 			/**
 			 * Extensions can listen for any custom actions that were added
 			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
@@ -187,14 +189,16 @@
 			 * @delegate CustomActions
 			 * @since Symphony 2.3.2
 			 * @param string $context
-			 * '/system/extensions/'
+			 *  '/system/extensions/'
+			 * @param array $checked
+			 *  An array of the selected rows. The value is usually the ID of the
+			 *  the associated object.
 			 */
-			Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/extensions/');
-
-			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
+			Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/extensions/', array(
+				'checked' => $checked
+			));
 
 			if(isset($_POST['with-selected']) && is_array($checked) && !empty($checked)) {
-
 				try{
 					switch($_POST['with-selected']) {
 						case 'enable':
