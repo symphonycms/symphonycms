@@ -473,16 +473,28 @@
 		 *  the path containing the directories to create.
 		 * @param integer $mode (optional)
 		 *  the permissions (in octal) of the directories to create. Defaults to 0755
+		 * @param boolean $silent (optional)
+		 *  true if an exception should be raised if an error occurs, false
+		 *  otherwise. this defaults to true.
 		 * @return boolean
 		 */
-		public static function realiseDirectory($path, $mode=0755){
+		public static function realiseDirectory($path, $mode = 0755, $silent = true){
 			if(is_dir($path)) return true;
 
-			$current_umask = umask(0);
-			$success = mkdir($path, intval($mode, 8), true);
-			umask($current_umask);
+			try {
+				$current_umask = umask(0);
+				$success = mkdir($path, intval($mode, 8), true);
+				umask($current_umask);
 
-			return $success;
+				return $success;
+			}
+			catch(Exception $ex) {
+				if($silent === false){
+					throw new Exception(__('Unable to create path - %s', array($path)));
+				}
+
+				return false;
+			}
 		}
 
 		/**
