@@ -205,7 +205,10 @@
 				// files. If `/lang` isn't a directory, `UnexpectedValueException` will be
 				// thrown.
 				try {
-					$directory = new DirectoryIterator($extension->getPathname() . '/lang');
+					$path = $extension->getPathname() . '/lang';
+					if(!is_dir($path)) continue;
+
+					$directory = new DirectoryIterator($path);
 					foreach($directory as $file) {
 						if ($file->isDot() || !preg_match('/\.php$/', $file->getPathname())) continue;
 
@@ -246,10 +249,7 @@
 						}
 					}
 				}
-				catch (UnexpectedValueException $ex) {
-					continue;
-				}
-				catch (RuntimeException $ex) {
+				catch (Exception $ex) {
 					continue;
 				}
 			}
