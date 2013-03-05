@@ -1276,14 +1276,25 @@
 		 * future expansion. Salting the hash comes to mind.
 		 *
 		 * @param string $input
-		 * the string to be hashed
+		 *  the string to be hashed
 		 * @param string $algorithm
-		 * a valid PHP function handle
+		 *  This function supports 'md5', 'sha1' and 'pbkdf2'. Any
+		 *  other algorithm will default to 'pbkdf2'.
 		 * @return string
-		 * the hashed string
+		 *  the hashed string
 		 */
-		public static function hash($input, $algorithm='sha1'){
-			return Cryptography::hash($input, $algorithm);
+		public static function hash($input, $algorithm='sha1') {
+			switch($algorithm) {
+				case 'sha1':
+					return SHA1::hash($input, $algorithm);
+
+				case 'md5':
+					return MD5::hash($input, $algorithm);
+
+				case 'pbkdf2':
+				default:
+					return Crytography::hash($input, $algorithm);
+			}
 		}
 
 		/**
