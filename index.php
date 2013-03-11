@@ -21,6 +21,8 @@
 
 	$output = renderer($renderer)->display(getCurrentPage());
 
+	cleanup_session_cookies();
+
 	echo $output;
 
 	exit;
