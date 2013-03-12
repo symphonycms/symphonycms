@@ -210,6 +210,10 @@
 
 						$entry = new XMLElement('entry', null, array('position' => $position));
 
+						// Reset errors for each entry execution
+						$this->filter_results = $this->filter_errors = array();
+
+						// Execute the event for this entry
 						$ret = $this->__doit(
 							$fields, $entry, $position, $entry_id
 						);
