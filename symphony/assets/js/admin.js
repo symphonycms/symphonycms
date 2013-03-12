@@ -686,6 +686,10 @@
 			$('#event-context').find('option').each(function() {
 				eventSections.clone().attr('id', 'choice' + $(this).val()).insertAfter(eventSections);
 			}).trigger('change.pickable');
+
+			form.on('submit', function() {
+				$('.pickable:not(:visible)').remove();
+			});
 		}
 
 	/*--------------------------------------------------------------------------
