@@ -501,7 +501,7 @@ div.password {
 /* Pagination */
 
 ul.page {
-	margin: 61px 0 0;
+	margin: -61px 0 0;
 	padding: 23px 50px 0 19px;
 	height: 36px;
 	color: #9e9e9e;
