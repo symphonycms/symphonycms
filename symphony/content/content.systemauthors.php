@@ -31,7 +31,7 @@
 			$this->setPageType('table');
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Authors'), __('Symphony'))));
 
-			if (Administration::instance()->Author->isDeveloper()) {
+			if (Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
 				$this->appendSubheading(__('Authors'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a new author'), 'create button', NULL, array('accesskey' => 'c')));
 			} else $this->appendSubheading(__('Authors'));
 
@@ -55,7 +55,7 @@
 				)
 			);
 
-			if (Administration::instance()->Author->isDeveloper()) {
+			if (Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
 				$columns = array_merge($columns, array(
 					array(
 						'label' => __('User Type'),
@@ -83,8 +83,15 @@
 			}
 			else{
 				foreach($authors as $a){
+
+                    if(Administration::instance()->Author->isManager() && $a->isDeveloper()) {
+                        continue;
+                    }
 					// Setup each cell
-					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->get('id') == $a->get('id')) {
+					if(
+                        (Administration::instance()->Author->isDeveloper() || (Administration::instance()->Author->isManager() && !$a->isDeveloper()))
+                        || Administration::instance()->Author->get('id') == $a->get('id')
+                    ) {
 						$td1 = Widget::TableData(
 							Widget::Anchor($a->getFullName(), Administration::instance()->getCurrentPageURL() . 'edit/' . $a->get('id') . '/', $a->get('username'), 'author')
 						);
@@ -102,23 +109,34 @@
 						$td3 = Widget::TableData(__('Unknown'), 'inactive');
 					}
 
-					$td4 = Widget::TableData($a->isDeveloper()? __("Developer") : __("Author"));
+                    if($a->isDeveloper()) {
+                        $type = 'Developer';
+                    }
+                    elseif($a->isManager()) {
+                        $type = 'Manager';
+                    }
+                    else {
+                        $type = 'Author';
+                    }
+					$td4 = Widget::TableData(__($type));
 
 					$languages = Lang::getAvailableLanguages();
 
 					$td5 = Widget::TableData($a->get("language") == NULL ? __("System Default") : $languages[$a->get("language")]);
 
-					if (Administration::instance()->Author->isDeveloper()) {
+					if (Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
 						if ($a->get('id') != Administration::instance()->Author->get('id')) {
 							$td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
 						}
 					}
 
 					// Add a row to the body array, assigning each cell to the row
-					if(Administration::instance()->Author->isDeveloper())
+					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
 						$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5));
-					else
+                    }
+					else {
 						$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
+                    }
 				}
 			}
 
@@ -131,7 +149,7 @@
 
 			$this->Form->appendChild($table);
 
-			if(Administration::instance()->Author->isDeveloper()) {
+			if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
 				$tableActions = new XMLElement('div');
 				$tableActions->setAttribute('class', 'actions');
 
@@ -230,7 +248,7 @@
 			// Handle unknown context
 			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();
 
-			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper()) {
+			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper() && !Administration::instance()->Author->isManager()) {
 				Administration::instance()->throwCustomError(
 					__('You are not authorised to access this page.'),
 					__('Access Denied'),
@@ -286,7 +304,7 @@
 
 			if($this->_context[0] == 'edit' && $author->get('id') == Administration::instance()->Author->get('id')) $isOwner = true;
 
-			if ($this->_context[0] == 'edit' && !$isOwner && !Administration::instance()->Author->isDeveloper()) {
+			if ($this->_context[0] == 'edit' && !$isOwner && !Administration::instance()->Author->isDeveloper() && !Administration::instance()->Author->isManager()) {
 				Administration::instance()->throwCustomError(
 					__('You are not authorised to edit other authors.'),
 					__('Access Denied'),
@@ -337,7 +355,7 @@
 			$div->appendChild((isset($this->_errors['username']) ? Widget::Error($label, $this->_errors['username']) : $label));
 
 			// Only developers can change the user type. Primary account should NOT be able to change this
-			if (Administration::instance()->Author->isDeveloper() && !$author->isPrimaryAccount()) {
+			if ((Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) && !$author->isPrimaryAccount()) {
 
 				// Create columns
 				$div->setAttribute('class', 'two columns');
@@ -348,6 +366,7 @@
 
 				$options = array(
 					array('author', false, __('Author')),
+                    array('developer', $author->isManager(), __('Manager')),
 					array('developer', $author->isDeveloper(), __('Developer'))
 				);
 
@@ -365,7 +384,7 @@
 			$fieldset->appendChild($help);
 
 			// Password reset
-			if($this->_context[0] == 'edit' && (!Administration::instance()->Author->isDeveloper() || $isOwner === true)) {
+			if($this->_context[0] == 'edit' && (!Administration::instance()->Author->isDeveloper() || !Administration::instance()->Author->isManager() || $isOwner === true)) {
 				$fieldset->setAttribute('class', 'three columns');
 
 				$label = Widget::Label(NULL, NULL, 'column');
@@ -388,7 +407,7 @@
 			$group->appendChild($fieldset);
 
 			// Auth token
-			if(Administration::instance()->Author->isDeveloper()) {
+			if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
 				$label = Widget::Label();
 				$group->appendChild(Widget::Input('fields[auth_token_active]', 'no', 'hidden'));
 				$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
@@ -410,7 +429,7 @@
 
 			// If the Author is the Developer, allow them to set the Default Area to
 			// be the Sections Index.
-			if($author->isDeveloper()) {
+			if($author->isDeveloper() || $author->isManager()) {
 				$options[] = array('/blueprints/sections/', $author->get('default_area') == '/blueprints/sections/', __('Sections Index'));
 			}
 
@@ -593,7 +612,7 @@
 				if ($this->_Author->isPrimaryAccount() || ($isOwner && Administration::instance()->Author->isDeveloper())){
 					$this->_Author->set('user_type', 'developer'); // Primary accounts are always developer, Developers can't lower their level
 				}
-				elseif (Administration::instance()->Author->isDeveloper() && isset($fields['user_type'])){
+				elseif ((Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) && isset($fields['user_type'])){
 					$this->_Author->set('user_type', $fields['user_type']); // Only developer can change user type
 				}
 
