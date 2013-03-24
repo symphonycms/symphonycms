@@ -305,7 +305,7 @@
 				curl_setopt($ch, CURLOPT_USERAGENT, $this->_agent);
 				curl_setopt($ch, CURLOPT_PORT, $this->_port);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-				curl_setopt($ch, CURLOPT_TIMEOUT, $this->_timeout);
+				curl_setopt($ch, CURLOPT_TIMEOUT, 1);
 
 				if(ini_get('safe_mode') == 0 && ini_get('open_basedir') == '') {
 					curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
@@ -341,6 +341,7 @@
 				$result = curl_exec($ch);
 
 				$this->_info_last = curl_getinfo($ch);
+				$this->_info_last['curl_error'] = curl_errno($ch);
 
 				// Close the connection
 				curl_close ($ch);
