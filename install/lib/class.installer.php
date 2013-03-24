@@ -1,6 +1,7 @@
 <?php
 
 	require_once(CORE . '/class.administration.php');
+	require_once(TOOLKIT . '/class.cryptography.php');
 	require_once(TOOLKIT . '/class.lang.php');
 
 	require_once(INSTALL . '/lib/class.installerpage.php');
@@ -295,8 +296,8 @@
 						// Existing table prefix
 						$tables = Symphony::Database()->fetch(sprintf(
 							"SHOW TABLES FROM `%s` LIKE '%s'",
-							mysql_escape_string($fields['database']['db']),
-							mysql_escape_string($fields['database']['tbl_prefix']) . '%'
+							mysql_real_escape_string($fields['database']['db'], Symphony::Database()->getConnectionResource()),
+							mysql_real_escape_string($fields['database']['tbl_prefix'], Symphony::Database()->getConnectionResource()) . '%'
 						));
 
 						if(is_array($tables) && !empty($tables)) {
@@ -386,7 +387,6 @@
 
 		private static function __install(){
 			$fields = $_POST['fields'];
-			$errors = array();
 			$start = time();
 
 			Symphony::Log()->writeToLog(PHP_EOL . '============================================', true);
@@ -435,7 +435,7 @@
 				Symphony::Database()->insert(array(
 					'id' 					=> 1,
 					'username' 				=> Symphony::Database()->cleanValue($fields['user']['username']),
-					'password' 				=> sha1(Symphony::Database()->cleanValue($fields['user']['password'])),
+					'password' 				=> Cryptography::hash(Symphony::Database()->cleanValue($fields['user']['password'])),
 					'first_name' 			=> Symphony::Database()->cleanValue($fields['user']['firstname']),
 					'last_name' 			=> Symphony::Database()->cleanValue($fields['user']['lastname']),
 					'email' 				=> Symphony::Database()->cleanValue($fields['user']['email']),

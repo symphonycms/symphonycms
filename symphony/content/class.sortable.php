@@ -116,7 +116,7 @@
 					$th = $c['label'];
 				}
 
-				$aTableHead[] = array($th, 'col', $c['attrs']);
+				$aTableHead[] = array($th, 'col', isset($c['attrs']) ? $c['attrs'] : NULL);
 			}
 
 			return $aTableHead;

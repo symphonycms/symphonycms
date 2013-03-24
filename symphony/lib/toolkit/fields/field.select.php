@@ -38,12 +38,7 @@
 			if ($this->get('dynamic_options') != '') $this->findAndAddDynamicOptions($values);
 
 			$values = array_map('trim', $values);
-			$states = array();
-
-			foreach ($values as $value) {
-				$value = $value;
-				$states[$value] = $value;
-			}
+			$states = array_combine($values, $values);
 
 			if($this->get('sort_options') == 'yes') {
 				natsort($states);
@@ -115,7 +110,7 @@
 			return Symphony::Database()->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
 		}
 
-		public function fetchAssociatedEntrySearchValue($data){
+		public function fetchAssociatedEntrySearchValue($data, $field_id = null, $parent_entry_id = null){
 			if(!is_array($data)) return $data;
 
 			return $data['value'];
@@ -288,15 +283,16 @@
 
 		public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null){
 			$states = $this->getToggleStates();
+			$value = isset($data['value']) ? $data['value'] : null;
 
-			if(!is_array($data['value'])) $data['value'] = array($data['value']);
+			if(!is_array($value)) $value = array($value);
 
 			$options = array(
-				array(NULL, false, NULL)
+				array(null, false, null)
 			);
 
 			foreach($states as $handle => $v){
-				$options[] = array(General::sanitize($v), in_array($v, $data['value']), General::sanitize($v));
+				$options[] = array(General::sanitize($v), in_array($v, $value), General::sanitize($v));
 			}
 
 			$fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
@@ -304,20 +300,28 @@
 
 			$label = Widget::Label($this->get('label'));
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
-			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : NULL)));
+			$label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple', 'size' => count($options)) : NULL)));
 
-			if($flagWithError != NULL) $wrapper->appendChild(Widget::Error($label, $flagWithError));
+			if($flagWithError != null) $wrapper->appendChild(Widget::Error($label, $flagWithError));
 			else $wrapper->appendChild($label);
 		}
 
 		public function processRawFieldData($data, &$status, &$message=null, $simulate=false, $entry_id=NULL){
 			$status = self::__OK__;
 
-			if(!is_array($data)) return array('value' => $data, 'handle' => Lang::createHandle($data));
+			if(!is_array($data)) {
+				return array(
+					'value' => $data,
+					'handle' => Lang::createHandle($data)
+				);
+			}
 
-			if(empty($data)) return NULL;
+			if(empty($data)) return null;
 
-			$result = array('value' => array(), 'handle' => array());
+			$result = array(
+				'value' => array(),
+				'handle' => array()
+			);
 
 			foreach($data as $value){
 				$result['value'][] = $value;
@@ -362,7 +366,7 @@
 			return parent::prepareTableValue(array('value' => implode(', ', $value)), $link, $entry_id = null);
 		}
 
-		public function getParameterPoolValue($data, $entry_id = null) {
+		public function getParameterPoolValue(array $data, $entry_id = null) {
 			return $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::HANDLE, $entry_id);
 		}
 
@@ -370,31 +374,33 @@
 		Import:
 	-------------------------------------------------------------------------*/
 
-		/**
-		 * Give the field some data and ask it to return a value.
-		 *
-		 * @param mixed $data
-		 * @param integer $entry_id
-		 * @return array|null
-		 */
-		public function prepareImportValue($data, $entry_id = null) {
-			if (empty($data)) return null;
-
-			$result = array(
-				'value' =>	array(),
-				'handle' =>	array()
+		public function getImportModes() {
+			return array(
+				'getValue' =>		ImportableField::STRING_VALUE,
+				'getPostdata' =>	ImportableField::ARRAY_VALUE
 			);
+		}
 
-			if (is_array($data) === false) {
+		public function prepareImportValue($data, $mode, $entry_id = null) {
+			$message = $status = null;
+			$modes = (object)$this->getImportModes();
+
+			if(!is_array($data)) {
 				$data = array($data);
 			}
 
-			foreach ($data as $value) {
-				$result['value'][] = $value;
-				$result['handle'][] = Lang::createHandle($value);
+			if($mode === $modes->getValue) {
+				if ($this->get('allow_multiple_selection') === 'no') {
+					$data = array(implode('', $data));
+				}
+
+				return $data;
+			}
+			else if($mode === $modes->getPostdata) {
+				return $this->processRawFieldData($data, $status, $message, true, $entry_id);
 			}
 
-			return $result;
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------

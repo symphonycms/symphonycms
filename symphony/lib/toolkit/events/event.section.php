@@ -90,7 +90,7 @@
 			}
 
 			if(isset($entry_id)) {
-				$entry =& EntryManager::fetch($entry_id);
+				$entry = EntryManager::fetch($entry_id);
 				$entry = $entry[0];
 
 				if(!is_object($entry)){
@@ -101,7 +101,7 @@
 			}
 
 			else{
-				$entry =& EntryManager::create();
+				$entry = EntryManager::create();
 				$entry->set('section_id', $source);
 			}
 

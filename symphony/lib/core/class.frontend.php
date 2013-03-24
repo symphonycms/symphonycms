@@ -112,7 +112,7 @@
 	 *
 	 * @see core.FrontendPageNotFoundExceptionHandler
 	 */
-	Class FrontendPageNotFoundException extends Exception{
+	Class FrontendPageNotFoundException extends Exception {
 
 		/**
 		 * The constructor for `FrontendPageNotFoundException` sets the default
@@ -121,9 +121,11 @@
 		public function __construct() {
 			parent::__construct();
 			$pagename = getCurrentPage();
+
 			if (empty($pagename)) {
 				$this->message = __('The page you requested does not exist.');
-			} else {
+			}
+			else {
 				$this->message = __('The page you requested, %s, does not exist.', array('<code>' . $pagename . '</code>'));
 			}
 			$this->code = E_USER_NOTICE;
@@ -144,22 +146,43 @@
 		 * that has been given the '404' page type, otherwise it will just use the default
 		 * Symphony error page template to output the exception
 		 *
-		 * @param FrontendPageNotFoundException $e
+		 * @param Exception $e
 		 *  The Exception object
 		 * @return string
 		 *  An HTML string
 		 */
 		public static function render(Exception $e){
 			$page = PageManager::fetchPageByType('404');
+			$previous_exception = Frontend::instance()->getException();
 
-			if(is_null($page['id'])){
-				parent::render(new SymphonyErrorPage($e->getMessage(), __('Page Not Found'), 'generic', array('header' => 'HTTP/1.0 404 Not Found')));
+			// No 404 detected, throw default Symphony error page
+			if(is_null($page['id'])) {
+				parent::render(new SymphonyErrorPage(
+						$e->getMessage(),
+						__('Page Not Found'),
+						'generic',
+						array(),
+						Page::HTTP_STATUS_NOT_FOUND
+					)
+				);
 			}
-			else{
+			// Recursive 404
+			else if (isset($previous_exception)) {
+				parent::render(new SymphonyErrorPage(
+						__('This error occurred whilst attempting to resolve the 404 page for the original request.') . ' ' . $e->getMessage(),
+						__('Page Not Found'),
+						'generic',
+						array(),
+						Page::HTTP_STATUS_NOT_FOUND
+					)
+				);
+			}
+			// Handle 404 page
+			else {
 				$url = '/' . PageManager::resolvePagePath($page['id']) . '/';
 
+				Frontend::instance()->setException($e);
 				$output = Frontend::instance()->display($url);
-				header(sprintf('Content-Length: %d', strlen($output)));
 				echo $output;
 				exit;
 			}

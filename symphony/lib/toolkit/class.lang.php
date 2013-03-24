@@ -205,7 +205,10 @@
 				// files. If `/lang` isn't a directory, `UnexpectedValueException` will be
 				// thrown.
 				try {
-					$directory = new DirectoryIterator($extension->getPathname() . '/lang');
+					$path = $extension->getPathname() . '/lang';
+					if(!is_dir($path)) continue;
+
+					$directory = new DirectoryIterator($path);
 					foreach($directory as $file) {
 						if ($file->isDot() || !preg_match('/\.php$/', $file->getPathname())) continue;
 
@@ -214,7 +217,7 @@
 						// Get language code
 						$code = explode('.', $file);
 						$code = $code[1];
-						$lang = self::$_languages[$code];
+						$lang = isset(self::$_languages[$code]) ? self::$_languages[$code] : null;
 
 						// Available extensions
 						$extensions = (isset($lang)) ? $lang['extensions'] : array();
@@ -246,10 +249,7 @@
 						}
 					}
 				}
-				catch (UnexpectedValueException $ex) {
-					continue;
-				}
-				catch (RuntimeException $ex) {
+				catch (Exception $ex) {
 					continue;
 				}
 			}
@@ -284,10 +284,12 @@
 				)));
 
 				// Load extension translations
-				foreach(self::$_languages[$code]['extensions'] as $extension) {
-					self::load(vsprintf('%s/%s/lang/lang.%s.php', array(
-						EXTENSIONS, $extension, $code
-					)));
+				if(is_array(self::$_languages[$code]['extensions'])) {
+					foreach(self::$_languages[$code]['extensions'] as $extension) {
+						self::load(vsprintf('%s/%s/lang/lang.%s.php', array(
+							EXTENSIONS, $extension, $code
+						)));
+					}
 				}
 			}
 

@@ -125,8 +125,8 @@
 
 			$types = array();
 
-			$fields = is_array($_POST['fields']) ? $_POST['fields'] : array();
-			$meta = $_POST['meta'];
+			$fields = (isset($_POST['fields']) && is_array($_POST['fields'])) ? $_POST['fields'] : array();
+			$meta = (isset($_POST['meta']) && is_array($_POST['meta'])) ? $_POST['meta'] : array('name'=>null);
 
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
@@ -156,13 +156,13 @@
 			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
+			$label->appendChild(Widget::Input('meta[name]', (isset($meta['name']) ? General::sanitize($meta['name']) : null)));
 
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
 			$label = Widget::Label();
-			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : NULL));
+			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : null));
 			$label->setValue(__('%s Hide this section from the back-end menu', array($input->generate(false))));
 			$namediv->appendChild($label);
 			$div->appendChild($namediv);
@@ -284,7 +284,11 @@
 			$section_id = $this->_context[1];
 
 			if(!$section = SectionManager::fetch($section_id)) {
-				Administration::instance()->customError(__('Unknown Section'), __('The Section, %s, could not be found.', array($section_id)));
+				Administration::instance()->throwCustomError(
+					__('The Section, %s, could not be found.', array($section_id)),
+					__('Unknown Section'),
+					Page::HTTP_STATUS_NOT_FOUND
+				);
 			}
 			$meta = $section->get();
 			$section_id = $meta['id'];
@@ -491,21 +495,25 @@
 		}
 
 		public function __actionIndex() {
-			/**
-			 * Extensions can listen for any custom actions that were added
-			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
-			 * delegates.
-			 *
-			 * @delegate CustomActions
-			 * @since Symphony 2.3.2
-			 * @param string $context
-			 * '/blueprints/sections/'
-			 */
-			Symphony::ExtensionManager()->notifyMembers('CustomActions', '/blueprints/sections/');
-
 			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
 
 			if(is_array($checked) && !empty($checked)){
+				/**
+				 * Extensions can listen for any custom actions that were added
+				 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+				 * delegates.
+				 *
+				 * @delegate CustomActions
+				 * @since Symphony 2.3.2
+				 * @param string $context
+				 *  '/blueprints/sections/'
+				 * @param array $checked
+				 *  An array of the selected rows. The value is usually the ID of the
+				 *  the associated object. 
+				 */
+				Symphony::ExtensionManager()->notifyMembers('CustomActions', '/blueprints/sections/', array(
+					'checked' => $checked
+				));
 
 				if($_POST['with-selected'] == 'delete') {
 					/**
@@ -570,7 +578,7 @@
 				$edit = ($this->_context[0] == "edit");
 				$this->_errors = array();
 
-				$fields = $_POST['fields'];
+				$fields = isset($_POST['fields']) ? $_POST['fields'] : array();
 				$meta = $_POST['meta'];
 
 				if($edit) {
@@ -586,10 +594,10 @@
 
 				// Check for duplicate section handle
 				elseif($edit) {
+					$s = SectionManager::fetchIDFromHandle(Lang::createHandle($meta['name']));
 					if(
-						$meta['name'] != $existing_section->get('name')
-						&& $s = SectionManager::fetchIDFromHandle(Lang::createHandle($meta['name']))
-						&& !is_null($s) && $s != $section_id
+						$meta['name'] !== $existing_section->get('name')
+						&& !is_null($s) && $s !== $section_id
 					) {
 						$this->_errors['name'] = __('A Section with the name %s already exists', array('<code>' . $meta['name'] . '</code>'));
 						$canProceed = false;
@@ -634,7 +642,7 @@
 							$field = FieldManager::create($data['type']);
 							$field->setFromPOST($data);
 
-							if($existing_section) {
+							if(isset($existing_section)) {
 								$field->set('parent_section', $existing_section->get('id'));
 							}
 

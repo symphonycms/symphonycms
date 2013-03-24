@@ -19,13 +19,13 @@
 			return (is_array($parent_paths) && !empty($parent_paths) ? " AND p.`path` IN ('".implode("', '", $parent_paths)."')" : null);
 		}
 
-		public function __processNavigationTypeFilter($filter, $filter_type = DS_FILTER_OR) {
-			$types = preg_split('/'.($filter_type == DS_FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
+		public function __processNavigationTypeFilter($filter, $filter_type = DataSource::FILTER_OR) {
+			$types = preg_split('/'.($filter_type == DataSource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
 			$types = array_map('trim', $types);
 
 			$types = array_map(array('Datasource', 'removeEscapedCommas'), $types);
 
-			if($filter_type == DS_FILTER_OR) {
+			if($filter_type == DataSource::FILTER_OR) {
 				$type_sql = " AND pt.type IN ('" . implode("', '", $types) . "')";
 			}
 			else {
@@ -60,7 +60,7 @@
 			return $oPage;
 		}
 
-		public function execute(&$param_pool) {
+		public function execute(array &$param_pool = null) {
 			$result = new XMLElement($this->dsParamROOTELEMENT);
 			$type_sql = $parent_sql = null;
 

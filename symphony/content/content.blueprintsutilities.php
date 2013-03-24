@@ -83,6 +83,8 @@
 			$this->_existing_file = (isset($this->_context[1]) ? $this->_context[1] . '.xsl' : NULL);
 			$this->Form->setAttribute('class', 'columns');
 
+			$filename = $this->_existing_file;
+
 			// Handle unknown context
 			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();
 
@@ -90,7 +92,6 @@
 			if($this->_context[0] == 'edit'){
 
 				$file_abs = UTILITIES . '/' . $this->_existing_file;
-				$filename = $this->_existing_file;
 
 				if(!is_file($file_abs)) redirect(SYMPHONY_URL . '/blueprints/utilities/new/');
 
@@ -144,9 +145,10 @@
 				Widget::Anchor(__('Utilities'), SYMPHONY_URL . '/blueprints/utilities/'),
 			));
 
-			if(!empty($_POST)) $fields = $_POST['fields'];;
+			if(!empty($_POST)) $fields = $_POST['fields'];
 
 			$fields['body'] = htmlentities($fields['body'], ENT_COMPAT, 'UTF-8');
+			$fields['name'] = (isset($fields['name']))? $fields['name'] : null;
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'primary column');
@@ -206,21 +208,26 @@
 		}
 
 		public function __actionIndex(){
-			/**
-			 * Extensions can listen for any custom actions that were added
-			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
-			 * delegates.
-			 *
-			 * @delegate CustomActions
-			 * @since Symphony 2.3.2
-			 * @param string $context
-			 * '/blueprints/utilities/'
-			 */
-			Symphony::ExtensionManager()->notifyMembers('CustomActions', '/blueprints/utilities/');
-
-			$checked = ($_POST['items']) ? @array_keys($_POST['items']) : NULL;
+			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
 
 			if(is_array($checked) && !empty($checked)){
+				/**
+				 * Extensions can listen for any custom actions that were added
+				 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+				 * delegates.
+				 *
+				 * @delegate CustomActions
+				 * @since Symphony 2.3.2
+				 * @param string $context
+				 *  '/blueprints/utilities/'
+				 * @param array $checked
+				 *  An array of the selected rows. The value is usually the ID of the
+				 *  the associated object. 
+				 */
+				Symphony::ExtensionManager()->notifyMembers('CustomActions', '/blueprints/utilities/', array(
+					'checked' => $checked
+				));
+
 				switch($_POST['with-selected']) {
 
 					case 'delete':

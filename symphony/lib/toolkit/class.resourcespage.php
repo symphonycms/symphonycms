@@ -43,7 +43,7 @@
 
 			// If `?unsort` is appended to the URL, then sorting information are reverted
 			// to their defaults
-			if($params['unsort']) {
+			if(isset($params['unsort'])) {
 				ResourceManager::setSortingField($type, 'name', false);
 				ResourceManager::setSortingOrder($type, 'asc');
 
@@ -146,7 +146,7 @@
 			else {
 				foreach($resources as $r) {
 					// Resource name
-					$action = ($r['can_parse'] ? 'edit' : 'info');
+					$action = isset($r['can_parse']) && $r['can_parse'] === true ? 'edit' : 'info';
 					$name = Widget::TableData(
 						Widget::Anchor(
 							$r['name'],
@@ -156,7 +156,7 @@
 					);
 
 					// Resource type/source
-					if(isset($r['source']['id'])) {
+					if(isset($r['source'], $r['source']['id'])) {
 						$section = Widget::TableData(
 							Widget::Anchor(
 								$r['source']['name'],
@@ -165,11 +165,11 @@
 							)
 						);
 					}
-					else if(class_exists($r['source']['name']) && method_exists($r['source']['name'], 'getSourceColumn')) {
+					else if(isset($r['source']) && class_exists($r['source']['name']) && method_exists($r['source']['name'], 'getSourceColumn')) {
 						$class = call_user_func(array($manager, '__getClassName'), $r['handle']);
 						$section = Widget::TableData(call_user_func(array($class, 'getSourceColumn'), $r['handle']));
 					}
-					else if(isset($r['source']['name'])){
+					else if(isset($r['source'], $r['source']['name'])) {
 						$section = Widget::TableData($r['source']['name']);
 					}
 					else {
@@ -293,24 +293,27 @@
 		 */
 		public function __actionIndex($resource_type){
 			$manager = ResourceManager::getManagerFromType($resource_type);
-
-			/**
-			 * Extensions can listen for any custom actions that were added
-			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
-			 * delegates.
-			 *
-			 * @delegate CustomActions
-			 * @since Symphony 2.3.2
-			 * @param string $context
-			 * '/blueprints/datasources/' or '/blueprints/events/'
-			 */
-			Symphony::ExtensionManager()->notifyMembers('CustomActions', $_REQUEST['symphony-page']);
+			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : NULL;
 
 			if (isset($_POST['action']) && is_array($_POST['action'])) {
-				$checked = ($_POST['items']) ? @array_keys($_POST['items']) : NULL;
+				/**
+				 * Extensions can listen for any custom actions that were added
+				 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+				 * delegates.
+				 *
+				 * @delegate CustomActions
+				 * @since Symphony 2.3.2
+				 * @param string $context
+				 *  '/blueprints/datasources/' or '/blueprints/events/'
+				 * @param array $checked
+				 *  An array of the selected rows. The value is usually the ID of the
+				 *  the associated object.
+				 */
+				Symphony::ExtensionManager()->notifyMembers('CustomActions', $_REQUEST['symphony-page'], array(
+					'checked' => $checked
+				));
 
 				if (is_array($checked) && !empty($checked)) {
-
 					if ($_POST['with-selected'] == 'delete') {
 						$canProceed = true;
 

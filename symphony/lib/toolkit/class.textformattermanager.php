@@ -137,9 +137,13 @@
 
 			$handle = self::__getHandleFromFilename(basename($path));
 
-			if(is_callable(array($classname, 'about'))){
-				$about = call_user_func(array($classname, 'about'));
+			try {
+				$method = new ReflectionMethod($classname, 'about');
+				$about = $method->invoke(new $classname);
 				return array_merge($about, array('handle' => $handle));
+			}
+			catch (ReflectionException $e){
+				$about = array();
 			}
 		}
 

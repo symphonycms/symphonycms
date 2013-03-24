@@ -18,9 +18,10 @@
 	require_once(TOOLKIT . '/cryptography/class.pbkdf2.php');
 
 	Class Cryptography{
-		
+
 		/**
-		 * Uses an instance of `MD5`, `SHA1` or `PBKDF2` to create a hash
+		 * Uses an instance of `PBKDF2` to create a hash. If you require other
+		 * hashes, see the related functions of the `MD5` or `SHA1` classes
 		 *
 		 * @see cryptography.MD5#hash()
 		 * @see cryptography.SHA1#hash()
@@ -28,30 +29,16 @@
 	 	 *
 		 * @param string $input
 		 * the string to be hashed
-		 * @param string $algorithm
-		 * a handle for the algorithm to be used
-		 * @deprecated This parameter will be removed in a future release. The use of i.e. `SHA1::hash()` is recommended instead when not using the default algorithm.
 		 * @return string
 		 * the hashed string
 		 */
-		public static function hash($input, $algorithm='pbkdf2'){
-			switch($algorithm) {
-				case 'md5':
-					return MD5::hash($input);
-					break;
-				case 'sha1':
-					return SHA1::hash($input);
-					break;
-				case 'pbkdf2':
-				default:
-					return PBKDF2::hash($input);
-					break;
-			}
+		public static function hash($input){
+			return PBKDF2::hash($input);
 		}
 
 		/**
-		 * Compares a given hash with a cleantext password by figuring out the
-		 * algorithm that has been used and then calling the approriate sub-class
+		 * Compares a given hash with a clean text password by figuring out the
+		 * algorithm that has been used and then calling the appropriate sub-class
 		 *
 		 * @see cryptography.MD5#compare()
 		 * @see cryptography.SHA1#compare()

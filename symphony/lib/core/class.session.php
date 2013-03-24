@@ -27,13 +27,6 @@
 		private static $_initialized = false;
 
 		/**
-		 * False until a shutdown function is registered, true after that
-		 *
-		 * @var boolean
-		 */
-		private static $_registered = false;
-
-		/**
 		 * Starts a Session object, only if one doesn't already exist. This function maps
 		 * the Session Handler functions to this classes methods by reading the default
 		 * information from the PHP ini file.
@@ -56,7 +49,6 @@
 		public static function start($lifetime = 0, $path = '/', $domain = NULL, $httpOnly = false) {
 
 			if (!self::$_initialized) {
-
 				if(!is_object(Symphony::Database()) || !Symphony::Database()->isConnected()) return false;
 
 				if (session_id() == '') {
@@ -77,10 +69,11 @@
 
 				session_set_cookie_params($lifetime, $path, ($domain ? $domain : self::getDomain()), false, $httpOnly);
 
-				if(session_id() == ""){
+				if(session_id() == ''){
 					if(headers_sent()){
 						throw new Exception('Headers already sent. Cannot start session.');
 					}
+					register_shutdown_function('session_write_close');
 					session_start();
 				}
 
@@ -115,18 +108,13 @@
 		}
 
 		/**
-		 * Called when a Session is created, registers the close function
+		 * Allows the Session to open without any further logic.
 		 *
 		 * @return boolean
 		 *  Always returns true
 		 */
 		public static function open() {
-			if (!self::$_registered) {
-				register_shutdown_function('session_write_close');
-				self::$_registered = true;
-			}
-
-			return self::$_registered;
+			return true;
 		}
 
 		/**

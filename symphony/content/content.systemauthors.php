@@ -169,35 +169,38 @@
 		}
 
 		public function __actionIndex(){
-			/**
-			 * Extensions can listen for any custom actions that were added
-			 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
-			 * delegates.
-			 *
-			 * @delegate CustomActions
-			 * @since Symphony 2.3.2
-			 * @param string $context
-			 * '/system/authors/'
-			 */
-			Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/authors/');
+			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
 
-			if($_POST['with-selected'] == 'delete' && is_array($_POST['items'])){
-
-				$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
-
-				if(!empty($checked)) {
-
+			if(is_array($checked) && !empty($checked)){
 				/**
-				* Prior to deleting an author, provided with an array of Author ID's.
-				*
-				* @delegate AuthorPreDelete
-				* @since Symphony 2.2
-				* @param string $context
-				* '/system/authors/'
-				* @param array $author_ids
-				*  An array of Author ID that are about to be removed
-				*/
-				Symphony::ExtensionManager()->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_ids' => $checked));
+				 * Extensions can listen for any custom actions that were added
+				 * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
+				 * delegates.
+				 *
+				 * @delegate CustomActions
+				 * @since Symphony 2.3.2
+				 * @param string $context
+				 *  '/system/authors/'
+				 * @param array $checked
+				 *  An array of the selected rows. The value is usually the ID of the
+				 *  the associated object.
+				 */
+				Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/authors/', array(
+					'checked' => $checked
+				));
+
+				if($_POST['with-selected'] == 'delete') {
+					/**
+					* Prior to deleting an author, provided with an array of Author ID's.
+					*
+					* @delegate AuthorPreDelete
+					* @since Symphony 2.2
+					* @param string $context
+					* '/system/authors/'
+					* @param array $author_ids
+					*  An array of Author ID that are about to be removed
+					*/
+					Symphony::ExtensionManager()->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_ids' => $checked));
 
 					foreach($checked as $author_id) {
 						$a = AuthorManager::fetchByID($author_id);
@@ -205,9 +208,9 @@
 							AuthorManager::delete($author_id);
 						}
 					}
-				}
 
-				redirect(SYMPHONY_URL . '/system/authors/');
+					redirect(SYMPHONY_URL . '/system/authors/');
+				}
 			}
 		}
 
@@ -228,7 +231,11 @@
 			if(!in_array($this->_context[0], array('new', 'edit'))) Administration::instance()->errorPageNotFound();
 
 			if($this->_context[0] == 'new' && !Administration::instance()->Author->isDeveloper()) {
-				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to access this page.'));
+				Administration::instance()->throwCustomError(
+					__('You are not authorised to access this page.'),
+					__('Access Denied'),
+					Page::HTTP_STATUS_UNAUTHORIZED
+				);
 			}
 
 			if(isset($this->_context[2])){
@@ -268,7 +275,11 @@
 				if(!$author_id = (int)$this->_context[1]) redirect(SYMPHONY_URL . '/system/authors/');
 
 				if(!$author = AuthorManager::fetchByID($author_id)){
-					Administration::instance()->customError(__('Author not found'), __('The author profile you requested does not exist.'));
+					Administration::instance()->throwCustomError(
+						__('The author profile you requested does not exist.'),
+						__('Author not found'),
+						Page::HTTP_STATUS_NOT_FOUND
+					);
 				}
 			}
 			else $author = new Author;
@@ -276,7 +287,11 @@
 			if($this->_context[0] == 'edit' && $author->get('id') == Administration::instance()->Author->get('id')) $isOwner = true;
 
 			if ($this->_context[0] == 'edit' && !$isOwner && !Administration::instance()->Author->isDeveloper()) {
-				Administration::instance()->customError(__('Access Denied'), __('You are not authorised to edit other authors.'));
+				Administration::instance()->throwCustomError(
+					__('You are not authorised to edit other authors.'),
+					__('Access Denied'),
+					Page::HTTP_STATUS_FORBIDDEN
+				);
 			}
 
 			$this->setTitle(__(($this->_context[0] == 'new' ? '%2$s &ndash; %3$s' : '%1$s &ndash; %2$s &ndash; %3$s'), array($author->getFullName(), __('Authors'), __('Symphony'))));
@@ -355,7 +370,7 @@
 
 				$label = Widget::Label(NULL, NULL, 'column');
 				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password', array('placeholder' => __('Old Password'))));
-				$fieldset->appendChild((isset($this->_errors['old-password']) ? Widget::Error($label, $this->_errors['password']) : $label));
+				$fieldset->appendChild((isset($this->_errors['old-password']) ? Widget::Error($label, $this->_errors['old-password']) : $label));
 			}
 
 			// New password
@@ -375,6 +390,7 @@
 			// Auth token
 			if(Administration::instance()->Author->isDeveloper()) {
 				$label = Widget::Label();
+				$group->appendChild(Widget::Input('fields[auth_token_active]', 'no', 'hidden'));
 				$input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
 
 				if($author->isTokenActive()) {
@@ -507,10 +523,10 @@
 				$this->_Author->set('first_name', General::sanitize($fields['first_name']));
 				$this->_Author->set('last_name', General::sanitize($fields['last_name']));
 				$this->_Author->set('last_seen', NULL);
-				$this->_Author->set('password', (trim($fields['password']) == '' ? '' : Cryptography::hash($fields['password'])));
+				$this->_Author->set('password', (trim($fields['password']) == '' ? '' : Cryptography::hash(Symphony::Database()->cleanValue($fields['password']))));
 				$this->_Author->set('default_area', $fields['default_area']);
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
-				$this->_Author->set('language', $fields['language']);
+				$this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
 
 				if($this->_Author->validate($this->_errors)) {
 					if($fields['password'] != $fields['password-confirmation']){
@@ -564,7 +580,7 @@
 				if($fields['email'] != $this->_Author->get('email')) $changing_email = true;
 
 				// Check the old password was correct
-				if(isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && Cryptography::compare(trim($fields['old-password']), $this->_Author->get('password'))) {
+				if(isset($fields['old-password']) && strlen(trim($fields['old-password'])) > 0 && Cryptography::compare(Symphony::Database()->cleanValue(trim($fields['old-password'])), $this->_Author->get('password'))) {
 					$authenticated = true;
 				}
 				// Developers don't need to specify the old password, unless it's their own account
@@ -585,10 +601,10 @@
 				$this->_Author->set('username', $fields['username']);
 				$this->_Author->set('first_name', General::sanitize($fields['first_name']));
 				$this->_Author->set('last_name', General::sanitize($fields['last_name']));
-				$this->_Author->set('language', $fields['language']);
+				$this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
 
 				if(trim($fields['password']) != ''){
-					$this->_Author->set('password', Cryptography::hash($fields['password']));
+					$this->_Author->set('password', Cryptography::hash(Symphony::Database()->cleanValue($fields['password'])));
 					$changing_password = true;
 				}
 

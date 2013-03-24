@@ -35,7 +35,7 @@
 		 * Initialises the configuration object by loading the existing
 		 * website config file
 		 */
-		public function initialiseConfiguration(array $settings){
+		public function initialiseConfiguration(array $data = array()){
 			parent::initialiseConfiguration();
 		}
 
@@ -43,7 +43,7 @@
 		 * Overrides the `initialiseLog()` method and writes
 		 * logs to logs/updater
 		 */
-		public function initialiseLog(){
+		public function initialiseLog($filename = null){
 			if(is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS, self::Configuration()->get('write_mode', 'directory'))) {
 				parent::initialiseLog(INSTALL_LOGS . '/update');
 			}

@@ -224,6 +224,39 @@
 		}
 
 		/**
+		 * Given an Exception, this function will add it to the internal `$_log`
+		 * so that it can be written to the Log.
+		 *
+		 * @since Symphony 2.3.2
+		 * @param Exception $exception
+		 * @param boolean $writeToLog
+		 *  If set to true, this message will be immediately written to the log. By default
+		 *  this is set to false, which means that it will only be added to the array ready
+		 *  for writing
+		 * @param boolean $addbreak
+		 *  To be used in conjunction with `$writeToLog`, this will add a line break
+		 *  before writing this message in the log file. Defaults to true.
+		 * @param boolean $append
+		 *  If set to true, the given `$message` will be append to the previous log
+		 *  message found in the `$_log` array
+		 * @return mixed
+		 *  If `$writeToLog` is passed, this function will return boolean, otherwise
+		 *  void
+		 */
+		public function pushExceptionToLog(Exception $exception, $writeToLog=false, $addbreak=true, $append=false) {
+			$message = sprintf(
+				'%s %s - %s on line %d of %s',
+				get_class($exception),
+				$exception->getCode(),
+				$exception->getMessage(),
+				$exception->getLine(),
+				$exception->getFile()
+			);
+
+			return $this->pushToLog($message, $exception->getCode(), $writeToLog, $addbreak, $append);
+		}
+
+		/**
 		 * The function handles the rotation of the log files. By default it will open
 		 * the current log file, 'main', which is written to `$_log_path` and
 		 * check it's file size doesn't exceed `$_max_size`. If it does, the log

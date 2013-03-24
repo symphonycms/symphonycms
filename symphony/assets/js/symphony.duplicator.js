@@ -179,7 +179,7 @@
 					selector.find('option[value="' + instance.attr('data-type') + '"]').attr('disabled', true);
 
 					// Preselect first available instance
-					selector.find('option').attr('selected', false).filter(':not(:disabled):first').attr('selected', true);
+					selector.find('option').prop('selected', false).filter(':not(:disabled):first').prop('selected', true);
 
 					// All selected
 					if(selector.find('option:not(:disabled)').length == 0) {
@@ -198,7 +198,7 @@
 
 					// Preselect instance if it's the only active one
 					if(selector.find('option:not(:disabled)').length == 1) {
-						option.attr('selected', true);
+						option.prop('selected', true);
 					}
 				}
 			});
@@ -272,7 +272,7 @@
 
 			// Select default
 			if(settings.preselect != false) {
-				selector.find('option[value="' + settings.preselect + '"]').attr('selected', true);
+				selector.find('option[value="' + settings.preselect + '"]').prop('selected', true);
 			}
 
 			// Single template

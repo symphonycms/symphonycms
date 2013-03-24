@@ -12,8 +12,6 @@
 	 */
 	require_once(CORE . '/class.symphony.php');
 	require_once(TOOLKIT . '/class.htmlpage.php');
-	require_once(TOOLKIT . '/class.ajaxpage.php');
-	require_once(TOOLKIT . '/class.sectionmanager.php');
 
 	Class Administration extends Symphony{
 
@@ -88,54 +86,6 @@
 			return parent::isLoggedIn();
 		}
 
-		/**
-		 * Returns the most recent version found in the `/install/migrations` folder.
-		 * Returns a version string to be used in `version_compare()` if an updater
-		 * has been found. Returns `FALSE` otherwise.
-		 * 
-		 * @since Symphony 2.3.1
-		 * @return mixed
-		 */
-		public function getMigrationVersion(){
-			if($this->isInstallerAvailable()){
-				$migration_file = end(scandir(DOCROOT . '/install/migrations'));
-				include_once(DOCROOT . '/install/lib/class.migration.php');
-				include_once(DOCROOT . '/install/migrations/' . $migration_file);
-
-				$migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
-				return call_user_func(array($migration_class, 'getVersion'));
-			}
-			else{
-				return FALSE;
-			}
-		}
-
-		/**
-		 * Checks if an update is available and applicable for the current installation.
-		 * 
-		 * @since Symphony 2.3.1
-		 * @return boolean
-		 */
-		public function isUpgradeAvailable(){
-			if($this->isInstallerAvailable()){
-				$migration_version = $this->getMigrationVersion();
-				$current_version = Symphony::Configuration()->get('version', 'symphony');
-				return version_compare($current_version, $migration_version, '<');
-			}
-			else{
-				return FALSE;
-			}
-		}
-
-		/**
-		 * Checks if the installer/upgrader is available.
-		 * 
-		 * @since Symphony 2.3.1
-		 * @return boolean
-		 */
-		public function isInstallerAvailable(){
-			return file_exists(DOCROOT . '/install/index.php');
-		}
 		/**
 		 * Given the URL path of a Symphony backend page, this function will
 		 * attempt to resolve the URL to a Symphony content page in the backend
@@ -246,13 +196,15 @@
 								}
 								else if (isset($_POST['action']['rename'])) {
 									if(!@rename(EXTENSIONS . '/' . $_POST['existing-folder'], EXTENSIONS . '/' . $_POST['new-folder'])) {
-										throw new SymphonyErrorPage(
+										$this->throwCustomError(
 											__('Could not find extension %s at location %s.', array(
 												'<code>' . $ex->getAdditional()->name . '</code>',
 												'<code>' . $ex->getAdditional()->path . '</code>'
 											)),
-											'Symphony Extension Missing Error',
-											'missing_extension', array(
+											__('Symphony Extension Missing Error'),
+											Page::HTTP_STATUS_ERROR,
+											'missing_extension',
+											array(
 												'name' => $ex->getAdditional()->name,
 												'path' => $ex->getAdditional()->path,
 												'rename_failed' => true
@@ -524,7 +476,11 @@
 		 * page not found template
 		 */
 		public function errorPageNotFound(){
-			$this->customError(__('Page Not Found'), __('The page you requested does not exist.'), 'generic', array('header' => 'HTTP/1.0 404 Not Found'));
+			$this->throwCustomError(
+				__('The page you requested does not exist.'),
+				__('Page Not Found'),
+				Page::HTTP_STATUS_NOT_FOUND
+			);
 		}
 
 		/**

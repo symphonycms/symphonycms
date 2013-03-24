@@ -9,7 +9,7 @@
 	Class contentAjaxLog extends AjaxPage{
 
 		public function handleFailedAuthorisation(){
-			$this->_status = self::STATUS_UNAUTHORISED;
+			$this->setHttpStatus(self::HTTP_STATUS_UNAUTHORIZED);
 			$this->_Result = json_encode(array('status' => __('You are not authorised to access this page.')));
 		}
 

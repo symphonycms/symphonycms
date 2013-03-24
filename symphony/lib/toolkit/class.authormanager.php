@@ -10,6 +10,8 @@
 	 * (edit) and deleted (delete).
 	 */
 
+	require_once(TOOLKIT . '/class.author.php');
+
 	Class AuthorManager {
 
 		/**
@@ -88,6 +90,8 @@
 		 *  An array of Author objects. If no Authors are found, an empty array is returned.
 		 */
 		public static function fetch($sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null, $where = null, $joins = null) {
+			$sortby = is_null($sortby) ? 'id' : Symphony::Database()->cleanValue($sortby);
+			$sortdirection = $sortdirection === 'ASC' ? 'ASC' : 'DESC';
 
 			$records = Symphony::Database()->fetch(sprintf("
 					SELECT a.*
@@ -99,7 +103,7 @@
 				",
 				$joins,
 				($where) ? $where : 1,
-				'a.'.$sortby, $sortdirection,
+				'a.'. $sortby, $sortdirection,
 				($limit) ? "LIMIT " . $limit : '',
 				($start && $limit) ? ', ' . $start : ''
 			));

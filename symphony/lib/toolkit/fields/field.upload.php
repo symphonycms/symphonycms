@@ -57,7 +57,7 @@
 				  `entry_id` int(11) unsigned NOT NULL,
 				  `file` varchar(255) default NULL,
 				  `size` int(11) unsigned NULL,
-				  `mimetype` varchar(50) default NULL,
+				  `mimetype` varchar(100) default NULL,
 				  `meta` varchar(255) default NULL,
 				  PRIMARY KEY  (`id`),
 				  UNIQUE KEY `entry_id` (`entry_id`),
@@ -183,7 +183,7 @@
 				));
 			}
 
-			else if ($flagWithError && !is_writable(DOCROOT . $this->get('destination') . '/') === false) {
+			else if ($flagWithError && is_writable(DOCROOT . $this->get('destination') . '/') === false) {
 				$flagWithError = __('Destination folder is not writable.')
 					. ' '
 					. __('Please check permissions on %s.', array(
@@ -196,7 +196,17 @@
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
 			$span = new XMLElement('span', NULL, array('class' => 'frame'));
-			if($data['file']) $span->appendChild(new XMLElement('span', Widget::Anchor('/workspace' . $data['file'], URL . '/workspace' . $data['file'])));
+			if ($data['file']) {
+				// Check to see if the file exists without a user having to
+				// attempt to save the entry. RE: #1649
+				$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)\.\./%'), '/', $data['file']);
+
+				if (file_exists($file) === false || !is_readable($file)) {
+					$flagWithError = __('The file uploaded is no longer available. Please check that it exists, and is readable.');
+				}
+
+				$span->appendChild(new XMLElement('span', Widget::Anchor('/workspace' . preg_replace("![^a-z0-9]+!i", "$0&#8203;", $data['file']), URL . '/workspace' . $data['file'])));
+			}
 
 			$span->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, $data['file'], ($data['file'] ? 'hidden' : 'file')));
 
@@ -464,7 +474,7 @@
 			// File has been replaced:
 			if (
 				isset($existing_file)
-				&& strtolower($existing_file) != strtolower($file)
+				&& $existing_file !== $file
 				&& is_file(WORKSPACE . $existing_file)
 			) {
 				General::deleteFile(WORKSPACE . $existing_file);
@@ -474,7 +484,7 @@
 			if (strlen(trim($data['type'])) == 0) {
 				$data['type'] = (
 					function_exists('mime_content_type')
-						? mime_content_type($file)
+						? mime_content_type(WORKSPACE . $file)
 						: 'application/octet-stream'
 				);
 			}
@@ -548,15 +558,25 @@
 		Import:
 	-------------------------------------------------------------------------*/
 
-		/**
-		 * Give the field some data and ask it to return a value.
-		 *
-		 * @param mixed $data
-		 * @param integer $entry_id
-		 * @return array|null
-		 */
-		public function prepareImportValue($data, $entry_id = null) {
-			return $this->processRawFieldData($data, $status, $message, false, $entry_id);
+		public function getImportModes() {
+			return array(
+				'getValue' =>		ImportableField::STRING_VALUE,
+				'getPostdata' =>	ImportableField::ARRAY_VALUE
+			);
+		}
+
+		public function prepareImportValue($data, $mode, $entry_id = null) {
+			$message = $status = null;
+			$modes = (object)$this->getImportModes();
+
+			if($mode === $modes->getValue) {
+				return $data;
+			}
+			else if($mode === $modes->getPostdata) {
+				return $this->processRawFieldData($data, $status, $message, true, $entry_id);
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------
@@ -570,9 +590,9 @@
 		 */
 		public function getExportModes() {
 			return array(
-				'getFilename' =>		ExportableField::VALUE,
-				'getObject' =>			ExportableField::OBJECT,
-				'getPostdata' =>		ExportableField::POSTDATA
+				'getFilename' =>	ExportableField::VALUE,
+				'getObject' =>		ExportableField::OBJECT,
+				'getPostdata' =>	ExportableField::POSTDATA
 			);
 		}
 

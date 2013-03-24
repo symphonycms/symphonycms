@@ -63,8 +63,8 @@
 			return false;
 		};
 
-		// Navigation and notifier sizing
-		$(window).on('resize.admin', function() {
+		// Navigation sizing
+		$(window).on('resize.admin nav.admin', function(event) {
 			var width = navContent.width() + navStructure.width() + 20;
 
 			// Compact mode
@@ -76,10 +76,35 @@
 			else {
 				nav.addClass('wide');
 			}
+		}).trigger('nav.admin');
 
-			// Refresh Notify height
+		// Accessible navigation
+		nav.on('focus.admin blur.admin', 'a', function() {
+			$(this).parents('li').eq(1).toggleClass('current');
+		});
+
+		// Notifier sizing
+		$(window).on('resize.admin', function(event) {
 			header.find('.notifier').trigger('resize.notify');
 		});
+
+		// Table sizing
+		$(window).on('resize.admin table.admin', function(event) {
+			var table = $('table:first');
+
+			// Fix table size, if width exceeds the visibile viewport area.
+			if(table.width() > $('html').width()){
+				table.addClass('fixed');
+			}
+			else {
+				table.removeClass('fixed');
+			}
+		}).trigger('table.admin');
+
+		// Focus first text-input or textarea when creating entries
+		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'new' || Symphony.Context.get('env').page == 'new')) {
+			contents.find('input[type="text"], textarea').first().focus();
+		}
 
 	/*--------------------------------------------------------------------------
 		Plugins - Tags, Pickable, Selectable, Notify and Drawers
@@ -153,68 +178,6 @@
 		// Duplicators
 		contents.find('.filters-duplicator').symphonyDuplicator();
 
-		// Field editor
-		contents.find('#fields-duplicator')
-			.symphonyDuplicator({
-				orderable: true,
-				collapsible: true,
-				preselect: 'input'
-			})
-			.on('blur.admin input.admin', '.instance input[name*="[label]"]', function(event) {
-				var label = $(this),
-					value = label.val();
-
-				// Empty label
-				if(value == '') {
-					value = Symphony.Language.get('Untitled Field');
-				}
-
-				// Update title
-				label.parents('.instance').find('header strong').text(value);
-
-				return false;
-			})
-			.on('change.admin', '.instance select[name*="[location]"]', function(event) {
-				var select = $(this);
-
-				// Set location
-				select.parents('.instance').find('header').removeClass('main').removeClass('sidebar').addClass(select.val());
-			})
-			.on('destructstart.duplicator', function(event) {
-				var item = $(event.target).clone(),
-					title = item.find('header strong').text(),
-					type = item.find('header span').text(),
-					id = new Date().getTime();
-
-				// Offer undo option after removing a field
-				header.find('div.notifier').trigger('attach.notify', [
-					Symphony.Language.get('The field “{$title}” ({$type}) has been removed.', {
-						title: title,
-						type: type
-					}) + '<a id="' + id + '">' + Symphony.Language.get('Undo?') + '</a>', 'protected']
-				);
-
-				// Prepare field recovery
-				$('#' + id).data('field', item).on('click.admin', function() {
-					var undo = $(this),
-						message = undo.parent(),
-						field = undo.data('field').hide(),
-						list = $('#fields-duplicator'),
-						duplicator = list.parent().removeClass('empty');
-
-					// Add field
-					field.trigger('constructstart.duplicator');
-					list.prepend(field);
-					field.trigger('constructshow.duplicator');
-					field.slideDown('fast', function() {
-						field.trigger('constructstop.duplicator');
-					});
-
-					// Clear system message
-					message.trigger('detach.notify');
-				});
-			});
-
 		// Highlight instances with the same location when ordering fields
 		contents.find('div.duplicator')
 			.on('orderstart.orderable', function(event, item) {
@@ -273,7 +236,7 @@
 	--------------------------------------------------------------------------*/
 
 		if(pagination.length > 0) {
-			var	pageform = pagination.find('form'),
+			var pageform = pagination.find('form'),
 				pagegoto = pageform.find('input'),
 				pageactive = pagegoto.attr('data-active'),
 				pageinactive = pagegoto.attr('data-inactive'),
@@ -339,7 +302,7 @@
 	--------------------------------------------------------------------------*/
 
 		// Confirm actions
-		contents.on('click.admin', 'button.confirm', function() {
+		contents.add(context).on('click.admin', 'button.confirm', function() {
 			var button = $(this),
 				name = document.title.split(/[\u2013]\s*/g)[2],
 				message = button.attr('data-message') || Symphony.Language.get('Are you sure you want to proceed?');
@@ -364,6 +327,77 @@
 	--------------------------------------------------------------------------*/
 
 		if(body.is('#blueprints-sections')) {
+
+			// Field editor
+			contents.find('#fields-duplicator')
+				.symphonyDuplicator({
+					orderable: true,
+					collapsible: (Symphony.Context.get('env')[0] !== 'new'),
+					preselect: 'input'
+				})
+				.on('blur.admin input.admin', '.instance input[name*="[label]"]', function(event) {
+					var label = $(this),
+						value = label.val();
+
+					// Empty label
+					if(value == '') {
+						value = Symphony.Language.get('Untitled Field');
+					}
+
+					// Update title
+					label.parents('.instance').find('header strong').text(value);
+
+					return false;
+				})
+				.on('change.admin', '.instance select[name*="[location]"]', function(event) {
+					var select = $(this);
+
+					// Set location
+					select.parents('.instance').find('header').removeClass('main').removeClass('sidebar').addClass(select.val());
+				})
+				.on('destructstart.duplicator', function(event) {
+					var target = $(event.target);
+						item = target.clone(),
+						title = item.find('header strong').text(),
+						type = item.find('header span').text(),
+						index = target.index();
+						id = new Date().getTime();
+
+					// Offer undo option after removing a field
+					header.find('div.notifier').trigger('attach.notify', [
+						Symphony.Language.get('The field “{$title}” ({$type}) has been removed.', {
+							title: title,
+							type: type
+						}) + '<a id="' + id + '">' + Symphony.Language.get('Undo?') + '</a>', 'protected undo']
+					);
+
+					// Prepare field recovery
+					$('#' + id).data('field', item).data('preceding', index - 1).on('click.admin', function() {
+						var undo = $(this),
+							message = undo.parent(),
+							field = undo.data('field').hide(),
+							list = $('#fields-duplicator'),
+							duplicator = list.parent().removeClass('empty');
+
+						// Add field
+						field.trigger('constructstart.duplicator');
+						list.find('.instance:eq(' + undo.data('preceding') + ')').after(field);
+						field.trigger('constructshow.duplicator');
+						field.slideDown('fast', function() {
+							field.trigger('constructstop.duplicator');
+						});
+
+						// Clear system message
+						message.trigger('detach.notify');
+					});
+				});
+
+			// Discard undo options because the field context changed
+			contents.find('.duplicator').on('orderstop.orderable', function(event) {
+				header.find('.undo').trigger('detach.notify');
+			});
+
+			// Field legend
 			var fieldLegend = contents.find('#fields legend'),
 				fieldExpand = $('<a />', {
 					class: 'expand',
@@ -376,39 +410,42 @@
 				fieldToggle = $('<p />', {
 					class: 'help toggle'
 				}).append(fieldExpand).append('<br />').append(fieldCollapse),
-				fieldLegendTop,	fieldToggleTop;
+				fieldLegendTop, fieldToggleTop;
 
 			// Add toggle controls
 			fieldLegend.after(fieldToggle);
-			fieldLegendTop = fieldLegend.offset().top;
-			fieldToggleTop = fieldToggle.offset().top;
-			
+
+			/* Check if there is DOM Element:
+			 * This prevents a bug in the section page since offset will return null on empty selections */
+			fieldLegendTop = !!fieldLegend.length ? fieldLegend.offset().top : 0;
+			fieldToggleTop = !!fieldToggle.length ? fieldToggle.offset().top : 0;
+
 			// Fix toggle controls
 			$(window).on('scroll.admin', function fixFieldControls(event) {
 				var top = $(this).scrollTop() + 20;
-				
+
 				if(top >= fieldLegendTop) {
 					fieldLegend.add(fieldToggle).addClass('fixed');
-				} 
+				}
 				else {
 					fieldLegend.add(fieldToggle).removeClass('fixed');
 				}
-    		});
+			});
 
 			// Toggle fields
 			fieldToggle.on('click.admin', 'p.help.toggle a', function toggleFields(event) {
 				var control = $(this),
 					fields = contents.find('#fields-duplicator > .instance');
-				
+
 				// Expand
 				if(control.is('.expand')) {
 					fields.trigger('expand.collapsible');
 				}
-				
+
 				// Collapse
 				else {
 					fields.trigger('collapse.collapsible');
-				}	
+				}
 			});
 		}
 
@@ -437,11 +474,11 @@
 
 						// Restore scroll position
 						this.scrollTop = position;
-	   				}
+					}
 				})
 				.on('blur.admin', function() {
 					var source = $(this).val(),
-						utilities = $('#utilities li');
+						utilities = $('#utilities').find('li');
 
 					// Remove current selection
 					utilities.removeClass('selected');
@@ -508,27 +545,6 @@
 		}
 
 	/*--------------------------------------------------------------------------
-		System - Authors
-	--------------------------------------------------------------------------*/
-
-		if(body.is('#system-authors')) {
-
-			// Change user password
-			contents.find('#password').each(function() {
-				var password = $(this),
-					overlay = $('<div class="password"><span class="frame"><button type="button">' + Symphony.Language.get('Change Password') + '</button></span></div>');
-
-				// Add overlay
-				if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
-					overlay.insertBefore(password).find('button').on('click.admin', function(event) {
-						event.preventDefault();
-						overlay.hide();
-					});
-				}
-			});
-		}
-
-	/*--------------------------------------------------------------------------
 		Blueprints - Datasource Editor
 	--------------------------------------------------------------------------*/
 
@@ -538,12 +554,12 @@
 				dsParams = contents.find('select[name="fields[param][]"]'),
 				dsMaxRecord = contents.find('input[name*=max_records]'),
 				dsPageNumber = contents.find('input[name*=page_number]');
-			
+
 			// Update data source handle
 			dsName.on('blur.admin input.admin', function updateDsHandle() {
 				var current = dsNameChangeCount = dsNameChangeCount + 1,
 					value = dsName.val();
-				
+
 				setTimeout(function fetchDsHandle() {
 					if(dsNameChangeCount == current) {
 						$.ajax({
@@ -561,23 +577,23 @@
 					}
 				}, 500);
 			});
-			
+
 			// Update output parameters
 			dsParams.on('update.admin', function updateDsParams() {
 				var params = $(this),
 					handle = dsName.data('handle') || Symphony.Language.get('unnamed');
-				
+
 				// Process parameters
 				if(parseInt(dsName.attr('data-updated')) !== 0) {
 					params.find('option').each(function updateDsParam() {
 						var param = $(this),
-							field = param.val();
-						
+							field = param.attr('data-handle');
+
 						// Set parameter
 						param.text('$ds-' + handle + '.' + field);
 					});
 				}
-				
+
 				// Updated
 				dsName.attr('data-updated', 1);
 			}).trigger('update.admin');
@@ -627,17 +643,21 @@
 
 			// Once pagination is disabled, dsMaxRecords and dsPageNumber are disabled too
 			contents.find('input[name*=paginate_results]').on('change.admin', function(event) {
+				// Look within the existing context to ensure that these actions only fire
+				// on the active Datasource type
+				var $paginate_results = $(this),
+					$paging_container = $paginate_results.closest('label'),
+					$dsMaxRecords = $paging_container.find('input[name*=max_records]'),
+					$dsPageNumber = $paging_container.find('input[name*=page_number]');
 
 				// Turn on pagination
 				if($(this).is(':checked')) {
-					dsMaxRecord.attr('disabled', false);
-					dsPageNumber.attr('disabled', false);
+					$dsMaxRecords.add($dsPageNumber).prop('disabled', false);
 				}
 
 				// Turn off pagination
 				else {
-					dsMaxRecord.attr('disabled', true);
-					dsPageNumber.attr('disabled', true);
+					$dsMaxRecords.add($dsPageNumber).prop('disabled', true);
 				}
 			}).trigger('change.admin');
 
@@ -648,12 +668,49 @@
 
 			// Enabled fields on submit
 			form.on('submit.admin', function() {
-				dsMaxRecord.attr('disabled', false);
-				dsPageNumber.attr('disabled', false);
+				dsMaxRecord.add(dsPageNumber).prop('disabled', false);
 			});
-			
+
 			// Enable parameter suggestions
 			contents.find('.duplicator:has(.filters-duplicator)').symphonySuggestions();
+		}
+
+	/*--------------------------------------------------------------------------
+		Blueprints - Event Editor
+	--------------------------------------------------------------------------*/
+
+		// This is transitional code needed until the event editor makes proper use of Pickable.
+		// This is scheduled to be removed in Symphony 2.4.
+		if(body.is('#blueprints-events')) {
+			var eventSections = $('#sections');
+			$('#event-context').find('option').each(function() {
+				eventSections.clone().attr('id', 'choice' + $(this).val()).insertAfter(eventSections);
+			}).trigger('change.pickable');
+
+			form.on('submit', function() {
+				$('.pickable:not(:visible)').remove();
+			});
+		}
+
+	/*--------------------------------------------------------------------------
+		System - Authors
+	--------------------------------------------------------------------------*/
+
+		if(body.is('#system-authors')) {
+
+			// Change user password
+			contents.find('#password').each(function() {
+				var password = $(this),
+					overlay = $('<div class="password"><span class="frame"><button type="button">' + Symphony.Language.get('Change Password') + '</button></span></div>');
+
+				// Add overlay
+				if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
+					overlay.insertBefore(password).find('button').on('click.admin', function(event) {
+						event.preventDefault();
+						overlay.hide();
+					});
+				}
+			});
 		}
 
 	/*--------------------------------------------------------------------------
@@ -672,33 +729,6 @@
 			span.empty().append('<input name="' + name + '" type="file">');
 		});
 
-	/*--------------------------------------------------------------------------
-		Miscellanea
-	--------------------------------------------------------------------------*/
-
-		// Focus first text-input or textarea when creating entries
-		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'new' || Symphony.Context.get('env').page == 'new')) {
-			contents.find('input[type="text"], textarea').first().focus();
-		}
-
-		// Accessible navigation
-		nav.on('focus.admin blur.admin', 'a', function() {
-			$(this).parents('li').eq(1).toggleClass('current');
-		});
-
-		// Set table to "fixed mode" if its width exceeds the visibile viewport area.
-		// See https://github.com/symphonycms/symphony-2/issues/932.
-		$(window).trigger('resize.admin table.admin', function() {
-			var table = $('table:first');
-
-			if(table.width() > $('html').width() && !table.hasClass('fixed')){
-				return table.addClass('fixed');
-			}
-
-			if(table.width() < $('html').width() && table.hasClass('fixed')){
-				return table.removeClass('fixed');
-			}
-		}).trigger('table.admin');
 	});
 
 })(window.jQuery);

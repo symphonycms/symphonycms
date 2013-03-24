@@ -225,7 +225,7 @@
 	 */
 	define_safe('__SECURE__',
 		(HTTPS == 'on' ||
-			$_SERVER['HTTP_X_FORWARDED_PROTO'] &&
+			isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
 			$_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')
 	);
 
@@ -242,3 +242,10 @@
 	 * @var string
 	 */
 	define_safe('SYMPHONY_URL', URL . '/symphony');
+
+	/**
+	 * Returns the folder name for Symphony as an application
+	 * @since Symphony 2.3.2
+	 * @var string
+	 */
+	define_safe('APPLICATION_URL', URL . '/symphony');

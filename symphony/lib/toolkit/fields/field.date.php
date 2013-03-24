@@ -199,13 +199,15 @@
 				$later = $parts['end'];
 
 				// Switch between earlier than and later than logic
+				// The earlier/later range is defined by MySQL's support. RE: #1560
+				// @link http://dev.mysql.com/doc/refman/5.0/en/datetime.html
 				switch($match[2]) {
 					case 'later':
-						$string = $later . ' to 2038-01-01 23:59:59';
+						$string = $later . ' to 9999-12-31 23:59:59';
 						break;
 
 					case 'earlier':
-						$string = '0000-01-01 to ' . $earlier;
+						$string = '1000-01-01 00:00:00 to ' . $earlier;
 						break;
 				}
 			}
@@ -341,7 +343,7 @@
 			$value = null;
 
 			// New entry
-			if(is_null($data) && is_null($flagWithError) && $this->get('pre_populate') == 'yes') {
+			if((is_null($data) || empty($data)) && is_null($flagWithError) && $this->get('pre_populate') == 'yes') {
 				$value = DateTimeObj::format('now', DateTimeObj::getSetting('datetime_format'));
 			}
 
@@ -459,15 +461,16 @@
 		Import:
 	-------------------------------------------------------------------------*/
 
-		/**
-		 * Give the field some data and ask it to return a value.
-		 *
-		 * @param mixed $data
-		 * @param integer $entry_id
-		 * @return array
-		 */
-		public function prepareImportValue($data, $entry_id = null) {
-			$value = $date = null;
+		public function getImportModes() {
+			return array(
+				'getValue' =>		ImportableField::STRING_VALUE,
+				'getPostdata' =>	ImportableField::ARRAY_VALUE
+			);
+		}
+
+		public function prepareImportValue($data, $mode, $entry_id = null) {
+			$value = $status = $message = null;
+			$modes = (object)$this->getImportModes();
 
 			// Prepopulate date:
 			if ($data === null || $data === '') {
@@ -489,13 +492,16 @@
 			// Valid date found:
 			if (isset($timestamp)) {
 				$value = DateTimeObj::get('c', $timestamp);
-				$date = DateTimeObj::getGMT('Y-m-d H:i:s', $timestamp);
+			}
+			
+			if($mode === $modes->getValue) {
+				return $value;
+			}
+			else if($mode === $modes->getPostdata) {
+				return $this->processRawFieldData($data, $status, $message, true, $entry_id);
 			}
 
-			return array(
-				'value' =>	$value,
-				'date' =>	$date
-			);
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------
@@ -593,7 +599,7 @@
 						FROM tbl_entries_data_%d AS `ed`
 						WHERE entry_id = e.id
 					) %s',
-					'`ed`.value',
+					'`ed`.date',
 					$this->get('id'),
 					$order
 				);

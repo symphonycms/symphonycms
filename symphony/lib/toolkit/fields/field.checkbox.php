@@ -138,6 +138,24 @@
 			else $wrapper->appendChild($label);
 		}
 
+		public function checkPostFieldData($data, &$message, $entry_id = null){
+			$message = NULL;
+
+			// Check if any value was passed
+			$has_no_value = is_array($data) ? empty($data) : strlen(trim($data)) == 0;
+			// Check that the value passed was 'on' or 'yes', if it's not
+			// then the field has 'no value' in the context of being required. RE: #1569
+			$has_no_value = ($has_no_value === false) ? !in_array(strtolower($data), array('on', 'yes')) : false;
+
+			if ($this->get('required') == 'yes' && $has_no_value) {
+				$message = __('‘%s’ is a required field.', array($this->get('label')));
+
+				return self::__MISSING_FIELDS__;
+			}
+
+			return self::__OK__;
+		}
+
 		public function processRawFieldData($data, &$status, &$message=null, $simulate = false, $entry_id = null){
 			$status = self::__OK__;
 
@@ -168,23 +186,27 @@
 		Import:
 	-------------------------------------------------------------------------*/
 
-		/**
-		 * Give the field some data and ask it to return a value.
-		 *
-		 * @param mixed $data
-		 * @param integer $entry_id
-		 * @return array
-		 */
-		public function prepareImportValue($data, $entry_id = null) {
+		public function getImportModes() {
 			return array(
-				'value' =>	(
-								$data === true
-								|| strtolower($data) == 'yes'
-								|| strtolower($data) == 'on'
-									? 'yes'
-									: 'no'
-							)
+				'getValue' =>		ImportableField::STRING_VALUE,
+				'getPostdata' =>	ImportableField::ARRAY_VALUE
 			);
+		}
+
+		public function prepareImportValue($data, $mode, $entry_id = null) {
+			$value = $status = $message = null;
+			$modes = (object)$this->getImportModes();
+
+			$value = $this->processRawFieldData($data, $status, $message, true, $entry_id);
+
+			if($mode === $modes->getValue) {
+				return $value['value'];
+			}
+			else if($mode === $modes->getPostdata) {
+				return $value;
+			}
+
+			return null;
 		}
 
 	/*-------------------------------------------------------------------------
