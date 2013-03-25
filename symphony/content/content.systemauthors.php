@@ -366,7 +366,7 @@
 
 				$options = array(
 					array('author', false, __('Author')),
-                    array('developer', $author->isManager(), __('Manager')),
+                    array('manager', $author->isManager(), __('Manager')),
 					array('developer', $author->isDeveloper(), __('Developer'))
 				);
 
