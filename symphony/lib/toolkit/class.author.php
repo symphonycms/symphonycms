@@ -80,7 +80,7 @@
          * Returns boolean if the current Author is of the manager
          * user type.
          *
-         * @since  2.3.4
+         * @since  2.3.3
          * @return boolean
          */
         public function isManager(){
