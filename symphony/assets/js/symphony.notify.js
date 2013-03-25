@@ -51,9 +51,8 @@
 
 			// Create item
 			item = $('<p />', {
-				html: message.replace(Symphony.Language.get('at') + ' ', ''),
 				'class': type
-			}).addClass('notice active').symphonyTimeAgo();
+			}).html(message.replace(Symphony.Language.get('at') + ' ', '')).addClass('notice active').symphonyTimeAgo();
 
 			// Add ignore link to notices)
 			if(!item.is('.error') && !item.is('.success') && !item.is('.protected')) {
@@ -251,7 +250,7 @@
 			if(notifier.find(settings.items).length > 0) {
 				notifier.removeClass('constructing').trigger('resize.notify');
 			}
-						
+
 			notifier.removeClass('constructing');
 
 			// Update relative times in system messages
