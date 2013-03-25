@@ -9,7 +9,7 @@ CREATE TABLE `tbl_authors` (
   `last_name` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `last_seen` datetime DEFAULT '0000-00-00 00:00:00',
-  `user_type` enum('author','developer') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'author',
+  `user_type` enum('author','manager','developer') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'author',
   `primary` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `default_area` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `auth_token_active` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
