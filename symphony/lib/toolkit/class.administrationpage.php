@@ -355,11 +355,11 @@
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/admin.css', 'screen', 40);
 
 			$this->addScriptToHead(APPLICATION_URL . '/assets/js/jquery.js', 50);
-			
+
 			/* For development only */
 				$this->addScriptToHead(APPLICATION_URL . '/assets/js/jquery.migrate.js', 51);
 			/* Remove before final release */
-			
+
 			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.js', 60);
 			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.collapsible.js', 61);
 			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.orderable.js', 62);
@@ -483,6 +483,7 @@
 			if(
 				$page_limit == 'author'
 				or ($page_limit == 'developer' && Administration::instance()->Author->isDeveloper())
+                or ($page_limit == 'manager' && (Administration::instance()->Author->isManager() || Administration::instance()->Author->isDeveloper()))
 				or ($page_limit == 'primary' && Administration::instance()->Author->isPrimaryAccount())
 			) {
 				return true;
