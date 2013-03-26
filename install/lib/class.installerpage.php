@@ -94,7 +94,7 @@
 
 		protected function viewMissinglog() {
 			$h2 = new XMLElement('h2', __('Missing log file'));
-			$p = new XMLElement('p', __('Symphony tried to create a log file and failed. Make sure the %s folder is writable.', array('<code>' . basename(INSTALL) . '</code>')));
+			$p = new XMLElement('p', __('Symphony tried to create a log file and failed. Make sure the %s folder is writable.', array('<code>' . basename(DOCROOT) . '</code>')));
 
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);
