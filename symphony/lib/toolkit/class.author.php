@@ -76,6 +76,17 @@
 			return ($this->get('user_type') == 'developer');
 		}
 
+        /**
+         * Returns boolean if the current Author is of the manager
+         * user type.
+         *
+         * @since  2.3.3
+         * @return boolean
+         */
+        public function isManager(){
+            return ($this->get('user_type') == 'manager');
+        }
+
 		/**
 		 * Returns boolean if the current Author is the original creator
 		 * of this Symphony installation.
