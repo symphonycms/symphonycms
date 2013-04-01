@@ -151,6 +151,22 @@
 
 			$this->appendSubheading($section->get('name'), $subheading_buttons);
 
+            /**
+             * Allows adjustments to be made to the SQL where and joins statements
+             * before they are used to fetch the entries for the page
+             *
+             * @delegate AdjustPublishFiltering
+             * @since Symphony 2.3.3
+             * @param string $context
+             * '/publish/'
+             * @param integer $section_id
+             * An array of the current columns, passed by reference
+             * @param string $where
+             * The current where statement, or null if not set
+             * @param string $joins
+             */
+            Symphony::ExtensionManager()->notifyMembers('AdjustPublishFiltering', '/publish/', array('section-id' => $section_id, 'where' => &$where, 'joins' => &$joins));
+
 			// Check that the filtered query fails that the filter is dropped and an
 			// error is logged. #841 ^BA
 			try {
