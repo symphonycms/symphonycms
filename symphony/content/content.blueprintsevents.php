@@ -240,17 +240,9 @@
 			// Providers
 				if(!empty($providers)) {
 					foreach($providers as $providerClass => $provider) {
-						if (PHP_VERSION_ID >= 50300) {
-							if($isEditing && $fields['source'] !== $providerClass::getSource()) continue;
+						if($isEditing && $fields['source'] !== call_user_func(array($providerClass, 'getSource'))) continue;
 
-							$providerClass::buildEditor($this->Form, $this->_errors, $fields, $handle);
-						}
-						// PHP 5.2 does not support late static binding..
-						else{
-							if($isEditing && $fields['source'] !== call_user_func(array($providerClass, 'getSource'))) continue;
-
-							call_user_func_array(array($providerClass, 'buildEditor'), array($this->Form, &$this->_errors, $fields, $handle));
-						}
+						call_user_func_array(array($providerClass, 'buildEditor'), array($this->Form, &$this->_errors, $fields, $handle));
 					}
 				}
 			}
@@ -391,14 +383,7 @@
 			// See if a Provided Datasource is saved
 			if (!empty($providers)) {
 				foreach($providers as $providerClass => $provider) {
-					if (PHP_VERSION_ID >= 50300) {
-						if($fields['source'] == $providerClass::getSource()) {
-							$providerClass::validate($fields, $this->_errors);
-							break;
-						}
-					}
-					// PHP 5.2 does not support late static binding..
-					else if($fields['source'] == call_user_func(array($providerClass, 'getSource'))) {
+					if($fields['source'] == call_user_func(array($providerClass, 'getSource'))) {
 						call_user_func_array(array($providerClass, 'validate'), array(&$fields, &$this->_errors));
 						break;
 					}
