@@ -46,7 +46,7 @@
 		// Select
 		objects.on('click.selectable', settings.items, function select(event) {
 			var item = $(this),
-				items = item.siblings().andSelf(),
+				items = item.siblings().addBack(),
 				object = $(event.liveFired),
 				target = $(event.target),
 				selection, deselection, first, last;
@@ -81,11 +81,11 @@
 
 				// Deselect items outside the selection range
 				deselection = items.filter('.selected').not(selection).removeClass('selected').trigger('deselect.selectable');
-				deselection.find('input[type="checkbox"]').attr('checked', false);
+				deselection.find('input[type="checkbox"]').prop('checked', false);
 
 				// Select range
 				selection.addClass('selected').trigger('select.selectable');
-				selection.find('input[type="checkbox"]').attr('checked', true);
+				selection.find('input[type="checkbox"]').prop('checked', true);
 			}
 
 			// Single selection
@@ -94,17 +94,17 @@
 				// Press meta or ctrl key to adjust current range, otherwise the selection will be removed
 				if((!event.metaKey && !event.ctrlKey && settings.mode != 'additive' &&  !target.is('input')) || object.is('.single')) {
 					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect.selectable');
-					deselection.find('input[type="checkbox"]').attr('checked', false);
+					deselection.find('input[type="checkbox"]').prop('checked', false);
 				}
 
 				// Toggle selection
 				if(item.is('.selected')) {
 					item.removeClass('selected').trigger('deselect.selectable');
-					item.find('input[type="checkbox"]').attr('checked', false);
+					item.find('input[type="checkbox"]').prop('checked', false);
 				}
 				else {
 					item.addClass('selected').trigger('select.selectable');
-					item.find('input[type="checkbox"]').attr('checked', true);
+					item.find('input[type="checkbox"]').prop('checked', true);
 				}
 			}
 
