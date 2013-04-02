@@ -10,18 +10,21 @@
 	Horizontal drawers
 -----------------------------------------------------------------------------*/
 
+#drawer-section-associations .contents {
+	padding: 5px 20px;
+}
+
 .association {
-    border-top: 1px solid #D0D0D0;
     min-height: 30px;
     color: #666;
 }
 
-.association:first-of-type {
-    margin-top: 20px;
+.association + .association {
+    border-top: 1px solid #D0D0D0;
 }
 
 .association:last-of-type {
-    padding-bottom: 15px;
+    padding-bottom: 10px;
 }
 
 .association a {
@@ -32,10 +35,12 @@
     color: #323232;
 }
 
+.association:first-of-type header {
+	padding-top: 6px;
+}
+
 .association header {
-    width: 240px;
-    float: right;
-    padding-top: 6px;
+    padding-top: 10px;
 }
 
 .association header p {
@@ -48,33 +53,39 @@
     border-bottom: none;
 }
 
+.association header i {
+	margin-left: 3px;
+	float: right;
+}
+
 .association .association-section {
     color: #323232;
 }
 
 .association ul {
-    padding: 0 250px 0 0;
+    padding: 10px 0;
     margin: 0;
 }
 
 .association li {
-    padding-top: 6px;
-    height: 30px;
+	display: block;
+	line-height: 2;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
-    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.association li:not(:last-of-type) {
-    border-bottom: 1px solid #E6E6E5;
+.assocation li + li {
+	padding-top: 6px;
 }
 
 .association:not(.empty) li::before {
-    content: "\2192";
+    content: "\2192 ";
+	margin-right: 3px;
 }
 
 .association.parent li::before {
-    content: "\2190";
+    content: "\2190 ";
+	margin-right: 3px;
 }

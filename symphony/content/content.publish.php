@@ -1177,151 +1177,150 @@
 		private function prepareAssociationsDrawer($section){
 			$entry_id = (!is_null($this->_context['entry_id'])) ? $this->_context['entry_id'] : null;
 
-			if(!is_null($entry_id)) {
-				$parent_associations = SectionManager::fetchParentAssociations($section->get('id'), true);
-				$child_associations = SectionManager::fetchChildAssociations($section->get('id'), true);
+			if(is_null($entry_id)) return;
 
-				$content = null;
-				/**
-				 * Prepare Associations Drawer from an Extension
-				 *
-				 * @since Symphony 2.3.3
-				 * @delegate PrepareAssociationsDrawer
-				 * @param string $context
-				 * '/publish/'
-				 * @param intager $entry_id
-				 *  The entry ID or null
-				 * @param array $parent_associations
-				 *  Array of Sections
-				 * @param array $child_associations
-				 *  Array of Sections
-				 */
-				Symphony::ExtensionManager()->notifyMembers('PrepareAssociationsDrawer', '/publish/', array(
-					'entry_id' => $entry_id,
-					'parent_associations' => $parent_associations,
-					'child_associations' => $child_associations,
-					'content' => $content
-				));
+			$parent_associations = SectionManager::fetchParentAssociations($section->get('id'), true);
+			$child_associations = SectionManager::fetchChildAssociations($section->get('id'), true);
 
-				if(!($content instanceof XMLElement)) {
-					$content = new XMLElement('div', null, array('class' => 'content'));
-					$content->setSelfClosingTag(false);
+			$content = null;
+			$drawer_position = 'vertical-right';
 
-					// Process Parent Associations
-					if(!is_null($parent_associations) && !empty($parent_associations)) foreach($parent_associations as $as){
-						$entries_ids = $this->findRelatedEntries($as['parent_section_field_id'], $entry_id);
-						$entries = EntryManager::fetch($entries_ids, $as['parent_section_id']);
+			/**
+			 * Prepare Associations Drawer from an Extension
+			 *
+			 * @since Symphony 2.3.3
+			 * @delegate PrepareAssociationsDrawer
+			 * @param string $context
+			 * '/publish/'
+			 * @param intager $entry_id
+			 *  The entry ID or null
+			 * @param array $parent_associations
+			 *  Array of Sections
+			 * @param array $child_associations
+			 *  Array of Sections
+			 * @param string $drawer_position
+			 *  The position of the Drawer, defaults to `vertical-right`. Available
+			 *  values of `vertical-left, `vertical-right` and `horizontal`
+			 */
+			Symphony::ExtensionManager()->notifyMembers('PrepareAssociationsDrawer', '/publish/', array(
+				'entry_id' => $entry_id,
+				'parent_associations' => &$parent_associations,
+				'child_associations' => &$child_associations,
+				'content' => &$content,
+				'drawer-position' => &$drawer_position
+			));
 
-						$element = new XMLElement('section', null, array('class' => 'association parent'));
-
-						$header = new XMLElement('header');
-						$header->appendChild(new XMLElement('p', __('Linked to') . ' ' . '<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . '</a>'));
-						$element->appendChild($header);
-
-						$ul = new XMLElement('ul', null, array(
-							'class' => 'association-links',
-							'data-section-id' => $as['child_section_id'],
-							'data-association-ids' => implode(', ', $entries_ids)
-						));
-
-						foreach($entries as $e) {
-							$f = $e->getData($as['parent_section_field_id']);
-							$li = new XMLElement('li');
-							$a = new XMLElement('a', $f['value']);
-							$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id'));
-							$li->appendChild($a);
-							$ul->appendChild($li);
-						}
-
-						$element->appendChild($ul);
-						$content->appendChild($element);
-					}
-
-					// Process Child Associations
-					if(!is_null($child_associations) && !empty($child_associations)) foreach($child_associations as $as){
-						$entries_ids = $this->findRelatedEntries($as['child_section_field_id'], $entry_id);
-						$entries = (!empty($entries_ids)) ? EntryManager::fetch($entries_ids, $as['child_section_id']) : array();
-
-						$child_section = SectionManager::fetch($as['child_section_id']);
-
-						$element = new XMLElement('section', null, array('class' => 'association child'));
-						$header = new XMLElement('header');
-
-						$field_name = FieldManager::fetchHandleFromID($as['child_section_field_id']);
-						$filter = '?filter[' . $field_name . ']=' . $this->_context['entry_id'];
-						$prepopulate = '?prepopulate[' . $as['child_section_field_id'] . ']=' . $this->_context['entry_id'];
-
-						// Create link with filter or prepopulate
-						if(!empty($entries_ids) && !is_null($entries_ids[0])) {
-							$link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/' . $filter;
-						}
-						else {
-							$link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/new/' . $prepopulate;
-						}
-
-						$a = new XMLElement('a', $as['name'], array(
-							'class' => 'association-section',
-							'href' => $link
-						));
-
-						$max = count($entries);
-						$show = ($num = Symphony::Configuration()->get('association_maximum_rows', 'symphony')) ? $num : 5;
-						if($max < $show) {
-							$show = $max;
-						}
-						$i = new XMLElement('i', sprintf(
-							__('%d of %d entries'),
-							$show,
-							$max
-						));
-
-						if($max) {
-							$counts = '<br />' . $i->generate();
-						}
-						else {
-							$countrs = '';
-						}
-
-						$header->appendChild(new XMLElement('p', __('Linked From') . ' ' . $a->generate() . $counts));
-						$element->appendChild($header);
-
-						$ul = new XMLElement('ul', null, array(
-							'class' => 'association-links',
-							'data-section-id' => $as['child_section_id']
-						));
-
-						if(!empty($entries)) {
-							$ul->setAttribute('data-association-ids', implode(', ', $entries_ids));
-
-							foreach($entries as $key => $e) {
-								$f = $e->getData($child_section->getDefaultSortingField());
-								$li = new XMLElement('li');
-								$a = new XMLElement('a', $f['value']);
-								$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/' . $prepopulate);
-								$li->appendChild($a);
-								$ul->appendChild($li);
-							}
-						}
-						else {
-							$ul->setAttribute('data-association-ids', '');
-							$li = new XMLElement('li', __('No linked entries yet.'));
-							$ul->appendChild($li);
-						}
-
-						$element->appendChild($ul);
-						$content->appendChild($element);
-					}
-				}
-			}
-			else {
+			if(!($content instanceof XMLElement)) {
 				$content = new XMLElement('div', null, array('class' => 'content'));
 				$content->setSelfClosingTag(false);
 
-				$p = new XMLElement('p', __('Please save your entry before you can associate other entries.'));
-				$content->appendChild($p);
+				// Process Parent Associations
+				if(!is_null($parent_associations) && !empty($parent_associations)) foreach($parent_associations as $as){
+					$entries_ids = $this->findRelatedEntries($as['parent_section_field_id'], $entry_id);
+					$entries = EntryManager::fetch($entries_ids, $as['parent_section_id']);
+
+					$element = new XMLElement('section', null, array('class' => 'association parent'));
+
+					$header = new XMLElement('header');
+					$header->appendChild(new XMLElement('p', __('Linked to') . ' ' . '<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . '</a>'));
+					$element->appendChild($header);
+
+					$ul = new XMLElement('ul', null, array(
+						'class' => 'association-links',
+						'data-section-id' => $as['child_section_id'],
+						'data-association-ids' => implode(', ', $entries_ids)
+					));
+
+					foreach($entries as $e) {
+						$f = $e->getData($as['parent_section_field_id']);
+						$li = new XMLElement('li');
+						$a = new XMLElement('a', $f['value']);
+						$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id'));
+						$li->appendChild($a);
+						$ul->appendChild($li);
+					}
+
+					$element->appendChild($ul);
+					$content->appendChild($element);
+				}
+
+				// Process Child Associations
+				if(!is_null($child_associations) && !empty($child_associations)) foreach($child_associations as $as){
+					$entries_ids = $this->findRelatedEntries($as['child_section_field_id'], $entry_id);
+					$entries = (!empty($entries_ids)) ? EntryManager::fetch($entries_ids, $as['child_section_id']) : array();
+
+					$child_section = SectionManager::fetch($as['child_section_id']);
+
+					$element = new XMLElement('section', null, array('class' => 'association child'));
+					$header = new XMLElement('header');
+
+					$field_name = FieldManager::fetchHandleFromID($as['child_section_field_id']);
+					$filter = '?filter[' . $field_name . ']=' . $this->_context['entry_id'];
+					$prepopulate = '?prepopulate[' . $as['child_section_field_id'] . ']=' . $this->_context['entry_id'];
+
+					// Create link with filter or prepopulate
+					if(!empty($entries_ids) && !is_null($entries_ids[0])) {
+						$link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/' . $filter;
+					}
+					else {
+						$link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/new/' . $prepopulate;
+					}
+
+					$a = new XMLElement('a', $as['name'], array(
+						'class' => 'association-section',
+						'href' => $link
+					));
+
+					$max = count($entries);
+					$show = ($num = Symphony::Configuration()->get('association_maximum_rows', 'symphony')) ? $num : 5;
+					if($max < $show) {
+						$show = $max;
+					}
+					$i = new XMLElement('i', __('%d of %d entries', array(
+						$show,
+						$max
+					)));
+
+					if($max) {
+						$counts = $i->generate();
+					}
+					else {
+						$counts = '';
+					}
+
+					$header->appendChild(new XMLElement('p', __('Linked from') . ' ' . $a->generate() . $counts));
+					$element->appendChild($header);
+
+					$ul = new XMLElement('ul', null, array(
+						'class' => 'association-links',
+						'data-section-id' => $as['child_section_id']
+					));
+
+					if(!empty($entries)) {
+						$ul->setAttribute('data-association-ids', implode(', ', $entries_ids));
+
+						foreach($entries as $key => $e) {
+							$f = $e->getData($child_section->getDefaultSortingField());
+							$li = new XMLElement('li');
+							$a = new XMLElement('a', $f['value']);
+							$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/' . $prepopulate);
+							$li->appendChild($a);
+							$ul->appendChild($li);
+						}
+					}
+					else {
+						$ul->setAttribute('data-association-ids', '');
+						$li = new XMLElement('li', __('No linked entries yet.'));
+						$ul->appendChild($li);
+					}
+
+					$element->appendChild($ul);
+					$content->appendChild($element);
+				}
 			}
-			$drawer = Widget::Drawer('section-associations', 'Show Associations', $content);
-			$this->insertDrawer($drawer, 'horizontal', 'prepend');
+
+			$drawer = Widget::Drawer('section-associations', __('Show Associations'), $content);
+			$this->insertDrawer($drawer, $drawer_position, 'prepend');
 		}
 
 		/**
