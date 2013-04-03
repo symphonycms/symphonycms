@@ -290,7 +290,7 @@
 
 			// Validate page number
 			pageform.on('submit.admin', function(event) {
-				if(pagegoto.val() > pagegoto.attr('data-max')) {
+				if(parseInt(pagegoto.val()) > parseInt(pagegoto.attr('data-max'))) {
 					pageform.addClass('invalid');
 					return false;
 				}
