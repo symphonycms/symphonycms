@@ -971,7 +971,7 @@
 		 *  The sanitized string
 		 */
 		public static function sanitizeParameter($parameter) {
-			return XMLElement::stripInvalidXMLCharacters(utf8_encode(urldecode($parameter)));
+			return XMLElement::stripInvalidXMLCharacters($parameter);
 		}
 
 		/**
