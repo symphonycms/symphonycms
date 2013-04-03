@@ -84,14 +84,14 @@
 			else{
 				foreach($authors as $a){
 
-                    if(Administration::instance()->Author->isManager() && $a->isDeveloper()) {
-                        continue;
-                    }
+					if(Administration::instance()->Author->isManager() && $a->isDeveloper()) {
+						continue;
+					}
 					// Setup each cell
 					if(
-                        (Administration::instance()->Author->isDeveloper() || (Administration::instance()->Author->isManager() && !$a->isDeveloper()))
-                        || Administration::instance()->Author->get('id') == $a->get('id')
-                    ) {
+						(Administration::instance()->Author->isDeveloper() || (Administration::instance()->Author->isManager() && !$a->isDeveloper()))
+						|| Administration::instance()->Author->get('id') == $a->get('id')
+					) {
 						$td1 = Widget::TableData(
 							Widget::Anchor($a->getFullName(), Administration::instance()->getCurrentPageURL() . 'edit/' . $a->get('id') . '/', $a->get('username'), 'author')
 						);
@@ -109,15 +109,15 @@
 						$td3 = Widget::TableData(__('Unknown'), 'inactive');
 					}
 
-                    if($a->isDeveloper()) {
-                        $type = 'Developer';
-                    }
-                    elseif($a->isManager()) {
-                        $type = 'Manager';
-                    }
-                    else {
-                        $type = 'Author';
-                    }
+					if($a->isDeveloper()) {
+						$type = 'Developer';
+					}
+					elseif($a->isManager()) {
+						$type = 'Manager';
+					}
+					else {
+						$type = 'Author';
+					}
 					$td4 = Widget::TableData(__($type));
 
 					$languages = Lang::getAvailableLanguages();
@@ -133,10 +133,10 @@
 					// Add a row to the body array, assigning each cell to the row
 					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
 						$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5));
-                    }
+					}
 					else {
 						$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
-                    }
+					}
 				}
 			}
 
@@ -366,9 +366,12 @@
 
 				$options = array(
 					array('author', false, __('Author')),
-                    array('manager', $author->isManager(), __('Manager')),
-					array('developer', $author->isDeveloper(), __('Developer'))
+					array('manager', $author->isManager(), __('Manager'))
 				);
+
+				if(Administration::instance()->Author->isDeveloper()) {
+					$options[] = array('developer', $author->isDeveloper(), __('Developer'));
+				}
 
 				$label->appendChild(Widget::Select('fields[user_type]', $options));
 				$div->appendChild($label);
