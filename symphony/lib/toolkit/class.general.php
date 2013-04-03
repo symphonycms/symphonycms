@@ -483,7 +483,7 @@
 
 			try {
 				$current_umask = umask(0);
-				$success = mkdir($path, intval($mode, 8), true);
+				$success = @mkdir($path, intval($mode, 8), true);
 				umask($current_umask);
 
 				return $success;

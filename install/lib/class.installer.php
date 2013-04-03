@@ -90,7 +90,7 @@
 
 		public function run() {
 			// Make sure a log file is available
-			if(is_null(Symphony::Log())) {
+			if(is_null(Symphony::Log()) || !file_exists(Symphony::Log()->getLogPath())) {
 				self::__render(new InstallerPage('missing-log'));
 			}
 
