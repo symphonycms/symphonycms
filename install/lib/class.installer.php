@@ -72,7 +72,7 @@
 
 		/**
 		 * Overrides the default `initialiseLog()` method and writes
-		 * logs to logs/installer
+		 * logs to manifest/logs/install
 		 */
 		public function initialiseLog($filename = null){
 			if(is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS, self::Configuration()->get('write_mode', 'directory'))) {
