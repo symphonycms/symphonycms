@@ -23,11 +23,11 @@
 		}
 
 		static function getVersion(){
-			return '2.3.3';
+			return '2.3.3beta1';
 		}
 
 		static function getReleaseNotes(){
-			return 'http://getsymphony.com/download/releases/version/2.3.3/';
+			return 'https://gist.github.com/brendo/5300783';
 		}
 
 		static function upgrade(){
@@ -38,11 +38,33 @@
 					$field
 				));
 			}
-            return true;
+
+			// Remove directory from the upload fields, #1719
+			$upload_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
+
+			if(is_array($upload_tables) && !empty($upload_tables)) foreach($upload_tables as $field) {
+				Symphony::Database()->query(sprintf(
+					"UPDATE default_entries_data_%d SET file = substring_index(file, '/', -1)"
+					$field
+				));
+			}
+
+			// Update the version information
+			Symphony::Configuration()->set('version', self::getVersion(), 'symphony');
+			Symphony::Configuration()->set('useragent', 'Symphony/' . self::getVersion(), 'general');
+
+			if(Symphony::Configuration()->write() === false) {
+				throw new Exception('Failed to write configuration file, please check the file permissions.');
+			}
+			else {
+				return true;
+			}
 		}
 
 		static function preUpdateNotes(){
-			return false;
+			return array(
+				__("On update, all files paths will be removed from the core Upload field entry tables. If you are using an Upload field extension, ensure that the extension is compatible with this release before continuing.")
+			);
 		}
 
 	}

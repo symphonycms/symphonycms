@@ -98,6 +98,16 @@
 			return $meta;
 		}
 
+		public function getFilePath($filename) {
+			/**
+			 * Ensure the file exists in the `WORKSPACE` directory
+			 * @link http://symphony-cms.com/discuss/issues/view/610/
+			 */
+			$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)\.\./%', '%\/workspace\/%'), '/', $this->get('destination') . '/' . $filename);
+
+			return $file;
+		}
+
 	/*-------------------------------------------------------------------------
 		Settings:
 	-------------------------------------------------------------------------*/
@@ -196,19 +206,21 @@
 			if($this->get('required') != 'yes') $label->appendChild(new XMLElement('i', __('Optional')));
 
 			$span = new XMLElement('span', NULL, array('class' => 'frame'));
-			if ($data['file']) {
-				// Check to see if the file exists without a user having to
-				// attempt to save the entry. RE: #1649
-				$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)\.\./%'), '/', $data['file']);
 
+			$filename = ($data['file'])
+				? $this->get('destination') . '/' . basename($data['file'])
+				: null;
+
+			if ($data['file']) {
+				$file = $this->getFilePath($data['file']);
 				if (file_exists($file) === false || !is_readable($file)) {
 					$flagWithError = __('The file uploaded is no longer available. Please check that it exists, and is readable.');
 				}
 
-				$span->appendChild(new XMLElement('span', Widget::Anchor('/workspace' . preg_replace("![^a-z0-9]+!i", "$0&#8203;", $data['file']), URL . '/workspace' . $data['file'])));
+				$span->appendChild(new XMLElement('span', Widget::Anchor(preg_replace("![^a-z0-9]+!i", "$0&#8203;", $filename), URL . $filename)));
 			}
 
-			$span->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, $data['file'], ($data['file'] ? 'hidden' : 'file')));
+			$span->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, $filename, ($filename ? 'hidden' : 'file')));
 
 			$label->appendChild($span);
 
@@ -242,12 +254,7 @@
 
 			// Its not an array, so just retain the current data and return
 			if (is_array($data) === false) {
-				/**
-				 * Ensure the file exists in the `WORKSPACE` directory
-				 * @link http://symphony-cms.com/discuss/issues/view/610/
-				 */
-				$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)\.\./%'), '/', $data);
-
+				$file = $this->getFilePath(basename($data));
 				if (file_exists($file) === false || !is_readable($file)) {
 					$message = __('The file uploaded is no longer available. Please check that it exists, and is readable.');
 
@@ -347,9 +354,7 @@
 
 			// Its not an array, so just retain the current data and return:
 			if (is_array($data) === false) {
-				// Ensure the file exists in the `WORKSPACE` directory
-				// @link http://symphony-cms.com/discuss/issues/view/610/
-				$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)\.\./%'), '/', $data);
+				$file = $this->getFilePath(basename($data));
 
 				$result = array(
 					'file' =>		$data,
@@ -490,7 +495,7 @@
 			}
 
 			return array(
-				'file' =>		$file,
+				'file' =>		basename($file),
 				'size' =>		$data['size'],
 				'mimetype' =>	$data['type'],
 				'meta' =>		serialize(self::getMetaInfo(WORKSPACE . $file, $data['type']))
@@ -507,8 +512,8 @@
 				return;
 			}
 
+			$file = $this->getFilePath($data['file']);
 			$item = new XMLElement($this->get('element_name'));
-			$file = WORKSPACE . $data['file'];
 			$item->setAttributeArray(array(
 				'size' =>	(
 								file_exists($file)
@@ -517,12 +522,12 @@
 									: 'unknown'
 							),
 			 	'path' =>	General::sanitize(
-			 			 		str_replace(WORKSPACE, NULL, dirname(WORKSPACE . $data['file']))
+			 			 		'/workspace' . str_replace(WORKSPACE, NULL, dirname($file))
 			 				),
 				'type' =>	$data['mimetype']
 			));
 
-			$item->appendChild(new XMLElement('filename', General::sanitize(basename($data['file']))));
+			$item->appendChild(new XMLElement('filename', General::sanitize(basename($file))));
 
 			$m = unserialize($data['meta']);
 
@@ -541,14 +546,14 @@
 
 			if ($link) {
 				$link->setValue(basename($file));
-				$link->setAttribute('data-path', $file);
+				$link->setAttribute('data-path', $this->get('destination'));
 
 				return $link->generate();
 			}
 
 			else {
-				$link = Widget::Anchor(basename($file), URL . '/workspace' . $file);
-				$link->setAttribute('data-path', $file);
+				$link = Widget::Anchor(basename($file), URL . $this->get('destination') . '/' . $file);
+				$link->setAttribute('data-path', $this->get('destination'));
 
 				return $link->generate();
 			}
@@ -608,14 +613,16 @@
 		public function prepareExportValue($data, $mode, $entry_id = null) {
 			$modes = (object)$this->getExportModes();
 
+			$file = $this->getFilePath($data['file']);
+
 			// No file, or the file that the entry is meant to have no
 			// longer exists.
-			if (!isset($data['file']) || !is_file(WORKSPACE . $data['file'])) {
+			if (!isset($data['file']) || !is_file($file)) {
 				return null;
 			}
 
 			if ($mode === $modes->getFilename) {
-				return WORKSPACE . $data['file'];
+				return $file;
 			}
 
 			if ($mode === $modes->getObject) {
