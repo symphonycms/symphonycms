@@ -108,10 +108,10 @@
 	 * If there is data, the cookie will be renewed, expiring it in two weeks from now.
 	 * This will improve the interoperability with caches like Varnish and Squid.
 	 *
+	 * @since 2.3.3
+	 * @author creativedutchmen (Huib Keemink)
 	 * @return void
-	 * @author creativedutchmen (Huib keemink)
-	 * @since 2.3.2 (12 March 2013)
-	 **/
+	 */
 	function cleanup_session_cookies()
 	{
 
