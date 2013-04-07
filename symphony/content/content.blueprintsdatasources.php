@@ -304,23 +304,30 @@
 				$ol->setAttribute('data-remove', __('Remove filter'));
 
 				// Add system:id filter
-				if(isset($fields['filter'][$section_id]['id'])){
+				if(
+					isset($fields['filter'][$section_id]['system:id'])
+					or isset($fields['filter'][$section_id]['id'])
+				) {
+					$id = isset($fields['filter'][$section_id]['system:id'])
+						? $fields['filter'][$section_id]['system:id']
+						: $fields['filter'][$section_id]['id'];
+
 					$li = new XMLElement('li');
 					$li->setAttribute('class', 'unique');
-					$li->setAttribute('data-type', 'id');
+					$li->setAttribute('data-type', 'system:id');
 					$li->appendChild(new XMLElement('header', '<h4>' . __('System ID') . '</h4>'));
 					$label = Widget::Label(__('Value'));
-					$label->appendChild(Widget::Input('fields[filter]['.$section_id.'][id]', General::sanitize($fields['filter'][$section_id]['id'])));
+					$label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:id]', General::sanitize($id)));
 					$li->appendChild($label);
 					$ol->appendChild($li);
 				}
 
 				$li = new XMLElement('li');
 				$li->setAttribute('class', 'unique template');
-				$li->setAttribute('data-type', 'id');
+				$li->setAttribute('data-type', 'system:id');
 				$li->appendChild(new XMLElement('header', '<h4>' . __('System ID') . '</h4>'));
 				$label = Widget::Label(__('Value'));
-				$label->appendChild(Widget::Input('fields[filter]['.$section_id.'][id]'));
+				$label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:id]'));
 				$li->appendChild($label);
 				$ol->appendChild($li);
 
@@ -329,12 +336,15 @@
 					isset($fields['filter'][$section_id]['system:creation-date'])
 					or isset($fields['filter'][$section_id]['system:date'])
 				) {
+					$creation_date = isset($fields['filter'][$section_id]['system:creation-date'])
+						? $fields['filter'][$section_id]['system:creation-date']
+						: $fields['filter'][$section_id]['system:date'];
+
 					$li = new XMLElement('li');
 					$li->setAttribute('class', 'unique');
 					$li->setAttribute('data-type', 'system:creation-date');
 					$li->appendChild(new XMLElement('header', '<h4>' . __('System Creation Date') . '</h4>'));
 					$label = Widget::Label(__('Value'));
-					$creation_date = isset($fields['filter'][$section_id]['system:creation-date']) ? $fields['filter'][$section_id]['system:creation-date'] : $fields['filter'][$section_id]['system:date'];
 					$label->appendChild(
 						Widget::Input('fields[filter]['.$section_id.'][system:creation-date]', General::sanitize($creation_date))
 					);
