@@ -44,7 +44,7 @@
 
 			if(is_array($upload_tables) && !empty($upload_tables)) foreach($upload_tables as $field) {
 				Symphony::Database()->query(sprintf(
-					"UPDATE default_entries_data_%d SET file = substring_index(file, '/', -1)",
+					"UPDATE tbl_entries_data_%d SET file = substring_index(file, '/', -1)",
 					$field
 				));
 			}
