@@ -1,6 +1,6 @@
 # Symphony 2
 
-- Version: 2.3.1 Beta 1
+- Version: 2.3.3 Beta 1
 - Date: 24th March 2013
 - Release Notes: <https://gist.github.com/brendo/5300783>
 - Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.3.3beta1>
