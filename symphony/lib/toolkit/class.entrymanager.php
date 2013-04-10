@@ -253,6 +253,7 @@
 						// Handles the case where `section_id` was not provided
 						if(is_null($section_id)) {
 							$e = self::fetch($id);
+							if(!is_array($e)) continue;
 							$e = current($e);
 							if(!$e instanceof Entry) continue;
 						}
