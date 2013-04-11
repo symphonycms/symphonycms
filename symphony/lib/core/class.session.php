@@ -42,11 +42,11 @@
 		 *  The domain this cookie is valid for
 		 * @param boolean $httpOnly
 		 *  Whether this cookie can be read by Javascript. By default the cookie
-		 *  can be read using Javascript and PHP
+		 *  cannot be read by Javascript
 		 * @return string|boolean
 		 *  Returns the Session ID on success, or false on error.
 		 */
-		public static function start($lifetime = 0, $path = '/', $domain = NULL, $httpOnly = false) {
+		public static function start($lifetime = 0, $path = '/', $domain = NULL, $httpOnly = true) {
 
 			if (!self::$_initialized) {
 				if(!is_object(Symphony::Database()) || !Symphony::Database()->isConnected()) return false;

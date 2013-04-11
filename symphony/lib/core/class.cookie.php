@@ -62,12 +62,11 @@
 
 		/**
 		 * Determines whether this cookie can be read by Javascript or not, by default
-		 * this is set to false, meaning cookies written by Symphony can be read by
-		 * Javascript
+		 * this is set to true, meaning cookies written by Symphony cannot be read by Javascript
 		 *
 		 * @var boolean
 		 */
-		private $_httpOnly = false;
+		private $_httpOnly = true;
 
 		/**
 		 * Constructor for the Cookie class intialises all class variables with the
@@ -87,9 +86,9 @@
 		 *  The domain this cookie is valid for
 		 * @param boolean $httpOnly
 		 *  Whether this cookie can be read by Javascript. By default the cookie
-		 *  can be read using Javascript and PHP
+		 *  cannot be read by Javascript
 		 */
-		public function __construct($index, $timeout = 0, $path = '/', $domain = NULL, $httpOnly = false) {
+		public function __construct($index, $timeout = 0, $path = '/', $domain = NULL, $httpOnly = true) {
 			$this->_index = $index;
 			$this->_timeout = $timeout;
 			$this->_path = $path;
