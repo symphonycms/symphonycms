@@ -69,6 +69,17 @@
 		private $_httpOnly = true;
 
 		/**
+		 * Determines whether this cookie will be sent over a secure connection or not. If
+		 * true, this cookie will only be sent on a secure connection. Defaults to false
+		 * but will automatically be set if `__SECURE__` is true
+		 *
+		 * @since Symphony 2.3.3
+		 * @see boot
+		 * @var boolean
+		 */
+		private $_secure = false;
+
+		/**
 		 * Constructor for the Cookie class intialises all class variables with the
 		 * given parameters. Most of the parameters map to PHP's setcookie
 		 * function. It creates a new Session object via the `$this->__init()`
@@ -94,6 +105,8 @@
 			$this->_path = $path;
 			$this->_domain = $domain;
 			$this->_httpOnly = $httpOnly;
+			if(defined(__SECURE__)) $this->_secure = __SECURE__;
+
 			$this->_session = $this->__init();
 		}
 
@@ -103,7 +116,7 @@
 		 * @return Session
 		 */
 		private function __init() {
-			$this->_session = Session::start($this->_timeout, $this->_path, $this->_domain, $this->_httpOnly);
+			$this->_session = Session::start($this->_timeout, $this->_path, $this->_domain, $this->_httpOnly, $this->_secure);
 			if (!$this->_session) return false;
 
 			if (!isset($_SESSION[$this->_index])) $_SESSION[$this->_index] = array();
