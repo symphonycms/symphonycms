@@ -267,17 +267,71 @@
 		 * @return array
 		 */
 		public static function fetchAssociatedSections($section_id, $respect_visibility = false) {
-			return Symphony::Database()->fetch(sprintf("
-					SELECT *
-					FROM `tbl_sections_association` AS `sa`, `tbl_sections` AS `s`
-					WHERE `sa`.`parent_section_id` = %d
-					AND `s`.`id` = `sa`.`child_section_id`
-					%s
-					ORDER BY `s`.`sortorder` ASC
-				",
-				$section_id,
-				($respect_visibility) ? "AND `sa`.`hide_association` = 'no'" : ""
-			));
+			self::fetchChildAssociations($section_id, $respect_visibility);
 		}
+
+        /**
+         * Returns any section associations this section has with other sections
+         * linked using fields, and where this section is the parent in the association.
+         * Has an optional parameter, `$respect_visibility` that
+         * will only return associations that are deemed visible by a field that
+         * created the association. eg. An articles section may link to the authors
+         * section, but the field that links these sections has hidden this association
+         * so an Articles column will not appear on the Author's Publish Index
+         *
+         * @since Symphony 2.4
+         * @param integer $section_id
+         *  The ID of the section
+         * @param boolean $respect_visibility
+         *  Whether to return all the section associations regardless of if they
+         *  are deemed visible or not. Defaults to false, which will return all
+         *  associations.
+         * @return array
+         */
+        public static function fetchChildAssociations($section_id, $respect_visibility = false) {
+            return Symphony::Database()->fetch(sprintf("
+                    SELECT *
+                    FROM `tbl_sections_association` AS `sa`, `tbl_sections` AS `s`
+                    WHERE `sa`.`parent_section_id` = %d
+                    AND `s`.`id` = `sa`.`child_section_id`
+                    %s
+                    ORDER BY `s`.`sortorder` ASC
+                ",
+                $section_id,
+                ($respect_visibility) ? "AND `sa`.`hide_association` = 'no'" : ""
+            ));
+        }
+
+        /**
+         * Returns any section associations this section has with other sections
+         * linked using fields, and where this section is the child in the association.
+         * Has an optional parameter, `$respect_visibility` that
+         * will only return associations that are deemed visible by a field that
+         * created the association. eg. An articles section may link to the authors
+         * section, but the field that links these sections has hidden this association
+         * so an Articles column will not appear on the Author's Publish Index
+         *
+         * @since Symphony 2.4
+         * @param integer $section_id
+         *  The ID of the section
+         * @param boolean $respect_visibility
+         *  Whether to return all the section associations regardless of if they
+         *  are deemed visible or not. Defaults to false, which will return all
+         *  associations.
+         * @return array
+         */
+        public static function fetchParentAssociations($section_id, $respect_visibility = false) {
+            return Symphony::Database()->fetch(sprintf("
+                    SELECT *
+                    FROM `tbl_sections_association` AS `sa`, `tbl_sections` AS `s`
+                    WHERE `sa`.`child_section_id` = %d
+                    AND `s`.`id` = `sa`.`parent_section_id`
+                    %s
+                    ORDER BY `s`.`sortorder` ASC
+                ",
+                $section_id,
+                ($respect_visibility) ? "AND `sa`.`hide_association` = 'no'" : ""
+            ));
+        }
 
 	}
