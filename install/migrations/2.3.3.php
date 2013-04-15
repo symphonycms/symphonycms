@@ -31,22 +31,26 @@
 		}
 
 		static function upgrade(){
-			//  Update DB for the new author role #1692
+			//	Update DB for the new author role #1692
 			if(version_compare(self::$existing_version, '2.3.2', '<=')) {
 				Symphony::Database()->query(sprintf(
 					"ALTER TABLE `tbl_authors` CHANGE `user_type` `user_type` enum('author', 'manager', 'developer') DEFAULT 'author'",
 					$field
 				));
-			}
 
-			// Remove directory from the upload fields, #1719
-			$upload_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
+				if(!Symphony::Configuration()->get('association_maximum_rows', 'symphony')) {
+					Symphony::Configuration()->set('association_maximum_rows', '5', 'symphony');
+				}
 
-			if(is_array($upload_tables) && !empty($upload_tables)) foreach($upload_tables as $field) {
-				Symphony::Database()->query(sprintf(
-					"UPDATE tbl_entries_data_%d SET file = substring_index(file, '/', -1)",
-					$field
-				));
+				// Remove directory from the upload fields, #1719
+				$upload_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
+
+				if(is_array($upload_tables) && !empty($upload_tables)) foreach($upload_tables as $field) {
+					Symphony::Database()->query(sprintf(
+						"UPDATE default_entries_data_%d SET file = substring_index(file, '/', -1)",
+						$field
+					));
+				}
 			}
 
 			// Update the version information

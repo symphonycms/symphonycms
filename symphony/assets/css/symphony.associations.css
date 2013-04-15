@@ -1,0 +1,92 @@
+/**
+ * Associations are visualisations of associated entries in Symphony's backend.
+ * They are hidden in Drawers by default and can be expanded on click.
+ *
+ * @since Symphony 2.3
+ */
+
+
+/*-----------------------------------------------------------------------------
+	Horizontal drawers
+-----------------------------------------------------------------------------*/
+
+#drawer-section-associations .contents {
+	padding: 5px 20px;
+}
+
+.association {
+	min-height: 30px;
+	color: #666;
+}
+
+.association + .association {
+	border-top: 1px solid #D0D0D0;
+}
+
+.association:last-of-type {
+	padding-bottom: 10px;
+}
+
+.association a {
+	color: #666;
+}
+
+.association a:hover {
+	color: #323232;
+}
+
+.association:first-of-type header {
+	padding-top: 6px;
+}
+
+.association header {
+	padding-top: 10px;
+}
+
+.association header p {
+	margin: 0;
+	padding: 0;
+}
+
+.association header i a {
+	color: rgb(169, 169, 169);
+	border-bottom: none;
+}
+
+.association header i {
+	margin-left: 3px;
+	float: right;
+}
+
+.association .association-section {
+	color: #323232;
+}
+
+.association ul {
+	padding: 10px 0;
+	margin: 0;
+}
+
+.association li {
+	display: block;
+	line-height: 2;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.assocation li + li {
+	padding-top: 6px;
+}
+
+.association:not(.empty) li::before {
+	content: "\2192 ";
+	margin-right: 3px;
+}
+
+.association.parent li::before {
+	content: "\2190 ";
+	margin-right: 3px;
+}
