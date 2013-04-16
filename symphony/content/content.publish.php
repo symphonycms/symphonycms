@@ -1181,7 +1181,7 @@
 
 			$parent_associations = SectionManager::fetchParentAssociations($section->get('id'), true);
 			$child_associations = SectionManager::fetchChildAssociations($section->get('id'), true);
-			$show_entries = ($num = Symphony::Configuration()->get('association_maximum_rows', 'symphony')) ? $num : 1;
+			$show_entries = ($num = Symphony::Configuration()->get('association_maximum_rows', 'symphony')) ? $num : 5;
 			$content = null;
 			$drawer_position = 'vertical-right';
 
