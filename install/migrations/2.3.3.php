@@ -23,7 +23,7 @@
 		}
 
 		static function getVersion(){
-			return '2.3.3beta1';
+			return '2.3.3beta2';
 		}
 
 		static function getReleaseNotes(){
@@ -31,16 +31,12 @@
 		}
 
 		static function upgrade(){
-			//	Update DB for the new author role #1692
-			if(version_compare(self::$existing_version, '2.3.2', '<=')) {
+			if(version_compare(self::$existing_version, '2.3.3beta1', '<=')) {
+				// Update DB for the new author role #1692
 				Symphony::Database()->query(sprintf(
 					"ALTER TABLE `tbl_authors` CHANGE `user_type` `user_type` enum('author', 'manager', 'developer') DEFAULT 'author'",
 					$field
 				));
-
-				if(!Symphony::Configuration()->get('association_maximum_rows', 'symphony')) {
-					Symphony::Configuration()->set('association_maximum_rows', '5', 'symphony');
-				}
 
 				// Remove directory from the upload fields, #1719
 				$upload_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");
@@ -50,6 +46,13 @@
 						"UPDATE default_entries_data_%d SET file = substring_index(file, '/', -1)",
 						$field
 					));
+				}
+			}
+
+			if(version_compare(self::$existing_version, '2.3.3beta2', '<=')) {
+				// Update rows for associations
+				if(!Symphony::Configuration()->get('association_maximum_rows', 'symphony')) {
+					Symphony::Configuration()->set('association_maximum_rows', '5', 'symphony');
 				}
 			}
 
