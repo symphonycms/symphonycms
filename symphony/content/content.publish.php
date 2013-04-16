@@ -1176,12 +1176,12 @@
 		 */
 		private function prepareAssociationsDrawer($section){
 			$entry_id = (!is_null($this->_context['entry_id'])) ? $this->_context['entry_id'] : null;
+			$show_entries = Symphony::Configuration()->get('association_maximum_rows', 'symphony');
 
-			if(is_null($entry_id)) return;
+			if(is_null($entry_id) || is_null($show_entries) || $show_entries == 0) return;
 
 			$parent_associations = SectionManager::fetchParentAssociations($section->get('id'), true);
 			$child_associations = SectionManager::fetchChildAssociations($section->get('id'), true);
-			$show_entries = ($num = Symphony::Configuration()->get('association_maximum_rows', 'symphony')) ? $num : 5;
 			$content = null;
 			$drawer_position = 'vertical-right';
 
@@ -1192,7 +1192,7 @@
 			 * @delegate PrepareAssociationsDrawer
 			 * @param string $context
 			 * '/publish/'
-			 * @param intager $entry_id
+			 * @param integer $entry_id
 			 *  The entry ID or null
 			 * @param array $parent_associations
 			 *  Array of Sections
