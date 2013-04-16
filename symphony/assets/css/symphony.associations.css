@@ -81,12 +81,12 @@
 	padding-top: 6px;
 }
 
-.association:not(.empty) li::before {
+.association:not(.empty) li a::before {
 	content: "\2192 ";
 	margin-right: 3px;
 }
 
-.association.parent li::before {
+.association.parent li a::before {
 	content: "\2190 ";
 	margin-right: 3px;
 }
