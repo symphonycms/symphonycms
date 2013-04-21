@@ -433,7 +433,7 @@
 			});
 
 			// Toggle fields
-			fieldToggle.on('click.admin', 'p.help.toggle a', function toggleFields(event) {
+			fieldToggle.on('click.admin', 'a.expand, a.collapse', function toggleFields(event) {
 				var control = $(this),
 					fields = contents.find('#fields-duplicator > .instance');
 
