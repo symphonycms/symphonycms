@@ -145,7 +145,7 @@
 			$has_no_value = is_array($data) ? empty($data) : strlen(trim($data)) == 0;
 			// Check that the value passed was 'on' or 'yes', if it's not
 			// then the field has 'no value' in the context of being required. RE: #1569
-			$has_no_value = ($has_no_value === false) ? !in_array(strtolower($data), array('on', 'yes')) : false;
+			$has_no_value = ($has_no_value === false) ? !in_array(strtolower($data), array('on', 'yes')) : true;
 
 			if ($this->get('required') == 'yes' && $has_no_value) {
 				$message = __('‘%s’ is a required field.', array($this->get('label')));
