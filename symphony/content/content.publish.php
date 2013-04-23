@@ -1237,28 +1237,30 @@
 						: array();
 					$has_entries = !empty($entries) && $entries['total-entries'] != 0;
 
-					$element = new XMLElement('section', null, array('class' => 'association parent'));
-					$header = new XMLElement('header');
-					$header->appendChild(new XMLElement('p', __('Linked to') . ' ' . '<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . '</a>'));
-					$element->appendChild($header);
+					if($has_entries) {
+						$element = new XMLElement('section', null, array('class' => 'association parent'));
+						$header = new XMLElement('header');
+						$header->appendChild(new XMLElement('p', __('Linked to %s in', array('<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . '</a>'))));
+						$element->appendChild($header);
 
-					$ul = new XMLElement('ul', null, array(
-						'class' => 'association-links',
-						'data-section-id' => $as['child_section_id'],
-						'data-association-ids' => implode(', ', $entry_ids)
-					));
+						$ul = new XMLElement('ul', null, array(
+							'class' => 'association-links',
+							'data-section-id' => $as['child_section_id'],
+							'data-association-ids' => implode(', ', $entry_ids)
+						));
 
-					if($has_entries) foreach($entries['records'] as $e) {
-						$value = $field->prepareTableValue($e->getData($field->get('id')), null, $e->get('id'));
-						$li = new XMLElement('li');
-						$a = new XMLElement('a', strip_tags($value));
-						$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/');
-						$li->appendChild($a);
-						$ul->appendChild($li);
+						foreach($entries['records'] as $e) {
+							$value = $field->prepareTableValue($e->getData($field->get('id')), null, $e->get('id'));
+							$li = new XMLElement('li');
+							$a = new XMLElement('a', strip_tags($value));
+							$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/');
+							$li->appendChild($a);
+							$ul->appendChild($li);
+						}
+
+						$element->appendChild($ul);
+						$content->appendChild($element);
 					}
-
-					$element->appendChild($ul);
-					$content->appendChild($element);
 				}
 
 				// Process Child Associations
@@ -1290,42 +1292,27 @@
 					$prepopulate = '?prepopulate[' . $as['child_section_field_id'] . ']=' . $entry_id;
 
 					// Create link with filter or prepopulate
-					if($has_entries) {
-						$link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/' . $filter;
-					}
-					else {
-						$link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/new/' . $prepopulate;
-					}
+					$link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/' . $filter;
 					$a = new XMLElement('a', $as['name'], array(
 						'class' => 'association-section',
 						'href' => $link
 					));
 
-					// If we are only showing 'some' of the entries, then show this on the UI
-					$counts = '';
-					if($entries['total-entries'] > $show_entries) {
-						$total_entries = new XMLElement('a', __('%d entries', array($entries['total-entries'])), array(
-							'href' => $link
-						));
-
-						$i = new XMLElement('i', __('%d of %s', array(
-							$show_entries,
-							$total_entries->generate()
-						)));
-
-						$counts = $i->generate();
-					}
-
-					$header->appendChild(new XMLElement('p', __('Linked from') . ' ' . $a->generate() . $counts));
-					$element->appendChild($header);
-
-					$ul = new XMLElement('ul', null, array(
-						'class' => 'association-links',
-						'data-section-id' => $as['child_section_id']
+					// Create new entries
+					$create = new XMLElement('a', __('Create New'), array(
+						'class' => 'button association-new',
+						'href' => SYMPHONY_URL . '/publish/' . $as['handle'] . '/new/' . $prepopulate
 					));
 
+					// Display existing entries
 					if($has_entries) {
-						$ul->setAttribute('data-association-ids', implode(', ', $entry_ids));
+						$header->appendChild(new XMLElement('p', __('Links in %s', array($a->generate()))));
+
+						$ul = new XMLElement('ul', null, array(
+							'class' => 'association-links',
+							'data-section-id' => $as['child_section_id'],
+							'data-association-ids' => implode(', ', $entry_ids)
+						));
 
 						foreach($entries['records'] as $key => $e) {
 							$value = $visible_field->prepareTableValue($e->getData($child_section->getDefaultSortingField()), null, $e->get('id'));
@@ -1335,14 +1322,36 @@
 							$li->appendChild($a);
 							$ul->appendChild($li);
 						}
-					}
-					else {
-						$ul->setAttribute('data-association-ids', '');
-						$li = new XMLElement('li', __('No linked entries yet.'));
-						$ul->appendChild($li);
+
+						$element->appendChild($ul);
+
+						// If we are only showing 'some' of the entries, then show this on the UI
+						if($entries['total-entries'] > $show_entries) {
+							$total_entries = new XMLElement('a', __('%d entries', array($entries['total-entries'])), array(
+								'href' => $link,
+							));
+							$pagination = new XMLElement('li', null, array(
+								'class' => 'association-more',
+								'data-current-page' => '1',
+								'data-total-pages' => ceil($entries['total-entries'] / $show_entries)
+							));
+							$counts = new XMLElement('a', __('Show more entries'), array(
+								'href' => $link
+							));
+
+							$pagination->appendChild($counts);
+							$ul->appendChild($pagination);
+						}
 					}
 
-					$element->appendChild($ul);
+					// No entries
+					else {
+						$element->setAttribute('class', 'association child empty');
+						$header->appendChild(new XMLElement('p', __('No links in %s', array($a->generate()))));
+					}
+
+					$header->appendChild($create);
+					$element->prependChild($header);
 					$content->appendChild($element);
 				}
 			}
