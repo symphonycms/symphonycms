@@ -43,8 +43,6 @@ div.drawer.vertical-right {
 	bottom: 0;
 	/* height is set implicitly via `top` and `bottom` to allow for dynamic height */
 	background: #F4F4F4;
-	-webkit-box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.05);
 }
 
 div.drawer.vertical-left {

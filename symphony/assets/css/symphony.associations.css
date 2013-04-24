@@ -7,7 +7,7 @@
 
 
 /*-----------------------------------------------------------------------------
-	Horizontal drawers
+	Vertical drawers
 -----------------------------------------------------------------------------*/
 
 #drawer-section-associations .contents {
@@ -16,11 +16,16 @@
 
 .association {
 	min-height: 30px;
+	margin-top: 20px;
 	color: #666;
 }
 
 .association + .association {
-	border-top: 1px solid #D0D0D0;
+	margin-top: 15px;
+}
+
+.empty + .empty {
+	margin-top:  0;
 }
 
 .association:last-of-type {
@@ -62,31 +67,50 @@
 	color: #323232;
 }
 
-.association ul {
-	padding: 10px 0;
+.association-links {
+	padding: 10px 0 0;
 	margin: 0;
+	width: 260px;
 }
 
-.association li {
+.association-links li {
 	display: block;
 	line-height: 2;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-.assocation li + li {
-	padding-top: 6px;
+.association-links a,
+.association-links a:hover {
+	width: 260px;
+	line-height: 30px;
+	display: inline-block;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	border-color: #E8E8E8;
 }
 
-.association:not(.empty) li a::before {
+.association-links li a::before {
 	content: "\2192 ";
 	margin-right: 3px;
 }
 
-.association.parent li a::before {
+.association-links.parent li a::before {
 	content: "\2190 ";
 	margin-right: 3px;
+}
+
+.association-more a {
+	color: #a9a9a9;
+}
+
+.association-more a::before {
+	content: "\00B7\00B7\00B7" !important;
+}
+
+.association-new {
+	float: right;
+	margin-top: -19px;
 }
