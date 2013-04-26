@@ -653,20 +653,43 @@
 			$fieldset->appendChild($label);
 			$this->Form->appendChild($fieldset);
 
-			// Output options
+			// Output
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml from_extensions');
-			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
+			$fieldset->appendChild(new XMLElement('legend', __('Output')));
 
-			$label = Widget::Label();
-			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) && $fields['redirect_on_empty'] == 'yes') ? array('checked' => 'checked') : NULL);
-			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
+			// Output: Grouping
+			$label = Widget::Label(__('Group By'));
+			$options = array(
+				array('', NULL, __('None')),
+			);
+
+			foreach($field_groups as $section_id => $section_data){
+				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
+
+				$authorOverride = false;
+
+				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
+					foreach($section_data['fields'] as $input){
+
+						if(!$input->allowDatasourceOutputGrouping()) continue;
+
+						if($input->get('element_name') == 'author') $authorOverride = true;
+
+						$optgroup['options'][] = array($input->get('id'), ($fields['source'] == $section_id && $fields['group'] == $input->get('id')), $input->get('label'));
+					}
+				}
+
+				if(!$authorOverride) $optgroup['options'][] = array('author', ($fields['source'] == $section_id && $fields['group'] == 'author'), __('Author'));
+
+				$options[] = $optgroup;
+			}
+
+			$label->appendChild(Widget::Select('fields[group]', $options, array('class' => 'filtered')));
 			$fieldset->appendChild($label);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-
-			$subfieldset = new XMLElement('fieldset', NULL, array('class' => 'column'));
-			$subfieldset->appendChild(new XMLElement('legend', __('Output Parameters')));
+			// Output: XML
+			$group = new XMLElement('div', NULL, array('class' => 'two columns'));
 
 			// Support multiple parameters
 			if(!isset($fields['param'])) {
@@ -676,7 +699,8 @@
 				$fields['param'] = array($fields['param']);
 			}
 
-			$label = Widget::Label(__('Use Fields'));
+			$label = Widget::Label(__('Parameters'));
+			$label->setAttribute('class', 'column');
 			$prefix = '$ds-' . (isset($this->_context[1]) ? Lang::createHandle($fields['name']) : __('unnamed')) . '.';
 
 			$options = array(
@@ -745,6 +769,7 @@
 			}
 
 			$label->appendChild(Widget::Select('fields[param][]', $options, array('class' => 'filtered', 'multiple' => 'multiple')));
+<<<<<<< HEAD
 			$subfieldset->appendChild($label);
 
 			$div->appendChild($subfieldset);
@@ -774,8 +799,12 @@
 
 			$label->appendChild(Widget::Select('fields[group]', $options, array('class' => 'filtered')));
 			$subfieldset->appendChild($label);
+=======
+			$group->appendChild($label);
+>>>>>>> Realign XML Output
 
-			$label = Widget::Label(__('Included Elements'));
+			$label = Widget::Label(__('Fields'));
+			$label->setAttribute('class', 'column');
 
 			$options = array(
 				array('label' => __('Authors'), 'options' => array(
@@ -826,26 +855,33 @@
 			}
 
 			$label->appendChild(Widget::Select('fields[xml_elements][]', $options, array('multiple' => 'multiple', 'class' => 'filtered')));
-			$subfieldset->appendChild($label);
+			$group->appendChild($label);
 
+			$fieldset->appendChild($group);
+
+			// Output: Associations
 			$label = Widget::Label();
 			$label->setAttribute('class', 'contextual inverse authors');
 			$input = Widget::Input('fields[associated_entry_counts]', 'yes', 'checkbox', ((isset($fields['associated_entry_counts']) && $fields['associated_entry_counts'] == 'yes') ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s Include a count of entries in associated sections', array($input->generate(false))));
-			$subfieldset->appendChild($label);
+			$fieldset->appendChild($label);
 
+			// Output: Encoding
 			$label = Widget::Label();
 			$label->setAttribute('class', 'contextual inverse authors');
 			$input = Widget::Input('fields[html_encode]', 'yes', 'checkbox', (isset($fields['html_encode']) && $fields['html_encode'] == 'yes' ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s HTML-encode text', array($input->generate(false))));
-			$subfieldset->appendChild($label);
+			$fieldset->appendChild($label);
 
-			$div->appendChild($subfieldset);
+			// Output: 404
+			$label = Widget::Label();
+			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) && $fields['redirect_on_empty'] == 'yes') ? array('checked' => 'checked') : NULL);
+			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
+			$fieldset->appendChild($label);
 
-			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 
-		// Dynamic XML
+			// Dynamic XML
 			if(!isset($fields['dynamic_xml'])) {
 				$fields['dynamic_xml'] = array('url'=>null, 'xpath'=>null, 'namespace'=>null, 'cache'=>null, 'timeout'=>null);
 			}
