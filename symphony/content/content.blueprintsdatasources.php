@@ -614,27 +614,40 @@
 
 			$this->Form->appendChild($fieldset);
 
+			// Environment
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml from_extensions');
+			$fieldset->appendChild(new XMLElement('legend', __('Environment')));
+			$p = new XMLElement('p', __('Leaving these fields empty will always execute the Data Source.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'two columns');
+
+			$label = Widget::Label(__('Required Parameter'));
+			$label->setAttribute('class', 'column');
+			$label->appendChild(new XMLElement('i', __('must not be empty')));
+			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array('placeholder' => __('$param'))));
+			$group->appendChild($label);
+
+			$div = new XMLElement('div', NULL, array('class' => 'column'));
+
+			$label = Widget::Label(__('Disallowed Parameter'));
+			$label->setAttribute('class', 'column');
+			$label->appendChild(new XMLElement('i', __('must be empty')));
+			$label->appendChild(Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array('placeholder' => __('$param'))));
+			$group->appendChild($label);
+
+			$fieldset->appendChild($group);
+
+
+			$this->Form->appendChild($fieldset);
+
+			// Output options
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml from_extensions');
 			$fieldset->appendChild(new XMLElement('legend', __('Output Options')));
-
-			$label = Widget::Label(__('Required URL Parameter'));
-			$label->appendChild(new XMLElement('i', __('Optional')));
-			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array('placeholder' => __('$param'))));
-			$fieldset->appendChild($label);
-
-			$p = new XMLElement('p', __('An empty result will be returned when this parameter does not have a value.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-
-			$label = Widget::Label(__('Negating URL Parameter'));
-			$label->appendChild(new XMLElement('i', __('Optional')));
-			$label->appendChild(Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array('placeholder' => __('$param'))));
-			$fieldset->appendChild($label);
-
-			$p = new XMLElement('p', __('An empty result will be returned when this parameter has a value.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
 
 			$label = Widget::Label();
 			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) && $fields['redirect_on_empty'] == 'yes') ? array('checked' => 'checked') : NULL);
