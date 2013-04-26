@@ -517,17 +517,37 @@
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 
+			// Environment
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml from_extensions');
+			$fieldset->appendChild(new XMLElement('legend', __('Environment')));
+			$p = new XMLElement('p', __('Leaving these fields empty will always execute the Data Source.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'two columns');
+
+			$label = Widget::Label(__('Required Parameter'));
+			$label->setAttribute('class', 'column');
+			$label->appendChild(new XMLElement('i', __('must not be empty')));
+			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array('placeholder' => __('$param'))));
+			$group->appendChild($label);
+
+			$div = new XMLElement('div', NULL, array('class' => 'column'));
+
+			$label = Widget::Label(__('Disallowed Parameter'));
+			$label->setAttribute('class', 'column');
+			$label->appendChild(new XMLElement('i', __('must be empty')));
+			$label->appendChild(Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array('placeholder' => __('$param'))));
+			$group->appendChild($label);
+
+			$fieldset->appendChild($group);
+			$this->Form->appendChild($fieldset);
+			// Sorting and Grouping
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml from_extensions');
-			$fieldset->appendChild(new XMLElement('legend', __('Sorting and Limiting')));
-
-			$p = new XMLElement('p',
-				__('Use %s syntax to limit by page parameters.', array(
-					'<code>{' . __('$param') . '}</code>'
-				))
-			);
-			$p->setAttribute('class', 'help contextual inverse navigation');
-			$fieldset->appendChild($p);
+			$fieldset->appendChild(new XMLElement('legend', __('Sorting')));
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'two columns contextual sections ' . __('Sections'));
@@ -596,52 +616,41 @@
 			$div->appendChild($label);
 
 			$fieldset->appendChild($div);
-
-			$label = Widget::Label();
-			$input = array(
-				Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] == 'yes' ? array('checked' => 'checked') : NULL)),
-				Widget::Input('fields[max_records]', isset($fields['max_records']) ? $fields['max_records'] : '10', 'text', array('size' => '6')),
-				Widget::Input('fields[page_number]', $fields['page_number'], 'text', array('size' => '6'))
-			);
-			$label->setValue(__('%1$s Paginate results, limiting to %2$s entries per page. Return page %3$s', array($input[0]->generate(false), $input[1]->generate(false), $input[2]->generate(false))));
-
-			if(isset($this->_errors['max_records'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['max_records']));
-			else if(isset($this->_errors['page_number'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['page_number']));
-			else $fieldset->appendChild($label);
-
-			$p = new XMLElement('p', __('Failing to paginate may degrade performance if the number of entries returned is very high.'), array('class' => 'help'));
-			$fieldset->appendChild($p);
-
 			$this->Form->appendChild($fieldset);
 
-			// Environment
+			// Pagination
 			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml from_extensions');
-			$fieldset->appendChild(new XMLElement('legend', __('Environment')));
-			$p = new XMLElement('p', __('Leaving these fields empty will always execute the Data Source.'));
-			$p->setAttribute('class', 'help');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml from_extensions');
+			$fieldset->appendChild(new XMLElement('legend', __('Pagination')));
+
+			$p = new XMLElement('p',
+				__('Use %s syntax to limit by page parameters.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
+			$p->setAttribute('class', 'help contextual inverse navigation');
 			$fieldset->appendChild($p);
 
 			$group = new XMLElement('div');
 			$group->setAttribute('class', 'two columns');
 
-			$label = Widget::Label(__('Required Parameter'));
+			$label = Widget::Label(__('Entries per Page'));
 			$label->setAttribute('class', 'column');
-			$label->appendChild(new XMLElement('i', __('must not be empty')));
-			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array('placeholder' => __('$param'))));
+			$label->appendChild(Widget::Input('fields[max_records]', isset($fields['max_records']) ? $fields['max_records'] : '10'));
 			$group->appendChild($label);
 
-			$div = new XMLElement('div', NULL, array('class' => 'column'));
-
-			$label = Widget::Label(__('Disallowed Parameter'));
+			$label = Widget::Label(__('Page Number'));
 			$label->setAttribute('class', 'column');
-			$label->appendChild(new XMLElement('i', __('must be empty')));
-			$label->appendChild(Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array('placeholder' => __('$param'))));
+			$label->appendChild(Widget::Input('fields[page_number]', $fields['page_number']));
 			$group->appendChild($label);
 
 			$fieldset->appendChild($group);
 
+			$label = Widget::Label();
+			$input = Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] !== 'yes' ? array('checked' => 'checked') : NULL));
+			$label->setValue(__('%1$s Disable pagination', array($input->generate(false))));
 
+			$fieldset->appendChild($label);
 			$this->Form->appendChild($fieldset);
 
 			// Output options
