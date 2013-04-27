@@ -35,7 +35,7 @@
 					$('<li data-name="' + name + '">' + name + '</li>').appendTo(suggestions);
 				});
 			}
-		});		
+		});
 		
 	/*-------------------------------------------------------------------------
 		Functions
@@ -47,11 +47,11 @@
 				
 			// Get distance
 			if(!active.is(':visible:first')) {
-				distance = ((active.prevAll(':visible').length + 1) * active.outerHeight()) - 180;	
+				distance = ((active.prevAll(':visible').length + 1) * active.outerHeight()) - 180;
 			}
 			else {
 				distance = 0;
-			}	
+			}
 			
 			// Focus
 			suggestions.animate({
@@ -80,6 +80,7 @@
 				// Relocate suggestions
 				if(input.nextAll('ul.suggestionlist').length == 0) {
 					input.after(suggestions);
+					suggestions.width(input.innerWidth());
 					suggestions.find('.active').removeClass();
 				}
 	
@@ -155,7 +156,7 @@
 					stayInFocus();
 				}
 				
-				// Enter			
+				// Enter
 				if(event.which == 13) {
 					event.preventDefault();
 					active.trigger('click.suggestions');
@@ -177,8 +178,8 @@
 				selectionStart = input[0].selectionStart || 0,
 				selectionEnd = input[0].selectionEnd || 0,
 				beforeSelection = value.substring(0, selectionStart).split(' '),
-				afterSelection = value.substr(selectionStart).split(' '),				
-				before = '', 
+				afterSelection = value.substr(selectionStart).split(' '),
+				before = '',
 				after = '';
 			
 			// Get text before parameter
