@@ -284,9 +284,10 @@
 			$fieldset->appendChild($group);
 			$this->Form->appendChild($fieldset);
 
+			// Filters
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual authors navigation ' . __('Sections') . ' ' . __('System'));
-			$fieldset->appendChild(new XMLElement('legend', __('Filter Results')));
+			$fieldset->appendChild(new XMLElement('legend', __('Filters')));
 			$p = new XMLElement('p',
 				__('Use %s syntax to filter by page parameters.', array(
 					'<code>{' . __('$param') . '}</code>'
@@ -517,11 +518,11 @@
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 
-			// Environment
+			// Conditions
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml from_extensions');
-			$fieldset->appendChild(new XMLElement('legend', __('Execution Conditions')));
-			$p = new XMLElement('p', __('Leaving these fields empty will always execute the Data Source.'));
+			$fieldset->appendChild(new XMLElement('legend', __('Conditions')));
+			$p = new XMLElement('p', __('Leaving these fields empty will always execute the data source.'));
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
 
@@ -530,7 +531,7 @@
 
 			$label = Widget::Label(__('Required Parameter'));
 			$label->setAttribute('class', 'column');
-			$label->appendChild(new XMLElement('i', __('must not be empty')));
+			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array('placeholder' => __('$param'))));
 			$group->appendChild($label);
 
@@ -538,12 +539,19 @@
 
 			$label = Widget::Label(__('Forbidden Parameter'));
 			$label->setAttribute('class', 'column');
-			$label->appendChild(new XMLElement('i', __('must be empty')));
+			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array('placeholder' => __('$param'))));
 			$group->appendChild($label);
 
 			$fieldset->appendChild($group);
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) && $fields['redirect_on_empty'] == 'yes') ? array('checked' => 'checked') : NULL);
+			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
+			$fieldset->appendChild($label);
+
 			$this->Form->appendChild($fieldset);
+
 			// Sorting and Grouping
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual inverse navigation authors static_xml dynamic_xml from_extensions');
@@ -701,7 +709,7 @@
 
 			$label = Widget::Label(__('Parameters'));
 			$label->setAttribute('class', 'column');
-			$prefix = '$ds-' . (isset($this->_context[1]) ? Lang::createHandle($fields['name']) : __('unnamed')) . '.';
+			$prefix = '$ds-' . (isset($this->_context[1]) ? Lang::createHandle($fields['name']) : __('untitled')) . '.';
 
 			$options = array(
 				array('label' => __('Authors'), 'options' => array())
@@ -871,12 +879,6 @@
 			$label->setAttribute('class', 'contextual inverse authors');
 			$input = Widget::Input('fields[html_encode]', 'yes', 'checkbox', (isset($fields['html_encode']) && $fields['html_encode'] == 'yes' ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%s HTML-encode text', array($input->generate(false))));
-			$fieldset->appendChild($label);
-
-			// Output: 404
-			$label = Widget::Label();
-			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) && $fields['redirect_on_empty'] == 'yes') ? array('checked' => 'checked') : NULL);
-			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
 			$fieldset->appendChild($label);
 
 			$this->Form->appendChild($fieldset);
