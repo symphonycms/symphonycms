@@ -284,6 +284,40 @@
 			$fieldset->appendChild($group);
 			$this->Form->appendChild($fieldset);
 
+			// Conditions
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml from_extensions');
+			$fieldset->appendChild(new XMLElement('legend', __('Conditions')));
+			$p = new XMLElement('p', __('Leaving these fields empty will always execute the data source.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+
+			$group = new XMLElement('div');
+			$group->setAttribute('class', 'two columns');
+
+			$label = Widget::Label(__('Required Parameter'));
+			$label->setAttribute('class', 'column');
+			$label->appendChild(new XMLElement('i', __('Optional')));
+			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array('placeholder' => __('$param'))));
+			$group->appendChild($label);
+
+			$div = new XMLElement('div', NULL, array('class' => 'column'));
+
+			$label = Widget::Label(__('Forbidden Parameter'));
+			$label->setAttribute('class', 'column');
+			$label->appendChild(new XMLElement('i', __('Optional')));
+			$label->appendChild(Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array('placeholder' => __('$param'))));
+			$group->appendChild($label);
+
+			$fieldset->appendChild($group);
+
+			$label = Widget::Label();
+			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) && $fields['redirect_on_empty'] == 'yes') ? array('checked' => 'checked') : NULL);
+			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
+			$fieldset->appendChild($label);
+
+			$this->Form->appendChild($fieldset);
+
 			// Filters
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual authors navigation ' . __('Sections') . ' ' . __('System'));
@@ -516,40 +550,6 @@
 			$div->appendChild($ol);
 
 			$fieldset->appendChild($div);
-			$this->Form->appendChild($fieldset);
-
-			// Conditions
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml from_extensions');
-			$fieldset->appendChild(new XMLElement('legend', __('Conditions')));
-			$p = new XMLElement('p', __('Leaving these fields empty will always execute the data source.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'two columns');
-
-			$label = Widget::Label(__('Required Parameter'));
-			$label->setAttribute('class', 'column');
-			$label->appendChild(new XMLElement('i', __('Optional')));
-			$label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array('placeholder' => __('$param'))));
-			$group->appendChild($label);
-
-			$div = new XMLElement('div', NULL, array('class' => 'column'));
-
-			$label = Widget::Label(__('Forbidden Parameter'));
-			$label->setAttribute('class', 'column');
-			$label->appendChild(new XMLElement('i', __('Optional')));
-			$label->appendChild(Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array('placeholder' => __('$param'))));
-			$group->appendChild($label);
-
-			$fieldset->appendChild($group);
-
-			$label = Widget::Label();
-			$input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) && $fields['redirect_on_empty'] == 'yes') ? array('checked' => 'checked') : NULL);
-			$label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
-			$fieldset->appendChild($label);
-
 			$this->Form->appendChild($fieldset);
 
 			// Sorting and Grouping
