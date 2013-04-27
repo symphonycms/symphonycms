@@ -16,10 +16,22 @@
 			$filter = $_GET['filter'];
 			if($_GET['template']) $this->template = General::sanitize($_GET['template']);
 
-			if($filter == 'page') {
+			// Environment parameters
+			if($filter == 'env') {
+				$params = array_merge($params, $this->__getEnvParams());
+			}
+
+			// Page parameters
+			elseif($filter == 'page') {
 				$params = array_merge($params, $this->__getPageParams());
 			}
 
+			// Data source parameters
+			elseif($filter == 'ds') {
+				$params = array_merge($params, $this->__getDSParams());
+			}
+
+			// All parameters
 			else {
 				$params = array_merge($params, $this->__getEnvParams());
 				$params = array_merge($params, $this->__getPageParams());
@@ -70,8 +82,6 @@
 			$datasources = DatasourceManager::listAll();
 			foreach($datasources as $datasource) {
 				$current = DatasourceManager::create($datasource['handle'], array(), false);
-				$prefix = '{$ds-' . Lang::createHandle($datasource['name']) . '.';
-				$suffix = '}';
 
 				// Get parameters
 				if(is_array($current->dsParamPARAMOUTPUT)) {
