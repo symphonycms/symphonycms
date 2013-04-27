@@ -42,11 +42,14 @@
 		 *  The domain this cookie is valid for
 		 * @param boolean $httpOnly
 		 *  Whether this cookie can be read by Javascript. By default the cookie
-		 *  can be read using Javascript and PHP
+		 *  cannot be read by Javascript
+		 * @param boolean $secure
+		 *  Whether this cookie should only be sent on secure servers. By default this is
+		 *  false, which means the cookie can be sent over HTTP and HTTPS
 		 * @return string|boolean
 		 *  Returns the Session ID on success, or false on error.
 		 */
-		public static function start($lifetime = 0, $path = '/', $domain = NULL, $httpOnly = false) {
+		public static function start($lifetime = 0, $path = '/', $domain = NULL, $httpOnly = true, $secure = false) {
 
 			if (!self::$_initialized) {
 				if(!is_object(Symphony::Database()) || !Symphony::Database()->isConnected()) return false;
@@ -67,7 +70,7 @@
 					array('Session', 'gc')
 				);
 
-				session_set_cookie_params($lifetime, $path, ($domain ? $domain : self::getDomain()), false, $httpOnly);
+				session_set_cookie_params($lifetime, $path, ($domain ? $domain : self::getDomain()), $secure, $httpOnly);
 
 				if(session_id() == ''){
 					if(headers_sent()){

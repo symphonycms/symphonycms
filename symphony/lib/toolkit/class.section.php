@@ -25,9 +25,9 @@
 		 * the poorly named `$this->_data` variable
 		 *
 		 * @param string $setting
-		 *  The setting name
+		 *	The setting name
 		 * @param string $value
-		 *  The setting value
+		 *	The setting value
 		 */
 		public function set($setting, $value){
 			$this->_data[$setting] = $value;
@@ -40,8 +40,8 @@
 		 * the setting given
 		 *
 		 * @return array|string
-		 *  If setting is provided, returns a string, if setting is omitted
-		 *  returns an associative array of this Section's settings
+		 *	If setting is provided, returns a string, if setting is omitted
+		 *	returns an associative array of this Section's settings
 		 */
 		public function get($setting = null){
 			if(is_null($setting)) return $this->_data;
@@ -57,7 +57,7 @@
 		 *
 		 * @since Symphony 2.3
 		 * @return string
-		 *  Either the field ID or the string 'id'.
+		 *	Either the field ID or the string 'id'.
 		 */
 		public function getDefaultSortingField(){
 			$fields = $this->fetchVisibleColumns();
@@ -78,7 +78,7 @@
 		 *
 		 * @since Symphony 2.3
 		 * @return string
-		 *  Either the field ID or the string 'id'.
+		 *	Either the field ID or the string 'id'.
 		 */
 		public function getSortingField(){
 			$result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_sortby', 'sorting');
@@ -91,7 +91,7 @@
 		 *
 		 * @since Symphony 2.3
 		 * @return string
-		 *  Either 'asc' or 'desc'.
+		 *	Either 'asc' or 'desc'.
 		 */
 		public function getSortingOrder(){
 			$result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_order', 'sorting');
@@ -104,10 +104,10 @@
 		 *
 		 * @since Symphony 2.3
 		 * @param string $sort
-		 *  The field ID or the string 'id'.
+		 *	The field ID or the string 'id'.
 		 * @param boolean $write
-		 *  If false, the new settings won't be written on the configuration file.
-		 *  Defaults to true.
+		 *	If false, the new settings won't be written on the configuration file.
+		 *	Defaults to true.
 		 */
 		public function setSortingField($sort, $write = true){
 			Symphony::Configuration()->set('section_' . $this->get('handle') . '_sortby', $sort, 'sorting');
@@ -120,10 +120,10 @@
 		 *
 		 * @since Symphony 2.3
 		 * @param string $order
-		 *  Either 'asc' or 'desc'.
+		 *	Either 'asc' or 'desc'.
 		 * @param boolean $write
-		 *  If false, the new settings won't be written on the configuration file.
-		 *  Defaults to true.
+		 *	If false, the new settings won't be written on the configuration file.
+		 *	Defaults to true.
 		 */
 		public function setSortingOrder($order, $write = true){
 			Symphony::Configuration()->set('section_' . $this->get('handle') . '_order', $order, 'sorting');
@@ -140,13 +140,53 @@
 		 * so an Articles column will not appear on the Author's Publish Index
 		 *
 		 * @param boolean $respect_visibility
-		 *  Whether to return all the section associations regardless of if they
-		 *  are deemed visible or not. Defaults to false, which will return all
-		 *  associations.
+		 *	Whether to return all the section associations regardless of if they
+		 *	are deemed visible or not. Defaults to false, which will return all
+		 *	associations.
 		 * @return array
 		 */
 		public function fetchAssociatedSections($respect_visibility = false){
-			return SectionManager::fetchAssociatedSections($this->get('id'), $respect_visibility);
+			return SectionManager::fetchChildAssociations($this->get('id'), $respect_visibility);
+		}
+
+		/**
+		 * Returns any section associations this section has with other sections
+		 * linked using fields, and where this section is the parent in the association.
+		 * Has an optional parameter, `$respect_visibility` that
+		 * will only return associations that are deemed visible by a field that
+		 * created the association. eg. An articles section may link to the authors
+		 * section, but the field that links these sections has hidden this association
+		 * so an Articles column will not appear on the Author's Publish Index
+		 *
+		 * @since Symphony 2.3.3
+		 * @param boolean $respect_visibility
+		 *	Whether to return all the section associations regardless of if they
+		 *	are deemed visible or not. Defaults to false, which will return all
+		 *	associations.
+		 * @return array
+		 */
+		public function fetchChildAssociations($respect_visibility = false){
+			return SectionManager::fetchChildAssociations($this->get('id'), $respect_visibility);
+		}
+
+		/**
+		 * Returns any section associations this section has with other sections
+		 * linked using fields, and where this section is the child in the association.
+		 * Has an optional parameter, `$respect_visibility` that
+		 * will only return associations that are deemed visible by a field that
+		 * created the association. eg. An articles section may link to the authors
+		 * section, but the field that links these sections has hidden this association
+		 * so an Articles column will not appear on the Author's Publish Index
+		 *
+		 * @since Symphony 2.3.3
+		 * @param boolean $respect_visibility
+		 *	Whether to return all the section associations regardless of if they
+		 *	are deemed visible or not. Defaults to false, which will return all
+		 *	associations.
+		 * @return array
+		 */
+		public function fetchParentAssociations($respect_visibility = false){
+			return SectionManager::fetchParentAssociations($this->get('id'), $respect_visibility);
 		}
 
 		/**
@@ -165,10 +205,10 @@
 		 * the field type or it's location within the section.
 		 *
 		 * @param string $type
-		 *  The field type (it's handle as returned by `$field->handle()`)
+		 *	The field type (it's handle as returned by `$field->handle()`)
 		 * @param string $location
-		 *  The location of the fields in the entry creator, whether they are
-		 *  'main' or 'sidebar'
+		 *	The location of the fields in the entry creator, whether they are
+		 *	'main' or 'sidebar'
 		 * @return array
 		 */
 		public function fetchFields($type = null, $location = null){
@@ -179,10 +219,10 @@
 		 * Returns an array of all the fields that can be filtered.
 		 *
 		 * @deprecated This function will be removed in the next major release. It
-		 *  is unused by Symphony.
+		 *	is unused by Symphony.
 		 * @param string $location
-		 *  The location of the fields in the entry creator, whether they are
-		 *  'main' or 'sidebar'
+		 *	The location of the fields in the entry creator, whether they are
+		 *	'main' or 'sidebar'
 		 * @return array
 		 */
 		public function fetchFilterableFields($location = null){
@@ -195,8 +235,8 @@
 		 * Index pages
 		 *
 		 * @param string $location
-		 *  The location of the fields in the entry creator, whether they are
-		 *  'main' or 'sidebar'
+		 *	The location of the fields in the entry creator, whether they are
+		 *	'main' or 'sidebar'
 		 * @return array
 		 */
 		public function fetchToggleableFields($location = null){
@@ -221,7 +261,7 @@
 		 *
 		 * @see toolkit.Field#commit()
 		 * @return boolean
-		 *  true if the commit was successful, false otherwise.
+		 *	true if the commit was successful, false otherwise.
 		 */
 		public function commit(){
 			$settings = $this->_data;

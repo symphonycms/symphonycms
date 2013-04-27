@@ -41,7 +41,7 @@
 
 		/**
 		 * Overrides the `initialiseLog()` method and writes
-		 * logs to logs/updater
+		 * logs to manifest/logs/update
 		 */
 		public function initialiseLog($filename = null){
 			if(is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS, self::Configuration()->get('write_mode', 'directory'))) {
@@ -81,7 +81,7 @@
 
 		public function run() {
 			// Initialize log
-			if(is_null(Symphony::Log())){
+			if(is_null(Symphony::Log()) || !file_exists(Symphony::Log()->getLogPath())) {
 				self::__render(new UpdaterPage('missing-log'));
 			}
 

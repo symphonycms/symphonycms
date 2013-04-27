@@ -43,9 +43,6 @@ div.drawer.vertical-right {
 	bottom: 0;
 	/* height is set implicitly via `top` and `bottom` to allow for dynamic height */
 	background: #F4F4F4;
-	border-top: 1px solid rgba(191, 191, 183, 0.65);
-	-webkit-box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.05);
-	box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.05);
 }
 
 div.drawer.vertical-left {
@@ -63,10 +60,10 @@ div.drawer.vertical-right .contents {
 	padding: 20px;
 }
 
-#wrapper.drawer-vertical-left #contents {
+#wrapper.drawer-vertical-left #contents > form {
 	margin-left: 301px;
 }
 
-#wrapper.drawer-vertical-right #contents {
+#wrapper.drawer-vertical-right #contents > form {
 	margin-right: 301px;
 }

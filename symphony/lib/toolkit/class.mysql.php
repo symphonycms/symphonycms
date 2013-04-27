@@ -343,6 +343,22 @@
 		}
 
 		/**
+		 * Sets the MySQL connection to use this timezone instead of the default
+		 * MySQL server timezone.
+		 *
+		 * @link https://dev.mysql.com/doc/refman/5.6/en/time-zone-support.html
+		 * @since Symphony 2.3.3
+		 * @param string $timezone
+		 *  Timezone will be a offset, `+10:00`, as not all MySQL installations will
+		 *  have the humanreadable timezone database available
+		 */
+		public function setTimeZone($timezone = null) {
+			if(is_null($timezone)) return;
+
+			$this->query("SET time_zone = '$timezone'");
+		}
+
+		/**
 		 * This function will clean a string using the `mysql_real_escape_string` function
 		 * taking into account the current database character encoding. Note that this
 		 * function does not encode _ or %. If `mysql_real_escape_string` doesn't exist,

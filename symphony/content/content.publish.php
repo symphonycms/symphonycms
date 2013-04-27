@@ -151,6 +151,22 @@
 
 			$this->appendSubheading($section->get('name'), $subheading_buttons);
 
+            /**
+             * Allows adjustments to be made to the SQL where and joins statements
+             * before they are used to fetch the entries for the page
+             *
+             * @delegate AdjustPublishFiltering
+             * @since Symphony 2.3.3
+             * @param string $context
+             * '/publish/'
+             * @param integer $section_id
+             * An array of the current columns, passed by reference
+             * @param string $where
+             * The current where statement, or null if not set
+             * @param string $joins
+             */
+            Symphony::ExtensionManager()->notifyMembers('AdjustPublishFiltering', '/publish/', array('section-id' => $section_id, 'where' => &$where, 'joins' => &$joins));
+
 			// Check that the filtered query fails that the filter is dropped and an
 			// error is logged. #841 ^BA
 			try {
@@ -698,6 +714,9 @@
 				$div->appendChild(Widget::Input('action[save]', __('Create Entry'), 'submit', array('accesskey' => 's')));
 
 				$this->Form->appendChild($div);
+
+				// Create a Drawer for Associated Sections
+				$this->prepareAssociationsDrawer($section);
 			}
 		}
 
@@ -1007,6 +1026,9 @@
 				$div->appendChild($button);
 
 				$this->Form->appendChild($div);
+
+				// Create a Drawer for Associated Sections
+				$this->prepareAssociationsDrawer($section);
 			}
 		}
 
@@ -1125,7 +1147,6 @@
 
 				redirect(SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/');
 			}
-
 		}
 
 		/**
@@ -1146,6 +1167,241 @@
 				null, null, (is_numeric($entry->get('id')) ? $entry->get('id') : NULL)
 			);
 			return $div;
+		}
+
+		/**
+		 * Prepare a Drawer to visualize section associations
+		 *
+		 * @param  Section $section The current Section object
+		 */
+		private function prepareAssociationsDrawer($section){
+			$entry_id = (!is_null($this->_context['entry_id'])) ? $this->_context['entry_id'] : null;
+			$show_entries = Symphony::Configuration()->get('association_maximum_rows', 'symphony');
+
+			if(is_null($entry_id) || is_null($show_entries) || $show_entries == 0) return;
+
+			$parent_associations = SectionManager::fetchParentAssociations($section->get('id'), true);
+			$child_associations = SectionManager::fetchChildAssociations($section->get('id'), true);
+			$content = null;
+			$drawer_position = 'vertical-right';
+
+			/**
+			 * Prepare Associations Drawer from an Extension
+			 *
+			 * @since Symphony 2.3.3
+			 * @delegate PrepareAssociationsDrawer
+			 * @param string $context
+			 * '/publish/'
+			 * @param integer $entry_id
+			 *  The entry ID or null
+			 * @param array $parent_associations
+			 *  Array of Sections
+			 * @param array $child_associations
+			 *  Array of Sections
+			 * @param string $drawer_position
+			 *  The position of the Drawer, defaults to `vertical-right`. Available
+			 *  values of `vertical-left, `vertical-right` and `horizontal`
+			 */
+			Symphony::ExtensionManager()->notifyMembers('PrepareAssociationsDrawer', '/publish/', array(
+				'entry_id' => $entry_id,
+				'parent_associations' => &$parent_associations,
+				'child_associations' => &$child_associations,
+				'content' => &$content,
+				'drawer-position' => &$drawer_position
+			));
+
+			// If there are no associations, return now.
+			if(
+				(is_null($parent_associations) || empty($parent_associations))
+				&&
+				(is_null($child_associations) || empty($child_associations))
+			) {
+				return;
+			}
+
+			if(!($content instanceof XMLElement)) {
+				$content = new XMLElement('div', null, array('class' => 'content'));
+				$content->setSelfClosingTag(false);
+
+				// Process Parent Associations
+				if(!is_null($parent_associations) && !empty($parent_associations)) foreach($parent_associations as $as){
+					$field = FieldManager::fetch($as['parent_section_field_id']);
+
+					// Use $schema for perf reasons
+					$entry_ids = $this->findParentRelatedEntries($as['child_section_field_id'], $entry_id);
+					$schema = array($field->get('element_name'));
+					$where = sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids));
+
+					$entries = (!empty($entry_ids))
+						? EntryManager::fetchByPage(1, $as['parent_section_id'], $show_entries, $where, null, false, false, true, $schema)
+						: array();
+					$has_entries = !empty($entries) && $entries['total-entries'] != 0;
+
+					if($has_entries) {
+						$element = new XMLElement('section', null, array('class' => 'association parent'));
+						$header = new XMLElement('header');
+						$header->appendChild(new XMLElement('p', __('Linked to %s in', array('<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . '</a>'))));
+						$element->appendChild($header);
+
+						$ul = new XMLElement('ul', null, array(
+							'class' => 'association-links',
+							'data-section-id' => $as['child_section_id'],
+							'data-association-ids' => implode(', ', $entry_ids)
+						));
+
+						foreach($entries['records'] as $e) {
+							$value = $field->prepareTableValue($e->getData($field->get('id')), null, $e->get('id'));
+							$li = new XMLElement('li');
+							$a = new XMLElement('a', strip_tags($value));
+							$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/');
+							$li->appendChild($a);
+							$ul->appendChild($li);
+						}
+
+						$element->appendChild($ul);
+						$content->appendChild($element);
+					}
+				}
+
+				// Process Child Associations
+				if(!is_null($child_associations) && !empty($child_associations)) foreach($child_associations as $as){
+					// Get the related section
+					$child_section = SectionManager::fetch($as['child_section_id']);
+					if(!($child_section instanceof Section)) continue;
+
+					// Get the visible field instance (using the sorting field, this is more flexible than visibleColumns())
+					// Get the link field instance
+					$visible_column = $child_section->getDefaultSortingField();
+					$visible_field = FieldManager::fetch($visible_column);
+					$relation_field = FieldManager::fetch($as['child_section_field_id']);
+
+					// Get entries, using $schema for performance reasons.
+					$entry_ids = $this->findRelatedEntries($as['child_section_field_id'], $entry_id);
+					$schema = array($visible_field->get('element_name'));
+					$where = sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids));
+
+					$entries = (!empty($entry_ids))
+						? EntryManager::fetchByPage(1, $as['child_section_id'], $show_entries, $where, null, false, false, true, $schema)
+						: array();
+					$has_entries = !empty($entries) && $entries['total-entries'] != 0;
+
+					// Build the HTML of the relationship
+					$element = new XMLElement('section', null, array('class' => 'association child'));
+					$header = new XMLElement('header');
+					$filter = '?filter[' . $relation_field->get('element_name') . ']=' . $entry_id;
+					$prepopulate = '?prepopulate[' . $as['child_section_field_id'] . ']=' . $entry_id;
+
+					// Create link with filter or prepopulate
+					$link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/' . $filter;
+					$a = new XMLElement('a', $as['name'], array(
+						'class' => 'association-section',
+						'href' => $link
+					));
+
+					// Create new entries
+					$create = new XMLElement('a', __('Create New'), array(
+						'class' => 'button association-new',
+						'href' => SYMPHONY_URL . '/publish/' . $as['handle'] . '/new/' . $prepopulate
+					));
+
+					// Display existing entries
+					if($has_entries) {
+						$header->appendChild(new XMLElement('p', __('Links in %s', array($a->generate()))));
+
+						$ul = new XMLElement('ul', null, array(
+							'class' => 'association-links',
+							'data-section-id' => $as['child_section_id'],
+							'data-association-ids' => implode(', ', $entry_ids)
+						));
+
+						foreach($entries['records'] as $key => $e) {
+							$value = $visible_field->prepareTableValue($e->getData($child_section->getDefaultSortingField()), null, $e->get('id'));
+							$li = new XMLElement('li');
+							$a = new XMLElement('a', strip_tags($value));
+							$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/' . $prepopulate);
+							$li->appendChild($a);
+							$ul->appendChild($li);
+						}
+
+						$element->appendChild($ul);
+
+						// If we are only showing 'some' of the entries, then show this on the UI
+						if($entries['total-entries'] > $show_entries) {
+							$total_entries = new XMLElement('a', __('%d entries', array($entries['total-entries'])), array(
+								'href' => $link,
+							));
+							$pagination = new XMLElement('li', null, array(
+								'class' => 'association-more',
+								'data-current-page' => '1',
+								'data-total-pages' => ceil($entries['total-entries'] / $show_entries)
+							));
+							$counts = new XMLElement('a', __('Show more entries'), array(
+								'href' => $link
+							));
+
+							$pagination->appendChild($counts);
+							$ul->appendChild($pagination);
+						}
+					}
+
+					// No entries
+					else {
+						$element->setAttribute('class', 'association child empty');
+						$header->appendChild(new XMLElement('p', __('No links in %s', array($a->generate()))));
+					}
+
+					$header->appendChild($create);
+					$element->prependChild($header);
+					$content->appendChild($element);
+				}
+			}
+
+			$drawer = Widget::Drawer('section-associations', __('Show Associations'), $content);
+			$this->insertDrawer($drawer, $drawer_position, 'prepend');
+		}
+
+		/**
+		 * Find related entries from a linking field's data table. Requires the
+		 * column names to be `entry_id` and `relation_id` as with the Select Box Link
+		 * @param  integer $field_id
+		 * @param  integer $entry_id
+		 * @return array
+		 */
+		public function findRelatedEntries($field_id = null, $entry_id) {
+			try {
+				$ids = Symphony::Database()->fetchCol('entry_id', sprintf("
+					SELECT `entry_id`
+					FROM `tbl_entries_data_%d`
+					WHERE `relation_id` = %d
+				", $field_id, $entry_id));
+			}
+			catch(Exception $e){
+				return array();
+			}
+
+			return $ids;
+		}
+
+		/**
+		 * Find related entries for the current field. Requires the column names
+		 * to be `entry_id` and `relation_id` as with the Select Box Link
+		 * @param  integer $field_id
+		 * @param  integer $entry_id
+		 * @return array
+		 */
+		public function findParentRelatedEntries($field_id = null, $entry_id) {
+			try {
+				$ids = Symphony::Database()->fetchCol('relation_id', sprintf("
+					SELECT `relation_id`
+					FROM `tbl_entries_data_%d`
+					WHERE `entry_id` = %d
+				", $field_id, $entry_id));
+			}
+			catch(Exception $e){
+				return array();
+			}
+
+			return $ids;
 		}
 
 	}

@@ -197,8 +197,9 @@
 				$message = DateTimeObj::get($this->_datetime_format) . ' > ' . $this->__defineNameString($type) . ': ' . $message;
 			}
 
-			if($writeToLog) $this->writeToLog($message, $addbreak);
-
+			if($writeToLog) {
+				return $this->writeToLog($message, $addbreak);
+			}
 		}
 
 		/**
@@ -214,13 +215,13 @@
 		 *  Returns true if the message was written successfully, false otherwise
 		 */
 		public function writeToLog($message, $addbreak=true){
-
 			if(file_exists($this->_log_path) && !is_writable($this->_log_path)){
 				$this->pushToLog('Could Not Write To Log. It is not readable.');
 				return false;
 			}
-			return file_put_contents($this->_log_path, $message . ($addbreak ? PHP_EOL : ''), FILE_APPEND);
 
+			$permissions = (is_null(Symphony::Configuration())) ? '0664' : Symphony::Configuration()->get('write_mode', 'file');
+			return General::writeFile($this->_log_path, $message . ($addbreak ? PHP_EOL : ''), $permissions, 'a+');
 		}
 
 		/**
@@ -286,7 +287,7 @@
 
 					if($this->_archive){
 						$this->close();
-						$file = LOGS . '/main.'.DateTimeObj::get('Ymdh').'.gz';
+						$file = $this->_log_path . DateTimeObj::get('Ymdh').'.gz';
 						$handle = gzopen($file,'w9');
 						gzwrite($handle, file_get_contents($this->_log_path));
 						gzclose($handle);
@@ -297,14 +298,14 @@
 
 			if($flag == self::OVERWRITE){
 				if(file_exists($this->_log_path) && is_writable($this->_log_path)){
-					unlink($this->_log_path);
+					General::deleteFile($this->_log_path);
 				}
 
 				$this->writeToLog('============================================', true);
 				$this->writeToLog('Log Created: ' . DateTimeObj::get('c'), true);
 				$this->writeToLog('============================================', true);
 
-				chmod($this->_log_path, intval($mode, 8));
+				@chmod($this->_log_path, intval($mode, 8));
 
 				return 1;
 			}

@@ -94,7 +94,20 @@
 
 		protected function viewMissinglog() {
 			$h2 = new XMLElement('h2', __('Missing log file'));
-			$p = new XMLElement('p', __('Symphony tried to create a log file and failed. Make sure the %s folder is writable.', array('<code>' . basename(DOCROOT) . '</code>')));
+
+			// What folder wasn't writable? The docroot or the logs folder?
+			// RE: #1706
+			if(is_writeable(DOCROOT) === false) {
+				$folder = DOCROOT;
+			}
+			else if(is_writeable(MANIFEST) === false) {
+				$folder = MANIFEST;
+			}
+			else if(is_writeable(INSTALL_LOGS) === false) {
+				$folder = INSTALL_LOGS;
+			}
+
+			$p = new XMLElement('p', __('Symphony tried to create a log file and failed. Make sure the %s folder is writable.', array('<code>' . $folder . '</code>')));
 
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);
@@ -141,7 +154,7 @@
 
 		protected function viewFailure() {
 			$h2 = new XMLElement('h2', __('Installation Failure'));
-			$p = new XMLElement('p', __('An error occurred during installation.') . ' ' . __('View the %s for more details', array('<a href="' . INSTALL_URL . '/logs/install">log</a>')));
+			$p = new XMLElement('p', __('An error occurred during installation.') . ' ' . __('View the %s for more details', array('<a href="' . INSTALL_LOGS . '/install">log</a>')));
 
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);

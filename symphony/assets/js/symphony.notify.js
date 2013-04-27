@@ -66,7 +66,7 @@
 
 			// Load exclusion rules
 			if(Symphony.Support.localStorage === true) {
-				storage = $.parseJSON(window.localStorage[settings.storage]) || [];
+				storage = (window.localStorage[settings.storage]) ? $.parseJSON(window.localStorage[settings.storage]) : [];
 			}
 
 			// Prepend item
@@ -212,7 +212,7 @@
 			if(Symphony.Support.localStorage === true) {
 				// Put in a try/catch incase we exceed storage space
 				try {
-					storage = $.parseJSON(window.localStorage[settings.storage]) || [];
+					storage = (window.localStorage[settings.storage]) ? $.parseJSON(window.localStorage[settings.storage]) : [];
 					storage.push(text);
 					window.localStorage[settings.storage] = JSON.stringify(storage);
 				}

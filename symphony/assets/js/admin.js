@@ -290,7 +290,7 @@
 
 			// Validate page number
 			pageform.on('submit.admin', function(event) {
-				if(pagegoto.val() > pagegoto.attr('data-max')) {
+				if(parseInt(pagegoto.val()) > parseInt(pagegoto.attr('data-max'))) {
 					pageform.addClass('invalid');
 					return false;
 				}
@@ -433,7 +433,7 @@
 			});
 
 			// Toggle fields
-			fieldToggle.on('click.admin', 'p.help.toggle a', function toggleFields(event) {
+			fieldToggle.on('click.admin', 'a.expand, a.collapse', function toggleFields(event) {
 				var control = $(this),
 					fields = contents.find('#fields-duplicator > .instance');
 

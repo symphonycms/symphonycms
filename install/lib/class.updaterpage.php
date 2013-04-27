@@ -82,7 +82,7 @@
 
 		protected function viewFailure() {
 			$h2 = new XMLElement('h2', __('Updating Failure'));
-			$p = new XMLElement('p', __('An error occurred during updating.') . ' ' . __('View the %s for more details', array('<a href="' . INSTALL_URL . '/logs/update">log</a>')));
+			$p = new XMLElement('p', __('An error occurred during updating.') . ' ' . __('View the %s for more details', array('<a href="' . INSTALL_LOGS . '/update">log</a>')));
 
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);
