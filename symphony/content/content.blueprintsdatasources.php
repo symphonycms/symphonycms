@@ -520,7 +520,7 @@
 			// Environment
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings contextual inverse navigation static_xml dynamic_xml from_extensions');
-			$fieldset->appendChild(new XMLElement('legend', __('Environment')));
+			$fieldset->appendChild(new XMLElement('legend', __('Execution Conditions')));
 			$p = new XMLElement('p', __('Leaving these fields empty will always execute the Data Source.'));
 			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
@@ -536,7 +536,7 @@
 
 			$div = new XMLElement('div', NULL, array('class' => 'column'));
 
-			$label = Widget::Label(__('Disallowed Parameter'));
+			$label = Widget::Label(__('Forbidden Parameter'));
 			$label->setAttribute('class', 'column');
 			$label->appendChild(new XMLElement('i', __('must be empty')));
 			$label->appendChild(Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array('placeholder' => __('$param'))));
@@ -648,7 +648,7 @@
 
 			$label = Widget::Label();
 			$input = Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] !== 'yes' ? array('checked' => 'checked') : NULL));
-			$label->setValue(__('%1$s Disable pagination', array($input->generate(false))));
+			$label->setValue(__('%1$s Disable pagination and return all entries', array($input->generate(false))));
 
 			$fieldset->appendChild($label);
 			$this->Form->appendChild($fieldset);
