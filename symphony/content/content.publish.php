@@ -1233,41 +1233,43 @@
 
 				// Process Parent Associations
 				if(!is_null($parent_associations) && !empty($parent_associations)) foreach($parent_associations as $as){
-					$field = FieldManager::fetch($as['parent_section_field_id']);
 
-					// Use $schema for perf reasons
-					$entry_ids = $this->findParentRelatedEntries($as['child_section_field_id'], $entry_id);
-					$schema = array($field->get('element_name'));
-					$where = sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids));
+					if ($field = FieldManager::fetch($as['parent_section_field_id'])) {
 
-					$entries = (!empty($entry_ids))
-						? EntryManager::fetchByPage(1, $as['parent_section_id'], $show_entries, $where, null, false, false, true, $schema)
-						: array();
-					$has_entries = !empty($entries) && $entries['total-entries'] != 0;
+						// Use $schema for perf reasons
+						$entry_ids = $this->findParentRelatedEntries($as['child_section_field_id'], $entry_id);
+						$schema = array($field->get('element_name'));
+						$where = sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids));
 
-					if($has_entries) {
-						$element = new XMLElement('section', null, array('class' => 'association parent'));
-						$header = new XMLElement('header');
-						$header->appendChild(new XMLElement('p', __('Linked to %s in', array('<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . '</a>'))));
-						$element->appendChild($header);
+						$entries = (!empty($entry_ids))
+							? EntryManager::fetchByPage(1, $as['parent_section_id'], $show_entries, $where, null, false, false, true, $schema)
+							: array();
+						$has_entries = !empty($entries) && $entries['total-entries'] != 0;
 
-						$ul = new XMLElement('ul', null, array(
-							'class' => 'association-links',
-							'data-section-id' => $as['child_section_id'],
-							'data-association-ids' => implode(', ', $entry_ids)
-						));
+						if($has_entries) {
+							$element = new XMLElement('section', null, array('class' => 'association parent'));
+							$header = new XMLElement('header');
+							$header->appendChild(new XMLElement('p', __('Linked to %s in', array('<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . '</a>'))));
+							$element->appendChild($header);
 
-						foreach($entries['records'] as $e) {
-							$value = $field->prepareTableValue($e->getData($field->get('id')), null, $e->get('id'));
-							$li = new XMLElement('li');
-							$a = new XMLElement('a', strip_tags($value));
-							$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/');
-							$li->appendChild($a);
-							$ul->appendChild($li);
+							$ul = new XMLElement('ul', null, array(
+								'class' => 'association-links',
+								'data-section-id' => $as['child_section_id'],
+								'data-association-ids' => implode(', ', $entry_ids)
+							));
+
+							foreach($entries['records'] as $e) {
+								$value = $field->prepareTableValue($e->getData($field->get('id')), null, $e->get('id'));
+								$li = new XMLElement('li');
+								$a = new XMLElement('a', strip_tags($value));
+								$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/');
+								$li->appendChild($a);
+								$ul->appendChild($li);
+							}
+
+							$element->appendChild($ul);
+							$content->appendChild($element);
 						}
-
-						$element->appendChild($ul);
-						$content->appendChild($element);
 					}
 				}
 
