@@ -400,15 +400,15 @@
 			// Field legend
 			var fieldLegend = contents.find('#fields legend'),
 				fieldExpand = $('<a />', {
-					class: 'expand',
-					text: Symphony.Language.get('Expand all fields')
+					'class': 'expand',
+					'text': Symphony.Language.get('Expand all fields')
 				}),
 				fieldCollapse = $('<a />', {
-					class: 'collapse',
-					text: Symphony.Language.get('Collapse all fields')
+					'class': 'collapse',
+					'text': Symphony.Language.get('Collapse all fields')
 				}),
 				fieldToggle = $('<p />', {
-					class: 'help toggle'
+					'class': 'help toggle'
 				}).append(fieldExpand).append('<br />').append(fieldCollapse),
 				fieldLegendTop, fieldToggleTop;
 
