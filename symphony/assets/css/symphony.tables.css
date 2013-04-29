@@ -22,6 +22,7 @@ th {
 	font-weight: normal;
 	line-height: 2;
 	white-space: nowrap;
+	vertical-align: bottom;
 }
 
 td {
