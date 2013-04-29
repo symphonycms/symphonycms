@@ -343,10 +343,21 @@
 				// @see https://github.com/symphonycms/symphony-2/issues/1726
 				$timezone = self::Configuration()->get('timezone', 'region');
 				$symphony_date = new DateTime('now', new DateTimeZone($timezone));
+
 				// MySQL wants the offset to be in the format +/-H:I, getOffset returns offset in seconds
 				$utc = new DateTime('now ' . $symphony_date->getOffset() . ' seconds', new DateTimeZone("UTC"));
-				// Using DateInterval we can format the difference so MySQL will be happy
-				$offset = $symphony_date->diff($utc)->format('%R%H:%I');
+
+				// Support PHP5.2
+				// @see https://github.com/symphonycms/symphony-2/issues/1735
+				if(function_exists('date_diff') === false) {
+					$offset = mysql_date_diff($utc, $symphony_date);
+				}
+				// On PHP5.3+ we can use DateInterval to format the difference
+				// in way that MySQL will be happy
+				else {
+					$offset = $symphony_date->diff($utc)->format('%R%H:%I');
+				}
+
 				self::Database()->setTimeZone($offset);
 
 				if(self::Configuration()->get('query_caching', 'database') == 'off') self::Database()->disableCaching();
