@@ -620,29 +620,28 @@
 			});
 
 			// Data source manager context
-			contents.find('.contextual').each(function() {
-				var area = $(this);
-
-				$('#ds-context').on('change.admin', function() {
-					var select = $(this),
-						optgroup = select.find('option:selected').parent(),
-						value = select.val().replace(/\W+/g, '_'),
-						group = optgroup.data('label') || optgroup.attr('label').replace(/\W+/g, '_');
-
-					// Show only relevant interface components based on context
-					area[(area.hasClass(value) || area.hasClass(group)) ^ area.hasClass('inverse') ? 'removeClass' : 'addClass']('irrelevant');
-				});
-			});
-
-			// Trigger the parameter name being remembered when the Datasource context changes
 			contents.find('#ds-context')
 				.on('change.admin', function() {
+					var select = $(this),
+						optgroup = select.find('option:selected').parent(),
+						label = optgroup.attr('data-label') || optgroup.attr('label').replace(/\W+/g, '-'),
+						context = select.find('option:selected').attr('data-context') || 'section-' + select.val();
+
+						console.log(label, context);
+
+					// Show only relevant interface components based on context
+					contents.find('.contextual').addClass('irrelevant');
+					contents.find('.contextual').filter('[data-context~=' + label + ']').removeClass('irrelevant');
+					contents.find('.contextual').filter('[data-context~=' + context + ']').removeClass('irrelevant');
+
+					// Make sure parameter names are up-to-date
 					contents.find('input[name="fields[name]"]').trigger('blur.admin');
 				})
 				.trigger('change.admin');
 
 			// Once pagination is disabled, dsMaxRecords and dsPageNumber are disabled too
 			contents.find('input[name*=paginate_results]').on('change.admin', function(event) {
+
 				// Look within the existing context to ensure that these actions only fire
 				// on the active Datasource type
 				var $paginate_results = $(this),
