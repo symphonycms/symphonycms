@@ -946,9 +946,16 @@
 
 			// Determine the page title
 			$field_id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
-			$field = FieldManager::fetch($field_id);
+			if(!is_null($field_id)) {
+				$field = FieldManager::fetch($field_id);
+			}
 
-			$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
+			if($field) {
+				$title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), NULL, $entry_id)));
+			}
+			else {
+				$title = '';
+			}
 
 			if (trim($title) == '') {
 				$title = __('Untitled');

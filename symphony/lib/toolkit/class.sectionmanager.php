@@ -241,12 +241,15 @@
 		 * Permanently remove a section association for this field in the database.
 		 *
 		 * @since Symphony 2.3
-		 * @param integer $child_field_id
+		 * @param integer $field_id
 		 *	the field ID of the linked section's linked field.
 		 * @return boolean
 		 */
-		public static function removeSectionAssociation($child_field_id) {
-			return Symphony::Database()->delete('tbl_sections_association', sprintf(" `child_section_field_id` = %d ", $child_field_id));
+		public static function removeSectionAssociation($field_id) {
+			return Symphony::Database()->delete('tbl_sections_association', sprintf('
+				`child_section_field_id` = %1$d OR `parent_section_field_id` = %1$d
+			',
+			$field_id));
 		}
 
 		/**
