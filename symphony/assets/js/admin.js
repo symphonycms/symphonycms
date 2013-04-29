@@ -602,7 +602,7 @@
 			contents.find('select.filtered > optgroup').each(function() {
 				var optgroup = $(this),
 					select = optgroup.parents('select'),
-					label = optgroup.attr('label'),
+					label = optgroup.attr('data-label'),
 					options = optgroup.remove().find('option').addClass('optgroup');
 
 				// Fix for Webkit browsers to initially show the options
@@ -611,8 +611,11 @@
 				}
 
 				// Show only relevant options based on context
-				$('#ds-context').on('change.admin', function() {
-					if($(this).find('option:selected').text() == label) {
+				contents.find('#ds-context').on('change.admin', function() {
+					var option = $(this).find('option:selected'),
+						context = option.attr('data-context') || 'section-' + option.val();
+
+					if(context == label) {
 						select.find('option.optgroup').remove();
 						select.append(options.clone(true));
 					}
@@ -624,10 +627,8 @@
 				.on('change.admin', function() {
 					var select = $(this),
 						optgroup = select.find('option:selected').parent(),
-						label = optgroup.attr('data-label') || optgroup.attr('label').replace(/\W+/g, '-'),
+						label = optgroup.attr('data-label') || optgroup.attr('label'),
 						context = select.find('option:selected').attr('data-context') || 'section-' + select.val();
-
-						console.log(label, context);
 
 					// Show only relevant interface components based on context
 					contents.find('.contextual').addClass('irrelevant');

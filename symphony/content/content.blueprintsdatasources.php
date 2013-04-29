@@ -557,7 +557,7 @@
 
 			// Sorting
 			$fieldset = new XMLElement('fieldset');
-			$this->setContext($fieldset, array('sections'));
+			$this->setContext($fieldset, array('sections', 'system'));
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting')));
 
 			$div = new XMLElement('div');
@@ -566,7 +566,7 @@
 			$label = Widget::Label(__('Sort By'), NULL, 'column');
 
 			$options = array(
-				array('label' => __('Authors'), 'options' => array(
+				array('label' => __('Authors'), 'data-label' => 'authors', 'options' => array(
 						array('id', ($fields['source'] == 'authors' && $fields['sort'] == 'id'), __('Author ID')),
 						array('username', ($fields['source'] == 'authors' && $fields['sort'] == 'username'), __('Username')),
 						array('first-name', ($fields['source'] == 'authors' && $fields['sort'] == 'first-name'), __('First Name')),
@@ -576,7 +576,7 @@
 					)
 				),
 
-				array('label' => __('Navigation'), 'options' => array(
+				array('label' => __('Navigation'), 'data-label' => 'navigation', 'options' => array(
 						array('id', ($fields['source'] == 'navigation' && $fields['sort'] == 'id'), __('Page ID')),
 						array('handle', ($fields['source'] == 'navigation' && $fields['sort'] == 'handle'), __('Handle')),
 						array('sortorder', ($fields['source'] == 'navigation' && $fields['sort'] == 'sortorder'), __('Sort Order')),
@@ -585,7 +585,7 @@
 			);
 
 			foreach($field_groups as $section_id => $section_data){
-				$optgroup = array('label' => General::sanitize($section_data['section']->get('name')), 'options' => array(
+				$optgroup = array('label' => General::sanitize($section_data['section']->get('name')), 'data-label' => 'section-' . $section_data['section']->get('id'), 'options' => array(
 					array('system:id', ($fields['source'] == $section_id && $fields['sort'] == 'system:id'), __('System ID')),
 					array('system:creation-date', ($fields['source'] == $section_id && ($fields['sort'] == 'system:creation-date' || $fields['sort'] == 'system:date')), __('System Creation Date')),
 					array('system:modification-date', ($fields['source'] == $section_id && $fields['sort'] == 'system:modification-date'), __('System Modification Date')),
@@ -640,7 +640,7 @@
 			);
 
 			foreach($field_groups as $section_id => $section_data){
-				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
+				$optgroup = array('label' => $section_data['section']->get('name'), 'data-label' => 'section-' . $section_data['section']->get('id'), 'options' => array());
 
 				$authorOverride = false;
 
@@ -712,7 +712,7 @@
 			$label->setAttribute('class', 'column');
 
 			$options = array(
-				array('label' => __('Authors'), 'options' => array(
+				array('label' => __('Authors'), 'data-label' => 'authors', 'options' => array(
 						array('username', ($fields['source'] == 'authors' && in_array('username', $fields['xml_elements'])), 'username'),
 						array('name', ($fields['source'] == 'authors' && in_array('name', $fields['xml_elements'])), 'name'),
 						array('email', ($fields['source'] == 'authors' && in_array('email', $fields['xml_elements'])), 'email'),
@@ -724,6 +724,7 @@
 			foreach($field_groups as $section_id => $section_data){
 				$optgroup = array(
 					'label' => General::sanitize($section_data['section']->get('name')),
+					'data-label' => 'section-' . $section_data['section']->get('id'),
 					'options' => array(
 						array(
 							'system:pagination',
@@ -775,7 +776,7 @@
 			$prefix = '$ds-' . (isset($this->_context[1]) ? Lang::createHandle($fields['name']) : __('untitled')) . '.';
 
 			$options = array(
-				array('label' => __('Authors'), 'options' => array())
+				array('label' => __('Authors'), 'data-label' => 'authors', 'options' => array())
 			);
 
 			foreach(array('id', 'username', 'name', 'email', 'user_type') as $p){
@@ -792,7 +793,7 @@
 			}
 
 			foreach($field_groups as $section_id => $section_data){
-				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
+				$optgroup = array('label' => $section_data['section']->get('name'), 'data-label' => 'section-' . $section_data['section']->get('id'), 'options' => array());
 
 				foreach(array('id', 'creation-date', 'modification-date', 'author') as $p){
 					$option = array(
