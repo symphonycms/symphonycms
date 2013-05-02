@@ -522,7 +522,7 @@
 									: 'unknown'
 							),
 			 	'path' =>	General::sanitize(
-			 			 		'/workspace' . str_replace(WORKSPACE, NULL, dirname($file))
+								str_replace(WORKSPACE, NULL, dirname($file))
 			 				),
 				'type' =>	$data['mimetype']
 			));
