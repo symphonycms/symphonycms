@@ -1193,7 +1193,7 @@
 			$entry_id = (!is_null($this->_context['entry_id'])) ? $this->_context['entry_id'] : null;
 			$show_entries = Symphony::Configuration()->get('association_maximum_rows', 'symphony');
 
-			if(is_null($entry_id) || is_null($show_entries) || $show_entries == 0) return;
+			if(is_null($entry_id) && !isset($_GET['prepopulate']) || is_null($show_entries) || $show_entries == 0) return;
 
 			$parent_associations = SectionManager::fetchParentAssociations($section->get('id'), true);
 			$child_associations = SectionManager::fetchChildAssociations($section->get('id'), true);
@@ -1240,15 +1240,14 @@
 
 				// Process Parent Associations
 				if(!is_null($parent_associations) && !empty($parent_associations)) foreach($parent_associations as $as){
-
 					if ($field = FieldManager::fetch($as['parent_section_field_id'])) {
 
 						// Use $schema for perf reasons
 						$entry_ids = $this->findParentRelatedEntries($as['child_section_field_id'], $entry_id);
 						$schema = array($field->get('element_name'));
-						$where = sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids));
+						$where = (!empty($entry_ids)) ? sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids)) : null;
 
-						$entries = (!empty($entry_ids))
+						$entries = (!empty($entry_ids) || isset($_GET['prepopulate']))
 							? EntryManager::fetchByPage(1, $as['parent_section_id'], $show_entries, $where, null, false, false, true, $schema)
 							: array();
 						$has_entries = !empty($entries) && $entries['total-entries'] != 0;
