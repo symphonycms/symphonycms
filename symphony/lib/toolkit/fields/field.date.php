@@ -21,6 +21,9 @@
 
 		private $key;
 
+		protected static $min_date = '1000-01-01 00:00:00';
+		protected static $max_date = '9999-12-31 23:59:59';
+
 		public function __construct() {
 			parent::__construct();
 			$this->_name = __('Date');
@@ -203,11 +206,11 @@
 				// @link http://dev.mysql.com/doc/refman/5.0/en/datetime.html
 				switch($match[2]) {
 					case 'later':
-						$string = $later . ' to 9999-12-31 23:59:59';
+						$string = $later . ' to ' . self::$max_date;
 						break;
 
 					case 'earlier':
-						$string = '1000-01-01 00:00:00 to ' . $earlier;
+						$string = self::$min_date . ' to ' . $earlier;
 						break;
 				}
 			}
@@ -269,9 +272,12 @@
 
 			if($andOperation) {
 				foreach($data as $date) {
+					// Prevent the DateTimeObj creating a range that isn't supported by MySQL.
+					$start = ($date['start'] === self::$min_date) ? self::$min_date : DateTimeObj::getGMT('Y-m-d H:i:s', $date['start']);
+					$end = ($date['end'] === self::$max_date) ? self::$max_date : DateTimeObj::getGMT('Y-m-d H:i:s', $date['end']);
+
 					$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
-					$where .= " AND (`t$field_id".$this->key."`.date >= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['start']) . "'
-								AND `t$field_id".$this->key."`.date <= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['end']) . "') ";
+					$where .= " AND (`t$field_id".$this->key."`.date >= '" . $start . "' AND `t$field_id".$this->key."`.date <= '" . $end . "') ";
 
 					$this->key++;
 				}
@@ -281,8 +287,11 @@
 				$tmp = array();
 
 				foreach($data as $date) {
-					$tmp[] = "`t$field_id".$this->key."`.date >= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['start']) . "'
-								AND `t$field_id".$this->key."`.date <= '" . DateTimeObj::getGMT('Y-m-d H:i:s', $date['end']) . "' ";
+					// Prevent the DateTimeObj creating a range that isn't supported by MySQL.
+					$start = ($date['start'] === self::$min_date) ? self::$min_date : DateTimeObj::getGMT('Y-m-d H:i:s', $date['start']);
+					$end = ($date['end'] === self::$max_date) ? self::$max_date : DateTimeObj::getGMT('Y-m-d H:i:s', $date['end']);
+
+					$tmp[] = "`t$field_id".$this->key."`.date >= '" . $start . "' AND `t$field_id".$this->key."`.date <= '" . $end . "' ";
 				}
 
 				$joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t$field_id".$this->key."` ON `e`.`id` = `t$field_id".$this->key."`.entry_id ";
@@ -493,7 +502,7 @@
 			if (isset($timestamp)) {
 				$value = DateTimeObj::get('c', $timestamp);
 			}
-			
+
 			if($mode === $modes->getValue) {
 				return $value;
 			}
