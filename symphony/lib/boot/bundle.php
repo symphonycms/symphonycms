@@ -32,7 +32,7 @@
 
 	if (!file_exists(CONFIG)) {
 
-		$bInsideInstaller = (bool)preg_match('%/install/index.php$%', $_SERVER['SCRIPT_FILENAME']);
+		$bInsideInstaller = (bool)preg_match('%(/|\\\\)install(/|\\\\)index.php$%', $_SERVER['SCRIPT_FILENAME']);
 
 		if (!$bInsideInstaller && file_exists(DOCROOT . '/install/index.php')) {
 			header(sprintf('Location: %s/install/', URL));
