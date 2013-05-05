@@ -112,7 +112,9 @@
 
 					if(is_numeric($this->Author->get('default_area'))) {
 						$default_section = SectionManager::fetch($this->Author->get('default_area'));
-						$section_handle = $default_section->get('handle');
+						if($default_section instanceof Section) {
+							$section_handle = $default_section->get('handle');
+						}
 
 						if(!$section_handle){
 							$all_sections = SectionManager::fetch();
