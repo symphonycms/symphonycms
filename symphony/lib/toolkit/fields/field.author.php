@@ -361,7 +361,7 @@
 				}
 
 				else if ($mode === $modes->listAuthorToValue) {
-					$items[$author_id] = $author->getFullName();
+					$items[$data['author_id']] = $author->getFullName();
 				}
 			}
 

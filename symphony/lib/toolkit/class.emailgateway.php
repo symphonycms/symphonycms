@@ -636,7 +636,7 @@
 		private function __fromCamel($string){
 			$string[0] = strtolower($string[0]);
 			$func = create_function('$c', 'return "_" . strtolower($c[1]);');
-			return preg_replace_callback('/([A-Z])/', $func, $str);
+			return preg_replace_callback('/([A-Z])/', $func, $string);
 		}
 
 		public function __destruct(){

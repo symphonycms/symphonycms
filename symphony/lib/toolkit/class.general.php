@@ -1286,10 +1286,10 @@
 		public static function hash($input, $algorithm='sha1') {
 			switch($algorithm) {
 				case 'sha1':
-					return SHA1::hash($input, $algorithm);
+					return SHA1::hash($input);
 
 				case 'md5':
-					return MD5::hash($input, $algorithm);
+					return MD5::hash($input);
 
 				case 'pbkdf2':
 				default:

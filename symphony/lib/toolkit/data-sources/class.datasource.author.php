@@ -75,7 +75,7 @@
 
 				}
 
-				$authors = AuthorManager::fetchByID(array_values($author_ids), $this->dsParamSORT, $this->dsParamORDER);
+				$authors = AuthorManager::fetchByID(array_values($author_ids));
 			}
 			else $authors = AuthorManager::fetch($this->dsParamSORT, $this->dsParamORDER);
 
