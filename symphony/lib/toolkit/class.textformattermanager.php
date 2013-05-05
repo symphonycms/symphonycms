@@ -162,7 +162,7 @@
 
 				if(!is_file($path)){
 					throw new Exception(
-						__('Could not find Text Formatter %s.', array('<code>' . $name . '</code>'))
+						__('Could not find Text Formatter %s.', array('<code>' . $classname . '</code>'))
 						. ' ' . __('If it was provided by an Extension, ensure that it is installed, and enabled.')
 					);
 				}
