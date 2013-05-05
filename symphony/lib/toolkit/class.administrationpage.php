@@ -346,21 +346,16 @@
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.css', 'screen', 30);
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.legacy.css', 'screen', 31);
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.grids.css', 'screen', 32);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.forms.css', 'screen', 34);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.forms.css', 'screen', 33);
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.tables.css', 'screen', 34);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.frames.css', 'screen', 33);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.tabs.css', 'screen', 34);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.drawers.css', 'screen', 34);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.associations.css', 'screen', 34);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.notices.css', 'screen', 34);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.frames.css', 'screen', 35);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.tabs.css', 'screen', 36);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.drawers.css', 'screen', 37);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.associations.css', 'screen', 38);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.notices.css', 'screen', 39);
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/admin.css', 'screen', 40);
 
 			$this->addScriptToHead(APPLICATION_URL . '/assets/js/jquery.js', 50);
-
-			/* For development only */
-				$this->addScriptToHead(APPLICATION_URL . '/assets/js/jquery.migrate.js', 51);
-			/* Remove before final release */
-
 			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.js', 60);
 			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.collapsible.js', 61);
 			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.orderable.js', 62);
