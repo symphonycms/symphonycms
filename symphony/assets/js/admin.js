@@ -18,6 +18,8 @@
 			context = wrapper.find('#context'),
 			contents = wrapper.find('#contents'),
 			form = contents.find('> form'),
+			columnPrimary = form.find('.primary'),
+			columnSecondary = form.find('.secondary'),
 			user = session.find('li:first a'),
 			pagination = contents.find('ul.page');
 
@@ -104,6 +106,12 @@
 		// Focus first text-input or textarea when creating entries
 		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'new' || Symphony.Context.get('env').page == 'new')) {
 			contents.find('input[type="text"], textarea').first().focus();
+		}
+
+		// Hide empty secondary column
+		if(columnSecondary.children(':visible').length == 0) {
+			columnSecondary.addClass('irrelevant');
+			columnPrimary.removeClass('column');
 		}
 
 	/*--------------------------------------------------------------------------
