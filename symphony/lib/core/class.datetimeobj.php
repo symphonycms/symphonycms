@@ -316,8 +316,7 @@
 		 *  specified by the `$format`.
 		 */
 		public static function getTimeAgo($format = __SYM_TIME_FORMAT__){
-			if (!isset($string)) $string = '';
-			$time = Widget::Time($string, $format);
+			$time = Widget::Time('', $format);
 			return $time->generate();
 		}
 
