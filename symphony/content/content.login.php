@@ -166,7 +166,7 @@
 						 * @param string $username
 						 *  The username of the Author who attempted to login.
 						 */
-						Symphony::ExtensionManager()->notifyMembers('AuthorLoginFailure', '/login/', array('username' => Symphony::Database()->cleanValue($username)));
+						Symphony::ExtensionManager()->notifyMembers('AuthorLoginFailure', '/login/', array('username' => Symphony::Database()->cleanValue($_POST['username'])));
 						$this->failedLoginAttempt = true;
 					}
 
@@ -181,7 +181,7 @@
 						 * @param string $username
 						 *  The username of the Author who logged in.
 						 */
-						Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => Symphony::Database()->cleanValue($username)));
+						Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => Symphony::Database()->cleanValue($_POST['username'])));
 
 						isset($_POST['redirect']) ? redirect($_POST['redirect']) : redirect(SYMPHONY_URL);
 					}

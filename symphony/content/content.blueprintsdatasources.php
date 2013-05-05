@@ -944,7 +944,7 @@
 					}
 					// PHP 5.2 does not support late static binding..
 					else{
-						call_user_func_array(array($providerClass, 'buildEditor'), $this->Form, array(&$this->_errors, $fields, $handle));
+						call_user_func_array(array($providerClass, 'buildEditor'), array($this->Form, &$this->_errors, $fields, $handle));
 					}
 				}
 			}
@@ -970,7 +970,7 @@
 			$about = $datasource->about();
 
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($about['name'], __('Data Source'), __('Symphony'))));
-			$this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
+			$this->appendSubheading(( ($this->_context[0] == 'edit') ? $about['name'] : __('Untitled')));
 			$this->insertBreadcrumbs(array(
 				Widget::Anchor(__('Data Sources'), SYMPHONY_URL . '/blueprints/datasources/'),
 			));
