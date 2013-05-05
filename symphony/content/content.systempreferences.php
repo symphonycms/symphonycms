@@ -65,7 +65,7 @@
 			}
 
 			// Get available EmailGateways
-			$email_gateway_manager = new EmailGatewayManager($this);
+			$email_gateway_manager = new EmailGatewayManager;
 			$email_gateways = $email_gateway_manager->listAll();
 			if(count($email_gateways) >= 1){
 				$group = new XMLElement('fieldset', NULL, array('class' => 'settings condensed'));
