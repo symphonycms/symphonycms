@@ -194,7 +194,7 @@
 		 *  DataSource::FILTER_OR or DataSource::FILTER_AND
 		 */
 		public function __determineFilterType($value){
-			return preg_match('/\s+\+\s+/', $value) ? DataSource::FILTER_AND : DataSource::FILTER_OR;
+			return preg_match('/\s+\+\s+/', $string) ? DataSource::FILTER_AND : DataSource::FILTER_OR;
 		}
 
 		/**
