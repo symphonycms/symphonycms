@@ -1175,13 +1175,32 @@
 		 * @return XMLElement
 		 */
 		private function __wrapFieldWithDiv(Field $field, Entry $entry){
-			$div = new XMLElement('div', NULL, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
+			$display = $this->isFieldHidden($field);
+			$div = new XMLElement('div', NULL, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '').($display == 'no' ? ' irrelevant' : '')));
 			$field->displayPublishPanel(
 				$div, $entry->getData($field->get('id')),
 				(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
 				null, null, (is_numeric($entry->get('id')) ? $entry->get('id') : NULL)
 			);
 			return $div;
+		}
+
+		/**
+		 * Check whether a field is a Select Box Link and is hidden
+		 *
+		 * @param  Field  $field
+		 * @return String
+		 */
+		public function isFieldHidden($field) {
+			if($field instanceof FieldSelectBox_Link && $field->get('hide_when_prepopulated') == 'yes') {
+				if (isset($_REQUEST['prepopulate'])) foreach($_REQUEST['prepopulate'] as $field_id => $value) {
+					if($field_id == $field->get('id')) {
+						return 'no';
+					}
+				}
+			}
+
+			return 'yes';
 		}
 
 		/**
