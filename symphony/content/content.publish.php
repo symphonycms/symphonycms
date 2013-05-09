@@ -1175,8 +1175,8 @@
 		 * @return XMLElement
 		 */
 		private function __wrapFieldWithDiv(Field $field, Entry $entry){
-			$display = $this->isFieldHidden($field);
-			$div = new XMLElement('div', NULL, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '').($display == 'no' ? ' irrelevant' : '')));
+			$is_hidden = $this->isFieldHidden($field);
+			$div = new XMLElement('div', NULL, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '').($is_hidden == true ? ' irrelevant' : '')));
 			$field->displayPublishPanel(
 				$div, $entry->getData($field->get('id')),
 				(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
@@ -1191,16 +1191,16 @@
 		 * @param  Field  $field
 		 * @return String
 		 */
-		public function isFieldHidden($field) {
-			if($field instanceof FieldSelectBox_Link && $field->get('hide_when_prepopulated') == 'yes') {
+		public function isFieldHidden(Field $field) {
+			if($field->get('hide_when_prepopulated') == 'yes') {
 				if (isset($_REQUEST['prepopulate'])) foreach($_REQUEST['prepopulate'] as $field_id => $value) {
 					if($field_id == $field->get('id')) {
-						return 'no';
+						return true;
 					}
 				}
 			}
 
-			return 'yes';
+			return false;
 		}
 
 		/**
