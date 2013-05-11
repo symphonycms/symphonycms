@@ -764,7 +764,7 @@
 					self::$namespace = sprintf('/%s/%s/%s', $bits[0], $bits[1], $bits[2]);
 				}
 				else {
-					self::$namespace =  sprintf('/%s/%s', $bits[0], $bits[1]);
+					self::$namespace =  sprintf('/%s/%s', $bits[0], isset($bits[1]) ? $bits[1] : '');
 				}
 			}
 

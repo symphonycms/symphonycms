@@ -315,7 +315,7 @@
 				$callback = array(
 					'driver' => 'login',
 					'driver_location' => CONTENT . '/content.login.php',
-					'context' => preg_split('/\//', $bits[1] . '/' . $bits[2], -1, PREG_SPLIT_NO_EMPTY),
+					'context' => isset($bits[1], $bits[2]) ? preg_split('/\//', $bits[1] . '/' . $bits[2], -1, PREG_SPLIT_NO_EMPTY) : array(),
 					'classname' => 'contentLogin',
 					'pageroot' => '/login/'
 				);

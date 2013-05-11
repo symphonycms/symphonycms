@@ -207,11 +207,11 @@
 
 			$span = new XMLElement('span', NULL, array('class' => 'frame'));
 
-			$filename = ($data['file'])
+			$filename = (array_key_exists('file', $data) && $data['file'])
 				? $this->get('destination') . '/' . basename($data['file'])
 				: null;
 
-			if ($data['file']) {
+			if (array_key_exists('file', $data) && $data['file']) {
 				$file = $this->getFilePath($data['file']);
 				if (file_exists($file) === false || !is_readable($file)) {
 					$flagWithError = __('The file uploaded is no longer available. Please check that it exists, and is readable.');
@@ -539,7 +539,7 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-			if (!$file = $data['file']) {
+			if (!array_key_exists('file', $data) || !$file = $data['file']) {
 				if ($link) return parent::prepareTableValue(null, $link, $entry_id);
 				else return parent::prepareTableValue(null, $link, $entry_id);
 			}

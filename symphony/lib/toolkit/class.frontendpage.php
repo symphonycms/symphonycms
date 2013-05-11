@@ -356,7 +356,7 @@
 				'symphony-version' => Symphony::Configuration()->get('version', 'symphony'),
 			);
 
-			if(is_array($this->_env['url'])){
+			if(isset($this->_env['url']) && is_array($this->_env['url'])){
 				foreach($this->_env['url'] as $key => $val) $this->_param[$key] = $val;
 			}
 
@@ -424,7 +424,7 @@
 			Symphony::Profiler()->seed($xml_build_start);
 			Symphony::Profiler()->sample('XML Built', PROFILE_LAP);
 
-			if(is_array($this->_env['pool']) && !empty($this->_env['pool'])) {
+			if(isset($this->_env['pool']) && is_array($this->_env['pool']) && !empty($this->_env['pool'])) {
 				foreach($this->_env['pool'] as $handle => $p){
 
 					if(!is_array($p)) $p = array($p);

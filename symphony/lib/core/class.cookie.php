@@ -154,7 +154,7 @@
 				return $_SESSION[$this->_index];
 			}
 
-			if (is_array($_SESSION[$this->_index]) && array_key_exists($name, $_SESSION[$this->_index])) {
+			if (isset($_SESSION[$this->_index]) && is_array($_SESSION[$this->_index]) && array_key_exists($name, $_SESSION[$this->_index])) {
 				return $_SESSION[$this->_index][$name];
 			}
 

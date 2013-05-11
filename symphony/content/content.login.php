@@ -55,7 +55,7 @@
 			$fieldset = new XMLElement('fieldset');
 
 			// Display retrieve password UI
-			if($this->_context[0] == 'retrieve-password'):
+			if(isset($this->_context[0]) && $this->_context[0] == 'retrieve-password'):
 				$this->Form->setAttribute('action', SYMPHONY_URL.'/login/retrieve-password/');
 
 				if(isset($this->_email_sent) && $this->_email_sent) {
@@ -101,7 +101,7 @@
 
 				// Username
 				$label = Widget::Label(__('Username'));
-				$username = Widget::Input('username', General::sanitize($_POST['username']));
+				$username = Widget::Input('username', isset($_POST['username']) ? General::sanitize($_POST['username']) : null);
 				if(!$this->failedLoginAttempt) {
 					$username->setAttribute('autofocus', 'autofocus');
 				}
