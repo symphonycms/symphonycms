@@ -406,7 +406,7 @@
 			});
 
 			// Field legend
-			var fieldLegend = contents.find('#fields legend'),
+			var fieldLegend = contents.find('#fields > legend'),
 				fieldExpand = $('<a />', {
 					'class': 'expand',
 					'text': Symphony.Language.get('Expand all fields')
