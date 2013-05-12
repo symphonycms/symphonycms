@@ -151,21 +151,21 @@
 
 			$this->appendSubheading($section->get('name'), $subheading_buttons);
 
-            /**
-             * Allows adjustments to be made to the SQL where and joins statements
-             * before they are used to fetch the entries for the page
-             *
-             * @delegate AdjustPublishFiltering
-             * @since Symphony 2.3.3
-             * @param string $context
-             * '/publish/'
-             * @param integer $section_id
-             * An array of the current columns, passed by reference
-             * @param string $where
-             * The current where statement, or null if not set
-             * @param string $joins
-             */
-            Symphony::ExtensionManager()->notifyMembers('AdjustPublishFiltering', '/publish/', array('section-id' => $section_id, 'where' => &$where, 'joins' => &$joins));
+			/**
+			 * Allows adjustments to be made to the SQL where and joins statements
+			 * before they are used to fetch the entries for the page
+			 *
+			 * @delegate AdjustPublishFiltering
+			 * @since Symphony 2.3.3
+			 * @param string $context
+			 * '/publish/'
+			 * @param integer $section_id
+			 * An array of the current columns, passed by reference
+			 * @param string $where
+			 * The current where statement, or null if not set
+			 * @param string $joins
+			 */
+			Symphony::ExtensionManager()->notifyMembers('AdjustPublishFiltering', '/publish/', array('section-id' => $section_id, 'where' => &$where, 'joins' => &$joins));
 
 			// Check that the filtered query fails that the filter is dropped and an
 			// error is logged. #841 ^BA
@@ -1175,13 +1175,32 @@
 		 * @return XMLElement
 		 */
 		private function __wrapFieldWithDiv(Field $field, Entry $entry){
-			$div = new XMLElement('div', NULL, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '')));
+			$is_hidden = $this->isFieldHidden($field);
+			$div = new XMLElement('div', NULL, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '').($is_hidden == true ? ' irrelevant' : '')));
 			$field->displayPublishPanel(
 				$div, $entry->getData($field->get('id')),
 				(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
 				null, null, (is_numeric($entry->get('id')) ? $entry->get('id') : NULL)
 			);
 			return $div;
+		}
+
+		/**
+		 * Check whether a field is a Select Box Link and is hidden
+		 *
+		 * @param  Field  $field
+		 * @return String
+		 */
+		public function isFieldHidden(Field $field) {
+			if($field->get('hide_when_prepopulated') == 'yes') {
+				if (isset($_REQUEST['prepopulate'])) foreach($_REQUEST['prepopulate'] as $field_id => $value) {
+					if($field_id == $field->get('id')) {
+						return true;
+					}
+				}
+			}
+
+			return false;
 		}
 
 		/**
