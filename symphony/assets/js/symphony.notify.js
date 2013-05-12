@@ -112,7 +112,7 @@
 
 				// No other items
 				if(item.siblings().length == 0) {
-					notifier.trigger('resize.notify');
+					notifier.trigger('resize.notify', [jQuery('<div />')]);
 				}
 
 				// More item
