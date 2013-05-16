@@ -207,17 +207,17 @@
 
 			$span = new XMLElement('span', NULL, array('class' => 'frame'));
 
-			$filename = (array_key_exists('file', $data) && $data['file'])
-				? $this->get('destination') . '/' . basename($data['file'])
-				: null;
-
-			if (array_key_exists('file', $data) && $data['file']) {
+			if (isset($data['file'])) {
+				$filename = $this->get('destination') . '/' . basename($data['file']);
 				$file = $this->getFilePath($data['file']);
 				if (file_exists($file) === false || !is_readable($file)) {
 					$flagWithError = __('The file uploaded is no longer available. Please check that it exists, and is readable.');
 				}
 
 				$span->appendChild(new XMLElement('span', Widget::Anchor(preg_replace("![^a-z0-9]+!i", "$0&#8203;", $filename), URL . $filename)));
+			}
+			else {
+				$filename = null;
 			}
 
 			$span->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, $filename, ($filename ? 'hidden' : 'file')));
@@ -414,7 +414,9 @@
 					$entry_id
 				));
 
-				$existing_file = '/' . trim($row['file'], '/');
+				$existing_file = isset($row['file'])
+					? '/' . trim($row['file'], '/')
+					: null;
 
 				// File was removed:
 				if (
@@ -539,7 +541,7 @@
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null){
-			if (!array_key_exists('file', $data) || !$file = $data['file']) {
+			if (isset($data['file']) === false || !$file = $data['file']) {
 				if ($link) return parent::prepareTableValue(null, $link, $entry_id);
 				else return parent::prepareTableValue(null, $link, $entry_id);
 			}
