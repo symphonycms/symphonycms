@@ -324,7 +324,7 @@
 									Widget::Anchor(
 										sprintf('%d &rarr;', max(0, intval($associated_entry_count))),
 										sprintf(
-											'%s/publish/%s/?filter=%s:%s',
+											'%s/publish/%s/?filter[%s]=%s',
 											SYMPHONY_URL,
 											$as->get('handle'),
 											$field->get('element_name'),
