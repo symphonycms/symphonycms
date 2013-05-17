@@ -1264,7 +1264,7 @@
 						// get associated entries if entry exists,
 						// get prepopulated entry otherwise
 
-						$entry_ids = $entry_ids ?
+						$entry_ids = $entry_id ?
 						             $this->findParentRelatedEntries($as['child_section_field_id'], $entry_id) :
 						             array(intval(current($_GET['prepopulate'])));
 
