@@ -1261,8 +1261,15 @@
 				if(!is_null($parent_associations) && !empty($parent_associations)) foreach($parent_associations as $as){
 					if ($field = FieldManager::fetch($as['parent_section_field_id'])) {
 
+						// get associated entries if entry exists,
+						// get prepopulated entry otherwise
+
+						$entry_ids = $entry_ids ?
+						             $this->findParentRelatedEntries($as['child_section_field_id'], $entry_id) :
+						             array(intval(current($_GET['prepopulate'])));
+
 						// Use $schema for perf reasons
-						$entry_ids = $this->findParentRelatedEntries($as['child_section_field_id'], $entry_id);
+
 						$schema = array($field->get('element_name'));
 						$where = (!empty($entry_ids)) ? sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids)) : null;
 
