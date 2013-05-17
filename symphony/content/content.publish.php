@@ -324,7 +324,7 @@
 									Widget::Anchor(
 										sprintf('%d &rarr;', max(0, intval($associated_entry_count))),
 										sprintf(
-											'%s/publish/%s/?filter=%s:%s',
+											'%s/publish/%s/?filter[%s]=%s',
 											SYMPHONY_URL,
 											$as->get('handle'),
 											$field->get('element_name'),
@@ -1261,8 +1261,15 @@
 				if(!is_null($parent_associations) && !empty($parent_associations)) foreach($parent_associations as $as){
 					if ($field = FieldManager::fetch($as['parent_section_field_id'])) {
 
+						// get associated entries if entry exists,
+						// get prepopulated entry otherwise
+
+						$entry_ids = $entry_id ?
+						             $this->findParentRelatedEntries($as['child_section_field_id'], $entry_id) :
+						             array(intval(current($_GET['prepopulate'])));
+
 						// Use $schema for perf reasons
-						$entry_ids = $this->findParentRelatedEntries($as['child_section_field_id'], $entry_id);
+
 						$schema = array($field->get('element_name'));
 						$where = (!empty($entry_ids)) ? sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids)) : null;
 
@@ -1306,13 +1313,12 @@
 
 					// Get the visible field instance (using the sorting field, this is more flexible than visibleColumns())
 					// Get the link field instance
-					$visible_column = $child_section->getDefaultSortingField();
-					$visible_field = FieldManager::fetch($visible_column);
-					$relation_field = FieldManager::fetch($as['child_section_field_id']);
+					$visible_field   = current($child_section->fetchVisibleColumns());
+					$relation_field  = FieldManager::fetch($as['child_section_field_id']);
 
 					// Get entries, using $schema for performance reasons.
 					$entry_ids = $this->findRelatedEntries($as['child_section_field_id'], $entry_id);
-					$schema = array($visible_field->get('element_name'));
+					$schema = $visible_field ? array($visible_field->get('element_name')) : array();
 					$where = sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids));
 
 					$entries = (!empty($entry_ids))
@@ -1350,7 +1356,9 @@
 						));
 
 						foreach($entries['records'] as $key => $e) {
-							$value = $visible_field->prepareTableValue($e->getData($child_section->getDefaultSortingField()), null, $e->get('id'));
+							$value = $visible_field ?
+							         $visible_field->prepareTableValue($e->getData($visible_field->get('id')), null, $e->get('id')) :
+							         $e->get('id');
 							$li = new XMLElement('li');
 							$a = new XMLElement('a', strip_tags($value));
 							$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/' . $prepopulate);
