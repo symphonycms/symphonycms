@@ -7,6 +7,7 @@
 	<link media="screen" href="{SYMPHONY_URL}/assets/css/symphony.frames.css" type="text/css" rel="stylesheet">
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/jquery.js"></script>
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/symphony.js"></script>
+	<script type='text/javascript'>Symphony.Context.add('root', '{URL}');Symphony.Context.add('env', {});</script>
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/symphony.collapsible.js"></script>
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/symphony.error.js"></script>
 </head>

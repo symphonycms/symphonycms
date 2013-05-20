@@ -6,11 +6,8 @@
 
 	$(document).ready(function() {
 
-		// Init Symphony
-		Symphony.init();
-
 		// Init collapsibles
-		var collapsible = $('.frame ul').symphonyCollapsible({
+		var collapsible = $('.frame').symphonyCollapsible({
 			items: 'li',
 			handles: 'header',
 			content: '.content',
