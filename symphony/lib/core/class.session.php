@@ -149,8 +149,18 @@
 			// Only prevent this record from saving if there isn't already a record
 			// in the database. This prevents empty Sessions from being created, but
 			// allows them to be nulled.
-			if(is_null(Session::read($id))) {
-				if(preg_match('/^([^}]+\|a:0:{})+$/i', $data)) return true;
+			$session_data = Session::read($id);
+			if(is_null($session_data)) {
+				$unserialized_data = Session::unserialize_session($session_data);
+				$empty = true;
+				foreach ($unserialized_data as $d) {
+					if (!empty($d)) {
+						$empty = false;
+					}
+				}
+				if ($empty) {
+					return;
+				}
 			}
 
 			$fields = array(
@@ -159,6 +169,29 @@
 				'session_data' => $data
 			);
 			return Symphony::Database()->insert($fields, 'tbl_sessions', true);
+		}
+
+		/**
+		 * Given raw session data return the unserialized array.
+		 * Used to check if the session is really empty before writing.
+		 *
+		 * @param string $data
+		 *  The serialized session data
+		 * @return string
+		 *  The unserialised session data
+		 */
+		private function unserialize_session($data) {
+		    $hasBuffer = isset($_SESSION);
+		    $buffer = $_SESSION;
+		    session_decode($data);
+		    $session = $_SESSION;
+		    if($hasBuffer) {
+		    	$_SESSION = $buffer;
+		    }
+		   	else {
+		   		unset($_SESSION);
+		   	}
+		    return $session;
 		}
 
 		/**
