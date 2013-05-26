@@ -151,15 +151,16 @@
 			// allows them to be nulled.
 			$session_data = Session::read($id);
 			if(is_null($session_data)) {
-				$unserialized_data = Session::unserialize_session($session_data);
 				$empty = true;
+				$unserialized_data = Session::unserialize_session($session_data);
 				foreach ($unserialized_data as $d) {
 					if (!empty($d)) {
 						$empty = false;
 					}
 				}
+
 				if ($empty) {
-					return;
+					return false;
 				}
 			}
 
@@ -175,23 +176,25 @@
 		 * Given raw session data return the unserialized array.
 		 * Used to check if the session is really empty before writing.
 		 *
+		 * @since Symphony 2.3.3
 		 * @param string $data
 		 *  The serialized session data
 		 * @return string
 		 *  The unserialised session data
 		 */
-		private function unserialize_session($data) {
-		    $hasBuffer = isset($_SESSION);
-		    $buffer = $_SESSION;
-		    session_decode($data);
-		    $session = $_SESSION;
-		    if($hasBuffer) {
-		    	$_SESSION = $buffer;
-		    }
-		   	else {
-		   		unset($_SESSION);
-		   	}
-		    return $session;
+		private static function unserialize_session($data) {
+			$hasBuffer = isset($_SESSION);
+			$buffer = $_SESSION;
+			session_decode($data);
+			$session = $_SESSION;
+			if($hasBuffer) {
+				$_SESSION = $buffer;
+			}
+			else {
+				unset($_SESSION);
+			}
+
+			return $session;
 		}
 
 		/**
