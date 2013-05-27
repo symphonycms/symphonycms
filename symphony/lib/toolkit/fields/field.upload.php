@@ -17,7 +17,7 @@
 			'image/jpeg',
 			'image/pjpeg',
 			'image/png',
-			'image/x-png',
+			'image/x-png'
 		);
 
 		public function __construct(){
@@ -379,11 +379,7 @@
 				// Found the file, add any missing meta information:
 				if (file_exists($file) && is_readable($file)) {
 					if (empty($result['mimetype'])) {
-						$result['mimetype'] = (
-							function_exists('mime_content_type')
-								? mime_content_type($file)
-								: 'application/octet-stream'
-						);
+						$result['mimetype'] = General::getMimeType($file);
 					}
 
 					if (empty($result['size'])) {
@@ -487,14 +483,8 @@
 				General::deleteFile(WORKSPACE . $existing_file);
 			}
 
-			// If browser doesn't send MIME type (e.g. .flv in Safari)
-			if (strlen(trim($data['type'])) == 0) {
-				$data['type'] = (
-					function_exists('mime_content_type')
-						? mime_content_type(WORKSPACE . $file)
-						: 'application/octet-stream'
-				);
-			}
+			// Get the mimetype, don't trust the browser. RE: #1609
+			$data['type'] = General::getMimeType(WORKSPACE . $file);
 
 			return array(
 				'file' =>		basename($file),

@@ -510,7 +510,7 @@
 				),
 			);
 			$binary = array(
-				'Content-Type'				=> EmailHelper::getMimeType($file).'; name="'.(!is_null($filename)?$filename:basename($file)).'"',
+				'Content-Type'				=> General::getMimeType($file).'; name="'.(!is_null($filename)?$filename:basename($file)).'"',
 				'Content-Transfer-Encoding' => 'base64',
 				'Content-Disposition'		=> 'attachment; filename="' . (!is_null($filename)?$filename:basename($file)).'"',
 			);

@@ -260,65 +260,17 @@
 		 * back to using a mapping of known of common mimetypes. If no matches
 		 * are found `application/octet-stream` will be returned.
 		 *
+		 * @deprecated This function is deprecated from the `EmailHelper` class,
+		 *  and has been moved to the `General` class. It is recommended to use
+		 *  `General::getMimeType` instead as it will be removed from here in the
+		 *  next major release.
  		 * @author Michael Eichelsdoerfer
 		 * @author Huib Keemink
 		 * @param string $file
 		 * @return string MIMEtype
 		 */
 		public function getMimeType($file) {
-			if (!empty($file)) {
-				// in PHP 5.3 we can use 'finfo'
-				if (function_exists('finfo_open')) {
-					$finfo = finfo_open(FILEINFO_MIME_TYPE);
-					$mime_type = finfo_file($finfo, $file);
-					finfo_close($finfo);
-				}
-				/**
-				 * fallback
-				 * this may be removed when Symphony requires PHP 5.3
-				 */
-				else{
-					// A few mimetypes to "guess" using the file extension.
-					$mimetypes = array(
-						'txt'	=> 'text/plain',
-						'csv'	=> 'text/csv',
-						'pdf'	=> 'application/pdf',
-						'doc'	=> 'application/msword',
-						'docx'	=> 'application/msword',
-						'xls'	=> 'application/vnd.ms-excel',
-						'ppt'	=> 'application/vnd.ms-powerpoint',
-						'eps'	=> 'application/postscript',
-						'zip'	=> 'application/zip',
-						'gif'	=> 'image/gif',
-						'jpg'	=> 'image/jpeg',
-						'jpeg'	=> 'image/jpeg',
-						'png'	=> 'image/png',
-						'mp3'	=> 'audio/mpeg',
-						'mp4a'	=> 'audio/mp4',
-						'aac'	=> 'audio/x-aac',
-						'aif'	=> 'audio/x-aiff',
-						'aiff'	=> 'audio/x-aiff',
-						'wav'	=> 'audio/x-wav',
-						'wma'	=> 'audio/x-ms-wma',
-						'mpeg'	=> 'video/mpeg',
-						'mpg'	=> 'video/mpeg',
-						'mp4'	=> 'video/mp4',
-						'mov'	=> 'video/quicktime',
-						'avi'	=> 'video/x-msvideo',
-						'wmv'	=> 'video/x-ms-wmv',
-					);
-					$extension = substr(strrchr($file, '.'), 1);
-					if($mimetypes[strtolower($extension)] != null){
-						$mime_type = $mimetypes[$extension];
-					}
-					else{
-						$mime_type = 'application/octet-stream';
-					}
-				}
-
-				return $mime_type;
-			}
-			return false;
+			return General::getMimeType($file);
 		}
 
 	}
