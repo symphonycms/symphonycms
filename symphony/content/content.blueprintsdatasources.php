@@ -974,7 +974,7 @@
 			$about = $datasource->about();
 
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($about['name'], __('Data Source'), __('Symphony'))));
-			$this->appendSubheading(( ($this->_context[0] == 'edit') ? $about['name'] : __('Untitled')));
+			$this->appendSubheading(( ($this->_context[0] == 'info') ? $about['name'] : __('Untitled')));
 			$this->insertBreadcrumbs(array(
 				Widget::Anchor(__('Data Sources'), SYMPHONY_URL . '/blueprints/datasources/'),
 			));
