@@ -1262,17 +1262,20 @@
 					if ($field = FieldManager::fetch($as['parent_section_field_id'])) {
 
 						// get associated entries if entry exists,
+						if($entry_id) {
+							$entry_ids = $this->findParentRelatedEntries($as['child_section_field_id'], $entry_id);
+						}
 						// get prepopulated entry otherwise
-
-						$entry_ids = $entry_id ?
-						             $this->findParentRelatedEntries($as['child_section_field_id'], $entry_id) :
-						             array(intval(current($_GET['prepopulate'])));
+						else if(isset($_GET['prepopulate'])) {
+							$entry_ids = array(intval(current($_GET['prepopulate'])));
+						}
+						else {
+							$entry_ids = array();
+						}
 
 						// Use $schema for perf reasons
-
 						$schema = array($field->get('element_name'));
 						$where = (!empty($entry_ids)) ? sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids)) : null;
-
 						$entries = (!empty($entry_ids) || isset($_GET['prepopulate']))
 							? EntryManager::fetchByPage(1, $as['parent_section_id'], $show_entries, $where, null, false, false, true, $schema)
 							: array();
