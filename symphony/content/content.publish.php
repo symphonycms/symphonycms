@@ -52,6 +52,11 @@
 					$section->setSortingField($sort, false);
 					$section->setSortingOrder($order);
 
+					if ($params['filters']) {
+
+						$params['filters'] = '?' . trim($params['filters'], '&amp;');
+					}
+
 					redirect(Administration::instance()->getCurrentPageURL() . $params['filters']);
 				}
 			}
