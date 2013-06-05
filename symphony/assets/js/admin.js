@@ -7,7 +7,8 @@
 	 * Symphony core interactions
 	 */
 	$(document).ready(function() {
-		var html = $('html').addClass('active'),
+		var win = $(window),
+			html = $('html').addClass('active'),
 			body = html.find('body'),
 			wrapper = html.find('#wrapper'),
 			header = wrapper.find('#header'),
@@ -65,12 +66,14 @@
 			return false;
 		};
 
+		
+		
 		// Navigation sizing
-		$(window).on('resize.admin nav.admin', function(event) {
+		win.on('resize.admin nav.admin', function(event) {
 			var width = navContent.width() + navStructure.width() + 20;
 
 			// Compact mode
-			if(width > $(window).width()) {
+			if(width > win.width()) {
 				nav.removeClass('wide');
 			}
 
@@ -78,7 +81,7 @@
 			else {
 				nav.addClass('wide');
 			}
-		}).trigger('nav.admin');
+		});
 
 		// Accessible navigation
 		nav.on('focus.admin blur.admin', 'a', function() {
@@ -86,12 +89,12 @@
 		});
 
 		// Notifier sizing
-		$(window).on('resize.admin', function(event) {
+		win.on('resize.admin', function(event) {
 			header.find('.notifier').trigger('resize.notify');
 		});
 
 		// Table sizing
-		$(window).on('resize.admin table.admin', function(event) {
+		win.on('resize.admin table.admin', function(event) {
 			var table = $('table:first');
 
 			// Fix table size, if width exceeds the visibile viewport area.
@@ -101,12 +104,19 @@
 			else {
 				table.removeClass('fixed');
 			}
-		}).trigger('table.admin');
+		});
+		
+		// trigger resize on load only
+		win.on('load', function () {
+			// Fire resize manually at this point
+			win.trigger('nav.admin').trigger('table.admin');
 
-		// Focus first text-input or textarea when creating entries
-		if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'new' || Symphony.Context.get('env').page == 'new')) {
-			contents.find('input[type="text"], textarea').first().focus();
-		}
+			// Focus first text-input or textarea when creating entries
+			if(Symphony.Context.get('env') != null && (Symphony.Context.get('env')[0] == 'new' || Symphony.Context.get('env').page == 'new')) {
+				contents.find('input[type="text"], textarea').first().focus();
+			}
+		});
+		
 
 		// Hide empty secondary column
 		if(columnSecondary.children(':visible').length == 0) {
@@ -184,6 +194,7 @@
 	--------------------------------------------------------------------------*/
 
 		// Duplicators
+		
 		contents.find('.filters-duplicator').symphonyDuplicator();
 
 		// Highlight instances with the same location when ordering fields
@@ -568,22 +579,24 @@
 				var current = dsNameChangeCount = dsNameChangeCount + 1,
 					value = dsName.val();
 
-				setTimeout(function fetchDsHandle() {
-					if(dsNameChangeCount == current) {
-						$.ajax({
-							type: 'GET',
-							data: { 'string': value },
-							dataType: 'json',
-							url: Symphony.Context.get('root') + '/symphony/ajax/handle/',
-							success: function(result) {
-								if(dsNameChangeCount == current) {
-									dsName.data('handle', result);
-									dsParams.trigger('update.admin');
+				if (!!value) {
+					setTimeout(function fetchDsHandle(dsNameChangeCount, current, dsName, dsParams) {
+						if(dsNameChangeCount == current) {
+							$.ajax({
+								type: 'GET',
+								data: { 'string': value },
+								dataType: 'json',
+								url: Symphony.Context.get('root') + '/symphony/ajax/handle/',
+								success: function(result) {
+									if(dsNameChangeCount == current) {
+										dsName.data('handle', result);
+										dsParams.trigger('update.admin');
+									}
 								}
-							}
-						});
-					}
-				}, 500);
+							});
+						}
+					}, 500, dsNameChangeCount, current, dsName, dsParams);
+				}
 			});
 
 			// Update output parameters
@@ -612,11 +625,6 @@
 					select = optgroup.parents('select'),
 					label = optgroup.attr('label'),
 					options = optgroup.remove().find('option').addClass('optgroup');
-
-				// Fix for Webkit browsers to initially show the options
-				if (select.attr('multiple')) {
-					select.scrollTop(0);
-				}
 
 				// Show only relevant options based on context
 				$('#ds-context').on('change.admin', function() {
