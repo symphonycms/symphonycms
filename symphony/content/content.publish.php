@@ -1419,6 +1419,7 @@
 					SELECT `entry_id`
 					FROM `tbl_entries_data_%d`
 					WHERE `relation_id` = %d
+					AND `entry_id` IS NOT NULL
 				", $field_id, $entry_id));
 			}
 			catch(Exception $e){
@@ -1441,6 +1442,7 @@
 					SELECT `relation_id`
 					FROM `tbl_entries_data_%d`
 					WHERE `entry_id` = %d
+					AND `relation_id` IS NOT NULL
 				", $field_id, $entry_id));
 			}
 			catch(Exception $e){
