@@ -381,6 +381,10 @@ fieldset .button {
 	Dropdowns
 --------------------------------------------------------------------------*/
 
+.frame.suggestions {
+	overflow: visible;
+}
+
 .suggestions {
 	overflow: visible;
 }
