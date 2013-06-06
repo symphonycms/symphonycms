@@ -1265,6 +1265,9 @@
 				// Process Parent Associations
 				if(!is_null($parent_associations) && !empty($parent_associations)) foreach($parent_associations as $as){
 					if ($field = FieldManager::fetch($as['parent_section_field_id'])) {
+						if(isset($_GET['prepopulate'])) {
+							$prepopulate_field = key($_GET['prepopulate']);
+						}
 
 						// get associated entries if entry exists,
 						if($entry_id) {
@@ -1281,7 +1284,7 @@
 						// Use $schema for perf reasons
 						$schema = array($field->get('element_name'));
 						$where = (!empty($entry_ids)) ? sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids)) : null;
-						$entries = (!empty($entry_ids) || isset($_GET['prepopulate']))
+						$entries = (!empty($entry_ids) || isset($_GET['prepopulate']) && $field->get('id') === $prepopulate_field)
 							? EntryManager::fetchByPage(1, $as['parent_section_id'], $show_entries, $where, null, false, false, true, $schema)
 							: array();
 						$has_entries = !empty($entries) && $entries['total-entries'] != 0;
