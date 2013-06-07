@@ -55,6 +55,11 @@
 					Symphony::Configuration()->set('association_maximum_rows', '5', 'symphony');
 				}
 			}
+			
+			if(version_compare(self::$existing_version, '2.3.3RC1', '<=')) {
+				// Set the jQuery version used in the backend
+				Symphony::Configuration()->set('jQuery', 'admin', '1.10.1');
+			}
 
 			// Update the version information
 			Symphony::Configuration()->set('version', self::getVersion(), 'symphony');
