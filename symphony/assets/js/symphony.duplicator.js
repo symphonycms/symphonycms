@@ -81,7 +81,7 @@
 
 				// Check if duplicator frame exists
 				if(duplicator.length == 0) {
-					duplicator = $('<div class="frame" />').insertBefore(list).prepend(list);
+					duplicator = $('<div />').attr('class','frame').insertBefore(list).prepend(list);
 				}
 			}
 
@@ -234,8 +234,8 @@
 			headers.each(function wrapContent() {
 				var header = $(this);
 
-				if(header.next('.content').length == 0) {
-					header.nextAll().wrapAll('<div class="content" />');
+				if (!header.next('.content').length) {
+					header.nextAll().wrapAll( $('<div />').attr('class','content') );
 				}
 			});
 
@@ -246,7 +246,7 @@
 				apply.appendTo(duplicator);
 
 				// Populate selector
-				templates.each(function createTemplates() {
+				templates.detach().each(function createTemplates() {
 					var template = $(this),
 						title = template.find(settings.headers).attr('data-name') || template.find(settings.headers).text(),
 						value = template.attr('data-type');
@@ -267,7 +267,7 @@
 
 					// Check uniqueness
 					template.trigger('constructstop.duplicator');
-				}).removeClass('template').addClass('instance').detach();
+				}).removeClass('template').addClass('instance');
 			}
 
 			// Select default
@@ -289,7 +289,11 @@
 			// Destructable interface
 			if(settings.destructable === true) {
 				duplicator.addClass('destructable');
-				headers.append('<a class="destructor">' + (list.attr('data-remove') || Symphony.Language.get('Remove item')) + '</a>');
+				headers.append(
+						$('<a />')
+							.attr('class', 'destructor')
+							.text(list.attr('data-remove') || Symphony.Language.get('Remove item'))
+						);
 			}
 
 			// Collapsible interface
