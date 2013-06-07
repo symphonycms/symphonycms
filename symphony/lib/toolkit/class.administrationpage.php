@@ -355,7 +355,7 @@
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.notices.css', 'screen', 39);
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/admin.css', 'screen', 40);
 
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/jquery.js', 50);
+			$this->addScriptToHead('//ajax.googleapis.com/ajax/libs/jquery/' . Symphony::Configuration()->get('jQuery', 'admin') . '/jquery.min.js', 50);
 			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.js', 60);
 			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.collapsible.js', 61);
 			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.orderable.js', 62);

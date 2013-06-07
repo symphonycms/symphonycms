@@ -5,6 +5,7 @@
 		###### ADMIN ######
 		'admin' => array(
 			'max_upload_size' => '5242880',
+			'jQuery' => '1.10.1',
 		),
 		########
 
@@ -12,7 +13,7 @@
 		###### SYMPHONY ######
 		'symphony' => array(
 			'pagination_maximum_rows' => '20',
-            'association_maximum_rows' => '5',
+			'association_maximum_rows' => '5',
 			'lang' => 'en',
 			'pages_table_nest_children' => 'no',
 			'version' => VERSION,
