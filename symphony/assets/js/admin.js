@@ -85,7 +85,7 @@
 
 		// Accessible navigation
 		nav.on('focus.admin blur.admin', 'a', function() {
-			$(this).parents('li').eq(1).toggleClass('current');
+			$(this).closest('li').toggleClass('current');
 		});
 
 		// Notifier sizing
@@ -98,7 +98,7 @@
 			var table = $('table:first');
 
 			// Fix table size, if width exceeds the visibile viewport area.
-			if(table.width() > $('html').width()){
+			if (table.width() > $('html').width()){
 				table.addClass('fixed');
 			}
 			else {
@@ -622,7 +622,7 @@
 			// Data source manager options
 			contents.find('select.filtered > optgroup').each(function() {
 				var optgroup = $(this),
-					select = optgroup.parents('select'),
+					select = optgroup.closest('select'),
 					label = optgroup.attr('label'),
 					options = optgroup.remove().find('option').addClass('optgroup');
 
@@ -631,6 +631,13 @@
 					if($(this).find('option:selected').text() == label) {
 						select.find('option.optgroup').remove();
 						select.append(options.clone(true));
+					}
+				});
+				
+				win.on('load', function () {
+					// Fix for Webkit browsers to initially show the options
+					if (select.attr('multiple')) {
+						select.scrollTop(0);
 					}
 				});
 			});
