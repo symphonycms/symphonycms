@@ -66,8 +66,8 @@
 			return false;
 		};
 
-		
-		
+
+
 		// Navigation sizing
 		win.on('resize.admin nav.admin', function(event) {
 			var width = navContent.width() + navStructure.width() + 20;
@@ -88,11 +88,6 @@
 			$(this).closest('li').toggleClass('current');
 		});
 
-		// Notifier sizing
-		win.on('resize.admin', function(event) {
-			header.find('.notifier').trigger('resize.notify');
-		});
-
 		// Table sizing
 		win.on('resize.admin table.admin', function(event) {
 			var table = $('table:first');
@@ -105,7 +100,7 @@
 				table.removeClass('fixed');
 			}
 		});
-		
+
 		// trigger resize on load only
 		win.on('load', function () {
 			// Fire resize manually at this point
@@ -116,7 +111,7 @@
 				contents.find('input[type="text"], textarea').first().focus();
 			}
 		});
-		
+
 
 		// Hide empty secondary column
 		if(columnSecondary.children(':visible').length == 0) {
@@ -139,6 +134,11 @@
 
 		// Notify
 		header.symphonyNotify();
+
+		// Notifier sizing
+		win.on('resize.admin', function(event) {
+			header.find('.notifier').trigger('resize.notify');
+		});
 
 		// Drawers
 		wrapper.find('div.drawer').symphonyDrawer();
@@ -194,7 +194,7 @@
 	--------------------------------------------------------------------------*/
 
 		// Duplicators
-		
+
 		contents.find('.filters-duplicator').symphonyDuplicator();
 
 		// Highlight instances with the same location when ordering fields
@@ -633,7 +633,7 @@
 						select.append(options.clone(true));
 					}
 				});
-				
+
 				win.on('load', function () {
 					// Fix for Webkit browsers to initially show the options
 					if (select.attr('multiple')) {

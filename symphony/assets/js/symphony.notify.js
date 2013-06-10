@@ -128,11 +128,12 @@
 
 		// Resize notifier
 		objects.on('resize.notify attachstop.notify', 'div.notifier', function resizeNotifer(event, item) {
-			var notifier = $(this),
-				active = item || notifier.find('.active:not(:animated)');
+			var notifier = $(this);
 
 			// Adjust height
-			if(!notifier.is('.constructing')) {
+			if(!notifier.hasClass('constructing')) {
+				var active = item || notifier.find('.active:not(:animated)');
+
 				notifier.show().animate({
 					height: active.innerHeight() || 0
 				}, 100);
@@ -158,7 +159,7 @@
 		// Next message
 		objects.on('click', 'nav', function switchMessage(event) {
 			var nav = $(this),
-				notifier = $(this).parents('div.notifier');
+				notifier = $(this).closest('div.notifier');
 
 			// Move messages
 			notifier.trigger('move.notify');
@@ -187,8 +188,8 @@
 				offset = 0;
 			}
 
-			// If next's height is smaller, resize first
-			if(next.outerHeight() < from) {
+			// If next's height is not the same, resize first
+			if(next.outerHeight() !== from) {
 				notifier.trigger('resize.notify');
 			}
 
