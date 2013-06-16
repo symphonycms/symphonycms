@@ -38,6 +38,11 @@
 			if ($this->get('dynamic_options') != '') $this->findAndAddDynamicOptions($values);
 
 			$values = array_map('trim', $values);
+			// Fixes issues on PHP5.3. RE: #1773 ^BA
+			if(empty($values)) {
+				return $values;
+			}
+
 			$states = array_combine($values, $values);
 
 			if($this->get('sort_options') == 'yes') {
