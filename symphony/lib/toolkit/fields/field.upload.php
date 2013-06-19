@@ -433,6 +433,9 @@
 			$abs_path = DOCROOT . '/' . trim($this->get('destination'), '/');
 			$rel_path = str_replace('/workspace', '', $this->get('destination'));
 
+			// Sanitize the filename
+			$data['name'] = Lang::createFilename($data['name']);
+
 			// If a file already exists, then rename the file being uploaded by
 			// adding `_1` to the filename. If `_1` already exists, the logic
 			// will keep adding 1 until a filename is available (#672)
@@ -451,8 +454,6 @@
 				$data['name'] = str_replace($abs_path . '/', '', $renamed_file);
 			}
 
-			// Sanitize the filename
-			$data['name'] = Lang::createFilename($data['name']);
 			$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
 
 			// Attempt to upload the file:
