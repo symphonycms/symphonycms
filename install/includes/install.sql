@@ -1,4 +1,3 @@
-
 -- *** STRUCTURE: `tbl_authors` ***
 DROP TABLE IF EXISTS `tbl_authors`;
 CREATE TABLE `tbl_authors` (
@@ -148,19 +147,6 @@ CREATE TABLE `tbl_fields_select` (
   PRIMARY KEY (`id`),
   KEY `field_id` (`field_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- *** STRUCTURE: `tbl_fields_selectbox_link` ***
-DROP TABLE IF EXISTS `tbl_fields_selectbox_link`;
-CREATE TABLE `tbl_fields_selectbox_link` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `field_id` int(11) unsigned NOT NULL,
-  `allow_multiple_selection` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
-  `show_association` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
-  `related_field_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `limit` int(4) unsigned NOT NULL DEFAULT '20',
-  PRIMARY KEY (`id`),
-  KEY `field_id` (`field_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- *** STRUCTURE: `tbl_fields_taglist` ***
 DROP TABLE IF EXISTS `tbl_fields_taglist`;
