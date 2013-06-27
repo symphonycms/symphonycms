@@ -72,7 +72,7 @@
 	-------------------------------------------------------------------------*/
 
 		public function entryDataCleanup($entry_id, $data=NULL){
-			$file_location = WORKSPACE . '/' . ltrim($data['file'], '/');
+			$file_location = $this->getFilePath($data['file']);
 
 			if(is_file($file_location)){
 				General::deleteFile($file_location);
