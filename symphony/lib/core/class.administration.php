@@ -312,10 +312,20 @@
 
 			// Login page, /symphony/login/
 			if($bits[0] == 'login') {
+				if(isset($bits[1], $bits[2])) {
+					$context = preg_split('/\//', $bits[1] . '/' . $bits[2], -1, PREG_SPLIT_NO_EMPTY);
+				}
+				else if(isset($bits[1])) {
+					$context = preg_split('/\//', $bits[1], -1, PREG_SPLIT_NO_EMPTY);
+				}
+				else {
+					$context = array();
+				}
+				
 				$callback = array(
 					'driver' => 'login',
 					'driver_location' => CONTENT . '/content.login.php',
-					'context' => isset($bits[1], $bits[2]) ? preg_split('/\//', $bits[1] . '/' . $bits[2], -1, PREG_SPLIT_NO_EMPTY) : array(),
+					'context' => $context,
 					'classname' => 'contentLogin',
 					'pageroot' => '/login/'
 				);
