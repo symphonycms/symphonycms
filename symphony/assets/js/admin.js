@@ -695,7 +695,7 @@
 			});
 
 			// Enable parameter suggestions
-			contents.find('.duplicator:has(.filters-duplicator)').symphonySuggestions();
+			contents.find('.duplicator:has(.suggestable)').symphonySuggestions();
 		}
 
 	/*--------------------------------------------------------------------------

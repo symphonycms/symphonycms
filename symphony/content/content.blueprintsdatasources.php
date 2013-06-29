@@ -299,7 +299,7 @@
 				$div->setAttribute('class', 'contextual ' . $section_id);
 
 				$ol = new XMLElement('ol');
-				$ol->setAttribute('class', 'filters-duplicator');
+				$ol->setAttribute('class', 'filters-duplicator suggestable');
 				$ol->setAttribute('data-add', __('Add filter'));
 				$ol->setAttribute('data-remove', __('Remove filter'));
 
@@ -416,7 +416,7 @@
 			$div->setAttribute('class', 'contextual authors');
 
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator');
+			$ol->setAttribute('class', 'filters-duplicator suggestable');
 			$ol->setAttribute('data-add', __('Add filter'));
 			$ol->setAttribute('data-remove', __('Remove filter'));
 
@@ -446,7 +446,7 @@
 			$div->setAttribute('class', 'contextual navigation');
 
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator');
+			$ol->setAttribute('class', 'filters-duplicator suggestable');
 			$ol->setAttribute('data-add', __('Add filter'));
 			$ol->setAttribute('data-remove', __('Remove filter'));
 
