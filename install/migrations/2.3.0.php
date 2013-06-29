@@ -184,7 +184,7 @@
 
 					if(Symphony::Database()->tableContainsField($table, 'date')) {
 						// Populate new Date column
-						if(Symphony::Database()->query("UPDATE `" . $table . "` SET date = CONVERT_TZ(value, SUBSTRING(value, -6), '+00:00')")) {
+						if(Symphony::Database()->query("UPDATE `" . $table . "` SET date = CONVERT_TZ(SUBSTRING(value, 1, 19), SUBSTRING(value, -6), '+00:00')")) {
 							// Drop the `local`/`gmt` columns from Date fields
 							if(Symphony::Database()->tableContainsField($table, 'local')) {
 								Symphony::Database()->query("ALTER TABLE `" . $table . "` DROP `local`;");
