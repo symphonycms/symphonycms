@@ -411,16 +411,16 @@
 				));
 
 				$existing_file = isset($row['file'])
-					? '/' . trim($row['file'], '/')
+					? $this->getFilePath($row['file'])
 					: null;
 
 				// File was removed:
 				if (
 					$data['error'] == UPLOAD_ERR_NO_FILE
 					&& !is_null($existing_file)
-					&& is_file(WORKSPACE . $existing_file)
+					&& is_file($existing_file)
 				) {
-					General::deleteFile(WORKSPACE . $existing_file);
+					General::deleteFile($existing_file);
 				}
 			}
 
@@ -454,7 +454,7 @@
 				$data['name'] = str_replace($abs_path . '/', '', $renamed_file);
 			}
 
-			$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
+			$file = $this->getFilePath($data['name']);
 
 			// Attempt to upload the file:
 			$uploaded = General::uploadFile(
@@ -479,19 +479,19 @@
 			if (
 				isset($existing_file)
 				&& $existing_file !== $file
-				&& is_file(WORKSPACE . $existing_file)
+				&& is_file($existing_file)
 			) {
-				General::deleteFile(WORKSPACE . $existing_file);
+				General::deleteFile($existing_file);
 			}
 
 			// Get the mimetype, don't trust the browser. RE: #1609
-			$data['type'] = General::getMimeType(WORKSPACE . $file);
+			$data['type'] = General::getMimeType($file);
 
 			return array(
 				'file' =>		basename($file),
 				'size' =>		$data['size'],
 				'mimetype' =>	$data['type'],
-				'meta' =>		serialize(self::getMetaInfo(WORKSPACE . $file, $data['type']))
+				'meta' =>		serialize(self::getMetaInfo($file, $data['type']))
 			);
 		}
 
