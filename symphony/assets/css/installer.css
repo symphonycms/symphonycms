@@ -180,3 +180,29 @@ ul li:before {
 	float: left;
 	margin: 0 0 0 -10px;
 }
+
+/* Log */
+
+pre {
+	margin-bottom: 15px;
+	color: #474742;
+	white-space: normal;
+	font: inherit;
+}
+
+pre code {
+	display: block;
+	white-space: pre;
+	border: 1px dashed #a1a19a;
+	padding: 5px 7px;
+	overflow: auto;
+}
+
+code {
+	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
+	-webkit-tab-size: 4;
+	-moz-tab-size: 4;
+	-ms-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+}

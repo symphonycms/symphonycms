@@ -82,10 +82,16 @@
 
 		protected function viewFailure() {
 			$h2 = new XMLElement('h2', __('Updating Failure'));
-			$p = new XMLElement('p', __('An error occurred during updating.') . ' ' . __('View the %s for more details', array('<a href="' . INSTALL_LOGS . '/update">log</a>')));
+			$p = new XMLElement('p', __('An error occurred during updating.'));
+			
+			$log = file_get_contents(INSTALL_LOGS . '/update');
+			$code = new XMLElement('code', $log);
 
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);
+			$this->Form->appendChild(
+				new XMLElement('pre', $code)
+			);
 		}
 
 		protected function viewSuccess() {
