@@ -1,9 +1,9 @@
 # Symphony 2
 
-- Version: 2.3.3 Release Candidate 2
-- Date: 12th June 2013
+- Version: 2.3.3 Release Candidate 3
+- Date: 1st July 2013
 - Release Notes: <https://gist.github.com/brendo/5300783>
-- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.3.3RC2>
+- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.3.3RC3>
 
 
 
