@@ -57,7 +57,7 @@
 		if(file_exists($extension->getPathname() . "/extension.meta.xml")) {
 			$xsl = file_get_contents($extension->getPathname() . "/extension.meta.xml");
 			$xsl = @new SimpleXMLElement($xsl);
-			$xsl->registerXPathNamespace("ext", "http://symphony-cms.com/schemas/extension/1.0");
+			$xsl->registerXPathNamespace("ext", "http://getsymphony.com/schemas/extension/1.0");
 			$result = $xsl->xpath("//ext:extension[@id = '" . $e->getAdditional()->name . "']");
 			if(!empty($result)) {
 				$match = $extension->getFilename();

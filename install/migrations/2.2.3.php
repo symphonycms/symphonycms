@@ -27,7 +27,7 @@
 		}
 
 		static function getReleaseNotes(){
-			return 'http://symphony-cms.com/download/releases/version/2.2.3/';
+			return 'http://getsymphony.com/download/releases/version/2.2.3/';
 		}
 
 		static function upgrade(){

@@ -9,7 +9,7 @@
 	 * data entered on the frontend to a corresponding Symphony section.
 	 *
 	 * @since Symphony 2.3.1
-	 * @link http://symphony-cms.com/learn/concepts/view/events/
+	 * @link http://getsymphony.com/learn/concepts/view/events/
 	 */
 
 	require_once(TOOLKIT . '/class.sectionmanager.php');

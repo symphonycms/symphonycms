@@ -78,7 +78,7 @@
 					'li',
 					Widget::Anchor(
 						__('Symphony is also available in other languages'),
-						'http://symphony-cms.com/download/extensions/translations/'
+						'http://getsymphony.com/download/extensions/translations/'
 					),
 					array('class' => 'more')
 				));

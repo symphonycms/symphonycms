@@ -11,7 +11,7 @@
 	 * from other `SectionDatasource`'s using output parameters.
 	 *
 	 * @since Symphony 2.3
-	 * @link http://symphony-cms.com/learn/concepts/view/data-sources/
+	 * @link http://getsymphony.com/learn/concepts/view/data-sources/
 	 */
 
 	require_once(TOOLKIT . '/class.entrymanager.php');

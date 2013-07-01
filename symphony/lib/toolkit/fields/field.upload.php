@@ -101,7 +101,7 @@
 		public function getFilePath($filename) {
 			/**
 			 * Ensure the file exists in the `WORKSPACE` directory
-			 * @link http://symphony-cms.com/discuss/issues/view/610/
+			 * @link http://getsymphony.com/discuss/issues/view/610/
 			 */
 			$file = WORKSPACE . preg_replace(array('%/+%', '%(^|/)\.\./%', '%\/workspace\/%'), '/', $this->get('destination') . '/' . $filename);
 
