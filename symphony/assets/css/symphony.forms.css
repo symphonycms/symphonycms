@@ -279,7 +279,9 @@ fieldset.apply div {
 	text-align: left;
 	overflow: hidden;
 	float: left;
-	background: url(../img/arrows.png) right -14px no-repeat;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAwCAYAAADHEYBIAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAORJREFUeNpiYIAAHiDuBmJWEOf///9YMRNUcRUQOwJxJgMeAFLsBcRuUH4cEFvhUsyITRBkJS6TiQYgxb5AfAYJW+FTvBmId0H5i4D4GCEbiAo6RlyeoYoHRxUPacWMjIwMQMwKxBZADOYTMtkQiKWAWIuQM+SAWAbKVwNicfrnQRYglgdiYySxo0D8EpfJD4H4CZR/C5dCZADKexYwZ43mwVHF5OZBEC3DCAEETZYEYl4gFiXkDH4g5oPyhaFVxgDkQX5omQEDj4H4Cy6TPwLxJyj/LS6FMJNB4DnU/a/xOQMgwACLFl2Yo1jbdgAAAABJRU5ErkJggg==);
+	background-repeat: no-repeat;
+	background-position: right -14px;
 }
 
 fieldset.apply:hover div {
