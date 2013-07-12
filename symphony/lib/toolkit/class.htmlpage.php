@@ -46,6 +46,17 @@
 		protected $_head = array();
 
 		/**
+		 * Accessor function for `$this->_head`. Returns all the XMLElements that are
+		 * about to be added to `$this->Head`.
+		 *
+		 * @since Symphony 2.3.3
+		 * @return array
+		 */
+		public function Head() {
+			return $this->_head;
+		}
+
+		/**
 		 * Constructor for the HTMLPage. Intialises the class variables with
 		 * empty instances of XMLElement
 		 */
@@ -134,7 +145,7 @@
 		 *  Returns the position that the `$object` has been set in the `$this->_head`
 		 */
 		public function addElementToHead(XMLElement $object, $position = null, $allowDuplicate = true){
-			
+
 			// find the right position
 			if(($position && isset($this->_head[$position]))) {
 				$position = General::array_find_available_index($this->_head, $position);
@@ -145,12 +156,12 @@
 				else
 					$position = 0;
 			}
-			
+
 			// check if we allow duplicate
 			if (!$allowDuplicate && !empty($this->_head)) {
 				$this->removeFromHead($object->getName());
 			}
-			
+
 			// append new element
 			$this->_head[$position] = $object;
 
@@ -167,6 +178,18 @@
 			foreach($this->_head as $position => $element){
 				if($element->getName() != $elementName) continue;
 
+				$this->removeFromHeadByPosition($position);
+			}
+		}
+
+		/**
+		 * Removes an item from `$this->_head` by it's index.
+		 *
+		 * @since Symphony 2.3.3
+		 * @param integer $position
+		 */
+		public function removeFromHeadByPosition($position) {
+			if(isset($position, $this->_head[$position])) {
 				unset($this->_head[$position]);
 			}
 		}
