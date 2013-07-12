@@ -54,22 +54,6 @@ div.notifier nav:hover:before {
 	}
 }
 
-/* Mozilla */
-
-@-moz-keyframes success {
-	to {
-		background-color: #383838;
-		border-color: #575757;
-		color: #9b9b9b;
-	}
-}
-@-moz-keyframes successlink {
-	to {
-		color: #bdc3c3;
-		border-color: #7c7c7c;
-	}
-}
-
 /* Internet Explorer */
 
 @-ms-keyframes success {
@@ -158,7 +142,6 @@ div.notifier nav:hover:before {
 	border-color: #90c349;
 	color: #6d7841;
 	-webkit-animation: success 0.5s ease-out 10s 1 forwards;
-	-moz-animation: success 0.5s ease-out 10s 1 forwards;
 	-ms-animation: success 0.5s ease-out 10s 1 forwards;
 	-o-animation: success 0.5s ease-out 10s 1 forwards;
 	animation: success 0.5s ease-out 10s 1 forwards;
@@ -168,7 +151,6 @@ div.notifier nav:hover:before {
 	color: #4e5b39;
 	border-color: #a1bf7e;
 	-webkit-animation: successlink 0.5s ease-out 10s 1 forwards;
-	-moz-animation: successlink 0.5s ease-out 10s 1 forwards;
 	-ms-animation: successlink 0.5s ease-out 10s 1 forwards;
 	-o-animation: successlink 0.5s ease-out 10s 1 forwards;
 	animation: successlink 0.5s ease-out 10s 1 forwards;

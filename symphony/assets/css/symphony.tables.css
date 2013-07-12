@@ -125,7 +125,6 @@ table.selectable input {
 tr.selected td {
 	background-color: #668abe;
 	background-image: -webkit-linear-gradient(top, #668abe, #5c83ba);
-	background-image:    -moz-linear-gradient(top, #668abe, #5c83ba);
 	background-image:     -ms-linear-gradient(top, #668abe, #5c83ba);
 	background-image:      -o-linear-gradient(top, #668abe, #5c83ba);
 	background-image:   linear-gradient(to bottom, #668abe, #5c83ba);
@@ -166,7 +165,6 @@ tr.ordering td,
 tr:nth-child(odd).ordering td {
 	background-color: #4870a9;
 	background-image: -webkit-linear-gradient(top, #4870a9, #446a9f);
-	background-image:    -moz-linear-gradient(top, #4870a9, #446a9f);
 	background-image:     -ms-linear-gradient(top, #4870a9, #446a9f);
 	background-image:      -o-linear-gradient(top, #4870a9, #446a9f);
 	background-image:   linear-gradient(to bottom, #4870a9, #446a9f);

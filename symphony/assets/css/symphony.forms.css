@@ -133,7 +133,6 @@ button,
 	padding: 0 10px;
 	background-color: #efefed; color: rgba(85, 85, 85, 0.95);
 	background-image: -webkit-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
-	background-image: -moz-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
 	background-image: -ms-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
 	background-image: -o-linear-gradient(top, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
 	background-image: linear-gradient(to bottom, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
@@ -166,7 +165,6 @@ input[type=submit].selected,
 button.selected,
 .button.selected {
 	background-image: -webkit-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
-	background-image:	 -moz-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
 	background-image:	  -ms-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
 	background-image:	   -o-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
 	background-image:		  linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
@@ -207,7 +205,6 @@ button.create,
 .button.create {
 	background-color: #83b340;
 	background-image: -webkit-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
-	background-image:	 -moz-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
 	background-image:	  -ms-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
 	background-image:	   -o-linear-gradient(top, #92c44d 0%, #92c44d 30%, #78a737 100%);
 	background-image:	linear-gradient(to bottom, #92c44d 0%, #92c44d 30%, #78a737 100%);
@@ -279,7 +276,9 @@ fieldset.apply div {
 	text-align: left;
 	overflow: hidden;
 	float: left;
-	background: url(../img/arrows.png) right -14px no-repeat;
+	background-repeat: no-repeat;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAwCAYAAADHEYBIAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAORJREFUeNpiYIAAHiDuBmJWEOf///9YMRNUcRUQOwJxJgMeAFLsBcRuUH4cEFvhUsyITRBkJS6TiQYgxb5AfAYJW+FTvBmId0H5i4D4GCEbiAo6RlyeoYoHRxUPacWMjIwMQMwKxBZADOYTMtkQiKWAWIuQM+SAWAbKVwNicfrnQRYglgdiYySxo0D8EpfJD4H4CZR/C5dCZADKexYwZ43mwVHF5OZBEC3DCAEETZYEYl4gFiXkDH4g5oPyhaFVxgDkQX5omQEDj4H4Cy6TPwLxJyj/LS6FMJNB4DnU/a/xOQMgwACLFl2Yo1jbdgAAAABJRU5ErkJggg==);
+	background-position: right -14px;
 }
 
 fieldset.apply:hover div {
@@ -403,7 +402,6 @@ ul.suggestionlist {
 	max-height: 240px;
 	overflow: auto;
 	-webkit-transition: max-height .25s ease-out;
-	-moz-transition: max-height .25s ease-out;
 	-ms-transition: max-height .25s ease-out;
 	-o-transition: max-height .25s ease-out;
 	transition: max-height .25s ease-out;
