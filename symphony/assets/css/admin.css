@@ -70,23 +70,22 @@
 	display: block;
 	margin: 0;
 	padding: 0 8px 0;
-	min-height: 30px;
+	min-height: 31px;
 	list-style: none;
 	font-size: 12px;
 	-webkit-box-shadow: 0 0 6px #a9a9a9;
 	box-shadow: 0 0 7px #a9a9a9;
-	background: #d7d7d2;
-	background: -webkit-linear-gradient(top, #efefed 0, #efefed 33%, #d7d7d2 67%, #d7d7d2 100%);
-	background: -moz-linear-gradient(top, #efefed 0, #efefed 33%, #d7d7d2 67%);
-	background: -ms-linear-gradient(top, #efefed 0, #efefed 33%, #d7d7d2 67%);
-	background: -o-linear-gradient(top, #efefed 0, #efefed 33%, #d7d7d2 67%);
-	background: linear-gradient(to bottom, #efefed 0%, #efefed 33%, #d7d7d2 67%);
+	background: #d7d7d2 url(../img/nav.png) 0 0 repeat;
+	background: url(../img/nav.png) 0 0 repeat, -webkit-linear-gradient(top, #efefed 0, #efefed 33%, #d7d7d2 67%, #d7d7d2 100%);
+	background: url(../img/nav.png) 0 0 repeat, -moz-linear-gradient(top, #efefed 0, #efefed 33%, #d7d7d2 67%);
+	background: url(../img/nav.png) 0 0 repeat, -ms-linear-gradient(top, #efefed 0, #efefed 33%, #d7d7d2 67%);
+	background: url(../img/nav.png) 0 0 repeat, -o-linear-gradient(top, #efefed 0, #efefed 33%, #d7d7d2 67%);
+	background: url(../img/nav.png) 0 0 repeat, linear-gradient(to bottom, #efefed 0%, #efefed 33%, #d7d7d2 67%);
 	z-index: 3;
 	float: left;
 	width: 100%;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	border-bottom: 1px solid rgba(191, 191, 183, 1);
 }
 
 #nav ul {
@@ -103,7 +102,7 @@
 	display: block;
 	color: #555;
 	float: left;
-	height: 30px;
+	height: 31px;
 	line-height: 31px;
 	padding: 0 10px;
 	position: relative;
@@ -123,21 +122,17 @@
 	background-image:     -ms-linear-gradient(top, #6f92c2 0%, #6f92c2 35%, #4d78b4 65%, #4d78b4 100%);
 	background-image:      -o-linear-gradient(top, #6f92c2 0%, #6f92c2 35%, #4d78b4 65%, #4d78b4 100%);
 	background-image:   linear-gradient(to bottom, #6f92c2 0%, #6f92c2 35%, #4d78b4 65%, #4d78b4 100%);
-	height: 30px;
+	height: 31px;
 	text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
 	z-index: 2;
-	margin-bottom: -1px;
-	padding-bottom: 1px;
 }
 
 #nav > ul > li:hover, #nav > ul > li.active:hover {
 	color: #555;
-	background: #fff;
-	height: 30px;
+	background: #fff url(../img/nav.png) 0 0 repeat;
+	height: 31px;
 	text-shadow: none;
 	z-index: 10000;
-	margin-bottom: -1px;
-	padding-bottom: 1px;
 }
 
 #nav > ul > li:hover:after {
