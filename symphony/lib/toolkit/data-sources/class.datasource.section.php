@@ -516,7 +516,7 @@
 						$groups = self::$_fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);
 
 						if (self::$_fieldPool[$this->dsParamGROUP] == NULL) {
-							throw new SymphonyErrorPage(vsprintf("The parameter group '%s' is not valid", $this->dsParamGROUP));
+							throw new SymphonyErrorPage(vsprintf("The field used for grouping '%s' cannot be found.", $this->dsParamGROUP));
 						}
 						
 						foreach($groups as $element => $group){
