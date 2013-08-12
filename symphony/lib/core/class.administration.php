@@ -252,7 +252,6 @@
 
 					$this->Page->pageAlert($message, Alert::NOTICE);
 				}
-
 				$this->Page->build($this->_callback['context']);
 			}
 
