@@ -21,6 +21,15 @@
 
 	$output = renderer($renderer)->display(getCurrentPage());
 
+	// #1808
+	if(isset($_SERVER['HTTP_MOD_REWRITE'])) {
+		$output = file_get_contents(GenericExceptionHandler::getTemplate('fatalerror.rewrite'));
+		$output = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $output);
+		$output = str_replace('{URL}', URL, $output);
+		echo $output;
+		exit;
+	}
+
 	cleanup_session_cookies();
 
 	echo $output;
