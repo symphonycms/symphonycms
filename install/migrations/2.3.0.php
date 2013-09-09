@@ -162,11 +162,12 @@
 				}
 
 				// Move section sorting data from the database to the filesystem. #977
-				$sections = Symphony::Database()->fetch("SELECT `handle`, `entry_order`, `entry_order_direction` FROM `tbl_sections`");
-
-				foreach($sections as $s) {
-					Symphony::Configuration()->set('section_' . $s['handle'] . '_sortby', $s['entry_order'], 'sorting');
-					Symphony::Configuration()->set('section_' . $s['handle'] . '_order', $s['entry_order_direction'], 'sorting');
+				if(Symphony::Database()->tableContainsField('tbl_sections', 'entry_order')) {
+					$sections = Symphony::Database()->fetch("SELECT `handle`, `entry_order`, `entry_order_direction` FROM `tbl_sections`");
+					foreach($sections as $s) {
+						Symphony::Configuration()->set('section_' . $s['handle'] . '_sortby', $s['entry_order'], 'sorting');
+						Symphony::Configuration()->set('section_' . $s['handle'] . '_order', $s['entry_order_direction'], 'sorting');
+					}
 				}
 
 				// Drop `local`/`gmt` from Date fields, add `date` column. #693
