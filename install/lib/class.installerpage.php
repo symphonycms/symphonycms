@@ -322,7 +322,7 @@
 			// Advanced configuration: Table Prefix
 			$label = Widget::label(__('Table Prefix'), Widget::Input('fields[database][tbl_prefix]', $fields['database']['tbl_prefix']));
 
-			$this->__appendError(array('database-table-clash'), $label);
+			$this->__appendError(array('database-table-prefix'), $label);
 			$Fieldset->appendChild($label);
 
 			$Database->appendChild($Fieldset);
