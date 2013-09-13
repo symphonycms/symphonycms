@@ -49,6 +49,12 @@
 					}
 				}
 				catch (Exception $ex) {}
+
+				// Extend token field to enable more secure tokens
+				try {
+					Symphony::Database()->query('ALTER TABLE `tbl_forgotpass` CHANGE `token` `token` VARCHAR(16);');
+				}
+				catch (Exception $ex) {}
 			}
 
 			// Update the version information

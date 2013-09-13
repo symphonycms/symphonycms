@@ -42,7 +42,7 @@
 		}
 
 		public function view() {
-			if(isset($this->_context[0]) && in_array(strlen($this->_context[0]), array(6, 8))){
+			if(isset($this->_context[0]) && in_array(strlen($this->_context[0]), array(6, 8, 16))){
 				if(!$this->__loginFromToken($this->_context[0])) {
 					if(Administration::instance()->isLoggedIn()) redirect(SYMPHONY_URL);
 				}
@@ -209,7 +209,16 @@
 						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' ");
 
 						if(!$token = Symphony::Database()->fetchVar('token', 0, "SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `author_id` = ".$author['id'])){
-							$token = substr(SHA1::hash(time() . rand(0, 1000)), 0, 6);
+
+							// More secure password token generation
+							if(function_exists('openssl_random_pseudo_bytes')) {
+								$seed = openssl_random_pseudo_bytes(16);
+							}
+							else {
+								$seed = mt_rand();
+							}
+							$token = substr(SHA1::hash($seed), 0, 16);
+
 							Symphony::Database()->insert(array(
 								'author_id' => $author['id'],
 								'token' => $token,
@@ -279,7 +288,7 @@
 			if(!Administration::instance()->loginFromToken($token)) return false;
 
 			// If token is valid and is an 8 char shortcut
-			if(strlen($token) != 6) redirect(SYMPHONY_URL); // Regular token-based login
+			if(!in_array(strlen($token), array(6, 16))) redirect(SYMPHONY_URL); // Regular token-based login
 
 			return false;
 		}
