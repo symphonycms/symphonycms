@@ -44,7 +44,10 @@
 		public function view() {
 			if(isset($this->_context[0]) && in_array(strlen($this->_context[0]), array(6, 8, 16))){
 				if(!$this->__loginFromToken($this->_context[0])) {
-					if(Administration::instance()->isLoggedIn()) redirect(SYMPHONY_URL);
+					if(Administration::instance()->isLoggedIn()) {
+						// Redirect to the Author's profile. RE: #1801
+						redirect(SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id'));
+					}
 				}
 			}
 
