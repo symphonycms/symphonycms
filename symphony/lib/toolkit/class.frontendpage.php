@@ -372,7 +372,8 @@
 
 					// If the key gets replaced out then it will break the XML so prevent
 					// the parameter being set.
-					if(!General::createHandle($key)) continue;
+					$key = General::createHandle($key);
+					if(!$key) continue;
 
 					// Handle ?foo[bar]=hi as well as straight ?foo=hi RE: #1348
 					if(is_array($val)) {
