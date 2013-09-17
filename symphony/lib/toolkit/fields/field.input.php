@@ -250,7 +250,7 @@
 				}
 
 				else if (isset($data['value'])) {
-					return General::createHandle($data['value']);
+					return Lang::createHandle($data['value']);
 				}
 			}
 

@@ -674,7 +674,7 @@
 		 * @return XMLElement
 		 */
 		public static function Drawer($id = '', $label = '', XMLElement $content = null, $default_state = 'closed', $context = '', array $attributes = array()){
-			$id = General::createHandle($id);
+			$id = Lang::createHandle($id);
 
 			$contents = new XMLElement('div', $content, array(
 				'class' => 'contents'
