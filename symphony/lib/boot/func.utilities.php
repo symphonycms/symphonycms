@@ -167,7 +167,7 @@
 			}
 		}
 		// in PHP 5.3 we can use 'header_remove'
-		if (version_compare(PHP_VERSION, '5.3', '>=')) {
+		if (function_exists('header_remove')) {
 			header_remove('Set-Cookie');
 		}
 		/**
