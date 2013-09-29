@@ -779,6 +779,22 @@
 		}
 
 		/**
+		 * This function takes `$table` and returns boolean
+		 * if it exists or not.
+		 *
+		 * @since Symphony 2.3.4
+		 * @param string $table
+		 *  The table name
+		 * @return boolean
+		 *  True if `$table` exists, false otherwise
+		 */
+		public function tableExists($table) {
+			$results = $this->fetch(sprintf("SHOW TABLES LIKE '%s'", $table));
+
+			return (is_array($results) && !empty($results));
+		}
+
+		/**
 		 * If an error occurs in a query, this function is called which logs
 		 * the last query and the error number and error message from MySQL
 		 * before throwing a `DatabaseException`
