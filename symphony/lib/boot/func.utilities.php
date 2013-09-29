@@ -166,7 +166,18 @@
 				$custom_cookies[] = $hdr;
 			}
 		}
-		header_remove('Set-Cookie');
+		// in PHP 5.3 we can use 'header_remove'
+		if (function_exists('header_remove')) {
+			header_remove('Set-Cookie');
+		}
+		/**
+		 * fallback
+		 * this may be removed when Symphony requires PHP 5.3
+		 */
+		else{
+			header('Set-Cookie:');
+		}
+
 		foreach ($custom_cookies as $custom_cookie) {
 			header($custom_cookie);
 		}
