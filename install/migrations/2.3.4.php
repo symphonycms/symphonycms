@@ -23,7 +23,7 @@
 		}
 
 		static function getVersion(){
-			return '2.3.4beta1';
+			return '2.3.4beta2';
 		}
 
 		static function getReleaseNotes(){
@@ -53,6 +53,14 @@
 				// Extend token field to enable more secure tokens
 				try {
 					Symphony::Database()->query('ALTER TABLE `tbl_forgotpass` CHANGE `token` `token` VARCHAR(16);');
+				}
+				catch (Exception $ex) {}
+			}
+
+			if(version_compare(self::$existing_version, '2.3.4beta2', '<=')) {
+				// Extend session_id field for default Suhosin installs
+				try {
+					Symphony::Database()->query('ALTER TABLE `tbl_sessions` CHANGE `session` `session` VARCHAR(128);');
 				}
 				catch (Exception $ex) {}
 			}
