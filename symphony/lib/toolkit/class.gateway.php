@@ -119,7 +119,7 @@
 
 		/**
 		 * An array of custom headers to pass with the request
-		 * @var integer
+		 * @var array
 		 */
 		private $_headers = array();
 
@@ -255,7 +255,12 @@
 					break;
 
 				case 'HTTPHEADER':
-					$this->_headers = $value;
+					// merge the values, so multiple calls won't erase other values
+					if (is_array($value)) {
+						$this->_headers = array_merge($this->_headers, $value);
+					} else {
+						$this->_headers[] = $value;
+					}
 					break;
 
 				case 'RETURNHEADERS':
