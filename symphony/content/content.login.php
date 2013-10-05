@@ -195,7 +195,7 @@
 						 */
 						Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => Symphony::Database()->cleanValue($_POST['username'])));
 
-						isset($_POST['redirect']) ? redirect($_POST['redirect']) : redirect(SYMPHONY_URL);
+						isset($_POST['redirect']) ? redirect($_POST['redirect']) : redirect(SYMPHONY_URL . '/');
 					}
 
 				// Reset of password requested
@@ -291,7 +291,7 @@
 			if(!Administration::instance()->loginFromToken($token)) return false;
 
 			// If token is valid and is an 8 char shortcut
-			if(!in_array(strlen($token), array(6, 16))) redirect(SYMPHONY_URL); // Regular token-based login
+			if(!in_array(strlen($token), array(6, 16))) redirect(SYMPHONY_URL . '/'); // Regular token-based login
 
 			return false;
 		}
