@@ -127,7 +127,7 @@
 
 #nav > ul > li:hover, #nav > ul > li.active:hover {
 	color: #555;
-	background: #fff url(../img/nav.png) 0 0 repeat;
+	background: #fff;
 	height: 31px;
 	text-shadow: none;
 	z-index: 10000;
