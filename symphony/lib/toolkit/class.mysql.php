@@ -650,7 +650,7 @@
 			$sql = "DELETE FROM $table";
 			
 			if (!is_null($where)) {
-				$sql .= "WHERE $where";
+				$sql .= " WHERE $where";
 			}
 			
 			return $this->query($sql);
