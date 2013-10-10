@@ -9,6 +9,7 @@
 	 * `LOGS` directory.
 	 */
 	require_once(CORE . '/class.datetimeobj.php');
+	require_once(TOOLKIT . '/class.general.php');
 
 	Class Log{
 
