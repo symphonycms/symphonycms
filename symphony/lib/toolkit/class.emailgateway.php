@@ -127,6 +127,22 @@
 			$this->setSenderEmailAddress($email);
 			$this->setSenderName($name);
 		}
+		
+		/**
+		 * Does some basic checks to validate the
+		 * value of a header field. Currently only checks
+		 * if the value contains a carriage return or a new line.
+		 *
+		 * @param string $value
+		 *
+		 * @return boolean
+		 */
+		protected function validateHeaderFieldValue($value) {
+			// values can't contains carriage returns or new lines
+			$carriage_returns = preg_match('%[\r\n]%', $value);
+			
+			return !$carriage_returns;
+		}
 
 		/**
 		 * Sets the sender-email.
@@ -137,7 +153,7 @@
 		 * @return void
 		 */
 		public function setSenderEmailAddress($email){
-			if(preg_match('%[\r\n]%', $email)){
+			if(!$this->validateHeaderFieldValue($email)){
 				throw new EmailValidationException(__('Sender Email Address can not contain carriage return or newlines.'));
 			}
 			$this->_sender_email_address = $email;
@@ -152,7 +168,7 @@
 		 * @return void
 		 */
 		public function setSenderName($name){
-			if(preg_match('%[\r\n]%', $name)){
+			if(!$this->validateHeaderFieldValue($name)){
 				throw new EmailValidationException(__('Sender Name can not contain carriage return or newlines.'));
 			}
 			$this->_sender_name = $name;
@@ -166,10 +182,14 @@
 		 * @return void
 		 */
 		public function setRecipients($email){
-			//TODO: sanitizing and security checking
 			if(!is_array($email)){
 				$email = explode(',',$email);
 				array_walk($email, create_function('&$val', '$val = trim($val);'));
+			}
+			foreach ($email as $e) {
+				if(!$this->validateHeaderFieldValue($e)){
+					throw new EmailValidationException(__('Recipient address can not contain carriage return or newlines.'));
+				}
 			}
 			$this->_recipients = $email;
 		}
@@ -182,7 +202,8 @@
 		 * @param string $text_plain
 		 */
 		public function setTextPlain($text_plain){
-			//TODO:
+			// How the hell can we validate this ???
+			// Allow only plain ASCII ?
 			$this->_text_plain = $text_plain;
 		}
 
