@@ -198,14 +198,87 @@
 		}
 
 		/**
-		 * @todo Document this function
-		 * @param string|array $file
+		 * This function adds one or multiple attachment files
+		 * to the email.
+		 *
+		 * @since Symphony 2.3.4 - Calling this method multiple times will
+		 * always append files to the email instead of erasing the
+		 * previous content. Passing `null` to this function will
+		 * erase the current values with an empty array.
+		 *
+		 * @param string|array $files
+		 *   Accepts the same parameters as `EmailGateway::addAttachment()`
+		 *   but you can also all multiple values at once if all files are
+		 *   wrap in a array.
+		 *
+		 *   Example:
+		 *   ````
+		 *   $email->setAttachments(array(
+		 *      array(
+		 *          'file' => 'http://example.com/foo.txt',
+		 *          'charset' => 'UTF-8'
+		 *      ),
+		 *      'path/to/your/webspace/foo/bar.csv',
+		 *      ...
+		 *   ));
+		 *   ````
 		 */
-		public function setAttachments($file){
-			if(!is_array($file)){
-				$file = array($file);
+		public function setAttachments($files){
+			if ($files == null) {
+				$this->_attachments = array();
+			} else {
+				if(!is_array($files) || !isset($files['file'])){
+					$files = array($files);
+				}
+				foreach ($files as $file) {
+					$this->appendAttachment($file);
+				}
 			}
-			$this->_attachments = $file;
+		}
+		
+		/**
+		 * Appends one file attachment to the attachments array.
+		 *
+		 * @since Symphony 2.3.4
+		 *
+		 * @param string|array $file
+		 *   Can be a string representing the file path, absolute or relative, i.e.
+		 *   `'http://example.com/foo.txt'` or `'path/to/your/webspace/foo/bar.csv'`.
+		 *
+		 *   Can also be a keyed array. This will enable more options, like setting the
+		 *   charset used by mail agent to open the file or a different filename.
+		 *
+		 *   Example:
+		 *   ````
+		 *   $email->appendAttachment(array(
+		 *      'file' => 'http://example.com/foo.txt',
+		 *      'filename' => 'bar.txt',
+		 *      'charset' => 'UTF-8',
+		 *   ));
+		 *   ````
+		 */
+		public function appendAttachment($file) {
+			if (!is_array($file)) {
+				// treat the param as string (old format)
+				$files = array(
+					'file' => $file,
+					'filename' => null,
+					'charset' => null,
+				);
+			}
+			// is array, but not the right key
+			else if (!isset($files['file'])) {
+				// another (un-documented) old format: key is filename
+				$keys = array_keys($file);
+				$files = array(
+					'file' => $file,
+					'filename' => $keys[0],
+					'charset' => null,
+				);
+			}
+			
+			// push properly formatted file entry
+			$this->_attachments[] = $file;
 		}
 
 		/**
@@ -433,13 +506,10 @@
 		 */
 		protected function getSectionAttachments() {
 			$output = '';
-			foreach ($this->_attachments as $filename => $file) {
-				if(is_numeric($filename)){
-					$filename = NULL;
-				}
+			foreach ($this->_attachments as $key => $file) {
 				$output .= $this->boundaryDelimiterLine('multipart/mixed')
-						 . $this->contentInfoString(NULL, $file, $filename)
-						 . EmailHelper::base64ContentTransferEncode(file_get_contents($file));
+						 . $this->contentInfoString(NULL, $file['file'], $file['filename'], $file['charset'])
+						 . EmailHelper::base64ContentTransferEncode(file_get_contents($file['file']));
 			}
 			return $output;
 		}
@@ -486,14 +556,23 @@
 		 * Builds the right content-type/encoding types based on file and
 		 * content-type.
 		 *
-		 * Will return a string containing the section, or an empty array on
-		 * failure. Can be used to send to an email server directly.
-		 * @return string
+		 * Will try to match a common description, based on the $type param.
+		 * If nothing is found, will return a base64 attached file disposition.
+		 *
+		 * Can be used to send to an email server directly.
+		 *
+		 * @param $type optional mime-type
+		 * @param $file optional the path of the attachment
+		 * @param $filename optional the name of the attached file
+		 * @param $charset optional the charset of the attached file
+		 *
+		 * @return array
 		 */
-		public function contentInfoArray($type = NULL, $file = NULL, $filename = NULL) {
+		public function contentInfoArray($type = NULL, $file = NULL, $filename = NULL, $charset = NULL) {
+			// Common descriptions
 			$description = array(
 				'multipart/mixed' => array(
-					"Content-Type" => 'multipart/mixed; boundary="'
+					'Content-Type' => 'multipart/mixed; boundary="'
 									  .$this->getBoundary('multipart/mixed').'"',
 				),
 				'multipart/alternative' => array(
@@ -509,27 +588,50 @@
 					'Content-Transfer-Encoding' => $this->_text_encoding ? $this->_text_encoding : '8bit',
 				),
 			);
-			$binary = array(
-				'Content-Type'				=> General::getMimeType($file).'; name="'.(!is_null($filename)?$filename:basename($file)).'"',
+			
+			// Try common
+			if (!empty($type) && !empty($description[$type])) {
+				// return it if found
+				return $description[$type];
+			}
+			
+			// assure we have a file name
+			$filename = !is_null($filename) ? $filename : basename($file);
+			
+			// Format charset for insertion in content-type, if needed
+			if (!empty($charset)) {
+				$charset = sprintf('charset=%s;', $charset);
+			} else {
+				$charset = '';
+			}
+			// Return binary description
+			return array(
+				'Content-Type'				=> General::getMimeType($file).';'.$charset.' name="'.$filename.'"',
 				'Content-Transfer-Encoding' => 'base64',
-				'Content-Disposition'		=> 'attachment; filename="' . (!is_null($filename)?$filename:basename($file)).'"',
+				'Content-Disposition'		=> 'attachment; filename="' .$filename .'"',
 			);
-			return !empty($description[$type]) ? $description[$type] : ((!is_null($filename)?$filename:basename($file)) ? $binary : array());
 		}
 
 		/**
-		 * TODO
+		 * Creates the properly formatted InfoString based on the InfoArray.
+		 *
+		 * @see `EmailGateway::contentInfoArray()`
 		 *
 		 * @return string
 		 */
-		protected function contentInfoString($type = NULL, $file = NULL, $filename = NULL) {
-			$data = $this->contentInfoArray($type, $file, $filename);
+		protected function contentInfoString($type = NULL, $file = NULL, $filename = NULL, $charset = NULL) {
+			$data = $this->contentInfoArray($type, $file, $filename, $charset);
 			foreach ($data as $key => $value) {
 				$field[] = EmailHelper::fold(sprintf('%s: %s', $key, $value));
 			}
 			return !empty($field) ? implode("\r\n", $field)."\r\n\r\n" : NULL;
 		}
 
+		/**
+		 * Returns the bondary based on the $type parameter
+		 *
+		 * @param string $type the multipart type
+		 */
 		protected function getBoundary($type) {
 			switch ($type) {
 				case 'multipart/mixed':
