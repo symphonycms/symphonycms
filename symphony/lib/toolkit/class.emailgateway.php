@@ -84,11 +84,11 @@
 		 * was successfully sent.
 		 * See the default gateway for an example.
 		 *
+		 * @abstract
+		 *
 		 * @return boolean
 		 */
-		public function send() {
-			return false;
-		}
+		public abstract function send();
 
 		/**
 		 * Open new connection to the email server.
