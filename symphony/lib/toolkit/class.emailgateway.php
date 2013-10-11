@@ -26,7 +26,7 @@
 			// empty string.
 			$gateway_class = $trace[1]['class']?' (' . $trace[1]['class'] . ')':'';
 			Symphony::Log()->pushToLog(__('Email Gateway Error') . $gateway_class  . ': ' . $message, $code, true);
-			parent::__construct('<![CDATA[' . trim($message) . ']]>');
+			parent::__construct(trim($message));
 		}
 	}
 
@@ -248,11 +248,15 @@
 			if ($files == null) {
 				$this->_attachments = array();
 			} else {
-				if(!is_array($files) || !isset($files['file'])){
+				if(!is_array($files)) {
 					$files = array($files);
 				}
-				foreach ($files as $file) {
-					$this->appendAttachment($file);
+				foreach ($files as $key => $file) {
+					if (is_numeric($key)) {
+						$this->appendAttachment($file);
+					} else {
+						$this->appendAttachment(array($key => $file));
+					}
 				}
 			}
 		}
@@ -281,19 +285,19 @@
 		public function appendAttachment($file) {
 			if (!is_array($file)) {
 				// treat the param as string (old format)
-				$files = array(
+				$file = array(
 					'file' => $file,
 					'filename' => null,
 					'charset' => null,
 				);
 			}
 			// is array, but not the right key
-			else if (!isset($files['file'])) {
+			else if (!isset($file['file'])) {
 				// another (un-documented) old format: key is filename
 				$keys = array_keys($file);
-				$files = array(
-					'file' => $file,
-					'filename' => $keys[0],
+				$file = array(
+					'file' => $file[$keys[0]],
+					'filename' => is_numeric($keys[0]) ? null : $keys[0],
 					'charset' => null,
 				);
 			}
@@ -523,14 +527,34 @@
 		 *
 		 * Will return a string containing the section. Can be used to send to
 		 * an email server directly.
+		 *
 		 * @return string
 		 */
 		protected function getSectionAttachments() {
 			$output = '';
 			foreach ($this->_attachments as $key => $file) {
-				$output .= $this->boundaryDelimiterLine('multipart/mixed')
+				
+				$fileContent = null;
+				
+				// If the attachement is an url
+				if (filter_var($file['file'], FILTER_VALIDATE_URL)) {
+					require_once(TOOLKIT . '/class.gateway.php');
+					// use gateway for urls
+					$gateway = new Gateway();
+					$gateway->init($file['file']);
+					$gateway->setopt('TIMEOUT', 30);
+					$fileContent = @$gateway->exec();
+				} else {
+					$fileContent = @file_get_contents($file['file']);
+				}
+				
+				if ($fileContent !== FALSE && !empty($fileContent)) {
+					$output .= $this->boundaryDelimiterLine('multipart/mixed')
 						 . $this->contentInfoString(NULL, $file['file'], $file['filename'], $file['charset'])
-						 . EmailHelper::base64ContentTransferEncode(file_get_contents($file['file']));
+						 . EmailHelper::base64ContentTransferEncode($fileContent);
+				} else {
+					throw new EmailGatewayException(__('The content of the file `%s` could not be loaded.', array($file['file'])));
+				}
 			}
 			return $output;
 		}
