@@ -357,12 +357,12 @@
 
 			$label = Widget::Label(__('Username'));
 			$label->setAttribute('class', 'column');
-			$label->appendChild(Widget::Input('settings[email_smtp][username]', $this->_user));
+			$label->appendChild(Widget::Input('settings[email_smtp][username]', $this->_user, 'text', array('autocomplete' => 'off')));
 			$div->appendChild($label);
 
 			$label = Widget::Label(__('Password'));
 			$label->setAttribute('class', 'column');
-			$label->appendChild(Widget::Input('settings[email_smtp][password]', $this->_pass, 'password'));
+			$label->appendChild(Widget::Input('settings[email_smtp][password]', $this->_pass, 'password', array('autocomplete' => 'off')));
 			$div->appendChild($label);
 			$group->appendChild($div);
 

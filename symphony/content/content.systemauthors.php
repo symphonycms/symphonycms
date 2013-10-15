@@ -391,7 +391,7 @@
 				$fieldset->setAttribute('class', 'three columns');
 
 				$label = Widget::Label(NULL, NULL, 'column');
-				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password', array('placeholder' => __('Old Password'))));
+				$label->appendChild(Widget::Input('fields[old-password]', NULL, 'password', array('placeholder' => __('Old Password'), 'autocomplete' => 'off')));
 				$fieldset->appendChild((isset($this->_errors['old-password']) ? Widget::Error($label, $this->_errors['old-password']) : $label));
 			}
 
@@ -399,12 +399,12 @@
 			$callback = Administration::instance()->getPageCallback();
 			$placeholder = ($callback['context'][0] == 'edit' ? __('New Password') : __('Password'));
 			$label = Widget::Label(NULL, NULL, 'column');
-			$label->appendChild(Widget::Input('fields[password]', NULL, 'password', array('placeholder' => $placeholder)));
+			$label->appendChild(Widget::Input('fields[password]', NULL, 'password', array('placeholder' => $placeholder, 'autocomplete' => 'off')));
 			$fieldset->appendChild((isset($this->_errors['password']) ? Widget::Error($label, $this->_errors['password']) : $label));
 
 			// Confirm password
 			$label = Widget::Label(NULL, NULL, 'column');
-			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password', array('placeholder' => __('Confirm Password'))));
+			$label->appendChild(Widget::Input('fields[password-confirmation]', NULL, 'password', array('placeholder' => __('Confirm Password'), 'autocomplete' => 'off')));
 			$fieldset->appendChild((isset($this->_errors['password-confirmation']) ? Widget::Error($label, $this->_errors['password']) : $label));
 
 			$group->appendChild($fieldset);
