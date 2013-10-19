@@ -338,7 +338,7 @@
 			$group->appendChild($div);
 
 			$label = Widget::Label(__('Email Address'));
-			$label->appendChild(Widget::Input('fields[email]', $author->get('email')));
+			$label->appendChild(Widget::Input('fields[email]', $author->get('email'), 'text', array('autocomplete' => 'off')));
 			$group->appendChild((isset($this->_errors['email']) ? Widget::Error($label, $this->_errors['email']) : $label));
 
 			$this->Form->appendChild($group);
@@ -351,7 +351,7 @@
 			$div = new XMLElement('div');
 
 			$label = Widget::Label(__('Username'));
-			$label->appendChild(Widget::Input('fields[username]', $author->get('username')));
+			$label->appendChild(Widget::Input('fields[username]', $author->get('username'), 'text', array('autocomplete' => 'off')));
 			$div->appendChild((isset($this->_errors['username']) ? Widget::Error($label, $this->_errors['username']) : $label));
 
 			// Only developers can change the user type. Primary account should NOT be able to change this
