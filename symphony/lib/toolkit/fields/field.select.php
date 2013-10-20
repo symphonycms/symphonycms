@@ -126,6 +126,11 @@
 
 			$results = false;
 
+			// Fixes #1802
+			if(!Symphony::Database()->tableExists('tbl_entries_data_' . $this->get('dynamic_options'))) {
+				return;
+			}
+
 			// Ensure that the table has a 'value' column
 			if((boolean)Symphony::Database()->fetchVar('Field', 0, sprintf("
 					SHOW COLUMNS FROM `tbl_entries_data_%d` LIKE '%s'

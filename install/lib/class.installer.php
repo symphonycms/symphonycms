@@ -279,7 +279,15 @@
 			}
 
 			try{
-				if(Symphony::Database()->isConnected()) {
+				// Check the database table prefix is legal. #1815
+				if(!preg_match('/^[0-9a-zA-Z\$_]*$/', $fields['database']['tbl_prefix'])) {
+					$errors['database-table-prefix']  = array(
+						'msg' => 'Invalid database table prefix: ‘' . $fields['database']['tbl_prefix'] . '’',
+						'details' =>  __('The table prefix %s is invalid. The table prefix must only contain numbers, letters or underscore characters.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
+					);
+				}
+				// Check the database credentials
+				else if(Symphony::Database()->isConnected()) {
 					// Looking for the given database name
 					Symphony::Database()->select($fields['database']['db']);
 
@@ -301,7 +309,7 @@
 						));
 
 						if(is_array($tables) && !empty($tables)) {
-							$errors['database-table-clash']  = array(
+							$errors['database-table-prefix']  = array(
 								'msg' => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
 								'details' =>  __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
 							);

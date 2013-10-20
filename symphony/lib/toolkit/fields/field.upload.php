@@ -606,16 +606,16 @@
 		public function prepareExportValue($data, $mode, $entry_id = null) {
 			$modes = (object)$this->getExportModes();
 
-			$file = $this->getFilePath($data['file']);
+			$filepath = $this->getFilePath($data['file']);
 
 			// No file, or the file that the entry is meant to have no
 			// longer exists.
-			if (!isset($data['file']) || !is_file($file)) {
+			if (!isset($data['file']) || !is_file($filepath)) {
 				return null;
 			}
 
 			if ($mode === $modes->getFilename) {
-				return $file;
+				return $data['file'];
 			}
 
 			if ($mode === $modes->getObject) {

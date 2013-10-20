@@ -541,7 +541,11 @@
 			$body_id = preg_replace("/^content/", '', get_class($this));
 
 			// lowercase any uppercase letters and prefix with a hyphen
-			$body_id = trim(preg_replace("/([A-Z])/e", "'-' . strtolower('\\1')", $body_id), '-');
+			$body_id = trim(preg_replace_callback("/([A-Z])/",
+				create_function('$id', 'return "-" . strtolower($id[0]);'),
+				$body_id),
+				'-'
+			);
 
 			if (!empty($body_id)) $this->Body->setAttribute('id', trim($body_id));
 		}

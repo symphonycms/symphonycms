@@ -37,7 +37,7 @@
 				// Get parameters
 				if(is_array($current->dsParamPARAMOUTPUT)) {
 					foreach($current->dsParamPARAMOUTPUT as $id => $param) {
-						$params[] = $prefix . Lang::createHandle($param) . $suffix;
+						$params[] = $prefix . $param . $suffix;
 					}
 				}
 			}

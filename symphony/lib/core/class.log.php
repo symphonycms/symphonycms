@@ -9,6 +9,7 @@
 	 * `LOGS` directory.
 	 */
 	require_once(CORE . '/class.datetimeobj.php');
+	require_once(TOOLKIT . '/class.general.php');
 
 	Class Log{
 
@@ -220,7 +221,7 @@
 				return false;
 			}
 
-			$permissions = (is_null(Symphony::Configuration())) ? '0664' : Symphony::Configuration()->get('write_mode', 'file');
+			$permissions = (class_exists('Symphony')) ? Symphony::Configuration()->get('write_mode', 'file') : '0664';
 			return General::writeFile($this->_log_path, $message . ($addbreak ? PHP_EOL : ''), $permissions, 'a+');
 		}
 

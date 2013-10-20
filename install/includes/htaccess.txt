@@ -1,6 +1,10 @@
 ### Symphony 2.3.x ###
 Options +FollowSymlinks -Indexes
 
+<IfModule !mod_rewrite.c>
+	SetEnv HTTP_MOD_REWRITE No
+</IfModule>
+
 <IfModule mod_rewrite.c>
 
 	RewriteEngine on

@@ -647,7 +647,13 @@
 		 * @return boolean
 		 */
 		public function delete($table, $where = null){
-			return $this->query("DELETE FROM $table WHERE $where");
+			$sql = "DELETE FROM $table";
+			
+			if (!is_null($where)) {
+				$sql .= " WHERE $where";
+			}
+			
+			return $this->query($sql);
 		}
 
 		/**
@@ -774,6 +780,22 @@
 		 */
 		public function tableContainsField($table, $field){
 			$results = $this->fetch("DESC `{$table}` `{$field}`");
+
+			return (is_array($results) && !empty($results));
+		}
+
+		/**
+		 * This function takes `$table` and returns boolean
+		 * if it exists or not.
+		 *
+		 * @since Symphony 2.3.4
+		 * @param string $table
+		 *  The table name
+		 * @return boolean
+		 *  True if `$table` exists, false otherwise
+		 */
+		public function tableExists($table) {
+			$results = $this->fetch(sprintf("SHOW TABLES LIKE '%s'", $table));
 
 			return (is_array($results) && !empty($results));
 		}

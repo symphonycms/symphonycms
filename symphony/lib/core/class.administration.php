@@ -71,7 +71,7 @@
 		 * Overrides the Symphony isLoggedIn function to allow Authors
 		 * to become logged into the backend when `$_REQUEST['auth-token']`
 		 * is present. This logs an Author in using the loginFromToken function.
-		 * A token may be 6 or 8 characters in length in the backend. A 6 character token
+		 * A token may be 6 or 8 characters in length in the backend. A 6 or 16 character token
 		 * is used for forget password requests, whereas the 8 character token is used to login
 		 * an Author into the page
 		 *
@@ -79,7 +79,7 @@
 		 * @return boolean
 		 */
 		public function isLoggedIn(){
-			if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && in_array(strlen($_REQUEST['auth-token']), array(6, 8))) {
+			if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && in_array(strlen($_REQUEST['auth-token']), array(6, 8, 16))) {
 				return $this->loginFromToken($_REQUEST['auth-token']);
 			}
 
