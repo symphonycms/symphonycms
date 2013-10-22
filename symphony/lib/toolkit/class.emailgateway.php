@@ -26,7 +26,9 @@
 			// empty string.
 			$gateway_class = $trace[1]['class']?' (' . $trace[1]['class'] . ')':'';
 			Symphony::Log()->pushToLog(__('Email Gateway Error') . $gateway_class  . ': ' . $message, $code, true);
-			parent::__construct('<![CDATA[' . trim($message) . ']]>');
+			// CDATA the $message: Do not trust input from others
+			$message = General::wrapInCDATAIfNeeded(trim($message));
+			parent::__construct($message);
 		}
 	}
 
