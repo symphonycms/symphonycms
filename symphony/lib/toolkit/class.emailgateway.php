@@ -202,8 +202,6 @@
 		 * @param string $text_plain
 		 */
 		public function setTextPlain($text_plain){
-			// How the hell can we validate this ???
-			// Allow only plain ASCII ?
 			$this->_text_plain = $text_plain;
 		}
 
