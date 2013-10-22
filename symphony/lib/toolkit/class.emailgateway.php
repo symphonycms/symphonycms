@@ -247,11 +247,27 @@
 			// Always erase
 			$this->_attachments = array();
 			
-			if(!is_array($files) || !isset($files['file'])){
+			// check if we have an input value
+			if ($files == null) {
+				return;
+			}
+			
+			// make sure we are dealing with an array
+			if(!is_array($files)){
 				$files = array($files);
 			}
-			foreach ($files as $file) {
-				$this->appendAttachment($file);
+			
+			// Append each attachment one by one in order
+			// to normalize each input
+			foreach ($files as $key => $file) {
+				if (is_numeric($key)) {
+					// key is numeric, assume keyed array or string
+					$this->appendAttachment($file);
+				} else {
+					// key is not numeric, assume key is filename
+					// and file is a string, key needs to be preserved
+					$this->appendAttachment(array($key => $file));
+				}
 			}
 		}
 		
