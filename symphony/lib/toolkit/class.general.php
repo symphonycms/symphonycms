@@ -2,6 +2,10 @@
 	/**
 	 * @package toolkit
 	 */
+
+	define_safe('CDATA_BEGIN', '<![CDATA[');
+	define_safe('CDATA_END', ']]>');
+
 	/**
 	 * General is a utility class that offers a number miscellaneous of
 	 * functions that are used throughout Symphony.
@@ -930,7 +934,9 @@
 		public function getMimeType($file) {
 			if (!empty($file)) {
 				// in PHP 5.3 we can use 'finfo'
-				if (PHP_VERSION_ID >= 50300) {
+				// But check if `finfo_open` exists since it requires PECL fileinfo >= 0.1.0
+				// @link: http://php.net/manual/fr/function.finfo-open.php 
+				if (PHP_VERSION_ID >= 50300 && function_exists('finfo_open')) {
 					$finfo = finfo_open(FILEINFO_MIME_TYPE);
 					$mime_type = finfo_file($finfo, $file);
 					finfo_close($finfo);
@@ -1423,7 +1429,39 @@
 
 			}
 		}
-
+		
+		
+		
+		/**
+		 * Wrap a value in CDATA tags for XSL output of non encoded data, only
+		 * if not already wrapped. This method is safer to use than `wrapInCDATA`
+		 * and it is recommanded to use it in all possible cases.
+		 *
+		 * @since Symphony 2.3.5
+		 * @param string $value
+		 *	The string to wrap in CDATA
+		 * @return string
+		 *	The wrapped string
+		 */
+		public static function wrapInCDATAIfNeeded($value) {
+			if (empty($value)) {
+				return $value;
+			}
+			
+			$startRegExp = '/^' . preg_quote(CDATA_BEGIN) . '/';
+			$endRegExp = '/' . preg_quote(CDATA_END) . '$/';
+			
+			if (!preg_match($startRegExp, $value)) {
+				$value = CDATA_BEGIN . $value;
+			}
+			
+			if (!preg_match($endRegExp, $value)) {
+				$value .= CDATA_END;
+			}
+			
+			return $value;
+		}
+		
 		/**
 		 * Wrap a value in CDATA tags for XSL output of non encoded data
 		 *
@@ -1434,7 +1472,7 @@
 		 *	The wrapped string
 		 */
 		public static function wrapInCDATA($value) {
-			return (!empty($value)) ? '<![CDATA[' . $value . ']]>' : $value;
+			return (!empty($value)) ? CDATA_BEGIN. $value . CDATA_END : $value;
 		}
 
 		/**
@@ -1447,7 +1485,7 @@
 		 *	The unwrapped string
 		 */
 		public static function unwrapCDATA($value) {
-			return str_replace(array('<![CDATA[', ']]>'), '', $value);
+			return str_replace(array(CDATA_BEGIN, CDATA_END), '', $value);
 		}
 
 	}
