@@ -3,8 +3,8 @@
 	 * @package toolkit
 	 */
 
-	safe_define('CDATA_BEGIN', '<![CDATA[');
-	safe_define('CDATA_END', ']]>');
+	define_safe('CDATA_BEGIN', '<![CDATA[');
+	define_safe('CDATA_END', ']]>');
 
 	/**
 	 * General is a utility class that offers a number miscellaneous of
