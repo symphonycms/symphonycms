@@ -220,16 +220,14 @@
 		}
 
 		/**
-		 * This function adds one or multiple attachment files
+		 * This function sets one or multiple attachment files
 		 * to the email.
 		 *
-		 * @since Symphony 2.3.4 - Calling this method multiple times will
-		 * always append files to the email instead of erasing the
-		 * previous content. Passing `null` to this function will
+		 * Passing `null` to this function will
 		 * erase the current values with an empty array.
 		 *
 		 * @param string|array $files
-		 *   Accepts the same parameters as `EmailGateway::addAttachment()`
+		 *   Accepts the same parameters format as `EmailGateway::addAttachment()`
 		 *   but you can also all multiple values at once if all files are
 		 *   wrap in a array.
 		 *
@@ -246,15 +244,14 @@
 		 *   ````
 		 */
 		public function setAttachments($files){
-			if ($files == null) {
-				$this->_attachments = array();
-			} else {
-				if(!is_array($files) || !isset($files['file'])){
-					$files = array($files);
-				}
-				foreach ($files as $file) {
-					$this->appendAttachment($file);
-				}
+			// Always erase
+			$this->_attachments = array();
+			
+			if(!is_array($files) || !isset($files['file'])){
+				$files = array($files);
+			}
+			foreach ($files as $file) {
+				$this->appendAttachment($file);
 			}
 		}
 		
