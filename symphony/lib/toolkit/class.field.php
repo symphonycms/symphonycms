@@ -89,6 +89,12 @@
 		const __FIELD_ALL__ = 1000;
 
 		/**
+		 * Indicates that a field is required
+		 * @var string
+		 */
+		const __FIELD_REQUIRED__ = 'yes';
+
+		/**
 		 * Used to manage the joins when this field used in a datasource
 		 * @var integer
 		 */
@@ -227,6 +233,18 @@
 		public function mustBeUnique(){
 			return false;
 		}
+
+		/**
+		 * Checks if this fieldinstance is required.
+		 *
+		 * @access public
+		 * @return boolean
+		 */
+		public function required()
+		{
+		    return self::__FIELD_REQUIRED__ === $this->get('required');
+		}
+
 
 		/**
 		 * Test whether this field supports data-source output grouping. This
