@@ -131,7 +131,7 @@
 				$data = $data['value'];
 			}
 
-			if($this->get('required') == 'yes' && strlen($data) == 0){
+			if($this->get('required') == 'yes' && 0 === strlen(trim($data))){
 				$message = __('‘%s’ is a required field.', array($this->get('label')));
 				return self::__MISSING_FIELDS__;
 			}
