@@ -163,9 +163,8 @@
 		 *  'missing' or 'invalid'
 		 */
 		public function __reduceType($a, $b) {
-			return (empty($b)) ? 'missing' : 'invalid';
+			return (strlen(trim($b)) === 0) ? 'missing' : 'invalid';
 		}
-
 
 		/**
 		 * This function will process the core Filters, Admin Only and Expect
