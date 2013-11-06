@@ -930,7 +930,7 @@
 		public function getMimeType($file) {
 			if (!empty($file)) {
 				// in PHP 5.3 we can use 'finfo'
-				if (PHP_VERSION_ID >= 50300) {
+				if (PHP_VERSION_ID >= 50300 && function_exists('finfo_open')) {
 					$finfo = finfo_open(FILEINFO_MIME_TYPE);
 					$mime_type = finfo_file($finfo, $file);
 					finfo_close($finfo);
