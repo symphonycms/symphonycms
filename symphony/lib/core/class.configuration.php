@@ -198,8 +198,8 @@
 		 * @return boolean
 		 */
 		public function write($file = null, $permissions = null) {
-			if(is_null($permissions) && isset($this->_properties['write_mode']['file'])) {
-				$permissions = $this->_properties['write_mode']['file'];
+			if(is_null($permissions) && isset($this->_properties['file']['write_mode'])) {
+				$permissions = $this->_properties['file']['write_mode'];
 			}
 
 			if(is_null($file)) {
