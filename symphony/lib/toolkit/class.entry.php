@@ -187,7 +187,7 @@
 			$fieldData = isset($this->_data[$field_id]) ? 
 				$this->_data[$field_id] :
 				array(
-					'entry-id' => $this->get('id')
+					'entry_id' => $this->get('id')
 				);
 			
 			if(!$field_id) return $this->_data;
