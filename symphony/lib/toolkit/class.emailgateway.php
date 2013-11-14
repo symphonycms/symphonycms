@@ -274,7 +274,7 @@
 		/**
 		 * Appends one file attachment to the attachments array.
 		 *
-		 * @since Symphony 2.3.4
+		 * @since Symphony 2.3.5
 		 *
 		 * @param string|array $file
 		 *   Can be a string representing the file path, absolute or relative, i.e.
