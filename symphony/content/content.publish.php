@@ -21,10 +21,10 @@
 		public function sort(&$sort, &$order, $params) {
 			$section = $params['current-section'];
 
-			// If `?unsort` is appended to the URL, then sorting information are reverted
-			// to their defaults
+			// If `?unsort` is appended to the URL, then sorting is reverted
+			// to 'none', aka. by 'entry-id'.
 			if($params['unsort']) {
-				$section->setSortingField($section->getDefaultSortingField(), false);
+				$section->setSortingField('id', false);
 				$section->setSortingOrder('asc');
 
 				redirect(Administration::instance()->getCurrentPageURL());
@@ -53,7 +53,6 @@
 					$section->setSortingOrder($order);
 
 					if ($params['filters']) {
-
 						$params['filters'] = '?' . trim($params['filters'], '&amp;');
 					}
 
