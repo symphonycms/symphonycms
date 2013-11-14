@@ -337,13 +337,17 @@
 		 * whether the value should be prepended or appended
 		 * to the children.
 		 *
-		 * @param string $value
+		 * @param string|XMLElement|array $value
 		 * @param boolean $prepend (optional)
 		 *  Defaults to true.
 		 */
 		public function setValue($value, $prepend=true){
-			$value = ($value instanceof XMLElement) ? $value->generate(false) : $value;
-
+			if ($value instanceof XMLElement) {
+				$value = $value->generate(false);
+			} else if (is_array($value)) {
+				$value = implode(', ', $value);
+			}
+			
 			if(!$prepend) $this->_placeValueAfterChildElements = true;
 			$this->_value = $value;
 		}
