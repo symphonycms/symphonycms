@@ -513,12 +513,13 @@
 					// If the datasource require's GROUPING
 					if(isset($this->dsParamGROUP)) {
 						self::$_fieldPool[$this->dsParamGROUP] = FieldManager::fetch($this->dsParamGROUP);
-						$groups = self::$_fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);
 
 						if (self::$_fieldPool[$this->dsParamGROUP] == NULL) {
 							throw new SymphonyErrorPage(vsprintf("The field used for grouping '%s' cannot be found.", $this->dsParamGROUP));
 						}
-						
+
+						$groups = self::$_fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);
+
 						foreach($groups as $element => $group){
 							foreach($group as $g) {
 								$result->appendChild(

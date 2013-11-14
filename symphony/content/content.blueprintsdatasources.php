@@ -728,20 +728,14 @@
 			foreach($field_groups as $section_id => $section_data){
 				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
 
-				$authorOverride = false;
-
 				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
 					foreach($section_data['fields'] as $input){
 
 						if(!$input->allowDatasourceOutputGrouping()) continue;
 
-						if($input->get('element_name') == 'author') $authorOverride = true;
-
 						$optgroup['options'][] = array($input->get('id'), ($fields['source'] == $section_id && $fields['group'] == $input->get('id')), $input->get('label'));
 					}
 				}
-
-				if(!$authorOverride) $optgroup['options'][] = array('author', ($fields['source'] == $section_id && $fields['group'] == 'author'), __('Author'));
 
 				$options[] = $optgroup;
 			}

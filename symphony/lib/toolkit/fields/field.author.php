@@ -27,7 +27,7 @@
 		Definition:
 	-------------------------------------------------------------------------*/
 
-		public function canToggle(){
+		public function canToggle() {
 			return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
 		}
 
@@ -63,7 +63,6 @@
 		public function allowDatasourceParamOutput() {
 			return true;
 		}
-
 
 	/*-------------------------------------------------------------------------
 		Setup:
@@ -506,6 +505,38 @@
 			$label->appendChild(Widget::Select($fieldname, $options, $attr));
 
 			return $label;
+		}
+
+	/*-------------------------------------------------------------------------
+		Grouping:
+	-------------------------------------------------------------------------*/
+
+		public function groupRecords($records){
+			if(!is_array($records) || empty($records)) return;
+
+			$groups = array($this->get('element_name') => array());
+
+			foreach($records as $r) {
+				$data = $r->getData($this->get('id'));
+
+				if(!isset($data['author_id'])) {
+					continue;
+				}
+
+				if(!isset($groups[$this->get('element_name')][$data['author_id']])) {
+					$author = AuthorManager::fetchByID($data['author_id']);
+
+					$groups[$this->get('element_name')][$data['author_id']] = array(
+						'attr' => array('author-id' => $data['author_id'], 'username' => $author->get('username'), 'full-name' => $author->getFullName()),
+						'records' => array(),
+						'groups' => array()
+					);
+				}
+
+				$groups[$this->get('element_name')][$data['author_id']]['records'][] = $r;
+			}
+
+			return $groups;
 		}
 
 	}
