@@ -80,6 +80,8 @@ form.columns .column.primary {
 
 @media screen and (max-width: 700px) {
 
+	.two.columns .column,
+	.two.columns > .invalid,
 	.two.columns .column.primary,
 	.two.columns .column.secondary {
 		width: 100%;
