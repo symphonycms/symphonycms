@@ -42,7 +42,7 @@
 	 */
 	$.fn.symphonySelectable = function(options) {
 		var objects = this,
-			settings = settings = $.extend({}, $.symphonySelectable.defaults, options);
+			settings = $.extend({}, $.symphonySelectable.defaults, options);
 
 	/*-------------------------------------------------------------------------
 		Events
