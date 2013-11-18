@@ -6,13 +6,16 @@
 	
 	$.symphonySelectable = {
 		defaults: {
-			input: 'input[type="checkbox"].selectable',
+			checkbox: 'input[type="checkbox"]', // private
+			input: '.selectable', // private
 			items: 'tbody tr:has(input)',
 			ignore: 'a',
-			mode: 'single'
+			mode: 'default'
 		}
 	};
 	
+	// Use more precise selectors by default
+	$.symphonySelectable.defaults.input = $.symphonySelectable.defaults.checkbox + $.symphonySelectable.defaults.input;
 	$.symphonySelectable.defaults.items = 'tbody tr:has('+$.symphonySelectable.defaults.input+')';
 	
 	/**
@@ -31,7 +34,7 @@
 	 * @param {String} [options.items='tbody tr:has(input)'] Selector to find items that are selectable
 	 * item. Needed to properly handle item highlighting when used in connection with the orderable plugin
 	 * @param {String} [options.ignore='a'] Selector to find elements that should not propagate to the handle
-	 * @param {String} [optinos.mode='single'] Either 'default' (click removes other selections) or 'additive' (click adds to exisiting selection)
+	 * @param {String} [options.mode='default'] Either 'default' (click removes other selections) or 'additive' (click adds to exisiting selection)
 	 *
 	 * @example
 
@@ -43,6 +46,12 @@
 	$.fn.symphonySelectable = function(options) {
 		var objects = this,
 			settings = $.extend({}, $.symphonySelectable.defaults, options);
+			
+		// Regression testing
+		// Make sure we can still find the checkboxes, even if they do not have
+		if (!objects.find(settings.items).length) {
+			settings.items = 'tbody tr:has('+settings.checkbox+')';
+		}
 
 	/*-------------------------------------------------------------------------
 		Events
