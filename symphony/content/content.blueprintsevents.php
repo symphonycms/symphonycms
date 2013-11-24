@@ -129,7 +129,7 @@
 
 			if(!$readonly) {
 				$fieldset = new XMLElement('fieldset');
-				$fieldset->setAttribute('class', 'settings picker');
+				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
 				$group = new XMLElement('div');
@@ -179,10 +179,7 @@
 				}
 
 				$label->appendChild(
-					Widget::Select('fields[source]', $options, array(
-						'id' => 'event-context',
-						'class' => 'picker'
-					))
+					Widget::Select('fields[source]', $options, array('id' => 'event-context'))
 				);
 
 				$div = new XMLElement('div');
