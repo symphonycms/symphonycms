@@ -1302,11 +1302,9 @@
 							));
 
 							foreach($entries['records'] as $e) {
-								$value = $field->prepareTableValue($e->getData($field->get('id')), null, $e->get('id'));
-								$li = new XMLElement('li');
-								$a = new XMLElement('a', strip_tags($value));
-								$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/');
-								$li->appendChild($a);
+								// let the field create the mark up
+								$li = $field->prepareAssociationsDrawerXMLElement($e, $as);
+								// add it to the unordered list
 								$ul->appendChild($li);
 							}
 

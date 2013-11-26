@@ -747,6 +747,29 @@
 
 			return $value;
 		}
+		
+		/**
+		 * Format this field value for display in the Associations Drawer publish index.
+		 * By default, Symphony will use the return value of the `prepareTableValue` function.
+		 * 
+		 * @param Entry $e
+		 *   The associated entry
+		 * @param array $parent_association
+		 *   An array containing information about the parent
+		 *
+		 * return XMLElement
+		 *   The XMLElement must be a li node, since it will be added an ul node.
+		 */
+		public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association) {
+			$value = $this->prepareTableValue($e->getData($this->get('id')), null, $e->get('id'));
+			$li = new XMLElement('li');
+			$li->setAttribute('class', 'field-' . $this->get('type'));
+			$a = new XMLElement('a', strip_tags($value));
+			$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $parent_association['handle'] . '/edit/' . $e->get('id') . '/');
+			$li->appendChild($a);
+			
+			return $li;
+		}
 
 		/**
 		 * Display the publish panel for this field. The display panel is the

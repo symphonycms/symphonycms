@@ -551,6 +551,13 @@
 				return $link->generate();
 			}
 		}
+		
+		public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association) {
+			$li = parent::prepareAssociationsDrawerXMLElement($e, $parent_association);
+			$a = $li->getChild(0);
+			$a->setAttribute('data-path', $this->get('destination'));
+			return $li;
+		}
 
 	/*-------------------------------------------------------------------------
 		Import:
