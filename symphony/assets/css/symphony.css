@@ -52,13 +52,18 @@ header, nav, section, aside, footer {
 	Basic styles
 -----------------------------------------------------------------------------*/
 
+/**
+ * Load the Open Sans stylesheet and associated font from the Google Fonts API.
+ */
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600);
+
 html,
 body {
 	height: 100%;
 }
 
 body {
-	font: 68.75%/1.5 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+	font: 68.75%/1.5 'Open Sans', 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 	background: #fff;
 	color: #222;
 }
@@ -67,7 +72,7 @@ body {
 
 h1,
 h2 {
-	font: 127.28%/1.35 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+	font: 127.28%/1.35 'Open Sans', 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }
 
 h3 {
