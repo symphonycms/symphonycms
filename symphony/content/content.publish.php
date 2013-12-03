@@ -58,6 +58,16 @@
 
 					redirect(Administration::instance()->getCurrentPageURL() . $params['filters']);
 				}
+
+				// If the sort order or direction remains the same, reload the page
+				if($sort == $section->getSortingField() && $order == $section->getSortingOrder()){
+					if ($params['filters']) {
+
+						$params['filters'] = '?' . trim($params['filters'], '&amp;');
+					}
+
+					redirect(Administration::instance()->getCurrentPageURL() . $params['filters']);
+				}
 			}
 
 		}
