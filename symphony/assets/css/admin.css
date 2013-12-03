@@ -10,6 +10,9 @@
 #wrapper {
 	background: #fff;
 	position: relative;
+}
+
+#wrapper.drawer-vertical-right {
 	height: 100%;
 	overflow: auto;
 }
