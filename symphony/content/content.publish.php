@@ -25,7 +25,7 @@
 			// to 'none', aka. by 'entry-id'.
 			if($params['unsort']) {
 				$section->setSortingField('id', false);
-				$section->setSortingOrder('asc');
+				$section->setSortingOrder('desc');
 
 				redirect(Administration::instance()->getCurrentPageURL());
 			}
