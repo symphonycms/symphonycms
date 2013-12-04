@@ -25,7 +25,7 @@
 			// to 'none', aka. by 'entry-id'.
 			if($params['unsort']) {
 				$section->setSortingField('id', false);
-				$section->setSortingOrder('asc');
+				$section->setSortingOrder('desc');
 
 				redirect(Administration::instance()->getCurrentPageURL());
 			}
@@ -53,6 +53,16 @@
 					$section->setSortingOrder($order);
 
 					if ($params['filters']) {
+						$params['filters'] = '?' . trim($params['filters'], '&amp;');
+					}
+
+					redirect(Administration::instance()->getCurrentPageURL() . $params['filters']);
+				}
+
+				// If the sort order or direction remains the same, reload the page
+				if($sort == $section->getSortingField() && $order == $section->getSortingOrder()){
+					if ($params['filters']) {
+
 						$params['filters'] = '?' . trim($params['filters'], '&amp;');
 					}
 
