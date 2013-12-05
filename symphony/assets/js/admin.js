@@ -350,7 +350,7 @@
 			// Field editor
 			contents.find('#fields-duplicator')
 				.symphonyDuplicator({
-					orderable: true,
+					// orderable: true,
 					collapsible: (Symphony.Context.get('env')[0] !== 'new'),
 					preselect: 'input'
 				})
@@ -440,30 +440,30 @@
 			fieldToggleTop = !!fieldToggle.length ? fieldToggle.offset().top : 0;
 
 			// Fix toggle controls
-			$(window).on('scroll.admin', function fixFieldControls(event) {
-				var top = $(this).scrollTop() + 20;
+			// $(window).on('scroll.admin', function fixFieldControls(event) {
+			// 	var top = $(this).scrollTop() + 20;
 
-				if(top >= fieldLegendTop) {
-					fieldLegend.add(fieldToggle).addClass('fixed');
-				}
-				else {
-					fieldLegend.add(fieldToggle).removeClass('fixed');
-				}
-			});
+			// 	if(top >= fieldLegendTop) {
+			// 		fieldLegend.add(fieldToggle).addClass('fixed');
+			// 	}
+			// 	else {
+			// 		fieldLegend.add(fieldToggle).removeClass('fixed');
+			// 	}
+			// });
 
 			// Toggle fields
 			fieldToggle.on('click.admin', 'a.expand, a.collapse', function toggleFields(event) {
 				var control = $(this),
-					fields = contents.find('#fields-duplicator > .instance');
+					fields = contents.find('#fields-duplicator');
 
 				// Expand
 				if(control.is('.expand')) {
-					fields.trigger('expand.collapsible');
+					fields.trigger('expandall.collapsible');
 				}
 
 				// Collapse
 				else {
-					fields.trigger('collapse.collapsible');
+					fields.trigger('collapseall.collapsible');
 				}
 			});
 		}

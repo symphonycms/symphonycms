@@ -29,7 +29,7 @@
 				items:				'li',
 				handles:			'*',
 				ignore:				'input, textarea, select, a',
-				delay:				250
+				delay:				100
 			};
 
 		$.extend(settings, options);

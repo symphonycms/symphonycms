@@ -7,9 +7,22 @@
 
 .frame {
 	margin: 0;
-	padding: 0 0 10px;
+	padding: 0;
 	list-style: none;
 	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	background: #f5f5f5;
+	width: 100%;
+	border-radius: 4px;
+	min-height: 30px;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	border: 1px solid #dcdcdc;
+}
+
+.frame.empty {
+	border: 1px dashed #b8b8b8;
 }
 
 .frame:after {
@@ -17,7 +30,110 @@
 	clear: both;
 }
 
-.frame h1 {
+.frame ol,
+.frame ul {
+	padding: 0;
+	margin: 0;
+}
+
+/* Headers */
+
+.frame-header {
+	position: relative;
+	color: #3d3d3d;
+	padding: 8px 10px 7px;
+	border-bottom: 1px solid #dcdcdc;
+}
+
+.orderable .frame-header {
+	cursor: move;
+}
+
+.collapsible .frame-header {
+	cursor: pointer;
+}
+
+.frame-header h4 {
+	display: inline;
+	font-weight: bold;
+}
+
+.frame-header span {
+	margin: 0 0 0 10px;
+	font-weight: normal;
+	color: #a1a1a1;
+}
+
+.frame-header:before {
+	content: "";
+	display: block;
+	width: 1px;
+	height: 10px;
+	float: left;
+	margin: 3px 7px 0 0;
+	border-left: 6px solid #b8b8b8;
+	border-right: 3px solid #dcdcdc;
+}
+
+.frame-header.sidebar:before {
+	border-left: 6px solid #dcdcdc;
+	border-right: 3px solid #b8b8b8;
+}
+
+.highlight .frame-header:before {
+	border-left: 6px solid #747474;
+	border-right: 3px solid #b9b9b9;
+}
+
+.highlight .frame-header.sidebar:before {
+	border-left: 6px solid #b9b9b9;
+	border-right: 3px solid #747474;
+}
+
+/* Content: light scheme */
+
+.frame .content {
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	padding: 10px;
+	overflow: hidden;
+	width: 100%;
+	border-bottom: 1px solid #d0d0d0;
+	transition: padding 0.25s ease-in;
+}
+
+.frame .content::after {
+	content: '';
+	display: block;
+	clear: both;
+}
+
+.collapsed .content {
+	padding-top: 0;
+}
+
+.collapsible .content {
+	background: #e8e8e8;
+}
+
+.frame .content fieldset {
+	border-top-color: #d0d0d0;
+}
+
+.collapsible legend {
+	background: #e8e8e8;
+	padding-right: 5px;
+}
+/*li:last-of-type .content {
+	-webkit-border-radius: 0 0 4px 4px;
+	border-radius: 0 0 4px 4px;
+}*/
+
+
+
+
+
+/*.frame h1 {
 	background: #282828;
 	color: #fff;
 	margin: -11px -11px 15px;
@@ -30,13 +146,13 @@
 .frame h1 em {
 	color: rgba(255, 255, 255, 0.6);
 	font-style: normal;
-}
+}*/
 
 /*--------------------------------------------------------------------------
 	Inline frames (e. g. upload fields)
 --------------------------------------------------------------------------*/
 
-span.frame,
+/*span.frame,
 fieldset.frame,
 .frame.inline {
 	display: block;
@@ -44,24 +160,21 @@ fieldset.frame,
 	border: 1px solid #b8b8b8;
 	padding: 10px;
 	background-color: #f5f5f5;
-	-webkit-box-shadow: 0 1px 2px #e5e5e5;
 	box-shadow: 0 1px 2px #e5e5e5;
-	-webkit-border-radius: 4px;
 	border-radius: 4px;
-	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
 span.frame {
 	text-align: center;
-}
+}*/
 
 /*--------------------------------------------------------------------------
 	Login
 --------------------------------------------------------------------------*/
 
-#login .frame {
+/*#login .frame {
 	width: 280px;
 	margin: 100px auto;
 	overflow: visible;
@@ -90,13 +203,13 @@ span.frame {
 	margin-top: 3px;
 	float: left;
 }
-
+*/
 
 /*--------------------------------------------------------------------------
 	Error frames
 --------------------------------------------------------------------------*/
 
-#error,
+/*#error,
 #fatalerror {
 	padding: 100px 50px;
 }
@@ -194,13 +307,13 @@ span.frame {
 #fatalerror .frame .content:last-of-type ul {
 	-webkit-border-radius: 0 0 4px 4px;
 	border-radius: 0 0 4px 4px;
-}
+}*/
 
 /*--------------------------------------------------------------------------
 	Framed lists (e. g. Duplicators)
 --------------------------------------------------------------------------*/
 
-.frame > ol,
+/*.frame > ol,
 .frame > ul {
 	margin: 0;
 	padding: 0;
@@ -256,101 +369,22 @@ span.frame {
 	border-bottom: 1px solid #b8b8b8;
 }
 
+*/
+
 /* Link lists */
 
+/*
 .frame > ol > li a:first-child,
 .frame > ul > li a:first-child {
 	margin-top: 6px;
 	display: inline-block;
 }
+*/
 
-/* Header */
-
-.frame > ol > li header,
-.frame > ul > li header {
-	position: relative;
-	color: #3d3d3d;
-	margin: 0 -10px;
-	padding: 8px 10px 7px;
-}
-
-.frame > ol > li header:not(:only-child),
-.frame > ul > li header:not(:only-child) {
-	-webkit-box-shadow: 0 3px 10px #ededed;
-	box-shadow: 0 3px 10px #ededed;
-	border-bottom: 1px solid #dcdcdc;
-}
-
-.frame.orderable > ol > li header,
-.frame.orderable > ul > li header {
-	cursor: move;
-}
-
-.frame.collapsible > ol > li header,
-.frame.collapsible > ul > li header {
-	cursor: pointer;
-	border-bottom: 1px solid #d0d0d0;
-	-webkit-box-shadow: none;
-	box-shadow: none;
-}
-
-.frame > ol > li.collapsed header,
-.frame > ul > li.collapsed header {
-	border-bottom-color: transparent;
-}
-
-.frame > ol > li.expanding header,
-.frame > ul > li.expanding header {
-	border-bottom: 1px solid #d0d0d0;
-}
-
-.frame > ol > li header h4,
-.frame > ul > li header h4 {
-	display: inline;
-	font-weight: bold;
-}
-
-.frame > ol > li header span,
-.frame > ul > li header span {
-	margin: 0 0 0 10px;
-	font-weight: normal;
-	color: #a1a1a1;
-}
-
-.frame > ol > li header.main:before,
-.frame > ol > li header.sidebar:before,
-.frame > ul > li header.main:before,
-.frame > ul > li header.sidebar:before {
-	content: "";
-	display: block;
-	width: 1px;
-	height: 10px;
-	float: left;
-	margin: 3px 7px 0 0;
-	border-left: 6px solid #b8b8b8;
-	border-right: 3px solid #dcdcdc;
-}
-
-.frame > ol > li header.sidebar:before,
-.frame > ul > li header.sidebar:before {
-	border-left: 6px solid #dcdcdc;
-	border-right: 3px solid #b8b8b8;
-}
-
-.frame > ol > li.highlight header:before,
-.frame > ul > li.highlight header:before {
-	border-left: 6px solid #747474;
-	border-right: 3px solid #b9b9b9;
-}
-
-.frame > ol > li.highlight header.sidebar:before,
-.frame > ul > li.highlight header.sidebar:before {
-	border-left: 6px solid #b9b9b9;
-	border-right: 3px solid #747474;
-}
 
 /* Errors */
 
+/*
 .frame > ol > li.conflict.collapsed header,
 .frame > ul > li.conflict.collapsed header {
 	background: #fff9a2;
@@ -377,11 +411,11 @@ span.frame {
 	border-left: 6px solid #E7A973;
 	border-right: 3px solid #BD7053;
 }
-
+*/
 
 /* Content: light scheme */
 
-.frame > ol > li .content,
+/*.frame > ol > li .content,
 .frame > ul > li .content {
 	padding: 10px 10px 0.1px 10px;
 	margin: 0 -10px;
@@ -399,6 +433,14 @@ span.frame {
 	background: #e8e8e8;
 }
 
+.frame.collapsible > ol > li.collapsed .content {
+	padding-top: 0;
+	padding-bottom: 0;
+	overflow: hidden;
+	background-color: red;
+	transition: all 1s ease-in;
+}
+
 .frame.collapsible .content fieldset {
 	border-top-color: #d0d0d0;
 }
@@ -407,9 +449,11 @@ span.frame {
 .frame.collapsible > ul > li legend {
 	background: #e8e8e8;
 	padding-right: 5px;
-}
+}*/
 
 /* Content: dark scheme */
+
+/*
 .frame.dark > ol > li .content,
 .frame.dark > ul > li .content {
 	background: #323230;
@@ -434,10 +478,10 @@ span.frame {
 .frame.dark > ul > li .content fieldset {
 	border-top-color: #464644;
 }
-
+*/
 /* Selecting & ordering */
 
-.frame > ol > li.selected,
+/*.frame > ol > li.selected,
 .frame > ol > li.ordering,
 .frame > ul > li.selected,
 .frame > ul > li.ordering {
@@ -535,14 +579,12 @@ span.frame {
 .frame > ul > li.ordering header.sidebar:before {
 	border-left: 6px solid #7c9bc7;
 	border-right: 3px solid #cedaea;
-}
+}*/
 
 /* Destructor */
 
-.frame > ol > li header .destructor,
-.frame > ul > li header .destructor,
-.frame > ol > li header .button,
-.frame > ul > li header .button {
+.frame-header .destructor,
+.frame-header .button {
 	position: absolute;
 	top: 8px;
 	right: 10px;
@@ -552,21 +594,13 @@ span.frame {
 	margin: 0;
 }
 
-.frame > ol > li header .destructor:hover,
-.frame > ul > li header .destructor:hover,
-.frame > ol > li header .button:hover,
-.frame > ul > li header .button:hover,
-.frame > ol + fieldset .constructor:hover,
-.frame > ol + fieldset .constructor:hover {
+.frame-header .destructor:hover,
+.frame-header .button:hover,
+.frame-header .constructor:hover {
 	color: #494949;
 }
 
-.frame > ol > li header .destructor.disabled,
-.frame > ul > li header .destructor.disabled,
-.frame > ol > li header .button.disabled,
-.frame > ul > li header .button.disabled,
-.frame > ol + fieldset .constructor.disabled,
-.frame > ol + fieldset .constructor.disabled {
+.frame-header .disabled {
 	color: #adadad;
 	cursor: not-allowed;
 	opacity: 0.4;
@@ -574,15 +608,12 @@ span.frame {
 
 /* Templates */
 
-.frame .template {
-	display: none;
-}
 
 /*--------------------------------------------------------------------------
 	Controls
 --------------------------------------------------------------------------*/
 
-.frame .apply {
+/*.frame .apply {
 	clear: left;
 	cursor: default;
 	margin: 10px 0 0;
@@ -602,12 +633,12 @@ span.frame {
 
 .frame .actions button {
 	float: right;
-}
+}*/
 
 /*-----------------------------------------------------------------------------
 	Invalid states
 -----------------------------------------------------------------------------*/
-
+/*
 .invalid {
 	background: #eb6347;
 	border: 1px solid #c31;
@@ -642,4 +673,33 @@ span.frame {
 
 .invalid i {
 	color: rgba(255, 255, 255, 0.5);
+}*/
+
+.collapsible .instance.js-animate {
+	transition: max-height 0.25s ease-in
+}
+
+.collapsible .instance.collapsed.js-animate {
+	transition: max-height 0.25s ease-out;
+}
+
+
+/*-----------------------------------------------------------------------------
+	Duplicators
+-----------------------------------------------------------------------------*/
+
+.duplicator {
+	-webkit-transform: translatez(0);
+	-moz-transform: translatez(0);
+	-ms-transform: translatez(0);
+	-o-transform: translatez(0);
+	transform: translatez(0);
+}
+
+.duplicator .instance {
+	overflow: hidden;
+}
+
+.duplicator .template {
+	display: none;
 }
