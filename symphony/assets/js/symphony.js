@@ -259,6 +259,37 @@ var Symphony = (function($) {
 		 *
 		 * @since Symphony 2.3
 		 */
-		Extensions: {}
+		Extensions: {},
+
+		/**
+		 *
+		 */
+		Utilities: {
+
+			/**
+			 *
+			 */
+			inSight: function inSight(elements) {
+				var windowHeight = window.innerHeight,
+					visibles = $(); 
+
+				elements.each(function() {
+					var context = this.getBoundingClientRect();
+
+					if(
+						(context.top >= 0 && context.top <= windowHeight) || // Element top in sight
+						(context.bottom >= 0 && context.bottom <= windowHeight) || // Element bottom in sight
+						(context.top <= 0 && context.bottom >= windowHeight) // Element overflowing viewport
+					) {
+						visibles = visibles.add(this);
+					}
+					else {
+						return false;
+					}
+				});
+
+				return visibles;
+			}
+		}
 	};
 }(window.jQuery));
