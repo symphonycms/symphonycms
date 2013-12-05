@@ -51,40 +51,86 @@
 			// Collapse item
 			object.on('collapse.collapsible', settings.items, function collapse(event, speed) {
 				var item = $(this),
-					content = item.find(settings.content);
-
+					heightMin = item.data('heightMin'),
+					heightMax = item.height();
+				
 				// Check speed
 				if(!$.isNumeric(speed)) {
-					speed = 'fast';
+					speed = 250;
+				}
+				if(speed > 0) {
+					item.addClass('js-animate');
 				}
 
 				// Collapse item
-				item.trigger('collapsestart.collapsible');
-				object.addClass('collapsing');
-				item.addClass('collapsing');
-				content.slideUp(speed, function() {
-					item.addClass('collapsed');
-					object.removeClass('collapsing');
-					item.removeClass('collapsing');
-					item.trigger('collapsestop.collapsible');
+				item.trigger('collapsestart.collapsible')
+					.css('max-height', heightMax)
+					.addClass('collapsed')
+					.css('max-height', heightMin);
+			});
+
+			object.on('webkitTransitionEnd transitionend oTransitionEnd otransitionend MSTransitionEnd', function() {
+			// object.on('transitionend', function() {
+				var item = $(this);
+
+				// Stop animating
+				setTimeout(function() {
+					item.removeClass('js-animate');
+				}, 250);
+
+				// Finish animation
+				if(item.is('.collapsed')) {
+					item.trigger('collapseend.collapsible')
+				}
+				else {
+					item.trigger('expandend.collapsible')
+				}
+			});
+
+			object.on('collapseall.collapsible', function collapseAll(event) {
+				var items = object.find(settings.items),
+					visibles = Symphony.Utilities.inSight(items),
+					invisibles = visibles.nextAll();
+
+				invisibles.each(function() {
+					var item = $(this);
+					item.css('max-height', item.data('heightMin'));
 				});
+				visibles.trigger('collapse.collapsible');
 			});
 
 			// Expand item
-			object.on('expand.collapsible', settings.items, function expand(event) {
+			object.on('expand.collapsible', settings.items, function expand(event, speed) {
 				var item = $(this),
-					content = item.find(settings.content);
+					heightMax = item[0].scrollHeight;
+
+				// Check speed
+				if(!$.isNumeric(speed)) {
+					speed = 250;
+				}
+				if(speed > 0) {
+					item.addClass('js-animate');
+				}
 
 				// Collapse item
-				item.trigger('expandstart.collapsible');
-				object.addClass('expanding');
-				item.addClass('expanding');
-				content.slideDown('fast', function() {
-					item.removeClass('collapsed');
-					object.removeClass('expanding');
-					item.removeClass('expanding');
-					item.trigger('expandstop.collapsible');
-				});
+				item.trigger('expandstart.collapsible')
+					.removeClass('collapsed')
+					.css('max-height', heightMax);
+			});
+
+			object.on('expandall.collapsible', function expandAll(event) {
+				var items = object.find(settings.items),
+					visibles = Symphony.Utilities.inSight(items),
+					invisibles;
+
+				visibles = visibles.filter(':lt(3)');
+				invisibles = visibles.nextAll();
+
+				visibles.trigger('expand.collapsible');
+				invisibles.each(function() {
+					var item = $(this);
+					item.css('max-height', item.data('heightMax'));
+				});			
 			});
 
 			// Toggle single item
@@ -146,16 +192,16 @@
 			});
 
 			// Restore states
-			object.on('restore.collapsible', function restoreState(event) {
-				if(settings.save_state === true && Symphony.Support.localStorage === true && window.localStorage[storage]) {
-					$.each(window.localStorage[storage].split(','), function(index, value) {
-						var collapsed = object.find(settings.items).eq(value);
-						if(collapsed.has('.invalid').length == 0) {
-							collapsed.trigger('collapse.collapsible', [0]);
-						}
-					});
-				}
-			});
+			// object.on('restore.collapsible', function restoreState(event) {
+			// 	if(settings.save_state === true && Symphony.Support.localStorage === true && window.localStorage[storage]) {
+			// 		$.each(window.localStorage[storage].split(','), function(index, value) {
+			// 			var collapsed = object.find(settings.items).eq(value);
+			// 			if(collapsed.has('.invalid').length == 0) {
+			// 				collapsed.trigger('collapse.collapsible', [0]);
+			// 			}
+			// 		});
+			// 	}
+			// });
 
 			// Refresh state storage
 			object.on('orderstop.orderable', function refreshState(event) {
@@ -170,6 +216,15 @@
 			object.addClass('collapsible');
 
 			// Restore states
+			object.find(settings.items).each(function() {
+				var item = $(this),
+					min = item.find(settings.handles).outerHeight(),
+					max = item[0].scrollHeight;
+
+				item.css('max-height', max);
+				item.data('heightMin', min);
+				item.data('heightMax', max);
+			});
 			object.trigger('restore.collapsible');
 		});
 

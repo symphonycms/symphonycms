@@ -301,7 +301,7 @@
 			if(settings.collapsible) {
 				duplicator.symphonyCollapsible({
 					items: '.instance',
-					handles: 'header',
+					handles: '.frame-header',
 					save_state: settings.save_state
 				});
 			}
@@ -310,7 +310,7 @@
 			if(settings.orderable) {
 				duplicator.symphonyOrderable({
 					items: '.instance',
-					handles: 'header'
+					handles: '.frame-header'
 				});
 			}
 
