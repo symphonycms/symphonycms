@@ -104,7 +104,7 @@
 					items.not(firsts).each(function() {
 						var item = $(this);
 						item.css('max-height', item.data('heightMax'));
-					}).trigger('expandstop.collapsible');			
+					}).removeClass('collapsed').trigger('expandstop.collapsible');			
 				}, 250);
 			});
 
