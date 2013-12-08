@@ -110,7 +110,11 @@
 
 			// Finish animations
 			object.on('webkitTransitionEnd transitionend oTransitionEnd otransitionend MSTransitionEnd', settings.items, function finish(event) {
-				var item = $(this).removeClass('js-animate');
+				var item = $(this);
+
+				setTimeout(function() {
+					item.removeClass('js-animate');
+				}, 200);
 
 				// Trigger events
 				if(item.is('.collapsed')) {
@@ -213,6 +217,7 @@
 				item.css('max-height', max);
 				item.data('heightMin', min);
 				item.data('heightMax', max);
+				// item.addClass('instance');
 			});
 			object.trigger('restore.collapsible');
 		});
