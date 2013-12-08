@@ -65,25 +65,9 @@
 				apply = $('<fieldset class="apply" />'),
 				selector = $('<select />'),
 				constructor = $('<button type="button" class="constructor" />'),
-				duplicator, list, instances, templates, items, headers, constructor, apply, selector;
-
-			// New API (applying the plugin to the frame)
-			if(object.is('.frame')) {
-				duplicator = object;
-				list = duplicator.find('> ol');
-			}
-
-			// Old API (applying the plugin to the list)
-			// @deprecated to be removed in Symphony 2.4
-			else {
-				list = object;
-				duplicator = object.parent('.frame');
-
-				// Check if duplicator frame exists
-				if(duplicator.length == 0) {
-					duplicator = $('<div />').attr('class','frame').insertBefore(list).prepend(list);
-				}
-			}
+				duplicator = object,
+				list = duplicator.find('> ol'),
+				instances, templates, items, headers, constructor, apply, selector;
 
 			// Initialise duplicator components
 			duplicator.addClass('duplicator').addClass('empty');
