@@ -332,6 +332,7 @@ fieldset.frame,
 
 .collapsible .instance {
 	-webkit-font-smoothing: subpixel-antialiased !important;
+	overflow: hidden;
 }
 
 .collapsible .frame-header {
@@ -398,10 +399,6 @@ fieldset.frame,
 	border-radius: 4px;
 	overflow: hidden;
 	margin-top: -1px;
-}
-
-.duplicator .instance {
-	overflow: hidden;
 }
 
 .duplicator .template {
