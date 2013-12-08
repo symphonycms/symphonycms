@@ -66,8 +66,6 @@
 			return false;
 		};
 
-
-
 		// Navigation sizing
 		win.on('resize.admin nav.admin', function(event) {
 			var width = navContent.width() + navStructure.width() + 20;
@@ -194,23 +192,7 @@
 	--------------------------------------------------------------------------*/
 
 		// Duplicators
-
 		contents.find('.filters-duplicator').symphonyDuplicator();
-
-		// Highlight instances with the same location when ordering fields
-		contents.find('div.duplicator')
-			.on('orderstart.orderable', function(event, item) {
-				var duplicator = $(this);
-
-				setTimeout(function() {
-					if(duplicator.is('.ordering')) {
-						duplicator.find('li:has(.' + item.find('header').attr('class') + ')').not(item).addClass('highlight');
-					}
-				}, 250);
-			})
-			.on('orderstop.orderable', function(event, item) {
-				$(this).find('li.highlight').removeClass('highlight');
-			});
 
 	/*--------------------------------------------------------------------------
 		Components - With Selected
@@ -350,10 +332,12 @@
 			// Field editor
 			contents.find('#fields-duplicator')
 				.symphonyDuplicator({
-					// orderable: true,
+					orderable: true,
 					collapsible: (Symphony.Context.get('env')[0] !== 'new'),
 					preselect: 'input'
 				})
+
+				// Update name
 				.on('blur.admin input.admin', '.instance input[name*="[label]"]', function(event) {
 					var label = $(this),
 						value = label.val();
@@ -368,12 +352,15 @@
 
 					return false;
 				})
+
+				// Set location
 				.on('change.admin', '.instance select[name*="[location]"]', function(event) {
 					var select = $(this);
 
-					// Set location
 					select.parents('.instance').find('header').removeClass('main').removeClass('sidebar').addClass(select.val());
 				})
+
+				// Destruct
 				.on('destructstart.duplicator', function(event) {
 					var target = $(event.target);
 						item = target.clone(),
@@ -409,63 +396,60 @@
 						// Clear system message
 						message.trigger('detach.notify');
 					});
+				})
+
+				// Discard undo options because the field context changed
+				.on('orderstop.orderable', function(event) {
+					header.find('.undo').trigger('detach.notify');
+				})
+
+				// Highlight instances with the same location when ordering fields
+				.on('orderstart.orderable', function(event, item) {
+					var duplicator = $(this),
+						header = item.find('.frame-header'),
+						position = (header.is('.main') ? 'main' : 'sidebar');
+
+					duplicator.find('li:has(.' + position + ')').not(item).addClass('highlight');
+				})
+				.on('orderstop.orderable', function(event, item) {
+					$(this).find('li.highlight').removeClass('highlight');
 				});
 
-			// Discard undo options because the field context changed
-			contents.find('.duplicator').on('orderstop.orderable', function(event) {
-				header.find('.undo').trigger('detach.notify');
-			});
-
 			// Field legend
-			var fieldLegend = contents.find('#fields > legend'),
-				fieldExpand = $('<a />', {
-					'class': 'expand',
-					'text': Symphony.Language.get('Expand all fields')
-				}),
-				fieldCollapse = $('<a />', {
-					'class': 'collapse',
-					'text': Symphony.Language.get('Collapse all fields')
-				}),
-				fieldToggle = $('<p />', {
-					'class': 'help toggle'
-				}).append(fieldExpand).append('<br />').append(fieldCollapse),
-				fieldLegendTop, fieldToggleTop;
+			var fieldLegend = contents.find('#fields > legend');
 
-			// Add toggle controls
-			fieldLegend.after(fieldToggle);
+			if(fieldLegend.length) {
+				var fieldExpand = $('<a />', {
+						'class': 'expand',
+						'text': Symphony.Language.get('Expand all fields')
+					}),
+					fieldCollapse = $('<a />', {
+						'class': 'collapse',
+						'text': Symphony.Language.get('Collapse all fields')
+					}),
+					fieldToggle = $('<p />', {
+						'class': 'help toggle'
+					}).append(fieldExpand).append('<br />').append(fieldCollapse);
 
-			/* Check if there is DOM Element:
-			 * This prevents a bug in the section page since offset will return null on empty selections */
-			fieldLegendTop = !!fieldLegend.length ? fieldLegend.offset().top : 0;
-			fieldToggleTop = !!fieldToggle.length ? fieldToggle.offset().top : 0;
+				// Add toggle controls
+				fieldLegend.after(fieldToggle);
 
-			// Fix toggle controls
-			// $(window).on('scroll.admin', function fixFieldControls(event) {
-			// 	var top = $(this).scrollTop() + 20;
+				// Toggle fields
+				fieldToggle.on('click.admin', 'a.expand, a.collapse', function toggleFields(event) {
+					var control = $(this),
+						fields = contents.find('#fields-duplicator');
 
-			// 	if(top >= fieldLegendTop) {
-			// 		fieldLegend.add(fieldToggle).addClass('fixed');
-			// 	}
-			// 	else {
-			// 		fieldLegend.add(fieldToggle).removeClass('fixed');
-			// 	}
-			// });
+					// Expand
+					if(control.is('.expand')) {
+						fields.trigger('expandall.collapsible');
+					}
 
-			// Toggle fields
-			fieldToggle.on('click.admin', 'a.expand, a.collapse', function toggleFields(event) {
-				var control = $(this),
-					fields = contents.find('#fields-duplicator');
-
-				// Expand
-				if(control.is('.expand')) {
-					fields.trigger('expandall.collapsible');
-				}
-
-				// Collapse
-				else {
-					fields.trigger('collapseall.collapsible');
-				}
-			});
+					// Collapse
+					else {
+						fields.trigger('collapseall.collapsible');
+					}
+				});
+			}
 		}
 
 	/*--------------------------------------------------------------------------
