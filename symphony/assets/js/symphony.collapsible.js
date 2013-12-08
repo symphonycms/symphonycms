@@ -217,7 +217,7 @@
 				item.css('max-height', max);
 				item.data('heightMin', min);
 				item.data('heightMax', max);
-				// item.addClass('instance');
+				item.addClass('instance');
 			});
 			object.trigger('restore.collapsible');
 		});
