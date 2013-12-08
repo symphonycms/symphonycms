@@ -124,12 +124,12 @@ table.selectable input {
 
 tr.selected td {
 	background-color: #668abe;
-	background-image: -webkit-linear-gradient(top, #668abe, #5c83ba);
-	background-image:     -ms-linear-gradient(top, #668abe, #5c83ba);
-	background-image:      -o-linear-gradient(top, #668abe, #5c83ba);
-	background-image:   linear-gradient(to bottom, #668abe, #5c83ba);
 	border-bottom: 1px solid #7492bc;
 	border-top: 1px solid #4D78B4;
+}
+
+tr:nth-child(odd).selected td {
+	background: #5c83ba;
 }
 
 tr.selected td,
@@ -164,10 +164,6 @@ tr.ordering {
 tr.ordering td,
 tr:nth-child(odd).ordering td {
 	background-color: #4870a9;
-	background-image: -webkit-linear-gradient(top, #4870a9, #446a9f);
-	background-image:     -ms-linear-gradient(top, #4870a9, #446a9f);
-	background-image:      -o-linear-gradient(top, #4870a9, #446a9f);
-	background-image:   linear-gradient(to bottom, #4870a9, #446a9f);
 	border-bottom: 1px solid #3c5e8e;
 	border-top: 1px solid #2d466a;
 	text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
