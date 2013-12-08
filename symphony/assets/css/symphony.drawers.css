@@ -59,11 +59,3 @@ div.drawer.vertical-left .contents,
 div.drawer.vertical-right .contents {
 	padding: 20px;
 }
-
-#wrapper.drawer-vertical-left #contents > form {
-	margin-left: 301px;
-}
-
-#wrapper.drawer-vertical-right #contents > form {
-	margin-right: 301px;
-}
