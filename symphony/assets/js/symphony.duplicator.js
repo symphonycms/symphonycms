@@ -22,7 +22,6 @@
 	 * @param {Boolean} [options.destructable=true] Allow destruction of instances
 	 * @param {Integer} [optionss.minimum=0] Do not allow instances to be removed below this limit
 	 * @param {Integer} [options.maximum=1000] Do not allow instances to be added above this limit
-	 * @param {String} [options.speed='fast'] Animation speed
 	 *
 	 * @example
 
@@ -44,8 +43,7 @@
 				destructable:		true,
 				save_state:			true,
 				minimum:			0,
-				maximum:			1000,
-				speed:				'fast'
+				maximum:			1000
 			};
 
 		$.extend(settings, options);
@@ -74,7 +72,7 @@
 			instances = list.find(settings.instances).addClass('instance');
 			templates = list.find(settings.templates).addClass('template');
 			items = instances.add(templates);
-			headers = items.find(settings.headers);
+			headers = items.find(settings.headers).addClass('frame-header');
 			constructor.text(list.attr('data-add') || Symphony.Language.get('Add item'));
 
 		/*---------------------------------------------------------------------
@@ -82,41 +80,60 @@
 		---------------------------------------------------------------------*/
 
 			// Construct instances
-			apply.on('click.duplicator', 'button.constructor:not(.disabled)', function construct(event, speed) {
-				var instance = templates.filter('[data-type="' + $(this).parent().find('select').val() + '"]').clone(true);
+			apply.on('click.duplicator', '.constructor:not(.disabled)', function construct(event, speed) {
+				var instance = templates.filter('[data-type="' + $(this).parent().find('select').val() + '"]').clone(true),
+					heightMin, heightMax;
 
 				event.preventDefault();
 
-				instance.trigger('constructstart.duplicator');
-				instance.trigger('construct.duplicator'); /* deprecated */
-				instance.hide().appendTo(list);
+				// Prepare instance
+				instance
+					.trigger('constructstart.duplicator')
+					.css('max-height', 0).appendTo(list);
 
 				// Duplicator is not empty
 				duplicator.removeClass('empty');
 
-				// Set speed
-				if(!speed) {
-					speed = settings.speed;
-				}
+				// Calculate instance heights
+				heightMin = instance.find(settings.headers).outerHeight() - 1;
+				heightMax = instance[0].scrollHeight;
 
 				// Show instance
-				instance.trigger('constructshow.duplicator');
-				instance.slideDown(speed, function() {
-
-					// Focus first input
-					instance.find('input[type!="hidden"]:first').focus();
-					instance.trigger('constructstop.duplicator');
-				});
+				instance
+					.trigger('constructshow.duplicator')
+					.data('heightMin', heightMin)
+					.data('heightMax', heightMax)
+					.addClass('js-animate')
+					.css('max-height', heightMax);
 			});
 
 			// Destruct instances
-			duplicator.on('click.duplicator', 'a.destructor:not(.disabled)', function destruct(event) {
+			duplicator.on('click.duplicator', '.destructor:not(.disabled)', function destruct(event) {
 				var instance = $(this).parents('.instance:first');
 
-				instance.trigger('destructstart.duplicator');
-				instance.trigger('destruct.duplicator'); /* deprecated */
-				instance.slideUp(settings.speed, function() {
-					$(this).remove();
+				event.preventDefault();
+				event.stopPropagation();
+
+				// Check if duplicator becomes empty
+				if(duplicator.find('.instance').length == 1) {
+					duplicator.addClass('empty');
+				}
+
+				// Remove instance
+				instance
+					.trigger('destructstart.duplicator')
+					.addClass('destructed')
+					.addClass('js-animate')
+					.css('max-height', 0);
+			});
+
+			// Finish animations
+			duplicator.on('webkitTransitionEnd transitionend oTransitionEnd otransitionend MSTransitionEnd', '.instance', function finish() {
+				var instance = $(this).removeClass('js-animate');
+
+				// Trigger events
+				if(instance.is('.destructed')) {
+					instance.remove();
 
 					// Check if duplicator is empty
 					if(duplicator.find('.instance').length == 0) {
@@ -124,7 +141,11 @@
 					}
 
 					instance.trigger('destructstop.duplicator');
-				});
+				}
+				else {
+					// instance.find('input[type!="hidden"]:first').focus();
+					instance.trigger('constructstop.duplicator');
+				}
 			});
 
 			// Lock constructor
