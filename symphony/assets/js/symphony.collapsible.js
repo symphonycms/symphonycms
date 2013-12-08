@@ -49,44 +49,22 @@
 		---------------------------------------------------------------------*/
 
 			// Collapse item
-			object.on('collapse.collapsible', settings.items, function collapse(event, speed) {
+			object.on('collapse.collapsible', settings.items, function collapse(event, duration) {
 				var item = $(this),
-					heightMin = item.data('heightMin'),
-					heightMax = item.height();
-				
-				// Check speed
-				if(!$.isNumeric(speed)) {
-					speed = 250;
-				}
-				if(speed > 0) {
+					heightMin = item.data('heightMin') || item.find(settings.handles).outerHeight() - 1;
+			
+				// Check duration
+				if(duration !== 0) {
 					item.addClass('js-animate');
 				}
 
 				// Collapse item
 				item.trigger('collapsestart.collapsible')
-					.css('max-height', heightMax)
 					.addClass('collapsed')
 					.css('max-height', heightMin);
 			});
 
-			object.on('webkitTransitionEnd transitionend oTransitionEnd otransitionend MSTransitionEnd', function() {
-			// object.on('transitionend', function() {
-				var item = $(this);
-
-				// Stop animating
-				setTimeout(function() {
-					item.removeClass('js-animate');
-				}, 250);
-
-				// Finish animation
-				if(item.is('.collapsed')) {
-					item.trigger('collapseend.collapsible')
-				}
-				else {
-					item.trigger('expandend.collapsible')
-				}
-			});
-
+			// Collapse all items
 			object.on('collapseall.collapsible', function collapseAll(event) {
 				var items = object.find(settings.items),
 					visibles = Symphony.Utilities.inSight(items),
@@ -97,18 +75,16 @@
 					item.css('max-height', item.data('heightMin'));
 				});
 				visibles.trigger('collapse.collapsible');
+				invisibles.trigger('collapsestop.collapsible');
 			});
 
 			// Expand item
-			object.on('expand.collapsible', settings.items, function expand(event, speed) {
+			object.on('expand.collapsible', settings.items, function expand(event, duration) {
 				var item = $(this),
-					heightMax = item[0].scrollHeight;
+					heightMax = item.data('heightMax') || item[0].scrollHeight;
 
-				// Check speed
-				if(!$.isNumeric(speed)) {
-					speed = 250;
-				}
-				if(speed > 0) {
+				// Check duration
+				if(duration !== 0) {
 					item.addClass('js-animate');
 				}
 
@@ -118,19 +94,31 @@
 					.css('max-height', heightMax);
 			});
 
+			// Expand all items
 			object.on('expandall.collapsible', function expandAll(event) {
 				var items = object.find(settings.items),
-					visibles = Symphony.Utilities.inSight(items),
-					invisibles;
+					firsts = items.filter('.collapsed:lt(2)');
 
-				visibles = visibles.filter(':lt(3)');
-				invisibles = visibles.nextAll();
+				firsts.trigger('expand.collapsible');
+				setTimeout(function() {
+					items.not(firsts).each(function() {
+						var item = $(this);
+						item.css('max-height', item.data('heightMax'));
+					}).trigger('expandstop.collapsible');			
+				}, 250);
+			});
 
-				visibles.trigger('expand.collapsible');
-				invisibles.each(function() {
-					var item = $(this);
-					item.css('max-height', item.data('heightMax'));
-				});			
+			// Finish animations
+			object.on('webkitTransitionEnd transitionend oTransitionEnd otransitionend MSTransitionEnd', settings.items, function finish(event) {
+				var item = $(this).removeClass('js-animate');
+
+				// Trigger events
+				if(item.is('.collapsed')) {
+					item.trigger('collapsestop.collapsible');
+				}
+				else {
+					item.trigger('expandstop.collapsible');
+				}
 			});
 
 			// Toggle single item
@@ -192,16 +180,16 @@
 			});
 
 			// Restore states
-			// object.on('restore.collapsible', function restoreState(event) {
-			// 	if(settings.save_state === true && Symphony.Support.localStorage === true && window.localStorage[storage]) {
-			// 		$.each(window.localStorage[storage].split(','), function(index, value) {
-			// 			var collapsed = object.find(settings.items).eq(value);
-			// 			if(collapsed.has('.invalid').length == 0) {
-			// 				collapsed.trigger('collapse.collapsible', [0]);
-			// 			}
-			// 		});
-			// 	}
-			// });
+			object.on('restore.collapsible', function restoreState(event) {
+				if(settings.save_state === true && Symphony.Support.localStorage === true && window.localStorage[storage]) {
+					$.each(window.localStorage[storage].split(','), function(index, value) {
+						var collapsed = object.find(settings.items).eq(value);
+						if(collapsed.has('.invalid').length == 0) {
+							collapsed.trigger('collapse.collapsible', [0]);
+						}
+					});
+				}
+			});
 
 			// Refresh state storage
 			object.on('orderstop.orderable', function refreshState(event) {
@@ -216,9 +204,10 @@
 			object.addClass('collapsible');
 
 			// Restore states
+			object.trigger('restore.collapsible');
 			object.find(settings.items).each(function() {
 				var item = $(this),
-					min = item.find(settings.handles).outerHeight(),
+					min = item.find(settings.handles).outerHeight() - 1,
 					max = item[0].scrollHeight;
 
 				item.css('max-height', max);
