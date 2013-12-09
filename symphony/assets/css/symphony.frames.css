@@ -33,6 +33,11 @@
 	margin: 0;
 }
 
+.frame .tags {
+	margin-top: -10px;
+	margin-bottom: 15px;
+}
+
 /* Headers */
 
 .frame-header {
