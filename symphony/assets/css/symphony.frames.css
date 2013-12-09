@@ -334,9 +334,23 @@ fieldset.frame,
 	the first `transitionend` event.
 -----------------------------------------------------------------------------*/
 
+.collapsible {
+	-webkit-transform: translatez(0);
+	-moz-transform: translatez(0);
+	-ms-transform: translatez(0);
+	-o-transform: translatez(0);
+	transform: translatez(0);
+}
+
 .collapsible .instance {
-	-webkit-font-smoothing: subpixel-antialiased !important;
 	overflow: hidden;
+}
+
+.collapsible .instance,
+.collapsible input,
+.collapsible select,
+.collapsible textarea {
+	-webkit-font-smoothing: subpixel-antialiased !important;
 }
 
 .collapsible .frame-header {
@@ -389,15 +403,6 @@ fieldset.frame,
 /*-----------------------------------------------------------------------------
 	Duplicators
 -----------------------------------------------------------------------------*/
-
-#fields,
-.duplicator {
-	-webkit-transform: translatez(0);
-	-moz-transform: translatez(0);
-	-ms-transform: translatez(0);
-	-o-transform: translatez(0);
-	transform: translatez(0);
-}
 
 .duplicator ol {
 	border-radius: 4px;
