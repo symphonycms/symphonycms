@@ -16,6 +16,15 @@
 	border: 1px solid #c5c5c5;
 }
 
+.frame h1 {
+	background: #282828;
+	color: #fff;
+	margin: -11px -11px 15px;
+	padding: 18px 11px;
+	border-radius: 4px 4px 0 0;
+	line-height: 1.5;
+}
+
 .frame.empty {
 	border: 1px dashed #b8b8b8;
 	height: 30px;
@@ -154,15 +163,6 @@ fieldset.frame,
 	overflow: visible;
 	padding: 10px 10px 15px;
 	text-align: left;
-}
-
-#login h1 {
-	background: #282828;
-	color: #fff;
-	margin: -11px -11px 15px;
-	padding: 18px 11px;
-	border-radius: 4px 4px 0 0;
-	line-height: 1.5;
 }
 
 #login fieldset {
@@ -353,8 +353,9 @@ fieldset.frame,
 
 .collapsible .instance,
 .collapsible input,
+.collapsible textarea, 
 .collapsible select,
-.collapsible textarea {
+.collapsible option {
 	-webkit-font-smoothing: subpixel-antialiased !important;
 }
 
