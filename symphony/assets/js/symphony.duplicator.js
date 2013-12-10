@@ -109,14 +109,15 @@
 
 			// Destruct instances
 			duplicator.on('click.duplicator', '.destructor:not(.disabled)', function destruct(event) {
-				var instance = $(this).parents('.instance:first');
+				var instance = $(this).parents('.instance:first'),
+					height = 0;
 
 				event.preventDefault();
 				event.stopPropagation();
 
 				// Check if duplicator becomes empty
 				if(duplicator.find('.instance').length == 1) {
-					duplicator.addClass('empty');
+					height = 30;
 				}
 
 				// Remove instance
@@ -124,7 +125,7 @@
 					.trigger('destructstart.duplicator')
 					.addClass('destructed')
 					.addClass('js-animate')
-					.css('max-height', 0);
+					.css('max-height', height);
 			});
 
 			// Finish animations
