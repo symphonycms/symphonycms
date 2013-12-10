@@ -451,7 +451,7 @@
 			}
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'contextual authors');
+			$div->setAttribute('class', 'contextual');
 			$div->setAttribute('data-context', 'authors');
 
 			$ol = new XMLElement('ol');
@@ -482,7 +482,7 @@
 			$fieldset->appendChild($div);
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'contextual navigation');
+			$div->setAttribute('class', 'contextual');
 			$div->setAttribute('data-context', 'navigation');
 
 			$ol = new XMLElement('ol');
@@ -676,7 +676,7 @@
 					'<code>{' . __('$param') . '}</code>'
 				))
 			);
-			$p->setAttribute('class', 'help contextual inverse navigation');
+			$p->setAttribute('class', 'help');
 			$fieldset->appendChild($p);
 
 			$group = new XMLElement('div');
