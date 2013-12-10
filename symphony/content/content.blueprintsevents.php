@@ -167,7 +167,7 @@
 				}
 
 				$div->appendChild(
-					Widget::Select('fields[source]', $options, array('id' => 'event-context'))
+					Widget::Select('source', $options, array('id' => 'event-context'))
 				);
 
 				if(isset($this->_errors['source'])) {
@@ -176,6 +176,10 @@
 				else {
 					$this->Context->prependChild($sources);
 				}
+
+				$this->Form->appendChild(
+					Widget::Input('fields[source]', null, 'hidden', array('id' => 'event-source'))
+				);
 
 			// Name
 				$group = new XMLElement('div');
