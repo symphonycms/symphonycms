@@ -132,25 +132,13 @@
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-				$group = new XMLElement('div');
-				$group->setAttribute('class', 'two columns');
-
-			// Name
-				$label = Widget::Label(__('Name'));
-				$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
-
-				$div = new XMLElement('div');
-				$div->setAttribute('class', 'column');
-				if(isset($this->_errors['name'])) {
-					$div->appendChild(Widget::Error($label, $this->_errors['name']));
-				}
-				else {
-					$div->appendChild($label);
-				}
-				$group->appendChild($div);
-
 			// Source
-				$label = Widget::Label(__('Source'));
+				$sources = new XMLElement('div', null, array('class' => 'apply actions'));
+				$div = new XMLElement('div');
+				$label = Widget::Label(__('Source'), null, 'apply-label-left');
+				$sources->appendChild($label);
+				$sources->appendChild($div);
+
 				$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 				$options = array();
 				$section_options = array();
@@ -178,28 +166,37 @@
 					$options[] = $p;
 				}
 
-				$label->appendChild(
+				$div->appendChild(
 					Widget::Select('fields[source]', $options, array('id' => 'event-context'))
 				);
 
+				if(isset($this->_errors['source'])) {
+					$this->Context->prependChild(Widget::Error($sources, $this->_errors['source']));
+				}
+				else {
+					$this->Context->prependChild($sources);
+				}
+
+			// Name
+				$group = new XMLElement('div');
+				$label = Widget::Label(__('Name'));
+				$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
+
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'column');
-				if(isset($this->_errors['source'])) {
-					$div->appendChild(Widget::Error($label, $this->_errors['source']));
+				if(isset($this->_errors['name'])) {
+					$div->appendChild(Widget::Error($label, $this->_errors['name']));
 				}
 				else {
 					$div->appendChild($label);
 				}
-
 				$group->appendChild($div);
 				$fieldset->appendChild($group);
 				$this->Form->appendChild($fieldset);
 
 				// Filters
 				$fieldset = new XMLElement('fieldset');
-				$fieldset->setAttribute('id', 'sections');
 				$fieldset->setAttribute('class', 'settings pickable');
-				$fieldset->setAttribute('data-relation', 'event-context');
 				$fieldset->appendChild(new XMLElement('legend', __('Filters')));
 				$p = new XMLElement('p',
 					__('Event Filters add additional conditions or actions to an event.')
@@ -230,7 +227,7 @@
 					'options' => &$options
 				));
 
-				$fieldset->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
+				$fieldset->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple', 'id' => 'event-filters')));
 
 				$this->Form->appendChild($fieldset);
 
@@ -291,14 +288,16 @@
 
 			// If we are editing an event, it assumed that the event has documentation
 			if($isEditing && method_exists($existing, 'documentation')) {
-				// Description
+				
+				// Documentation
 				$fieldset = new XMLElement('fieldset');
+				$fieldset->setAttribute('id', 'event-documentation');
 				$fieldset->setAttribute('class', 'settings');
 
 				$doc = $existing->documentation();
 				if($doc) {
 					$fieldset->setValue(
-						'<legend>' . __('Description') . '</legend>' . PHP_EOL .
+						'<legend>' . __('Documentation') . '</legend>' . PHP_EOL .
 						General::tabsToSpaces(is_object($doc) ? $doc->generate(true) : $doc, 2)
 					);
 					$this->Form->appendChild($fieldset);
