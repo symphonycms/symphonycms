@@ -296,10 +296,10 @@
 
 			foreach($field_groups as $section_id => $section_data){
 				$div = new XMLElement('div');
-				$div->setAttribute('class', 'contextual ' . $section_id);
+				$div->setAttribute('class', 'frame filters-duplicator contextual ' . $section_id);
 
 				$ol = new XMLElement('ol');
-				$ol->setAttribute('class', 'filters-duplicator suggestable');
+				$ol->setAttribute('class', 'suggestable');
 				$ol->setAttribute('data-add', __('Add filter'));
 				$ol->setAttribute('data-remove', __('Remove filter'));
 

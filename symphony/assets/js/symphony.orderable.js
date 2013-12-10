@@ -50,22 +50,21 @@
 			}
 
 			if(!handle.is(settings.ignore) && !$(event.target).is(settings.ignore)) {
-				object.trigger('orderstart.orderable', [item]);
-				object.addClass('ordering');
+				object.data('ordering', 1);
 
 				// Highlight item
 				if(object.is('.selectable, .collapsible')) {
 
 					// Delay ordering to avoid conflicts with scripts bound to the click event
-					object.trigger('orderstartlock', [item]);
 					setTimeout(function() {
-						if(object.is('.ordering')) {
+						if(object.data('ordering') == 1) {
+							object.trigger('orderstart.orderable', [item]);
 							item.addClass('ordering');
-							object.trigger('orderstartunlock', [item]);
 						}
 					}, settings.delay);
 				}
 				else {
+					object.trigger('orderstart.orderable', [item]);
 					item.addClass('ordering');
 				}
 			}
@@ -76,9 +75,9 @@
 			var object = $(this),
 				item = object.find('.ordering');
 
-			if(object.is('.ordering')) {
+			if(object.data('ordering') == 1) {
 				item.removeClass('ordering');
-				object.removeClass('ordering');
+				object.data('ordering', 0);
 				object.trigger('orderstop.orderable', [item]);
 
 				// Lock item to avoid conflicts with scripts bound to the click event
@@ -92,7 +91,7 @@
 		});
 
 		// Order items
-		$(document).on('mousemove.orderable', '.ordering:has(.ordering)', function order(event) {
+		$(document).on('mousemove.orderable', '.orderable:has(.ordering)', function order(event) {
 			var object = $(this),
 				item = object.find('.ordering'),
 				top = item.offset().top,
