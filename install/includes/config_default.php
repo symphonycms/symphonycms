@@ -11,6 +11,7 @@
 
 		###### SYMPHONY ######
 		'symphony' => array(
+			'admin-path' => 'symphony',
 			'pagination_maximum_rows' => '20',
             'association_maximum_rows' => '5',
 			'lang' => 'en',

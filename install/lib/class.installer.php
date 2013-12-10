@@ -372,6 +372,14 @@
 				);
 			}
 
+			// Admin path not entered
+			if(trim($fields['symphony']['admin-path']) == ''){
+				$errors['no-symphony-path']  = array(
+					'msg' => 'No Symphony path entered.',
+					'details' => __('You must enter a path for accessing Symphony, or leave the default. This will be used to access Symphony\'s backend.')
+				);
+			}
+
 			return $errors;
 		}
 
