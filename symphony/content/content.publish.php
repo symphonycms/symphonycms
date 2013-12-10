@@ -629,8 +629,17 @@
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
-			$this->Form->setAttribute('class', 'two columns');
 			$this->setTitle(__('%1$s &ndash; %2$s', array($section->get('name'), __('Symphony'))));
+
+			$sidebar_fields = $section->fetchFields(NULL, 'sidebar');
+			$main_fields = $section->fetchFields(NULL, 'main');
+
+			if(!empty($sidebar_fields) && !empty($main_fields)) {
+				$this->Form->setAttribute('class', 'two columns');
+			}
+			else {
+				$this->Form->setAttribute('class', 'columns');
+			}
 
 			// Only show the Edit Section button if the Author is a developer. #938 ^BA
 			if(Administration::instance()->Author->isDeveloper()) {
@@ -695,9 +704,6 @@
 
 			$primary = new XMLElement('fieldset');
 			$primary->setAttribute('class', 'primary column');
-
-			$sidebar_fields = $section->fetchFields(NULL, 'sidebar');
-			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if ((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))) {
 				$message = __('Fields must be added to this section before an entry can be created.');
@@ -988,8 +994,17 @@
 
 			$this->setPageType('form');
 			$this->Form->setAttribute('enctype', 'multipart/form-data');
-			$this->Form->setAttribute('class', 'two columns');
 			$this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($title, $section->get('name'), __('Symphony'))));
+
+			$sidebar_fields = $section->fetchFields(NULL, 'sidebar');
+			$main_fields = $section->fetchFields(NULL, 'main');
+
+			if(!empty($sidebar_fields) && !empty($main_fields)) {
+				$this->Form->setAttribute('class', 'two columns');
+			}
+			else {
+				$this->Form->setAttribute('class', 'columns');
+			}
 
 			// Only show the Edit Section button if the Author is a developer. #938 ^BA
 			if(Administration::instance()->Author->isDeveloper()) {
@@ -1009,9 +1024,6 @@
 
 			$primary = new XMLElement('fieldset');
 			$primary->setAttribute('class', 'primary column');
-
-			$sidebar_fields = $section->fetchFields(NULL, 'sidebar');
-			$main_fields = $section->fetchFields(NULL, 'main');
 
 			if((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))){
 				$message = __('Fields must be added to this section before an entry can be created.');
