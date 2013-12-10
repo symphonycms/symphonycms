@@ -579,7 +579,7 @@
 				var current = dsNameChangeCount = dsNameChangeCount + 1,
 					value = dsName.val();
 
-				if (!!value) {
+				if(!!value) {
 					setTimeout(function fetchDsHandle(dsNameChangeCount, current, dsName, dsParams) {
 						if(dsNameChangeCount == current) {
 							$.ajax({
@@ -698,6 +698,59 @@
 			contents.find('.duplicator:has(.suggestable)').symphonySuggestions();
 		}
 
+	/*--------------------------------------------------------------------------
+		Blueprints - Event Editor
+	--------------------------------------------------------------------------*/
+
+		if(body.is('#blueprints-events')) {
+			var eventContext = $('#event-context'),
+				eventFilters = $('#event-filters'),
+				eventName = contents.find('input[name="fields[name]"]').attr('data-updated', 0),
+				eventNameChangeCount = 0;
+
+			// Update event handle
+			eventName.on('blur.admin input.admin', function updateEventHandle() {
+				var current = eventNameChangeCount = eventNameChangeCount + 1,
+					value = eventName.val();
+
+				if(!!value) {
+					setTimeout(function checkEventHandle(eventNameChangeCount, current) {
+						if(eventNameChangeCount == current) {
+							contents.trigger('update.admin');
+						}
+					}, 500, eventNameChangeCount, current);
+				}
+			});
+
+			// Change context
+			eventContext.on('change.admin', function changeEventContext() {
+				contents.trigger('update.admin');
+			});
+
+			// Change filters
+			eventFilters.on('change.admin', function changeEventFilters() {
+				contents.trigger('update.admin');
+			});
+
+			// Update documentation
+			contents.on('update.admin', function updateEventDocumentation() {
+				$.ajax({
+					type: 'POST',
+					data: { 
+						'section': eventContext.val(),
+						'filters': eventFilters.serializeArray(),
+						'name': eventName.val()
+					},
+					dataType: 'json',
+					url: Symphony.Context.get('root') + '/symphony/ajax/event-documentation/',
+					success: function(documentation) {
+						$('event-documentation').remove();
+						form.append(documentation);
+					}
+				});
+			});
+		}
+	
 	/*--------------------------------------------------------------------------
 		System - Authors
 	--------------------------------------------------------------------------*/
