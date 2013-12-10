@@ -348,6 +348,10 @@ fieldset.frame,
 	transform: translatez(0);
 }
 
+.collapsible .instance {
+	overflow: hidden;
+}
+
 .collapsible .instance,
 .collapsible input,
 .collapsible textarea, 
