@@ -23,8 +23,8 @@
 	$.fn.symphonyDrawer = function(options) {
 		var objects = this,
 			wrapper = $('#wrapper'),
-			context = $('#context'),
-			contents = $('#contents > form'),
+			contents = $('#contents'),
+			form = contents.find('> form'),
 			settings = {
 				verticalWidth: 300,
 				speed: 'fast'
@@ -43,7 +43,8 @@
 				buttons = $('.button.drawer'),
 				button = buttons.filter('[href="#' + drawer.attr('id') + '"]'),
 				samePositionButtons = buttons.filter('.' + position),
-				context = drawer.data('context') ? '.' + drawer.data('context') : '';
+				context = drawer.data('context') ? '.' + drawer.data('context') : '',
+				height = getHeight();
 
 			drawer.trigger('expandstart.drawer');
 
@@ -61,6 +62,7 @@
 			if (position === 'vertical-left') {
 				drawer.css({
 					width: 0,
+					height: height,
 					display: 'block'
 				})
 				.animate({
@@ -68,10 +70,10 @@
 				}, {
 					duration: speed,
 					step: function(now, fx){
-						contents.css('margin-left', now + 1); // +1px right border
+						form.css('margin-left', now + 1); // +1px right border
 					},
 					complete: function() {
-						contents.css('margin-left', settings.verticalWidth + 1); // +1px right border
+						form.css('margin-left', settings.verticalWidth + 1); // +1px right border
 						drawer.trigger('expandstop.drawer');
 					}
 				});
@@ -79,6 +81,7 @@
 			else if (position === 'vertical-right') {
 				drawer.css({
 					width: 0,
+					height: height,
 					display: 'block'
 				})
 				.animate({
@@ -86,10 +89,10 @@
 				}, {
 					duration: speed,
 					step: function(now, fx){
-						contents.css('margin-right', now + 1); // +1px left border
+						form.css('margin-right', now + 1); // +1px left border
 					},
 					complete: function() {
-						contents.css('margin-right', settings.verticalWidth + 1); // +1px right border
+						form.css('margin-right', settings.verticalWidth + 1); // +1px right border
 						drawer.trigger('expandstop.drawer');
 					}
 				});
@@ -145,7 +148,7 @@
 					duration: speed,
 					step: function(now, fx){
 						if (!stay) {
-							contents.css('margin-left', now);
+							form.css('margin-left', now);
 						}
 					},
 					complete: function() {
@@ -163,7 +166,7 @@
 					duration: speed,
 					step: function(now, fx){
 						if (!stay) {
-							contents.css('margin-right', now);
+							form.css('margin-right', now);
 						}
 					},
 					complete: function() {
@@ -199,6 +202,22 @@
 			wrapper.removeClass('drawer-' + position);
 			drawer.data('open', false);
 		});
+
+		// Resize drawers
+		$(window).on('resize.drawer load.drawer', function() {
+			var height = getHeight();
+			objects.filter('.vertical-left, .vertical-right').css('height', height);
+		});
+
+	/*-------------------------------------------------------------------------
+		Utilities
+	-------------------------------------------------------------------------*/
+
+		var getHeight = function() {
+			var height = Math.max(window.innerHeight - contents[0].offsetTop, contents[0].clientHeight);
+
+			return height;
+		};
 
 	/*-------------------------------------------------------------------------
 		Initialisation

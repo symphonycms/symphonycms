@@ -10,8 +10,6 @@
 #wrapper {
 	background: #fff;
 	position: relative;
-	height: 100%;
-	overflow: auto;
 }
 
 /* Header */
@@ -184,6 +182,7 @@
 	padding: 0 9px;
 	border: 1px solid transparent;
 	cursor: pointer;
+	-webkit-font-smoothing: subpixel-antialiased !important;
 }
 
 #nav ul a:hover {
@@ -682,6 +681,12 @@ div.field-checkbox:first-child {
 	Misc
 --------------------------------------------------------------------*/
 
+#utilities > li {
+	min-height: 30px;
+	line-height: 30px;
+	padding: 0 10px;
+}
+
 #utilities > li:nth-child(2n) {
 	background: #FFF;
 }
@@ -698,9 +703,11 @@ div.field-checkbox:first-child {
 
 #fields p.help.toggle a {
 	color: #808080;
+	font-weight: normal;
 }
 
-#fields .fixed {
-	position: fixed;
-	top: 20px;
+/* JavaScript interactions */
+
+.js-animate {
+	pointer-events: none;
 }
