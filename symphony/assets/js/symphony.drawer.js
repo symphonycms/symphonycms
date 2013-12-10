@@ -206,7 +206,7 @@
 		// Resize drawers
 		$(window).on('resize.drawer load.drawer', function() {
 			var height = getHeight();
-			objects.css('height', height);
+			objects.filter('.vertical-left, .vertical-right').css('height', height);
 		});
 
 	/*-------------------------------------------------------------------------
