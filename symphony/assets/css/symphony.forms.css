@@ -92,6 +92,7 @@ input[type="reset"],
 input[type="button"], 
 input[type="submit"] {
 	width: auto;
+	font-size: inherit;
 }
 
 button::-moz-focus-inner,
