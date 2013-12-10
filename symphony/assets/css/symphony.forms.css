@@ -82,13 +82,15 @@ input[type="submit"] {
 
 a,
 select,
-input[type="reset"], 
-input[type="button"], 
-input[type="submit"],
 textarea,
 option,
 fieldset {
 	outline: 0;
+}
+
+input[type="reset"], 
+input[type="button"], 
+input[type="submit"] {
 	width: auto;
 }
 

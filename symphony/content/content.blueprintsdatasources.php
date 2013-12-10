@@ -339,12 +339,8 @@
 
 			foreach($field_groups as $section_id => $section_data){
 				$div = new XMLElement('div');
-<<<<<<< HEAD
-				$div->setAttribute('class', 'frame filters-duplicator contextual ' . $section_id);
-=======
-				$div->setAttribute('class', 'contextual');
+				$div->setAttribute('class', 'contextual frame filters-duplicator');
 				$div->setAttribute('data-context', 'section-' . $section_id);
->>>>>>> 5ceb92f1f843ebe008f27a291332b2d976d0c341
 
 				$ol = new XMLElement('ol');
 				$ol->setAttribute('class', 'suggestable');
@@ -461,11 +457,11 @@
 			}
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'contextual');
+			$div->setAttribute('class', 'contextual frame filters-duplicator');
 			$div->setAttribute('data-context', 'authors');
 
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator suggestable');
+			$ol->setAttribute('class', 'suggestable');
 			$ol->setAttribute('data-add', __('Add filter'));
 			$ol->setAttribute('data-remove', __('Remove filter'));
 
@@ -492,11 +488,11 @@
 			$fieldset->appendChild($div);
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'contextual');
+			$div->setAttribute('class', 'contextual frame filters-duplicator');
 			$div->setAttribute('data-context', 'navigation');
 
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator suggestable');
+			$ol->setAttribute('class', 'suggestable');
 			$ol->setAttribute('data-add', __('Add filter'));
 			$ol->setAttribute('data-remove', __('Remove filter'));
 
@@ -913,8 +909,12 @@
 
 			$namespaces = Widget::Label(__('Namespace Declarations'));
 			$namespaces->appendChild(new XMLElement('i', __('Optional')));
+
+			$duplicator = new XMLElement('div');			
+			$duplicator->setAttribute('class', 'frame filters-duplicator');
+			$namespaces->appendChild($duplicator);
+
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('class', 'filters-duplicator');
 			$ol->setAttribute('data-add', __('Add namespace'));
 			$ol->setAttribute('data-remove', __('Remove namespace'));
 
@@ -968,7 +968,7 @@
 			$li->appendChild($group);
 			$ol->appendChild($li);
 
-			$namespaces->appendChild($ol);
+			$duplicator->appendChild($ol);
 			$fieldset->appendChild($namespaces);
 
 			$this->Form->appendChild($fieldset);

@@ -6,6 +6,7 @@
  */
 
 .frame {
+	position: relative;
 	margin: 0 0 45px;
 	padding: 0;
 	list-style: none;
@@ -347,10 +348,6 @@ fieldset.frame,
 	transform: translatez(0);
 }
 
-.collapsible .instance {
-	overflow: hidden;
-}
-
 .collapsible .instance,
 .collapsible input,
 .collapsible textarea, 
@@ -377,12 +374,13 @@ fieldset.frame,
 	padding-right: 5px;
 }
 
-.collapsible .js-animate {
+.frame .js-animate {
 	-webkit-transition: max-height 0.25s linear;
 	-moz-transition: max-height 0.25s linear;
 	-ms-transition: max-height 0.25s linear;
 	-o-transition: max-height 0.25s linear;
 	transition: max-height 0.25s linear;
+	overflow: hidden;
 }
 
 .collapsed.js-animate {
