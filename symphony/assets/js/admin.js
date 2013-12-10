@@ -537,6 +537,7 @@
 
 		if(body.is('#blueprints-datasources')) {
 			var dsContext = $('#ds-context'),
+				dsSource = $('#ds-source'),
 				dsName = contents.find('input[name="fields[name]"]').attr('data-updated', 0),
 				dsNameChangeCount = 0,
 				dsParams = contents.find('select[name="fields[param][]"]'),
@@ -609,10 +610,12 @@
 
 			// Data source manager context
 			dsContext.on('change.admin', function() {
-				var select = $(this),
-					optgroup = select.find('option:selected').parent(),
+				var optgroup = dsContext.find('option:selected').parent(),
 					label = optgroup.attr('data-label') || optgroup.attr('label'),
-					context = select.find('option:selected').attr('data-context') || 'section-' + select.val();
+					context = dsContext.find('option:selected').attr('data-context') || 'section-' + dsContext.val();
+
+				// Store context
+				dsSource.val(dsContext.val());
 
 				// Show only relevant interface components based on context
 				contents.find('.contextual').addClass('irrelevant');
@@ -649,6 +652,7 @@
 
 		if(body.is('#blueprints-events')) {
 			var eventContext = $('#event-context'),
+				eventSource = $('#event-source'),
 				eventFilters = $('#event-filters'),
 				eventName = contents.find('input[name="fields[name]"]').attr('data-updated', 0),
 				eventNameChangeCount = 0;
@@ -669,6 +673,8 @@
 
 			// Change context
 			eventContext.on('change.admin', function changeEventContext() {
+				console.log('text');
+				eventSource.val(eventContext.val());
 				contents.trigger('update.admin');
 			});
 
