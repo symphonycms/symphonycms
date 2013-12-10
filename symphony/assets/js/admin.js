@@ -539,7 +539,7 @@
 			var dsName = contents.find('input[name="fields[name]"]').attr('data-updated', 0),
 				dsNameChangeCount = 0,
 				dsParams = contents.find('select[name="fields[param][]"]'),
-				dsMaxRecord = contents.find('input[name*=max_records]'),
+				dsMaxRecords = contents.find('input[name*=max_records]'),
 				dsPageNumber = contents.find('input[name*=page_number]');
 
 			// Update data source handle
@@ -631,57 +631,28 @@
 
 			// Once pagination is disabled, dsMaxRecords and dsPageNumber are disabled too
 			contents.find('input[name*=paginate_results]').on('change.admin', function(event) {
-
-				// Look within the existing context to ensure that these actions only fire
-				// on the active Datasource type
-				var $paginate_results = $(this),
-					$paging_container = $paginate_results.closest('label'),
-					$dsMaxRecords = $paging_container.find('input[name*=max_records]'),
-					$dsPageNumber = $paging_container.find('input[name*=page_number]');
-
-				// Turn on pagination
-				if($(this).is(':checked')) {
-					$dsMaxRecords.add($dsPageNumber).prop('disabled', false);
-				}
-
-				// Turn off pagination
-				else {
-					$dsMaxRecords.add($dsPageNumber).prop('disabled', true);
-				}
+				var enabled = $(this).is(':checked');
+				
+				dsMaxRecords.prop('disabled', enabled);
+				dsPageNumber.prop('disabled', enabled);
 			}).trigger('change.admin');
 
 			// Disable paginate_results checking/unchecking when clicking on either dsMaxRecords or dsPageNumber
-			dsMaxRecord.add(dsPageNumber).on('click.admin', function(event) {
+			dsMaxRecords.add(dsPageNumber).on('click.admin', function(event) {
 				event.preventDefault();
 			});
 
 			// Enabled fields on submit
 			form.on('submit.admin', function() {
-				dsMaxRecord.add(dsPageNumber).prop('disabled', false);
+				dsMaxRecords.prop('disabled', false);
+				dsPageNumber.prop('disabled', false);
 			});
 
 			// Enable parameter suggestions
-			contents.find('.duplicator:has(.filters-duplicator)').add(dsMaxRecord.parent()).add(dsPageNumber.parent()).symphonySuggestions();
+			contents.find('.duplicator:has(.filters-duplicator)').add(dsMaxRecords.parent()).add(dsPageNumber.parent()).symphonySuggestions();
 			contents.find('label:has(input[name*="url_param"])').symphonySuggestions({
 				trigger: '$',
 				source: '/symphony/ajax/parameters/?filter=page&template=$%s'
-			});
-		}
-
-	/*--------------------------------------------------------------------------
-		Blueprints - Event Editor
-	--------------------------------------------------------------------------*/
-
-		// This is transitional code needed until the event editor makes proper use of Pickable.
-		// This is scheduled to be removed in Symphony 2.4.
-		if(body.is('#blueprints-events')) {
-			var eventSections = $('#sections');
-			$('#event-context').find('option').each(function() {
-				eventSections.clone().attr('id', 'choice' + $(this).val()).insertAfter(eventSections);
-			}).trigger('change.pickable');
-
-			form.on('submit', function() {
-				$('.pickable:not(:visible)').remove();
 			});
 		}
 
