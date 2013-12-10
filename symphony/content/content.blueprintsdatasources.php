@@ -220,23 +220,12 @@
 				Widget::Anchor(__('Data Sources'), SYMPHONY_URL . '/blueprints/datasources/'),
 			));
 
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
-
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'two columns');
-
-			$div = new XMLElement('div', NULL, array('class' => 'column'));
-			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
-
-			if(isset($this->_errors['name'])) $div->appendChild(Widget::Error($label, $this->_errors['name']));
-			else $div->appendChild($label);
-			$group->appendChild($div);
-
-			$div = new XMLElement('div', NULL, array('class' => 'column'));
-			$label = Widget::Label(__('Source'));
+			// Sources
+			$sources = new XMLElement('div', null, array('class' => 'apply actions'));
+			$div = new XMLElement('div');
+			$label = Widget::Label(__('Source'), null, 'apply-label-left');
+			$sources->appendChild($label);
+			$sources->appendChild($div);
 
 			$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 
@@ -274,12 +263,30 @@
 			// Add Sections
 			if(is_array($sections) && !empty($sections)){
 				array_unshift($options, array('label' => __('Sections'), 'data-label' => 'sections', 'options' => array()));
-				foreach($sections as $s) $options[0]['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
+				foreach($sections as $s) {
+					$options[0]['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
+				}
 			}
 
-			$label->appendChild(Widget::Select('fields[source]', $options, array('id' => 'ds-context')));
-			$div->appendChild($label);
+			$div->appendChild(Widget::Select('fields[source]', $options, array('id' => 'ds-context')));
+			$this->Context->prependChild($sources);
+
+			// Name
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
+
+			$group = new XMLElement('div');
+
+			$div = new XMLElement('div');
+			$label = Widget::Label(__('Name'));
+			$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
+
+			if(isset($this->_errors['name'])) $div->appendChild(Widget::Error($label, $this->_errors['name']));
+			else $div->appendChild($label);
 			$group->appendChild($div);
+
+			$div = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$fieldset->appendChild($group);
 			$this->Form->appendChild($fieldset);
