@@ -673,7 +673,6 @@
 
 			// Change context
 			eventContext.on('change.admin', function changeEventContext() {
-				console.log('text');
 				eventSource.val(eventContext.val());
 				contents.trigger('update.admin');
 			});
