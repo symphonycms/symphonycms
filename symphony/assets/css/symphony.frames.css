@@ -48,6 +48,10 @@
 	margin-bottom: 15px;
 }
 
+.password .frame {
+	text-align: center;
+}
+
 /* Headers */
 
 .frame-header {
