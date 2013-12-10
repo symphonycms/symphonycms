@@ -268,8 +268,12 @@
 				}
 			}
 
-			$div->appendChild(Widget::Select('fields[source]', $options, array('id' => 'ds-context')));
+			$div->appendChild(Widget::Select('source', $options, array('id' => 'ds-context')));
 			$this->Context->prependChild($sources);
+
+			$this->Form->appendChild(
+				Widget::Input('fields[source]', null, 'hidden', array('id' => 'ds-source'))
+			);
 
 			// Name
 			$fieldset = new XMLElement('fieldset');
@@ -278,13 +282,11 @@
 
 			$group = new XMLElement('div');
 
-			$div = new XMLElement('div');
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
 
-			if(isset($this->_errors['name'])) $div->appendChild(Widget::Error($label, $this->_errors['name']));
-			else $div->appendChild($label);
-			$group->appendChild($div);
+			if(isset($this->_errors['name'])) $group->appendChild(Widget::Error($label, $this->_errors['name']));
+			else $group->appendChild($label);
 
 			$div = new XMLElement('div', NULL, array('class' => 'column'));
 
@@ -614,7 +616,7 @@
 				$options[] = $optgroup;
 			}
 
-			$label->appendChild(Widget::Select('fields[sort]', $options, array('class' => 'filtered')));
+			$label->appendChild(Widget::Select('fields[sort]', $options));
 			$div->appendChild($label);
 
 			$label = Widget::Label(__('Sort Order'), NULL, 'column');
@@ -667,7 +669,7 @@
 				$options[] = $optgroup;
 			}
 
-			$label->appendChild(Widget::Select('fields[group]', $options, array('class' => 'filtered')));
+			$label->appendChild(Widget::Select('fields[group]', $options));
 			$fieldset->appendChild($label);
 
 			$this->Form->appendChild($fieldset);
@@ -767,7 +769,7 @@
 				$options[] = $optgroup;
 			}
 
-			$label->appendChild(Widget::Select('fields[xml_elements][]', $options, array('multiple' => 'multiple', 'class' => 'filtered')));
+			$label->appendChild(Widget::Select('fields[xml_elements][]', $options, array('multiple' => 'multiple')));
 			$group->appendChild($label);
 
 			// Support multiple parameters
@@ -847,7 +849,7 @@
 				$options[] = $optgroup;
 			}
 
-			$label->appendChild(Widget::Select('fields[param][]', $options, array('class' => 'filtered', 'multiple' => 'multiple')));
+			$label->appendChild(Widget::Select('fields[param][]', $options, array('multiple' => 'multiple')));
 			$group->appendChild($label);
 
 			$fieldset->appendChild($group);
