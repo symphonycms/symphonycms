@@ -561,10 +561,10 @@
 										dsParams.trigger('update.admin');
 									}
 								}
-							}
-						});
-					}
-				}, 500);
+							});
+						}
+					}, 500);
+				}
 			});
 
 			// Update output parameters
