@@ -610,7 +610,7 @@
 			});
 
 			// Data source manager context
-			contents.find('#ds-context')
+			$('#ds-context')
 				.on('change.admin', function() {
 					var select = $(this),
 						optgroup = select.find('option:selected').parent(),

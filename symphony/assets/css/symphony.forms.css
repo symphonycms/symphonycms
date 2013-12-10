@@ -126,7 +126,11 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
 
 input[type=submit],
 button,
-.button {
+.button,
+.apply-button-left,
+.apply-button-right,
+.apply-label-left,
+.apply-label-right {
 	display: inline-block;
 	min-height: 20px;
 	margin-left: 10px;
@@ -245,8 +249,8 @@ button.delete:focus,
 
 /* "With selected…" menu */
 
-fieldset.apply,
-fieldset.apply.inactive:hover {
+.apply,
+.apply.inactive:hover {
 	background: #fbfbfa;
 	border: 1px solid rgba(0, 0, 0, 0.25);
 	-webkit-border-radius: 4px;
@@ -261,18 +265,11 @@ fieldset.apply.inactive:hover {
 	padding: 0;
 }
 
-fieldset.apply.inactive {
+.apply.inactive {
 	opacity: 0.5;
 }
 
-fieldset.apply:hover {
-	border-color: rgba(0, 0, 0, 0.4);
-	-webkit-box-shadow: 0 0 7px rgba(0, 0, 0, 0.1);
-	box-shadow: 0 0 7px rgba(0, 0, 0, 0.1);
-	color: rgb(60, 60, 60);
-}
-
-fieldset.apply div {
+.apply div {
 	text-align: left;
 	overflow: hidden;
 	float: left;
@@ -281,15 +278,15 @@ fieldset.apply div {
 	background-position: right -14px;
 }
 
-fieldset.apply:hover div {
+.apply:hover div {
 	background-position: right 6px;
 }
 
-fieldset.applay.inactive div {
+.apply.inactive div {
 	background: right -34px;
 }
 
-fieldset.apply select {
+.apply select {
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	-ms-appearance: none;
@@ -298,7 +295,6 @@ fieldset.apply select {
 	/* DavidOliver's note: start: causing outline when selected: */
 	background: transparent;
 	border: none;
-	-webkit-border-radius: 5px;
 	border-radius: 5px;
 	/* DavidOliver's note: end: causing outline when selected: */
 	color: rgb(60, 60, 60);
@@ -312,58 +308,68 @@ fieldset.apply select {
 	min-width: 170px;
 }
 
-fieldset.apply.inactive select {
+.apply.inactive select {
 	cursor: default;
 }
 
-fieldset.apply select:hover {
+.apply select:hover {
 	background-position: right -16px;
 }
 
-fieldset.apply button {
+.apply button,
+.apply-button-right,
+.apply-button-left,
+.apply-label-right,
+.apply-label-left {
 	margin: 0;
 	border: none;
 	border-left: 1px solid rgba(0, 0, 0, 0.15);
-	-webkit-border-radius: 0 4px 4px 0;
+	border-right: none;
 	border-radius: 0 4px 4px 0;
 	line-height: 1.85;
 	height: 1.85em;
 	float: right;
 }
 
-fieldset.apply.inactive button,
-fieldset.apply.inactive button:hover {
+.apply-button-left,
+.apply-label-left {
+	float: left;
+	border-left: none;
+	border-right: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 4px 0 0 4px;
+}
+
+.apply.inactive button,
+.apply.inactive button:hover {
 	color: rgba(60, 60, 60, 0.8);
 	border-left: 1px solid rgba(0, 0, 0, 0.15);
-	-webkit-box-shadow: none;
 	box-shadow: none;
 	cursor: default;
 }
 
-fieldset.apply:hover button {
+.apply:hover button {
 	border-left: 1px solid rgba(0, 0, 0, 0.25);
 }
 
 /* Single select "With selected…" */
 
-fieldset.apply.single {
+.apply.single {
 	border: none;
 }
 
-fieldset.apply.single select {
+.apply.single select {
 	display: none;
 }
 
-fieldset.apply.single button {
+.apply.single button {
 	border: 1px solid rgba(0, 0, 0, 0.25);
 	border-bottom-color: rgba(0, 0, 0, 0.3);
-	-webkit-border-radius: 4px;
 	border-radius: 4px;
 	height: auto;
 	white-space: nowrap;
 }
 
-fieldset.apply.single button:before {
+.apply.single button:before {
 	display: none;
 }
 
