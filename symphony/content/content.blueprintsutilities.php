@@ -42,7 +42,7 @@
 							SYMPHONY_URL . '/blueprints/utilities/edit/' . str_replace('.xsl', '', $u) . '/')
 					);
 
-					$name->appendChild(Widget::Input('items[' . $u . ']', null, 'checkbox'));
+					$name->appendChild(Widget::Input('items[' . $u . ']', null, 'checkbox', array('class'=>'selectable')));
 
 					$aTableBody[] = Widget::TableRow(array($name));
 				}

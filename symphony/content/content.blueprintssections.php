@@ -47,7 +47,7 @@
 					$td2 = Widget::TableData(Widget::Anchor("$entry_count", SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
 					$td3 = Widget::TableData($s->get('navigation_group'));
 
-					$td3->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox'));
+					$td3->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox', array('class'=>'selectable')));
 
 					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));

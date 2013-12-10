@@ -137,7 +137,7 @@
 					$col_title = Widget::TableData(Widget::Anchor(
 						$page_title, $page_edit_url, $page['handle']
 					));
-					$col_title->appendChild(Widget::Input("items[{$page['id']}]", null, 'checkbox'));
+					$col_title->appendChild(Widget::Input("items[{$page['id']}]", null, 'checkbox', array('class'=>'selectable')));
 
 					$col_template = Widget::TableData(Widget::Anchor(
 						$page_template . '.xsl',

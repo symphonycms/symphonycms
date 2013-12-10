@@ -126,7 +126,7 @@
 
 					if (Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
 						if ($a->get('id') != Administration::instance()->Author->get('id')) {
-							$td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
+							$td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox', array('class'=>'selectable')));
 						}
 					}
 

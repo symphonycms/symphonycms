@@ -3,7 +3,21 @@
  */
 
 (function($) {
-
+	
+	$.symphonySelectable = {
+		defaults: {
+			checkbox: 'input[type="checkbox"]', // private
+			input: '.selectable', // private
+			items: 'tbody tr:has(input)',
+			ignore: 'a',
+			mode: 'default'
+		}
+	};
+	
+	// Use more precise selectors by default
+	$.symphonySelectable.defaults.input = $.symphonySelectable.defaults.checkbox + $.symphonySelectable.defaults.input;
+	$.symphonySelectable.defaults.items = 'tbody tr:has('+$.symphonySelectable.defaults.input+')';
+	
 	/**
 	 * Create selectable elements. Clicking an item will select it
 	 * by adding the class <code>.selected</code>. Holding down the shift key
@@ -20,7 +34,7 @@
 	 * @param {String} [options.items='tbody tr:has(input)'] Selector to find items that are selectable
 	 * item. Needed to properly handle item highlighting when used in connection with the orderable plugin
 	 * @param {String} [options.ignore='a'] Selector to find elements that should not propagate to the handle
-	 * @param {String} [optinos.mode='single'] Either 'default' (click removes other selections) or 'additive' (click adds to exisiting selection)
+	 * @param {String} [options.mode='default'] Either 'default' (click removes other selections) or 'additive' (click adds to exisiting selection)
 	 *
 	 * @example
 
@@ -31,13 +45,13 @@
 	 */
 	$.fn.symphonySelectable = function(options) {
 		var objects = this,
-			settings = {
-				items: 'tbody tr:has(input)',
-				ignore: 'a',
-				mode: 'single'
-			};
-
-		$.extend(settings, options);
+			settings = $.extend({}, $.symphonySelectable.defaults, options);
+			
+		// Regression testing
+		// Make sure we can still find the checkboxes, even if they do not have
+		if (!objects.find(settings.items).length) {
+			settings.items = 'tbody tr:has('+settings.checkbox+')';
+		}
 
 	/*-------------------------------------------------------------------------
 		Events
@@ -81,11 +95,11 @@
 
 				// Deselect items outside the selection range
 				deselection = items.filter('.selected').not(selection).removeClass('selected').trigger('deselect.selectable');
-				deselection.find('input[type="checkbox"]').prop('checked', false);
+				deselection.find(settings.input).prop('checked', false);
 
 				// Select range
 				selection.addClass('selected').trigger('select.selectable');
-				selection.find('input[type="checkbox"]').prop('checked', true);
+				selection.find(settings.input).prop('checked', true);
 			}
 
 			// Single selection
@@ -94,17 +108,17 @@
 				// Press meta or ctrl key to adjust current range, otherwise the selection will be removed
 				if((!event.metaKey && !event.ctrlKey && settings.mode != 'additive' &&  !target.is('input')) || object.is('.single')) {
 					deselection = items.not(item).filter('.selected').removeClass('selected').trigger('deselect.selectable');
-					deselection.find('input[type="checkbox"]').prop('checked', false);
+					deselection.find(settings.input).prop('checked', false);
 				}
 
 				// Toggle selection
 				if(item.is('.selected')) {
 					item.removeClass('selected').trigger('deselect.selectable');
-					item.find('input[type="checkbox"]').prop('checked', false);
+					item.find(settings.input).prop('checked', false);
 				}
 				else {
 					item.addClass('selected').trigger('select.selectable');
-					item.find('input[type="checkbox"]').prop('checked', true);
+					item.find(settings.input).prop('checked', true);
 				}
 			}
 

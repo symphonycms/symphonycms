@@ -1,3 +1,4 @@
+
 <?php
 
 	/**
@@ -216,7 +217,7 @@
 					}
 
 					$author = Widget::TableData($author);
-					$author->appendChild(Widget::Input('items[' . $r['handle'] . ']', null, 'checkbox'));
+					$author->appendChild(Widget::Input('items[' . $r['handle'] . ']', null, 'checkbox', array('class'=>'selectable')));
 
 					$aTableBody[] = Widget::TableRow(array($name, $section, $pagelinks, $releasedate, $author));
 				}

@@ -377,7 +377,7 @@
 						'entry' => $entry
 					));
 
-					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox'));
+					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox', array('class' => 'selectable')));
 
 					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow($tableData, NULL, 'id-' . $entry->get('id'));

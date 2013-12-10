@@ -120,7 +120,7 @@
 						$td4->setValue($link instanceof XMLElement ? $link->generate() : $link);
 					}
 
-					$td4->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
+					$td4->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox', array('class'=>'selectable')));
 
 					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4), (in_array(EXTENSION_NOT_INSTALLED, $about['status']) ? 'inactive' : NULL));
