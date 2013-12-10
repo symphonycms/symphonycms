@@ -182,6 +182,7 @@
 	padding: 0 9px;
 	border: 1px solid transparent;
 	cursor: pointer;
+	-webkit-font-smoothing: subpixel-antialiased !important;
 }
 
 #nav ul a:hover {
