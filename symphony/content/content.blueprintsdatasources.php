@@ -841,39 +841,7 @@
 			}
 
 			$label->appendChild(Widget::Select('fields[param][]', $options, array('class' => 'filtered', 'multiple' => 'multiple')));
-<<<<<<< HEAD
-			$subfieldset->appendChild($label);
-
-			$div->appendChild($subfieldset);
-
-			$subfieldset = new XMLElement('fieldset', NULL, array('class' => 'column'));
-			$subfieldset->appendChild(new XMLElement('legend', __('XML Output')));
-
-			$label = Widget::Label(__('Group By'));
-			$options = array(
-				array('', NULL, __('None')),
-			);
-
-			foreach($field_groups as $section_id => $section_data){
-				$optgroup = array('label' => $section_data['section']->get('name'), 'options' => array());
-
-				if(is_array($section_data['fields']) && !empty($section_data['fields'])){
-					foreach($section_data['fields'] as $input){
-
-						if(!$input->allowDatasourceOutputGrouping()) continue;
-
-						$optgroup['options'][] = array($input->get('id'), ($fields['source'] == $section_id && $fields['group'] == $input->get('id')), $input->get('label'));
-					}
-				}
-
-				$options[] = $optgroup;
-			}
-
-			$label->appendChild(Widget::Select('fields[group]', $options, array('class' => 'filtered')));
-			$subfieldset->appendChild($label);
-=======
 			$group->appendChild($label);
->>>>>>> Realign XML Output
 
 			$fieldset->appendChild($group);
 
