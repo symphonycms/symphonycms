@@ -246,3 +246,7 @@ label.inline-help > i {
 	color: #808080;
 	clear: both;
 }
+
+.centered {
+	text-align: center;
+}

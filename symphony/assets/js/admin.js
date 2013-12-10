@@ -747,7 +747,7 @@
 			// Change user password
 			contents.find('#password').each(function() {
 				var password = $(this),
-					overlay = $('<div class="password"><span class="frame"><button type="button">' + Symphony.Language.get('Change Password') + '</button></span></div>');
+					overlay = $('<div class="password"><span class="frame centered"><button type="button">' + Symphony.Language.get('Change Password') + '</button></span></div>');
 
 				// Add overlay
 				if(password.has('.invalid').length == 0 && Symphony.Context.get('env')[0] != 'new') {
