@@ -686,7 +686,7 @@
 			$fieldset->appendChild($p);
 
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'two columns');
+			$group->setAttribute('class', 'two columns pagination');
 
 			$label = Widget::Label(__('Entries per Page'));
 			$label->setAttribute('class', 'column');
