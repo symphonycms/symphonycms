@@ -536,11 +536,12 @@
 	--------------------------------------------------------------------------*/
 
 		if(body.is('#blueprints-datasources')) {
-			var dsName = contents.find('input[name="fields[name]"]').attr('data-updated', 0),
+			var dsContext = $('#ds-context'),
+				dsName = contents.find('input[name="fields[name]"]').attr('data-updated', 0),
 				dsNameChangeCount = 0,
 				dsParams = contents.find('select[name="fields[param][]"]'),
-				dsMaxRecords = contents.find('input[name*=max_records]'),
-				dsPageNumber = contents.find('input[name*=page_number]');
+				dsPagination = contents.find('.pagination'),
+				dsPaginationInput = dsPagination.find('input');
 
 			// Update data source handle
 			dsName.on('blur.admin input.admin', function updateDsHandle() {
@@ -588,19 +589,14 @@
 			}).trigger('update.admin');
 
 			// Data source manager options
-			contents.find('select.filtered > optgroup').each(function() {
+			contents.find('select optgroup').each(function() {
 				var optgroup = $(this),
 					select = optgroup.parents('select'),
 					label = optgroup.attr('data-label'),
 					options = optgroup.remove().find('option').addClass('optgroup');
 
-				// Fix for Webkit browsers to initially show the options
-				if (select.attr('multiple')) {
-					select.scrollTop(0);
-				}
-
 				// Show only relevant options based on context
-				contents.find('#ds-context').on('change.admin', function() {
+				dsContext.on('change.admin', function() {
 					var option = $(this).find('option:selected'),
 						context = option.attr('data-context') || 'section-' + option.val();
 
@@ -612,44 +608,35 @@
 			});
 
 			// Data source manager context
-			$('#ds-context')
-				.on('change.admin', function() {
-					var select = $(this),
-						optgroup = select.find('option:selected').parent(),
-						label = optgroup.attr('data-label') || optgroup.attr('label'),
-						context = select.find('option:selected').attr('data-context') || 'section-' + select.val();
+			dsContext.on('change.admin', function() {
+				var select = $(this),
+					optgroup = select.find('option:selected').parent(),
+					label = optgroup.attr('data-label') || optgroup.attr('label'),
+					context = select.find('option:selected').attr('data-context') || 'section-' + select.val();
 
-					// Show only relevant interface components based on context
-					contents.find('.contextual').addClass('irrelevant');
-					contents.find('.contextual').filter('[data-context~=' + label + ']').removeClass('irrelevant');
-					contents.find('.contextual').filter('[data-context~=' + context + ']').removeClass('irrelevant');
+				// Show only relevant interface components based on context
+				contents.find('.contextual').addClass('irrelevant');
+				contents.find('.contextual').filter('[data-context~=' + label + ']').removeClass('irrelevant');
+				contents.find('.contextual').filter('[data-context~=' + context + ']').removeClass('irrelevant');
 
-					// Make sure parameter names are up-to-date
-					contents.find('input[name="fields[name]"]').trigger('blur.admin');
-				})
-				.trigger('change.admin');
-
-			// Once pagination is disabled, dsMaxRecords and dsPageNumber are disabled too
-			contents.find('input[name*=paginate_results]').on('change.admin', function(event) {
-				var enabled = $(this).is(':checked');
-				
-				dsMaxRecords.prop('disabled', enabled);
-				dsPageNumber.prop('disabled', enabled);
+				// Make sure parameter names are up-to-date
+				contents.find('input[name="fields[name]"]').trigger('blur.admin');
 			}).trigger('change.admin');
 
-			// Disable paginate_results checking/unchecking when clicking on either dsMaxRecords or dsPageNumber
-			dsMaxRecords.add(dsPageNumber).on('click.admin', function(event) {
-				event.preventDefault();
-			});
+			// Toggle pagination
+			contents.find('input[name*=paginate_results]').on('change.admin', function(event) {
+				var enabled = $(this).is(':checked');
+				dsPaginationInput.prop('disabled', enabled);
+			}).trigger('change.admin');
 
 			// Enabled fields on submit
 			form.on('submit.admin', function() {
-				dsMaxRecords.prop('disabled', false);
-				dsPageNumber.prop('disabled', false);
+				dsPaginationInput.prop('disabled', false);
 			});
 
 			// Enable parameter suggestions
-			contents.find('.duplicator:has(.filters-duplicator)').add(dsMaxRecords.parent()).add(dsPageNumber.parent()).symphonySuggestions();
+			contents.find('.filters-duplicator').symphonySuggestions();
+			dsPagination.symphonySuggestions();
 			contents.find('label:has(input[name*="url_param"])').symphonySuggestions({
 				trigger: '$',
 				source: '/symphony/ajax/parameters/?filter=page&template=$%s'
