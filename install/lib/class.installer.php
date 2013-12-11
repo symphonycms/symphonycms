@@ -381,14 +381,16 @@
 		 * @todo: Resume installation after an error has been fixed.
 		 */
 		protected static function __abort($message, $start){
-			Symphony::Log()->pushToLog($message, E_ERROR, true);
+			$result = Symphony::Log()->pushToLog($message, E_ERROR, true);
 
-			Symphony::Log()->writeToLog(        '============================================', true);
-			Symphony::Log()->writeToLog(sprintf('INSTALLATION ABORTED: Execution Time - %d sec (%s)',
-				max(1, time() - $start),
-				date('d.m.y H:i:s')
-			), true);
-			Symphony::Log()->writeToLog(        '============================================' . PHP_EOL . PHP_EOL . PHP_EOL, true);
+			if($result) {
+				Symphony::Log()->writeToLog(        '============================================', true);
+				Symphony::Log()->writeToLog(sprintf('INSTALLATION ABORTED: Execution Time - %d sec (%s)',
+					max(1, time() - $start),
+					date('d.m.y H:i:s')
+				), true);
+				Symphony::Log()->writeToLog(        '============================================' . PHP_EOL . PHP_EOL . PHP_EOL, true);
+			}
 
 			self::__render(new InstallerPage('failure'));
 		}

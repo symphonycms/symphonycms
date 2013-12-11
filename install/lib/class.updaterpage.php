@@ -82,9 +82,22 @@
 
 		protected function viewFailure() {
 			$h2 = new XMLElement('h2', __('Updating Failure'));
-			$p = new XMLElement('p', __('An error occurred during updating.'));
-			
-			$log = file_get_contents(INSTALL_LOGS . '/update');
+			$p = new XMLElement('p', __('An error occurred while updating Symphony.'));
+
+			// Attempt to get update information from the log file
+			try {
+				$log = file_get_contents(INSTALL_LOGS . '/update');
+			}
+			catch (Exception $ex) {
+				$log_entry = Symphony::Log()->popFromLog();
+				if(isset($log_entry['message'])) {
+					$log = $log_entry['message'];
+				}
+				else {
+					$log = 'Unknown error occurred when reading the update log';
+				}
+			}
+
 			$code = new XMLElement('code', $log);
 
 			$this->Form->appendChild($h2);
