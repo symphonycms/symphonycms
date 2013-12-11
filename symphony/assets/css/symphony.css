@@ -52,11 +52,6 @@ header, nav, section, aside, footer {
 	Basic styles
 -----------------------------------------------------------------------------*/
 
-html,
-body {
-	height: 100%;
-}
-
 body {
 	font: 68.75%/1.5 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 	background: #fff;
@@ -250,4 +245,8 @@ label.inline-help > i {
 .help {
 	color: #808080;
 	clear: both;
+}
+
+.centered {
+	text-align: center;
 }

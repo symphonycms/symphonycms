@@ -11,18 +11,14 @@
 	Inputs, text areas, selects
 --------------------------------------------------------------------------*/
 
-input[type=password],
-input[type=text],
+input,
 textarea,
 select[multiple] {
 	padding: 2px 3px;
 	border: 1px solid rgba(0, 0, 0, 0.25);
-	-webkit-box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05);
 	box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.05);
-	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	-webkit-border-radius: 2px;
 	border-radius: 2px;
 	margin-top: 2px;
 	width: 100%;
@@ -30,29 +26,24 @@ select[multiple] {
 	font-family: inherit;
 }
 
-input[type=text] {
+input {
 	height: 22px;
 }
 
-input[type=password]:active,
-input[type=password]:focus,
-input[type=text]:active,
-input[type=text]:focus,
+input:active,
+input:focus,
 textarea:active,
 textarea:focus,
 select[multiple]:active,
 select[multiple]:focus {
 	outline: none;
 	border-color: rgba(0, 0, 0, 0.4);
-	-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
-	box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
 }
 
 select {
 	width: 100%;
 	display: block;
 	margin-top: 2px;
-	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
@@ -70,25 +61,38 @@ select[size] {
 }
 
 input[size],
-input[type=radio],
-input[type=checkbox] {
+input[type="radio"],
+input[type="checkbox"] {
 	display: inline;
 	width: auto;
 	margin-right: 5px;
+	height: auto;
+	padding: inherit;
+	border: none;
+	box-shadow: none;
+	border-radius: none;
+	margin-top: 0;
+	font-size: inherit;
 }
 
 button,
-input[type=submit] {
+input[type="submit"] {
 	font-family: 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }
 
 a,
 select,
-input[type="reset"], input[type=button], input[type=submit],
 textarea,
 option,
 fieldset {
 	outline: 0;
+}
+
+input[type="reset"], 
+input[type="button"], 
+input[type="submit"] {
+	width: auto;
+	font-size: inherit;
 }
 
 button::-moz-focus-inner,
@@ -102,21 +106,17 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
 
 /* Errors */
 
-.invalid input[type=password],
-.invalid input[type=text],
+.invalid input
 .invalid select[multiple],
 .invalid textarea {
 	border-color: #cc3311;
 }
 
-.invalid input[type=password]:active,
-.invalid input[type=password]:focus,
-.invalid input[type=text]:active,
-.invalid input[type=text]:focus,
+.invalid input:active,
+.invalid input:focus,
 .invalid textarea:active,
 .invalid textarea:focus {
 	border-color: #9d270d;
-	-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
 	box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
@@ -126,7 +126,11 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
 
 input[type=submit],
 button,
-.button {
+.button,
+.apply-button-left,
+.apply-button-right,
+.apply-label-left,
+.apply-label-right {
 	display: inline-block;
 	min-height: 20px;
 	margin-left: 10px;
@@ -138,9 +142,7 @@ button,
 	background-image: linear-gradient(to bottom, #fbfbfa 0%, #fbfbfa 30%, #e3e3df 100%);
 	border: 1px solid rgba(0, 0, 0, 0.25);
 	border-bottom-color: rgba(0, 0, 0, 0.3);
-	-webkit-border-radius: 4px;
 	border-radius: 4px;
-	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
 	line-height: 1.85;
 }
@@ -156,7 +158,6 @@ button:focus,
 .button:focus {
 	color: #3c3c3c;
 	border-color: rgba(0, 0, 0, 0.4);
-	-webkit-box-shadow: 0 0 7px rgba(0, 0, 0, 0.05), 0 0 1px 2px rgba(77, 120, 180, 0.1);
 	box-shadow: 0 0 7px rgba(0, 0, 0, 0.05), 0 0 1px 2px rgba(77, 120, 180, 0.1);
 	cursor: pointer;
 }
@@ -168,7 +169,6 @@ button.selected,
 	background-image:	  -ms-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
 	background-image:	   -o-linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
 	background-image:		  linear-gradient(bottom, #EFEFED 0%, #EFEFED 30%, #E3E3DF 100%);
-	-webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.3);
 	box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.3);
 	cursor: pointer;
 	color: rgba(0, 0, 0, 0.65);
@@ -245,13 +245,11 @@ button.delete:focus,
 
 /* "With selected…" menu */
 
-fieldset.apply,
-fieldset.apply.inactive:hover {
+.apply,
+.apply.inactive:hover {
 	background: #fbfbfa;
 	border: 1px solid rgba(0, 0, 0, 0.25);
-	-webkit-border-radius: 4px;
 	border-radius: 4px;
-	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
 	display: block;
 	float: right;
@@ -261,18 +259,11 @@ fieldset.apply.inactive:hover {
 	padding: 0;
 }
 
-fieldset.apply.inactive {
+.apply.inactive {
 	opacity: 0.5;
 }
 
-fieldset.apply:hover {
-	border-color: rgba(0, 0, 0, 0.4);
-	-webkit-box-shadow: 0 0 7px rgba(0, 0, 0, 0.1);
-	box-shadow: 0 0 7px rgba(0, 0, 0, 0.1);
-	color: rgb(60, 60, 60);
-}
-
-fieldset.apply div {
+.apply div {
 	text-align: left;
 	overflow: hidden;
 	float: left;
@@ -281,26 +272,23 @@ fieldset.apply div {
 	background-position: right -14px;
 }
 
-fieldset.apply:hover div {
+.apply:hover div {
 	background-position: right 6px;
 }
 
-fieldset.applay.inactive div {
+.apply.inactive div {
 	background: right -34px;
 }
 
-fieldset.apply select {
+.apply select {
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	-ms-appearance: none;
 	-o-appearance: none;
 	appearance: none;
-	/* DavidOliver's note: start: causing outline when selected: */
 	background: transparent;
 	border: none;
-	-webkit-border-radius: 5px;
 	border-radius: 5px;
-	/* DavidOliver's note: end: causing outline when selected: */
 	color: rgb(60, 60, 60);
 	cursor: pointer;
 	display: inline-block;
@@ -312,58 +300,68 @@ fieldset.apply select {
 	min-width: 170px;
 }
 
-fieldset.apply.inactive select {
+.apply.inactive select {
 	cursor: default;
 }
 
-fieldset.apply select:hover {
+.apply select:hover {
 	background-position: right -16px;
 }
 
-fieldset.apply button {
+.apply button,
+.apply-button-right,
+.apply-button-left,
+.apply-label-right,
+.apply-label-left {
 	margin: 0;
 	border: none;
 	border-left: 1px solid rgba(0, 0, 0, 0.15);
-	-webkit-border-radius: 0 4px 4px 0;
+	border-right: none;
 	border-radius: 0 4px 4px 0;
 	line-height: 1.85;
 	height: 1.85em;
 	float: right;
 }
 
-fieldset.apply.inactive button,
-fieldset.apply.inactive button:hover {
+.apply-button-left,
+.apply-label-left {
+	float: left;
+	border-left: none;
+	border-right: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 4px 0 0 4px;
+}
+
+.apply.inactive button,
+.apply.inactive button:hover {
 	color: rgba(60, 60, 60, 0.8);
 	border-left: 1px solid rgba(0, 0, 0, 0.15);
-	-webkit-box-shadow: none;
 	box-shadow: none;
 	cursor: default;
 }
 
-fieldset.apply:hover button {
+.apply:hover button {
 	border-left: 1px solid rgba(0, 0, 0, 0.25);
 }
 
 /* Single select "With selected…" */
 
-fieldset.apply.single {
+.apply.single {
 	border: none;
 }
 
-fieldset.apply.single select {
+.apply.single select {
 	display: none;
 }
 
-fieldset.apply.single button {
+.apply.single button {
 	border: 1px solid rgba(0, 0, 0, 0.25);
 	border-bottom-color: rgba(0, 0, 0, 0.3);
-	-webkit-border-radius: 4px;
 	border-radius: 4px;
 	height: auto;
 	white-space: nowrap;
 }
 
-fieldset.apply.single button:before {
+.apply.single button:before {
 	display: none;
 }
 

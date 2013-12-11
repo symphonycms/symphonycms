@@ -220,10 +220,9 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
 
-			$div = new XMLElement('div', null, array('class' => 'frame'));
+			$div = new XMLElement('div', null, array('class' => 'frame', 'id' => 'fields-duplicator'));
 
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'fields-duplicator');
 			$ol->setAttribute('data-add', __('Add field'));
 			$ol->setAttribute('data-remove', __('Remove field'));
 
@@ -433,10 +432,9 @@
 			$fieldset = new XMLElement('fieldset', null, array('id' => 'fields', 'class' => 'settings'));
 			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
 
-			$div = new XMLElement('div', null, array('class' => 'frame'));
+			$div = new XMLElement('div', null, array('class' => 'frame', 'id' => 'fields-duplicator'));
 
 			$ol = new XMLElement('ol');
-			$ol->setAttribute('id', 'fields-duplicator');
 			$ol->setAttribute('data-add', __('Add field'));
 			$ol->setAttribute('data-remove', __('Remove field'));
 

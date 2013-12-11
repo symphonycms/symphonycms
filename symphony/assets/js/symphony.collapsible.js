@@ -49,42 +49,80 @@
 		---------------------------------------------------------------------*/
 
 			// Collapse item
-			object.on('collapse.collapsible', settings.items, function collapse(event, speed) {
+			object.on('collapse.collapsible', settings.items, function collapse(event, duration) {
 				var item = $(this),
-					content = item.find(settings.content);
-
-				// Check speed
-				if(!$.isNumeric(speed)) {
-					speed = 'fast';
+					heightMin = item.data('heightMin') || item.find(settings.handles).outerHeight() - 1;
+			
+				// Check duration
+				if(duration !== 0) {
+					item.addClass('js-animate');
 				}
 
 				// Collapse item
-				item.trigger('collapsestart.collapsible');
-				object.addClass('collapsing');
-				item.addClass('collapsing');
-				content.slideUp(speed, function() {
-					item.addClass('collapsed');
-					object.removeClass('collapsing');
-					item.removeClass('collapsing');
-					item.trigger('collapsestop.collapsible');
+				item.trigger('collapsestart.collapsible')
+					.addClass('collapsed')
+					.css('max-height', heightMin);
+			});
+
+			// Collapse all items
+			object.on('collapseall.collapsible', function collapseAll(event) {
+				var items = object.find(settings.items),
+					visibles = Symphony.Utilities.inSight(items),
+					invisibles = visibles.nextAll();
+
+				invisibles.each(function() {
+					var item = $(this);
+					item.css('max-height', item.data('heightMin'));
 				});
+				visibles.trigger('collapse.collapsible');
+				invisibles.trigger('collapsestop.collapsible');
 			});
 
 			// Expand item
-			object.on('expand.collapsible', settings.items, function expand(event) {
+			object.on('expand.collapsible', settings.items, function expand(event, duration) {
 				var item = $(this),
-					content = item.find(settings.content);
+					heightMax = item.data('heightMax') || item[0].scrollHeight;
+
+				// Check duration
+				if(duration !== 0) {
+					item.addClass('js-animate');
+				}
 
 				// Collapse item
-				item.trigger('expandstart.collapsible');
-				object.addClass('expanding');
-				item.addClass('expanding');
-				content.slideDown('fast', function() {
-					item.removeClass('collapsed');
-					object.removeClass('expanding');
-					item.removeClass('expanding');
+				item.trigger('expandstart.collapsible')
+					.removeClass('collapsed')
+					.css('max-height', heightMax);
+			});
+
+			// Expand all items
+			object.on('expandall.collapsible', function expandAll(event) {
+				var items = object.find(settings.items),
+					firsts = items.filter('.collapsed:lt(2)');
+
+				firsts.trigger('expand.collapsible');
+				setTimeout(function() {
+					items.not(firsts).each(function() {
+						var item = $(this);
+						item.css('max-height', item.data('heightMax'));
+					}).removeClass('collapsed').trigger('expandstop.collapsible');			
+				}, 250);
+			});
+
+			// Finish animations
+			object.on('webkitTransitionEnd transitionend oTransitionEnd otransitionend MSTransitionEnd', settings.items, function finish(event) {
+				var item = $(this);
+
+				setTimeout(function() {
+					item.removeClass('js-animate');
+				}, 200);
+
+				// Trigger events
+				if(item.is('.collapsed')) {
+					item.trigger('collapsestop.collapsible');
+				}
+				else {
 					item.trigger('expandstop.collapsible');
-				});
+				}
 			});
 
 			// Toggle single item
@@ -170,6 +208,17 @@
 			object.addClass('collapsible');
 
 			// Restore states
+			object.trigger('restore.collapsible');
+			object.find(settings.items).each(function() {
+				var item = $(this),
+					min = item.find(settings.handles).outerHeight() - 1,
+					max = item[0].scrollHeight;
+
+				item.css('max-height', max);
+				item.data('heightMin', min);
+				item.data('heightMax', max);
+				item.addClass('instance');
+			});
 			object.trigger('restore.collapsible');
 		});
 
