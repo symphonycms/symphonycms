@@ -500,7 +500,7 @@ fieldset.frame,
 	min-width: 500px;
 	max-width: 800px;
 	margin: 0 auto;
-	overflow: visible;
+	overflow: hidden;
 }
 
 #error .frame::after,
@@ -521,8 +521,21 @@ fieldset.frame,
 	padding: 10px;
 }
 
-#fatalerror .frame {
-	padding: 10px 0;
+#error h1,
+#fatalerror h1 {
+	margin: 0;
+}
+
+#error .frame h1 em,
+#fatalerror .frame h1 em {
+	color: rgba(255, 255, 255, 0.5);
+	font-style: normal;
+	font-family: inherit;
+}
+
+#fatalerror p {
+	padding: 10px;
+	margin: 0;
 }
 
 #fatalerror .frame pre {
@@ -532,9 +545,12 @@ fieldset.frame,
 #fatalerror .frame pre,
 #fatalerror .frame ul ul {
 	background: #fefefe;
-	padding: 0 0 10px;
-	margin: 0 -10px;
+	padding: 10px 0;
 	overflow: auto;
+}
+
+#fatalerror .content ul {
+	margin: 0 -10px;
 }
 
 #fatalerror .frame ul ul li {
@@ -548,7 +564,7 @@ fieldset.frame,
 	white-space: normal;
 }
 
-#fatalerror .frame ul ul:first-child li:first-child {
+#fatalerror .frame ul ul:first-of-type li:first-of-type {
 	border-top: none;
 }
 
@@ -569,8 +585,8 @@ fieldset.frame,
 	margin: 0;
 }
 
-#fatalerror .frame ul ul li strong,
-#fatalerror .frame ul ul li em {
+#fatalerror .frame strong,
+#fatalerror .frame em {
 	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
 	color: rgba(0, 0, 0, 0.5);
 	font-style: normal;

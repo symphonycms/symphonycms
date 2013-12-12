@@ -55,7 +55,7 @@
 		switch($group){
 
 			case 'general':
-				$error = new XMLElement('li', '<header>' . __('General') . '<a class="button" href="?debug' . $query_string .'" title="' . __('Show debug view') . '">' . __('Debug') . '</a></header>');
+				$error = new XMLElement('li', '<header class="frame-header">' . __('General') . '<a class="button" href="?debug' . $query_string .'" title="' . __('Show debug view') . '">' . __('Debug') . '</a></header>');
 				$content = new XMLElement('div', null, array('class' => 'content'));
 				$list = new XMLElement('ul');
 				$file = null;
@@ -137,7 +137,7 @@
 
 			case 'page':
 				foreach($data as $filename => $errors){
-					$error = new XMLElement('li', '<header>' . $filename . '<a class="button" href="?debug=/workspace/pages/' .  $filename . $query_string .'" title="' . __('Show debug view') . '">' . __('Debug') . '</a></header>');
+					$error = new XMLElement('li', '<header class="frame-header">' . $filename . '<a class="button" href="?debug=/workspace/pages/' .  $filename . $query_string .'" title="' . __('Show debug view') . '">' . __('Debug') . '</a></header>');
 					$content = new XMLElement('div', null, array('class' => 'content'));
 					$list = new XMLElement('ul');
 
@@ -176,7 +176,7 @@
 
 			case 'utility':
 				foreach($data as $filename => $errors){
-					$error = new XMLElement('li', '<header>' . $filename . '<a class="button" href="?debug=/workspace/utilities/' .  $filename . $query_string .'" title="' . __('Show debug view') . '">' . __('Debug') . '</a></header>');
+					$error = new XMLElement('li', '<header class="frame-header">' . $filename . '<a class="button" href="?debug=/workspace/utilities/' .  $filename . $query_string .'" title="' . __('Show debug view') . '">' . __('Debug') . '</a></header>');
 					$content = new XMLElement('div', null, array('class' => 'content'));
 					$list = new XMLElement('ul');
 
@@ -215,7 +215,7 @@
 
 			case 'xml':
 				foreach($data as $filename => $errors){
-					$error = new XMLElement('li', '<header>XML <a class="button" href="?debug=xml' . $query_string .'" title="' . __('Show debug view') . '">' . __('Debug') . '</a></header>');
+					$error = new XMLElement('li', '<header class="frame-header">XML <a class="button" href="?debug=xml' . $query_string .'" title="' . __('Show debug view') . '">' . __('Debug') . '</a></header>');
 					$content = new XMLElement('div', null, array('class' => 'content'));
 					$list = new XMLElement('ul');
 
