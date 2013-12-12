@@ -11,7 +11,7 @@
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/symphony.collapsible.js"></script>
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/symphony.error.js"></script>
 </head>
-<body id="fatalerror">
+<body id="error">
 	<div class="frame">
 		<ul>
 			<li>
