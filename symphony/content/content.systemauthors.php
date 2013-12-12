@@ -257,10 +257,12 @@
 			}
 
 			if(isset($this->_context[2])){
+				$time = Widget::Time();
+
 				switch($this->_context[2]){
 					case 'saved':
 						$this->pageAlert(
-							__('Author updated at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Author updated at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
@@ -271,7 +273,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Author created at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Author created at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
