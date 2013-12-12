@@ -275,13 +275,13 @@
 
 			if(!FieldManager::saveSettings($id, $fields)) { return false; }
 
-			$this->removeSectionAssociation($id);
+			SectionManager::removeSectionAssociation($id);
 
 			// Dynamic Options isn't an array like in Select Box Link
 			$field_id = $this->get('dynamic_options');
 
 			if (!is_null($field_id)) {
-				$this->createSectionAssociation(NULL, $id, $field_id, $this->get('show_association') == 'yes' ? true : false);
+				SectionManager::createSectionAssociation(NULL, $id, $field_id, $this->get('show_association') == 'yes' ? true : false);
 			}
 
 			return true;

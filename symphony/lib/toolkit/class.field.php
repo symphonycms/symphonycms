@@ -97,10 +97,8 @@
 		/**
 		 * An associative array of the settings for this `Field` instance
 		 * @var array
-		 * @deprecated This variable will be renamed to `$_settings` in the next major
-		 *  release.
 		 */
-		protected $_fields = array();
+		protected $_settings = array();
 
 		/**
 		 * Whether this field is required inherently, defaults to false.
@@ -318,7 +316,7 @@
 		 *	the value of the setting.
 		 */
 		public function set($setting, $value){
-			$this->_fields[$setting] = $value;
+			$this->_settings[$setting] = $value;
 		}
 
 		/**
@@ -367,11 +365,11 @@
 		 *  for that setting.
 		 */
 		public function get($setting = null){
-			if(is_null($setting)) return $this->_fields;
+			if(is_null($setting)) return $this->_settings;
 
-			if(!isset($this->_fields[$setting])) return null;
+			if(!isset($this->_settings[$setting])) return null;
 
-			return $this->_fields[$setting];
+			return $this->_settings[$setting];
 		}
 
 		/**
@@ -381,7 +379,7 @@
 		 *  the key of the setting to unset.
 		 */
 		public function remove($setting){
-			unset($this->_fields[$setting]);
+			unset($this->_settings[$setting]);
 		}
 
 		/**
@@ -1204,40 +1202,6 @@
 		}
 
 		/**
-		 * Create an association between a section and a field.
-		 *
-		 * @deprecated This function will be removed in a future Symphony release,
-		 *  Use `SectionManager::createSectionAssociation` instead.
-		 * @param integer $parent_section_id
-		 *  The linked section id.
-		 * @param integer $child_field_id
-		 *  The field ID of the field that is creating the association
-		 * @param integer $parent_field_id (optional)
-		 *  The field ID of the linked field in the linked section
-		 * @param boolean $show_association (optional)
-		 *  Whether of not the link should be shown on the entries table of the
-		 *  linked section. This defaults to true.
-		 * @return boolean
-		 *  true if the association was successfully made, false otherwise.
-		 */
-		public function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true){
-			return SectionManager::createSectionAssociation($parent_section_id, $child_field_id, $parent_field_id, $show_association);
-		}
-
-		/**
-		 * Permanently remove a section association for this field in the database.
-		 *
-		 * @deprecated This function will be removed in a future Symphony release,
-		 *  Use `SectionManager::removeSectionAssociation` instead.
-		 * @param integer $child_field_id
-		 *  the field ID of the linked section's linked field.
-		 * @return boolean
-		 */
-		public function removeSectionAssociation($child_field_id){
-			return SectionManager::removeSectionAssociation($child_field_id);
-		}
-
-		/**
 		 * Accessor to the associated entry search value for this field
 		 * instance. This default implementation simply returns `$data`
 		 *
@@ -1284,7 +1248,8 @@
 
 		/**
 		 * @deprecated This function name has a typo that has withstood many versions of
-		 *  Symphony. The correct function is `$this->buildDSRetrievalSQL`.
+		 *  Symphony. The correct function is `$this->buildDSRetrievalSQL`. It will be
+		 *  removed in Symphony 2.5
 		 */
 		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
 			return $this->buildDSRetrievalSQL($data, $joins, $where, $andOperation);

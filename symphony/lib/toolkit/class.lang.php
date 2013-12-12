@@ -574,17 +574,3 @@
 		}
 
 	}
-
-	/**
-	 * Status when a language is installed and enabled (will be removed in Symphony 2.4)
-	 * @deprecated
-	 * @var integer
-	 */
-	define_safe('LANGUAGE_ENABLED', 10);
-
-	/**
-	 * Status when a language is disabled (will be removed in Symphony 2.4)
-	 * @deprecated
-	 * @var integer
-	 */
-	define_safe('LANGUAGE_DISABLED', 11);
