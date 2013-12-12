@@ -43,10 +43,12 @@
 			}
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
+				$time = Widget::Time();
+	
 				switch($this->_context[2]) {
 					case 'saved':
 						$this->pageAlert(
-							__('Data source updated at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Data source updated at %s.', array($time->generate))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
@@ -57,7 +59,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Data source created at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Data source created at %s.', array($time->generate))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'

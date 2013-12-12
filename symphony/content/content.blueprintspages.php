@@ -255,8 +255,10 @@
 			}
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
+				$time = Widget::Time();
+
 				$this->pageAlert(
-					__('Page updated at %s.', array(DateTimeObj::getTimeAgo()))
+					__('Page updated at %s.', array($time->generate()))
 					. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
 					. __('Create another?')
 					. '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
@@ -369,6 +371,7 @@
 			if(isset($this->_context[2])){
 				$flag = $this->_context[2];
 				$link_suffix = '';
+				$time = Widget::Time();
 
 				if(isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])){
 					$link_suffix = "?parent=" . $_REQUEST['parent'];
@@ -382,7 +385,7 @@
 
 					case 'saved':
 						$this->pageAlert(
-							__('Page updated at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Page updated at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
@@ -394,7 +397,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Page created at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Page created at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'

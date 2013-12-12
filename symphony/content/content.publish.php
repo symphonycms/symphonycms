@@ -938,10 +938,12 @@
 			if(isset($this->_context['flag'])) {
 				// These flags are only relevant if there are no errors
 				if(empty($this->_errors)) {
+					$time = Widget::Time();
+
 					switch($this->_context['flag']) {
 						case 'saved':
 							$this->pageAlert(
-								__('Entry updated at %s.', array(DateTimeObj::getTimeAgo()))
+								__('Entry updated at %s.', array($time->generate()))
 								. ' <a href="' . SYMPHONY_URL . $new_link . '" accesskey="c">'
 								. __('Create another?')
 								. '</a> <a href="' . SYMPHONY_URL . $filter_link . '" accesskey="a">'
@@ -952,7 +954,7 @@
 
 						case 'created':
 							$this->pageAlert(
-								__('Entry created at %s.', array(DateTimeObj::getTimeAgo()))
+								__('Entry created at %s.', array($time->generate()))
 								. ' <a href="' . SYMPHONY_URL . $new_link . '" accesskey="c">'
 								. __('Create another?')
 								. '</a> <a href="' . SYMPHONY_URL . $filter_link . '" accesskey="a">'
