@@ -8,8 +8,8 @@
 
 		// Init collapsibles
 		var collapsible = $('.frame').symphonyCollapsible({
-			items: 'li',
-			handles: 'header',
+			items: '> li',
+			handles: '.frame-header',
 			content: '.content',
 			save_state: true,
 			storage: 'symphony.collapsible.error'
