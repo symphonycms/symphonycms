@@ -114,10 +114,12 @@
 			}
 			// These alerts are only valid if the form doesn't have errors
 			if(isset($this->_context[2])) {
+				$time = Widget::Time();
+
 				switch($this->_context[2]) {
 					case 'saved':
 						$this->pageAlert(
-							__('Utility updated at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Utility updated at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/utilities/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/utilities/" accesskey="a">'
@@ -128,7 +130,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Utility created at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Utility created at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/utilities/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/utilities/" accesskey="a">'
