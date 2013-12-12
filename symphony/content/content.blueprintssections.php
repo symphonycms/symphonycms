@@ -302,7 +302,7 @@
 			}
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
-				$time = Widget::Time()
+				$time = Widget::Time();
 
 				switch($this->_context[2]) {
 					case 'saved':
