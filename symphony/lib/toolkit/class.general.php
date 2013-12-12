@@ -264,55 +264,6 @@
 		}
 
 		/**
-		 * Allows you to send emails. It initializes the core email class.
-		 *
-		 * @deprecated Since Symphony 2.2
-		 * @param string $to_email
-		 *  email of the recipient
-		 * @param string $from_email
-		 *  the from email address. This is usually your email
-		 * @param string $from_name
-		 *  the name of the sender
-		 * @param string $subject
-		 *  subject of the email
-		 * @param string $message
-		 *  contents of the email
-		 * @param array $additional_headers
-		 *  an array containing additional email headers. This will NOT work
-		 *  for Content-Type header fields which will be added/overwritten by
-		 *  the email gateways.)
-		 * @return boolean
-		 *  true on success
-		 */
-		public static function sendEmail($to_email, $from_email, $from_name, $subject, $message, array $additional_headers = array()) {
-
-			try{
-				$email = Email::create();
-
-				if (!empty($additional_headers)) {
-					foreach ($additional_headers as $name => $body) {
-						$email->appendHeaderField($name, $body);
-					}
-				}
-				$email->sender_name = $from_name;
-				$email->sender_email_address = $from_email;
-
-				$email->setRecipients($to_email);
-
-				$email->text_plain = $message;
-				$email->subject = $subject;
-
-				return $email->send();
-			}
-			catch(EmailGatewayException $e){
-				Symphony::Engine()->throwCustomError('Error sending email. ' . $e->getMessage());
-			}
-			catch(EmailException $e){
-				Symphony::Engine()->throwCustomError('Error sending email. ' . $e->getMessage());
-			}
-		}
-
-		/**
 		 * Given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters.
 		 *
 		 * @since Symphony 2.2.1

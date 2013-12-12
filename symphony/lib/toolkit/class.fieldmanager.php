@@ -590,17 +590,4 @@
 			return false;
 		}
 
-		/**
-		 * Returns an array of all available field handles discovered in the
-		 * `TOOLKIT . /fields` or `EXTENSIONS . /{}/fields`.
-		 *
-		 * @deprecated This function will be removed in Symphony 2.4. Use
-		 * `FieldManager::listAll` instead.
-		 * @return array
-		 *  A single dimensional array of field handles.
-		 */
-		public static function fetchTypes() {
-			return FieldManager::listAll();
-		}
-
 	}

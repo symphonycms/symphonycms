@@ -104,42 +104,6 @@
 	}
 
 	/**
-	 * This function, give two DateTime objects, will return the
-	 * difference between the two in hours and minutes, in a format
-	 * suitable for MySQL.
-	 *
-	 * This function does not provide full date_diff functionality,
-	 * it's a stopgap for PHP5.2 support.
-	 *
-	 * @since Symphony 2.3.3
-	 * @deprecated Do not use, it will be removed in the next
-	 *  major version of Symphony when PHP5.2 support is dropped
-	 * @param DateTime $date_1
-	 * @param DateTime $date_2
-	 * @return string
-	 *  A string representing the difference between the dates, eg.
-	 *  +05:00 or -10:00 or +09:30
-	 */
-	function mysql_date_diff(DateTime $date_1, DateTime $date_2) {
-		$date_1_seconds = $date_1->format('U');
-		$date_2_seconds = $date_2->format('U');
-
-		// In hours
-		$offset = ($date_1_seconds - $date_2_seconds) / 60 / 60;
-
-		// Deal with x.5 (:30 minutes)
-		$minutes = (fmod($offset, 1) === 0.5) ? ":30" : ":00";
-
-		// Is this +/- GMT?
-		$op = ($offset > 0) ? '+' : '-';
-
-		// Return difference, +05:00, -10:00, +09:30
-		$difference = $op . str_pad(abs(floor($offset)), 2, '0', STR_PAD_LEFT) . $minutes;
-
-		return $difference;
-	}
-
-	/**
 	 * Cleans up Session Cookies. When there is no data in the session the cookie will be unset.
 	 * If there is data, the cookie will be renewed, expiring it in two weeks from now.
 	 * This will improve the interoperability with caches like Varnish and Squid.
@@ -148,8 +112,7 @@
 	 * @author creativedutchmen (Huib Keemink)
 	 * @return void
 	 */
-	function cleanup_session_cookies()
-	{
+	function cleanup_session_cookies() {
 
 		/*
 		Unfortunately there is no way to delete a specific previously set cookie from PHP.
