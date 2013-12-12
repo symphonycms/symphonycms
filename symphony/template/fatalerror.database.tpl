@@ -24,13 +24,13 @@
 				</ul>
 			</li>
 			<li>
-				<header>Backtrace</header>
+				<header class="frame-header">Backtrace</header>
 				<div class="content">
 					<ul>%s</ul>
 				</div>
 			</li>
 			<li>
-				<header>Database Query Log</header>
+				<header class="frame-header">Database Query Log</header>
 				<div class="content">
 					<ul>%s</ul>
 				</div>
