@@ -252,25 +252,4 @@
 			return implode(', ', $return);
 		}
 
-		/**
-		 * Gets mime type of a file.
-		 *
-		 * For email attachments, the mime type is very important.
-		 * Uses the PHP 5.3 function `finfo_open` when available, otherwise falls
-		 * back to using a mapping of known of common mimetypes. If no matches
-		 * are found `application/octet-stream` will be returned.
-		 *
-		 * @deprecated This function is deprecated from the `EmailHelper` class,
-		 *  and has been moved to the `General` class. It is recommended to use
-		 *  `General::getMimeType` instead as it will be removed from here in the
-		 *  next major release.
- 		 * @author Michael Eichelsdoerfer
-		 * @author Huib Keemink
-		 * @param string $file
-		 * @return string MIMEtype
-		 */
-		public function getMimeType($file) {
-			return General::getMimeType($file);
-		}
-
 	}

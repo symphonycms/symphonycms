@@ -753,8 +753,6 @@
 		 * If the `$rawXML` parameter is passed true, and the extension has a `extension.meta.xml`
 		 * file, this function will return `DOMDocument` of the file.
 		 *
-		 * @deprecated Since Symphony 2.3, the `about()` function is deprecated for extensions
-		 *  in favour of the `extension.meta.xml` file.
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @param boolean $rawXML
@@ -863,20 +861,6 @@
 
 					$about['author'][] = array_filter($a);
 				}
-			}
-
-			// It doesn't, fallback to loading the extension using the built in
-			// `about()` array.
-			else {
-				$obj = self::getInstance($name);
-				$about = $obj->about();
-
-				// If this is empty then the extension has managed to not provide
-				// an `about()` function or an `extension.meta.xml` file. So
-				// ignore this extension even exists
-				if(empty($about)) return array();
-
-				$about['status'] = array();
 			}
 
 			$about['handle'] = $name;

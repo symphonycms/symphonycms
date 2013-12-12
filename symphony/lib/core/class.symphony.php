@@ -347,16 +347,9 @@
 				// MySQL wants the offset to be in the format +/-H:I, getOffset returns offset in seconds
 				$utc = new DateTime('now ' . $symphony_date->getOffset() . ' seconds', new DateTimeZone("UTC"));
 
-				// Support PHP5.2
-				// @see https://github.com/symphonycms/symphony-2/issues/1735
-				if(function_exists('date_diff') === false) {
-					$offset = mysql_date_diff($utc, $symphony_date);
-				}
 				// On PHP5.3+ we can use DateInterval to format the difference
 				// in way that MySQL will be happy
-				else {
-					$offset = $symphony_date->diff($utc)->format('%R%H:%I');
-				}
+				$offset = $symphony_date->diff($utc)->format('%R%H:%I');
 
 				self::Database()->setTimeZone($offset);
 
@@ -603,7 +596,7 @@
 		/**
 		 * A wrapper for throwing a new Symphony Error page.
 		 *
-		 * @deprecated @since Symphony 2.3.2
+		 * @deprecated @since Symphony 2.3.2. This function will be removed in Symphony 2.5
 		 *
 		 * @see `throwCustomError`
 		 * @param string $heading
@@ -669,58 +662,6 @@
 		 */
 		public function getException() {
 			return $this->exception;
-		}
-
-		/**
-		 * Given the `$page_id` and a `$column`, this function will return an
-		 * array of the given `$column` for the Page, including all parents.
-		 *
-		 * @deprecated This function will be removed in Symphony 2.4. Use
-		 * `PageManager::resolvePage` instead.
-		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
-		 * @return array
-		 * An array of the current Page, containing the `$column`
-		 * requested. The current page will be the last item the array, as all
-		 * parent pages are prepended to the start of the array
-		 */
-		public function resolvePage($page_id, $column) {
-			return PageManager::resolvePage($page_id, $column);
-		}
-
-		/**
-		 * Given the `$page_id`, return the complete title of the
-		 * current page.
-		 *
-		 * @deprecated This function will be removed in Symphony 2.4. Use
-		 * `PageManager::resolvePageTitle` instead.
-		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
-		 * @return string
-		 * The title of the current Page. If the page is a child of another
-		 * it will be prepended by the parent and a colon, ie. Articles: Read
-		 */
-		public function resolvePageTitle($page_id) {
-			return PageManager::resolvePage($page_id, 'title');
-		}
-
-		/**
-		 * Given the `$page_id`, return the complete path to the
-		 * current page.
-		 *
-		 * @deprecated This function will be removed in Symphony 2.4. Use
-		 * `PageManager::resolvePagePath` instead.
-		 * @param mixed $page_id
-		 * The ID of the Page that currently being viewed, or the handle of the
-		 * current Page
-		 * @return string
-		 *  The complete path to the current Page including any parent
-		 *  Pages, ie. /articles/read
-		 */
-		public function resolvePagePath($page_id) {
-			return PageManager::resolvePage($page_id, 'handle');
 		}
 
 		/**
