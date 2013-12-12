@@ -1246,12 +1246,4 @@
 		 */
 		public function fetchAssociatedEntryIDs($value){}
 
-		/**
-		 * @deprecated This function name has a typo that has withstood many versions of
-		 *  Symphony. The correct function is `$this->buildDSRetrievalSQL`. It will be
-		 *  removed in Symphony 2.5
-		 */
-		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
-			return $this->buildDSRetrievalSQL($data, $joins, $where, $andOperation);
-		}
 	}
