@@ -441,7 +441,7 @@
 		 *  A flag to make the given date a publish date
 		 * @return XMLElement
 		 */
-		public static function Time($string, $format = __SYM_TIME_FORMAT__, $pubdate = false) {
+		public static function Time($string = 'now', $format = __SYM_TIME_FORMAT__, $pubdate = false) {
 
 			// Parse date
 			$date = DateTimeObj::parse($string);
