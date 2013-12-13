@@ -11,7 +11,7 @@
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/symphony.collapsible.js"></script>
 	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/symphony.error.js"></script>
 </head>
-<body id="fatalerror">
+<body id="error">
 	<div class="frame">
 		<ul>
 			<li>
@@ -20,13 +20,13 @@
 				<ul>%s</ul>
 			</li>
 			<li>
-				<header>Backtrace</header>
+				<header class="frame-header">Backtrace</header>
 				<div class="content">
 					<ul>%s</ul>
 				</div>
 			</li>
 			<li>
-				<header>Database Query Log</header>
+				<header class="frame-header">Database Query Log</header>
 				<div class="content">
 					<ul>%s</ul>
 				</div>

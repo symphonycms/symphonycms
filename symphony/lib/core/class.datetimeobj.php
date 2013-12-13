@@ -301,26 +301,6 @@
 		}
 
 		/**
-		 * A wrapper for get, this function will return a HTML string representing
-		 * an `<abbr>` element which contained the formatted date of now, and an
-		 * RFC 2822 formatted date (Thu, 21 Dec 2000 16:01:07 +0200) as the title
-		 * attribute. Symphony uses this in it's status messages so that it can
-		 * dynamically update how long ago the action took place using Javascript.
-		 *
-		 * @deprecated This will be removed in the next version of Symphony
-		 * @param string $format
-		 *  A valid PHP date format
-		 * @return string
-		 *  A HTML string of an `<abbr>` element with a class of 'timeago' and the current
-		 *  date (RFC 2822) as the title element. The value is the current time as
-		 *  specified by the `$format`.
-		 */
-		public static function getTimeAgo($format = __SYM_TIME_FORMAT__){
-			$time = Widget::Time('', $format);
-			return $time->generate();
-		}
-
-		/**
 		 * This functions acts as a standard way to get the zones
 		 * available on the system. For PHP5.2, these constants are
 		 * just copied from PHP5.3

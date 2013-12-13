@@ -975,39 +975,5 @@
 			return XMLElement::stripInvalidXMLCharacters($parameter);
 		}
 
-		/**
-		 * Given a page ID, return it's type from `tbl_pages`
-		 *
-		 * @deprecated This function will be removed in Symphony 2.4. Use
-		 * `PageManager::fetchPageTypes` instead.
-		 * @param integer $page_id
-		 *  The page ID to find it's type
-		 * @return array
-		 *  An array of types that this page is set as
-		 */
-		public static function fetchPageTypes($page_id) {
-			return PageManager::fetchPageTypes($page_id);
-		}
-
-		/**
-		 * Resolves the path to this page's XSLT file. The Symphony convention
-		 * is that they are stored in the `PAGES` folder. If this page has a parent
-		 * it will be as if all the / in the URL have been replaced with _. ie.
-		 * /articles/read/ will produce a file `articles_read.xsl`
-		 *
-		 * @deprecated This function will be removed in Symphony 2.4. Use
-		 *  `PageManager::resolvePageFileLocation`
-		 * @param string $path
-		 *  The URL path to this page, excluding the current page. ie, /articles/read
-		 *  would make `$path` become articles/
-		 * @param string $handle
-		 *  The handle of the resolved page.
-		 * @return string
-		 *  The path to the XSLT of this page
-		 */
-		public static function resolvePageFileLocation($path, $handle) {
-			return PageManager::resolvePageFileLocation($path, $handle);
-		}
-
 	}
 

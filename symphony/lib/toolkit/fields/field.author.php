@@ -89,7 +89,7 @@
 			if($field === 'author_types' && !is_array($value)){
 				$value = explode(',', $value);
 			}
-			$this->_fields[$field] = $value;
+			$this->_settings[$field] = $value;
 		}
 
 		/**

@@ -35,6 +35,7 @@
 
 		public function __form($readonly=false) {
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
+			
 			if($formHasErrors) {
 				$this->pageAlert(
 					__('An error occurred while processing this form. See below for details.')
@@ -43,10 +44,12 @@
 			}
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
+				$time = Widget::Time();
+
 				switch($this->_context[2]) {
 					case 'saved':
 						$this->pageAlert(
-							__('Event updated at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Event updated at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'
@@ -57,7 +60,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Event created at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Event created at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'

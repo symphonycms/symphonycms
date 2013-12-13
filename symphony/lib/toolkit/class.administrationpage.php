@@ -1012,24 +1012,6 @@
 			$this->buildSectionNavigation($nav);
 			$this->buildExtensionsNavigation($nav);
 
-			/**
-			 * After building the Navigation properties array. This is specifically
-			 * for extensions to add their groups to the navigation or items to groups,
-			 * already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need
-			 * to edit existing navigation elements, use the `NavigationPreRender` delegate.
-			 *
-			 * @deprecated This delegate is deprecated and will be removed in the next
-			 *  major release of Symphony. Extensions are encouraged to use provide the
-			 *  `fetchNavigation` method instead.
-			 * @delegate ExtensionsAddToNavigation
-			 * @param string $context
-			 * '/backend/'
-			 * @param array $navigation
-			 */
-			Symphony::ExtensionManager()->notifyMembers(
-				'ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav)
-			);
-
 			$pageCallback = Administration::instance()->getPageCallback();
 
 			$pageRoot = $pageCallback['pageroot'] . (isset($pageCallback['context'][0]) ? $pageCallback['context'][0] . '/' : '');
@@ -1144,24 +1126,6 @@
 			$ul->appendChild($li);
 
 			$this->Header->appendChild($ul);
-		}
-
-		/**
-		 * Returns all the page types that exist in this Symphony install.
-		 * There are 5 default system page types, and new types can be added
-		 * by Developers via the Page Editor.
-		 *
-		 * @deprecated This function will be removed in Symphony 2.4.
-		 *  The preferred way to access the page types is via
-		 *  `PageManager::fetchAvailablePageTypes()`
-		 * @see toolkit.PageManager#fetchAvailablePageTypes
-		 * @return array
-		 *  An array of strings of the page types used in this Symphony
-		 *  install. At the minimum, this will be an array with the values
-		 * 'index', 'XML', 'admin', '404' and '403'.
-		 */
-		public function __fetchAvailablePageTypes(){
-			return PageManager::fetchAvailablePageTypes();
 		}
 
 	}

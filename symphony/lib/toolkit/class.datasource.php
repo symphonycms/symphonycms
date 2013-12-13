@@ -149,7 +149,8 @@
 
 		/**
 		 * @deprecated This function has been renamed to `execute` as of
-		 *  Symphony 2.3.1, please use `execute()` instead.
+		 *  Symphony 2.3.1, please use `execute()` instead. This function will
+		 *  be removed in Symphony 2.5
 		 * @see execute()
 		 */
 		public function grab(array &$param_pool = null) {
@@ -477,26 +478,6 @@
 			return null;
 		}
 	}
-
-	/**
-	 * A constant that represents if this filter is an AND filter in which
-	 * an Entry must match all these filters
-	 *
-	 * @deprecated This constant has been deprecated and will be removed in
-	 *  Symphony 2.4. Use DataSource::FILTER_AND instead
-	 * @var integer
-	 */
-	define_safe('DS_FILTER_AND', 1);
-
-	/**
-	 * A constant that represents if this filter is an OR filter in which an
-	 * entry can match any or all of these filters
-	 *
-	 * @deprecated This constant has been deprecated and will be removed in
-	 *  Symphony 2.4. Use DataSource::FILTER_AND instead
-	 * @var integer
-	 */
-	define_safe('DS_FILTER_OR', 2);
 
 	require_once(TOOLKIT . '/data-sources/class.datasource.author.php');
 	require_once(TOOLKIT . '/data-sources/class.datasource.section.php');

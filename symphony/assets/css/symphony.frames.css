@@ -489,28 +489,25 @@ fieldset.frame,
 	Error messages
 --------------------------------------------------------------------------*/
 
-#error,
-#fatalerror {
+#error {
 	padding: 100px 50px;
 }
 
-#error .frame,
-#fatalerror .frame {
+#error .frame {
 	display: block;
 	min-width: 500px;
 	max-width: 800px;
 	margin: 0 auto;
-	overflow: visible;
+	overflow: hidden;
 }
 
-#error .frame::after,
-#fatalerror .frame::after {
+#error .frame::after {
 	content: "";
 	display: block;
 	clear: both;
 }
 
-#error .frame {
+/*#error .frame {
 	border: 1px solid #b8b8b8;
 	background-color: #f5f5f3;
 	text-align: left;
@@ -519,44 +516,58 @@ fieldset.frame,
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	padding: 10px;
+}*/
+
+#error h1 {
+	margin: 0;
 }
 
-#fatalerror .frame {
-	padding: 10px 0;
+#error .frame h1 em {
+	color: rgba(255, 255, 255, 0.5);
+	font-style: normal;
+	font-family: inherit;
 }
 
-#fatalerror .frame pre {
+#error p {
+	padding: 10px;
+	margin: 0;
+}
+
+#error .frame pre {
 	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
 }
 
-#fatalerror .frame pre,
-#fatalerror .frame ul ul {
+#error .frame pre,
+#error .frame ul ul {
 	background: #fefefe;
-	padding: 0 0 10px;
-	margin: 0 -10px;
+	padding: 10px 0;
 	overflow: auto;
 }
 
-#fatalerror .frame ul ul li {
+#error .content ul {
+	margin: 0 -10px;
+}
+
+#error .frame ul ul li {
 	border-top: 1px solid rgba(0, 0, 0, 0.05);
 	line-height: 1.8;
 	padding: 0 10px;
 	white-space: nowrap;
 }
 
-#fatalerror .frame ul ul li.full {
+#error .frame ul ul li.full {
 	white-space: normal;
 }
 
-#fatalerror .frame ul ul:first-child li:first-child {
+#error .frame ul ul:first-of-type li:first-of-type {
 	border-top: none;
 }
 
-#fatalerror .frame .error {
+#error .frame .error {
 	background-color: #fff9a2;
 	color: #bd7053;
 }
-#fatalerror .frame .error b {
+#error .frame .error b {
 	background: rgba(167, 31, 45, 0.7);
 	color: #fff;
 	display: inline-block;
@@ -565,22 +576,22 @@ fieldset.frame,
 	padding: 2px 0 1px;
 }
 
-#fatalerror .frame code a {
+#error .frame code a {
 	margin: 0;
 }
 
-#fatalerror .frame ul ul li strong,
-#fatalerror .frame ul ul li em {
+#error .frame strong,
+#error .frame em {
 	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
 	color: rgba(0, 0, 0, 0.5);
 	font-style: normal;
 }
 
-#fatalerror .frame .content {
+#error .frame .content {
 	background: #fefefe;
 	padding-bottom: 0;
 }
 
-#fatalerror .frame .content:last-of-type ul {
+#error .frame .content:last-of-type ul {
 	border-radius: 0 0 4px 4px;
 }

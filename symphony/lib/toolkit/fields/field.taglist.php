@@ -66,7 +66,7 @@
 
 		public function set($field, $value){
 			if($field == 'pre_populate_source' && !is_array($value)) $value = preg_split('/\s*,\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
-			$this->_fields[$field] = $value;
+			$this->_settings[$field] = $value;
 		}
 
 		public function findAllTags(){

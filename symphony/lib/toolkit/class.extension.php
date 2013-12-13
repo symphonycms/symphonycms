@@ -98,29 +98,6 @@
 		}
 
 		/**
-		 * The about method allows an extension to provide
-		 * information about itself as an associative array. eg.
-		 * `
-		 *		'name' => 'Name of Extension',
-		 *		'version' => '1.8',
-		 *		'release-date' => 'YYYY-MM-DD',
-		 *		'author' => array(
-		 *			'name' => 'Author Name',
-		 *			'website' => 'Author Website',
-		 *			'email' => 'Author Email'
-		 *		),
-		 *		'description' => 'A description about this extension'
-		 * `
-		 * @deprecated Since Symphony 2.3, the `about()` function is deprecated for extensions
-		 *  in favour of the `extension.meta.xml` file. It will be removed in Symphony 2.4.
-		 * @return array
-		 *  An associative array describing this extension.
-		 */
-		public function about() {
-			return array();
-		}
-
-		/**
 		 * Extensions use delegates to perform logic at certain times
 		 * throughout Symphony. This function allows an extension to
 		 * subscribe to a delegate which will notify the extension when it

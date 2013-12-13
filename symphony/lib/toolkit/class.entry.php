@@ -28,7 +28,8 @@
 		/**
 		 * An ISO 8601 representation of when this Entry was created
 		 * eg. `2004-02-12T15:19:21+00:00`
-		 * @deprecated Since Symphony 2.3.1, use $entry->get('creation_date') instead
+		 * @deprecated Since Symphony 2.3.1, use $entry->get('creation_date') instead. This
+		 *  variable will be removed in Symphony 2.5
 		 * @var string
 		 */
 		public $creationDate = null;

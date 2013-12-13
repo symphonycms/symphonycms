@@ -155,8 +155,21 @@
 		protected function viewFailure() {
 			$h2 = new XMLElement('h2', __('Installation Failure'));
 			$p = new XMLElement('p', __('An error occurred during installation.'));
-			
-			$log = file_get_contents(INSTALL_LOGS . '/install');
+
+			// Attempt to get log information from the log file
+			try {
+				$log = file_get_contents(INSTALL_LOGS . '/install');
+			}
+			catch (Exception $ex) {
+				$log_entry = Symphony::Log()->popFromLog();
+				if(isset($log_entry['message'])) {
+					$log = $log_entry['message'];
+				}
+				else {
+					$log = 'Unknown error occurred when reading the install log';
+				}
+			}
+
 			$code = new XMLElement('code', $log);
 
 			$this->Form->appendChild($h2);

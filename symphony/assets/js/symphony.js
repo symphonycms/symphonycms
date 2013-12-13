@@ -208,44 +208,6 @@ var Symphony = (function($) {
 		},
 
 		/**
-		 * The message object handles system messages that should be displayed on the fly.
-		 * It offers a post and a clear function to set and remove messages. Absolute dates
-		 * and times will be replaced by a representation relative to the user's system time.
-		 *
-		 * @class
-		 * @deprecated
-		 *	To be removed in Symphony 2.4 – please use Notify methods directly
-		 */
-		Message: {
-
-			/**
-			 * Post system message
-			 *
-			 * @param {String} message
-			 *  Message to be shown
-			 * @param {String} type
-			 *  Message type to be used as class name
-			 * @deprecated
-			 *	To be removed in Symphony 2.4 – please use Notify methods directly
-			 */
-			post: function postMessage(message, type) {
-				$('header div.notifier').trigger('attach.notify', [message, type]);
-			},
-
-			/**
-			 * Clear last message of a type
-			 *
-			 * @param {String} type
-			 *  Message type
-			 * @deprecated
-			 *	To be removed in Symphony 2.4 – please use Notify methods directly
-			 */
-			clear: function clearMessage(type) {
-				$('header p.notice').filter('.' + type).first().trigger('detach.notify');
-			}
-		},
-
-		/**
 		 * A collection of properties that represent the presence of
 		 * different browser features and also contains the test results
 		 * from jQuery.support.
