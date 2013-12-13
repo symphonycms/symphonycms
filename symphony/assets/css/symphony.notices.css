@@ -9,13 +9,13 @@
 	Notifier
 -----------------------------------------------------------------------------*/
 
-div.notifier {
+.notifier {
 	overflow: hidden;
 	background: #383838;
 	border-bottom: 1px solid #575757;
 }
 
-div.notifier nav {
+.notifier nav {
 	position: absolute;
 	top: 0;
 	right: 18px;
@@ -24,17 +24,17 @@ div.notifier nav {
 	cursor: pointer;
 }
 
-div.notifier nav:before {
+.notifier nav:before {
 	content: "\2193";
 	padding-right: 3px;
 	opacity: 0.2;
 }
 
-div.notifier p.notice:last-child nav:before {
+.notifier .notice:last-child nav:before {
 	content: "\2191";
 }
 
-div.notifier nav:hover:before {
+.notifier nav:hover:before {
 	opacity: 0.5;
 }
 

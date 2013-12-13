@@ -42,9 +42,9 @@ ul.tabs li:hover {
 	color: rgba(0, 0, 0, 0.65);
 }
 
-ul.tabs li.selected,
-ul.tabs li.invalid.selected,
-ul.tabs li.invalid.selected:hover {
+ul.tabs .selected,
+ul.tabs .invalid.selected,
+ul.tabs .invalid.selected:hover {
 	background: #fff;
 	border: 1px solid rgba(0, 0, 0, 0.2);
 	border-bottom-color: #fff;
@@ -53,7 +53,7 @@ ul.tabs li.invalid.selected:hover {
 	z-index: 1000;
 }
 
-ul.tabs li.selected:before {
+ul.tabs .selected:before {
 	content: "";
 	width: 3px;
 	height: 3px;
@@ -68,7 +68,7 @@ ul.tabs li.selected:before {
 	border-right: 1px solid #ccc;
 }
 
-ul.tabs li.selected:after {
+ul.tabs .selected:after {
 	content: "";
 	width: 3px;
 	height: 3px;
@@ -85,8 +85,8 @@ ul.tabs li.selected:after {
 
 /* Destructor */
 
-ul.tabs li a.destructor,
-ul.tabs li.selected.invalid a.destructor {
+ul.tabs a.destructor,
+ul.tabs .selected.invalid a.destructor {
 	line-height: 1;
 	border-bottom: none;
 	color: rgba(0, 0, 0, 0.15);
@@ -95,19 +95,19 @@ ul.tabs li.selected.invalid a.destructor {
 	margin: 0 -4px 0 0;
 }
 
-ul.tabs li:hover a.destructor,
-ul.tabs li.selected.invalid:hover a.destructor {
+ul.tabs :hover a.destructor,
+ul.tabs .selected.invalid:hover a.destructor {
 	color: rgba(0, 0, 0, 0.2);
 }
 
-ul.tabs li a.destructor:hover,
-ul.tabs li.selected a.destructor:hover {
+ul.tabs a.destructor:hover,
+ul.tabs .selected a.destructor:hover {
 	color: rgba(0, 0, 0, 0.5);
 }
 
 /* Invalid tabs */
 
-ul.tabs li.invalid {
+ul.tabs .invalid {
 	background: #dd4422;
 	border-color: #bb2211;
 	color: rgba(255, 255, 255, 0.7);
@@ -116,11 +116,11 @@ ul.tabs li.invalid {
 	box-shadow: none;
 }
 
-ul.tabs li.invalid:hover {
+ul.tabs .invalid:hover {
 	color: rgba(255, 255, 255, 0.9);
 }
 
-ul.tabs li.invalid a.destructor {
+ul.tabs .invalid a.destructor {
 	color: #fb9;
 	text-shadow: none;
 }
