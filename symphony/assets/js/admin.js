@@ -133,6 +133,7 @@
 		contents.find('ul.orderable').symphonyOrderable();
 
 		// Orderable tables
+		var oldSorting = null;
 		contents.find('table.orderable')
 			.symphonyOrderable({
 				items: 'tr',
@@ -148,7 +149,7 @@
 					newSorting = orderable.find('input').map(function(e, i) { return this.name + '=' + (e + 1); }).get().join('&');
 
 				// Store sort order, if changed
-				if(newSorting !== oldSorting) {
+				if(oldSorting != null && newSorting !== oldSorting) {
 
 					// Update items
 					orderable.trigger('orderupdate.admin');
