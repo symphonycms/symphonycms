@@ -290,15 +290,15 @@ fieldset.frame,
 	transition: none;
 }
 
-.ordering .frame-header span,
-.ordering .frame-header .destructor,
-.ordering .content i,
-.ordering ul.tags {
+.frame .ordering .frame-header span,
+.frame .ordering .frame-header .destructor,
+.frame .ordering .content i,
+.frame .ordering ul.tags {
 	color: #bdcbdd;
 }
 
-.ordering .content,
-.ordering .content legend {
+.frame .ordering .content,
+.frame .ordering .content legend {
 	background: #668abe;
 	color: #fff;
 }
@@ -309,21 +309,21 @@ fieldset.frame,
 	color: #fff;
 }
 
-.ordering .content input,
-.ordering .content textarea {
+.frame .ordering .content input,
+.frame .ordering .content textarea {
 	border-color: #4b76b1;
 }
 
-.ordering .content fieldset {
+.frame .ordering .content fieldset {
 	border-top-color: #7093c3;
 }
 
-.ordering .frame-header::before {
+.frame .ordering .frame-header::before {
 	border-left: 6px solid #cedaea;
 	border-right: 3px solid #7c9bc7;
 }
 
-.ordering .frame-header.sidebar::before {
+.frame .ordering .frame-header.sidebar::before {
 	border-left: 6px solid #7c9bc7;
 	border-right: 3px solid #cedaea;
 }
