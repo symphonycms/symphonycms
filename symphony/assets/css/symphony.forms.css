@@ -58,7 +58,10 @@ select[size] {
 	max-height: 10em;
 }
 
-input[size],
+input[size] {
+	width: auto;
+}
+
 input[type="radio"],
 input[type="checkbox"] {
 	display: inline;
