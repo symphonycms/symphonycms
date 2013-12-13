@@ -318,8 +318,8 @@
 
 		/**
 		 * This function will replace any parameters in a string with their value.
-		 * Parameters are defined by being prefixed by a $ character. In certain
-		 * situations, the parameter will be surrounded by {}, which Symphony
+		 * Parameters are defined by being prefixed by a `$` character. In certain
+		 * situations, the parameter will be surrounded by `{}`, which Symphony
 		 * takes to mean, evaluate this parameter to a value, other times it will be
 		 * omitted which is usually used to indicate that this parameter exists
 		 *
@@ -329,16 +329,16 @@
 		 *  The environment variables from the Frontend class which includes
 		 *  any params set by Symphony or Events or by other Datasources
 		 * @param boolean $includeParenthesis
-		 *  Parameters will sometimes not be surrounded by {}. If this is the case
+		 *  Parameters will sometimes not be surrounded by `{}`. If this is the case
 		 *  setting this parameter to false will make this function automatically add
 		 *  them to the parameter. By default this is true, which means all parameters
-		 *  in the string already are surrounded by {}
+		 *  in the string already are surrounded by `{}`
 		 * @param boolean $escape
-		 *  If set to true, the resulting value will be `urlencode`'d before being returned.
-		 *  By default this is false
+		 *  If set to true, the resulting value will passed through `urlencode` before 
+		 *  being returned. By default this is `false`
 		 * @return string
-		 *  The string will all parameters evaluated. If a parameter was not found, it will
-		 *  not be replaced at all.
+		 *  The string with all parameters evaluated. If a parameter is not found, it will
+		 *  not be replaced and remain in the `$value`.
 		 */
 		public function __processParametersInString($value, array $env, $includeParenthesis=true, $escape=false){
 			if(trim($value) == '') return null;
