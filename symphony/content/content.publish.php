@@ -133,7 +133,7 @@
 					if($field instanceof Field) {
 						// For deprecated reasons, call the old, typo'd function name until the switch to the
 						// properly named buildDSRetrievalSQL function.
-						$field->buildDSRetrivalSQL(array($value), $joins, $where, false);
+						$field->buildDSRetrievalSQL(array($value), $joins, $where, false);
 						$filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, rawurlencode($value));
 						$prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, rawurlencode($value));
 					}
