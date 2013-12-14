@@ -365,7 +365,7 @@
 				else {
 					// For deprecated reasons, call the old, typo'd function name until the switch to the
 					// properly named buildDSRetrievalSQL function.
-					if(!self::$_fieldPool[$field_id]->buildDSRetrivalSQL($value, $joins, $where, ($filter_type == DataSource::FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
+					if(!self::$_fieldPool[$field_id]->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == DataSource::FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
 					if(!$group) $group = self::$_fieldPool[$field_id]->requiresSQLGrouping();
 				}
 			}
