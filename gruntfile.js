@@ -24,6 +24,11 @@ module.exports = function (grunt) {
                         'symphony/assets/css/src/symphony.associations.css',
                         'symphony/assets/css/src/symphony.notices.css',
                         'symphony/assets/css/src/admin.css'
+                    ],
+
+                    'symphony/assets/css/devkit.min.css' : [
+
+                        'symphony/assets/css/src/devkit.css'
                     ]
                 }
             }
@@ -33,10 +38,41 @@ module.exports = function (grunt) {
 
             styles : {
 
-                src  : 'symphony/assets/css/symphony.min.css',
-                dest : 'symphony/assets/css/symphony.min.css'
+                files : {
+
+                    'symphony/assets/css/symphony.min.css' : [
+
+                        'symphony/assets/css/symphony.min.css'
+                    ],
+
+                    'symphony/assets/css/devkit.min.css' : [
+
+                        'symphony/assets/css/devkit.min.css'
+                    ]
+                }
             }
         },
+
+        /*
+        jshint : {
+
+            scripts : [
+
+                'symphony/assets/js/src/symphony.js',
+                'symphony/assets/js/src/symphony.collapsible.js',
+                'symphony/assets/js/src/symphony.orderable.js',
+                'symphony/assets/js/src/symphony.selectable.js',
+                'symphony/assets/js/src/symphony.duplicator.js',
+                'symphony/assets/js/src/symphony.tags.js',
+                'symphony/assets/js/src/symphony.suggestions.js',
+                'symphony/assets/js/src/symphony.pickable.js',
+                'symphony/assets/js/src/symphony.timeago.js',
+                'symphony/assets/js/src/symphony.notify.js',
+                'symphony/assets/js/src/symphony.drawer.js',
+                'symphony/assets/js/src/admin.js'
+            ]
+        },
+        */
 
         uglify : {
 
@@ -67,6 +103,7 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-autoprefixer');
     grunt.loadNpmTasks('grunt-csso');
+    //grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
     grunt.registerTask('default', ['autoprefixer', 'csso', 'uglify']);
