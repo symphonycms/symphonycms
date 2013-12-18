@@ -116,7 +116,7 @@
 			$xml = new DOMDocument();
 			$xml->preserveWhiteSpace = false;
 			$xml->formatOutput = true;
-			$xml->load(ASSETS . '/devkit_navigation.xml');
+			$xml->load(ASSETS . '/xml/devkit_navigation.xml');
 			$root = $xml->documentElement;
 			$first = $root->firstChild;
 			$xpath = new DOMXPath($xml);

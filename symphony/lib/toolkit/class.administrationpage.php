@@ -413,11 +413,11 @@
 
 		/**
 		 * Checks the current Symphony Author can access the current page.
-		 * This check uses the `ASSETS . /navigation.xml` file to determine
+		 * This check uses the `ASSETS . /xml/navigation.xml` file to determine
 		 * if the current page (or the current page namespace) can be viewed
 		 * by the currently logged in Author.
 		 *
-		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
+		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
 		 * @return boolean
 		 *  True if the Author can access the current page, false otherwise
 		 */
@@ -772,9 +772,9 @@
 
 		/**
 		 * This method fills the `$nav` array with value
-		 * from the `ASSETS/navigation.xml` file
+		 * from the `ASSETS/xml/navigation.xml` file
 		 *
-		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
+		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
 		 *
 		 * @since Symphony 2.3.2
 		 *
@@ -782,7 +782,7 @@
 		 *  The navigation array that will receive nav nodes
 		 */
 		private function buildXmlNavigation(&$nav){
-			$xml = simplexml_load_file(ASSETS . '/navigation.xml');
+			$xml = simplexml_load_file(ASSETS . '/xml/navigation.xml');
 
 			// Loop over the default Symphony navigation file, converting
 			// it into an associative array representation
@@ -975,12 +975,12 @@
 		 * This function populates the `$_navigation` array with an associative array
 		 * of all the navigation groups and their links. Symphony only supports one
 		 * level of navigation, so children links cannot have children links. The default
-		 * Symphony navigation is found in the `ASSETS/navigation.xml` folder. This is
+		 * Symphony navigation is found in the `ASSETS/xml/navigation.xml` folder. This is
 		 * loaded first, and then the Section navigation is built, followed by the Extension
 		 * navigation. Additionally, this function will set the active group of the navigation
 		 * by checking the current page against the array of links.
 		 *
-		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
+		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
 		 * @link https://github.com/symphonycms/symphony-2/blob/master/symphony/lib/toolkit/class.extension.php
 		 */
 		public function __buildNavigation(){
