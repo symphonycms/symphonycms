@@ -24,9 +24,7 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge,chrome=1')), 1);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1')), 2);
 
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.css', 'screen', 30);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.forms.css', 'screen', 31);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.frames.css', 'screen', 32);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.min.css', 'screen', null, false);
 
 			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Login'), __('Symphony'))));
 
