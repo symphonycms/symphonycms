@@ -73,7 +73,7 @@
 					'content'		=> 'text/html; charset=UTF-8'
 				)
 			));
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/devkit.css', 'screen');
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/devkit.min.css', 'screen', null, false);
 		}
 
 		/**
@@ -116,7 +116,7 @@
 			$xml = new DOMDocument();
 			$xml->preserveWhiteSpace = false;
 			$xml->formatOutput = true;
-			$xml->load(ASSETS . '/devkit_navigation.xml');
+			$xml->load(ASSETS . '/xml/devkit_navigation.xml');
 			$root = $xml->documentElement;
 			$first = $root->firstChild;
 			$xpath = new DOMXPath($xml);
@@ -139,7 +139,7 @@
 
 			/**
 			 * Allow navigation XML to be manipulated before it is rendered.
-			 * 
+			 *
 			 * @delegate ManipulateDevKitNavigation
 			 * @param string $context
 			 *	'/frontend/'
