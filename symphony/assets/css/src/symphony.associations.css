@@ -11,17 +11,17 @@
 -----------------------------------------------------------------------------*/
 
 #drawer-section-associations .contents {
-	padding: 5px 20px;
+	padding: 0.5rem 2rem;
 }
 
 .association {
-	min-height: 30px;
-	margin-top: 20px;
+	min-height: 3rem;
+	margin-top: 2rem;
 	color: #666;
 }
 
 .association + .association {
-	margin-top: 15px;
+	margin-top: 1.5rem;
 }
 
 .empty + .empty {
@@ -29,7 +29,7 @@
 }
 
 .association:last-of-type {
-	padding-bottom: 10px;
+	padding-bottom: 1rem;
 }
 
 .association a {
@@ -41,11 +41,11 @@
 }
 
 .association:first-of-type header {
-	padding-top: 6px;
+	padding-top: 0.6rem;
 }
 
 .association header {
-	padding-top: 10px;
+	padding-top: 1rem;
 }
 
 .association header p {
@@ -59,7 +59,7 @@
 }
 
 .association header i {
-	margin-left: 3px;
+	margin-left: 0.3rem;
 	float: right;
 }
 
@@ -68,9 +68,9 @@
 }
 
 .association-links {
-	padding: 10px 0 0;
+	padding: 1rem 0 0;
 	margin: 0;
-	width: 260px;
+	width: 26rem;
 }
 
 .association-links li {
@@ -84,8 +84,8 @@
 
 .association-links a,
 .association-links a:hover {
-	width: 260px;
-	line-height: 30px;
+	width: 26rem;
+	line-height: 3rem;
 	display: inline-block;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -94,12 +94,12 @@
 
 .association-links li a::before {
 	content: "\2192 ";
-	margin-right: 3px;
+	margin-right: 0.3rem;
 }
 
 .association-links.parent li a::before {
 	content: "\2190 ";
-	margin-right: 3px;
+	margin-right: 0.3rem;
 }
 
 .association-more a {
@@ -112,5 +112,5 @@
 
 .association-new {
 	float: right;
-	margin-top: -19px;
+	margin-top: -1.9rem;
 }

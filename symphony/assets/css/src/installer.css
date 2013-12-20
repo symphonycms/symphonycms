@@ -4,7 +4,7 @@
 
 
 body {
-	padding: 80px 100px 50px 50px;
+	padding: 8rem 10rem 5rem 5rem;
 	font: 68.75%/1.5 "Lucida Grande", Verdana, sans-serif;
 	cursor: default;
 }
@@ -12,25 +12,25 @@ body {
 form {
 	margin: 0 auto;
 	position: relative;
-	width: 450px;
-	padding-left: 200px;
+	width: 45rem;
+	padding-left: 20rem;
 }
 
 /* Sidebar */
 
 h1 {
 	position: fixed;
-	margin-left: -200px;
-	padding: 0 0 18px 0;
+	margin-left: -20rem;
+	padding: 0 0 1.8rem 0;
 	text-align: right;
 	font-weight: normal;
-	font-size: 1.25em;
-	width: 150px;
+	font-size: 1.25rem;
+	width: 15rem;
 }
 
 h1 em {
 	display: block;
-	margin-top: 0.5em;
+	margin-top: 0.5rem;
 	color: rgba(0, 0, 0, 0.4);
 	text-align: right;
 	font-style: normal;
@@ -43,11 +43,11 @@ h1 + ul {
 	text-align: right;
 	font-style: normal;
 	list-style: none;
-	margin: 55px 0 0 -200px;
-	padding: 0 0 18px 0;
+	margin: 5.5rem 0 0 -20rem;
+	padding: 0 0 1.8rem 0;
 	text-align: right;
 	font-weight: normal;
-	width: 150px;
+	width: 15rem;
 }
 
 h1 + ul li.selected a {
@@ -56,25 +56,25 @@ h1 + ul li.selected a {
 }
 
 h1 + ul li.more {
-	margin-top: 12px;
+	margin-top: 1.2rem;
 }
 
 h1 + ul li.more a {
-	width: 150px;
+	width: 15rem;
 	color: rgba(0, 0, 0, 0.4);
 	display: block;
 	text-decoration: none;
 }
 
 h1 + ul li.more a:hover {
-	border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.3);
 }
 
 /* Multiple errors */
 
 .invalid ul {
 	position: static;
-	margin: 0 0 0 13px;
+	margin: 0 0 0 1.3rem;
 	padding: 0;
 	width: auto;
 	text-align: left;
@@ -86,24 +86,24 @@ h1 + ul li.more a:hover {
 }
 
 .invalid li + li {
-	margin-top: 10px;
+	margin-top: 1rem;
 }
 
 /* Content */
 
 h2 {
-	margin-bottom: 10px;
-	margin-right: 50px;
+	margin-bottom: 1rem;
+	margin-right: 5rem;
 }
 
 fieldset + h2,
 p + h2 {
-	margin-top: 50px;
+	margin-top: 5rem;
 }
 
 fieldset {
-	margin: 50px 0 0;
-	padding: 10px 0 0;
+	margin: 5rem 0 0;
+	padding: 1rem 0 0;
 }
 
 fieldset legend {
@@ -117,46 +117,46 @@ fieldset > .columns:last-child .column {
 }
 
 fieldset fieldset {
-	padding-top: 30px !important;
-	margin: 5px 0 0 !important;
+	padding-top: 3rem !important;
+	margin: 0.5rem 0 0 !important;
 }
 
 fieldset label + fieldset {
-	margin-top: 20px !important;
+	margin-top: 2rem !important;
 }
 
 fieldset fieldset legend {
 	position: absolute;
-	top: 10px;
-	left: 10px;
-	font-size: 1em;
+	top: 1rem;
+	left: 1rem;
+	font-size: 1rem;
 	color: rgba(0, 0, 0, 0.4);
 }
 
 .option {
-	margin: 0 0 0 20px;
+	margin: 0 0 0 2rem;
 }
 
 .option input {
-	margin-left: -20px;
+	margin-left: -2rem;
 	float: left;
 	min-width: 0;
 }
 
 .option + p {
-	margin: 5px 30px 0 20px;
+	margin: 0.5rem 3rem 0 2rem;
 	color: rgba(0, 0, 0, 0.4);
 }
 
 .submit {
 	text-align: right;
-	padding-bottom: 50px;
+	padding-bottom: 5rem;
 }
 
 dt {
 	font-weight: normal;
 	color: rgba(0, 0, 0, 0.4);
-	margin-bottom: 5px;
+	margin-bottom: 0.5rem;
 }
 
 ul {
@@ -165,26 +165,26 @@ ul {
 
 dd,
 ul li {
-	margin: 0 0 15px 10px;
+	margin: 0 0 1.5rem 1rem;
 	font-weight: normal;
 	position: relative;
 }
 
 ul li {
-	margin: 0 0 0 10px;
+	margin: 0 0 0 1rem;
 }
 
 dd:before,
 ul li:before {
 	content: "\00b7";
 	float: left;
-	margin: 0 0 0 -10px;
+	margin: 0 0 0 -1rem;
 }
 
 /* Log */
 
 pre {
-	margin-bottom: 15px;
+	margin-bottom: 1.5rem;
 	color: #474742;
 	white-space: normal;
 	font: inherit;
@@ -193,8 +193,8 @@ pre {
 pre code {
 	display: block;
 	white-space: pre;
-	border: 1px dashed #a1a19a;
-	padding: 5px 7px;
+	border: 0.1rem dashed #a1a19a;
+	padding: 0.5rem 0.7rem;
 	overflow: auto;
 }
 

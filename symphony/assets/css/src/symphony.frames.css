@@ -7,28 +7,28 @@
 
 .frame {
 	position: relative;
-	margin: 0 0 45px;
+	margin: 0 0 4.5rem;
 	padding: 0;
 	list-style: none;
 	background: #f5f5f5;
-	border-radius: 4px;
+	border-radius: 0.4rem;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	border: 1px solid #c5c5c5;
+	border: 0.1rem solid #c5c5c5;
 }
 
 .frame h1 {
 	background: #282828;
 	color: #fff;
-	margin: -11px -11px 15px;
-	padding: 18px 11px;
-	border-radius: 4px 4px 0 0;
+	margin: -1.1rem -1.1rem 1.5rem;
+	padding: 1.8rem 1.1rem;
+	border-radius: 0.4rem 0.4rem 0 0;
 	line-height: 1.5;
 }
 
 .frame.empty {
-	border: 1px dashed #b8b8b8;
-	height: 30px;
+	border: 0.1rem dashed #b8b8b8;
+	height: 3rem;
 }
 
 .frame::after {
@@ -44,8 +44,8 @@
 }
 
 .frame .tags {
-	margin-top: -10px;
-	margin-bottom: 15px;
+	margin-top: -1rem;
+	margin-bottom: 1.5rem;
 }
 
 /* Headers */
@@ -53,13 +53,13 @@
 .frame-header {
 	position: relative;
 	color: #3d3d3d;
-	padding: 8px 10px 7px;
-	border-top: 1px solid #d0d0d0;
-	border-bottom: 1px solid #dcdcdc;
+	padding: 0.8rem 1rem 0.7rem;
+	border-top: 0.1rem solid #d0d0d0;
+	border-bottom: 0.1rem solid #dcdcdc;
 }
 
 .frame:not(.collapsible) .frame-header {
-	box-shadow: 0 1px 4px #e5e5e5;
+	box-shadow: 0 0.1rem 0.4rem #e5e5e5;
 }
 
 .frame-header h4 {
@@ -68,7 +68,7 @@
 }
 
 .frame-header span {
-	margin: 0 0 0 10px;
+	margin: 0 0 0 1rem;
 	font-weight: normal;
 	color: #a1a1a1;
 }
@@ -76,27 +76,27 @@
 .frame-header::before {
 	content: "";
 	display: block;
-	width: 1px;
-	height: 10px;
+	width: 0.1rem;
+	height: 1rem;
 	float: left;
-	margin: 3px 7px 0 0;
-	border-left: 6px solid #b8b8b8;
-	border-right: 3px solid #dcdcdc;
+	margin: 0.3rem 0.7rem 0 0;
+	border-left: 0.6rem solid #b8b8b8;
+	border-right: 0.3rem solid #dcdcdc;
 }
 
 .frame-header.sidebar::before {
-	border-left: 6px solid #dcdcdc;
-	border-right: 3px solid #b8b8b8;
+	border-left: 0.6rem solid #dcdcdc;
+	border-right: 0.3rem solid #b8b8b8;
 }
 
 .highlight .frame-header::before {
-	border-left: 6px solid #747474;
-	border-right: 3px solid #b9b9b9;
+	border-left: 0.6rem solid #747474;
+	border-right: 0.3rem solid #b9b9b9;
 }
 
 .highlight .frame-header.sidebar::before {
-	border-left: 6px solid #b9b9b9;
-	border-right: 3px solid #747474;
+	border-left: 0.6rem solid #b9b9b9;
+	border-right: 0.3rem solid #747474;
 }
 
 /* Content: light scheme */
@@ -104,12 +104,12 @@
 .frame .content {
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	padding: 10px;
+	padding: 1rem;
 	overflow: hidden;
 }
 
 .frame .instance:last-of-type .content {
-	border-radius: 0 0 4px 4px;
+	border-radius: 0 0 0.4rem 0.4rem;
 }
 
 .frame .content::after {
@@ -150,8 +150,8 @@ span.frame,
 fieldset.frame,
 .frame.inline {
 	display: block;
-	margin-bottom: 15px;
-	padding: 10px;
+	margin-bottom: 1.5rem;
+	padding: 1rem;
 }
 
 /*--------------------------------------------------------------------------
@@ -159,10 +159,10 @@ fieldset.frame,
 --------------------------------------------------------------------------*/
 
 #login .frame {
-	width: 280px;
-	margin: 100px auto;
+	width: 28rem;
+	margin: 10rem auto;
 	overflow: visible;
-	padding: 10px 10px 15px;
+	padding: 1rem 1rem 1.5rem;
 	text-align: left;
 }
 
@@ -175,7 +175,7 @@ fieldset.frame,
 }
 
 #login .action-link  {
-	margin-top: 3px;
+	margin-top: 0.3rem;
 	float: left;
 }
 
@@ -192,8 +192,8 @@ fieldset.frame,
 .frame .destructor,
 .frame .button {
 	position: absolute;
-	top: 8px;
-	right: 10px;
+	top: 0.8rem;
+	right: 1rem;
 	color: #aeaeae;
 	border-bottom: none;
 	font-weight: normal;
@@ -217,10 +217,10 @@ fieldset.frame,
 .frame .apply {
 	clear: left;
 	cursor: default;
-	margin: 10px 0 0;
+	margin: 1rem 0 0;
 	text-align: right;
 	position: absolute;
-	bottom: -35px;
+	bottom: -3.5rem;
 	right: 0;
 	border-color: rgba(0, 0, 0, 0.25);
 }
@@ -230,8 +230,8 @@ fieldset.frame,
 }
 
 .frame .actions {
-	margin: 0 0 7px;
-	height: 20px;
+	margin: 0 0 0.7rem;
+	height: 2rem;
 }
 
 .frame .actions button {
@@ -259,11 +259,11 @@ fieldset.frame,
 	content: '';
 	display: block;
 	position: absolute;
-	width: 1px;
+	width: 0.1rem;
 	height: 100%;
 	background: #4D78B4;
 	top: 0;
-	left: -1px;
+	left: -0.1rem;
 	z-index: 1000;
 }
 
@@ -274,13 +274,13 @@ fieldset.frame,
 }
 
 .frame .ordering + .instance .frame-header {
-	border-top: 1px solid #4D78B4;
+	border-top: 0.1rem solid #4D78B4;
 }
 
 .ordering .frame-header {
 	color: #fff;
 	background: #5c83ba;
-	border-top: 1px solid #4D78B4;
+	border-top: 0.1rem solid #4D78B4;
 	border-bottom-color: #7093c3;
 	cursor: move;
 	-webkit-transition: none;
@@ -319,13 +319,13 @@ fieldset.frame,
 }
 
 .frame .ordering .frame-header::before {
-	border-left: 6px solid #cedaea;
-	border-right: 3px solid #7c9bc7;
+	border-left: 0.6rem solid #cedaea;
+	border-right: 0.3rem solid #7c9bc7;
 }
 
 .frame .ordering .frame-header.sidebar::before {
-	border-left: 6px solid #7c9bc7;
-	border-right: 3px solid #cedaea;
+	border-left: 0.6rem solid #7c9bc7;
+	border-right: 0.3rem solid #cedaea;
 }
 
 .frame .highlight {
@@ -375,7 +375,7 @@ fieldset.frame,
 
 .collapsible legend {
 	background: #e8e8e8;
-	padding-right: 5px;
+	padding-right: 0.5rem;
 }
 
 .frame .js-animate {
@@ -413,9 +413,9 @@ fieldset.frame,
 -----------------------------------------------------------------------------*/
 
 .duplicator ol {
-	border-radius: 4px;
+	border-radius: 0.4rem;
 	overflow: hidden;
-	margin-top: -1px;
+	margin-top: -0.1rem;
 }
 
 .duplicator .template {
@@ -428,14 +428,14 @@ fieldset.frame,
 
 .invalid {
 	background: #eb6347;
-	border: 1px solid #c31;
-	padding: 10px;
-	margin: 0 0 15px;
+	border: 0.1rem solid #c31;
+	padding: 1rem;
+	margin: 0 0 1.5rem;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	display: block;
 	color: #fff;
-	border-radius: 4px;
+	border-radius: 0.4rem;
 }
 
 .invalid p {
@@ -453,7 +453,7 @@ fieldset.frame,
 }
 
 .invalid label {
-	margin-bottom: 10px;
+	margin-bottom: 1rem;
 }
 
 .invalid i {
@@ -476,13 +476,13 @@ fieldset.frame,
 }
 
 .conflict.collapsed .frame-header::before {
-	border-left: 6px solid #BD7053;
-	border-right: 3px solid #E7A973;
+	border-left: 0.6rem solid #BD7053;
+	border-right: 0.3rem solid #E7A973;
 }
 
 .conflict.collapsed .frame-header.sidebar::before {
-	border-left: 6px solid #E7A973;
-	border-right: 3px solid #BD7053;
+	border-left: 0.6rem solid #E7A973;
+	border-right: 0.3rem solid #BD7053;
 }
 
 /*--------------------------------------------------------------------------
@@ -490,13 +490,13 @@ fieldset.frame,
 --------------------------------------------------------------------------*/
 
 #error {
-	padding: 100px 50px;
+	padding: 10rem 5rem;
 }
 
 #error .frame {
 	display: block;
-	min-width: 500px;
-	max-width: 800px;
+	min-width: 50rem;
+	max-width: 80rem;
 	margin: 0 auto;
 	overflow: hidden;
 }
@@ -506,17 +506,6 @@ fieldset.frame,
 	display: block;
 	clear: both;
 }
-
-/*#error .frame {
-	border: 1px solid #b8b8b8;
-	background-color: #f5f5f3;
-	text-align: left;
-	box-shadow: 0 1px 2px #e5e5e5;
-	border-radius: 4px;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-	padding: 10px;
-}*/
 
 #error h1 {
 	margin: 0;
@@ -529,7 +518,7 @@ fieldset.frame,
 }
 
 #error p {
-	padding: 10px;
+	padding: 1rem;
 	margin: 0;
 }
 
@@ -540,18 +529,18 @@ fieldset.frame,
 #error .frame pre,
 #error .frame ul ul {
 	background: #fefefe;
-	padding: 10px 0;
+	padding: 1rem 0;
 	overflow: auto;
 }
 
 #error .content ul {
-	margin: 0 -10px;
+	margin: 0 -1rem;
 }
 
 #error .frame ul ul li {
-	border-top: 1px solid rgba(0, 0, 0, 0.05);
+	border-top: 0.1rem solid rgba(0, 0, 0, 0.05);
 	line-height: 1.8;
-	padding: 0 10px;
+	padding: 0 1rem;
 	white-space: nowrap;
 }
 
@@ -572,8 +561,8 @@ fieldset.frame,
 	color: #fff;
 	display: inline-block;
 	line-height: 1.8;
-	margin: -2px 0 -1px;
-	padding: 2px 0 1px;
+	margin: -0.2rem 0 -0.1rem;
+	padding: 0.2rem 0 0.1rem;
 }
 
 #error .frame code a {
@@ -593,5 +582,5 @@ fieldset.frame,
 }
 
 #error .frame .content:last-of-type ul {
-	border-radius: 0 0 4px 4px;
+	border-radius: 0 0 0.4rem 0.4rem;
 }

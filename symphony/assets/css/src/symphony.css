@@ -52,8 +52,12 @@ header, nav, section, aside, footer {
 	Basic styles
 -----------------------------------------------------------------------------*/
 
+html {
+	font-size: 62.5%;
+}
+
 body {
-	font: 68.75%/1.5 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+	font: 1.1rem/1.5 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 	background: #fff;
 	color: #222;
 }
@@ -62,7 +66,6 @@ body {
 
 h1,
 h2 {
-	font: 127.28%/1.35 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }
 
 h3 {
@@ -72,12 +75,12 @@ h3 {
 /* Paragraphs */
 
 p {
-	margin-bottom: 15px;
+	margin-bottom: 1.5rem;
 }
 
 p.label {
 	position: relative;
-	margin: 0 0 2px;
+	margin: 0 0 0.2rem;
 }
 
 /* Links */
@@ -103,11 +106,11 @@ a:active, a:focus,
 /* Lists */
 
 ul, ol {
-	margin: 0 0 15px 25px;
+	margin: 0 0 1.5rem 2.5rem;
 }
 
 ul.tags {
-	margin: -0.75em 0 1.5em 0;
+	margin: -0.75rem 0 1.5rem 0;
 	padding: 0;
 	color: #A2A2A2;
 	color: rgba(0, 0, 0, 0.4);
@@ -119,11 +122,10 @@ ul.tags li:first-of-type,
 ul.tags li:last-of-type {
 	display: inline;
 	padding: 0 6px 0 0;
-	word-spacing: -1px;
 	cursor: pointer;
-	font-size: 90.91%;
 	float: none;
 	border: none;
+	font-size: 90.91%;
 }
 
 ul.tags li:hover {
@@ -132,7 +134,7 @@ ul.tags li:hover {
 
 ul.tags li.more {
 	color: #5072bf;
-	border-bottom: 1px solid rgba(63, 105, 165, 0.15);
+	border-bottom: 0.1rem solid rgba(63, 105, 165, 0.15);
 }
 
 ul.tags .more:hover {
@@ -153,7 +155,7 @@ code,
 }
 
 pre {
-	margin-bottom: 15px;
+	margin-bottom: 1.5rem;
 	color: #474742;
 	white-space: normal;
 	font: inherit;
@@ -162,14 +164,14 @@ pre {
 pre code {
 	display: block;
 	white-space: pre;
-	border: 1px dashed #a1a19a;
-	padding: 5px 7px;
+	border: 0.1rem dashed #a1a19a;
+	padding: 0.5rem 0.7rem;
 	overflow: auto;
 }
 
 i code {
-	font-size: 1em;
 	font-size-adjust: 0;
+	font-size: 1em;
 }
 
 i, var {
@@ -182,7 +184,7 @@ i, var {
 
 fieldset {
 	position: relative;
-	padding: 10px 0;
+	padding: 1rem 0;
 }
 
 legend {
@@ -194,7 +196,7 @@ legend {
 
 label {
 	display: block;
-	margin-bottom: 15px;
+	margin-bottom: 1.5rem;
 	position: relative;
 }
 
