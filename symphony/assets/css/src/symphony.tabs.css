@@ -30,8 +30,6 @@ ul.tabs li {
 	padding: 0.4rem 1rem 0;
 	cursor: pointer;
 	display: block;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
@@ -61,7 +59,6 @@ ul.tabs .selected:before {
 	left: -0.4rem;
 	bottom: -0.1rem;
 	display: block;
-	-webkit-border-radius: 0 0 0.2rem 0;
 	border-radius: 0 0 0.2rem 0;
 	border: none;
 	border-bottom: 0.1rem solid #ccc;
@@ -76,7 +73,6 @@ ul.tabs .selected:after {
 	right: -0.4rem;
 	bottom: -0.1rem;
 	display: block;
-	-webkit-border-radius: 0 0 0 0.2rem;
 	border-radius: 0 0 0 0.2rem;
 	border: none;
 	border-bottom: 0.1rem solid #ccc;
@@ -112,7 +108,6 @@ ul.tabs .invalid {
 	border-color: #bb2211;
 	color: rgba(255, 255, 255, 0.7);
 	text-shadow: 0.1rem 0.1rem 0.1rem rgba(187, 34, 17, 1);
-	-webkit-box-shadow: none;
 	box-shadow: none;
 }
 

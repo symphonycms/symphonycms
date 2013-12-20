@@ -16,7 +16,6 @@ textarea,
 select[multiple] {
 	padding: 0.2rem 0.3rem;
 	border: 0.1rem solid rgba(0, 0, 0, 0.25);
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	margin-top: 0.2rem;
 	width: 100%;
@@ -42,7 +41,6 @@ select {
 	width: 100%;
 	display: block;
 	margin-top: 0.2rem;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
@@ -267,10 +265,6 @@ button.delete:focus,
 }
 
 .apply select {
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	-ms-appearance: none;
-	-o-appearance: none;
 	appearance: none;
 	background: transparent;
 	border: none;
@@ -379,15 +373,11 @@ ul.suggestionlist {
 	border-top: none;
 	margin: 0;
 	width: 100%;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.2);
 	z-index: 10000;
 	max-height: 24rem;
 	overflow: auto;
-	-webkit-transition: max-height .25s ease-out;
-	-ms-transition: max-height .25s ease-out;
-	-o-transition: max-height .25s ease-out;
 	transition: max-height .25s ease-out;
 	background: #fff;
 }
@@ -395,7 +385,6 @@ ul.suggestionlist {
 ul.suggestionlist li {
 	height: 2.2rem;
 	padding: 0.2rem 0.5rem;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	border-bottom: 0.1rem solid #f3f3f3;
 }

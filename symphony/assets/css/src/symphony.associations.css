@@ -76,8 +76,6 @@
 .association-links li {
 	display: block;
 	line-height: 2;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	white-space: nowrap;
 }
