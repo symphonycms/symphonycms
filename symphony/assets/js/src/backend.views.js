@@ -258,7 +258,7 @@ Symphony.View.add('/symphony/:context*:/new', function() {
 	Blueprints - Pages Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/symphony/blueprints/pages/:action:/:id:', function() {
+Symphony.View.add('/symphony/blueprints/pages/:action:/:id:/:status:', function() {
 	// No core interactions yet
 });
 
@@ -266,7 +266,7 @@ Symphony.View.add('/symphony/blueprints/pages/:action:/:id:', function() {
 	Blueprints - Sections
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/symphony/blueprints/sections/:action:/:id:', function() {
+Symphony.View.add('/symphony/blueprints/sections/:action:/:id:/:status:', function() {
 	var duplicator = $('#fields-duplicator'),
 		legend = $('#fields-legend'),
 		expand, collapse, toggle;
@@ -390,7 +390,7 @@ Symphony.View.add('/symphony/blueprints/sections/:action:/:id:', function() {
 	Blueprints - Datasource Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/symphony/blueprints/datasources/:action:/:id:', function() {
+Symphony.View.add('/symphony/blueprints/datasources/:action:/:id:/:status:', function() {
 	var context = $('#ds-context'),
 		source = $('#ds-source'),
 		name = Symphony.Elements.contents.find('input[name="fields[name]"]').attr('data-updated', 0),
@@ -503,7 +503,7 @@ Symphony.View.add('/symphony/blueprints/datasources/:action:/:id:', function() {
 	Blueprints - Event Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/symphony/blueprints/events/:action:/:name:', function() {
+Symphony.View.add('/symphony/blueprints/events/:action:/:name:/:status:', function() {
 	var context = $('#event-context'),
 		source = $('#event-source'),
 		filters = $('#event-filters'),
@@ -556,7 +556,7 @@ Symphony.View.add('/symphony/blueprints/events/:action:/:name:', function() {
 	System - Authors
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/symphony/system/authors/:action:/:id:', function(action, id) {
+Symphony.View.add('/symphony/system/authors/:action:/:id:/:status:', function(action, id) {
 	var password = $('#password');
 
 	// Add change password overlay
