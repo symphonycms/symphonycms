@@ -208,6 +208,9 @@
 	border-bottom: 0;
 	padding: 0;
 	float: left;
+	font-size: 127.28%;
+	line-height: 1.35;
+	font-weight: normal;
 }
 
 #context .actions {
