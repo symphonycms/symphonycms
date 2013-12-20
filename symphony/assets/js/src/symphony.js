@@ -81,6 +81,78 @@ var Symphony = (function($) {
 	return {
 
 		/**
+		 * Symphony backend view using Crossroads
+		 *
+		 * @since Symphony 2.4
+		 */
+		View: {
+
+			/**
+			 * Add function to view
+			 *
+			 * @param {String} pattern
+			 *  Expression to match the view
+			 * @param {Function} handler
+			 *  Function that should be applied to a view
+			 * @param {Integer} priority
+			 *  Priority of the function 
+			 * @param {Boolean} greedy
+			 *  If set to `false`, only executes the first matched view, defaults to `true` 
+			 * @return {Route}
+			 *  Returns a route object
+			 */
+			add: function addRoute(pattern, handler, priority, greedy) {
+				var route = crossroads.addRoute(pattern, handler, priority);
+
+				if(greedy !== false) {
+					route.greedy = true;
+				}
+
+				return route;
+			},
+
+			/**
+			 * Render given URL, defaults to the current backend URL
+			 *
+			 * @param {String} url
+			 *  The URL of the view that should be rendered, optional
+			 * @param {Boolean} greedy
+			 *  Determines, if only the first or all matching views are rendered, 
+			 *  defaults to `true (all)
+			 */
+			render: function renderRoute(url, greedy) {
+				if(!url) {
+					url = window.location.href.split(Symphony.Context.get('root'))[1];
+				}
+
+				if(greedy === false) {
+					crossroads.greedyEnabled = false;
+				}
+
+				crossroads.parse(url);
+			}
+
+		},
+
+		/**
+		 * Storage for the main Symphony elements`. 
+		 * Symphony automatically adds all main UI areas.
+		 *
+		 * @since Symphony 2.4
+		 */
+		Elements: {
+			window: null,
+			html: null,
+			body: null,
+			wrapper: null,
+			header: null,
+			nav: null,
+			session: null,
+			context: null,
+			contents: null
+		},
+
+		/**
 		 * The Context object contains general information about the system,
 		 * the backend, the current user. It includes an add and a get function.
 		 * This is a private object and can only be accessed via add and get.
@@ -224,12 +296,16 @@ var Symphony = (function($) {
 		Extensions: {},
 
 		/**
+		 * Helper functions
 		 *
+		 * @since Symphony 2.4
 		 */
 		Utilities: {
 
 			/**
+			 * Get a jQuery object of all elements within the current viewport
 			 *
+			 * @since Symphony 2.4
 			 */
 			inSight: function inSight(elements) {
 				var windowHeight = window.innerHeight,
