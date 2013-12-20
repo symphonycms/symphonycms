@@ -152,7 +152,7 @@ button:focus,
 .button:active,
 .button:focus {
 	color: #3c3c3c;
-	background-image: linear-gradient(to bottom, #efefed 10%, #e6e6e3 40%);
+	background-image: linear-gradient(to bottom, #e8e8e5 10%, #dadad6 40%);
 	cursor: pointer;
 }
 
@@ -205,7 +205,7 @@ button.create:focus,
 .button.create:hover,
 .button.create:active,
 .button.create:focus {
-	background-image: linear-gradient(to bottom, #9bc660 10%, #8db950 40%);
+	background-image: linear-gradient(to bottom, #8DCA3A 10%, #7DB331 40%);
 	color: rgba(255, 255, 255, 0.99);
 }
 
