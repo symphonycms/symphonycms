@@ -12,7 +12,6 @@
 	list-style: none;
 	background: #f5f5f5;
 	border-radius: 0.4rem;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	border: 0.1rem solid #c5c5c5;
 }
@@ -102,7 +101,6 @@
 /* Content: light scheme */
 
 .frame .content {
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	padding: 1rem;
 	overflow: hidden;
@@ -283,10 +281,6 @@ fieldset.frame,
 	border-top: 0.1rem solid #4D78B4;
 	border-bottom-color: #7093c3;
 	cursor: move;
-	-webkit-transition: none;
-	-moz-transition: none;
-	-ms-transition: none;
-	-o-transition: none;
 	transition: none;
 }
 
@@ -341,10 +335,6 @@ fieldset.frame,
 -----------------------------------------------------------------------------*/
 
 .collapsible {
-	-webkit-transform: translatez(0);
-	-moz-transform: translatez(0);
-	-ms-transform: translatez(0);
-	-o-transform: translatez(0);
 	transform: translatez(0);
 }
 
@@ -365,10 +355,6 @@ fieldset.frame,
 }
 
 .collapsible .content {
-	-webkit-transition: padding 0.25s ease-in;
-	-moz-transition: padding 0.25s ease-in;
-	-ms-transition: padding 0.25s ease-in;
-	-o-transition: padding 0.25s ease-in;
 	transition: padding 0.25s ease-in;
 	background: #e8e8e8;
 }
@@ -379,28 +365,16 @@ fieldset.frame,
 }
 
 .frame .js-animate {
-	-webkit-transition: max-height 0.25s linear;
-	-moz-transition: max-height 0.25s linear;
-	-ms-transition: max-height 0.25s linear;
-	-o-transition: max-height 0.25s linear;
 	transition: max-height 0.25s linear;
 	overflow: hidden;
 }
 
 .collapsed.js-animate {
-	-webkit-transition: max-height 0.25s ease-out;
-	-moz-transition: max-height 0.25s ease-out;
-	-ms-transition: max-height 0.25s ease-out;
-	-o-transition: max-height 0.25s ease-out;
 	transition: max-height 0.25s ease-out;
 }
 
 .collapsed.js-animate .frame-header {
 	border-bottom-color: rgba(0, 0, 0, 0);
-	-webkit-transition: border-color 0.25s ease-in;
-	-moz-transition: border-color 0.25s ease-in;
-	-ms-transition: border-color 0.25s ease-in;
-	-o-transition: border-color 0.25s ease-in;
 	transition: border-color 0.25s ease-in;
 }
 
@@ -431,7 +405,6 @@ fieldset.frame,
 	border: 0.1rem solid #c31;
 	padding: 1rem;
 	margin: 0 0 1.5rem;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	display: block;
 	color: #fff;

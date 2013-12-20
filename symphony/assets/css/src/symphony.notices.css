@@ -38,58 +38,6 @@
 	opacity: 0.5;
 }
 
-/* Webkit */
-
-@-webkit-keyframes success {
-	to {
-		background-color: #383838;
-		border-color: #575757;
-		color: #9b9b9b;
-	}
-}
-@-webkit-keyframes successlink {
-	to {
-		color: #bdc3c3;
-		border-color: #7c7c7c;
-	}
-}
-
-/* Internet Explorer */
-
-@-ms-keyframes success {
-	to {
-		background-color: #383838;
-		border-color: #575757;
-		color: #9b9b9b;
-	}
-}
-
-@-ms-keyframes successlink {
-	to {
-		color: #bdc3c3;
-		border-color: #7c7c7c;
-	}
-}
-
-/* Opera */
-
-@-o-keyframes success {
-	to {
-		background-color: #383838;
-		border-color: #575757;
-		color: #9b9b9b;
-	}
-}
-
-@-o-keyframes successlink {
-	to {
-		color: #bdc3c3;
-		border-color: #7c7c7c;
-	}
-}
-
-/* W3C */
-
 @keyframes success {
 	to {
 		background-color: #383838;
@@ -117,8 +65,6 @@
 	color: #9b9b9b;
 	background: #383838;
 	width: 100%;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
@@ -141,18 +87,12 @@
 	background-color: #bfdc96;
 	border-color: #90c349;
 	color: #6d7841;
-	-webkit-animation: success 0.5s ease-out 10s 1 forwards;
-	-ms-animation: success 0.5s ease-out 10s 1 forwards;
-	-o-animation: success 0.5s ease-out 10s 1 forwards;
 	animation: success 0.5s ease-out 10s 1 forwards;
 }
 
 .notice.success a {
 	color: #4e5b39;
 	border-color: #a1bf7e;
-	-webkit-animation: successlink 0.5s ease-out 10s 1 forwards;
-	-ms-animation: successlink 0.5s ease-out 10s 1 forwards;
-	-o-animation: successlink 0.5s ease-out 10s 1 forwards;
 	animation: successlink 0.5s ease-out 10s 1 forwards;
 }
 

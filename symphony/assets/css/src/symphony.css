@@ -147,10 +147,6 @@ ul.tags .more:hover {
 code,
 .code {
 	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
-	-webkit-tab-size: 4;
-	-moz-tab-size: 4;
-	-ms-tab-size: 4;
-	-o-tab-size: 4;
 	tab-size: 4;
 }
 
