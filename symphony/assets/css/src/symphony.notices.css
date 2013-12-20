@@ -12,21 +12,21 @@
 .notifier {
 	overflow: hidden;
 	background: #383838;
-	border-bottom: 1px solid #575757;
+	border-bottom: 0.1rem solid #575757;
 }
 
 .notifier nav {
 	position: absolute;
 	top: 0;
-	right: 18px;
+	right: 1.8rem;
 	display: block;
-	padding: 4px 0;
+	padding: 0.4rem 0;
 	cursor: pointer;
 }
 
 .notifier nav:before {
 	content: "\2193";
-	padding-right: 3px;
+	padding-right: 0.3rem;
 	opacity: 0.2;
 }
 
@@ -112,8 +112,8 @@
 .notice {
 	position: relative;
 	margin: 0;
-	padding: 4px 90px 3px 18px;
-	border-bottom: 1px solid #575757;
+	padding: 0.4rem 9rem 0.3rem 1.8rem;
+	border-bottom: 0.1rem solid #575757;
 	color: #9b9b9b;
 	background: #383838;
 	width: 100%;
@@ -124,8 +124,8 @@
 
 .notice a {
 	color: #bdc3c3;
-	border-bottom: 1px solid rgba(189, 195, 195, 0.2);
-	margin: 0 3px;
+	border-bottom: 0.1rem solid rgba(189, 195, 195, 0.2);
+	margin: 0 0.3rem;
 }
 
 .notice a:hover,
@@ -171,10 +171,10 @@
 
 .notice.error a {
 	color: #b02d3c;
-	border-bottom: 1px solid #eed08a;
+	border-bottom: 0.1rem solid #eed08a;
 }
 
 .notice.error a:hover {
 	color: #87232e;
-	border-bottom: 1px solid #b02d3c;
+	border-bottom: 0.1rem solid #b02d3c;
 }

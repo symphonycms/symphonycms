@@ -6,7 +6,7 @@
 table {
 	border-collapse: collapse;
 	width: 100%;
-	margin-top: 8px;
+	margin-top: 0.8rem;
 }
 
 table.fixed {
@@ -16,7 +16,7 @@ table.fixed {
 }
 
 th {
-	padding-right: 19px;
+	padding-right: 1.9rem;
 	color: rgba(0, 0, 0, 0.6);
 	text-align: left;
 	font-weight: normal;
@@ -25,15 +25,15 @@ th {
 }
 
 td {
-	border: 1px solid #e6e6e5;
-	border-width: 1px 0;
-	padding: 0.67em 19px 0.67em 0;
+	border: 0.1rem solid #e6e6e5;
+	border-width: 0.1rem 0;
+	padding: 0.67rem 1.9rem 0.67rem 0;
 	background-color: #f5f5f5;
 }
 
 th:first-child,
 td:first-child {
-	padding-left: 19px;
+	padding-left: 1.9rem;
 }
 
 tr:nth-child(even) td {
@@ -41,12 +41,12 @@ tr:nth-child(even) td {
 }
 
 tbody a {
-	padding-top: 0.67em;
+	padding-top: 0.67rem;
 }
 
 table input {
 	float: right;
-	margin-right: 19px;
+	margin-right: 1.9rem;
 }
 
 th span {
@@ -80,7 +80,7 @@ th a.active:after {
 th a:after,
 th a.active:hover:after,
 th a.active[href$=asc]:after {
-	margin-left: 3px;
+	margin-left: 0.3rem;
 	content: "\2193"
 }
 
@@ -91,14 +91,14 @@ th a.active[href$=asc]:hover:after {
 }
 
 table.busy td {
-	border-top: 1px solid #e6e6e5;
-	border-bottom: 1px solid #e6e6e5;
+	border-top: 0.1rem solid #e6e6e5;
+	border-bottom: 0.1rem solid #e6e6e5;
 	background-color: #fff;
 }
 
 table.busy tr:nth-child(odd) td {
-	border-top: 1px solid #e6e6e5;
-	border-bottom: 1px solid #e6e6e5;
+	border-top: 0.1rem solid #e6e6e5;
+	border-bottom: 0.1rem solid #e6e6e5;
 	background-color: #f5f5f4;
 }
 
@@ -107,7 +107,7 @@ table.busy a {
 }
 
 table + fieldset {
-	margin-top: 50px !important;
+	margin-top: 5rem !important;
 }
 
 td img {
@@ -124,8 +124,8 @@ table.selectable input {
 
 tr.selected td {
 	background-color: #668abe;
-	border-bottom: 1px solid #7492bc;
-	border-top: 1px solid #4D78B4;
+	border-bottom: 0.1rem solid #7492bc;
+	border-top: 0.1rem solid #4D78B4;
 }
 
 tr:nth-child(odd).selected td {
@@ -164,9 +164,9 @@ tr.ordering {
 tr.ordering td,
 tr:nth-child(odd).ordering td {
 	background-color: #4870a9;
-	border-bottom: 1px solid #3c5e8e;
-	border-top: 1px solid #2d466a;
-	text-shadow: 1px 1px rgba(0, 0, 0, 0.2);
+	border-bottom: 0.1rem solid #3c5e8e;
+	border-top: 0.1rem solid #2d466a;
+	text-shadow: 0.1rem 0.1rem rgba(0, 0, 0, 0.2);
 }
 
 tr.ordering td,

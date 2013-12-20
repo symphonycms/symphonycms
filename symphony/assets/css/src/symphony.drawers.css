@@ -16,9 +16,9 @@ div.drawer.horizontal {
 }
 
 div.drawer.horizontal .contents {
-	margin-top: 17px;
-	padding: 20px 0;
-	border-top: 1px solid rgba(0, 0, 0, 0.05);
+	margin-top: 1.7rem;
+	padding: 2rem 0;
+	border-top: 0.1rem solid rgba(0, 0, 0, 0.05);
 }
 
 div.drawer.horizontal .contents:after {
@@ -38,7 +38,7 @@ div.drawer.vertical-left,
 div.drawer.vertical-right {
 	position: absolute;
 	overflow: auto;
-	width: 300px;
+	width: 30rem;
 	top: 0;
 	bottom: 0;
 	/* height is set implicitly via `top` and `bottom` to allow for dynamic height */
@@ -47,15 +47,15 @@ div.drawer.vertical-right {
 
 div.drawer.vertical-left {
 	left: 0;
-	border-right: 1px solid rgba(0, 0, 0, 0.05);
+	border-right: 0.1rem solid rgba(0, 0, 0, 0.05);
 }
 
 div.drawer.vertical-right {
 	right: 0;
-	border-left: 1px solid rgba(0, 0, 0, 0.05);
+	border-left: 0.1rem solid rgba(0, 0, 0, 0.05);
 }
 
 div.drawer.vertical-left .contents,
 div.drawer.vertical-right .contents {
-	padding: 20px;
+	padding: 2rem;
 }
