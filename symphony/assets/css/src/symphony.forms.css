@@ -133,7 +133,8 @@ button,
 	min-height: 2rem;
 	margin-left: 1rem;
 	padding: 0 1rem;
-	background-color: #efefed; 
+	background-color: #e6e6e3;
+	background-image: linear-gradient(to bottom, #efefed 60%, #e6e6e3 100%);
 	color: rgba(85, 85, 85, 0.95);
 	border: 0.1rem solid rgba(0, 0, 0, 0.25);
 	border-bottom-color: rgba(0, 0, 0, 0.3);
@@ -151,8 +152,7 @@ button:focus,
 .button:active,
 .button:focus {
 	color: #3c3c3c;
-	border-color: rgba(0, 0, 0, 0.4);
-	box-shadow: 0 0 0.7rem rgba(0, 0, 0, 0.05), 0 0 0.1rem 0.2rem rgba(77, 120, 180, 0.1);
+	background-image: linear-gradient(to bottom, #efefed 10%, #e6e6e3 40%);
 	cursor: pointer;
 }
 
@@ -192,7 +192,8 @@ button[disabled=disabled]:focus {
 
 button.create,
 .button.create {
-	background-color: #83b340;
+	background-color: #8db950;
+	background-image: linear-gradient(to bottom, #9bc660 60%, #8db950 100%);
 	border-color: rgba(50, 70, 23, 0.3);
 	border-bottom-color: rgba(50, 70, 23, 0.5);
 	color: rgba(255, 255, 255, 0.9);
@@ -204,7 +205,7 @@ button.create:focus,
 .button.create:hover,
 .button.create:active,
 .button.create:focus {
-	border-color: rgba(50, 70, 23, 0.6);
+	background-image: linear-gradient(to bottom, #9bc660 10%, #8db950 40%);
 	color: rgba(255, 255, 255, 0.99);
 }
 
@@ -234,7 +235,6 @@ button.delete:focus,
 	background: #fbfbfa;
 	border: 0.1rem solid rgba(0, 0, 0, 0.25);
 	border-radius: 0.4rem;
-	box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.05);
 	display: block;
 	float: right;
 	height: 1.85em;
@@ -265,6 +265,10 @@ button.delete:focus,
 }
 
 .apply select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	-ms-appearance: none;
+	-o-appearance: none;
 	appearance: none;
 	background: transparent;
 	border: none;
