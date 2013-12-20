@@ -218,7 +218,10 @@
 
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
+
+			$legend = new XMLElement('legend', __('Fields'));
+			$legend->setAttribute('id', 'fields-legend');
+			$fieldset->appendChild($legend);
 
 			$div = new XMLElement('div', null, array('class' => 'frame', 'id' => 'fields-duplicator'));
 
@@ -431,8 +434,12 @@
 				'errors' => &$this->_errors
 			));
 
-			$fieldset = new XMLElement('fieldset', null, array('id' => 'fields', 'class' => 'settings'));
-			$fieldset->appendChild(new XMLElement('legend', __('Fields')));
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+
+			$legend = new XMLElement('legend', __('Fields'));
+			$legend->setAttribute('id', 'fields-legend');
+			$fieldset->appendChild($legend);
 
 			$div = new XMLElement('div', null, array('class' => 'frame', 'id' => 'fields-duplicator'));
 
