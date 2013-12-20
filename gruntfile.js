@@ -83,6 +83,8 @@ module.exports = function (grunt) {
                     'symphony/assets/js/symphony.min.js' : [
 
                         'symphony/assets/js/lib/jquery.js',
+                        'symphony/assets/js/lib/signals.js',
+                        'symphony/assets/js/lib/crossroads.js',
                         'symphony/assets/js/src/symphony.js',
                         'symphony/assets/js/src/symphony.collapsible.js',
                         'symphony/assets/js/src/symphony.orderable.js',
@@ -94,7 +96,8 @@ module.exports = function (grunt) {
                         'symphony/assets/js/src/symphony.timeago.js',
                         'symphony/assets/js/src/symphony.notify.js',
                         'symphony/assets/js/src/symphony.drawer.js',
-                        'symphony/assets/js/src/admin.js'
+                        'symphony/assets/js/src/backend.js',
+                        'symphony/assets/js/src/backend.views.js',
                     ]
                 }
             }
@@ -107,4 +110,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
     grunt.registerTask('default', ['autoprefixer', 'csso', 'uglify']);
+    grunt.registerTask('js', ['uglify']);
 };
