@@ -26,7 +26,7 @@
 		 * An array of all extensions whose status is enabled
 		 * @var array
 		 */
-		private static $_enabled_extensions = null;
+		private static $_enabled_extensions = array();
 
 		/**
 		 * An array of all the subscriptions to Symphony delegates made by extensions.
@@ -615,7 +615,7 @@
 		 * @return array
 		 */
 		public static function listInstalledHandles(){
-			if(is_null(self::$_enabled_extensions)) {
+			if(empty(self::$_enabled_extensions) && Symphony::Database()->isConnected()) {
 				self::$_enabled_extensions = Symphony::Database()->fetchCol('name',
 					"SELECT `name` FROM `tbl_extensions` WHERE `status` = 'enabled'"
 				);

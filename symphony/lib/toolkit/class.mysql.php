@@ -439,7 +439,7 @@
 		 */
 		public function query($query, $type = "OBJECT"){
 
-			if(empty($query)) return false;
+			if(empty($query) || self::isConnected() === false) return false;
 
 			$start = precision_timer();
 			$query = trim($query);
