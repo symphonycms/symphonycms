@@ -467,7 +467,7 @@
 			$this->_lastQuery = $query;
 			$this->_lastQueryHash = $query_hash;
 			$this->_result = mysql_query($query, MySQL::$_connection['id']);
-            $this->_lastInsertID = mysql_insert_id(MySQL::$_connection['id']);
+			$this->_lastInsertID = mysql_insert_id(MySQL::$_connection['id']);
 
 			self::$_query_count++;
 

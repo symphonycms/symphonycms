@@ -57,7 +57,7 @@
 		 * the `tbl_extension` and `tbl_extensions_delegates` tables.
 		 */
 		public function __construct() {
-			if (empty(self::$_subscriptions)) {
+			if (empty(self::$_subscriptions) && Symphony::Database()->isConnected()) {
 				$subscriptions = Symphony::Database()->fetch("
 					SELECT t1.name, t2.page, t2.delegate, t2.callback
 					FROM `tbl_extensions` as t1 INNER JOIN `tbl_extensions_delegates` as t2 ON t1.id = t2.extension_id

@@ -31,14 +31,11 @@
 			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
 			DateTimeObj::setSettings(self::Configuration()->get('region'));
 
-			// Initialize language
+			// Initialize Language, Logs, Database and Extension Manager
 			$this->initialiseLang();
-
-			// Initialize logs
 			$this->initialiseLog(INSTALL_LOGS . '/install');
-
-			// Initialize database
 			$this->initialiseDatabase();
+			$this->initialiseExtensionManager();
 
 			// Initialize error handlers
 			GenericExceptionHandler::initialise(Symphony::Log());
