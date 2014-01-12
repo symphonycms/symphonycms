@@ -27,6 +27,15 @@
 
 	ini_set('magic_quotes_runtime', 0);
 
+	if(file_exists(DOCROOT . '/manifest/config.php')) {
+		require_once(DOCROOT . '/symphony/lib/core/class.configuration.php');
+		require_once(DOCROOT . '/symphony/lib/toolkit/class.general.php');
+		// Create the $settings var from the config file
+		include(DOCROOT . '/manifest/config.php');
+		$Configuration = new Configuration(true);
+		$Configuration->setArray($settings);
+	}
+
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
 
