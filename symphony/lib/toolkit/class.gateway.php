@@ -440,7 +440,7 @@
 			$this->_info_last = array(
 				'url' => $this->_url,
 				'content_type' => $content_type,
-				'http_code' => $status,
+				'http_code' => (int)$status,
 				'total_time' => $end
 			);
 
