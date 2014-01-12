@@ -15,8 +15,9 @@
 		return ($mode == 'administration' ? Administration::instance() : Frontend::instance());
 	}
 
-	// $Configuration is created in bundle.php
+	// #702 $Configuration is created in bundle.php
 	$adminPath = $Configuration->get('admin-path', 'symphony');
+	$adminPath = (is_null($adminPath)) ? 'symphony' :  $adminPath;
 	if(strpos($_GET['symphony-page'], $adminPath, 0) === 0) {
 		$_GET['symphony-page'] = str_replace($adminPath . '/', '', $_GET['symphony-page']);
 		if($_GET['symphony-page'] == '') unset($_GET['symphony-page']);

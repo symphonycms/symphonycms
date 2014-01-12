@@ -803,6 +803,7 @@
 
 				$about = array(
 					'name' => $xpath->evaluate('string(ext:name)', $extension),
+					'handle' => $name,
 					'status' => array()
 				);
 
@@ -861,12 +862,15 @@
 
 					$about['author'][] = array_filter($a);
 				}
+
+				$about['status'] = array_merge($about['status'], self::fetchStatus($about));
+				return $about;
 			}
+			else {
+				Symphony::Log()->pushToLog(sprintf('%s does not have an extension.meta.xml file', $name), E_DEPRECATED, true);
 
-			$about['handle'] = $name;
-			$about['status'] = array_merge($about['status'], self::fetchStatus($about));
-
-			return $about;
+				return;
+			}
 		}
 
 		/**
