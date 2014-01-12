@@ -31,6 +31,14 @@
 		}
 
 		static function upgrade() {
+			// Update to include Admin Path configuration #702
+			if(version_compare(self::$existing_version, '2.4a1', '<=')) {
+				// Add missing config value for index view string length
+				Symphony::Configuration()->set('cell_truncation_length', '75', 'symphony');
+				// Add admin-path to configuration
+				Symphony::Configuration()->set('admin-path', 'symphony', 'symphony');
+			}
+
 			// Update the version information
 			Symphony::Configuration()->set('version', self::getVersion(), 'symphony');
 			Symphony::Configuration()->set('useragent', 'Symphony/' . self::getVersion(), 'general');
