@@ -543,7 +543,7 @@ Symphony.View.add('/symphony/blueprints/events/:action:/:name:/:status:', functi
 				'name': name.val()
 			},
 			dataType: 'json',
-			url: Symphony.Context.get('root') + '/symphony/ajax/event-documentation/',
+			url: Symphony.Context.get('root') + '/symphony/ajax/eventdocumentation/',
 			success: function(documentation) {
 				$('#event-documentation').remove();
 				form.append(documentation);
