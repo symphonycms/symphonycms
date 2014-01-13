@@ -542,11 +542,10 @@ Symphony.View.add('/symphony/blueprints/events/:action:/:name:/:status:', functi
 				'filters': filters.serializeArray(),
 				'name': name.val()
 			},
-			dataType: 'json',
+			dataType: 'html',
 			url: Symphony.Context.get('root') + '/symphony/ajax/eventdocumentation/',
 			success: function(documentation) {
-				$('#event-documentation').remove();
-				form.append(documentation);
+				$('#event-documentation').replaceWith(documentation);
 			}
 		});
 	});

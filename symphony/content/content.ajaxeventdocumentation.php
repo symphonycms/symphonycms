@@ -10,22 +10,23 @@
 	Class contentAjaxEventDocumentation extends AjaxPage {
 
 		public function view() {
-			$name = $_REQUEST['name'];
-			$section = $_REQUEST['section'];
-			$filters = $_REQUEST['filters'];
+			$name = General::sanitize($_REQUEST['name']);
+			$section = General::sanitize($_REQUEST['section']);
+			$filters = self::processFilters($_REQUEST['filters']);
+			$rootelement = Lang::createHandle($name);
 			$documentation = NULL;
 			$doc_parts = array();
 
 			// Add Documentation (Success/Failure)
-			$this->addEntrySuccessDoc($doc_parts, $name, $section, $filters);
-			$this->addEntryFailureDoc($doc_parts, $name, $section, $filters);
+			$this->addEntrySuccessDoc($doc_parts, $rootelement, $section, $filters);
+			$this->addEntryFailureDoc($doc_parts, $rootelement, $section, $filters);
 
 			// Filters
-			$this->addDefaultFiltersDoc($doc_parts, $name, $section, $filters);
+			$this->addDefaultFiltersDoc($doc_parts, $rootelement, $section, $filters);
 
 			// Frontend Markup
-			$this->addFrontendMarkupDoc($doc_parts, $name, $section, $filters);
-			$this->addSendMailFilterDoc($doc_parts, $name, $section, $filters);
+			$this->addFrontendMarkupDoc($doc_parts, $rootelement, $section, $filters);
+			$this->addSendMailFilterDoc($doc_parts, $rootelement, $section, $filters);
 
 			/**
 			 * Allows adding documentation for new filters. A reference to the $documentation
@@ -38,7 +39,7 @@
 			 * @param array $documentation
 			 *  An array of all the documentation XMLElements, passed by reference
 			 */
-			Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $name . '/', array(
+			Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $rootelement . '/', array(
 				'selected' => $filters,
 				'documentation' => &$doc_parts
 			));
@@ -46,12 +47,13 @@
 			$documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $doc_parts));
 			$documentation = str_replace('\'', '\\\'', $documentation);
 
+			$documentation = '<fieldset id="event-documentation" class="settings"><legend>' . __('Documentation') . '</legend>' . $documentation . '</fieldset>';
 			$this->_Result = $documentation;
 		}
 
 		public function generate($page = null) {
-			header('Content-Type: application/json');
-			echo json_encode($this->_Result);
+			header('Content-Type: text/html');
+			echo $this->_Result;
 			exit;
 		}
 
@@ -70,11 +72,23 @@
 			return in_array('send-email', $filters);
 		}
 
+		public static function processFilters($filters) {
+			$filter_names = array();
+
+			if(is_array($filters) && !empty($filters)) {
+				foreach($filters as $filter) {
+					$filter_names[] = $filter['value'];
+				}
+			}
+
+			return $filter_names;
+		}
+
 		public static function processDocumentationCode($code) {
 			return new XMLElement('pre', '<code>' . str_replace('<', '&lt;', str_replace('&', '&amp;', trim((is_object($code) ? $code->generate(true) : $code)))) . '</code>', array('class' => 'XML'));
 		}
 
-		public function addEntrySuccessDoc(array &$doc_parts, $name, $section, $filters) {
+		public function addEntrySuccessDoc(array &$doc_parts, $rootelement, $section, $filters) {
 			$doc_parts[] = new XMLElement('h3', __('Success and Failure XML Examples'));
 			$doc_parts[] = new XMLElement('p', __('When saved successfully, the following XML will be returned:'));
 
@@ -93,7 +107,7 @@
 			$doc_parts[] = self::processDocumentationCode($code);
 		}
 
-		public function addEntryFailureDoc(array &$doc_parts, $name, $section, $filters) {
+		public function addEntryFailureDoc(array &$doc_parts, $rootelement, $section, $filters) {
 			$doc_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? ' (<strong> ' . __('Notice that it is possible to get mixtures of success and failure messages when using the ‘Allow Multiple’ option') . '</strong>)' : NULL) . ':');
 
 			if($this->hasMultipleFilter($filters)) {
@@ -119,7 +133,7 @@
 			$doc_parts[] = self::processDocumentationCode($code);
 		}
 
-		public function addDefaultFiltersDoc(array &$doc_parts, $name, $section, $filters) {
+		public function addDefaultFiltersDoc(array &$doc_parts, $rootelement, $section, $filters) {
 			if(is_array($filters) && !empty($filters)) {
 				$doc_parts[] = new XMLElement('p', __('The following is an example of what is returned if any options return an error:'));
 
@@ -128,12 +142,12 @@
 				$code->appendChild(new XMLElement('filter', NULL, array('name' => 'admin-only', 'status' => 'failed')));
 				$code->appendChild(new XMLElement('filter', __('Recipient not found'), array('name' => 'send-email', 'status' => 'failed')));
 				$code->setValue('...', false);
+	
+				$doc_parts[] = self::processDocumentationCode($code);
 			}
-
-			$doc_parts[] = self::processDocumentationCode($code);
 		}
 
-		public function addFrontendMarkupDoc(array &$doc_parts, $name, $section, $filters) {
+		public function addFrontendMarkupDoc(array &$doc_parts, $rootelement, $section, $filters) {
 			$doc_parts[] = new XMLElement('h3', __('Example Front-end Form Markup'));
 			$doc_parts[] = new XMLElement('p', __('This is an example of the form markup you can use on your frontend:'));
 			$container = new XMLElement('form', NULL, array('method' => 'post', 'action' => 'post', 'enctype' => 'multipart/form-data'));
@@ -165,7 +179,7 @@
 			$doc_parts[] = self::processDocumentationCode(Widget::Input('redirect', URL.'/success/', 'hidden'));
 		}
 
-		public function addSendMailFilterDoc(array &$doc_parts, $name, $section, $filters) {
+		public function addSendMailFilterDoc(array &$doc_parts, $rootelement, $section, $filters) {
 			if($this->hasSendEmailFilter($filters)) {
 				$doc_parts[] = new XMLElement('h3', __('Send Notification Email'));
 				$doc_parts[] = new XMLElement('p',
