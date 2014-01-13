@@ -78,6 +78,12 @@ module.exports = function (grunt) {
 
             scripts : {
 
+                options: {
+                
+                    preserveComments: 'some'
+
+                },
+
                 files : {
 
                     'symphony/assets/js/symphony.min.js' : [

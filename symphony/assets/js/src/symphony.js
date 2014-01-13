@@ -1,3 +1,7 @@
+/*! 
+ * Symphony 2.4, http://getsymphony.com, MIT license
+ */
+
 /**
  * @package assets
  */
