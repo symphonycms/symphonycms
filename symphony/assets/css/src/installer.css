@@ -5,7 +5,6 @@
 
 body {
 	padding: 8rem 10rem 5rem 5rem;
-	font: 68.75%/1.5 "Lucida Grande", Verdana, sans-serif;
 	cursor: default;
 }
 
@@ -34,7 +33,7 @@ h1 em {
 	color: rgba(0, 0, 0, 0.4);
 	text-align: right;
 	font-style: normal;
-	font-size: 73.33%;
+	font-size: 1rem;
 }
 
 h1 + ul {
