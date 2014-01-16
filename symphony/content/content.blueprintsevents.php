@@ -294,22 +294,19 @@
 			}
 
 			// If we are editing an event, it assumed that the event has documentation
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('id', 'event-documentation');
+			$fieldset->setAttribute('class', 'settings');
 			if($isEditing && method_exists($existing, 'documentation')) {
-				
-				// Documentation
-				$fieldset = new XMLElement('fieldset');
-				$fieldset->setAttribute('id', 'event-documentation');
-				$fieldset->setAttribute('class', 'settings');
-
 				$doc = $existing->documentation();
 				if($doc) {
 					$fieldset->setValue(
 						'<legend>' . __('Documentation') . '</legend>' . PHP_EOL .
-						General::tabsToSpaces(is_object($doc) ? $doc->generate(true) : $doc, 2)
+						General::tabsToSpaces(is_object($doc) ? $doc->generate(true) : $doc, 4)
 					);
-					$this->Form->appendChild($fieldset);
 				}
 			}
+			$this->Form->appendChild($fieldset);
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
