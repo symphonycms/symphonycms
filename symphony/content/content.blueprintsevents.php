@@ -302,7 +302,7 @@
 				if($doc) {
 					$fieldset->setValue(
 						'<legend>' . __('Documentation') . '</legend>' . PHP_EOL .
-						General::tabsToSpaces(is_object($doc) ? $doc->generate(true) : $doc, 4)
+						General::tabsToSpaces(is_object($doc) ? $doc->generate(true, 4) : $doc)
 					);
 				}
 			}
@@ -460,129 +460,21 @@
 					$this->__injectFilters($eventShell, $filters);
 
 				// Add Documentation
+					require_once(CONTENT . '/content.ajaxeventdocumentation.php');
+					$ajaxEventDoc = new contentAjaxEventDocumentation();
 					$documentation = NULL;
-					$documentation_parts = array();
-					$documentation_parts[] = new XMLElement('h3', __('Success and Failure XML Examples'));
-					$documentation_parts[] = new XMLElement('p', __('When saved successfully, the following XML will be returned:'));
+					$doc_parts = array();
 
-					if($multiple) {
-						$code = new XMLElement($rootelement);
-						$entry = new XMLElement('entry', NULL, array('index' => '0', 'result' => 'success' , 'type' => 'create | edit'));
-						$entry->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
+					// Add Documentation (Success/Failure)
+					$this->addEntrySuccessDoc($doc_parts, $rootelement, $fields['source'], $filters);
+					$this->addEntryFailureDoc($doc_parts, $rootelement, $fields['source'], $filters);
 
-						$code->appendChild($entry);
-					}
+					// Filters
+					$this->addDefaultFiltersDoc($doc_parts, $rootelement, $fields['source'], $filters);
 
-					else {
-						$code = new XMLElement($rootelement, NULL, array('result' => 'success' , 'type' => 'create | edit'));
-						$code->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
-					}
-
-					$documentation_parts[] = self::processDocumentationCode($code);
-					$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? ' (<strong> ' . __('Notice that it is possible to get mixtures of success and failure messages when using the ‘Allow Multiple’ option') . '</strong>)' : NULL) . ':');
-
-					if($multiple) {
-						$code = new XMLElement($rootelement);
-
-						$entry = new XMLElement('entry', NULL, array('index' => '0', 'result' => 'error'));
-						$entry->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
-						$entry->appendChild(new XMLElement('field-name', NULL, array('type' => 'invalid | missing')));
-						$code->appendChild($entry);
-
-						$entry = new XMLElement('entry', NULL, array('index' => '1', 'result' => 'success' , 'type' => 'create | edit'));
-						$entry->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
-						$code->appendChild($entry);
-					}
-
-					else {
-						$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
-						$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
-						$code->appendChild(new XMLElement('field-name', NULL, array('type' => 'invalid | missing')));
-					}
-
-					$code->setValue('...', false);
-					$documentation_parts[] = self::processDocumentationCode($code);
-
-					if(is_array($filters) && !empty($filters)) {
-						$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any options return an error:'));
-
-						$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
-						$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
-						$code->appendChild(new XMLElement('filter', NULL, array('name' => 'admin-only', 'status' => 'failed')));
-						$code->appendChild(new XMLElement('filter', __('Recipient not found'), array('name' => 'send-email', 'status' => 'failed')));
-						$code->setValue('...', false);
-						$documentation_parts[] = self::processDocumentationCode($code);
-					}
-
-					$documentation_parts[] = new XMLElement('h3', __('Example Front-end Form Markup'));
-					$documentation_parts[] = new XMLElement('p', __('This is an example of the form markup you can use on your frontend:'));
-					$container = new XMLElement('form', NULL, array('method' => 'post', 'action' => '', 'enctype' => 'multipart/form-data'));
-					$container->appendChild(Widget::Input('MAX_FILE_SIZE', (string)min(ini_size_to_bytes(ini_get('upload_max_filesize')), Symphony::Configuration()->get('max_upload_size', 'admin')), 'hidden'));
-
-					if(is_numeric($fields['source'])) {
-						$section = SectionManager::fetch($fields['source']);
-						if($section instanceof Section) {
-							$section_fields = $section->fetchFields();
-							if(is_array($section_fields) && !empty($section_fields)) {
-								foreach($section_fields as $f) {
-									if ($f->getExampleFormMarkup() instanceof XMLElement) {
-										$container->appendChild($f->getExampleFormMarkup());
-									}
-								}
-							}
-						}
-					}
-
-					$container->appendChild(Widget::Input('action['.$rootelement.']', __('Submit'), 'submit'));
-					$code = $container->generate(true);
-
-					$documentation_parts[] = self::processDocumentationCode(($multiple ? str_replace('fields[', 'fields[0][', $code) : $code));
-
-					$documentation_parts[] = new XMLElement('p', __('To edit an existing entry, include the entry ID value of the entry in the form. This is best as a hidden field like so:'));
-					$documentation_parts[] = self::processDocumentationCode(Widget::Input('id' . ($multiple ? '[0]' : NULL), '23', 'hidden'));
-
-					$documentation_parts[] = new XMLElement('p', __('To redirect to a different location upon a successful save, include the redirect location in the form. This is best as a hidden field like so, where the value is the URL to redirect to:'));
-					$documentation_parts[] = self::processDocumentationCode(Widget::Input('redirect', URL.'/success/', 'hidden'));
-
-					if(in_array('send-email', $filters)) {
-						$documentation_parts[] = new XMLElement('h3', __('Send Notification Email'));
-
-						$documentation_parts[] = new XMLElement('p',
-							__('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient.')
-							. ' <strong>'
-							. __('It currently does not work with ‘Allow Multiple’')
-							. '</strong>. '
-							. __('The following are the recognised fields:')
-						);
-
-						$documentation_parts[] = self::processDocumentationCode(
-							'send-email[sender-email] // '.__('Optional').PHP_EOL.
-							'send-email[sender-name] // '.__('Optional').PHP_EOL.
-							'send-email[reply-to-email] // '.__('Optional').PHP_EOL.
-							'send-email[reply-to-name] // '.__('Optional').PHP_EOL.
-							'send-email[subject]'.PHP_EOL.
-							'send-email[body]'.PHP_EOL.
-							'send-email[recipient] // '.__('list of comma-separated author usernames.'));
-
-						$documentation_parts[] = new XMLElement('p', __('All of these fields can be set dynamically using the exact field name of another field in the form as shown below in the example form:'));
-
-						$documentation_parts[] = self::processDocumentationCode('<form action="" method="post">
-		<fieldset>
-			<label>'.__('Name').' <input type="text" name="fields[author]" value="" /></label>
-			<label>'.__('Email').' <input type="text" name="fields[email]" value="" /></label>
-			<label>'.__('Message').' <textarea name="fields[message]" rows="5" cols="21"></textarea></label>
-			<input name="send-email[sender-email]" value="fields[email]" type="hidden" />
-			<input name="send-email[sender-name]" value="fields[author]" type="hidden" />
-			<input name="send-email[reply-to-email]" value="fields[email]" type="hidden" />
-			<input name="send-email[reply-to-name]" value="fields[author]" type="hidden" />
-			<input name="send-email[subject]" value="You are being contacted" type="hidden" />
-			<input name="send-email[body]" value="fields[message]" type="hidden" />
-			<input name="send-email[recipient]" value="fred" type="hidden" />
-			<input id="submit" type="submit" name="action[save-contact-form]" value="Send" />
-		</fieldset>
-	</form>');
-
-					}
+					// Frontend Markup
+					$this->addFrontendMarkupDoc($doc_parts, $rootelement, $fields['source'], $filters);
+					$this->addSendMailFilterDoc($doc_parts, $rootelement, $fields['source'], $filters);
 
 					/**
 					 * Allows adding documentation for new filters. A reference to the $documentation
@@ -595,16 +487,16 @@
 					 * @param array $documentation
 					 *  An array of all the documentation XMLElements, passed by reference
 					 */
-					Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $this->_context[0] . '/', array(
+					Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $rootelement . '/', array(
 						'selected' => $filters,
-						'documentation' => &$documentation_parts
+						'documentation' => &$doc_parts
 					));
 
-					$documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $documentation_parts));
+					$documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $doc_parts));
 					$documentation = str_replace('\'', '\\\'', $documentation);
 
 					$eventShell = str_replace('<!-- CLASS EXTENDS -->', $extends, $eventShell);
-					$eventShell = str_replace('<!-- DOCUMENTATION -->', General::tabsToSpaces($documentation, 2), $eventShell);
+					$eventShell = str_replace('<!-- DOCUMENTATION -->', General::tabsToSpaces($documentation, 4), $eventShell);
 				}
 
 				$eventShell = str_replace('<!-- ROOT ELEMENT -->', $rootelement, $eventShell);
@@ -727,10 +619,6 @@
 
 				}
 			}
-		}
-
-		public static function processDocumentationCode($code) {
-			return new XMLElement('pre', '<code>' . str_replace('<', '&lt;', str_replace('&', '&amp;', trim((is_object($code) ? $code->generate(true) : $code)))) . '</code>', array('class' => 'XML'));
 		}
 
 		public function __injectFilters(&$shell, $elements) {
