@@ -535,19 +535,24 @@ Symphony.View.add('/symphony/blueprints/events/:action:/:name:/:status:', functi
 
 	// Update documentation
 	Symphony.Elements.contents.on('update.admin', function updateEventDocumentation() {
-		$.ajax({
-			type: 'POST',
-			data: { 
-				'section': context.val(),
-				'filters': filters.serializeArray(),
-				'name': name.val()
-			},
-			dataType: 'html',
-			url: Symphony.Context.get('root') + '/symphony/ajax/eventdocumentation/',
-			success: function(documentation) {
-				$('#event-documentation').replaceWith(documentation);
-			}
-		});
+		if(name.val() == '') {
+			$('#event-documentation').empty();
+		}
+		else {
+			$.ajax({
+				type: 'POST',
+				data: { 
+					'section': context.val(),
+					'filters': filters.serializeArray(),
+					'name': name.val()
+				},
+				dataType: 'html',
+				url: Symphony.Context.get('root') + '/symphony/ajax/eventdocumentation/',
+				success: function(documentation) {
+					$('#event-documentation').replaceWith(documentation);
+				}
+			});
+		}
 	});
 });
 
