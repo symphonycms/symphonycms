@@ -466,15 +466,15 @@
 					$doc_parts = array();
 
 					// Add Documentation (Success/Failure)
-					$this->addEntrySuccessDoc($doc_parts, $rootelement, $fields['source'], $filters);
-					$this->addEntryFailureDoc($doc_parts, $rootelement, $fields['source'], $filters);
+					$ajaxEventDoc->addEntrySuccessDoc($doc_parts, $rootelement, $fields['source'], $filters);
+					$ajaxEventDoc->addEntryFailureDoc($doc_parts, $rootelement, $fields['source'], $filters);
 
 					// Filters
-					$this->addDefaultFiltersDoc($doc_parts, $rootelement, $fields['source'], $filters);
+					$ajaxEventDoc->addDefaultFiltersDoc($doc_parts, $rootelement, $fields['source'], $filters);
 
 					// Frontend Markup
-					$this->addFrontendMarkupDoc($doc_parts, $rootelement, $fields['source'], $filters);
-					$this->addSendMailFilterDoc($doc_parts, $rootelement, $fields['source'], $filters);
+					$ajaxEventDoc->addFrontendMarkupDoc($doc_parts, $rootelement, $fields['source'], $filters);
+					$ajaxEventDoc->addSendMailFilterDoc($doc_parts, $rootelement, $fields['source'], $filters);
 
 					/**
 					 * Allows adding documentation for new filters. A reference to the $documentation
