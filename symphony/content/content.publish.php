@@ -1190,10 +1190,9 @@
 		 */
 		private function __wrapFieldWithDiv(Field $field, Entry $entry){
 			$is_hidden = $this->isFieldHidden($field);
-			$data = $entry->getData($field->get('id'));
 			$div = new XMLElement('div', NULL, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '').($is_hidden == true ? ' irrelevant' : '')));
 			$field->displayPublishPanel(
-				$div, $data,
+				$div, $entry->getData($field->get('id')),
 				(isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : NULL),
 				null, null, (is_numeric($entry->get('id')) ? $entry->get('id') : NULL)
 			);
