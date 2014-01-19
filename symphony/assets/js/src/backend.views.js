@@ -433,7 +433,7 @@ Symphony.View.add('/symphony/blueprints/datasources/:action:/:id:/:status:', fun
 					field = param.attr('data-handle');
 
 				// Set parameter
-				param.text('$-' + handle + '.' + field);
+				param.text('$ds-' + handle + '.' + field);
 			});
 		}
 
