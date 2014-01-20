@@ -272,6 +272,7 @@
 					$author->getFullName(),
 					array(
 						'id' => (string)$author->get('id'),
+						'handle' => Lang::createHandle($author->getFullName()),
 						'username' => General::sanitize($author->get('username'))
 					)
 				));
