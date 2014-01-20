@@ -37,7 +37,8 @@ div.drawer.horizontal .contents:after {
 div.drawer.vertical-left,
 div.drawer.vertical-right {
 	position: absolute;
-	overflow: auto;
+	overflow: scroll;
+	-webkit-overflow-scrolling: touch;
 	width: 30rem;
 	top: 0;
 	bottom: 0;
