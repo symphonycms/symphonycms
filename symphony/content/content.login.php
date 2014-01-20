@@ -26,7 +26,7 @@
 
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.min.css', 'screen', null, false);
 
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Login'), __('Symphony'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Login'), Symphony::Configuration()->get('sitename', 'general'))));
 
 			$this->Body->setAttribute('id', 'login');
 
@@ -51,7 +51,7 @@
 
 			$this->Form = Widget::Form(SYMPHONY_URL . '/login/', 'post');
 			$this->Form->setAttribute('class', 'frame');
-			$this->Form->appendChild(new XMLElement('h1', __('Symphony')));
+			$this->Form->appendChild(new XMLElement('h1', Symphony::Configuration()->get('sitename', 'general')));
 
 			$fieldset = new XMLElement('fieldset');
 
