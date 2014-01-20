@@ -248,3 +248,19 @@ label.inline-help > i {
 .centered {
 	text-align: center;
 }
+
+.resource-info {
+	position: relative;
+}
+
+.resource-info::after {
+	content: "";
+	background: url(../img/lock.svg) 0 0 no-repeat;
+	background-size: 100%;
+	display: block;
+	height: 1.1rem;
+	width: 0.8rem;
+	position: absolute;
+	top: 0.6rem;
+	right: -1.3rem;
+}
