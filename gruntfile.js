@@ -116,5 +116,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
     grunt.registerTask('default', ['autoprefixer', 'csso', 'uglify']);
+    grunt.registerTask('css', ['autoprefixer', 'csso']);
     grunt.registerTask('js', ['uglify']);
 };
