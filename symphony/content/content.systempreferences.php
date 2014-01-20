@@ -115,6 +115,11 @@
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
+			
+			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array(
+				'id' => 'version'
+			));
+			$div->appendChild($version);
 
 			$attr = array('accesskey' => 's');
 			if(!$bIsWritable) $attr['disabled'] = 'disabled';
