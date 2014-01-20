@@ -214,7 +214,7 @@
 	-------------------------------------------------------------------------*/
 
 		var getHeight = function() {
-			var height = Math.max(window.innerHeight - contents[0].offsetTop, contents[0].clientHeight);
+			var height = Math.max(window.innerHeight - contents[0].offsetTop - 1, contents[0].clientHeight);
 
 			return height;
 		};
