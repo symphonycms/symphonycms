@@ -121,11 +121,6 @@
 					'sortable' => false,
 				),
 				array(
-					'label' => __('Release Date'),
-					'sortable' => true,
-					'handle' => 'release-date'
-				),
-				array(
 					'label' => __('Author'),
 					'sortable' => true,
 					'handle' => 'author'
@@ -151,7 +146,8 @@
 						Widget::Anchor(
 							$r['name'],
 							SYMPHONY_URL . $_REQUEST['symphony-page'] .  $action . '/' . $r['handle'] . '/',
-							$r['handle']
+							$r['handle'],
+							'resource-' . $action
 						)
 					);
 
@@ -199,11 +195,6 @@
 						$pagelinks = Widget::TableData($pages, 'pages');
 					}
 
-					// Release date
-					$releasedate = Widget::TableData(Lang::localizeDate(
-						DateTimeObj::format($r['release-date'], __SYM_DATETIME_FORMAT__)
-					));
-
 					// Authors
 					$author = $r['author']['name'];
 					if($author) {
@@ -218,7 +209,7 @@
 					$author = Widget::TableData($author);
 					$author->appendChild(Widget::Input('items[' . $r['handle'] . ']', null, 'checkbox'));
 
-					$aTableBody[] = Widget::TableRow(array($name, $section, $pagelinks, $releasedate, $author));
+					$aTableBody[] = Widget::TableRow(array($name, $section, $pagelinks, $author));
 				}
 			}
 
