@@ -153,6 +153,7 @@ code,
 pre {
 	margin-bottom: 1.5rem;
 	color: #474742;
+	background: #f4f4f4;
 	white-space: normal;
 	font: inherit;
 }
@@ -160,7 +161,7 @@ pre {
 pre code {
 	display: block;
 	white-space: pre;
-	border: 0.1rem dashed #a1a19a;
+	border: 0.1rem solid #d5d6d0;
 	padding: 0.5rem 0.7rem;
 	overflow: auto;
 }
