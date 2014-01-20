@@ -680,6 +680,10 @@ div.field-checkbox:first-child {
 	float: left;
 }
 
+.actions #version {
+	margin: 0.5rem 0 0;
+}
+
 #fields p.help.toggle a {
 	color: #808080;
 	font-weight: normal;

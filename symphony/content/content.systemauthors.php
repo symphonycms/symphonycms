@@ -148,6 +148,11 @@
 			);
 
 			$this->Form->appendChild($table);
+			
+			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array(
+				'id' => 'version'
+			));
+			$this->Form->appendChild($version);
 
 			if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
 				$tableActions = new XMLElement('div');
