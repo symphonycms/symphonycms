@@ -132,17 +132,13 @@
 					$page_url = URL . '/' . PageManager::resolvePagePath($page['id']) . '/';
 					$page_edit_url = Administration::instance()->getCurrentPageURL() . 'edit/' . $page['id'] . '/';
 					$page_template = PageManager::createFilePath($page['path'], $page['handle']);
-					$page_template_url = Administration::instance()->getCurrentPageURL() . 'template/' . $page_template . '/';
 
 					$col_title = Widget::TableData(Widget::Anchor(
 						$page_title, $page_edit_url, $page['handle']
 					));
 					$col_title->appendChild(Widget::Input("items[{$page['id']}]", null, 'checkbox'));
 
-					$col_template = Widget::TableData(Widget::Anchor(
-						$page_template . '.xsl',
-						$page_template_url
-					));
+					$col_template = Widget::TableData($page_template . '.xsl');
 
 					$col_url = Widget::TableData(Widget::Anchor($page_url, $page_url));
 
@@ -451,8 +447,7 @@
 				}
 
 				$this->appendSubheading($title, array(
-					Widget::Anchor(__('View Page'), $page_url, __('View Page on Frontend'), 'button', NULL, array('target' => '_blank', 'accesskey' => 'v')),
-					Widget::Anchor(__('Edit Page Template'), SYMPHONY_URL . '/blueprints/pages/template/' . $template_name, __('Edit Page Template'), 'button', NULL, array('accesskey' => 't'))
+					Widget::Anchor(__('View Page'), $page_url, __('View Page on Frontend'), 'button', NULL, array('target' => '_blank', 'accesskey' => 'v'))
 				));
 			}
 			else {
