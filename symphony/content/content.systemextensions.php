@@ -35,11 +35,11 @@
 					'handle' => 'name'
 				),
 				array(
-					'label' => __('Installed Version'),
+					'label' => __('Version'),
 					'sortable' => false,
 				),
 				array(
-					'label' => __('Enabled'),
+					'label' => __('Status'),
 					'sortable' => false,
 				),
 				array(
@@ -66,26 +66,36 @@
 
 					$td1 = Widget::TableData($about['name']);
 					$installed_version = Symphony::ExtensionManager()->fetchInstalledVersion($name);
-					$td2 = Widget::TableData(is_null($installed_version) ? __('Not Installed') : $installed_version);
+
+					// Version
+					if(is_null($installed_version)) {
+						$td2 = Widget::TableData($about['version']);
+					}
+					elseif($installed_version != $about['version']) {
+						$td2 = Widget::TableData($installed_version . '<i> → ' . $about['version'] . '</i>');
+					}
+					else {
+						$td2 = Widget::TableData($installed_version);
+					}
 
 					// If the extension is using the new `extension.meta.xml` format, check the
 					// compatibility of the extension. This won't prevent a user from installing
 					// it, but it will let them know that it requires a version of Symphony greater
 					// then what they have.
 					if(in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
-						$td3 = Widget::TableData(__('Enable to install %s', array($about['version'])));
+						$td3 = Widget::TableData(__('Not installed'), 'extension-can-install');
 					}
 					if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
 						$td3 = Widget::TableData(__('Requires Symphony %s', array($about['required_version'])));
 					}
 					if(in_array(EXTENSION_ENABLED, $about['status'])) {
-						$td3 = Widget::TableData(__('Yes'));
+						$td3 = Widget::TableData(__('Enabled'));
 					}
 					if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
 						if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status']))
-							$td3 = Widget::TableData(__('New version %1$s, Requires Symphony %2$s', array($about['version'], $about['required_version'])));
+							$td3 = Widget::TableData(__('Incompatible, requires Symphony %s', array($about['required_version'])));
 						else
-							$td3 = Widget::TableData(__('Enable to update to %s', array($about['version'])));
+							$td3 = Widget::TableData(__('Update available'), 'extension-can-update');
 					}
 					if(in_array(EXTENSION_DISABLED, $about['status'])) {
 						$td3 = Widget::TableData(__('Disabled'));
@@ -147,7 +157,7 @@
 
 			$options = array(
 				array(NULL, false, __('With Selected...')),
-				array('enable', false, __('Enable/Install')),
+				array('enable', false, __('Enable')),
 				array('disable', false, __('Disable')),
 				array('uninstall', false, __('Uninstall'), 'confirm', null, array(
 					'data-message' => __('Are you sure you want to uninstall the selected extensions?')
