@@ -69,7 +69,14 @@
 			$this->_settings[$field] = $value;
 		}
 
+		/**
+		 * @depracted Will be removed in Symphony 2.5, use `getToggleStates()` instead
+		 */
 		public function findAllTags(){
+			$this->getToggleStates();
+		}
+
+		public function getToggleStates(){
 			if(!is_array($this->get('pre_populate_source'))) return;
 
 			$values = array();
@@ -179,7 +186,7 @@
 
 			if($this->get('pre_populate_source') != NULL){
 
-				$existing_tags = $this->findAllTags();
+				$existing_tags = $this->getToggleStates();
 
 				if(is_array($existing_tags) && !empty($existing_tags)){
 					$taglist = new XMLElement('ul');
@@ -400,7 +407,7 @@
 
 			if($this->get('pre_populate_source') != NULL){
 
-				$existing_tags = $this->findAllTags();
+				$existing_tags = $this->getToggleStates();
 
 				if(is_array($existing_tags) && !empty($existing_tags)){
 					$taglist = new XMLElement('ul');
