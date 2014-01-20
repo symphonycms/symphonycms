@@ -18,10 +18,6 @@
 			<item link="/blueprints/events/new/" name="Event New" visible="no" />
 			<item link="/blueprints/events/edit/" name="Event Edit" visible="no" />
 			<item link="/blueprints/events/info/" name="Event Info" visible="no" />
-
-			<item link="/blueprints/utilities/" name="Utilities" />
-			<item link="/blueprints/utilities/new/" name="Utility New" visible="no" />
-			<item link="/blueprints/utilities/edit/" name="Utility Edit" visible="no" />
 		</children>
 	</group>
 
