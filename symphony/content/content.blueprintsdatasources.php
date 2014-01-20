@@ -1095,9 +1095,24 @@
 					$fieldset->setAttribute('class', 'settings');
 					$this->Form->appendChild($fieldset);
 				}
-
 			}
 
+			// Display source
+			$file = DatasourceManager::__getClassPath($this->_context[1]) . '/data.' . $this->_context[1] . '.php';
+
+			if(file_exists($file)) {
+				$fieldset = new XMLElement('fieldset');
+				$fieldset->setAttribute('class', 'settings');
+				$fieldset->appendChild(new XMLElement('legend', __('Source')));
+		
+				$source = file_get_contents($file);
+				$code = new XMLElement('code', htmlspecialchars($source));
+				$pre = new XMLElement('pre');
+				$pre->appendChild($code);
+				
+				$fieldset->appendChild($pre);
+				$this->Form->appendChild($fieldset);
+			}
 		}
 
 		public function __actionIndex($resource_type){
