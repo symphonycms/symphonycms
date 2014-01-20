@@ -29,7 +29,7 @@ Visit [the Symphony website](http://getsymphony.com/), [the forum](http://getsym
 
 ## Server requirements
 
-- PHP 5.2 or above (PHP 5.3 recommended)
+- PHP 5.3 or above
 - PHP’s LibXML module, with the XSLT extension enabled (`--with-xsl`)
 - MySQL 5.0 or above
 - A webserver (known to be used with Apache, Litespeed, Nginx and Hiawatha)

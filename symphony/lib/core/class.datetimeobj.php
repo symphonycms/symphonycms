@@ -409,20 +409,22 @@
 		 */
 		public static function getDateFormats(){
 			return array(
-				'Y/m/d',	// e. g. 2011/01/20
-				'm/d/Y',	// e. g. 01/20/2011
-				'm/d/y',	// e. g. 10/20/11
-				'Y-m-d',	// e. g. 2011-01-20
-				'm-d-Y',	// e. g. 01-20-2011
-				'm-d-y',	// e. g. 01-20-11
-				'd.m.Y',	// e. g. 20.01.2011
-				'j.n.Y',	// e. g. 20.1.2011 - no leading zeros
-				'd.m.y',	// e. g. 20.01.11
-				'j.n.y',	// e. g. 20.1.11 - no leading zeros
-				'd F Y',	// e. g. 20 January 2011
-				'd M Y',	// e. g. 20 Jan 2011
-				'j. F Y',	// e. g. 20. January 2011 - no leading zeros
-				'j. M. Y',	// e. g. 20. Jan. 2011 - no leading zeros
+				'Y/m/d',	// e. g. 2014/01/02
+				'd/m/Y',	// e. g. 01/02/2014
+				'm/d/Y',	// e. g. 01/02/2014
+				'm/d/y',	// e. g. 01/02/14
+				'Y-m-d',	// e. g. 2014-01-02
+				'm-d-Y',	// e. g. 01-02-2014
+				'm-d-y',	// e. g. 01-02-14
+				'd.m.Y',	// e. g. 02.01.2014
+				'j.n.Y',	// e. g. 2.1.2014 - no leading zeros
+				'j.n.y',	// e. g. 2.1.14 - no leading zeros
+				'd.m.Y',	// e. g. 02.01.2014
+				'd.m.y',	// e. g. 02.01.14
+				'd F Y',	// e. g. 02 January 2014
+				'd M Y',	// e. g. 02 Jan 2014
+				'j. F Y',	// e. g. 2. January 2014 - no leading zeros
+				'j. M. Y',	// e. g. 2. Jan. 2014 - no leading zeros
 			);
 		}
 
