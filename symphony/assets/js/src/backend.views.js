@@ -583,4 +583,38 @@ Symphony.View.add('/symphony/system/authors/:action:/:id:/:status:', function(ac
 	}
 });
 
+/*--------------------------------------------------------------------------
+	System - Extensions
+--------------------------------------------------------------------------*/
+
+Symphony.View.add('/symphony/system/extensions/:context*:', function() {
+	Symphony.Language.add({
+		'Enable': false,
+		'Install': false,
+		'Update': false
+	});
+
+	// Update controls contextually
+	Symphony.Elements.contents.find('.actions select').on('click.admin focus.admin', function(event) {
+		var selected = Symphony.Elements.contents.find('tr.selected'),
+			canUpdate = selected.find('.extension-can-update').length,
+			canInstall = selected.find('.extension-can-install').length,
+			canEnable = selected.length - canUpdate - canInstall,
+			control = Symphony.Elements.contents.find('.actions option[value="enable"]'),
+			label = [];
+
+		if(canEnable) {
+			label.push(Symphony.Language.get('Enable'));
+		}
+		if(canUpdate) {
+			label.push(Symphony.Language.get('Update'));
+		}
+		if(canInstall) {
+			label.push(Symphony.Language.get('Install'));
+		}
+
+		control.text(label.join('/'));
+	});
+});
+
 })(window.jQuery);
