@@ -201,6 +201,35 @@
 				$fieldset->appendChild($group);
 				$this->Form->appendChild($fieldset);
 
+				// Connections
+				$fieldset = new XMLElement('fieldset');
+				$fieldset->setAttribute('class', 'settings');
+				$fieldset->appendChild(new XMLElement('legend', __('Connections')));
+				$p = new XMLElement('p', __('The event will only be available in connected pages.'));
+				$p->setAttribute('class', 'help');
+				$fieldset->appendChild($p);
+
+				$div = new XMLElement('div');
+				$label = Widget::Label(__('Pages'));
+
+				$pages = PageManager::fetch();
+				$connections = ResourceManager::getAttachedPages(RESOURCE_TYPE_EVENT, General::sanitize($fields['name']));
+				$selected = array();
+				foreach($connections as $conncection) {
+					$selected[] = $conncection['id'];
+				}
+
+				$options = array();
+				foreach($pages as $page) {
+					$options[] = array($page['id'], in_array($page['id'], $selected), $page['title']);
+				}
+
+				$label->appendChild(Widget::Select('fields[connections]', $options, array('multiple' => 'multiple')));
+				$div->appendChild($label);
+
+				$fieldset->appendChild($div);
+				$this->Form->appendChild($fieldset);
+
 				// Filters
 				$fieldset = new XMLElement('fieldset');
 				$fieldset->setAttribute('class', 'settings pickable');
