@@ -58,7 +58,7 @@
 
 	/**
 	 * The MySQL class acts as a wrapper for connecting to the Database
-	 * in Symphony. It utilises mysql_* functions in PHP to complete the usual
+	 * in Symphony. It utilises mysqli_* functions in PHP to complete the usual
 	 * querying. As well as the normal set of insert, update, delete and query
 	 * functions, some convenience functions are provided to return results
 	 * in different ways. Symphony uses a prefix to namespace it's tables in a
@@ -116,7 +116,7 @@
 		private static $_connection = array();
 
 		/**
-		 * The resource of the last result returned from mysql_query
+		 * The resource of the last result returned from mysqli_query
 		 *
 		 * @var resource
 		 */
@@ -239,7 +239,7 @@
 		 * @return boolean
 		 */
 		public function isConnected(){
-			return (isset(MySQL::$_connection['id']) && is_resource(MySQL::$_connection['id']));
+			return (isset(MySQL::$_connection['id']) && !is_null(MySQL::$_connection['id']));
 		}
 
 		/**
@@ -249,7 +249,7 @@
 		 * @return boolean
 		 */
 		public function close(){
-			if($this->isConnected()) return mysql_close(MySQL::$_connection['id']);
+			if($this->isConnected()) return mysqli_close(MySQL::$_connection['id']);
 		}
 
 		/**
@@ -266,7 +266,7 @@
 		 *  Defaults to 3306.
 		 * @return boolean
 		 */
-		public function connect($host = null, $user = null, $password = null, $port ='3306', $database = null){
+		public function connect($host = null, $user = null, $password = null, $port ='3306', $database = null) {
 			MySQL::$_connection = array(
 				'host' => $host,
 				'user' => $user,
@@ -276,16 +276,16 @@
 			);
 
 			try {
-				MySQL::$_connection['id'] = mysql_connect(
-					MySQL::$_connection['host'] . ":" . MySQL::$_connection['port'], MySQL::$_connection['user'], MySQL::$_connection['pass']
+				MySQL::$_connection['id'] = mysqli_connect(
+					MySQL::$_connection['host'], MySQL::$_connection['user'], MySQL::$_connection['pass'], MySQL::$_connection['database'], MySQL::$_connection['port']
 				);
 
-				if(!$this->isConnected() || (!is_null($database) && !mysql_select_db(MySQL::$_connection['database'], MySQL::$_connection['id']))) {
-					$this->__error();
+				if(!$this->isConnected()) {
+					$this->__error('connect');
 				}
 			}
 			catch (Exception $ex) {
-				$this->__error();
+				$this->__error('connect');
 			}
 
 			return true;
@@ -304,28 +304,6 @@
 		}
 
 		/**
-		 * This function selects a MySQL database. Only used by installation
-		 * and must exists for compatibility reasons. But might be removed
-		 * in future versions. Not recommended its usage by developers.
-		 *
-		 * @link http://au2.php.net/manual/en/function.mysql-select-db.php
-		 * @param string $db
-		 *  The name of the database that is to be selected, defaults to null.
-		 * @return boolean
-		 */
-		public function select($db=NULL){
-			if ($db) MySQL::$_connection['database'] = $db;
-
-			if (!mysql_select_db(MySQL::$_connection['database'], MySQL::$_connection['id'])) {
-				$this->__error();
-				MySQL::$_connection['database'] = null;
-				return false;
-			}
-
-			return true;
-		}
-
-		/**
 		 * This will set the character encoding of the connection for sending and
 		 * receiving data. This function will run every time the database class
 		 * is being initialized. If no character encoding is provided, UTF-8
@@ -336,7 +314,7 @@
 		 *  The character encoding to use, by default this 'utf8'
 		 */
 		public function setCharacterEncoding($set='utf8'){
-			mysql_set_charset($set, MySQL::$_connection['id']);
+			mysqli_set_charset(MySQL::$_connection['id'], $set);
 		}
 
 		/**
@@ -369,9 +347,9 @@
 		}
 
 		/**
-		 * This function will clean a string using the `mysql_real_escape_string` function
+		 * This function will clean a string using the `mysqli_real_escape_string` function
 		 * taking into account the current database character encoding. Note that this
-		 * function does not encode _ or %. If `mysql_real_escape_string` doesn't exist,
+		 * function does not encode _ or %. If `mysqli_real_escape_string` doesn't exist,
 		 * `addslashes` will be used as a backup option
 		 *
 		 * @param string $value
@@ -380,9 +358,8 @@
 		 *  The escaped SQL string
 		 */
 		public static function cleanValue($value) {
-			if (function_exists('mysql_real_escape_string')) {
-				return mysql_real_escape_string($value);
-
+			if (function_exists('mysqli_real_escape_string')) {
+				return mysqli_real_escape_string(MySQL::$_connection['id'], $value);
 			} else {
 				return addslashes($value);
 			}
@@ -476,26 +453,26 @@
 			$this->flush();
 			$this->_lastQuery = $query;
 			$this->_lastQueryHash = $query_hash;
-			$this->_result = mysql_query($query, MySQL::$_connection['id']);
-			$this->_lastInsertID = mysql_insert_id(MySQL::$_connection['id']);
+			$this->_result = mysqli_query(MySQL::$_connection['id'], $query);
+			$this->_lastInsertID = mysqli_insert_id(MySQL::$_connection['id']);
 			self::$_query_count++;
 
-			if(mysql_error()){
+			if(mysqli_error(MySQL::$_connection['id'])){
 				$this->__error();
 			}
-			else if(is_resource($this->_result)){
+			else if(($this->_result instanceof mysqli_result)){
 				if($type == "ASSOC") {
-					while ($row = mysql_fetch_assoc($this->_result)){
+					while ($row = mysqli_fetch_assoc($this->_result)){
 						$this->_lastResult[] = $row;
 					}
 				}
 				else {
-					while ($row = mysql_fetch_object($this->_result)){
+					while ($row = mysqli_fetch_object($this->_result)){
 						$this->_lastResult[] = $row;
 					}
 				}
 
-				mysql_free_result($this->_result);
+				mysqli_free_result($this->_result);
 			}
 
 			$stop = precision_timer('stop', $start);
@@ -816,10 +793,19 @@
 		 *
 		 * @uses QueryExecutionError
 		 * @throws DatabaseException
+		 * @param string $type
+		 *  Accepts one parameter, 'connect', which will return the correct
+		 *  error codes when the connection sequence fails
 		 */
-		private function __error() {
-			$msg = mysql_error();
-			$errornum = mysql_errno();
+		private function __error($type = null) {
+			if($type == 'connect') {
+				$msg = mysqli_connect_error();
+				$errornum = mysqli_connect_errno();
+			}
+			else {
+				$msg = mysqli_error(MySQL::$_connection['id']);
+				$errornum = mysqli_errno(MySQL::$_connection['id']);
+			}
 
 			/**
 			 * After a query execution has failed this delegate will provide the query,
