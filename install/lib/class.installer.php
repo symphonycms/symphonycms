@@ -254,7 +254,8 @@
 					$fields['database']['host'],
 					$fields['database']['user'],
 					$fields['database']['password'],
-					$fields['database']['port']
+					$fields['database']['port'],
+					$fields['database']['db']
 				);
 			}
 			catch(DatabaseException $e){
@@ -285,9 +286,6 @@
 				}
 				// Check the database credentials
 				else if(Symphony::Database()->isConnected()) {
-					// Looking for the given database name
-					Symphony::Database()->select($fields['database']['db']);
-
 					// Incorrect MySQL version
 					$version = Symphony::Database()->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
 					if(version_compare($version, '5.0', '<')){
