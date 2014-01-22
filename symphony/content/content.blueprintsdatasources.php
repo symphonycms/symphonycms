@@ -295,35 +295,6 @@
 			$fieldset->appendChild($group);
 			$this->Form->appendChild($fieldset);
 
-			// Connections
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Connections')));
-			$p = new XMLElement('p', __('The data will only be available in connected pages.'));
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-
-			$div = new XMLElement('div');
-			$label = Widget::Label(__('Pages'));
-
-			$pages = PageManager::fetch();
-			$connections = ResourceManager::getAttachedPages(RESOURCE_TYPE_DS, General::sanitize($fields['name']));
-			$selected = array();
-			foreach($connections as $conncection) {
-				$selected[] = $conncection['id'];
-			}
-
-			$options = array();
-			foreach($pages as $page) {
-				$options[] = array($page['id'], in_array($page['id'], $selected), $page['title']);
-			}
-
-			$label->appendChild(Widget::Select('fields[connections]', $options, array('multiple' => 'multiple')));
-			$div->appendChild($label);
-
-			$fieldset->appendChild($div);
-			$this->Form->appendChild($fieldset);
-
 			// Conditions
 			$fieldset = new XMLElement('fieldset');
 			$this->setContext($fieldset, array('sections', 'system', 'custom-xml'));
@@ -1025,6 +996,37 @@
 			else $fieldset->appendChild($label);
 
 			$this->Form->appendChild($fieldset);
+			
+			// Connections
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Attach to Pages')));
+			$p = new XMLElement('p', __('The data will only be available on the selected pages.'));
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+
+			$div = new XMLElement('div');
+			$label = Widget::Label(__('Pages'));
+
+			$pages = PageManager::fetch();
+			$ds_handle = str_replace('-', '_', General::createHandle($fields['name']));
+			$connections = ResourceManager::getAttachedPages(RESOURCE_TYPE_DS, $ds_handle);
+			$selected = array();
+			foreach($connections as $connection) {
+				$selected[] = $connection['id'];
+			}
+
+			$options = array();
+			foreach($pages as $page) {
+				$options[] = array($page['id'], in_array($page['id'], $selected), $page['title']);
+			}
+
+			$label->appendChild(Widget::Select('fields[connections][]', $options, array('multiple' => 'multiple')));
+			$div->appendChild($label);
+
+			$fieldset->appendChild($div);
+			$this->Form->appendChild($fieldset);
+		
 
 		// Call the provided datasources to let them inject their filters
 		// @todo Ideally when a new Datasource is chosen an AJAX request will fire
@@ -1291,7 +1293,7 @@
 				$placeholder = '<!-- GRAB -->';
 				$source = $fields['source'];
 				$params = array(
-					'rootelement' => $rootelement,
+					'rootelement' => $rootelement
 				);
 
 				$about = array(
@@ -1535,10 +1537,15 @@
 						, Alert::ERROR
 					);
 				}
-				// Write Successful, add record to the database
+				// Write successful
 				else {
 
-					if($queueForDeletion){
+					// Attach this datasources to pages
+					$connections = $fields['connections'];
+					ResourceManager::setPages(RESOURCE_TYPE_DS, is_null($existing_handle) ? $classname : $existing_handle, $connections);
+
+					// If the datasource has been updated and the name changed, then adjust all the existing pages that have the old datasource name
+					if($queueForDeletion) {
 						General::deleteFile($queueForDeletion);
 
 						// Update pages that use this DS
