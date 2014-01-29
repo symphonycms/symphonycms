@@ -372,6 +372,10 @@
 		 * @return boolean
 		 */
 		public static function setPages($type, $r_handle, $pages = array()) {
+			if(!is_array($pages)) {
+				$pages = array();
+			}
+
 			// Get attached pages
 			$attached_pages = ResourceManager::getAttachedPages($type, $r_handle);
 			$currently_attached_pages = array();
