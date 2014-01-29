@@ -14,7 +14,7 @@
 	require_once(TOOLKIT . '/class.mutex.php');
 
 	Class CacheDatabase implements iCache {
-		
+
 		/**
 		 * An instance of the MySQL class to communicate with `tbl_cache`
 		 * which is where the cached data is stored.
@@ -22,7 +22,7 @@
 		 * @var MySQL
 		 */
 		private $Database;
-		
+
 		/**
 		 * The constructor for the Cacheable takes an instance of the
 		 * MySQL class and assigns it to `$this->Database`
@@ -34,7 +34,7 @@
 		public function __construct(MySQL $Database) {
 			$this->Database = $Database;
 		}
-		
+
 		/**
 		 * Returns the human readable name of this cache type. This is
 		 * displayed in the system preferences cache options.
@@ -55,7 +55,7 @@
 		 *  key being the setting name, value being, the value
 		 */
 		public function settings() {
-			
+
 		}
 
 		/**
