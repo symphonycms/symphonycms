@@ -62,7 +62,7 @@
 		public function write($hash, $data, $ttl = null) {
 			return $this->cacheProvider->write($hash, $data, $ttl);
 		}
-		
+
 		/**
 		 * Given the hash of a some data, check to see whether it exists in
 		 * `tbl_cache`. If no cached object is found, this function will return
@@ -78,8 +78,7 @@
 		public function read($hash) {
 			return $this->cacheProvider->read($hash);
 		}
-		
-		
+
 		/**
 		 * Given the hash of a cacheable object, remove it from `tbl_cache`
 		 * regardless of if it has expired or not. If no $hash is given,
@@ -93,11 +92,11 @@
 		public function delete($hash = null) {
 			return $this->cacheProvider->delete($hash);
 		}
-	
+
 	/*-------------------------------------------------------------------------
 		Utilities:
 	-------------------------------------------------------------------------*/
-	
+
 		/**
 		 * Given some data, this function will compress it using `gzcompress`
 		 * and then the result is run through `base64_encode` If this fails,
