@@ -255,7 +255,7 @@
 
 				foreach($providers as $providerClass => $provider) {
 					$p['options'][] = array(
-						$providerClass, ($fields['source'] == $providerClass), $provider
+						$providerClass, ($fields['source'] == $providerClass), $provider, null, null, array('data-context' => General::createHandle($provider))
 					);
 				}
 
