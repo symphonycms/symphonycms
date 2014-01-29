@@ -83,10 +83,6 @@
 			}
 			else{
 				foreach($authors as $a){
-
-					if(Administration::instance()->Author->isManager() && $a->isDeveloper()) {
-						continue;
-					}
 					// Setup each cell
 					if(
 						(Administration::instance()->Author->isDeveloper() || (Administration::instance()->Author->isManager() && !$a->isDeveloper()))
@@ -393,8 +389,23 @@
 			$fieldset->appendChild($legend);
 			$fieldset->appendChild($help);
 
-			// Password reset
-			if($this->_context[0] == 'edit' && (!Administration::instance()->Author->isDeveloper() || !Administration::instance()->Author->isManager() || $isOwner === true)) {
+			/*
+				Password reset rules:
+				- Primary account can edit all accounts.
+				- Developers can edit all developers, managers and authors, and their own.
+				- Managers can edit all Authors, and their own.
+				- Authors can edit their own.
+			*/
+			if($this->_context[0] == 'edit' && !(
+				// All accounts can edit their own
+				$isOwner
+				// Managers can edit all Authors, and their own.
+				|| (Administration::instance()->Author->isManager() && $author->isAuthor())
+				// Primary account can edit all accounts.
+				|| Administration::instance()->Author->isPrimaryAccount()
+				// Developers can edit all developers, managers and authors, and their own.
+				|| Administration::instance()->Author->isDeveloper() && $author->isPrimaryAccount() === false
+			)) {
 				$fieldset->setAttribute('class', 'three columns');
 
 				$label = Widget::Label(NULL, NULL, 'column');
@@ -613,7 +624,16 @@
 					$authenticated = true;
 				}
 				// Developers don't need to specify the old password, unless it's their own account
-				else if(Administration::instance()->Author->isDeveloper()){
+				else if(
+					// All accounts can edit their own
+					$isOwner
+						// Managers can edit all Authors, and their own.
+					|| (Administration::instance()->Author->isManager() && $this->_Author->isAuthor())
+						// Primary account can edit all accounts.
+					|| Administration::instance()->Author->isPrimaryAccount()
+						// Developers can edit all developers, managers and authors, and their own.
+					|| Administration::instance()->Author->isDeveloper() && $this->_Author->isPrimaryAccount() === false
+				) {
 					$authenticated = true;
 				}
 
