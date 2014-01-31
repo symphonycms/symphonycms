@@ -140,6 +140,19 @@
 			}
 			else {
 				foreach($resources as $r) {
+					$action = 'edit';
+					$status = null;
+					$locked = null;
+
+					// Locked resources
+					if(isset($r['can_parse']) && $r['can_parse'] !== true) {
+						$action = 'info';
+						$status = 'status-notice';
+						$locked = array(
+							'data-status' => ' — ' . __('read only')
+						);
+					}
+
 					// Resource name
 					$action = isset($r['can_parse']) && $r['can_parse'] === true ? 'edit' : 'info';
 					$name = Widget::TableData(
@@ -147,7 +160,9 @@
 							$r['name'],
 							SYMPHONY_URL . $_REQUEST['symphony-page'] .  $action . '/' . $r['handle'] . '/',
 							$r['handle'],
-							'resource-' . $action
+							'resource-' . $action,
+							null,
+							$locked
 						)
 					);
 
@@ -209,7 +224,7 @@
 					$author = Widget::TableData($author);
 					$author->appendChild(Widget::Input('items[' . $r['handle'] . ']', null, 'checkbox'));
 
-					$aTableBody[] = Widget::TableRow(array($name, $section, $pagelinks, $author));
+					$aTableBody[] = Widget::TableRow(array($name, $section, $pagelinks, $author), $status);
 				}
 			}
 

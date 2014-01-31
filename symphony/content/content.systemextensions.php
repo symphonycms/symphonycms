@@ -82,23 +82,32 @@
 					// compatibility of the extension. This won't prevent a user from installing
 					// it, but it will let them know that it requires a version of Symphony greater
 					// then what they have.
+					$status = null;
+
 					if(in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
 						$td3 = Widget::TableData(__('Not installed'), 'extension-can-install');
+						$status = 'inactive';
 					}
 					if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
 						$td3 = Widget::TableData(__('Requires Symphony %s', array($about['required_version'])));
+						$status = 'status-error';
 					}
 					if(in_array(EXTENSION_ENABLED, $about['status'])) {
 						$td3 = Widget::TableData(__('Enabled'));
 					}
 					if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
-						if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status']))
+						if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
 							$td3 = Widget::TableData(__('Incompatible, requires Symphony %s', array($about['required_version'])));
-						else
+							$status = 'status-error';
+						}
+						else {
 							$td3 = Widget::TableData(__('Update available'), 'extension-can-update');
+							$status = 'status-ok';
+						}
 					}
 					if(in_array(EXTENSION_DISABLED, $about['status'])) {
 						$td3 = Widget::TableData(__('Disabled'));
+						$status = 'status-notice';
 					}
 
 					$td4 = Widget::TableData(NULL);
@@ -133,7 +142,7 @@
 					$td4->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
 
 					// Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4), (in_array(EXTENSION_NOT_INSTALLED, $about['status']) ? 'inactive' : NULL));
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4), $status);
 
 				}
 			}
