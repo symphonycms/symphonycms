@@ -133,11 +133,9 @@ button,
 	min-height: 2rem;
 	margin-left: 1rem;
 	padding: 0 1rem;
-	background-color: #e6e6e3;
-	background-image: linear-gradient(to bottom, #efefed 60%, #e6e6e3 100%);
+	background-color: #f0f0ee;
 	color: rgba(85, 85, 85, 0.95);
 	border: 0.1rem solid rgba(0, 0, 0, 0.25);
-	border-bottom-color: rgba(0, 0, 0, 0.3);
 	border-radius: 0.4rem;
 	line-height: 1.85;
 }
@@ -151,8 +149,9 @@ button:focus,
 .button:hover,
 .button:active,
 .button:focus {
+	background-color: #deded9;
+	border-color: rgba(0, 0, 0, 0.35);
 	color: #3c3c3c;
-	background-image: linear-gradient(to bottom, #e8e8e5 10%, #dadad6 40%);
 	cursor: pointer;
 }
 
@@ -192,11 +191,8 @@ button[disabled=disabled]:focus {
 
 button.create,
 .button.create {
-	background-color: #8db950;
-	background-image: linear-gradient(to bottom, #9bc660 60%, #8db950 100%);
-	border-color: rgba(50, 70, 23, 0.3);
-	border-bottom-color: rgba(50, 70, 23, 0.5);
-	color: rgba(255, 255, 255, 0.9);
+	background-color: #91c948;
+	color: #fff;
 }
 
 button.create:hover,
@@ -205,8 +201,7 @@ button.create:focus,
 .button.create:hover,
 .button.create:active,
 .button.create:focus {
-	background-image: linear-gradient(to bottom, #8DCA3A 10%, #7DB331 40%);
-	color: rgba(255, 255, 255, 0.99);
+	background-color: #70B418;
 }
 
 /* Delete buttons */
@@ -217,9 +212,8 @@ button.delete:focus,
 .button.delete:hover,
 .button.delete:active,
 .button.delete:focus {
-	background: #dd4422;
-	border-color: #bb2211;
-	color: rgba(255, 255, 255, 0.99);
+	background: #c4301e;
+	color: #fff;
 }
 
 /* Installer */

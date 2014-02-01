@@ -19,6 +19,7 @@
 	color: #fff;
 	position: relative;
 	z-index: 9000;
+	border-bottom: 1px solid #e6e6e6;
 }
 
 #header h1 {
@@ -71,11 +72,9 @@
 	padding: 0 0.8rem 0;
 	min-height: 3.1rem;
 	list-style: none;
-	box-shadow: 0 0 0.7rem #a9a9a9;
 	background-image: linear-gradient(to bottom, #efefed 0%, #efefed 33%, #d7d7d2 67%);
 	font-size: 12px;
 	z-index: 3;
-	float: left;
 	width: 100%;
 	box-sizing: border-box;
 	border-bottom: 0.1rem solid #bbbbb7;
@@ -274,7 +273,7 @@
 	background: #fff;
 	padding: 0 0 5rem;
 	border-top: 0.1rem solid rgba(191, 191, 183, 0.65);
-	box-shadow: 0 -0.3rem 0.5rem rgba(0, 0, 0, 0.05);
+	box-shadow: 0 -0.2rem 0.3rem rgba(0, 0, 0, 0.05);
 	min-height: 100%;
 }
 
