@@ -506,12 +506,19 @@
 			}
 
 			$file = $this->getFilePath($data['file']);
+			$filesize = filesize($file);
 			$item = new XMLElement($this->get('element_name'));
 			$item->setAttributeArray(array(
 				'size' =>	(
 								file_exists($file)
 								&& is_readable($file)
-									? General::formatFilesize(filesize($file))
+									? General::formatFilesize($filesize)
+									: 'unknown'
+							),
+				'bytes' =>	(
+								file_exists($file)
+								&& is_readable($file)
+									? $filesize
 									: 'unknown'
 							),
 			 	'path' =>	General::sanitize(
