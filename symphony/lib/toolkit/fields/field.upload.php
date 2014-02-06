@@ -506,14 +506,11 @@
 			}
 
 			$file = $this->getFilePath($data['file']);
+			$filesize = (file_exists($file) && is_readable($file)) ? filesize($file) : NULL;
 			$item = new XMLElement($this->get('element_name'));
 			$item->setAttributeArray(array(
-				'size' =>	(
-								file_exists($file)
-								&& is_readable($file)
-									? General::formatFilesize(filesize($file))
-									: 'unknown'
-							),
+				'size' =>	!is_null($filesize) ? General::formatFilesize($filesize) : 'unknown',
+				'bytes' =>	!is_null($filesize) ? $filesize : 'unknown',
 			 	'path' =>	General::sanitize(
 								str_replace(WORKSPACE, NULL, dirname($file))
 			 				),
