@@ -13,7 +13,7 @@
 		'symphony' => array(
 			'admin-path' => 'symphony',
 			'pagination_maximum_rows' => '20',
-            'association_maximum_rows' => '5',
+			'association_maximum_rows' => '5',
 			'lang' => 'en',
 			'pages_table_nest_children' => 'no',
 			'version' => VERSION,
@@ -81,10 +81,9 @@
 		########
 
 
-		###### IMAGE ######
-		'image' => array(
-			'cache' => '1',
-			'quality' => '90',
+		###### CACHE ######
+		'cache_driver' => array(
+			'default' => 'database',
 		),
 		########
 	);
