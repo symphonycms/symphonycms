@@ -29,7 +29,16 @@
 
 	require_once(DOCROOT . '/symphony/lib/boot/func.utilities.php');
 
-	if(file_exists(DOCROOT . '/manifest/config.php')) {
+	if (!file_exists(CONFIG)) {
+		$bInsideInstaller = (bool)preg_match('%(/|\\\\)install(/|\\\\)index.php$%', $_SERVER['SCRIPT_FILENAME']);
+
+		if (!$bInsideInstaller && file_exists(DOCROOT . '/install/index.php')) {
+			header(sprintf('Location: %s/install/', URL));
+			exit;
+		} elseif(!$bInsideInstaller) {
+			die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
+		}
+	} else {
 		require_once(DOCROOT . '/symphony/lib/core/class.configuration.php');
 		require_once(DOCROOT . '/symphony/lib/toolkit/class.general.php');
 		// Create the $settings var from the config file
@@ -39,17 +48,3 @@
 	}
 
 	require_once(DOCROOT . '/symphony/lib/boot/defines.php');
-
-	if (!file_exists(CONFIG)) {
-
-		$bInsideInstaller = (bool)preg_match('%(/|\\\\)install(/|\\\\)index.php$%', $_SERVER['SCRIPT_FILENAME']);
-
-		if (!$bInsideInstaller && file_exists(DOCROOT . '/install/index.php')) {
-			header(sprintf('Location: %s/install/', URL));
-			exit;
-		}
-
-		else if(!$bInsideInstaller) {
-			die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
-		}
-	}
