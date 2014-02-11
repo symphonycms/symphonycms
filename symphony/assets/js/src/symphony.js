@@ -1,4 +1,4 @@
-/*! 
+/*!
  * Symphony 2.4, http://getsymphony.com, MIT license
  */
 
@@ -50,7 +50,7 @@ var Symphony = (function($) {
 		$.ajax({
 			async: false,
 			type: 'GET',
-			url: Symphony.Context.get('root') + '/symphony/ajax/translate/',
+			url: Symphony.Context.get('admin') + '/ajax/translate/',
 			data: data,
 			dataType: 'json',
 
@@ -99,9 +99,9 @@ var Symphony = (function($) {
 			 * @param {Function} handler
 			 *  Function that should be applied to a view
 			 * @param {Integer} priority
-			 *  Priority of the function 
+			 *  Priority of the function
 			 * @param {Boolean} greedy
-			 *  If set to `false`, only executes the first matched view, defaults to `true` 
+			 *  If set to `false`, only executes the first matched view, defaults to `true`
 			 * @return {Route}
 			 *  Returns a route object
 			 */
@@ -121,7 +121,7 @@ var Symphony = (function($) {
 			 * @param {String} url
 			 *  The URL of the view that should be rendered, optional
 			 * @param {Boolean} greedy
-			 *  Determines, if only the first or all matching views are rendered, 
+			 *  Determines, if only the first or all matching views are rendered,
 			 *  defaults to `true (all)
 			 */
 			render: function renderRoute(url, greedy) {
@@ -139,7 +139,7 @@ var Symphony = (function($) {
 		},
 
 		/**
-		 * Storage for the main Symphony elements`. 
+		 * Storage for the main Symphony elements`.
 		 * Symphony automatically adds all main UI areas.
 		 *
 		 * @since Symphony 2.4
@@ -313,7 +313,7 @@ var Symphony = (function($) {
 			 */
 			inSight: function inSight(elements) {
 				var windowHeight = window.innerHeight,
-					visibles = $(); 
+					visibles = $();
 
 				elements.each(function() {
 					var context = this.getBoundingClientRect();
