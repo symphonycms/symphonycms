@@ -352,7 +352,7 @@
 					"Symphony.Context.add('env', " . json_encode(array_merge(
 						array('page-namespace' => Symphony::getPageNamespace()),
 						$this->_context
-					)) . "); Symphony.Context.add('root', '" . URL . "'); Symphony.Context.add('admin', '" . SYMPHONY_URL . "');",
+					)) . "); Symphony.Context.add('root', '" . URL . "'); Symphony.Context.add('admin', '" . substr(SYMPHONY_URL, strlen(URL)) . "');",
 					array('type' => 'text/javascript')
 				), 72
 			);
