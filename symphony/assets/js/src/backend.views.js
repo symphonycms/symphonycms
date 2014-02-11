@@ -10,7 +10,7 @@
 	General backend view
 --------------------------------------------------------------------------*/
 
-Symphony.View.add(Symphony.Context.get('admin') + '/:context*:', function() {
+Symphony.View.add('/:backend:/:context*:', function() {
 
 	console.log('test');
 	// Initialise core plugins
@@ -251,7 +251,7 @@ Symphony.View.add(Symphony.Context.get('admin') + '/:context*:', function() {
 	});
 });
 
-Symphony.View.add(Symphony.Context.get('admin') + '/:context*:/new', function() {
+Symphony.View.add('/:backend:/:context*:/new', function() {
 	Symphony.Elements.contents.find('input[type="text"], textarea').first().focus();
 });
 
@@ -259,7 +259,7 @@ Symphony.View.add(Symphony.Context.get('admin') + '/:context*:/new', function() 
 	Blueprints - Pages Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add(Symphony.Context.get('admin') + '/blueprints/pages/:action:/:id:/:status:', function() {
+Symphony.View.add('/:backend:/blueprints/pages/:action:/:id:/:status:', function() {
 	// No core interactions yet
 });
 
@@ -267,7 +267,7 @@ Symphony.View.add(Symphony.Context.get('admin') + '/blueprints/pages/:action:/:i
 	Blueprints - Sections
 --------------------------------------------------------------------------*/
 
-Symphony.View.add(Symphony.Context.get('admin') + '/blueprints/sections/:action:/:id:/:status:', function() {
+Symphony.View.add('/:backend:/blueprints/sections/:action:/:id:/:status:', function() {
 	var duplicator = $('#fields-duplicator'),
 		legend = $('#fields-legend'),
 		expand, collapse, toggle;
@@ -391,7 +391,7 @@ Symphony.View.add(Symphony.Context.get('admin') + '/blueprints/sections/:action:
 	Blueprints - Datasource Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add(Symphony.Context.get('admin') + '/blueprints/datasources/:action:/:id:/:status:', function() {
+Symphony.View.add('/:backend:/blueprints/datasources/:action:/:id:/:status:', function() {
 	var context = $('#ds-context'),
 		source = $('#ds-source'),
 		name = Symphony.Elements.contents.find('input[name="fields[name]"]').attr('data-updated', 0),
