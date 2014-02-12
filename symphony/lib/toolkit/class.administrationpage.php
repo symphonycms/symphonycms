@@ -350,6 +350,7 @@
 			$environment = array(
 				'root' => URL,
 				'symphony' => SYMPHONY_URL,
+				'path' => '/' . Symphony::Configuration()->get('admin-path', 'symphony'),
 				'lang' => Lang::get(),
 				'user' => array(
 					'fullname' => Administration::instance()->Author->getFullName(),

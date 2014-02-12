@@ -108,7 +108,7 @@ var Symphony = (function($) {
 			add: function addRoute(pattern, handler, priority, greedy) {
 				var route; 
 
-				pattern = Symphony.Context.get('symphony') + pattern;
+				pattern = Symphony.Context.get('path') + pattern;
 				route = crossroads.addRoute(pattern, handler, priority);
 
 				if(greedy !== false) {
