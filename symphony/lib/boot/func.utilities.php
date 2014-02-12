@@ -119,7 +119,6 @@
 		The only way seems to be the method employed here: store all the cookie we need to keep, then delete every cookie and add the stored cookies again.
 		Luckily we can just store the raw header and output them again, so we do not need to actively parse the header string.
 		*/
-
 		$cookie_params = session_get_cookie_params();
 		$list = headers_list();
 		$custom_cookies = array();
@@ -129,17 +128,8 @@
 				$custom_cookies[] = $hdr;
 			}
 		}
-		// in PHP 5.3 we can use 'header_remove'
-		if (function_exists('header_remove')) {
-			header_remove('Set-Cookie');
-		}
-		/**
-		 * fallback
-		 * this may be removed when Symphony requires PHP 5.3
-		 */
-		else{
-			header('Set-Cookie:');
-		}
+
+		header_remove('Set-Cookie');
 
 		foreach ($custom_cookies as $custom_cookie) {
 			header($custom_cookie);

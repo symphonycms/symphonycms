@@ -165,8 +165,6 @@
 		 * Formats the given date and time `$string` based on the given `$format`.
 		 * Optionally the result will be localized and respect a timezone differing
 		 * from the system default. The default output is ISO 8601.
-		 * Please note that for best compatibility with European dates it is recommended
-		 * that your site be in a PHP5.3 environment.
 		 *
 		 * @since Symphony 2.2.1
 		 * @param string $string (optional)
@@ -212,8 +210,6 @@
 
 		/**
 		 * Parses the given string and returns a DateTime object.
-		 * Please note that for best compatibility with European dates it is recommended
-		 * that your site be in a PHP5.3 environment.
 		 *
 		 * @since Symphony 2.3
 		 * @param string $string (optional)
@@ -243,29 +239,15 @@
 				$string = Lang::standardizeDate($string);
 
 				// PHP 5.3: Apply Symphony date format using `createFromFormat`
-				if(method_exists('DateTime', 'createFromFormat')) {
-					$date = DateTime::createFromFormat(self::$settings['datetime_format'], $string);
-					if($date === false) {
-						$date = DateTime::createFromFormat(self::$settings['date_format'], $string);
-					}
-
-					// Handle dates that are in a different format to Symphony's config
-					// DateTime is much the same as `strtotime` and will handle relative
-					// dates.
-					if($date === false) {
-						try {
-							$date = new DateTime($string);
-						}
-						catch(Exception $ex) {
-							// Invalid date, it can't be parsed
-							return false;
-						}
-					}
+				$date = DateTime::createFromFormat(self::$settings['datetime_format'], $string);
+				if($date === false) {
+					$date = DateTime::createFromFormat(self::$settings['date_format'], $string);
 				}
 
-				// PHP 5.2: Fallback to DateTime parsing.
-				// Note that this parsing will not respect European dates.
-				else {
+				// Handle dates that are in a different format to Symphony's config
+				// DateTime is much the same as `strtotime` and will handle relative
+				// dates.
+				if($date === false) {
 					try {
 						$date = new DateTime($string);
 					}
@@ -302,33 +284,15 @@
 
 		/**
 		 * This functions acts as a standard way to get the zones
-		 * available on the system. For PHP5.2, these constants are
-		 * just copied from PHP5.3
+		 * available on the system.
 		 *
 		 * @since Symphony 2.3
 		 * @link http://au2.php.net/manual/en/class.datetimezone.php
 		 * @return array
 		 */
 		public static function getZones() {
-			if(PHP_VERSION_ID >= 50300) {
-				$ref = new ReflectionClass('DateTimeZone');
-				return $ref->getConstants();
-			}
-			else {
-				return array(
-					'AFRICA' => 1,
-					'AMERICA' => 2,
-					'ANTARCTICA' => 4,
-					'ARCTIC' => 8,
-					'ASIA' => 16,
-					'ATLANTIC' => 32,
-					'AUSTRALIA' => 64,
-					'EUROPE' => 128,
-					'INDIAN' => 256,
-					'PACIFIC' => 512,
-					'UTC' => 1024
-				);
-			}
+			$ref = new ReflectionClass('DateTimeZone');
+			return $ref->getConstants();
 		}
 
 		/**
@@ -345,19 +309,7 @@
 		 * @return array
 		 */
 		public static function getTimezones($zone = null) {
-			// PHP5.3 supports the `$what` parameter of the listIdentifiers function
-			if(PHP_VERSION_ID >= 50300) {
-				return DateTimeZone::listIdentifiers(constant('DateTimeZone::' . $zone));
-			}
-			else {
-				$timezones = DateTimeZone::listIdentifiers();
-
-				foreach($timezones as $index => $timezone) {
-					if(stripos($timezone, $zone) === false) unset($timezones[$index]);
-				}
-
-				return $timezones;
-			}
+			return DateTimeZone::listIdentifiers(constant('DateTimeZone::' . $zone));
 		}
 
 		/**
