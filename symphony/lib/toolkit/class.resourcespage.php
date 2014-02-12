@@ -139,6 +139,8 @@
 				);
 			}
 			else {
+				$context = Administration::instance()->getPageCallback();
+
 				foreach($resources as $r) {
 					$action = 'edit';
 					$status = null;
@@ -158,7 +160,7 @@
 					$name = Widget::TableData(
 						Widget::Anchor(
 							$r['name'],
-							SYMPHONY_URL . $_REQUEST['symphony-page'] .  $action . '/' . $r['handle'] . '/',
+							SYMPHONY_URL . $context['pageroot'] .  $action . '/' . $r['handle'] . '/',
 							$r['handle'],
 							'resource-' . $action,
 							null,
@@ -280,7 +282,7 @@
 			 *  in the With Selected menu. Options should follow the same format
 			 *  expected by `Widget::__SelectBuildOption`. Passed by reference.
 			 */
-			Symphony::ExtensionManager()->notifyMembers('AddCustomActions', $_REQUEST['symphony-page'], array(
+			Symphony::ExtensionManager()->notifyMembers('AddCustomActions', $context['pageroot'], array(
 				'options' => &$options
 			));
 
@@ -305,6 +307,7 @@
 		public function __actionIndex($resource_type){
 			$manager = ResourceManager::getManagerFromType($resource_type);
 			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : NULL;
+			$context = Administration::instance()->getPageCallback();
 
 			if (isset($_POST['action']) && is_array($_POST['action'])) {
 				/**
@@ -320,7 +323,7 @@
 				 *  An array of the selected rows. The value is usually the ID of the
 				 *  the associated object.
 				 */
-				Symphony::ExtensionManager()->notifyMembers('CustomActions', $_REQUEST['symphony-page'], array(
+				Symphony::ExtensionManager()->notifyMembers('CustomActions', $context['pageroot'], array(
 					'checked' => $checked
 				));
 
