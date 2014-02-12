@@ -50,7 +50,7 @@ var Symphony = (function($) {
 		$.ajax({
 			async: false,
 			type: 'GET',
-			url: Symphony.Context.get('admin') + '/ajax/translate/',
+			url: Symphony.Context.get('symphony') + '/ajax/translate/',
 			data: data,
 			dataType: 'json',
 
@@ -95,7 +95,7 @@ var Symphony = (function($) {
 			 * Add function to view
 			 *
 			 * @param {String} pattern
-			 *  Expression to match the view
+			 *  Expression to match the view, using the Symphony URL as base
 			 * @param {Function} handler
 			 *  Function that should be applied to a view
 			 * @param {Integer} priority
@@ -106,7 +106,10 @@ var Symphony = (function($) {
 			 *  Returns a route object
 			 */
 			add: function addRoute(pattern, handler, priority, greedy) {
-				var route = crossroads.addRoute(pattern, handler, priority);
+				var route; 
+
+				pattern = Symphony.Context.get('symphony') + pattern;
+				route = crossroads.addRoute(pattern, handler, priority);
 
 				if(greedy !== false) {
 					route.greedy = true;
@@ -175,8 +178,13 @@ var Symphony = (function($) {
 			 */
 			add: function addContext(group, values) {
 
-				// Extend existing group
-				if(Storage.Context[group] && $.type(values) !== 'string') {
+				// Add multiple groups
+				if(!group && $.type(values) === 'object') {
+					$.extend(Storage.Context, values);
+				}
+
+				// Add to existing group
+				else if(Storage.Context[group] && $.type(values) !== 'string') {
 					$.extend(Storage.Context[group], values);
 				}
 

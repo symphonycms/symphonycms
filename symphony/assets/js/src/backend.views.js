@@ -10,9 +10,8 @@
 	General backend view
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/:backend:/:context*:', function() {
+Symphony.View.add('/:context*:', function() {
 
-	console.log('test');
 	// Initialise core plugins
 	Symphony.Elements.contents.find('.filters-duplicator').symphonyDuplicator();
 	Symphony.Elements.contents.find('.tags').symphonyTags();
@@ -87,7 +86,7 @@ Symphony.View.add('/:backend:/:context*:', function() {
 				// Send request
 				$.ajax({
 					type: 'POST',
-					url: Symphony.Context.get('admin') + '/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
+					url: Symphony.Context.get('symphony') + '/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
 					data: newSorting,
 					error: function() {
 						Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'error');
@@ -239,7 +238,7 @@ Symphony.View.add('/:backend:/:context*:', function() {
 	Symphony.Elements.window.on('error.admin', function(event) {
 		$.ajax({
 			type: 'POST',
-			url: Symphony.Context.get('admin') + '/ajax/log/',
+			url: Symphony.Context.get('symphony') + '/ajax/log/',
 			data: {
 				'error': event.originalEvent.message,
 				'url': event.originalEvent.filename,
@@ -251,7 +250,7 @@ Symphony.View.add('/:backend:/:context*:', function() {
 	});
 });
 
-Symphony.View.add('/:backend:/:context*:/new', function() {
+Symphony.View.add('/:context*:/new', function() {
 	Symphony.Elements.contents.find('input[type="text"], textarea').first().focus();
 });
 
@@ -259,7 +258,7 @@ Symphony.View.add('/:backend:/:context*:/new', function() {
 	Blueprints - Pages Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/:backend:/blueprints/pages/:action:/:id:/:status:', function() {
+Symphony.View.add('/blueprints/pages/:action:/:id:/:status:', function() {
 	// No core interactions yet
 });
 
@@ -267,7 +266,7 @@ Symphony.View.add('/:backend:/blueprints/pages/:action:/:id:/:status:', function
 	Blueprints - Sections
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/:backend:/blueprints/sections/:action:/:id:/:status:', function() {
+Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 	var duplicator = $('#fields-duplicator'),
 		legend = $('#fields-legend'),
 		expand, collapse, toggle;
@@ -391,7 +390,7 @@ Symphony.View.add('/:backend:/blueprints/sections/:action:/:id:/:status:', funct
 	Blueprints - Datasource Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/:backend:/blueprints/datasources/:action:/:id:/:status:', function() {
+Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function() {
 	var context = $('#ds-context'),
 		source = $('#ds-source'),
 		name = Symphony.Elements.contents.find('input[name="fields[name]"]').attr('data-updated', 0),
@@ -411,7 +410,7 @@ Symphony.View.add('/:backend:/blueprints/datasources/:action:/:id:/:status:', fu
 					type: 'GET',
 					data: { 'string': value },
 					dataType: 'json',
-					url: Symphony.Context.get('admin') + '/ajax/handle/',
+					url: Symphony.Context.get('symphony') + '/ajax/handle/',
 					success: function(result) {
 						if(nameChangeCount == current) {
 							name.data('handle', result);
@@ -496,7 +495,7 @@ Symphony.View.add('/:backend:/blueprints/datasources/:action:/:id:/:status:', fu
 	pagination.symphonySuggestions();
 	Symphony.Elements.contents.find('label:has(input[name*="url_param"])').symphonySuggestions({
 		trigger: '$',
-		source: Symphony.Context.get('admin') + '/ajax/parameters/?filter=page&template=$%s'
+		source: Symphony.Context.get('symphony') + '/ajax/parameters/?filter=page&template=$%s'
 	});
 });
 
@@ -504,7 +503,7 @@ Symphony.View.add('/:backend:/blueprints/datasources/:action:/:id:/:status:', fu
 	Blueprints - Event Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add(Symphony.Context.get('admin') + '/blueprints/events/:action:/:name:/:status:', function() {
+Symphony.View.add(Symphony.Context.get('symphony') + '/blueprints/events/:action:/:name:/:status:', function() {
 	var context = $('#event-context'),
 		source = $('#event-source'),
 		filters = $('#event-filters'),
@@ -548,7 +547,7 @@ Symphony.View.add(Symphony.Context.get('admin') + '/blueprints/events/:action:/:
 					'name': name.val()
 				},
 				dataType: 'html',
-				url: Symphony.Context.get('admin') + '/ajax/eventdocumentation/',
+				url: Symphony.Context.get('symphony') + '/ajax/eventdocumentation/',
 				success: function(documentation) {
 					$('#event-documentation').replaceWith(documentation);
 				}
@@ -561,7 +560,7 @@ Symphony.View.add(Symphony.Context.get('admin') + '/blueprints/events/:action:/:
 	System - Authors
 --------------------------------------------------------------------------*/
 
-Symphony.View.add(Symphony.Context.get('admin') + '/system/authors/:action:/:id:/:status:', function(action, id) {
+Symphony.View.add(Symphony.Context.get('symphony') + '/system/authors/:action:/:id:/:status:', function(action, id) {
 	var password = $('#password');
 
 	// Add change password overlay
@@ -588,7 +587,7 @@ Symphony.View.add(Symphony.Context.get('admin') + '/system/authors/:action:/:id:
 	System - Extensions
 --------------------------------------------------------------------------*/
 
-Symphony.View.add(Symphony.Context.get('admin') + '/system/extensions/:context*:', function() {
+Symphony.View.add(Symphony.Context.get('symphony') + '/system/extensions/:context*:', function() {
 	Symphony.Language.add({
 		'Enable': false,
 		'Install': false,
