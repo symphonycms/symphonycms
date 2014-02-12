@@ -21,7 +21,7 @@
 	if(strpos($_GET['symphony-page'], $adminPath, 0) === 0) {
 		$_GET['symphony-page'] = str_replace($adminPath . '/', '', $_GET['symphony-page']);
 		if($_GET['symphony-page'] == '') unset($_GET['symphony-page']);
-		$_GET['mode'] = 'administration';
+		$_GET['mode'] = $_REQUEST['mode'] = 'administration';
 	}
 
 	$renderer = (isset($_GET['mode']) && strtolower($_GET['mode']) == 'administration'

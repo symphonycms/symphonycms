@@ -1,4 +1,4 @@
-/*! 
+/*!
  * Symphony 2.4, http://getsymphony.com, MIT license
  */
 
@@ -50,7 +50,7 @@ var Symphony = (function($) {
 		$.ajax({
 			async: false,
 			type: 'GET',
-			url: Symphony.Context.get('root') + '/symphony/ajax/translate/',
+			url: Symphony.Context.get('symphony') + '/ajax/translate/',
 			data: data,
 			dataType: 'json',
 
@@ -95,18 +95,21 @@ var Symphony = (function($) {
 			 * Add function to view
 			 *
 			 * @param {String} pattern
-			 *  Expression to match the view
+			 *  Expression to match the view, using the Symphony URL as base
 			 * @param {Function} handler
 			 *  Function that should be applied to a view
 			 * @param {Integer} priority
-			 *  Priority of the function 
+			 *  Priority of the function
 			 * @param {Boolean} greedy
-			 *  If set to `false`, only executes the first matched view, defaults to `true` 
+			 *  If set to `false`, only executes the first matched view, defaults to `true`
 			 * @return {Route}
 			 *  Returns a route object
 			 */
 			add: function addRoute(pattern, handler, priority, greedy) {
-				var route = crossroads.addRoute(pattern, handler, priority);
+				var route; 
+
+				pattern = Symphony.Context.get('path') + pattern;
+				route = crossroads.addRoute(pattern, handler, priority);
 
 				if(greedy !== false) {
 					route.greedy = true;
@@ -121,7 +124,7 @@ var Symphony = (function($) {
 			 * @param {String} url
 			 *  The URL of the view that should be rendered, optional
 			 * @param {Boolean} greedy
-			 *  Determines, if only the first or all matching views are rendered, 
+			 *  Determines, if only the first or all matching views are rendered,
 			 *  defaults to `true (all)
 			 */
 			render: function renderRoute(url, greedy) {
@@ -139,7 +142,7 @@ var Symphony = (function($) {
 		},
 
 		/**
-		 * Storage for the main Symphony elements`. 
+		 * Storage for the main Symphony elements`.
 		 * Symphony automatically adds all main UI areas.
 		 *
 		 * @since Symphony 2.4
@@ -175,8 +178,13 @@ var Symphony = (function($) {
 			 */
 			add: function addContext(group, values) {
 
-				// Extend existing group
-				if(Storage.Context[group] && $.type(values) !== 'string') {
+				// Add multiple groups
+				if(!group && $.type(values) === 'object') {
+					$.extend(Storage.Context, values);
+				}
+
+				// Add to existing group
+				else if(Storage.Context[group] && $.type(values) !== 'string') {
 					$.extend(Storage.Context[group], values);
 				}
 
@@ -313,7 +321,7 @@ var Symphony = (function($) {
 			 */
 			inSight: function inSight(elements) {
 				var windowHeight = window.innerHeight,
-					visibles = $(); 
+					visibles = $();
 
 				elements.each(function() {
 					var context = this.getBoundingClientRect();

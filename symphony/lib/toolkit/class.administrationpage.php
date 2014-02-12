@@ -343,19 +343,32 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge,chrome=1')), 1);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1')), 2);
 
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.min.css', 'screen', null, false);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.min.js', null, false);
+			// Add styles
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.min.css', 'screen', null, false);		
 
-			$this->addElementToHead(
-				new XMLElement(
-					'script',
-					"Symphony.Context.add('env', " . json_encode(array_merge(
-						array('page-namespace' => Symphony::getPageNamespace()),
-						$this->_context
-					)) . "); Symphony.Context.add('root', '" . URL . "');",
-					array('type' => 'text/javascript')
-				), 72
+			// Add scripts
+			$environment = array(
+				'root' => URL,
+				'symphony' => SYMPHONY_URL,
+				'path' => '/' . Symphony::Configuration()->get('admin-path', 'symphony'),
+				'lang' => Lang::get(),
+				'user' => array(
+					'fullname' => Administration::instance()->Author->getFullName(),
+					'name' => Administration::instance()->Author->get('first_name'),
+					'type'=> Administration::instance()->Author->get('user_type'),
+					'id' => Administration::instance()->Author->get('id')
+				),
+				'env' => array_merge(
+					array('page-namespace' => Symphony::getPageNamespace()), $this->_context
+				)
 			);
+			$this->addElementToHead(
+				new XMLElement('script', json_encode($environment), array(
+					'type' => 'application/json',
+					'id' => 'environment'
+				)), 1
+			);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.min.js', null, false);
 
 			// Initialise page containers
 			$this->Wrapper = new XMLElement('div', NULL, array('id' => 'wrapper'));
@@ -1086,15 +1099,7 @@
 			$li->appendChild(
 				Widget::Anchor(
 					Administration::instance()->Author->getFullName(),
-					SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/',
-					null,
-					null,
-					null,
-					array(
-						'data-id' => Administration::instance()->Author->get('id'),
-						'data-name' => Administration::instance()->Author->get('first_name'),
-						'data-type' => Administration::instance()->Author->get('user_type')
-					)
+					SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/'
 				)
 			);
 			$ul->appendChild($li);

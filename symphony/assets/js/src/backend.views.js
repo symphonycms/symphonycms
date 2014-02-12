@@ -10,7 +10,7 @@
 	General backend view
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/symphony/:context*:', function() {
+Symphony.View.add('/:context*:', function() {
 
 	// Initialise core plugins
 	Symphony.Elements.contents.find('.filters-duplicator').symphonyDuplicator();
@@ -86,7 +86,7 @@ Symphony.View.add('/symphony/:context*:', function() {
 				// Send request
 				$.ajax({
 					type: 'POST',
-					url: Symphony.Context.get('root') + '/symphony/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
+					url: Symphony.Context.get('symphony') + '/ajax/reorder' + location.href.slice(Symphony.Context.get('root').length + 9),
 					data: newSorting,
 					error: function() {
 						Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'error');
@@ -238,7 +238,7 @@ Symphony.View.add('/symphony/:context*:', function() {
 	Symphony.Elements.window.on('error.admin', function(event) {
 		$.ajax({
 			type: 'POST',
-			url: Symphony.Context.get('root') + '/symphony/ajax/log/',
+			url: Symphony.Context.get('symphony') + '/ajax/log/',
 			data: {
 				'error': event.originalEvent.message,
 				'url': event.originalEvent.filename,
@@ -250,7 +250,7 @@ Symphony.View.add('/symphony/:context*:', function() {
 	});
 });
 
-Symphony.View.add('/symphony/:context*:/new', function() {
+Symphony.View.add('/:context*:/new', function() {
 	Symphony.Elements.contents.find('input[type="text"], textarea').first().focus();
 });
 
@@ -258,7 +258,7 @@ Symphony.View.add('/symphony/:context*:/new', function() {
 	Blueprints - Pages Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/symphony/blueprints/pages/:action:/:id:/:status:', function() {
+Symphony.View.add('/blueprints/pages/:action:/:id:/:status:', function() {
 	// No core interactions yet
 });
 
@@ -266,7 +266,7 @@ Symphony.View.add('/symphony/blueprints/pages/:action:/:id:/:status:', function(
 	Blueprints - Sections
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/symphony/blueprints/sections/:action:/:id:/:status:', function() {
+Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 	var duplicator = $('#fields-duplicator'),
 		legend = $('#fields-legend'),
 		expand, collapse, toggle;
@@ -301,7 +301,7 @@ Symphony.View.add('/symphony/blueprints/sections/:action:/:id:/:status:', functi
 		}
 	});
 
-	// Initialise field editor	
+	// Initialise field editor
 	duplicator.symphonyDuplicator({
 		orderable: true,
 		collapsible: (Symphony.Context.get('env')[0] !== 'new'),
@@ -352,7 +352,7 @@ Symphony.View.add('/symphony/blueprints/sections/:action:/:id:/:status:', functi
 				message = undo.parent(),
 				field = undo.data('field').hide(),
 				list = $('#fields-duplicator');
-          
+
 			// Add field
 			list.parent().removeClass('empty');
 			field.trigger('constructstart.duplicator');
@@ -390,7 +390,7 @@ Symphony.View.add('/symphony/blueprints/sections/:action:/:id:/:status:', functi
 	Blueprints - Datasource Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/symphony/blueprints/datasources/:action:/:id:/:status:', function() {
+Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function() {
 	var context = $('#ds-context'),
 		source = $('#ds-source'),
 		name = Symphony.Elements.contents.find('input[name="fields[name]"]').attr('data-updated', 0),
@@ -410,7 +410,7 @@ Symphony.View.add('/symphony/blueprints/datasources/:action:/:id:/:status:', fun
 					type: 'GET',
 					data: { 'string': value },
 					dataType: 'json',
-					url: Symphony.Context.get('root') + '/symphony/ajax/handle/',
+					url: Symphony.Context.get('symphony') + '/ajax/handle/',
 					success: function(result) {
 						if(nameChangeCount == current) {
 							name.data('handle', result);
@@ -495,7 +495,7 @@ Symphony.View.add('/symphony/blueprints/datasources/:action:/:id:/:status:', fun
 	pagination.symphonySuggestions();
 	Symphony.Elements.contents.find('label:has(input[name*="url_param"])').symphonySuggestions({
 		trigger: '$',
-		source: '/symphony/ajax/parameters/?filter=page&template=$%s'
+		source: Symphony.Context.get('path') + '/ajax/parameters/?filter=page&template=$%s'
 	});
 });
 
@@ -503,7 +503,7 @@ Symphony.View.add('/symphony/blueprints/datasources/:action:/:id:/:status:', fun
 	Blueprints - Event Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/symphony/blueprints/events/:action:/:name:/:status:', function() {
+Symphony.View.add(Symphony.Context.get('symphony') + '/blueprints/events/:action:/:name:/:status:', function() {
 	var context = $('#event-context'),
 		source = $('#event-source'),
 		filters = $('#event-filters'),
@@ -541,13 +541,13 @@ Symphony.View.add('/symphony/blueprints/events/:action:/:name:/:status:', functi
 		else {
 			$.ajax({
 				type: 'POST',
-				data: { 
+				data: {
 					'section': context.val(),
 					'filters': filters.serializeArray(),
 					'name': name.val()
 				},
 				dataType: 'html',
-				url: Symphony.Context.get('root') + '/symphony/ajax/eventdocumentation/',
+				url: Symphony.Context.get('symphony') + '/ajax/eventdocumentation/',
 				success: function(documentation) {
 					$('#event-documentation').replaceWith(documentation);
 				}
@@ -560,7 +560,7 @@ Symphony.View.add('/symphony/blueprints/events/:action:/:name:/:status:', functi
 	System - Authors
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/symphony/system/authors/:action:/:id:/:status:', function(action, id) {
+Symphony.View.add(Symphony.Context.get('symphony') + '/system/authors/:action:/:id:/:status:', function(action, id) {
 	var password = $('#password');
 
 	// Add change password overlay
@@ -587,7 +587,7 @@ Symphony.View.add('/symphony/system/authors/:action:/:id:/:status:', function(ac
 	System - Extensions
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/symphony/system/extensions/:context*:', function() {
+Symphony.View.add(Symphony.Context.get('symphony') + '/system/extensions/:context*:', function() {
 	Symphony.Language.add({
 		'Enable': false,
 		'Install': false,
