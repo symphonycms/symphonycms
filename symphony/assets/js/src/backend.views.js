@@ -495,7 +495,7 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function() {
 	pagination.symphonySuggestions();
 	Symphony.Elements.contents.find('label:has(input[name*="url_param"])').symphonySuggestions({
 		trigger: '$',
-		source: Symphony.Context.get('symphony') + '/ajax/parameters/?filter=page&template=$%s'
+		source: Symphony.Context.get('path') + '/ajax/parameters/?filter=page&template=$%s'
 	});
 });
 
