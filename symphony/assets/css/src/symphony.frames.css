@@ -74,7 +74,8 @@
 	color: #a1a1a1;
 }
 
-.frame-header::before {
+.main::before,
+.sidebar::before {
 	content: "";
 	display: block;
 	width: 0.1rem;
@@ -85,17 +86,17 @@
 	border-right: 0.3rem solid #dcdcdc;
 }
 
-.frame-header.sidebar::before {
+.sidebar::before {
 	border-left: 0.6rem solid #dcdcdc;
 	border-right: 0.3rem solid #b8b8b8;
 }
 
-.highlight .frame-header::before {
+.highlight .main::before {
 	border-left: 0.6rem solid #747474;
 	border-right: 0.3rem solid #b9b9b9;
 }
 
-.highlight .frame-header.sidebar::before {
+.highlight .sidebar::before {
 	border-left: 0.6rem solid #b9b9b9;
 	border-right: 0.3rem solid #747474;
 }
@@ -187,10 +188,9 @@ fieldset.frame,
 	Controls
 --------------------------------------------------------------------------*/
 
-/* Destructor */
-
 .frame .destructor,
-.frame .button {
+.frame .button,
+.frame .debug {
 	position: absolute;
 	top: 0.8rem;
 	right: 1rem;
@@ -202,6 +202,7 @@ fieldset.frame,
 
 .frame .destructor:hover,
 .frame .button:hover,
+.frame .debug:hover,
 .frame .constructor:hover {
 	color: #494949;
 }
@@ -314,12 +315,12 @@ fieldset.frame,
 	border-top-color: #7093c3;
 }
 
-.frame .ordering .frame-header::before {
+.frame .ordering .main::before {
 	border-left: 0.6rem solid #cedaea;
 	border-right: 0.3rem solid #7c9bc7;
 }
 
-.frame .ordering .frame-header.sidebar::before {
+.frame .ordering .sidebar::before {
 	border-left: 0.6rem solid #7c9bc7;
 	border-right: 0.3rem solid #cedaea;
 }
