@@ -62,9 +62,10 @@ Symphony.View.add('/:context*:', function() {
 	}).trigger('table.admin');
 
 	// Orderable tables
-	var oldSorting = null;
-	Symphony.Elements.contents.find('table.orderable')
-		.symphonyOrderable({
+	var oldSorting = null,
+		orderable = Symphony.Elements.contents.find('table.orderable');
+
+	orderable.symphonyOrderable({
 			items: 'tr',
 			handles: 'td'
 		})
@@ -74,10 +75,10 @@ Symphony.View.add('/:context*:', function() {
 			oldSorting = $(this).find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
 		})
 		.on('orderstop.orderable', function() {
-			var orderable = $(this).addClass('busy'),
-				newSorting = orderable.find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
+			var newSorting = orderable.find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
 
 			// Store sort order, if changed
+			orderable.addClass('busy');
 			if(oldSorting !== null && newSorting !== oldSorting) {
 
 				// Update items
@@ -100,6 +101,11 @@ Symphony.View.add('/:context*:', function() {
 				orderable.removeClass('busy');
 			}
 		});
+
+	// Suggest
+	if(orderable.length) {
+		Symphony.Elements.breadcrumbs.append('<p class="inactive"><span> – ' + Symphony.Language.get('drag to reorder') + '</span></p>');
+	}
 
 	// With Selected
 	Symphony.Elements.contents.find('fieldset.apply').each(function() {
