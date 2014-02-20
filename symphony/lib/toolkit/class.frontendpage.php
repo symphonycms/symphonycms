@@ -192,8 +192,9 @@
 				 * '/frontend/'
 				 * @param FrontendPage $page
 				 *  This FrontendPage object, by reference
-				 * @param string $xml
-				 *  This pages XML, including the Parameters, Datasource and Event XML, by reference
+				 * @param XMLElement $xml
+				 *  This pages XML, including the Parameters, Datasource and Event XML, by reference as
+				 *  an XMLElement
 				 * @param string $xsl
 				 *  This pages XSLT, by reference
 				 */
@@ -232,6 +233,13 @@
 
 				$backup_param = $this->_param;
 				$this->_param['current-query-string'] = General::wrapInCDATA($this->_param['current-query-string']);
+
+				// In Symphony 2.4, the XML structure stays as an object until
+				// the very last moment.
+				if($this->_xml instanceof XMLElement) {
+					$this->setXML($this->_xml->generate(true, 0));
+				}
+
 				$output = parent::generate();
 				$this->_param = $backup_param;
 
@@ -499,7 +507,7 @@
 			$xml->prependChild($params);
 
 			Symphony::Profiler()->seed();
-			$this->setXML($xml->generate(true, 0));
+			$this->setXML($xml);
 			Symphony::Profiler()->sample('XML Generation', PROFILE_LAP);
 
 			$xsl = '<?xml version="1.0" encoding="UTF-8"?>
