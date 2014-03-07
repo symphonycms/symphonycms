@@ -65,6 +65,12 @@
 				foreach($extensions as $name => $about){
 
 					$td1 = Widget::TableData($about['name']);
+					$td1->appendChild(Widget::Label(__('Select %s Extension', array($about['name'])), null, 'accessible', null, array(
+						'for' => 'extension-' . $name
+					)));
+					$td1->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox', array(
+						'id' => 'extension-' . $name
+					)));
 					$installed_version = Symphony::ExtensionManager()->fetchInstalledVersion($name);
 
 					// Version
@@ -139,8 +145,6 @@
 						$td4->setValue($link instanceof XMLElement ? $link->generate() : $link);
 					}
 
-					$td4->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
-
 					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4), $status);
 
@@ -151,7 +155,9 @@
 				Widget::TableHead($aTableHead),
 				NULL,
 				Widget::TableBody($aTableBody),
-				'selectable'
+				'selectable',
+				null,
+				array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
 			);
 
 			$this->Form->appendChild($table);

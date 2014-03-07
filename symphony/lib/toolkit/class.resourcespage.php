@@ -98,6 +98,7 @@
 		 */
 		public function __viewIndex($resource_type){
 			$manager = ResourceManager::getManagerFromType($resource_type);
+			$friendly_resource = ($resource_type === RESOURCE_TYPE_EVENT) ? __('Event') : __('DataSource');
 
 			$this->setPageType('table');
 
@@ -157,6 +158,7 @@
 
 					// Resource name
 					$action = isset($r['can_parse']) && $r['can_parse'] === true ? 'edit' : 'info';
+
 					$name = Widget::TableData(
 						Widget::Anchor(
 							$r['name'],
@@ -167,6 +169,13 @@
 							$locked
 						)
 					);
+
+					$name->appendChild(Widget::Label(__('Select ' . $friendly_resource . ' %s', array($r['name'])), null, 'accessible', null, array(
+						'for' => 'resource-' . $r['handle']
+					)));
+					$name->appendChild(Widget::Input('items['.$r['handle'].']', 'on', 'checkbox', array(
+						'id' => 'resource-' . $r['handle']
+					)));
 
 					// Resource type/source
 					if(isset($r['source'], $r['source']['id'])) {
@@ -224,7 +233,6 @@
 					}
 
 					$author = Widget::TableData($author);
-					$author->appendChild(Widget::Input('items[' . $r['handle'] . ']', null, 'checkbox'));
 
 					$aTableBody[] = Widget::TableRow(array($name, $section, $pagelinks, $author), $status);
 				}
@@ -234,7 +242,9 @@
 				Widget::TableHead($aTableHead),
 				NULL,
 				Widget::TableBody($aTableBody),
-				'selectable'
+				'selectable',
+				null,
+				array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
 			);
 
 			$this->Form->appendChild($table);

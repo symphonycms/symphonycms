@@ -89,7 +89,7 @@
 
 					$div = new XMLElement('div', NULL, array('class' => 'actions'));
 					$div->appendChild(
-						new XMLElement('button', __('Send Email'), array('name' => 'action[reset]', 'type' => 'submit'))
+						new XMLElement('button', __('Send Email'), array('name' => 'action[reset]', 'type' => 'submit', 'accesskey' => 's'))
 					);
 					$div->appendChild(
 						Widget::Anchor(__('Cancel'), SYMPHONY_URL.'/login/', null, 'action-link')
@@ -100,7 +100,7 @@
 			// Normal login
 			else:
 
-				$fieldset->appendChild(new XMLElement('legend', __('Login')));
+				$fieldset->appendChild(new XMLElement('legend', __('Login'), array('role' => 'heading')));
 
 				// Display error message
 				if($this->failedLoginAttempt){
@@ -139,7 +139,7 @@
 				// Actions
 				$div = new XMLElement('div', NULL, array('class' => 'actions'));
 				$div->appendChild(
-					new XMLElement('button', __('Login'), array('name' => 'action[login]', 'type' => 'submit', 'accesskey' => 's'))
+					new XMLElement('button', __('Login'), array('name' => 'action[login]', 'type' => 'submit', 'accesskey' => 'l'))
 				);
 				$div->appendChild(
 					Widget::Anchor(__('Retrieve password?'), SYMPHONY_URL.'/login/retrieve-password/', null, 'action-link')

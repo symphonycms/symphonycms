@@ -249,3 +249,12 @@ label.inline-help > i {
 .centered {
 	text-align: center;
 }
+
+.accessible {
+	position:absolute;
+	left:-10000px;
+	top:auto;
+	width:1px;
+	height:1px;
+	overflow:hidden;
+}

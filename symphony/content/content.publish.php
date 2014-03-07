@@ -377,7 +377,12 @@
 						'entry' => $entry
 					));
 
-					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox'));
+					$tableData[count($tableData) - 1]->appendChild(Widget::Label(__('Select Entry %d', array($entry->get('id'))), null, 'accessible', null, array(
+						'for' => 'entry-' . $entry->get('id')
+					)));
+					$tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', NULL, 'checkbox', array(
+						'id' => 'entry-' . $entry->get('id')
+					)));
 
 					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow($tableData, NULL, 'id-' . $entry->get('id'));
@@ -388,7 +393,9 @@
 				Widget::TableHead($aTableHead),
 				NULL,
 				Widget::TableBody($aTableBody),
-				'selectable'
+				'selectable',
+				null,
+				array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
 			);
 
 			$this->Form->appendChild($table);

@@ -44,14 +44,18 @@
 
 					// Setup each cell
 					$td1 = Widget::TableData(Widget::Anchor($s->get('name'), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', NULL, 'content'));
+					$td1->appendChild(Widget::Label(__('Select Section %s', array($s->get('name'))), null, 'accessible', null, array(
+						'for' => 'section-' . $s->get('id')
+					)));
+					$td1->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox', array(
+						'id' => 'section-' . $s->get('id')
+					)));
+
 					$td2 = Widget::TableData(Widget::Anchor("$entry_count", SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
 					$td3 = Widget::TableData($s->get('navigation_group'));
 
-					$td3->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox'));
-
 					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
-
 				}
 			}
 
@@ -59,7 +63,9 @@
 				Widget::TableHead($aTableHead),
 				NULL,
 				Widget::TableBody($aTableBody),
-				'orderable selectable'
+				'orderable selectable',
+				null,
+				array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
 			);
 
 			$this->Form->appendChild($table);

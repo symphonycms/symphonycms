@@ -617,7 +617,12 @@
 		public static function Apply(array $options = null){
 			$fieldset = new XMLElement('fieldset', NULL, array('class' => 'apply'));
 			$div = new XMLElement('div');
-			$div->appendChild(Widget::Select('with-selected', $options));
+			$div->appendChild(Widget::Label(__('Actions'), null, 'accessible', null, array(
+				'for' => 'with-selected'
+			)));
+			$div->appendChild(Widget::Select('with-selected', $options, array(
+				'id' => 'with-selected'
+			)));
 			$fieldset->appendChild($div);
 			$fieldset->appendChild(new XMLElement('button', __('Apply'), array('name' => 'action[apply]', 'type' => 'submit')));
 

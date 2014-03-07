@@ -95,6 +95,18 @@
 						$td1 = Widget::TableData($a->getFullName(), 'inactive');
 					}
 
+					// Can this Author be edited by the current Author?
+					if (Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
+						if ($a->get('id') != Administration::instance()->Author->get('id')) {
+							$td1->appendChild(Widget::Label(__('Select Author %s', array($a->getFullName())), null, 'accessible', null, array(
+								'for' => 'author-' . $a->get('id')
+							)));
+							$td1->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox', array(
+								'id' => 'author-' . $a->get('id')
+							)));
+						}
+					}
+
 					$td2 = Widget::TableData(Widget::Anchor($a->get('email'), 'mailto:'.$a->get('email'), __('Email this author')));
 
 					if(!is_null($a->get('last_seen'))) {
@@ -120,12 +132,6 @@
 
 					$td5 = Widget::TableData($a->get("language") == NULL ? __("System Default") : $languages[$a->get("language")]);
 
-					if (Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
-						if ($a->get('id') != Administration::instance()->Author->get('id')) {
-							$td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
-						}
-					}
-
 					// Add a row to the body array, assigning each cell to the row
 					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
 						$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5));
@@ -140,7 +146,9 @@
 				Widget::TableHead($aTableHead),
 				NULL,
 				Widget::TableBody($aTableBody),
-				'selectable'
+				'selectable',
+				null,
+				array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
 			);
 
 			$this->Form->appendChild($table);
