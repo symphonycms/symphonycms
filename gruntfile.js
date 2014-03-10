@@ -6,6 +6,27 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
 
+        concat_css: {
+
+            all: {
+
+                src: [
+
+                    'symphony/assets/css/src/symphony.css',
+                    'symphony/assets/css/src/symphony.grids.css',
+                    'symphony/assets/css/src/symphony.forms.css',
+                    'symphony/assets/css/src/symphony.tables.css',
+                    'symphony/assets/css/src/symphony.frames.css',
+                    'symphony/assets/css/src/symphony.tabs.css',
+                    'symphony/assets/css/src/symphony.drawers.css',
+                    'symphony/assets/css/src/symphony.associations.css',
+                    'symphony/assets/css/src/symphony.notices.css',
+                    'symphony/assets/css/src/admin.css'
+                ],
+                dest: "symphony/assets/css/symphony.min.css"
+            },
+        },
+
         autoprefixer : {
 
             styles : {
@@ -14,16 +35,7 @@ module.exports = function (grunt) {
 
                     'symphony/assets/css/symphony.min.css' : [
 
-                        'symphony/assets/css/src/symphony.css',
-                        'symphony/assets/css/src/symphony.grids.css',
-                        'symphony/assets/css/src/symphony.forms.css',
-                        'symphony/assets/css/src/symphony.tables.css',
-                        'symphony/assets/css/src/symphony.frames.css',
-                        'symphony/assets/css/src/symphony.tabs.css',
-                        'symphony/assets/css/src/symphony.drawers.css',
-                        'symphony/assets/css/src/symphony.associations.css',
-                        'symphony/assets/css/src/symphony.notices.css',
-                        'symphony/assets/css/src/admin.css'
+                        'symphony/assets/css/symphony.min.css'
                     ],
 
                     'symphony/assets/css/devkit.min.css' : [
@@ -79,7 +91,7 @@ module.exports = function (grunt) {
             scripts : {
 
                 options: {
-                
+
                     preserveComments: 'some'
 
                 },
@@ -110,12 +122,13 @@ module.exports = function (grunt) {
         }
     });
 
+    grunt.loadNpmTasks('grunt-concat-css');
     grunt.loadNpmTasks('grunt-autoprefixer');
     grunt.loadNpmTasks('grunt-csso');
     //grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('default', ['autoprefixer', 'csso', 'uglify']);
-    grunt.registerTask('css', ['autoprefixer', 'csso']);
+    grunt.registerTask('default', ['concat_css', 'autoprefixer', 'csso', 'uglify']);
+    grunt.registerTask('css', ['concat_css', 'autoprefixer', 'csso']);
     grunt.registerTask('js', ['uglify']);
 };
