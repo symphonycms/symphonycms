@@ -6,9 +6,9 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
 
-        concat_css: {
+        concat: {
 
-            all: {
+            dist: {
 
                 src: [
 
@@ -122,13 +122,13 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.loadNpmTasks('grunt-concat-css');
+    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-autoprefixer');
     grunt.loadNpmTasks('grunt-csso');
     //grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('default', ['concat_css', 'autoprefixer', 'csso', 'uglify']);
-    grunt.registerTask('css', ['concat_css', 'autoprefixer', 'csso']);
+    grunt.registerTask('default', ['concat', 'autoprefixer', 'csso', 'uglify']);
+    grunt.registerTask('css', ['concat', 'autoprefixer', 'csso']);
     grunt.registerTask('js', ['uglify']);
 };
