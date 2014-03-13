@@ -216,6 +216,18 @@
 		}
 
 		/**
+		 * Returns an array of all the fields that can be filtered.
+		 *
+		 * @param string $location
+		 *	The location of the fields in the entry creator, whether they are
+		 *	'main' or 'sidebar'
+		 * @return array
+		 */
+		public function fetchFilterableFields($location = null){
+			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location, null, Field::__FILTERABLE_ONLY__);
+		}
+
+		/**
 		 * Returns an array of all the fields that can be toggled. This function
 		 * is used to help build the With Selected drop downs on the Publish
 		 * Index pages
