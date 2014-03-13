@@ -186,7 +186,7 @@ CREATE TABLE `tbl_fields_upload` (
 DROP TABLE IF EXISTS `tbl_forgotpass`;
 CREATE TABLE `tbl_forgotpass` (
   `author_id` int(11) NOT NULL DEFAULT '0',
-  `token` varchar(6) COLLATE utf8_unicode_ci NOT NULL,
+  `token` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
   `expiry` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`author_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
