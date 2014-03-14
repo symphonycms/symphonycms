@@ -88,33 +88,57 @@
 					// compatibility of the extension. This won't prevent a user from installing
 					// it, but it will let them know that it requires a version of Symphony greater
 					// then what they have.
+					$statuses = array();
 					$status = null;
+					$tdMessages = null;
+					$tdClass = null;
 
 					if(in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
-						$td3 = Widget::TableData(__('Not installed'), 'extension-can-install');
-						$status = 'inactive';
-					}
-					if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
-						$td3 = Widget::TableData(__('Requires Symphony %s', array($about['required_version'])));
-						$status = 'status-error';
-					}
-					if(in_array(EXTENSION_ENABLED, $about['status'])) {
-						$td3 = Widget::TableData(__('Enabled'));
-					}
-					if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+						array_push($statuses, 'inactive');
 						if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
-							$td3 = Widget::TableData(__('Incompatible, requires Symphony %s', array($about['required_version'])));
-							$status = 'status-error';
+							array_push($statuses, 'status-error');
+							$tdMessages = __('Not installed, requires Symphony %s', array($about['required_version']));
 						}
 						else {
-							$td3 = Widget::TableData(__('Update available'), 'extension-can-update');
-							$status = 'status-ok';
+							$tdMessages = __('Not installed');
+							$tdClass = 'extension-can-install';
 						}
 					}
 					if(in_array(EXTENSION_DISABLED, $about['status'])) {
-						$td3 = Widget::TableData(__('Disabled'));
-						$status = 'status-notice';
+						if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
+							array_push($statuses, 'status-error');
+							$tdMessages = __('Disabled, requires Symphony %s', array($about['required_version']));
+						}
+						else {
+							array_push($statuses, 'status-notice');
+							$tdMessages = __('Disabled');
+						}
 					}
+					if(in_array(EXTENSION_ENABLED, $about['status'])) {
+						if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+							if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
+								array_push($statuses, 'status-error');
+								$tdMessages = __('Update available, requires Symphony %s', array($about['required_version']));
+							}
+							else {
+								array_push($statuses, 'status-ok');
+								$tdMessages = __('Update available');
+								$tdClass = 'extension-can-update';
+							}
+						}
+						else {
+							if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
+								array_push($statuses, 'status-error');
+								$tdMessages = __('Enabled, requires Symphony %s', array($about['required_version']));
+							}
+							else {
+								$tdMessages = __('Enabled');
+							}
+						}
+					}
+
+					$td3 = Widget::TableData($tdMessages, $tdClass);
+					$status = implode(' ', $statuses);
 
 					$td4 = Widget::TableData(NULL);
 					if(isset($about['author'][0]) && is_array($about['author'][0])) {
