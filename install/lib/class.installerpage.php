@@ -180,7 +180,8 @@
 		}
 
 		protected function viewSuccess() {
-			$this->Form->setAttribute('action', SYMPHONY_URL);
+			$symphonyUrl = URL . '/' . Symphony::Configuration()->get('admin-path', 'symphony');
+			$this->Form->setAttribute('action', $symphonyUrl);
 
 			$div = new XMLElement('div');
 			$div->appendChild(
