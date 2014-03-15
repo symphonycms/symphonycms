@@ -353,7 +353,7 @@
 
 			$Permissions = new XMLElement('fieldset');
 			$Permissions->appendChild(new XMLElement('legend', __('Permission Settings')));
-			$Permissions->appendChild(new XMLElement('p', __('Symphony needs permission to read and write both files and directories.')));
+			$Permissions->appendChild(new XMLElement('p', __('Set the permissions Symphony uses when saving files/directories.')));
 
 			$Div = new XMLElement('div', null, array('class' => 'two columns'));
 			$Div->appendChild(Widget::label(__('Files'), Widget::Input('fields[file][write_mode]', $fields['file']['write_mode']), 'column'));
