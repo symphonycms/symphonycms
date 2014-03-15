@@ -46,6 +46,11 @@
 					'label' => __('Authors'),
 					'sortable' => true,
 					'handle' => 'author'
+				),
+				array(
+					'label' => __('Links'),
+					'sortable' => false,
+					'handle' => 'links'
 				)
 			);
 
@@ -145,8 +150,16 @@
 						$td4->setValue($link instanceof XMLElement ? $link->generate() : $link);
 					}
 
+					$links = array();
+					if ($about['github'] != '') $links['github'] = Widget::Anchor('GitHub', General::validateURL($about['github']))->generate();
+					if ($about['discuss'] != '') $links['discuss'] = Widget::Anchor('Discuss', General::validateURL($about['discuss']))->generate();
+					if ($about['homepage'] != '') $links['homepage'] = Widget::Anchor('Homepage', General::validateURL($about['homepage']))->generate();
+					if ($about['wiki'] != '') $links['wiki'] = Widget::Anchor('Wiki', General::validateURL($about['wiki']))->generate();
+					if ($about['issues'] != '') $links['issues'] = Widget::Anchor('Issues', General::validateURL($about['issues']))->generate();
+					$td5 = Widget::TableData($links);
+
 					// Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4), $status);
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5), $status);
 
 				}
 			}
