@@ -35,11 +35,7 @@
 			$this->setTitle($this->_page_title);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 1);
 
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/src/symphony.css', 'screen', 30);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/src/symphony.grids.css', 'screen', 31);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/src/symphony.forms.css', 'screen', 32);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/src/symphony.frames.css', 'screen', 33);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/src/installer.css', 'screen', 40);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/installer.min.css', 'screen', 30);
 
 			return parent::generate($page);
 		}
