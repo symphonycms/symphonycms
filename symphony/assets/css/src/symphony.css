@@ -62,6 +62,10 @@ body {
 	color: #222;
 }
 
+body > div {
+	font-size: 1.1rem;
+}
+
 /* Headlines */
 
 h1,
