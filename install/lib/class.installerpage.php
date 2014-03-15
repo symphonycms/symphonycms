@@ -120,7 +120,7 @@
 
 			if(!empty($this->_params['errors'])){
 				$div = new XMLElement('div');
-				$this->__appendError(array_keys($this->_params['errors']), $div, __('Symphony needs to meet the following requirements before thing can be taken to the "next level".'));
+				$this->__appendError(array_keys($this->_params['errors']), $div, __('Symphony needs the following requirements to be met before things can be taken to the “next level”.'));
 
 				$this->Form->appendChild($div);
 			}
@@ -128,7 +128,7 @@
 
 		protected function viewLanguages() {
 			$h2 = new XMLElement('h2', __('Language selection'));
-			$p = new XMLElement('p', __('This installation can speak in different languages, which one are you fluent in?'));
+			$p = new XMLElement('p', __('This installation can speak in different languages. Which one are you fluent in?'));
 
 			$this->Form->appendChild($h2);
 			$this->Form->appendChild($p);
@@ -187,7 +187,7 @@
 				new XMLElement('h2', __('The floor is yours'))
 			);
 			$div->appendChild(
-				new XMLElement('p', __('Thanks for taking the quick, yet epic installation journey with us. It\'s now your turn to shine!'))
+				new XMLElement('p', __('Thanks for taking the quick, yet epic installation journey with us. It’s now your turn to shine!'))
 			);
 			$this->Form->appendChild($div);
 
@@ -201,7 +201,7 @@
 			if($ul->getNumberOfChildren() !== 0){
 				$this->Form->appendChild(
 					new XMLElement('p',
-						__('Looks like the following extensions couldn’t be enabled and must be manually installed. It\'s a minor setback in our otherwise prosperous future together.')
+						__('Looks like the following extensions couldn’t be enabled and must be manually installed. It’s a minor setback in our otherwise prosperous future together.')
 					)
 				);
 				$this->Form->appendChild($ul);
@@ -209,12 +209,12 @@
 
 			$this->Form->appendChild(
 				new XMLElement('p',
-					__('I think, you and I will achieve great things together. Just one last thing, how about we remove the %s folder and really secure the safety of our relationship.', array('<code>' . basename(INSTALL) . '</code>'))
+					__('I think you and I will achieve great things together. Just one last thing: how about we remove the %s folder and secure the safety of our relationship?', array('<code>' . basename(INSTALL) . '</code>'))
 				)
 			);
 
 			$submit = new XMLElement('div', null, array('class' => 'submit'));
-			$submit->appendChild(Widget::Input('submit', __('Ok, now take me to the login page'), 'submit'));
+			$submit->appendChild(Widget::Input('submit', __('Okay, now take me to the login page'), 'submit'));
 
 			$this->Form->appendChild($submit);
 		}
@@ -236,7 +236,7 @@
 				new XMLElement('h2', __('Find something sturdy to hold on to because things are about to get awesome.'))
 			);
 			$div->appendChild(
-				new XMLElement('p', __('Think of this as a pre-game warm up. You know you\'re going to kick-ass, so you\'re savouring every moment before the show. Welcome to the Symphony install page.'))
+				new XMLElement('p', __('Think of this as a pre-game warm up. You know you’re going to kick-ass, so you’re savouring every moment before the show. Welcome to the Symphony install page.'))
 			);
 
 			$this->Form->appendChild($div);
@@ -369,7 +369,7 @@
 
 			$User = new XMLElement('fieldset');
 			$User->appendChild(new XMLElement('legend', __('User Information')));
-			$User->appendChild(new XMLElement('p', __('Once installed, you will be able to login to the Symphony admin with these user details.')));
+			$User->appendChild(new XMLElement('p', __('Once installation is complete, you will be able to log in to the Symphony admin area with these user details.')));
 
 			// Username
 			$label = Widget::label(__('Username'), Widget::Input('fields[user][username]', $fields['user']['username']));
