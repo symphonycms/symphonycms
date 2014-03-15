@@ -179,7 +179,7 @@ tr.ordering a {
 	Status information
 -----------------------------------------------------------------------------*/
 
-tr[class^=status-] {
+tr[class*=status-] {
 	border-left-width: 0.8rem;
 	border-left-style: solid;
 }
@@ -196,24 +196,24 @@ tr.status-error {
 	border-left-color: #c4301e;
 }
 
-tr[class^=status-].selected {
+tr[class*=status-].selected {
 	border-left-color: #4967a1;
 }
 
-tr[class^=status-] td:first-of-type {
+tr[class*=status-] td:first-of-type {
 	padding-left: 1.5rem;
 }
 
-tr[class^=status-] a:first-of-type::after {
+tr[class*=status-] a:first-of-type::after {
 	content: attr(data-status);
 	color: transparent;
 	border-bottom: 1px solid #f5f5f5;
 }
 
-tr[class^=status-]:nth-child(even):hover a:first-of-type::after {
+tr[class*=status-]:nth-child(even):hover a:first-of-type::after {
 	border-bottom-color: #fff;
 }
 
-tr[class^=status-]:hover a:first-of-type::after {
+tr[class*=status-]:hover a:first-of-type::after {
 	color: #b4b4b4;
 }
