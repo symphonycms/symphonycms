@@ -274,7 +274,7 @@
 			$field_id = $this->get('id');
 
 			if(empty($data)) return;
-			//var_dump($data);
+			
 			if($andOperation) {
 				foreach($data as $date) {
 					// Prevent the DateTimeObj creating a range that isn't supported by MySQL.
@@ -355,7 +355,6 @@
 			$name = $this->get('element_name');
 			$value = null;
 
-
 			// New entry
 			if((is_null($data) || empty($data)) && is_null($flagWithError) && !is_null($this->get('pre_populate'))) {
 				$date = self::parseDate($this->get('pre_populate'));
@@ -365,7 +364,6 @@
 			// Error entry, display original data
 			else if(!is_null($flagWithError)) {
 				$value = $_POST['fields'][$name];
-				
 			}
 			
 			// Empty entry
@@ -416,7 +414,6 @@
 					$date = self::parseDate($this->get('pre_populate'));
 					$date = $date['start'];
 					$timestamp = DateTimeObj::format($date, DateTimeObj::getSetting('datetime_format'));
-
 				}
 			}
 
