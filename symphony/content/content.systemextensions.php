@@ -43,14 +43,14 @@
 					'sortable' => false,
 				),
 				array(
-					'label' => __('Authors'),
-					'sortable' => true,
-					'handle' => 'author'
-				),
-				array(
 					'label' => __('Links'),
 					'sortable' => false,
 					'handle' => 'links'
+				),
+				array(
+					'label' => __('Authors'),
+					'sortable' => true,
+					'handle' => 'author'
 				)
 			);
 
@@ -121,7 +121,15 @@
 						$status = 'status-notice';
 					}
 
-					$td4 = Widget::TableData(NULL);
+					$links = array();
+					if ($about['github'] != '') $links['github'] = Widget::Anchor('GitHub', General::validateURL($about['github']))->generate();
+					if ($about['discuss'] != '') $links['discuss'] = Widget::Anchor('Discuss', General::validateURL($about['discuss']))->generate();
+					if ($about['homepage'] != '') $links['homepage'] = Widget::Anchor('Homepage', General::validateURL($about['homepage']))->generate();
+					if ($about['wiki'] != '') $links['wiki'] = Widget::Anchor('Wiki', General::validateURL($about['wiki']))->generate();
+					if ($about['issues'] != '') $links['issues'] = Widget::Anchor('Issues', General::validateURL($about['issues']))->generate();
+					$td4 = Widget::TableData($links);
+
+					$td5 = Widget::TableData(NULL);
 					if(isset($about['author'][0]) && is_array($about['author'][0])) {
 						$authors = '';
 						foreach($about['author'] as $i => $author) {
@@ -137,7 +145,7 @@
 									. ($i != count($about['author']) - 1 ? ", " : "");
 						}
 
-						$td4->setValue($authors);
+						$td5->setValue($authors);
 					}
 					else {
 						if(isset($about['author']['website']))
@@ -147,16 +155,8 @@
 						else
 							$link = $about['author']['name'];
 
-						$td4->setValue($link instanceof XMLElement ? $link->generate() : $link);
+						$td5->setValue($link instanceof XMLElement ? $link->generate() : $link);
 					}
-
-					$links = array();
-					if ($about['github'] != '') $links['github'] = Widget::Anchor('GitHub', General::validateURL($about['github']))->generate();
-					if ($about['discuss'] != '') $links['discuss'] = Widget::Anchor('Discuss', General::validateURL($about['discuss']))->generate();
-					if ($about['homepage'] != '') $links['homepage'] = Widget::Anchor('Homepage', General::validateURL($about['homepage']))->generate();
-					if ($about['wiki'] != '') $links['wiki'] = Widget::Anchor('Wiki', General::validateURL($about['wiki']))->generate();
-					if ($about['issues'] != '') $links['issues'] = Widget::Anchor('Issues', General::validateURL($about['issues']))->generate();
-					$td5 = Widget::TableData($links);
 
 					// Add a row to the body array, assigning each cell to the row
 					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5), $status);

@@ -803,12 +803,12 @@
 
 				$about = array(
 					'name' => $xpath->evaluate('string(ext:name)', $extension),
+					'handle' => $name,
 					'github' => $xpath->evaluate('string(ext:repo)', $extension),
 					'discuss' => $xpath->evaluate('string(ext:url[@type="discuss"])', $extension),
 					'homepage' => $xpath->evaluate('string(ext:url[@type="homepage"])', $extension),
 					'wiki' => $xpath->evaluate('string(ext:url[@type="wiki"])', $extension),
 					'issues' => $xpath->evaluate('string(ext:url[@type="issues"])', $extension),
-					'handle' => $name,
 					'status' => array()
 				);
 
