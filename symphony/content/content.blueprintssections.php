@@ -697,7 +697,10 @@
 				}
 
 				if($canProceed){
-					$meta['handle'] = Lang::createHandle(isset($meta['handle']) ? $meta['handle'] : $meta['name']);
+					$meta['handle'] = Lang::createHandle((isset($meta['handle']) && !empty($meta['handle']))
+						? $meta['handle']
+						: $meta['name']
+					);
 
 					// If we are creating a new Section
 					if(!$edit) {
