@@ -624,19 +624,20 @@
 					$canProceed = false;
 				}
 
-				// Check for duplicate section handle
-				elseif($edit) {
-					$s = SectionManager::fetchIDFromHandle(Lang::createHandle($meta['name']));
+				// Check for duplicate section handle during edit
+				else if($edit) {
+					$s = SectionManager::fetchIDFromHandle(Lang::createHandle($meta['handle']));
 					if(
-						$meta['name'] !== $existing_section->get('name')
+						$meta['handle'] !== $existing_section->get('handle')
 						&& !is_null($s) && $s !== $section_id
 					) {
-						$this->_errors['name'] = __('A Section with the name %s already exists', array('<code>' . $meta['name'] . '</code>'));
+						$this->_errors['handle'] = __('A Section with the handle %s already exists', array('<code>' . $meta['handle'] . '</code>'));
 						$canProceed = false;
 					}
 				}
-				elseif(!is_null(SectionManager::fetchIDFromHandle(Lang::createHandle($meta['name'])))) {
-					$this->_errors['name'] = __('A Section with the name %s already exists', array('<code>' . $meta['name'] . '</code>'));
+				// Existing section during creation
+				else if(!is_null(SectionManager::fetchIDFromHandle(Lang::createHandle($meta['handle'])))) {
+					$this->_errors['handle'] = __('A Section with the handle %s already exists', array('<code>' . $meta['handle'] . '</code>'));
 					$canProceed = false;
 				}
 
@@ -696,7 +697,7 @@
 				}
 
 				if($canProceed){
-					$meta['handle'] = Lang::createHandle($meta['name']);
+					$meta['handle'] = Lang::createHandle(isset($meta['handle']) ? $meta['handle'] : $meta['name']);
 
 					// If we are creating a new Section
 					if(!$edit) {
