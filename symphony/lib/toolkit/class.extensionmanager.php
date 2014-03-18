@@ -834,6 +834,10 @@
 					$required_max_version = $xpath->evaluate('string(@max)', $release);
 					$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
 
+					// Remove pre-release notes fro the current Symphony version so that
+					// we don't get false erros in the backend
+					$current_symphony_version = str_replace(array('dev', 'beta1', 'beta2', 'rc1', 'rc2'), '', $current_symphony_version);
+
 					// Munge the version number so that it makes sense in the backend.
 					// Consider, 2.3.x. As the min version, this means 2.3 onwards,
 					// for the max it implies any 2.3 release. RE: #1019
@@ -862,6 +866,7 @@
 					$a = array(
 						'name' => $xpath->evaluate('string(ext:name)', $author),
 						'website' => $xpath->evaluate('string(ext:website)', $author),
+						'github' => $xpath->evaluate('string(ext:name/@github)', $author),
 						'email' => $xpath->evaluate('string(ext:email)', $author)
 					);
 

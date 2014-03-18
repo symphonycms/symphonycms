@@ -69,6 +69,7 @@
 			else{
 				foreach($extensions as $name => $about){
 
+					// Name
 					$td1 = Widget::TableData($about['name']);
 					$td1->appendChild(Widget::Label(__('Select %s Extension', array($about['name'])), null, 'accessible', null, array(
 						'for' => 'extension-' . $name
@@ -76,91 +77,97 @@
 					$td1->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox', array(
 						'id' => 'extension-' . $name
 					)));
-					$installed_version = Symphony::ExtensionManager()->fetchInstalledVersion($name);
 
 					// Version
-					if(is_null($installed_version)) {
+					$installed_version = Symphony::ExtensionManager()->fetchInstalledVersion($name);
+
+					if(in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
 						$td2 = Widget::TableData($about['version']);
 					}
-					elseif($installed_version != $about['version']) {
+					elseif(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
 						$td2 = Widget::TableData($installed_version . '<i> → ' . $about['version'] . '</i>');
 					}
 					else {
 						$td2 = Widget::TableData($installed_version);
 					}
 
-					// If the extension is using the new `extension.meta.xml` format, check the
-					// compatibility of the extension. This won't prevent a user from installing
-					// it, but it will let them know that it requires a version of Symphony greater
-					// then what they have.
-					$status = null;
+					// Status
+					$trClasses = array();
+					$trStatus = '';
+					$tdMessage = __('Status unavailable');
 
 					if(in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
-						$td3 = Widget::TableData(__('Not installed'), 'extension-can-install');
-						$status = 'inactive';
-					}
-					if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
-						$td3 = Widget::TableData(__('Requires Symphony %s', array($about['required_version'])));
-						$status = 'status-error';
-					}
-					if(in_array(EXTENSION_ENABLED, $about['status'])) {
-						$td3 = Widget::TableData(__('Enabled'));
-					}
-					if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
-						if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
-							$td3 = Widget::TableData(__('Incompatible, requires Symphony %s', array($about['required_version'])));
-							$status = 'status-error';
-						}
-						else {
-							$td3 = Widget::TableData(__('Update available'), 'extension-can-update');
-							$status = 'status-ok';
-						}
+						$tdMessage = __('Not installed');
+						$trClasses[] = 'inactive';
+						$trClasses[] = 'extension-can-install';
 					}
 					if(in_array(EXTENSION_DISABLED, $about['status'])) {
-						$td3 = Widget::TableData(__('Disabled'));
-						$status = 'status-notice';
+						$tdMessage = __('Disabled');
+						$trStatus = 'status-notice';
+					}
+					if(in_array(EXTENSION_ENABLED, $about['status'])) {
+						$tdMessage = __('Enabled');
+					}
+					if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+						$tdMessage = __('Update available');
+						$trClasses[] = 'extension-can-update';
+						$trStatus = 'status-ok';
+					}
+					if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
+						$tdMessage .= ', ' . __('requires Symphony %s', array($about['required_version']));
+						$trStatus = 'status-error';
 					}
 
-					$links = array();
-					if ($about['github'] != '') $links['github'] = Widget::Anchor('GitHub', General::validateURL($about['github']))->generate();
-					if ($about['discuss'] != '') $links['discuss'] = Widget::Anchor('Discuss', General::validateURL($about['discuss']))->generate();
-					if ($about['homepage'] != '') $links['homepage'] = Widget::Anchor('Homepage', General::validateURL($about['homepage']))->generate();
-					if ($about['wiki'] != '') $links['wiki'] = Widget::Anchor('Wiki', General::validateURL($about['wiki']))->generate();
-					if ($about['issues'] != '') $links['issues'] = Widget::Anchor('Issues', General::validateURL($about['issues']))->generate();
-					$td4 = Widget::TableData($links);
+					$trClasses[] = $trStatus;
+					$td3 = Widget::TableData($tdMessage);
 
-					$td5 = Widget::TableData(NULL);
-					if(isset($about['author'][0]) && is_array($about['author'][0])) {
-						$authors = '';
-						foreach($about['author'] as $i => $author) {
+					// Links
+					$tdLinks = array();
 
-							if(isset($author['website']))
-								$link = Widget::Anchor($author['name'], General::validateURL($author['website']));
-							else if(isset($author['email']))
-								$link = Widget::Anchor($author['name'], 'mailto:' . $author['email']);
-							else
-								$link = $author['name'];
+					if($about['github'] != '') {
+						$tdLinks['github'] = Widget::Anchor('GitHub', General::validateURL($about['github']))->generate();
+					}
+					if($about['discuss'] != '') {
+						$tdLinks['discuss'] = Widget::Anchor('Discuss', General::validateURL($about['discuss']))->generate();
+					}
+					if($about['homepage'] != '') {
+						$tdLinks['homepage'] = Widget::Anchor('Homepage', General::validateURL($about['homepage']))->generate();
+					}
+					if($about['wiki'] != '') {
+						$tdLinks['wiki'] = Widget::Anchor('Wiki', General::validateURL($about['wiki']))->generate();
+					}
+					if($about['issues'] != '') {
+						$tdLinks['issues'] = Widget::Anchor('Issues', General::validateURL($about['issues']))->generate();
+					}
 
-							$authors .= ($link instanceof XMLElement ? $link->generate() : $link)
-									. ($i != count($about['author']) - 1 ? ", " : "");
+					$td4 = Widget::TableData($tdLinks);
+
+					// Authors
+					$tdAuthors = array();
+
+					if(!is_array($about['author'])) {
+						$about['author'] = array($about['author']);
+					}
+
+					foreach($about['author'] as $author) {
+						if(isset($author['website'])) {
+							$tdAuthors[] = Widget::Anchor($author['name'], General::validateURL($author['website']))->generate();
 						}
-
-						$td5->setValue($authors);
+						elseif(isset($author['github'])) {
+							$tdAuthors[] = Widget::Anchor($author['name'],  General::validateURL('https://github.com/' . $author['github']))->generate();
+						}
+						elseif(isset($author['email'])) {
+							$tdAuthors[] = Widget::Anchor($author['name'], 'mailto:' . $author['email'])->generate();
+						}
+						else {
+							$tdAuthors[] = $author['name'];
+						}
 					}
-					else {
-						if(isset($about['author']['website']))
-							$link = Widget::Anchor($about['author']['name'], General::validateURL($about['author']['website']));
-						else if(isset($about['author']['email']))
-							$link = Widget::Anchor($about['author']['name'], 'mailto:' . $about['author']['email']);
-						else
-							$link = $about['author']['name'];
 
-						$td5->setValue($link instanceof XMLElement ? $link->generate() : $link);
-					}
+					$td5 = Widget::TableData($tdAuthors);
 
 					// Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5), $status);
-
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5), implode(' ', $trClasses));
 				}
 			}
 
