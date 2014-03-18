@@ -396,7 +396,9 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 	Blueprints - Datasource Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function() {
+Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(action) {
+	if(!action) return;
+
 	var context = $('#ds-context'),
 		source = $('#ds-source'),
 		name = Symphony.Elements.contents.find('input[name="fields[name]"]').attr('data-updated', 0),
