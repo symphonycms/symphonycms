@@ -44,7 +44,7 @@
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
 				$time = Widget::Time();
-	
+
 				switch($this->_context[2]) {
 					case 'saved':
 						$this->pageAlert(
@@ -718,7 +718,7 @@
 
 			// XML
 			$group = new XMLElement('div', NULL, array('class' => 'two columns'));
-	
+
 			$label = Widget::Label(__('Included Elements'));
 			$label->setAttribute('class', 'column');
 
@@ -914,7 +914,7 @@
 			$namespaces = Widget::Label(__('Namespace Declarations'));
 			$namespaces->appendChild(new XMLElement('i', __('Optional')));
 
-			$duplicator = new XMLElement('div');			
+			$duplicator = new XMLElement('div');
 			$duplicator->setAttribute('class', 'frame filters-duplicator');
 			$namespaces->appendChild($duplicator);
 
@@ -996,7 +996,7 @@
 			else $fieldset->appendChild($label);
 
 			$this->Form->appendChild($fieldset);
-			
+
 			// Connections
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -1026,7 +1026,7 @@
 
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
-		
+
 
 		// Call the provided datasources to let them inject their filters
 		// @todo Ideally when a new Datasource is chosen an AJAX request will fire
@@ -1135,12 +1135,12 @@
 				$fieldset = new XMLElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Source')));
-		
+
 				$source = file_get_contents($file);
 				$code = new XMLElement('code', htmlspecialchars($source));
 				$pre = new XMLElement('pre');
 				$pre->appendChild($code);
-				
+
 				$fieldset->appendChild($pre);
 				$this->Form->appendChild($fieldset);
 			}
@@ -1432,7 +1432,7 @@
 
 							$params['order'] = $fields['order'];
 							$params['group'] = $fields['group'];
-							$params['paginateresults'] = (isset($fields['paginate_results']) ? 'yes' : 'no');
+							$params['paginateresults'] = (isset($fields['paginate_results']) ? 'no' : 'yes');
 							$params['limit'] = $fields['max_records'];
 							$params['startpage'] = $fields['page_number'];
 							$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
