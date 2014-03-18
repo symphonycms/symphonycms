@@ -21,6 +21,11 @@ Symphony.View.add('/:context*:', function() {
 	Symphony.Elements.wrapper.find('div.drawer').symphonyDrawer();
 	Symphony.Elements.header.symphonyNotify();
 
+	// Initialise tag lists inside duplicators
+	Symphony.Elements.contents.find('.duplicator').on('constructshow.duplicator', '.instance', function() {
+		$(this).find('.tags').symphonyTags();
+	});
+
 	// Navigation sizing
 	Symphony.Elements.window.on('resize.admin nav.admin', function() {
 		var content = Symphony.Elements.nav.find('ul.content'),
