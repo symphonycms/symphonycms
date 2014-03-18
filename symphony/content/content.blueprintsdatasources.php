@@ -705,7 +705,7 @@
 			$fieldset->appendChild($group);
 
 			$label = Widget::Label();
-			$input = Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] == 'yes' ? array('checked' => 'checked') : NULL));
+			$input = Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] !== 'yes' ? array('checked' => 'checked') : NULL));
 			$label->setValue(__('%1$s Disable pagination and return all entries', array($input->generate(false))));
 
 			$fieldset->appendChild($label);
