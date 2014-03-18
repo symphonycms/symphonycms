@@ -69,7 +69,7 @@
 			);
 
 			$this->Form->appendChild($table);
-			
+
 			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array(
 				'id' => 'version'
 			));
@@ -164,21 +164,24 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+
 			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('meta[name]', (isset($meta['name']) ? General::sanitize($meta['name']) : null)));
-
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
-			$label = Widget::Label();
-			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : null));
-			$label->setValue(__('%s Hide this section from the back-end menu', array($input->generate(false))));
-			$namediv->appendChild($label);
+			// @TODO: make Handle work (https://github.com/symphonycms/symphony-2/issues/1916)
+			$label = Widget::Label(__('Handle'));
+			$label->appendChild(Widget::Input('meta[handle]', (isset($meta['handle']) ? General::sanitize($meta['handle']) : null)));
+			if(isset($this->_errors['handle'])) $namediv->appendChild(Widget::Error($label, $this->_errors['handle']));
+			else $namediv->appendChild($label);
+
 			$div->appendChild($namediv);
 
 			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
+
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label(__('Navigation Group'));
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
@@ -197,6 +200,11 @@
 
 				$navgroupdiv->appendChild($ul);
 			}
+
+			$label = Widget::Label();
+			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : null));
+			$label->setValue(__('%s Hide this section from the back-end menu', array($input->generate(false))));
+			$navgroupdiv->appendChild($label);
 
 			$div->appendChild($navgroupdiv);
 
@@ -382,18 +390,19 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+
 			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
 			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
-
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
-			$label = Widget::Label();
-			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : NULL));
-			$label->setValue(__('%s Hide this section from the back-end menu', array($input->generate(false))));
-			$namediv->appendChild($label);
+			$label = Widget::Label(__('Handle'));
+			$label->appendChild(Widget::Input('meta[handle]', General::sanitize($meta['handle'])));
+			if(isset($this->_errors['handle'])) $namediv->appendChild(Widget::Error($label, $this->_errors['handle']));
+			else $namediv->appendChild($label);
+
 			$div->appendChild($namediv);
 
 			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
@@ -415,6 +424,11 @@
 
 				$navgroupdiv->appendChild($ul);
 			}
+
+			$label = Widget::Label();
+			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : NULL));
+			$label->setValue(__('%s Hide this section from the back-end menu', array($input->generate(false))));
+			$navgroupdiv->appendChild($label);
 
 			$div->appendChild($navgroupdiv);
 
@@ -527,7 +541,7 @@
 				 *  '/blueprints/sections/'
 				 * @param array $checked
 				 *  An array of the selected rows. The value is usually the ID of the
-				 *  the associated object. 
+				 *  the associated object.
 				 */
 				Symphony::ExtensionManager()->notifyMembers('CustomActions', '/blueprints/sections/', array(
 					'checked' => $checked
