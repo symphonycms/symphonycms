@@ -317,20 +317,20 @@
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-			$this->appendRequiredCheckbox($div);
-			$this->appendShowColumnCheckbox($div);
-			$wrapper->appendChild($div);
+ 			// Default date
+            $label = Widget::Label(__('Default date'));
+            $help = new XMLElement('i', __('optional, accepts absolute or relative dates'));
+            $input = Widget::Input('fields['.$this->get('sortorder').'][pre_populate]', $this->get('pre_populate') ? $this->get('pre_populate') : '', 'input');
+            $label->appendChild($help);
+            $label->appendChild($input);
+            $wrapper->appendChild($label);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-
-			$label = Widget::Label();
-			$label->setAttribute('class', 'column');
-			$input = Widget::Input('fields['.$this->get('sortorder').'][pre_populate]', $this->get('pre_populate')? $this->get('pre_populate') : '', 'input');
-			$label->setValue(__('Pre populate with: %s', array($input->generate())));			
-			$div->appendChild($label);
-
-			$wrapper->appendChild($div);
+            $fieldset = new XMLElement('fieldset');
+            $div = new XMLElement('div', NULL, array('class' => 'two columns'));
+            $this->appendRequiredCheckbox($div);
+            $this->appendShowColumnCheckbox($div);
+            $fieldset->appendChild($div);
+            $wrapper->appendChild($fieldset);
 		}
 
 		public function commit() {
