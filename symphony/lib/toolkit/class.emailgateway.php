@@ -543,27 +543,50 @@
 		protected function getSectionAttachments() {
 			$output = '';
 			foreach ($this->_attachments as $key => $file) {
-				
-				$fileContent = null;
-				
-				// If the attachement is an url
+
+				$file_content = null;
+				$tmp_file = false;
+
+				// If the attachment is a URL, download the file to a temporary location.
+				// This prevents downloading the file twice - once for info, once for data.
 				if (filter_var($file['file'], FILTER_VALIDATE_URL)) {
 					require_once(TOOLKIT . '/class.gateway.php');
-					// use gateway for urls
 					$gateway = new Gateway();
 					$gateway->init($file['file']);
 					$gateway->setopt('TIMEOUT', 30);
-					$fileContent = @$gateway->exec();
+					$file_content = @$gateway->exec();
+
+					$tmp_file = tempnam(TMP, 'attachment');
+					@file_put_contents($tmp_file, $file_content);
+
+					$original_filename = $file['file'];
+					$file['file'] = $tmp_file;
+
+					// Without this the temporary filename will be used. Ugly!
+					if (is_null($file['filename'])) {
+						$file['filename'] = basename($original_filename);
+					}
+
 				} else {
-					$fileContent = @file_get_contents($file['file']);
+					$file_content = @file_get_contents($file['file']);
 				}
-				
-				if ($fileContent !== FALSE && !empty($fileContent)) {
+
+				if ($file_content !== FALSE && !empty($file_content)) {
 					$output .= $this->boundaryDelimiterLine('multipart/mixed')
 						 . $this->contentInfoString(NULL, $file['file'], $file['filename'], $file['charset'])
-						 . EmailHelper::base64ContentTransferEncode($fileContent);
+						 . EmailHelper::base64ContentTransferEncode($file_content);
 				} else {
-					throw new EmailGatewayException(__('The content of the file `%s` could not be loaded.', array($file['file'])));
+					if (!$tmp_file === FALSE) {
+						$filename = $original_filename;
+					}
+					else {
+						$filename = $file['file'];
+					}
+					throw new EmailGatewayException(__('The content of the file `%s` could not be loaded.', array($filename)));
+				}
+
+				if (!$tmp_file === FALSE) {
+					@unlink($tmp_file);
 				}
 			}
 			return $output;
