@@ -172,7 +172,6 @@
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
-			// @TODO: make Handle work (https://github.com/symphonycms/symphony-2/issues/1916)
 			$label = Widget::Label(__('Handle'));
 			$label->appendChild(Widget::Input('meta[handle]', (isset($meta['handle']) ? General::sanitize($meta['handle']) : null)));
 			if(isset($this->_errors['handle'])) $namediv->appendChild(Widget::Error($label, $this->_errors['handle']));

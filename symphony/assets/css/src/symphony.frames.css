@@ -106,7 +106,6 @@
 .frame .content {
 	box-sizing: border-box;
 	padding: 1rem;
-	overflow: hidden;
 }
 
 .frame .instance:last-of-type .content {
@@ -391,7 +390,6 @@ fieldset.frame,
 
 .duplicator ol {
 	border-radius: 0.4rem;
-	overflow: hidden;
 	margin-top: -0.1rem;
 }
 

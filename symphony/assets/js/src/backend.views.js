@@ -396,7 +396,9 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 	Blueprints - Datasource Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function() {
+Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(action) {
+	if(!action) return;
+
 	var context = $('#ds-context'),
 		source = $('#ds-source'),
 		name = Symphony.Elements.contents.find('input[name="fields[name]"]').attr('data-updated', 0),
@@ -509,7 +511,7 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function() {
 	Blueprints - Event Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add(Symphony.Context.get('symphony') + '/blueprints/events/:action:/:name:/:status:', function() {
+Symphony.View.add('/blueprints/events/:action:/:name:/:status:', function() {
 	var context = $('#event-context'),
 		source = $('#event-source'),
 		filters = $('#event-filters'),
@@ -566,7 +568,7 @@ Symphony.View.add(Symphony.Context.get('symphony') + '/blueprints/events/:action
 	System - Authors
 --------------------------------------------------------------------------*/
 
-Symphony.View.add(Symphony.Context.get('symphony') + '/system/authors/:action:/:id:/:status:', function(action, id) {
+Symphony.View.add('/system/authors/:action:/:id:/:status:', function(action, id) {
 	var password = $('#password');
 
 	// Add change password overlay
@@ -592,8 +594,7 @@ Symphony.View.add(Symphony.Context.get('symphony') + '/system/authors/:action:/:
 /*--------------------------------------------------------------------------
 	System - Extensions
 --------------------------------------------------------------------------*/
-
-Symphony.View.add(Symphony.Context.get('symphony') + '/system/extensions/:context*:', function() {
+Symphony.View.add('/system/extensions/:context*:', function() {
 	Symphony.Language.add({
 		'Enable': false,
 		'Install': false,
@@ -603,8 +604,8 @@ Symphony.View.add(Symphony.Context.get('symphony') + '/system/extensions/:contex
 	// Update controls contextually
 	Symphony.Elements.contents.find('.actions select').on('click.admin focus.admin', function(event) {
 		var selected = Symphony.Elements.contents.find('tr.selected'),
-			canUpdate = selected.find('.extension-can-update').length,
-			canInstall = selected.find('.extension-can-install').length,
+			canUpdate = selected.filter('.extension-can-update').length,
+			canInstall = selected.filter('.extension-can-install').length,
 			canEnable = selected.length - canUpdate - canInstall,
 			control = Symphony.Elements.contents.find('.actions option[value="enable"]'),
 			label = [];
