@@ -33,7 +33,7 @@
 			$this->set('pre_populate','today');
 			$this->set('required', 'no');
 			$this->set('location', 'sidebar');
-			
+
 		}
 
 	/*-------------------------------------------------------------------------
@@ -146,7 +146,7 @@
 			// Relative date, aka '+ 3 weeks'
 			else {
 				// Handles the case of `to` filters
-				
+
 				if($equal_to || is_null($direction)) {
 					$parts['start'] = $parts['end'] = DateTimeObj::get('Y-m-d H:i:s', $string);
 				}
@@ -189,18 +189,18 @@
 
 		public static function parseFilter(&$string) {
 			$string = self::cleanFilterString($string);
-			
+
 			// Relative check, earlier or later
 			if(preg_match('/^(equal to or )?(earlier|later) than (.*)$/i', $string, $match)) {
 				$string = $match[3];
-				
+
 				// Validate date
 				if(!DateTimeObj::validate($string)) return self::ERROR;
-				
+
 				// Date is equal to or earlier/later than
 				// Date is earlier/later than
 				$parts = self::parseDate($string, $match[2], $match[1] == "equal to or ");
-				
+
 				$earlier = $parts['start'];
 				$later = $parts['end'];
 
@@ -216,7 +216,7 @@
 						$string = self::$min_date . ' to ' . $earlier;
 						break;
 				}
-				
+
 			}
 
 			// Look to see if its a shorthand date (year only), and convert to full date
@@ -232,7 +232,7 @@
 
 				$parts = self::parseDate($string);
 				$string = $parts['start'] . ' to ' . $parts['end'];
-				
+
 			}
 
 			// Match date ranges
@@ -260,7 +260,7 @@
 			if(!DateTimeObj::validate($start) || !DateTimeObj::validate($end)) return self::ERROR;
 
 			$string = array('start' => $start, 'end' => $end);
-			
+
 			return self::RANGE;
 		}
 
@@ -274,7 +274,7 @@
 			$field_id = $this->get('id');
 
 			if(empty($data)) return;
-			
+
 			if($andOperation) {
 				foreach($data as $date) {
 					// Prevent the DateTimeObj creating a range that isn't supported by MySQL.
@@ -343,7 +343,7 @@
 			$fields = array();
 
 			$fields['pre_populate'] = ($this->get('pre_populate') ? $this->get('pre_populate') : '');
-			
+
 			return FieldManager::saveSettings($id, $fields);
 		}
 
@@ -356,19 +356,22 @@
 			$value = null;
 
 			// New entry
-			if((is_null($data) || empty($data)) && is_null($flagWithError) && !is_null($this->get('pre_populate'))) {
-				$date = self::parseDate($this->get('pre_populate'));
+			if((is_null($data) || empty($data)) && is_null($flagWithError) && !is_null($this->get('pre_populate')) && $this->get('pre_populate') != 'no') {
+				$prepopulate = ($this->get('pre_populate') == 'yes')
+					? 'now'
+					: $this->get('pre_populate');
+
+				$date = self::parseDate($prepopulate);
 				$date = $date['start'];
-				$value = DateTimeObj::format($date, DateTimeObj::getSetting('datetime_format'));				
+				$value = DateTimeObj::format($date, DateTimeObj::getSetting('datetime_format'));
 			}
 			// Error entry, display original data
 			else if(!is_null($flagWithError)) {
 				$value = $_POST['fields'][$name];
 			}
-			
 			// Empty entry
 			else if(isset($data['value'])) {
-					$value = DateTimeObj::format($data['value'], DateTimeObj::getSetting('datetime_format'));					
+				$value = DateTimeObj::format($data['value'], DateTimeObj::getSetting('datetime_format'));
 			}
 
 			$label = Widget::Label($this->get('label'));
@@ -453,7 +456,7 @@
 				else {
 					$date = $data['value'];
 				}
-				
+
 				$wrapper->appendChild(General::createXMLDateObject($date, $this->get('element_name')));
 			}
 		}
@@ -461,13 +464,12 @@
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null) {
 			$value = null;
 			if(isset($data['value'])) {
-													
 				$value = DateTimeObj::format($data['value'], DateTimeObj::getSetting('datetime_format'), true);
 			}
 			return parent::prepareTableValue(array('value' => $value), $link, $entry_id = null);
 		}
-		
-		public function getParameterPoolValue(array $data, $entry_id=NULL){			
+
+		public function getParameterPoolValue(array $data, $entry_id=NULL) {
 			return DateTimeObj::get('Y-m-d H:i:s', $data['value']);
 		}
 
@@ -508,7 +510,7 @@
 			if (isset($timestamp)) {
 				$value = DateTimeObj::get('c', $timestamp);
 			}
-			
+
 			if($mode === $modes->getValue) {
 				return $value;
 			}
@@ -546,10 +548,10 @@
 		 */
 		public function prepareExportValue($data, $mode, $entry_id = null) {
 			$modes = (object)$this->getExportModes();
-			
+
 			if ($mode === $modes->getObject) {
 				$timezone = Symphony::Configuration()->get('timezone', 'region');
-				
+
 				$date = new DateTime(
 					isset($data['value'])
 						? $data['value']
@@ -561,7 +563,7 @@
 			}
 
 			else if ($mode === $modes->getPostdata) {
-			
+
 				return isset($data['value'])
 					? $data['value']
 					: null;
