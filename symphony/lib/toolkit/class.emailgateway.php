@@ -26,7 +26,7 @@
 			// empty string.
 			$gateway_class = $trace[1]['class']?' (' . $trace[1]['class'] . ')':'';
 			Symphony::Log()->pushToLog(__('Email Gateway Error') . $gateway_class  . ': ' . $message, $code, true);
-			
+
 			// CDATA the $message: Do not trust input from others
 			$message = General::wrapInCDATA(trim($message));
 			parent::__construct($message);
@@ -82,6 +82,14 @@
 		}
 
 		/**
+		 * The destructor ensures that any open connections to the Email Gateway
+		 * is closed.
+		 */
+		public function __destruct(){
+			$this->closeConnection();
+		}
+
+		/**
 		 * Sends the actual email. This function should be implemented in the
 		 * Email Gateway itself and should return true or false if the email
 		 * was successfully sent.
@@ -130,7 +138,7 @@
 			$this->setSenderEmailAddress($email);
 			$this->setSenderName($name);
 		}
-		
+
 		/**
 		 * Does some basic checks to validate the
 		 * value of a header field. Currently only checks
@@ -143,7 +151,7 @@
 		protected function validateHeaderFieldValue($value) {
 			// values can't contains carriage returns or new lines
 			$carriage_returns = preg_match('%[\r\n]%', $value);
-			
+
 			return !$carriage_returns;
 		}
 
@@ -246,17 +254,17 @@
 		public function setAttachments($files){
 			// Always erase
 			$this->_attachments = array();
-			
+
 			// check if we have an input value
 			if ($files == null) {
 				return;
 			}
-			
+
 			// make sure we are dealing with an array
 			if(!is_array($files)){
 				$files = array($files);
 			}
-			
+
 			// Append each attachment one by one in order
 			// to normalize each input
 			foreach ($files as $key => $file) {
@@ -270,7 +278,7 @@
 				}
 			}
 		}
-		
+
 		/**
 		 * Appends one file attachment to the attachments array.
 		 *
@@ -311,7 +319,7 @@
 					'charset' => null,
 				);
 			}
-			
+
 			// push properly formatted file entry
 			$this->_attachments[] = $file;
 		}
@@ -557,7 +565,7 @@
 					$file_content = @$gateway->exec();
 
 					$tmp_file = tempnam(TMP, 'attachment');
-					@file_put_contents($tmp_file, $file_content);
+					General::writeFile($tmp_file, $file_content, Symphony::Configuration()->get('write_mode', 'file'));
 
 					$original_filename = $file['file'];
 					$file['file'] = $tmp_file;
@@ -586,7 +594,7 @@
 				}
 
 				if (!$tmp_file === FALSE) {
-					@unlink($tmp_file);
+					General::deleteFile($tmp_file);
 				}
 			}
 			return $output;
@@ -666,16 +674,16 @@
 					'Content-Transfer-Encoding' => $this->_text_encoding ? $this->_text_encoding : '8bit',
 				),
 			);
-			
+
 			// Try common
 			if (!empty($type) && !empty($description[$type])) {
 				// return it if found
 				return $description[$type];
 			}
-			
+
 			// assure we have a file name
 			$filename = !is_null($filename) ? $filename : basename($file);
-			
+
 			// Format charset for insertion in content-type, if needed
 			if (!empty($charset)) {
 				$charset = sprintf('charset=%s;', $charset);
@@ -721,12 +729,20 @@
 			}
 		}
 
+		/**
+		 * @param string $type
+		 * @return string
+		 */
 		protected function boundaryDelimiterLine($type) {
 			// As requested by RFC 2046: 'The CRLF preceding the boundary
 			// delimiter line is conceptually attached to the boundary.'
 			return $this->getBoundary($type) ? "\r\n--".$this->getBoundary($type)."\r\n" : NULL;
 		}
 
+		/**
+		 * @param string $type
+		 * @return string
+		 */
 		protected function finalBoundaryDelimiterLine($type) {
 			return $this->getBoundary($type) ? "\r\n--".$this->getBoundary($type)."--\r\n" : NULL;
 		}
@@ -817,10 +833,6 @@
 			$string[0] = strtolower($string[0]);
 			$func = create_function('$c', 'return "_" . strtolower($c[1]);');
 			return preg_replace_callback('/([A-Z])/', $func, $string);
-		}
-
-		public function __destruct(){
-			$this->closeConnection();
 		}
 
 	}
