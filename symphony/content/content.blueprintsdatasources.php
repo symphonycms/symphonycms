@@ -43,7 +43,7 @@
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
 				$time = Widget::Time();
-	
+
 				switch($this->_context[2]) {
 					case 'saved':
 						$this->pageAlert(
@@ -689,8 +689,8 @@
 			$fieldset->appendChild($group);
 
 			$label = Widget::Label();
-			$input = Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] !== 'yes' ? array('checked' => 'checked') : NULL));
-			$label->setValue(__('%1$s Disable pagination and return all entries', array($input->generate(false))));
+			$input = Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] == 'yes' ? array('checked' => 'checked') : NULL));
+			$label->setValue(__('%1$s Enable pagination', array($input->generate(false))));
 
 			$fieldset->appendChild($label);
 			$this->Form->appendChild($fieldset);
@@ -702,7 +702,7 @@
 
 			// XML
 			$group = new XMLElement('div', NULL, array('class' => 'two columns'));
-	
+
 			$label = Widget::Label(__('Included Elements'));
 			$label->setAttribute('class', 'column');
 
@@ -875,7 +875,7 @@
 			else $fieldset->appendChild($label);
 
 			$this->Form->appendChild($fieldset);
-			
+
 			// Connections
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -905,7 +905,7 @@
 
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
-		
+
 
 		// Call the provided datasources to let them inject their filters
 		// @todo Ideally when a new Datasource is chosen an AJAX request will fire
@@ -1014,12 +1014,12 @@
 				$fieldset = new XMLElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Source')));
-		
+
 				$source = file_get_contents($file);
 				$code = new XMLElement('code', htmlspecialchars($source));
 				$pre = new XMLElement('pre');
 				$pre->appendChild($code);
-				
+
 				$fieldset->appendChild($pre);
 				$this->Form->appendChild($fieldset);
 			}
