@@ -307,6 +307,7 @@
 				$this->_force_empty_result = true; // don't output any XML
 				$this->dsParamPARAMOUTPUT = null; // don't output any parameters
 				$this->dsParamINCLUDEDELEMENTS = null; // don't query any fields in this section
+				return;
 			}
 
 			if(
@@ -317,6 +318,7 @@
 				$this->_negate_result = true; // don't output any XML
 				$this->dsParamPARAMOUTPUT = null; // don't output any parameters
 				$this->dsParamINCLUDEDELEMENTS = null; // don't query any fields in this section
+				return;
 			}
 
 			$this->_param_output_only = ((!isset($this->dsParamINCLUDEDELEMENTS) || !is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) && !isset($this->dsParamGROUP));

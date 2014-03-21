@@ -787,13 +787,15 @@
 		 *  the permissions as an octal number to set set on the resulting file.
 		 *  this defaults to 0644 (if omitted or set to null)
 		 * @param string $mode (optional)
-		 * the mode that the file should be opened with, defaults to 'w'. See modes
-		 * at http://php.net/manual/en/function.fopen.php
+		 *  the mode that the file should be opened with, defaults to 'w'. See modes
+		 *  at http://php.net/manual/en/function.fopen.php
+		 * @param boolean $trim (optional)
+		 *  removes tripple linebreaks
 		 * @return boolean
 		 *  true if the file is successfully opened, written to, closed and has the
 		 *  required permissions set. false, otherwise.
 		 */
-		public static function writeFile($file, $data, $perm = 0644, $mode = 'w'){
+		public static function writeFile($file, $data, $perm = 0644, $mode = 'w', $trim = false){
 			if(
 				(!is_writable(dirname($file)) || !is_readable(dirname($file))) // Folder
 				|| (file_exists($file) && (!is_readable($file) || !is_writable($file))) // File
@@ -803,6 +805,10 @@
 
 			if(!$handle = fopen($file, $mode)) {
 				return false;
+			}
+
+			if($trim === true) {
+				$data = preg_replace("/(" . PHP_EOL . "(\t+)?){2,}" . PHP_EOL . "/", PHP_EOL . PHP_EOL, trim($data));
 			}
 
 			if(fwrite($handle, $data, strlen($data)) === false) {

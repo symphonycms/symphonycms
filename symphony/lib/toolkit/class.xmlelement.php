@@ -710,4 +710,72 @@
 
 			return $result;
 		}
+
+		/**
+		 * Given a string of XML, this function will convert it to an `XMLElement`
+		 * object and return the result.
+		 *
+		 * @since Symphony 2.4
+		 * @param string $xml
+		 *  A string of XML
+		 * @return XMLElement
+		 */
+		public static function convertFromXMLString($root_element, $xml) {
+			$doc = new DOMDocument('1.0', 'utf-8');
+			$doc->loadXML($xml);
+
+			return self::convertFromDOMDocument($root_element, $doc);
+		}
+
+		/**
+		 * Given a `DOMDocument`, this function will convert it to an `XMLElement`
+		 * object and return the result.
+		 *
+		 * @since Symphony 2.4
+		 * @param DOMDOcument $doc
+		 * @return XMLElement
+		 */
+		public static function convertFromDOMDocument($root_element, DOMDocument $doc) {
+			$xpath = new DOMXPath($doc);
+			$root = new XMLElement($root_element);
+			foreach($xpath->query('*') as $node) {
+				self::convert($root, $node);
+			}
+			
+			return $root;
+		}
+
+		/**
+		 * This helper function is used by `XMLElement::convertFromDOMDocument`
+		 * to recursively convert `DOMNode` into an `XMLElement` structure
+		 *
+		 * @since Symphony 2.4
+		 * @param XMLElement $root
+		 * @param DOMNOde $node
+		 * @return XMLElement
+		 */
+		private static function convert(XMLElement &$root, DOMNode $node) {
+			$el = new XMLElement($node->tagName);
+
+			if($node->hasAttributes()) {
+				foreach($node->attributes as $name => $attrEl) {
+					$el->setAttribute($name, General::sanitize($attrEl->value));
+				}
+			}
+
+			if($node->hasChildNodes()) {
+				foreach($node->childNodes as $childNode) {
+					if($childNode instanceof DOMText) {
+						if($childNode->isWhitespaceInElementContent() === false) {
+							$el->setValue(General::sanitize($childNode->data));
+						}
+					}
+					else if($childNode instanceof DOMElement) {
+						self::convert($el, $childNode);
+					}
+				}
+			}
+
+			$root->appendChild($el);
+		}
 	}

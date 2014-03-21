@@ -21,7 +21,9 @@
 		'Undo?': false,
 		'untitled': false,
 		'Expand all fields': false,
-		'Collapse all fields': false
+		'Collapse all fields': false,
+		'drag to reorder': false,
+		'Please reset your password': false
 	});
 
 	// Initialise backend
@@ -34,6 +36,7 @@
 		Symphony.Elements.nav = $('#nav');
 		Symphony.Elements.session = $('#session');
 		Symphony.Elements.context = $('#context');
+		Symphony.Elements.breadcrumbs = $('#breadcrumbs');
 		Symphony.Elements.contents = $('#contents');
 
 		// Render view

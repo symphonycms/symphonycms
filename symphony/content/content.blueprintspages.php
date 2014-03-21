@@ -136,7 +136,12 @@
 					$col_title = Widget::TableData(Widget::Anchor(
 						$page_title, $page_edit_url, $page['handle']
 					));
-					$col_title->appendChild(Widget::Input("items[{$page['id']}]", null, 'checkbox'));
+					$col_title->appendChild(Widget::Label(__('Select Page %s', array($page_title)), null, 'accessible', null, array(
+						'for' => 'page-' . $page['id']
+					)));
+					$col_title->appendChild(Widget::Input('items['.$page['id'].']', 'on', 'checkbox', array(
+						'id' => 'page-' . $page['id']
+					)));
 
 					$col_template = Widget::TableData($page_template . '.xsl');
 
@@ -183,7 +188,8 @@
 
 			$table = Widget::Table(
 				Widget::TableHead($aTableHead), null,
-				Widget::TableBody($aTableBody), 'orderable selectable'
+				Widget::TableBody($aTableBody), 'orderable selectable',
+				null, array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
 			);
 
 			$this->Form->appendChild($table);

@@ -135,10 +135,10 @@
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-			// Source
+			// Target
 				$sources = new XMLElement('div', null, array('class' => 'apply actions'));
 				$div = new XMLElement('div');
-				$label = Widget::Label(__('Source'), null, 'apply-label-left');
+				$label = Widget::Label(__('Target'), null, 'apply-label-left');
 				$sources->appendChild($label);
 				$sources->appendChild($div);
 

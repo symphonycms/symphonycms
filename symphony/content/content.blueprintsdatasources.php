@@ -5,8 +5,7 @@
 	 */
 	/**
 	 * The Datasource Editor page allows a developer to create new datasources
-	 * from the four Symphony types, Section, Authors, Navigation, Dynamic XML,
-	 * and Static XML
+	 * from the four Symphony types, Section, Authors, Navigation and Static XML
 	 */
 	require_once(TOOLKIT . '/class.gateway.php');
 	require_once(TOOLKIT . '/class.resourcespage.php');
@@ -44,7 +43,7 @@
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
 				$time = Widget::Time();
-	
+
 				switch($this->_context[2]) {
 					case 'saved':
 						$this->pageAlert(
@@ -80,7 +79,7 @@
 				$fields['paginate_results'] = ($fields['paginate_results'] == 'on') ? 'yes' : 'no';
 
 				if(
-					!in_array($fields['source'], array('authors', 'navigation', 'dynamic_xml', 'static_xml'))
+					!in_array($fields['source'], array('authors', 'navigation', 'static_xml'))
 					&& !empty($fields['filter']) && is_array($fields['filter'])
 				) {
 					$filters = array();
@@ -162,14 +161,6 @@
 							$fields['filter']['navigation'] = $existing->dsParamFILTERS;
 							break;
 
-						case 'dynamic_xml':
-							$fields['dynamic_xml']['namespace'] = $existing->dsParamFILTERS;
-							$fields['dynamic_xml']['url'] = $existing->dsParamURL;
-							$fields['dynamic_xml']['xpath'] = $existing->dsParamXPATH;
-							$fields['dynamic_xml']['cache'] = $existing->dsParamCACHE;
-							$fields['dynamic_xml']['timeout'] = (isset($existing->dsParamTIMEOUT) ? $existing->dsParamTIMEOUT : 6);
-							break;
-
 						case 'static_xml':
 							// Symphony 2.3+
 							if (isset($existing->dsParamSTATIC)) {
@@ -193,12 +184,6 @@
 				}
 			}
 			else {
-				$fields['dynamic_xml']['url'] = '';
-				$fields['dynamic_xml']['cache'] = '30';
-				$fields['dynamic_xml']['xpath'] = '/';
-				$fields['dynamic_xml']['timeout'] = '6';
-				$fields['dynamic_xml']['format'] = 'XML';
-
 				$fields['paginate_results'] = 'yes';
 				$fields['max_records'] = '20';
 				$fields['page_number'] = '1';
@@ -244,7 +229,6 @@
 						array('navigation', ($fields['source'] == 'navigation'), __('Navigation'), null, null, array('data-context' => 'navigation')),
 				)),
 				array('label' => __('Custom XML'), 'data-label' => 'custom-xml', 'options' => array(
-						array('dynamic_xml', ($fields['source'] == 'dynamic_xml'), __('Dynamic XML'), null, null, array('data-context' => 'dynamic-xml')),
 						array('static_xml', ($fields['source'] == 'static_xml'), __('Static XML'), null, null, array('data-context' => 'static-xml')),
 				)),
 			);
@@ -304,7 +288,7 @@
 			$fieldset->appendChild($p);
 
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'two columns');
+			$group->setAttribute('class', 'two columns ds-param');
 
 			$label = Widget::Label(__('Required Parameter'));
 			$label->setAttribute('class', 'column');
@@ -571,10 +555,17 @@
 			$this->setContext($fieldset, array('sections', 'system'));
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting')));
 
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'two columns');
+			$p = new XMLElement('p',
+				__('Use %s syntax to order by page parameters.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
 
-			$label = Widget::Label(__('Sort By'), NULL, 'column');
+			$div = new XMLElement('div');
+
+			$label = Widget::Label(__('Sort By'));
 
 			$options = array(
 				array('label' => __('Authors'), 'data-label' => 'authors', 'options' => array(
@@ -621,21 +612,19 @@
 			$label->appendChild(Widget::Select('fields[sort]', $options));
 			$div->appendChild($label);
 
-			$label = Widget::Label(__('Sort Order'), NULL, 'column');
+			$label = Widget::Label(__('Sort Order'));
+			$label->setAttribute('class', 'ds-order');
 
-			$options = array(
-				array('asc', ('asc' == $fields['order']), __('ascending')),
-				array('desc', ('desc' == $fields['order']), __('descending')),
-				array('random', ('random' == $fields['order']), __('random')),
-			);
-
-			// Retain custom sort order
-			if(!in_array($fields['order'], array('asc', 'desc', 'random'))){
-				$options[] = array($fields['order'], true, $fields['order']);
-			}
-
-			$label->appendChild(Widget::Select('fields[order]', $options));
+			$input = Widget::Input('field[order]', $fields['order']);
+			$label->appendChild($input);
 			$div->appendChild($label);
+
+			$orders = new XMLElement('ul');
+			$orders->setAttribute('class', 'tags singular');
+			$orders->appendChild(new XMLElement('li', 'asc'));
+			$orders->appendChild(new XMLElement('li', 'desc'));
+			$orders->appendChild(new XMLElement('li', 'random'));
+			$div->appendChild($orders);
 
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
@@ -705,8 +694,8 @@
 			$fieldset->appendChild($group);
 
 			$label = Widget::Label();
-			$input = Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] !== 'yes' ? array('checked' => 'checked') : NULL));
-			$label->setValue(__('%1$s Disable pagination and return all entries', array($input->generate(false))));
+			$input = Widget::Input('fields[paginate_results]', NULL, 'checkbox', ($fields['paginate_results'] == 'yes' ? array('checked' => 'checked') : NULL));
+			$label->setValue(__('%1$s Enable pagination', array($input->generate(false))));
 
 			$fieldset->appendChild($label);
 			$this->Form->appendChild($fieldset);
@@ -718,7 +707,7 @@
 
 			// XML
 			$group = new XMLElement('div', NULL, array('class' => 'two columns'));
-	
+
 			$label = Widget::Label(__('Included Elements'));
 			$label->setAttribute('class', 'column');
 
@@ -872,112 +861,7 @@
 
 			$this->Form->appendChild($fieldset);
 
-			// Dynamic XML
-			if(!isset($fields['dynamic_xml'])) {
-				$fields['dynamic_xml'] = array('url'=>null, 'xpath'=>null, 'namespace'=>null, 'cache'=>null, 'timeout'=>null);
-			}
-
-			$fieldset = new XMLElement('fieldset');
-			$this->setContext($fieldset, array('dynamic-xml'));
-			$fieldset->appendChild(new XMLElement('legend', __('Dynamic XML')));
-			$p = new XMLElement('p',
-				__('Use %s syntax to specify dynamic portions of the URL.', array(
-					'<code>{' . __('$param') . '}</code>'
-				))
-			);
-			$p->setAttribute('class', 'help');
-			$fieldset->appendChild($p);
-
-			$label = Widget::Label(__('URL'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][url]', General::sanitize($fields['dynamic_xml']['url']), 'text', array('placeholder' => '{$root}/dynamic.xml')));
-			if(isset($this->_errors['dynamic_xml']['url'])) $fieldset->appendChild(Widget::Error($label, $this->_errors['dynamic_xml']['url']));
-			else $fieldset->appendChild($label);
-
-			$group = new XMLElement('div', NULL, array('class' => 'two columns'));
-
-			$label = Widget::Label(__('xPath Expression'), null, 'column');
-			$label->appendChild(Widget::Input('fields[dynamic_xml][xpath]', General::sanitize($fields['dynamic_xml']['xpath']), 'text', array('placeholder' => '/')));
-			if(isset($this->_errors['dynamic_xml']['xpath'])) $group->appendChild(Widget::Error($label, $this->_errors['dynamic_xml']['xpath']));
-			else $group->appendChild($label);
-
-			$label = Widget::Label(__('Cache Expiration'), null, 'column');
-			$label->appendChild(new XMLElement('i', __('In minutes')));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][cache]', (string)max(1, intval($fields['dynamic_xml']['cache']))));
-			if(isset($this->_errors['dynamic_xml']['cache'])) $group->appendChild(Widget::Error($label, $this->_errors['dynamic_xml']['cache']));
-			else $group->appendChild($label);
-
-			$fieldset->appendChild($group);
-
-			$input = Widget::Input('fields[dynamic_xml][timeout]', (string)max(1, intval($fields['dynamic_xml']['timeout'])), 'text', array('type' => 'hidden'));
-			$fieldset->appendChild($input);
-
-			$namespaces = Widget::Label(__('Namespace Declarations'));
-			$namespaces->appendChild(new XMLElement('i', __('Optional')));
-
-			$duplicator = new XMLElement('div');			
-			$duplicator->setAttribute('class', 'frame filters-duplicator');
-			$namespaces->appendChild($duplicator);
-
-			$ol = new XMLElement('ol');
-			$ol->setAttribute('data-add', __('Add namespace'));
-			$ol->setAttribute('data-remove', __('Remove namespace'));
-
-			if(is_array($fields['dynamic_xml']['namespace'])){
-				$i = 0;
-				foreach($fields['dynamic_xml']['namespace'] as $name => $uri){
-					// Namespaces get saved to the file as $name => $uri, however in
-					// the $_POST they are represented as $index => array. This loop
-					// patches the difference.
-					if(is_array($uri)) {
-						$name = $uri['name'];
-						$uri = $uri['uri'];
-					}
-
-					$li = new XMLElement('li');
-					$li->appendChild(new XMLElement('header', '<h4>' . __('Namespace') . '</h4>'));
-
-					$group = new XMLElement('div');
-					$group->setAttribute('class', 'group');
-
-					$label = Widget::Label(__('Name'));
-					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][' . $i .'][name]', General::sanitize($name)));
-					$group->appendChild($label);
-
-					$label = Widget::Label(__('URI'));
-					$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][' . $i .'][uri]', General::sanitize($uri)));
-					$group->appendChild($label);
-
-					$li->appendChild($group);
-					$ol->appendChild($li);
-					$i++;
-				}
-			}
-
-			$li = new XMLElement('li');
-			$li->setAttribute('class', 'template');
-			$li->setAttribute('data-type', 'namespace');
-			$li->appendChild(new XMLElement('header', '<h4>' . __('Namespace') . '</h4>'));
-
-			$group = new XMLElement('div');
-			$group->setAttribute('class', 'group');
-
-			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][-1][name]'));
-			$group->appendChild($label);
-
-			$label = Widget::Label(__('URI'));
-			$label->appendChild(Widget::Input('fields[dynamic_xml][namespace][-1][uri]'));
-			$group->appendChild($label);
-
-			$li->appendChild($group);
-			$ol->appendChild($li);
-
-			$duplicator->appendChild($ol);
-			$fieldset->appendChild($namespaces);
-
-			$this->Form->appendChild($fieldset);
-
-		// Static XML
+			// Static XML
 			if(!isset($fields['static_xml'])) {
 				$fields['static_xml'] = null;
 			}
@@ -996,7 +880,7 @@
 			else $fieldset->appendChild($label);
 
 			$this->Form->appendChild($fieldset);
-			
+
 			// Connections
 			$fieldset = new XMLElement('fieldset');
 			$fieldset->setAttribute('class', 'settings');
@@ -1026,7 +910,7 @@
 
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
-		
+
 
 		// Call the provided datasources to let them inject their filters
 		// @todo Ideally when a new Datasource is chosen an AJAX request will fire
@@ -1135,12 +1019,12 @@
 				$fieldset = new XMLElement('fieldset');
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Source')));
-		
+
 				$source = file_get_contents($file);
 				$code = new XMLElement('code', htmlspecialchars($source));
 				$pre = new XMLElement('pre');
 				$pre->appendChild($code);
-				
+
 				$fieldset->appendChild($pre);
 				$this->Form->appendChild($fieldset);
 			}
@@ -1208,33 +1092,6 @@
 
 					if(!empty($xml_errors)) $this->_errors['static_xml'] = __('XML is invalid.');
 				}
-			}
-
-			elseif($fields['source'] == 'dynamic_xml'){
-				if(trim($fields['dynamic_xml']['url']) == '') $this->_errors['dynamic_xml']['url'] = __('This is a required field');
-
-				// Use the TIMEOUT that was specified by the user for a real world indication
-				$timeout = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : 6);
-
-				// If there is a parameter in the URL, we can't validate the existence of the URL
-				// as we don't have the environment details of where this datasource is going
-				// to be executed.
-				if(!preg_match('@{([^}]+)}@i', $fields['dynamic_xml']['url'])) {
-					$valid_url = self::__isValidURL($fields['dynamic_xml']['url'], $timeout, $error);
-
-					if($valid_url) {
-						$data = $valid_url['data'];
-					}
-					else {
-						$this->_errors['dynamic_xml']['url'] = $error;
-					}
-				}
-
-				if(trim($fields['dynamic_xml']['xpath']) == '') $this->_errors['dynamic_xml']['xpath'] = __('This is a required field');
-
-				if(!is_numeric($fields['dynamic_xml']['cache'])) $this->_errors['dynamic_xml']['cache'] = __('Must be a valid number');
-				elseif($fields['dynamic_xml']['cache'] < 1) $this->_errors['dynamic_xml']['cache'] = __('Must be greater than zero');
-
 			}
 
 			elseif(is_numeric($fields['source'])) {
@@ -1352,54 +1209,6 @@
 							$params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
 							$params['requiredparam'] = trim($fields['required_url_param']);
 							$params['negateparam'] = trim($fields['negate_url_param']);
-
-							break;
-
-						case 'dynamic_xml':
-							$extends = 'DynamicXMLDatasource';
-
-							// Automatically detect namespaces
-							if(isset($data)) {
-								preg_match_all('/xmlns:([a-z][a-z-0-9\-]*)="([^\"]+)"/i', $data, $matches);
-
-								if(!is_array($fields['dynamic_xml']['namespace'])) {
-									$fields['dynamic_xml']['namespace'] = array();
-								}
-
-								if (isset($matches[2][0])) {
-									$detected_namespaces = array();
-
-									foreach ($fields['dynamic_xml']['namespace'] as $name => $uri) {
-										$detected_namespaces[] = $name;
-										$detected_namespaces[] = $uri;
-									}
-
-									foreach ($matches[2] as $index => $uri) {
-										$name = $matches[1][$index];
-
-										if (in_array($name, $detected_namespaces) or in_array($uri, $detected_namespaces)) continue;
-
-										$detected_namespaces[] = $name;
-										$detected_namespaces[] = $uri;
-
-										$fields['dynamic_xml']['namespace'][] = array(
-											'name' => $name,
-											'uri' => $uri
-										);
-									}
-								}
-							}
-
-							$filters = array();
-							if(is_array($fields['dynamic_xml']['namespace'])) foreach($fields['dynamic_xml']['namespace'] as $index => $data) {
-								$filters[$data['name']] = $data['uri'];
-							}
-
-							$params['url'] = $fields['dynamic_xml']['url'];
-							$params['xpath'] = $fields['dynamic_xml']['xpath'];
-							$params['cache'] = $fields['dynamic_xml']['cache'];
-							$params['format'] = $fields['dynamic_xml']['format'];
-							$params['timeout'] = (isset($fields['dynamic_xml']['timeout']) ? (int)$fields['dynamic_xml']['timeout'] : '6');
 
 							break;
 
@@ -1530,7 +1339,7 @@
 				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);
 
 				// Write the file
-				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file'))) {
+				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file'), 'w', true)) {
 					$this->pageAlert(
 						__('Failed to write Data source to disk.')
 						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/data-sources</code>'))

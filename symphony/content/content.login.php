@@ -44,7 +44,7 @@
 				if(!$this->__loginFromToken($this->_context[0])) {
 					if(Administration::instance()->isLoggedIn()) {
 						// Redirect to the Author's profile. RE: #1801
-						redirect(SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id'));
+						redirect(SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/reset-password/');
 					}
 				}
 			}
@@ -89,7 +89,7 @@
 
 					$div = new XMLElement('div', NULL, array('class' => 'actions'));
 					$div->appendChild(
-						new XMLElement('button', __('Send Email'), array('name' => 'action[reset]', 'type' => 'submit'))
+						new XMLElement('button', __('Send Email'), array('name' => 'action[reset]', 'type' => 'submit', 'accesskey' => 's'))
 					);
 					$div->appendChild(
 						Widget::Anchor(__('Cancel'), SYMPHONY_URL.'/login/', null, 'action-link')
@@ -100,7 +100,7 @@
 			// Normal login
 			else:
 
-				$fieldset->appendChild(new XMLElement('legend', __('Login')));
+				$fieldset->appendChild(new XMLElement('legend', __('Login'), array('role' => 'heading')));
 
 				// Display error message
 				if($this->failedLoginAttempt){
@@ -139,7 +139,7 @@
 				// Actions
 				$div = new XMLElement('div', NULL, array('class' => 'actions'));
 				$div->appendChild(
-					new XMLElement('button', __('Login'), array('name' => 'action[login]', 'type' => 'submit', 'accesskey' => 's'))
+					new XMLElement('button', __('Login'), array('name' => 'action[login]', 'type' => 'submit', 'accesskey' => 'l'))
 				);
 				$div->appendChild(
 					Widget::Anchor(__('Retrieve password?'), SYMPHONY_URL.'/login/retrieve-password/', null, 'action-link')

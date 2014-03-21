@@ -21,6 +21,11 @@ Symphony.View.add('/:context*:', function() {
 	Symphony.Elements.wrapper.find('div.drawer').symphonyDrawer();
 	Symphony.Elements.header.symphonyNotify();
 
+	// Initialise tag lists inside duplicators
+	Symphony.Elements.contents.find('.duplicator').on('constructshow.duplicator', '.instance', function() {
+		$(this).find('.tags').symphonyTags();
+	});
+
 	// Navigation sizing
 	Symphony.Elements.window.on('resize.admin nav.admin', function() {
 		var content = Symphony.Elements.nav.find('ul.content'),
@@ -62,9 +67,10 @@ Symphony.View.add('/:context*:', function() {
 	}).trigger('table.admin');
 
 	// Orderable tables
-	var oldSorting = null;
-	Symphony.Elements.contents.find('table.orderable')
-		.symphonyOrderable({
+	var oldSorting = null,
+		orderable = Symphony.Elements.contents.find('table.orderable');
+
+	orderable.symphonyOrderable({
 			items: 'tr',
 			handles: 'td'
 		})
@@ -74,10 +80,10 @@ Symphony.View.add('/:context*:', function() {
 			oldSorting = $(this).find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
 		})
 		.on('orderstop.orderable', function() {
-			var orderable = $(this).addClass('busy'),
-				newSorting = orderable.find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
+			var newSorting = orderable.find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
 
 			// Store sort order, if changed
+			orderable.addClass('busy');
 			if(oldSorting !== null && newSorting !== oldSorting) {
 
 				// Update items
@@ -100,6 +106,11 @@ Symphony.View.add('/:context*:', function() {
 				orderable.removeClass('busy');
 			}
 		});
+
+	// Suggest
+	if(orderable.length) {
+		Symphony.Elements.breadcrumbs.append('<p class="inactive"><span> – ' + Symphony.Language.get('drag to reorder') + '</span></p>');
+	}
 
 	// With Selected
 	Symphony.Elements.contents.find('fieldset.apply').each(function() {
@@ -390,7 +401,9 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 	Blueprints - Datasource Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function() {
+Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(action) {
+	if(!action) return;
+
 	var context = $('#ds-context'),
 		source = $('#ds-source'),
 		name = Symphony.Elements.contents.find('input[name="fields[name]"]').attr('data-updated', 0),
@@ -481,8 +494,8 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function() {
 
 	// Toggle pagination
 	Symphony.Elements.contents.find('input[name*=paginate_results]').on('change.admin', function() {
-		var enabled = $(this).is(':checked');
-		paginationInput.prop('disabled', enabled);
+		var disabled = !$(this).is(':checked');
+		paginationInput.prop('disabled', disabled);
 	}).trigger('change.admin');
 
 	// Enabled fields on submit
@@ -491,11 +504,17 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function() {
 	});
 
 	// Enable parameter suggestions
-	Symphony.Elements.contents.find('.filters-duplicator').symphonySuggestions();
 	pagination.symphonySuggestions();
-	Symphony.Elements.contents.find('label:has(input[name*="url_param"])').symphonySuggestions({
+	Symphony.Elements.contents.find('.filters-duplicator').symphonySuggestions();
+	Symphony.Elements.contents.find('.ds-order').symphonySuggestions();
+	Symphony.Elements.contents.find('.ds-param').symphonySuggestions({
 		trigger: '$',
 		source: Symphony.Context.get('path') + '/ajax/parameters/?filter=page&template=$%s'
+	});
+
+	// Make sure autocomplete is off for newly added filters
+	Symphony.Elements.contents.find('.filters-duplicator').on('constructshow.duplicator', '.instance', function() {
+		$(this).find('input').attr('autocomplete', 'off');
 	});
 });
 
@@ -503,7 +522,7 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function() {
 	Blueprints - Event Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add(Symphony.Context.get('symphony') + '/blueprints/events/:action:/:name:/:status:', function() {
+Symphony.View.add('/blueprints/events/:action:/:name:/:status:', function() {
 	var context = $('#event-context'),
 		source = $('#event-source'),
 		filters = $('#event-filters'),
@@ -560,11 +579,11 @@ Symphony.View.add(Symphony.Context.get('symphony') + '/blueprints/events/:action
 	System - Authors
 --------------------------------------------------------------------------*/
 
-Symphony.View.add(Symphony.Context.get('symphony') + '/system/authors/:action:/:id:/:status:', function(action, id) {
+Symphony.View.add('/system/authors/:action:/:id:/:status:', function(action, id, status) {
 	var password = $('#password');
 
 	// Add change password overlay
-	if(!password.has('.invalid').length && id) {
+	if(!password.has('.invalid').length && id && !status) {
 		var overlay = $('<div class="password" />'),
 			frame = $('<span class="frame centered" />'),
 			button = $('<button />', {
@@ -581,13 +600,28 @@ Symphony.View.add(Symphony.Context.get('symphony') + '/system/authors/:action:/:
 		overlay.append(frame);
 		overlay.insertBefore(password);
 	}
+
+	// Focussed UI for password reset
+	if(status == 'reset-password') {
+		var fieldsets = Symphony.Elements.contents.find('fieldset'),
+			essentials = fieldsets.eq(0),
+			login = fieldsets.eq(1),
+			legend = login.find('> legend');
+
+		essentials.hide();
+		login.children().not('legend, #password').hide();
+
+		$('<p />', {
+			class: 'help',
+			text: Symphony.Language.get('Please reset your password')
+		}).insertAfter(legend);
+	}
 });
 
 /*--------------------------------------------------------------------------
 	System - Extensions
 --------------------------------------------------------------------------*/
-
-Symphony.View.add(Symphony.Context.get('symphony') + '/system/extensions/:context*:', function() {
+Symphony.View.add('/system/extensions/:context*:', function() {
 	Symphony.Language.add({
 		'Enable': false,
 		'Install': false,
@@ -597,8 +631,8 @@ Symphony.View.add(Symphony.Context.get('symphony') + '/system/extensions/:contex
 	// Update controls contextually
 	Symphony.Elements.contents.find('.actions select').on('click.admin focus.admin', function(event) {
 		var selected = Symphony.Elements.contents.find('tr.selected'),
-			canUpdate = selected.find('.extension-can-update').length,
-			canInstall = selected.find('.extension-can-install').length,
+			canUpdate = selected.filter('.extension-can-update').length,
+			canInstall = selected.filter('.extension-can-install').length,
 			canEnable = selected.length - canUpdate - canInstall,
 			control = Symphony.Elements.contents.find('.actions option[value="enable"]'),
 			label = [];

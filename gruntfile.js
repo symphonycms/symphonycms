@@ -1,19 +1,13 @@
 /*global module*/
-
 module.exports = function (grunt) {
-
     'use strict';
 
     grunt.initConfig({
 
-        autoprefixer : {
-
-            styles : {
-
-                files : {
-
-                    'symphony/assets/css/symphony.min.css' : [
-
+        concat: {
+            dist: {
+                files: {
+                    'symphony/assets/css/symphony.min.css': [
                         'symphony/assets/css/src/symphony.css',
                         'symphony/assets/css/src/symphony.grids.css',
                         'symphony/assets/css/src/symphony.forms.css',
@@ -25,28 +19,43 @@ module.exports = function (grunt) {
                         'symphony/assets/css/src/symphony.notices.css',
                         'symphony/assets/css/src/admin.css'
                     ],
+                    'symphony/assets/css/installer.min.css': [
+                        'symphony/assets/css/src/symphony.css',
+                        'symphony/assets/css/src/symphony.grids.css',
+                        'symphony/assets/css/src/symphony.forms.css',
+                        'symphony/assets/css/src/symphony.frames.css',
+                        'symphony/assets/css/src/installer.css'
+                    ],
+                },
+            },
+        },
 
-                    'symphony/assets/css/devkit.min.css' : [
-
+        autoprefixer: {
+            styles: {
+                files: {
+                    'symphony/assets/css/symphony.min.css': [
+                        'symphony/assets/css/symphony.min.css'
+                    ],
+                    'symphony/assets/css/installer.min.css': [
+                        'symphony/assets/css/installer.min.css'
+                    ],
+                    'symphony/assets/css/devkit.min.css': [
                         'symphony/assets/css/src/devkit.css'
                     ]
                 }
             }
         },
 
-        csso : {
-
-            styles : {
-
-                files : {
-
-                    'symphony/assets/css/symphony.min.css' : [
-
+        csso: {
+            styles: {
+                files: {
+                    'symphony/assets/css/symphony.min.css': [
                         'symphony/assets/css/symphony.min.css'
                     ],
-
-                    'symphony/assets/css/devkit.min.css' : [
-
+                    'symphony/assets/css/installer.min.css': [
+                        'symphony/assets/css/installer.min.css'
+                    ],
+                    'symphony/assets/css/devkit.min.css': [
                         'symphony/assets/css/devkit.min.css'
                     ]
                 }
@@ -54,10 +63,8 @@ module.exports = function (grunt) {
         },
 
         /*
-        jshint : {
-
-            scripts : [
-
+        jshint: {
+            scripts: [
                 'symphony/assets/js/src/symphony.js',
                 'symphony/assets/js/src/symphony.collapsible.js',
                 'symphony/assets/js/src/symphony.orderable.js',
@@ -74,20 +81,13 @@ module.exports = function (grunt) {
         },
         */
 
-        uglify : {
-
-            scripts : {
-
+        uglify: {
+            scripts: {
                 options: {
-                
                     preserveComments: 'some'
-
                 },
-
-                files : {
-
-                    'symphony/assets/js/symphony.min.js' : [
-
+                files: {
+                    'symphony/assets/js/symphony.min.js': [
                         'symphony/assets/js/lib/jquery.js',
                         'symphony/assets/js/lib/signals.js',
                         'symphony/assets/js/lib/crossroads.js',
@@ -107,15 +107,29 @@ module.exports = function (grunt) {
                     ]
                 }
             }
+        },
+
+        watch: {
+            styles: {
+                files: 'symphony/assets/css/src/*.css',
+                tasks: ['css']
+            },
+            scripts: {
+                files: 'symphony/assets/js/src/*.js',
+                tasks: ['js']
+            }
         }
+
     });
 
+    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-autoprefixer');
     grunt.loadNpmTasks('grunt-csso');
     //grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-
-    grunt.registerTask('default', ['autoprefixer', 'csso', 'uglify']);
-    grunt.registerTask('css', ['autoprefixer', 'csso']);
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    
+    grunt.registerTask('default', ['concat', 'autoprefixer', 'csso', 'uglify']);
+    grunt.registerTask('css', ['concat', 'autoprefixer', 'csso']);
     grunt.registerTask('js', ['uglify']);
 };

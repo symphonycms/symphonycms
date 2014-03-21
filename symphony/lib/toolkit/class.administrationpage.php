@@ -203,7 +203,7 @@
 				$this->insertAction($a);
 			}
 
-			$this->Breadcrumbs->appendChild(new XMLElement('h2', $value));
+			$this->Breadcrumbs->appendChild(new XMLElement('h2', $value, array('role' => 'heading', 'id' => 'symphony-subheading')));
 		}
 
 		/**
@@ -300,6 +300,7 @@
 		public function insertDrawer(XMLElement $drawer, $position = 'horizontal', $button = 'append') {
 			$drawer->addClass($position);
 			$drawer->setAttribute('data-position', $position);
+			$drawer->setAttribute('role', 'complementary');
 			$this->Drawer[$position][] = $drawer;
 
 			if(in_array($button, array('prepend', 'append'))) {
@@ -375,8 +376,8 @@
 			$this->Header = new XMLElement('header', NULL, array('id' => 'header'));
 			$this->Context = new XMLElement('div', NULL, array('id' => 'context'));
 			$this->Breadcrumbs = new XMLElement('div', NULL, array('id' => 'breadcrumbs'));
-			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents'));
-			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
+			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents', 'role' => 'main'));
+			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post', null, null, array('role' => 'form'));
 
 			/**
 			 * Allows developers to insert items into the page HEAD. Use
@@ -699,9 +700,9 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
 
-			$navElement = new XMLElement('nav', NULL, array('id' => 'nav'));
-			$contentNav = new XMLElement('ul', NULL, array('class' => 'content'));
-			$structureNav = new XMLElement('ul', NULL, array('class' => 'structure'));
+			$navElement = new XMLElement('nav', NULL, array('id' => 'nav', 'role' => 'navigation'));
+			$contentNav = new XMLElement('ul', NULL, array('class' => 'content', 'role' => 'menubar'));
+			$structureNav = new XMLElement('ul', NULL, array('class' => 'structure', 'role' => 'menubar'));
 
 			foreach($nav as $n){
 				if(isset($n['visible']) && $n['visible'] == 'no') continue;
@@ -718,11 +719,11 @@
 					$can_access = true;
 
 				if($can_access) {
-					$xGroup = new XMLElement('li', $n['name']);
+					$xGroup = new XMLElement('li', $n['name'], array('role' => 'presentation'));
 					if(isset($n['class']) && trim($n['name']) != '') $xGroup->setAttribute('class', $n['class']);
 
 					$hasChildren = false;
-					$xChildren = new XMLElement('ul');
+					$xChildren = new XMLElement('ul', null, array('role' => 'menu'));
 
 					if(is_array($n['children']) && !empty($n['children'])){
 						foreach($n['children'] as $c){
@@ -743,6 +744,7 @@
 
 							if($can_access_child) {
 								$xChild = new XMLElement('li');
+								$xChild->setAttribute('role', 'menuitem');
 								$linkChild = Widget::Anchor($c['name'], SYMPHONY_URL . $c['link']);
 								if (isset($c['target'])) {
 									$linkChild->setAttribute('target', $c['target']);
@@ -754,6 +756,7 @@
 						}
 
 						if($hasChildren){
+							$xGroup->setAttribute('aria-haspopup', 'true');
 							$xGroup->appendChild($xChildren);
 
 							if ($n['type'] === 'content')

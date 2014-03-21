@@ -30,8 +30,10 @@
 			$this->_required = true;
 			$this->key = 1;
 
+			$this->set('pre_populate','today');
 			$this->set('required', 'no');
 			$this->set('location', 'sidebar');
+
 		}
 
 	/*-------------------------------------------------------------------------
@@ -144,6 +146,7 @@
 			// Relative date, aka '+ 3 weeks'
 			else {
 				// Handles the case of `to` filters
+
 				if($equal_to || is_null($direction)) {
 					$parts['start'] = $parts['end'] = DateTimeObj::get('Y-m-d H:i:s', $string);
 				}
@@ -213,6 +216,7 @@
 						$string = self::$min_date . ' to ' . $earlier;
 						break;
 				}
+
 			}
 
 			// Look to see if its a shorthand date (year only), and convert to full date
@@ -228,6 +232,7 @@
 
 				$parts = self::parseDate($string);
 				$string = $parts['start'] . ' to ' . $parts['end'];
+
 			}
 
 			// Match date ranges
@@ -306,27 +311,26 @@
 	-------------------------------------------------------------------------*/
 
 		public function findDefaults(array &$settings) {
-			if(!isset($settings['pre_populate'])) $settings['pre_populate'] = 'yes';
+			if(!isset($settings['pre_populate'])) $settings['pre_populate'] = $this->get('pre_populate');
 		}
 
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-			$this->appendRequiredCheckbox($div);
-			$this->appendShowColumnCheckbox($div);
-			$wrapper->appendChild($div);
+ 			// Default date
+ 			$label = Widget::Label(__('Default date'));
+ 			$help = new XMLElement('i', __('optional, accepts absolute or relative dates'));
+ 			$input = Widget::Input('fields['.$this->get('sortorder').'][pre_populate]', $this->get('pre_populate') ? $this->get('pre_populate') : '', 'input');
+ 			$label->appendChild($help);
+ 			$label->appendChild($input);
+ 			$wrapper->appendChild($label);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-
-			$label = Widget::Label();
-			$label->setAttribute('class', 'column');
-			$input = Widget::Input('fields['.$this->get('sortorder').'][pre_populate]', 'yes', 'checkbox');
-			if($this->get('pre_populate') == 'yes') $input->setAttribute('checked', 'checked');
-			$label->setValue(__('%s Pre-populate with current date', array($input->generate())));
-			$div->appendChild($label);
-
-			$wrapper->appendChild($div);
+ 			$fieldset = new XMLElement('fieldset');
+ 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+ 			$this->appendRequiredCheckbox($div);
+ 			$this->appendShowColumnCheckbox($div);
+ 			$fieldset->appendChild($div);
+ 			$wrapper->appendChild($fieldset);
 		}
 
 		public function commit() {
@@ -338,7 +342,7 @@
 
 			$fields = array();
 
-			$fields['pre_populate'] = ($this->get('pre_populate') ? $this->get('pre_populate') : 'no');
+			$fields['pre_populate'] = ($this->get('pre_populate') ? $this->get('pre_populate') : '');
 
 			return FieldManager::saveSettings($id, $fields);
 		}
@@ -352,15 +356,19 @@
 			$value = null;
 
 			// New entry
-			if((is_null($data) || empty($data)) && is_null($flagWithError) && $this->get('pre_populate') == 'yes') {
-				$value = DateTimeObj::format('now', DateTimeObj::getSetting('datetime_format'));
-			}
+			if((is_null($data) || empty($data)) && is_null($flagWithError) && !is_null($this->get('pre_populate')) && $this->get('pre_populate') != 'no') {
+				$prepopulate = ($this->get('pre_populate') == 'yes')
+					? 'now'
+					: $this->get('pre_populate');
 
+				$date = self::parseDate($prepopulate);
+				$date = $date['start'];
+				$value = DateTimeObj::format($date, DateTimeObj::getSetting('datetime_format'));
+			}
 			// Error entry, display original data
 			else if(!is_null($flagWithError)) {
 				$value = $_POST['fields'][$name];
 			}
-
 			// Empty entry
 			else if(isset($data['value'])) {
 				$value = DateTimeObj::format($data['value'], DateTimeObj::getSetting('datetime_format'));
@@ -405,8 +413,10 @@
 
 			// Prepopulate date
 			if(is_null($data) || $data == '') {
-				if($this->get('pre_populate') == 'yes') {
-					$timestamp = time();
+				if($this->get('pre_populate') !='') {
+					$date = self::parseDate($this->get('pre_populate'));
+					$date = $date['start'];
+					$timestamp = DateTimeObj::format($date, DateTimeObj::getSetting('datetime_format'));
 				}
 			}
 
@@ -447,22 +457,19 @@
 					$date = $data['value'];
 				}
 
-				// Append date
 				$wrapper->appendChild(General::createXMLDateObject($date, $this->get('element_name')));
 			}
 		}
 
 		public function prepareTableValue($data, XMLElement $link=NULL, $entry_id = null) {
 			$value = null;
-
 			if(isset($data['value'])) {
 				$value = DateTimeObj::format($data['value'], DateTimeObj::getSetting('datetime_format'), true);
 			}
-
 			return parent::prepareTableValue(array('value' => $value), $link, $entry_id = null);
 		}
 
-		public function getParameterPoolValue(array $data, $entry_id=NULL){
+		public function getParameterPoolValue(array $data, $entry_id=NULL) {
 			return DateTimeObj::get('Y-m-d H:i:s', $data['value']);
 		}
 
@@ -483,8 +490,9 @@
 
 			// Prepopulate date:
 			if ($data === null || $data === '') {
-				if ($this->get('pre_populate') == 'yes') {
-					$timestamp = time();
+				if (!is_null($this->get('pre_populate'))) {
+					$timestamp = self::parseDate($this->get('pre_populate'));
+					$timestamp = $timestamp['start'];
 				}
 			}
 
@@ -543,6 +551,7 @@
 
 			if ($mode === $modes->getObject) {
 				$timezone = Symphony::Configuration()->get('timezone', 'region');
+
 				$date = new DateTime(
 					isset($data['value'])
 						? $data['value']
@@ -554,6 +563,7 @@
 			}
 
 			else if ($mode === $modes->getPostdata) {
+
 				return isset($data['value'])
 					? $data['value']
 					: null;

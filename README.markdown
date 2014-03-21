@@ -1,9 +1,9 @@
 # Symphony 2
 
-- Version: 2.4 Beta 1
-- Date: 10th February 2014
+- Version: 2.4 Beta 2
+- Date: 8th March 2014
 - Release Notes: <http://getsymphony.com/download/releases/version/2.4/>
-- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.4beta1>
+- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.4beta2>
 
 
 ## Contents

@@ -533,7 +533,8 @@
 		public static function createFilename($string, $delim='-', $apply_transliteration = true) {
 			// Use the transliteration table if provided
 			if($apply_transliteration == true){
-				$string = self::applyTransliterations($string);
+				$file = pathinfo($string);
+				$string = self::applyTransliterations($file['basename']) . '.' . $file['extension'];
 			}
 
 			return General::createFilename($string, $delim);

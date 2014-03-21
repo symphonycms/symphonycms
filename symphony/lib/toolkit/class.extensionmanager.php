@@ -804,6 +804,11 @@
 				$about = array(
 					'name' => $xpath->evaluate('string(ext:name)', $extension),
 					'handle' => $name,
+					'github' => $xpath->evaluate('string(ext:repo)', $extension),
+					'discuss' => $xpath->evaluate('string(ext:url[@type="discuss"])', $extension),
+					'homepage' => $xpath->evaluate('string(ext:url[@type="homepage"])', $extension),
+					'wiki' => $xpath->evaluate('string(ext:url[@type="wiki"])', $extension),
+					'issues' => $xpath->evaluate('string(ext:url[@type="issues"])', $extension),
 					'status' => array()
 				);
 
@@ -828,6 +833,10 @@
 					$required_min_version = $xpath->evaluate('string(@min)', $release);
 					$required_max_version = $xpath->evaluate('string(@max)', $release);
 					$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
+
+					// Remove pre-release notes fro the current Symphony version so that
+					// we don't get false erros in the backend
+					$current_symphony_version = str_replace(array('dev', 'beta1', 'beta2', 'rc1', 'rc2'), '', $current_symphony_version);
 
 					// Munge the version number so that it makes sense in the backend.
 					// Consider, 2.3.x. As the min version, this means 2.3 onwards,
@@ -857,6 +866,7 @@
 					$a = array(
 						'name' => $xpath->evaluate('string(ext:name)', $author),
 						'website' => $xpath->evaluate('string(ext:website)', $author),
+						'github' => $xpath->evaluate('string(ext:name/@github)', $author),
 						'email' => $xpath->evaluate('string(ext:email)', $author)
 					);
 

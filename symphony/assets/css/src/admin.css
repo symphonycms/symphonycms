@@ -243,7 +243,8 @@
 	clear: both;
 }
 
-#breadcrumbs a, #breadcrumbs span {
+#breadcrumbs a, 
+#breadcrumbs span {
 	padding: 0;
 	font: 127.28%/1.35 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 	color: #2E2E2E;
@@ -255,7 +256,8 @@
 	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.05);
 }
 
-#breadcrumbs a:hover, #breadcrumbs a:focus {
+#breadcrumbs a:hover, 
+#breadcrumbs a:focus {
 	border-bottom-color: #a9a9a9;
 	color: #2E2E2E;
 	color: rgba(0, 0, 0, 0.8);
@@ -263,6 +265,10 @@
 
 #breadcrumbs span {
 	padding: 0 0.4rem;
+}
+
+#breadcrumbs .inactive span {
+	color: #b4b4b4;
 }
 
 /* Contents */

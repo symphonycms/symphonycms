@@ -108,7 +108,7 @@
 		 */
 		public function asXML(){
 
-			$p = new XMLElement('p', $this->message);
+			$p = new XMLElement('p', $this->message, array('role' => 'alert'));
 			$p->setAttribute('class', 'notice');
 
 			if($this->type != self::NOTICE){
