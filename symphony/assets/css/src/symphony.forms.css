@@ -27,6 +27,13 @@ input {
 	height: 2.2rem;
 }
 
+input[type=file] {
+	border: none;
+	padding: 0;
+	margin: 0;
+	height: auto;
+}
+
 input:active,
 input:focus,
 textarea:active,
