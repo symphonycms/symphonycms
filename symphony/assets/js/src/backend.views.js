@@ -510,6 +510,11 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(act
 		trigger: '$',
 		source: Symphony.Context.get('path') + '/ajax/parameters/?filter=page&template=$%s'
 	});
+
+	// Make sure autocomplete is off for newly added filters
+	Symphony.Elements.contents.find('.filters-duplicator').on('constructshow.duplicator', '.instance', function() {
+		$(this).find('input').attr('autocomplete', 'off');
+	});
 });
 
 /*--------------------------------------------------------------------------
