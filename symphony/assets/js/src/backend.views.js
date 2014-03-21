@@ -504,9 +504,10 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(act
 	});
 
 	// Enable parameter suggestions
-	Symphony.Elements.contents.find('.filters-duplicator').symphonySuggestions();
 	pagination.symphonySuggestions();
-	Symphony.Elements.contents.find('label:has(input[name*="url_param"])').symphonySuggestions({
+	Symphony.Elements.contents.find('.filters-duplicator').symphonySuggestions();
+	Symphony.Elements.contents.find('.ds-order').symphonySuggestions();
+	Symphony.Elements.contents.find('.ds-param').symphonySuggestions({
 		trigger: '$',
 		source: Symphony.Context.get('path') + '/ajax/parameters/?filter=page&template=$%s'
 	});

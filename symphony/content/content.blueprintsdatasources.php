@@ -288,7 +288,7 @@
 			$fieldset->appendChild($p);
 
 			$group = new XMLElement('div');
-			$group->setAttribute('class', 'two columns');
+			$group->setAttribute('class', 'two columns ds-param');
 
 			$label = Widget::Label(__('Required Parameter'));
 			$label->setAttribute('class', 'column');
@@ -556,9 +556,8 @@
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting')));
 
 			$div = new XMLElement('div');
-			$div->setAttribute('class', 'two columns');
 
-			$label = Widget::Label(__('Sort By'), NULL, 'column');
+			$label = Widget::Label(__('Sort By'));
 
 			$options = array(
 				array('label' => __('Authors'), 'data-label' => 'authors', 'options' => array(
@@ -605,21 +604,19 @@
 			$label->appendChild(Widget::Select('fields[sort]', $options));
 			$div->appendChild($label);
 
-			$label = Widget::Label(__('Sort Order'), NULL, 'column');
+			$label = Widget::Label(__('Sort Order'));
+			$label->setAttribute('class', 'ds-order');
 
-			$options = array(
-				array('asc', ('asc' == $fields['order']), __('ascending')),
-				array('desc', ('desc' == $fields['order']), __('descending')),
-				array('random', ('random' == $fields['order']), __('random')),
-			);
-
-			// Retain custom sort order
-			if(!in_array($fields['order'], array('asc', 'desc', 'random'))){
-				$options[] = array($fields['order'], true, $fields['order']);
-			}
-
-			$label->appendChild(Widget::Select('fields[order]', $options));
+			$input = Widget::Input('field[order]', $fields['order']);
+			$label->appendChild($input);
 			$div->appendChild($label);
+
+			$orders = new XMLElement('ul');
+			$orders->setAttribute('class', 'tags singular');
+			$orders->appendChild(new XMLElement('li', 'asc'));
+			$orders->appendChild(new XMLElement('li', 'desc'));
+			$orders->appendChild(new XMLElement('li', 'random'));
+			$div->appendChild($orders);
 
 			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
