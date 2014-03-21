@@ -555,6 +555,14 @@
 			$this->setContext($fieldset, array('sections', 'system'));
 			$fieldset->appendChild(new XMLElement('legend', __('Sorting')));
 
+			$p = new XMLElement('p',
+				__('Use %s syntax to order by page parameters.', array(
+					'<code>{' . __('$param') . '}</code>'
+				))
+			);
+			$p->setAttribute('class', 'help');
+			$fieldset->appendChild($p);
+
 			$div = new XMLElement('div');
 
 			$label = Widget::Label(__('Sort By'));
