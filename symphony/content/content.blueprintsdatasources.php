@@ -1339,7 +1339,7 @@
 				$dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);
 
 				// Write the file
-				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file'))) {
+				if(!is_writable(dirname($file)) || !$write = General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file'), 'w', true)) {
 					$this->pageAlert(
 						__('Failed to write Data source to disk.')
 						. ' ' . __('Please check permissions on %s.', array('<code>/workspace/data-sources</code>'))
