@@ -678,21 +678,28 @@
 		 */
 		public function checkFields(array &$errors, $checkForDuplicates = true) {
 			$parent_section = $this->get('parent_section');
+			$label = $this->get('label');
 			$element_name = $this->get('element_name');
 
 			if(Lang::isUnicodeCompiled()) {
-				$valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $this->get('element_name'));
+				$valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $element_name);
 			}
 			else {
-				$valid_name = preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $this->get('element_name'));
+				$valid_name = preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $element_name);
 			}
 
-			if ($this->get('label') == '') {
+			if ($label == '') {
 				$errors['label'] = __('This is a required field.');
 			}
+			elseif (strtolower($label) == 'id') {
+				$errors['label'] = __('%s is a reserved name used by the system and is not allowed for a field handle. Try using %s instead.', array('<code>ID</code>', '<code>UID</code>'));				
+			}
 
-			if ($this->get('element_name') == '') {
+			if ($element_name == '') {
 				$errors['element_name'] = __('This is a required field.');
+			}
+			elseif ($element_name == 'id') {
+				$errors['element_name'] = __('%s is a reserved name used by the system and is not allowed for a field handle. Try using %s instead.', array('<code>id</code>', '<code>uid</code>'));				
 			}
 			elseif (!$valid_name) {
 				$errors['element_name'] = __('Invalid element name. Must be valid %s.', array('<code>QName</code>'));
