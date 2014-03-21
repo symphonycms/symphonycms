@@ -371,7 +371,8 @@ fieldset.frame,
 	overflow: hidden;
 }
 
-.collapsed.js-animate {
+.collapsed.js-animate,
+.destructed.js-animate {
 	transition: max-height 0.25s ease-out;
 }
 

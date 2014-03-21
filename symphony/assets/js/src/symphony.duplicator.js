@@ -105,31 +105,52 @@
 					.data('heightMax', heightMax)
 					.addClass('js-animate')
 					.css('max-height', heightMax);
+
+				setTimeout(function() {
+					instance.trigger('animationend.duplicator');
+				}, 250);
 			});
 
 			// Destruct instances
 			duplicator.on('click.duplicator', '.destructor:not(.disabled)', function destruct(event) {
 				var instance = $(this).parents('.instance:first'),
-					height = 0;
+					heightMax = instance[0].style.maxHeight,
+					heightMin = 0;
 
 				event.preventDefault();
 				event.stopPropagation();
 
+				// Check if maximum height is set
+				if(!heightMax) {
+					heightMax = instance[0].scrollHeight;
+				}
+
 				// Check if duplicator becomes empty
-				if(duplicator.find('.instance').length == 1) {
-					height = 30;
+				if(!instance.siblings(':not(.destructed)').length) {
+					heightMin = 30;
 				}
 
 				// Remove instance
 				instance
 					.trigger('destructstart.duplicator')
-					.addClass('destructed')
-					.addClass('js-animate')
-					.css('max-height', height);
+					.css('max-height', heightMax)
+					.data('heightMin', heightMin)
+					.data('heightMax', heightMax);
+
+				setTimeout(function() {
+					instance
+						.addClass('js-animate')
+						.addClass('destructed')
+						.css('max-height', heightMin);
+				}, 100);
+
+				setTimeout(function() {
+					instance.trigger('animationend.duplicator');
+				}, 350);
 			});
 
 			// Finish animations
-			duplicator.on('webkitTransitionEnd transitionend oTransitionEnd otransitionend MSTransitionEnd', '.instance', function finish() {
+			duplicator.on('animationend.duplicator', '.instance', function finish() {
 				var instance = $(this).removeClass('js-animate');
 
 				// Trigger events
