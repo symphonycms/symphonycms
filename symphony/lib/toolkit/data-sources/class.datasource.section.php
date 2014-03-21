@@ -278,7 +278,7 @@
 					$this->_param_pool[$param_key] = array_merge($param_pool_values, $this->_param_pool[$param_key]);
 					if($singleParam) $this->_param_pool[$key] = array_merge($param_pool_values, $this->_param_pool[$key]);
 				}
-				else{
+				else if(!is_null($param_pool_values)){
 					$this->_param_pool[$param_key][] = $param_pool_values;
 					if($singleParam) $this->_param_pool[$key][] = $param_pool_values;
 				}
