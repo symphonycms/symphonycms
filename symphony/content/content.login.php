@@ -44,7 +44,7 @@
 				if(!$this->__loginFromToken($this->_context[0])) {
 					if(Administration::instance()->isLoggedIn()) {
 						// Redirect to the Author's profile. RE: #1801
-						redirect(SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id'));
+						redirect(SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/reset-password/');
 					}
 				}
 			}

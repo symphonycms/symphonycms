@@ -22,7 +22,8 @@
 		'untitled': false,
 		'Expand all fields': false,
 		'Collapse all fields': false,
-		'drag to reorder': false
+		'drag to reorder': false,
+		'Please reset your password': false
 	});
 
 	// Initialise backend

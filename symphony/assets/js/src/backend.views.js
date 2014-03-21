@@ -579,11 +579,11 @@ Symphony.View.add('/blueprints/events/:action:/:name:/:status:', function() {
 	System - Authors
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/system/authors/:action:/:id:/:status:', function(action, id) {
+Symphony.View.add('/system/authors/:action:/:id:/:status:', function(action, id, status) {
 	var password = $('#password');
 
 	// Add change password overlay
-	if(!password.has('.invalid').length && id) {
+	if(!password.has('.invalid').length && id && !status) {
 		var overlay = $('<div class="password" />'),
 			frame = $('<span class="frame centered" />'),
 			button = $('<button />', {
@@ -599,6 +599,22 @@ Symphony.View.add('/system/authors/:action:/:id:/:status:', function(action, id)
 		frame.append(button);
 		overlay.append(frame);
 		overlay.insertBefore(password);
+	}
+
+	// Focussed UI for password reset
+	if(status == 'reset-password') {
+		var fieldsets = Symphony.Elements.contents.find('fieldset'),
+			essentials = fieldsets.eq(0),
+			login = fieldsets.eq(1),
+			legend = login.find('> legend');
+
+		essentials.hide();
+		login.children().not('legend, #password').hide();
+
+		$('<p />', {
+			class: 'help',
+			text: Symphony.Language.get('Please reset your password')
+		}).insertAfter(legend);
 	}
 });
 
