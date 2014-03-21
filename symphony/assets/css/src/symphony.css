@@ -62,7 +62,8 @@ body {
 	color: #222;
 }
 
-body > div {
+body > div,
+body > form {
 	font-size: 1.1rem;
 }
 
