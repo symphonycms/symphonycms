@@ -494,8 +494,8 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(act
 
 	// Toggle pagination
 	Symphony.Elements.contents.find('input[name*=paginate_results]').on('change.admin', function() {
-		var enabled = $(this).is(':checked');
-		paginationInput.prop('disabled', enabled);
+		var disabled = !$(this).is(':checked');
+		paginationInput.prop('disabled', disabled);
 	}).trigger('change.admin');
 
 	// Enabled fields on submit

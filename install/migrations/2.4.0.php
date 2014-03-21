@@ -32,7 +32,7 @@
 
 		static function upgrade() {
 			// [#702] Update to include Admin Path configuration
-			if(version_compare(self::$existing_version, '2.4a1', '<=')) {
+			if(version_compare(self::$existing_version, '2.4', '<=')) {
 				// Add missing config value for index view string length
 				Symphony::Configuration()->set('cell_truncation_length', '75', 'symphony');
 				// Add admin-path to configuration
@@ -59,6 +59,15 @@
 					));
 				}
 			}
+
+			// Change date field to be a varchar instead of an ENUM to support prepopulation
+			try {
+				Symphony::Database()->query('
+					ALTER TABLE `tbl_fields_date` 
+					CHANGE `pre_populate` `pre_populate` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL;
+				');
+			}
+			catch (Exception $ex) {}
 
 			// Update the version information
 			Symphony::Configuration()->set('version', self::getVersion(), 'symphony');
