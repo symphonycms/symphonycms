@@ -7,6 +7,7 @@
 	 * of a Symphony backend AJAX page.
 	 *
 	 * @deprecated @since Symphony 2.4
+	 * @see TextPage
 	 * @see XMLPage
 	 * @see JSONPage
 	 */
