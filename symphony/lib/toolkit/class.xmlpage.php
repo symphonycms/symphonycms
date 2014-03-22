@@ -3,17 +3,13 @@
 	 * @package toolkit
 	 */
 	/**
-	 * AjaxPage extends the Page class to provide an object representation
-	 * of a Symphony backend AJAX page.
-	 *
-	 * @deprecated @since Symphony 2.4
-	 * @see XMLPage
-	 * @see JSONPage
+	 * XMLPage extends the Page class to provide an object representation
+	 * of a Symphony backend XML/AJAX page.
 	 */
 
 	require_once(TOOLKIT . '/class.page.php');
 
-	Abstract Class AjaxPage extends Page {
+	Abstract Class XMLPage extends Page {
 
 		/**
 		 * The root node for the response of the AJAXPage
@@ -22,7 +18,7 @@
 		protected $_Result;
 
 		/**
-		 * The constructor for `AJAXPage`. This sets the page status to `Page::HTTP_STATUS_OK`,
+		 * The constructor for `XMLPage`. This sets the page status to `Page::HTTP_STATUS_OK`,
 		 * the default content type to `text/xml` and initialises `$this->_Result`
 		 * with an `XMLElement`. The constructor also starts the Profiler for this
 		 * page template.
@@ -40,9 +36,9 @@
 		}
 
 		/**
-		 * This function is called when a user is not authenticated to the Symphony
-		 * backend. It sets the status of this page to `Page::HTTP_STATUS_UNAUTHORIZED` and
-		 * appends a message for generation
+		 * This function is called by Administration class when a user is not authenticated
+		 * to the Symphony backend. It sets the status of this page to
+		 * `Page::HTTP_STATUS_UNAUTHORIZED` and appends a message for generation
 		 */
 		public function handleFailedAuthorisation(){
 			$this->setHttpStatus(self::HTTP_STATUS_UNAUTHORIZED);
@@ -64,7 +60,7 @@
 
 		/**
 		 * The generate functions outputs the correct headers for
-		 * this `AJAXPage`, adds `$this->getHttpStatusCode()` code to the root attribute
+		 * this `XMLPage`, adds `$this->getHttpStatusCode()` code to the root attribute
 		 * before calling the parent generate function and generating
 		 * the `$this->_Result` XMLElement
 		 *
@@ -80,7 +76,7 @@
 		}
 
 		/**
-		 * All classes that extend the `AJAXPage` class must define a view method
+		 * All classes that extend the `XMLPage` class must define a view method
 		 * which contains the logic for the content of this page. The resulting HTML
 		 * is append to `$this->_Result` where it is generated on build
 		 *
