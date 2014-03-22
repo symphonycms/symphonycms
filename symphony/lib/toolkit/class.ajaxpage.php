@@ -15,13 +15,4 @@
 
 	Abstract Class AjaxPage extends XMLPage {
 
-		/**
-		 * All classes that extend the `AJAXPage` class must define a view method
-		 * which contains the logic for the content of this page. The resulting HTML
-		 * is append to `$this->_Result` where it is generated on build
-		 *
-		 * @see build()
-		 */
-		abstract public function view();
-
 	}
