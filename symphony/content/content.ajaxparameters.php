@@ -6,8 +6,9 @@
 	 * The AjaxParameters returns an JSON array of all available parameters.
 	 */
 	require_once(TOOLKIT . '/class.datasourcemanager.php');
+	require_once(TOOLKIT . '/class.jsonpage.php');
 
-	Class contentAjaxParameters extends AjaxPage {
+	Class contentAjaxParameters extends JSONPage {
 
 		private $template = '{$%s}';
 
@@ -37,17 +38,16 @@
 				$params = array_merge($params, $this->__getPageParams());
 				$params = array_merge($params, $this->__getDSParams());
 			}
-
+			
 			sort($params);
-			$this->_Result = json_encode($params);
+			$this->_Result = $params;
 		}
-
-		public function generate($page = null) {
-			header('Content-Type: application/json');
-			echo $this->_Result;
-			exit;
-		}
-
+		
+		
+		/**
+		 * Utilities
+		 */
+		
 		private function __getEnvParams() {
 			$params = array();
 			$env = array('today', 'current-time', 'this-year', 'this-month', 'this-day', 'timezone', 'website-name', 'page-title', 'root', 'workspace', 'root-page', 'current-page', 'current-page-id', 'current-path', 'current-query-string', 'current-url', 'cookie-username', 'cookie-pass', 'page-types', 'upload-limit');
