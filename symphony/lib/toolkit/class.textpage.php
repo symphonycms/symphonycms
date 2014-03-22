@@ -59,9 +59,8 @@
 
 		/**
 		 * The generate functions outputs the correct headers for
-		 * this `TextPage`, adds `$this->getHttpStatusCode()` code to the root attribute
-		 * before calling the parent generate function and generating
-		 * the `$this->_Result` json string
+		 * this `TextPage`, before calling the parent generate function and
+		 * returning the `$this->_Result` string
 		 *
 		 * @return string
 		 */
