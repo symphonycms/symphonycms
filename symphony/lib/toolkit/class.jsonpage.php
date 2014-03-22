@@ -7,9 +7,9 @@
 	 * of a Symphony backend JSON page.
 	 */
 
-	require_once(TOOLKIT . '/class.page.php');
+	require_once(TOOLKIT . '/class.textpage.php');
 
-	Abstract Class JSONPage extends Page {
+	Abstract Class JSONPage extends TextPage {
 
 		/**
 		 * The root node for the response of the JSONPage
@@ -45,19 +45,6 @@
 		}
 
 		/**
-		 * Calls the view function of this page. If a context is passed, it is
-		 * also set.
-		 *
-		 * @see view()
-		 * @param array $context
-		 *  The context of the page as an array. Defaults to null
-		 */
-		public function build($context = null){
-			if($context) $this->_context = $context;
-			$this->view();
-		}
-
-		/**
 		 * The generate functions outputs the correct headers for
 		 * this `JSONPage`, adds `$this->getHttpStatusCode()` code to the root attribute
 		 * before calling the parent generate function and generating
@@ -73,14 +60,4 @@
 
 			return json_encode($this->_Result);
 		}
-
-		/**
-		 * All classes that extend the `JSONPage` class must define a view method
-		 * which contains the logic for the content of this page. The resulting values
-		 * must be appended to `$this->_Result` where it is generated as json on build
-		 *
-		 * @see build()
-		 */
-		abstract public function view();
-
 	}

@@ -7,12 +7,12 @@
 	 * of a Symphony backend XML/AJAX page.
 	 */
 
-	require_once(TOOLKIT . '/class.page.php');
+	require_once(TOOLKIT . '/class.textpage.php');
 
-	Abstract Class XMLPage extends Page {
+	Abstract Class XMLPage extends TextPage {
 
 		/**
-		 * The root node for the response of the AJAXPage
+		 * The root node for the response of the XMLPage
 		 * @var XMLElement
 		 */
 		protected $_Result;
@@ -46,19 +46,6 @@
 		}
 
 		/**
-		 * Calls the view function of this page. If a context is passed, it is
-		 * also set.
-		 *
-		 * @see view()
-		 * @param array $context
-		 *  The context of the page as an array. Defaults to null
-		 */
-		public function build($context = null){
-			if($context) $this->_context = $context;
-			$this->view();
-		}
-
-		/**
 		 * The generate functions outputs the correct headers for
 		 * this `XMLPage`, adds `$this->getHttpStatusCode()` code to the root attribute
 		 * before calling the parent generate function and generating
@@ -74,14 +61,5 @@
 
 			return $this->_Result->generate(true);
 		}
-
-		/**
-		 * All classes that extend the `XMLPage` class must define a view method
-		 * which contains the logic for the content of this page. The resulting HTML
-		 * is append to `$this->_Result` where it is generated on build
-		 *
-		 * @see build()
-		 */
-		abstract public function view();
 
 	}
