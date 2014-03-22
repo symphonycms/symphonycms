@@ -13,7 +13,7 @@
 
 		/**
 		 * The root node for the response of the JSONPage
-		 * @var array|object
+		 * @var array
 		 */
 		protected $_Result;
 
