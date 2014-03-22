@@ -415,7 +415,7 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(act
 	// Update data source handle
 	name.on('blur.admin input.admin', function updateDsHandle() {
 		var current = nameChangeCount = nameChangeCount + 1,
-        value = name.val();
+		value = name.val();
 
 		setTimeout(function fetchDsHandle(nameChangeCount, current, value) {
 			if(nameChangeCount == current) {
@@ -426,7 +426,7 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(act
 					url: Symphony.Context.get('symphony') + '/ajax/handle/',
 					success: function(result) {
 						if(nameChangeCount == current) {
-							name.data('handle', result);
+							name.data('handle', result.handle);
 							params.trigger('update.admin');
 						}
 					}
