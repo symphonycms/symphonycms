@@ -319,6 +319,52 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 		preselect: 'input'
 	});
 
+	// Load section list
+	duplicator.on('constructshow.duplicator', '.instance', function() {
+		var instance = $(this),
+			sections = instance.find('.js-fetch-sections'),
+			selected = [],
+			options;
+
+		if(sections.length) {
+			options = sections.find('option').each(function() {
+				selected.push(this.value);
+
+				if(!isNaN(this.value)) {
+					$(this).remove();
+				}
+			});
+
+			$.ajax({
+				type: 'GET',
+				dataType: 'json',
+				url: Symphony.Context.get('symphony') + '/ajax/sections/',
+				success: function(result) {
+
+					// Append sections
+					$.each(result.sections, function(index, section) {
+						var optgroup = $('<optgroup />', {
+							label: section.name
+						}).appendTo(sections);
+
+						// Append fields
+						$.each(section.fields, function(index, field) {
+							var option = $('<option />', {
+								value: field.id,
+								text: field.name
+							}).appendTo(optgroup);
+
+							if($.inArray(field.id, selected) > -1) {
+								option.prop('selected', true);
+							}
+						});
+					});
+				}
+			});
+		}
+	});
+	duplicator.find('.instance').trigger('constructshow.duplicator');
+
 	// Update name
 	duplicator.on('blur.admin input.admin', '.instance input[name*="[label]"]', function() {
 		var label = $(this),

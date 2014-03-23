@@ -190,37 +190,24 @@
 			$div->appendChild($label);
 
 			// Dynamic Values
+			// Only append selected ids, load full section information asynchronously
 			$label = Widget::Label(__('Dynamic Values'));
 			$label->setAttribute('class', 'column');
 			$label->appendChild(new XMLElement('i', __('Optional')));
 
-			$sections = SectionManager::fetch(NULL, 'ASC', 'name');
-			$field_groups = array();
-
-			if(is_array($sections) && !empty($sections)) {
-				foreach($sections as $section) {
-					$field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
-				}
-			}
-
 			$options = array(
-				array('', false, __('None')),
+				array('', false, __('None'))
 			);
 
-			foreach($field_groups as $group){
-				if(!is_array($group['fields'])) continue;
-
-				$fields = array();
-				foreach($group['fields'] as $f){
-					if($f->get('id') != $this->get('id') && $f->canPrePopulate()) $fields[] = array($f->get('id'), ($this->get('dynamic_options') == $f->get('id')), $f->get('label'));
-				}
-
-				if(is_array($fields) && !empty($fields)) {
-					$options[] = array('label' => $group['section']->get('name'), 'options' => $fields);
-				}
+			if($this->get('dynamic_options')) {
+				$options[] = array($this->get('dynamic_options'));
 			}
 
-			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][dynamic_options]', $options));
+			$label->appendChild(
+				Widget::Select('fields['.$this->get('sortorder').'][dynamic_options]', $options, array(
+					'class' => 'js-fetch-sections'
+				))
+			);
 
 			if(isset($errors['dynamic_options'])) {
 				$div->appendChild(Widget::Error($label, $errors['dynamic_options']));
