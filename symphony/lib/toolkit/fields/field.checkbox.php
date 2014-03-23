@@ -84,20 +84,20 @@
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-			$this->appendRequiredCheckbox($div);
-			$this->appendShowColumnCheckbox($div);
-			$wrapper->appendChild($div);
-
 			// Checkbox Default State
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 			$label = Widget::Label();
 			$label->setAttribute('class', 'column');
 			$input = Widget::Input('fields['.$this->get('sortorder').'][default_state]', 'on', 'checkbox');
-			if($this->get('default_state') == 'on') $input->setAttribute('checked', 'checked');
+
+			if($this->get('default_state') == 'on') {
+				$input->setAttribute('checked', 'checked');
+			}
+
 			$label->setValue(__('%s Checked by default', array($input->generate())));
-			$div->appendChild($label);
-			$wrapper->appendChild($div);
+			$wrapper->appendChild($label);
+
+			// Requirements and table display
+			$this->appendStatusFooter($wrapper);
 		}
 
 		public function commit(){

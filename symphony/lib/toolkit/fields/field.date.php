@@ -325,12 +325,8 @@
  			$label->appendChild($input);
  			$wrapper->appendChild($label);
 
- 			$fieldset = new XMLElement('fieldset');
- 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
- 			$this->appendRequiredCheckbox($div);
- 			$this->appendShowColumnCheckbox($div);
- 			$fieldset->appendChild($div);
- 			$wrapper->appendChild($fieldset);
+			// Requirements and table display
+			$this->appendStatusFooter($wrapper);
 		}
 
 		public function commit() {

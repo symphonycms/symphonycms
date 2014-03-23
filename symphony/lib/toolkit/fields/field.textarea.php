@@ -97,16 +97,13 @@
 			$input = Widget::Input('fields['.$this->get('sortorder').'][size]', (string)$this->get('size'));
 			$label->appendChild($input);
 
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'two columns');
-			$div->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
+			$div = new XMLElement('div', null, array('class' => 'two columns'));
 			$div->appendChild($label);
+			$div->appendChild($this->buildFormatterSelect($this->get('formatter'), 'fields['.$this->get('sortorder').'][formatter]', __('Text Formatter')));
 			$wrapper->appendChild($div);
 
-			$div =  new XMLElement('div', NULL, array('class' => 'two columns'));
-			$this->appendRequiredCheckbox($div);
-			$this->appendShowColumnCheckbox($div);
-			$wrapper->appendChild($div);
+			// Requirements and table display
+			$this->appendStatusFooter($wrapper);
 		}
 
 		public function commit(){

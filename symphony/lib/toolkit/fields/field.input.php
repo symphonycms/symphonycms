@@ -88,12 +88,11 @@
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
+			// Validation rule
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'input', $errors);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-			$this->appendRequiredCheckbox($div);
-			$this->appendShowColumnCheckbox($div);
-			$wrapper->appendChild($div);
+			// Requirements and table display
+			$this->appendStatusFooter($wrapper);
 		}
 
 		public function commit(){

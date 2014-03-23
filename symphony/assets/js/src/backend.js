@@ -23,7 +23,8 @@
 		'Expand all fields': false,
 		'Collapse all fields': false,
 		'drag to reorder': false,
-		'Please reset your password': false
+		'Please reset your password': false,
+		'required': false
 	});
 
 	// Initialise backend

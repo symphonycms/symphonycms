@@ -138,15 +138,18 @@
 
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][destination]', $options));
 
-			if(isset($errors['destination'])) $wrapper->appendChild(Widget::Error($label, $errors['destination']));
-			else $wrapper->appendChild($label);
+			if(isset($errors['destination'])) {
+				$wrapper->appendChild(Widget::Error($label, $errors['destination']));
+			}
+			else {
+				$wrapper->appendChild($label);
+			}
 
+			// Validation rule
 			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload', $errors);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-			$this->appendRequiredCheckbox($div);
-			$this->appendShowColumnCheckbox($div);
-			$wrapper->appendChild($div);
+			// Requirements and table display
+			$this->appendStatusFooter($wrapper);
 		}
 
 		public function checkFields(array &$errors, $checkForDuplicates = true){
