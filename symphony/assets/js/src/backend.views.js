@@ -340,6 +340,15 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 		select.parents('.instance').find('.frame-header').removeClass('main').removeClass('sidebar').addClass(select.val());
 	});
 
+	// Update select field
+	duplicator.on('change.admin', '.instance select[name*="[dynamic_options]"]', function() {
+		var select = $(this),
+			isDynamic = (select.val() !== '');
+
+		select.parents('.instance').find('.show-associations').toggle(isDynamic);
+	});
+	duplicator.find('.instance select[name*="[dynamic_options]"]').trigger('change.admin');
+
 	// Remove field
 	duplicator.on('destructstart.duplicator', function(event) {
 		var target = $(event.target),

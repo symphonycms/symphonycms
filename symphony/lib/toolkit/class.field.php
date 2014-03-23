@@ -681,7 +681,7 @@
 			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
 
 			$label = Widget::Label();
-			$label->setAttribute('class', 'column');
+			$label->setAttribute('class', 'column show-associations');
 			if($help) $label->addClass('inline-help');
 			$input = Widget::Input($name, 'yes', 'checkbox');
 
