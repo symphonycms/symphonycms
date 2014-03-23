@@ -3,11 +3,18 @@
 	 * @package content
 	 */
 	/**
-	 * The AjaxEventDocumentation returns the documentation for a particular event by invoking all fields to return their documentation. Accepts three parameters, `section`, `filters` and `name`.
+	 * The AjaxEventDocumentation returns the documentation for a particular
+	 * event by invoking all fields to return their documentation.
+	 * Accepts three parameters, `section`, `filters` and `name`.
 	 */
 	require_once(TOOLKIT . '/class.datasourcemanager.php');
 
-	Class contentAjaxEventDocumentation extends AjaxPage {
+	Class contentAjaxEventDocumentation extends TextPage {
+		
+		public function __construct() {
+			parent::__construct();
+			$this->addHeaderToPage('Content-Type', 'text/html');
+		}
 
 		public function view() {
 			$name = General::sanitize($_REQUEST['name']);
@@ -43,18 +50,12 @@
 				'selected' => $filters,
 				'documentation' => &$doc_parts
 			));
-
+			
 			$documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $doc_parts));
 			$documentation = str_replace('\'', '\\\'', $documentation);
 
 			$documentation = '<fieldset id="event-documentation" class="settings"><legend>' . __('Documentation') . '</legend>' . $documentation . '</fieldset>';
 			$this->_Result = $documentation;
-		}
-
-		public function generate($page = null) {
-			header('Content-Type: text/html');
-			echo $this->_Result;
-			exit;
 		}
 
 		/**
