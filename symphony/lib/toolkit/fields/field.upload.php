@@ -141,7 +141,7 @@
 			if(isset($errors['destination'])) $wrapper->appendChild(Widget::Error($label, $errors['destination']));
 			else $wrapper->appendChild($label);
 
-			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload');
+			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload', $errors);
 
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 			$this->appendRequiredCheckbox($div);

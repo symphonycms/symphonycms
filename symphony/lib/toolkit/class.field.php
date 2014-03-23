@@ -550,7 +550,7 @@
 		 * @param XMLElement $wrapper
 		 *	the parent element to append the XMLElement of the Validation select to,
 		 *  passed by reference.
-		 * @param string $selection (optional)
+		 * @param string $selected (optional)
 		 *	the current validator selection if there is one. defaults to null if there
 		 *	isn't.
 		 * @param string $name (optional)
@@ -558,8 +558,10 @@
 		 * @param string $type (optional)
 		 *	the type of input for the validation to apply to. this defaults to 'input'
 		 *	but also accepts 'upload'.
+		 * @param array $errors (optional)
+		 *	an associative array of errors
 		 */
-		public function buildValidationSelect(XMLElement &$wrapper, $selected = null, $name='fields[validator]', $type='input'){
+		public function buildValidationSelect(XMLElement &$wrapper, $selected = null, $name='fields[validator]', $type='input', array $errors = null) {
 
 			include(TOOLKIT . '/util.validators.php');
 			$rules = ($type == 'upload' ? $upload : $validators);
@@ -568,11 +570,23 @@
 			$label->setAttribute('class', 'column');
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input($name, $selected));
-			$wrapper->appendChild($label);
 
 			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
-			foreach($rules as $name => $rule) $ul->appendChild(new XMLElement('li', $name, array('class' => $rule)));
-			$wrapper->appendChild($ul);
+			foreach($rules as $name => $rule) {
+				$ul->appendChild(new XMLElement('li', $name, array('class' => $rule)));
+			}
+
+			if(isset($errors['validator'])) {
+				$div = new XMLElement('div');
+				$div->appendChild($label);
+				$div->appendChild($ul);
+
+				$wrapper->appendChild(Widget::Error($div, $errors['validator']));
+			}
+			else {
+				$wrapper->appendChild($label);
+				$wrapper->appendChild($ul);
+			}
 
 		}
 
@@ -707,6 +721,13 @@
 			elseif($checkForDuplicates) {
 				if(FieldManager::fetchFieldIDFromElementName($element_name, $parent_section) != $this->get('id')) {
 					$errors['element_name'] = __('A field with that element name already exists. Please choose another.');
+				}
+			}
+
+			// Check that if the validator is provided that it's a valid regular expression
+			if(!is_null($this->get('validator'))) {
+				if(@preg_match($this->get('validator'), 'teststring') === false) {
+					$errors['validator'] = __('Validation rule is not a valid regular expression');
 				}
 			}
 
