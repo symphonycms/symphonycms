@@ -340,6 +340,26 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 		select.parents('.instance').find('.frame-header').removeClass('main').removeClass('sidebar').addClass(select.val());
 	});
 
+	// Update requirements
+	duplicator.on('change.admin', '.instance input[name*="[required]"]', function() {
+		var checkbox = $(this),
+			headline = checkbox.parents('.instance').find('.frame-header h4');
+
+		// Is required
+		if(checkbox.is(':checked')) {
+			$('<span />', {
+				class: 'required',
+				text: '— ' + Symphony.Language.get('required')
+			}).appendTo(headline);
+		}
+
+		// Is not required
+		else {
+			headline.find('.required').remove();
+		}
+	});
+	duplicator.find('.instance input[name*="[required]"]').trigger('change.admin');
+
 	// Update select field
 	duplicator.on('change.admin', '.instance select[name*="[dynamic_options]"]', function() {
 		var select = $(this),
