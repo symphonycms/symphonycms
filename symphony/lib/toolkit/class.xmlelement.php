@@ -31,7 +31,7 @@
 		 * The value of this `XMLElement` as a string
 		 * @var string
 		 */
-		private $_value;
+		private $_value = array();
 
 		/**
 		 * Any additional attributes can be included in an associative array
@@ -103,14 +103,6 @@
 		private $_allowEmptyAttributes = true;
 
 		/**
-		 * Defaults to `false`, which puts the value before any children elements.
-		 * Setting to true will append any children first, then add the value
-		 * to the current `XMLElement`
-		 * @var boolean
-		 */
-		private $_placeValueAfterChildElements = false;
-
-		/**
 		 * The constructor for the `XMLElement`
 		 *
 		 * @param string $name
@@ -128,7 +120,7 @@
 		 *  `false`.
 		 * @return XMLElement
 		 */
-		public function __construct($name, $value = null, Array $attributes = array(), $createHandle = false){
+		public function __construct($name, $value = null, array $attributes = array(), $createHandle = false){
 			$this->setName($name, $createHandle);
 			$this->setValue($value);
 
@@ -152,7 +144,21 @@
 		 * @return string|XMLElement
 		 */
 		public function getValue(){
-			return $this->_value;
+			$value = '';
+
+			if(is_array($this->_value)) foreach($this->_value as $v) {
+				if($v instanceof XMLElement) {
+					$value .= $v->generate();
+				}
+				else {
+					$value .= $v;
+				}
+			}
+			else if(!is_null($this->_value)) {
+				$value = $this->_value;
+			}
+
+			return $value;
 		}
 
 		/**
@@ -342,14 +348,14 @@
 		 *  Defaults to true.
 		 */
 		public function setValue($value, $prepend=true){
-			if ($value instanceof XMLElement) {
-				$value = $value->generate(false);
-			} else if (is_array($value)) {
+			if (is_array($value)) {
 				$value = implode(', ', $value);
 			}
-			
-			if(!$prepend) $this->_placeValueAfterChildElements = true;
-			$this->_value = $value;
+
+			if(!is_null($value)) {
+				$this->_value = $value;
+				$this->appendChild($value);
+			}
 		}
 
 		/**
@@ -372,7 +378,7 @@
 		 *  Associative array with the key being the name and
 		 *  the value being the value of the attribute.
 		 */
-		public function setAttributeArray(Array $attributes = null){
+		public function setAttributeArray(array $attributes = null){
 			if(!is_array($attributes) || empty($attributes)) return;
 
 			foreach($attributes as $name => $value)
@@ -390,7 +396,7 @@
 		 *  XMLElement instance
 		 * @return boolean
 		 */
-		public function setChildren(Array $children = null) {
+		public function setChildren(array $children = null) {
 			$this->_children = $children;
 
 			return true;
@@ -399,10 +405,10 @@
 		/**
 		 * Adds an `XMLElement` to the children array
 		 *
-		 * @param XMLElement $child
+		 * @param XMLElement|string $child
 		 * @return boolean
 		 */
-		public function appendChild(XMLElement $child){
+		public function appendChild($child){
 			$this->_children[] = $child;
 
 			return true;
@@ -414,7 +420,7 @@
 		 *
 		 * @param array $children
 		 */
-		public function appendChildArray(Array $children = null){
+		public function appendChildArray(array $children = null){
 			if(is_array($children) && !empty($children)) {
 				foreach($children as $child)
 					$this->appendChild($child);
@@ -622,17 +628,17 @@
 		 * @param integer $tab_depth
 		 *  Defaults to 0, indicates the number of tabs (\t) that this
 		 *  element should be indented by in the output string
-		 * @param boolean $hasParent
+		 * @param boolean $has_parent
 		 *  Defaults to false, set to true when the children are being
 		 *  generated. Only the parent will output an XML declaration
 		 *  if `$this->_includeHeader` is set to true.
 		 * @return string
 		 */
-		public function generate($indent = false, $tab_depth = 0, $hasParent = false){
+		public function generate($indent = false, $tab_depth = 0, $has_parent = false){
 			$result = null;
 			$newline = ($indent ? PHP_EOL : null);
 
-			if(!$hasParent){
+			if(!$has_parent){
 				if($this->_includeHeader){
 					$result .= sprintf(
 						'<?xml version="%s" encoding="%s" ?>%s',
@@ -649,7 +655,7 @@
 				}
 			}
 
-			$result .= ($indent ? str_repeat("\t", $tab_depth) : null) . '<' . $this->getName();
+			$result = ($indent ? str_repeat("\t", $tab_depth) : null) . '<' . $this->getName();
 
 			$attributes = $this->getAttributes();
 			if(!empty($attributes)){
@@ -660,37 +666,31 @@
 				}
 			}
 
-			$numberOfchildren = $this->getNumberOfChildren();
-
-			if($numberOfchildren > 0 || strlen($this->_value) != 0 || !$this->_selfclosing){
-
+			$value = $this->getValue();
+			$added_newline = false;
+			if($this->getNumberOfChildren() > 0 || strlen($value) != 0 || !$this->_selfclosing) {
 				$result .= '>';
 
-				if(!is_null($this->getValue()) && !$this->_placeValueAfterChildElements) {
-					$result .= $this->getValue();
-				}
-
-				if($numberOfchildren > 0 ){
-					$result .= $newline;
-
-					foreach($this->_children as $child ){
-						if(!($child instanceof XMLElement)) {
-							throw new Exception('Child is not of type XMLElement');
+				foreach($this->_children as $i => $child) {
+					if(!($child instanceof XMLElement)) {
+						$result .= $child;
+					}
+					else {
+						if($added_newline === false) {
+							$added_newline = true;
+							$result .= $newline;
 						}
+
 						$child->setElementStyle($this->_elementStyle);
 						$result .= $child->generate($indent, $tab_depth + 1, true);
 					}
-
-					if($indent) $result .= str_repeat("\t", $tab_depth);
 				}
 
-				if(!is_null($this->getValue()) && $this->_placeValueAfterChildElements){
-					if($indent) $result .= str_repeat("\t", max(1, $tab_depth));
-					$result .= $this->getValue() . $newline;
-				}
-
-				$result .= sprintf("</%s>%s", $this->getName(), $newline);
-
+				$result .= sprintf("%s</%s>%s", 
+					($indent && $added_newline ? str_repeat("\t", $tab_depth) : null),
+					$this->getName(), 
+					$newline
+				);
 			}
 
 			// Empty elements:
@@ -738,10 +738,27 @@
 		public static function convertFromDOMDocument($root_element, DOMDocument $doc) {
 			$xpath = new DOMXPath($doc);
 			$root = new XMLElement($root_element);
-			foreach($xpath->query('*') as $node) {
-				self::convert($root, $node);
+			foreach($xpath->query('.') as $node) {
+				if($node->hasAttributes()) {
+					foreach($node->attributes as $name => $attrEl) {
+						$root->setAttribute($name, General::sanitize($attrEl->value));
+					}
+				}
+
+				if($node->hasChildNodes()) {
+					foreach($node->childNodes as $childNode) {
+						if($childNode instanceof DOMText) {
+							if($childNode->isWhitespaceInElementContent() === false) {
+								$root->setValue(General::sanitize($childNode->data));
+							}
+						}
+						else if($childNode instanceof DOMElement) {
+							self::convert($root, $childNode);
+						}
+					}
+				}
 			}
-			
+
 			return $root;
 		}
 
@@ -754,7 +771,7 @@
 		 * @param DOMNOde $node
 		 * @return XMLElement
 		 */
-		private static function convert(XMLElement &$root, DOMNode $node) {
+		private static function convert(XMLElement $root = null, DOMNode $node) {
 			$el = new XMLElement($node->tagName);
 
 			if($node->hasAttributes()) {
@@ -776,6 +793,11 @@
 				}
 			}
 
-			$root->appendChild($el);
+			if (is_null($root)) {
+				return $el;
+			}
+			else {
+				$root->appendChild($el);
+			}
 		}
 	}
