@@ -286,7 +286,7 @@
 					}
 					else {
 						$link = Widget::Anchor(
-							__('None'),
+							'',
 							Administration::instance()->getCurrentPageURL() . 'edit/' . $entry->get('id') . '/'.($filter_querystring ? '?' . $prepopulate_querystring : ''),
 							$entry->get('id'),
 							'content'
