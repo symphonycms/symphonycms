@@ -56,7 +56,7 @@
 
 			$cache = new Cacheable(Symphony::Database());
 
-			$cachedData = $cache->check($cache_id);
+			$cachedData = $cache->read($cache_id);
 			$writeToCache = false;
 			$valid = true;
 			$creation = DateTimeObj::get('c');

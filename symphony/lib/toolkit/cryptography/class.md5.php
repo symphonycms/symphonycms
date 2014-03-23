@@ -10,6 +10,8 @@
 	 * @see toolkit.Cryptography
 	 * @deprecated This code is regarded as insecure and exists only for backwards-compatibility-purposes.
 	 * It should not be used when writing new password-related features.
+	 *
+	 * This class will be removed in Symphony 2.5
 	 */
 	Class MD5 extends Cryptography{
 
