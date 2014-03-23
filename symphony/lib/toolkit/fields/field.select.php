@@ -182,7 +182,7 @@
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 
 			// Predefined Values
-			$label = Widget::Label(__('Predefined Values'));
+			$label = Widget::Label(__('Static Values'));
 			$label->setAttribute('class', 'column');
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$input = Widget::Input('fields['.$this->get('sortorder').'][static_options]', General::sanitize($this->get('static_options')));
@@ -197,8 +197,11 @@
 			$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 			$field_groups = array();
 
-			if(is_array($sections) && !empty($sections))
-				foreach($sections as $section) $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
+			if(is_array($sections) && !empty($sections)) {
+				foreach($sections as $section) {
+					$field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
+				}
+			}
 
 			$options = array(
 				array('', false, __('None')),
@@ -212,13 +215,19 @@
 					if($f->get('id') != $this->get('id') && $f->canPrePopulate()) $fields[] = array($f->get('id'), ($this->get('dynamic_options') == $f->get('id')), $f->get('label'));
 				}
 
-				if(is_array($fields) && !empty($fields)) $options[] = array('label' => $group['section']->get('name'), 'options' => $fields);
+				if(is_array($fields) && !empty($fields)) {
+					$options[] = array('label' => $group['section']->get('name'), 'options' => $fields);
+				}
 			}
 
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][dynamic_options]', $options));
 
-			if(isset($errors['dynamic_options'])) $div->appendChild(Widget::Error($label, $errors['dynamic_options']));
-			else $div->appendChild($label);
+			if(isset($errors['dynamic_options'])) {
+				$div->appendChild(Widget::Error($label, $errors['dynamic_options']));
+			}
+			else {
+				$div->appendChild($label);
+			}
 
 			$wrapper->appendChild($div);
 
@@ -228,25 +237,32 @@
 			$label = Widget::Label();
 			$label->setAttribute('class', 'column');
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
-			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
+
+			if($this->get('allow_multiple_selection') == 'yes') {
+				$input->setAttribute('checked', 'checked');
+			}
+
 			$label->setValue(__('%s Allow selection of multiple options', array($input->generate())));
 			$div->appendChild($label);
-
-			$this->appendShowAssociationCheckbox($div, __('available when using Dynamic Values'));
 
 			// Sort options?
 			$label = Widget::Label();
 			$label->setAttribute('class', 'column');
 			$input = Widget::Input('fields['.$this->get('sortorder').'][sort_options]', 'yes', 'checkbox');
-			if($this->get('sort_options') == 'yes') $input->setAttribute('checked', 'checked');
+
+			if($this->get('sort_options') == 'yes') {
+				$input->setAttribute('checked', 'checked');
+			}
+
 			$label->setValue(__('%s Sort all options alphabetically', array($input->generate())));
 			$div->appendChild($label);
 			$wrapper->appendChild($div);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-			$this->appendShowColumnCheckbox($div);
-			$this->appendRequiredCheckbox($div);
-			$wrapper->appendChild($div);
+			// Show relationships
+			$this->appendShowAssociationCheckbox($div);
+
+			// Requirements and table display
+			$this->appendStatusFooter($wrapper);
 		}
 
 		public function checkFields(array &$errors, $checkForDuplicates = true){

@@ -644,6 +644,24 @@
 		}
 
 		/**
+		 * Append the default status footer to the field settings panel.
+		 * Displays the required and show column checkboxes.
+		 *
+		 * @param XMLElement $wrapper
+		 *	the parent XML element to append the checkbox to.
+		 */
+		public function appendStatusFooter(XMLElement &$wrapper) {
+			$fieldset = new XMLElement('fieldset');
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+
+			$this->appendRequiredCheckbox($div);
+			$this->appendShowColumnCheckbox($div);
+			
+			$fieldset->appendChild($div);
+			$wrapper->appendChild($fieldset);
+		}
+
+		/**
 		 * Append the show association html widget to the input parent XML element. This
 		 * widget allows fields that provide linking to hide or show the column in the linked
 		 * section, similar to how the Show Column functionality works, but for the linked
