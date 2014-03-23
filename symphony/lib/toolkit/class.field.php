@@ -725,7 +725,7 @@
 			}
 
 			// Check that if the validator is provided that it's a valid regular expression
-			if(!is_null($this->get('validator'))) {
+			if(!is_null($this->get('validator')) && $this->get('validator') !== '') {
 				if(@preg_match($this->get('validator'), 'teststring') === false) {
 					$errors['validator'] = __('Validation rule is not a valid regular expression');
 				}
