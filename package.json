@@ -1,7 +1,7 @@
 {
   "name": "symphonycms",
   "version": "2.4.0",
-  "description": "Symphony is a PHP & MySQL based CMS that utilises XML and XSLT as its core technologies.",
+  "description": "Symphony is a XSLT-powered open source content management system",
   "repository": {
     "type": "git",
     "url": "https://github.com/symphonycms/symphony-2.git"
