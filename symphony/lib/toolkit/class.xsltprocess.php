@@ -142,7 +142,11 @@
 
 			// Load the xsl document
 			set_error_handler(array($this, 'trapXSLError'));
+			// Ensure that the XSLT can be loaded with `false`. RE: #1939
+			// Note that `true` will cause `<xsl:import />` to fail.
+			$elOLD = libxml_disable_entity_loader(false);
 			$xslDoc->loadXML($xsl, LIBXML_NONET | LIBXML_DTDLOAD | LIBXML_DTDATTR | defined('LIBXML_COMPACT') ? LIBXML_COMPACT : 0);
+			libxml_disable_entity_loader($elOLD);
 
 			// Load the xsl template
 			$XSLProc->importStyleSheet($xslDoc);
