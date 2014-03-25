@@ -147,6 +147,43 @@ Symphony.View.add('/:context*:', function() {
 		}
 	});
 
+	// Confirm actions
+	Symphony.Elements.contents.add(Symphony.Elements.context).on('click.admin', 'button.confirm', function() {
+		var message = $(this).attr('data-message') || Symphony.Language.get('Are you sure you want to proceed?');
+
+		return confirm(message);
+	});
+
+	// Confirm with selected actions
+	Symphony.Elements.contents.find('> form').on('submit.admin', function() {
+		var select = $('select[name="with-selected"]'),
+			option = select.find('option:selected'),
+			message = option.attr('data-message') ||  Symphony.Language.get('Are you sure you want to proceed?');
+
+		// Needs confirmation
+		if(option.is('.confirm')) {
+			return confirm(message);
+		}
+	});
+
+	// Catch all JavaScript errors and write them to the Symphony Log
+	Symphony.Elements.window.on('error.admin', function(event) {
+		$.ajax({
+			type: 'POST',
+			url: Symphony.Context.get('symphony') + '/ajax/log/',
+			data: {
+				'error': event.originalEvent.message,
+				'url': event.originalEvent.filename,
+				'line': event.originalEvent.lineno
+			}
+		});
+
+		return false;
+	});
+});
+
+Symphony.View.add('/publish/:context*:', function() {
+
 	// Pagination
 	Symphony.Elements.contents.find('.pagination').each(function() {
 		var pagination = $(this),
@@ -211,25 +248,6 @@ Symphony.View.add('/:context*:', function() {
 		});
 	});
 
-	// Confirm actions
-	Symphony.Elements.contents.add(Symphony.Elements.context).on('click.admin', 'button.confirm', function() {
-		var message = $(this).attr('data-message') || Symphony.Language.get('Are you sure you want to proceed?');
-
-		return confirm(message);
-	});
-
-	// Confirm with selected actions
-	Symphony.Elements.contents.find('> form').on('submit.admin', function() {
-		var select = $('select[name="with-selected"]'),
-			option = select.find('option:selected'),
-			message = option.attr('data-message') ||  Symphony.Language.get('Are you sure you want to proceed?');
-
-		// Needs confirmation
-		if(option.is('.confirm')) {
-			return confirm(message);
-		}
-	});
-
 	// Upload field destructors
 	$('<em />', {
 		text: Symphony.Language.get('Remove File'),
@@ -244,21 +262,6 @@ Symphony.View.add('/:context*:', function() {
 			}
 		}
 	}).appendTo('label.file:has(a) span.frame');
-
-	// Catch all JavaScript errors and write them to the Symphony Log
-	Symphony.Elements.window.on('error.admin', function(event) {
-		$.ajax({
-			type: 'POST',
-			url: Symphony.Context.get('symphony') + '/ajax/log/',
-			data: {
-				'error': event.originalEvent.message,
-				'url': event.originalEvent.filename,
-				'line': event.originalEvent.lineno
-			}
-		});
-
-		return false;
-	});
 });
 
 Symphony.View.add('/:context*:/new', function() {
