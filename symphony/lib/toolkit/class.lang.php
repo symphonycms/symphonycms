@@ -534,7 +534,7 @@
 			// Use the transliteration table if provided
 			if($apply_transliteration == true){
 				$file = pathinfo($string);
-				$string = self::applyTransliterations($file['basename']) . '.' . $file['extension'];
+				$string = self::applyTransliterations($file['filename']) . '.' . $file['extension'];
 			}
 
 			return General::createFilename($string, $delim);
