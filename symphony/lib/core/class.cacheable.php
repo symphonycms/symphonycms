@@ -20,13 +20,13 @@
 		 *
 		 * @var iCache
 		 */
-		private $cacheProvider;
+		private $cacheProvider = null;
 
 		/**
 		 * The constructor for the Cacheable takes an instance of the
 		 * MySQL class and assigns it to `$this->Database`
 		 *
-		 * @param MySQL $Database
+		 * @param iCache $Database
 		 *  An instance of the MySQL class to store the cached
 		 *  data in.
 		 */
@@ -38,6 +38,16 @@
 			else {
 				$this->cacheProvider = $cacheProvider;
 			}
+		}
+
+		/**
+		 * Returns the type of the internal caching provider
+		 *
+		 * @since Symphony 2.4
+		 * @return string
+		 */
+		public function getType() {
+			return get_class($this->cacheProvider);
 		}
 
 		/**

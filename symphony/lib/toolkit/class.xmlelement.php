@@ -11,7 +11,7 @@
 
 	require_once(TOOLKIT . '/class.lang.php');
 
-	Class XMLElement {
+	Class XMLElement implements IteratorAggregate {
 
 		/**
 		 * This is an array of HTML elements that are self closing.
@@ -203,6 +203,16 @@
 		}
 
 		/**
+		 * Accessor for `$this->_children`, returning only `XMLElement` children,
+		 * not text nodes.
+		 *
+		 * @return XMLElementChildrenFilter
+		 */
+		public function getIterator(){
+			return new XMLElementChildrenFilter(new ArrayIterator($this->_children));
+		}
+
+		/**
 		 * Retrieves child-element by name and position. If no child is found,
 		 * `NULL` will be returned.
 		 *
@@ -230,7 +240,7 @@
 		 */
 		public function getChildrenByName($name) {
 			$result = array();
-			foreach($this->_children as $i => $child) {
+			foreach($this as $i => $child) {
 				if($child->getName() != $name) continue;
 
 				$result[$i] = $child;
@@ -344,10 +354,9 @@
 		 * to the children.
 		 *
 		 * @param string|XMLElement|array $value
-		 * @param boolean $prepend (optional)
 		 *  Defaults to true.
 		 */
-		public function setValue($value, $prepend=true){
+		public function setValue($value){
 			if (is_array($value)) {
 				$value = implode(', ', $value);
 			}
@@ -356,6 +365,23 @@
 				$this->_value = $value;
 				$this->appendChild($value);
 			}
+		}
+
+		/**
+		 * This function will remove all text attributes from the `XMLElement` node
+		 * and replace them with the given value.
+		 *
+		 * @since Symphony 2.4
+		 * @param string|XMLElement|array $value
+		 */
+		public function replaceValue($value) {
+			foreach($this->_children as $i => $child) {
+				if($child instanceof XMLElement) continue;
+
+				unset($this->_children[$i]);
+			}
+
+			$this->setValue($value);
 		}
 
 		/**
@@ -799,5 +825,17 @@
 			else {
 				$root->appendChild($el);
 			}
+		}
+	}
+
+	/**
+	 * Creates a filter that only returns XMLElement items
+	 */
+	Class XMLElementChildrenFilter extends FilterIterator {
+
+		public function accept() {
+			$item = $this->getInnerIterator()->current();
+
+			return $item instanceof XMLElement;
 		}
 	}

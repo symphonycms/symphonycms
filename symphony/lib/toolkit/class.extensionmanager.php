@@ -239,6 +239,30 @@
 		}
 
 		/**
+		 * This function will return the `Cacheable` object with the appropriate
+		 * caching layer for the given `$key`. This `$key` should be stored in
+		 * the Symphony configuration in the caching group with a reference
+		 * to the class of the caching object. If the key is not found, this
+		 * will return a default `Cacheable` object created with the MySQL driver.
+		 *
+		 * @since Symphony 2.4
+		 * @param string $key
+		 *  Should be a reference in the Configuration file to the Caching class
+		 * @return Cacheable
+		 */
+		public static function getCacheProvider($key = null) {
+			$cacheDriver = Symphony::Configuration()->get($key, 'caching');
+			if(in_array($cacheDriver, array_keys(Symphony::ExtensionManager()->getProvidersOf('cache')))) {
+				$cacheable = new $cacheDriver;
+			}
+			else {
+				$cacheable = Symphony::Database();
+			}
+
+			return new Cacheable($cacheable);
+		}
+
+		/**
 		 * Determines whether the current extension is installed or not by checking
 		 * for an id in `tbl_extensions`
 		 *

@@ -36,7 +36,9 @@
 			if(!is_null($Log)){
 				self::$_Log = $Log;
 			}
+
 			set_exception_handler(array(__CLASS__, 'handler'));
+			register_shutdown_function(array(__CLASS__, 'shutdown'));
 		}
 
 		/**
@@ -207,6 +209,45 @@
 
 			return $html;
 		}
+
+		/**
+		 * The shutdown function will capture any fatal errors and format them as a
+		 * usual Symphony page.
+		 *
+		 * @since Symphony 2.4
+		 */
+		public static function shutdown() {
+			$last_error = error_get_last();
+			if(!is_null($last_error) && $last_error['type'] === E_ERROR) {
+				$code = $last_error['type'];
+				$message = $last_error['message'];
+				$file = $last_error['file'];
+				$line = $last_error['line'];
+
+				// Log the error message
+				if(self::$_Log instanceof Log) {
+					self::$_Log->pushToLog(
+						sprintf(
+							'%s %s: %s%s%s',
+							__CLASS__, $code, $message, ($line ? " on line $line" : null), ($file ? " of file $file" : null)
+						), $code, true
+					);
+				}
+				ob_clean();
+
+				// Display the error message
+				$html = sprintf(file_get_contents(self::getTemplate('fatalerror.fatal')),
+					'Fatal Error',
+					$message,
+					$file,
+					$line
+				);
+				$html = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $html);
+				$html = str_replace('{URL}', URL, $html);
+
+				echo $html;
+			}
+		}
 	}
 
 	/**
@@ -251,10 +292,10 @@
 		 * @var array
 		 */
 		public static $errorTypeStrings = array (
-			E_NOTICE				=> 'Notice',
+			E_ERROR					=> 'Fatal Error',
 			E_WARNING				=> 'Warning',
-			E_ERROR					=> 'Error',
 			E_PARSE					=> 'Parsing Error',
+			E_NOTICE				=> 'Notice',
 
 			E_CORE_ERROR			=> 'Core Error',
 			E_CORE_WARNING			=> 'Core Warning',
