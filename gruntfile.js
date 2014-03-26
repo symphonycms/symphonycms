@@ -91,6 +91,7 @@ module.exports = function (grunt) {
                         'symphony/assets/js/lib/jquery.js',
                         'symphony/assets/js/lib/signals.js',
                         'symphony/assets/js/lib/crossroads.js',
+                        'symphony/assets/js/lib/punycode.js',
                         'symphony/assets/js/src/symphony.js',
                         'symphony/assets/js/src/symphony.collapsible.js',
                         'symphony/assets/js/src/symphony.orderable.js',
@@ -128,7 +129,7 @@ module.exports = function (grunt) {
     //grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    
+
     grunt.registerTask('default', ['concat', 'autoprefixer', 'csso', 'uglify']);
     grunt.registerTask('css', ['concat', 'autoprefixer', 'csso']);
     grunt.registerTask('js', ['uglify']);

@@ -128,8 +128,11 @@ var Symphony = (function($) {
 			 *  defaults to `true (all)
 			 */
 			render: function renderRoute(url, greedy) {
+
 				if(!url) {
-					url = Symphony.Context.get('path') + Symphony.Context.get('env')['page-namespace'] + '/';
+
+					url = window.location.href.replace(window.location.host, window.punycode.toUnicode(window.location.host));
+					url = url.replace(Symphony.Context.get('root'), '');
 				}
 
 				if(greedy === false) {
