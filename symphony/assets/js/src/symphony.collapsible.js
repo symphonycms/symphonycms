@@ -34,12 +34,12 @@
 		path     = path.replace(Symphony.Context.get('root') + '/', '').replace(/\/(edit|new|created|saved)/g, '').replace(/\//g, '.');
 		settings = {
 
-			items:				'.instance',
-			handles:			'.header:first',
-			content:			'.content',
-			ignore:				'.ignore',
-			save_state:			true,
-			storage:			'symphony.collapsible.' + path
+			items      : '.instance',
+			handles    : '.header:first',
+			content    : '.content',
+			ignore     : '.ignore',
+			save_state : true,
+			storage    : 'symphony.collapsible.' + path
 		};
 
 		$.extend(settings, options);
