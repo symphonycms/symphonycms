@@ -92,7 +92,7 @@ Symphony.View.add('/:context*:', function() {
 				// Send request
 				$.ajax({
 					type: 'POST',
-					url: Symphony.Context.get('symphony') + '/ajax/reorder' + location.href.slice(Symphony.Context.get('symphony').length),
+					url: Symphony.Context.get('symphony') + '/ajax/reorder' + Symphony.Context.get('env')['page-namespace'] + '/',
 					data: newSorting,
 					error: function() {
 						Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'error');

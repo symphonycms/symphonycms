@@ -106,7 +106,7 @@ var Symphony = (function($) {
 			 *  Returns a route object
 			 */
 			add: function addRoute(pattern, handler, priority, greedy) {
-				var route; 
+				var route;
 
 				pattern = Symphony.Context.get('path') + pattern;
 				route = crossroads.addRoute(pattern, handler, priority);
@@ -129,7 +129,7 @@ var Symphony = (function($) {
 			 */
 			render: function renderRoute(url, greedy) {
 				if(!url) {
-					url = window.location.href.split(Symphony.Context.get('root'))[1];
+					url = Symphony.Context.get('path') + Symphony.Context.get('env')['page-namespace'] + '/';
 				}
 
 				if(greedy === false) {
