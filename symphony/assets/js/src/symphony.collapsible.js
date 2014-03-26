@@ -30,8 +30,8 @@
 		var objects, path, settings;
 
 		objects  = this;
-		path     = window.location.href.replace(window.location.host, window.punycode.toUnicode(window.location.host));
-		path     = path.replace(Symphony.Context.get('root') + '/', '').replace(/\/(edit|new|created|saved)/g, '').replace(/\//g, '.');
+		path     = Symphony.Context.get('path') + Symphony.Context.get('route');
+		path     = path.substr(1, path.length).replace(/\/(edit|new|created|saved)/g, '').replace(/\//g, '.');
 		settings = {
 
 			items      : '.instance',

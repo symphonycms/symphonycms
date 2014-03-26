@@ -345,24 +345,30 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1')), 2);
 
 			// Add styles
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.min.css', 'screen', null, false);		
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.min.css', 'screen', null, false);
 
 			// Add scripts
 			$environment = array(
-				'root' => URL,
+
+				'root'     => URL,
 				'symphony' => SYMPHONY_URL,
-				'path' => '/' . Symphony::Configuration()->get('admin-path', 'symphony'),
-				'lang' => Lang::get(),
-				'user' => array(
+				'path'     => '/' . Symphony::Configuration()->get('admin-path', 'symphony'),
+				'route'    => getCurrentPage(),
+				'lang'     => Lang::get(),
+				'user'     => array(
+
 					'fullname' => Administration::instance()->Author->getFullName(),
-					'name' => Administration::instance()->Author->get('first_name'),
-					'type'=> Administration::instance()->Author->get('user_type'),
-					'id' => Administration::instance()->Author->get('id')
+					'name'     => Administration::instance()->Author->get('first_name'),
+					'type'     => Administration::instance()->Author->get('user_type'),
+					'id'       => Administration::instance()->Author->get('id')
 				),
+
 				'env' => array_merge(
+
 					array('page-namespace' => Symphony::getPageNamespace()), $this->_context
 				)
 			);
+
 			$this->addElementToHead(
 				new XMLElement('script', json_encode($environment), array(
 					'type' => 'application/json',

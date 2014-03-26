@@ -91,7 +91,6 @@ module.exports = function (grunt) {
                         'symphony/assets/js/lib/jquery.js',
                         'symphony/assets/js/lib/signals.js',
                         'symphony/assets/js/lib/crossroads.js',
-                        'symphony/assets/js/lib/punycode.js',
                         'symphony/assets/js/src/symphony.js',
                         'symphony/assets/js/src/symphony.collapsible.js',
                         'symphony/assets/js/src/symphony.orderable.js',

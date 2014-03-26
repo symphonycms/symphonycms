@@ -80,11 +80,8 @@ Symphony.View.add('/:context*:', function() {
 			oldSorting = $(this).find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
 		})
 		.on('orderstop.orderable', function() {
-			var newSorting, path;
 
-			newSorting = orderable.find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
-			path       = window.location.href.replace(window.location.host, window.punycode.toUnicode(window.location.host));
-			path       = path.replace(Symphony.Context.get('symphony'), '');
+			var newSorting = orderable.find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
 
 			// Store sort order, if changed
 			orderable.addClass('busy');
@@ -96,7 +93,7 @@ Symphony.View.add('/:context*:', function() {
 				// Send request
 				$.ajax({
 					type: 'POST',
-					url: Symphony.Context.get('symphony') + '/ajax/reorder' + path,
+					url: Symphony.Context.get('symphony') + '/ajax/reorder' + Symphony.Context.get('route'),
 					data: newSorting,
 					error: function() {
 						Symphony.Message.post(Symphony.Language.get('Reordering was unsuccessful.'), 'error');

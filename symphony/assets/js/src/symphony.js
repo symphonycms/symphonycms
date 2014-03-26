@@ -131,8 +131,7 @@ var Symphony = (function($) {
 
 				if(!url) {
 
-					url = window.location.href.replace(window.location.host, window.punycode.toUnicode(window.location.host));
-					url = url.replace(Symphony.Context.get('root'), '');
+					url = Symphony.Context.get('path') + Symphony.Context.get('route');
 				}
 
 				if(greedy === false) {
