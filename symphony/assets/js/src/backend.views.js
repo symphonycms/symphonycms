@@ -80,7 +80,6 @@ Symphony.View.add('/:context*:', function() {
 			oldSorting = $(this).find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
 		})
 		.on('orderstop.orderable', function() {
-
 			var newSorting = orderable.find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
 
 			// Store sort order, if changed

@@ -33,17 +33,17 @@
 	$.fn.symphonyDuplicator = function(options) {
 		var objects = this,
 			settings = {
-				instances:			'> li:not(.template)',
-				templates:			'> li.template',
-				headers:			'> :first-child',
-				preselect:			false,
-				orderable:			false,
-				collapsible:		false,
-				constructable:		true,
-				destructable:		true,
-				save_state:			true,
-				minimum:			0,
-				maximum:			1000
+				instances: '> li:not(.template)',
+				templates: '> li.template',
+				headers: '> :first-child',
+				preselect: false,
+				orderable: false,
+				collapsible: false,
+				constructable: true,
+				destructable: true,
+				save_state: true,
+				minimum: 0,
+				maximum: 1000
 			};
 
 		$.extend(settings, options);

@@ -26,10 +26,10 @@
 	$.fn.symphonyOrderable = function(options) {
 		var objects = this,
 			settings = {
-				items:				'li',
-				handles:			'*',
-				ignore:				'input, textarea, select, a',
-				delay:				250
+				items: 'li',
+				handles: '*',
+				ignore: 'input, textarea, select, a',
+				delay: 250
 			};
 
 		$.extend(settings, options);

@@ -26,21 +26,15 @@
 			collapsible.collapseAll();
 	 */
 	$.fn.symphonyCollapsible = function(options) {
-
-		var objects, path, settings;
-
-		objects  = this;
-		path     = Symphony.Context.get('path') + Symphony.Context.get('route');
-		path     = path.substr(1, path.length).replace(/\/(edit|new|created|saved)/g, '').replace(/\//g, '.');
-		settings = {
-
-			items      : '.instance',
-			handles    : '.header:first',
-			content    : '.content',
-			ignore     : '.ignore',
-			save_state : true,
-			storage    : 'symphony.collapsible.' + path
-		};
+		var objects = this,
+			settings = {
+				items: '.instance',
+				handles: '.header:first',
+				content: '.content',
+				ignore: '.ignore',
+				save_state: true,
+				storage: 'symphony.collapsible.' + Symphony.Context.get('context-id')
+			};
 
 		$.extend(settings, options);
 

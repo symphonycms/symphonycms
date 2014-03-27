@@ -23,7 +23,7 @@
 		var objects = this,
 			settings = {
 				items: 'p.notice',
-				storage: 'symphony.notify.' + Symphony.Context.get('root').replace('http://', '')
+				storage: 'symphony.notify.' + Symphony.Context.get('context-id')
 			};
 
 		$.extend(settings, options);
