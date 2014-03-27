@@ -26,15 +26,21 @@
 			collapsible.collapseAll();
 	 */
 	$.fn.symphonyCollapsible = function(options) {
-		var objects = this,
-			settings = {
-				items:				'.instance',
-				handles:			'.header:first',
-				content:			'.content',
-				ignore:				'.ignore',
-				save_state:			true,
-				storage:			'symphony.collapsible.' + window.location.href.split(Symphony.Context.get('root') + '/')[1].replace(/\/(edit|new|created|saved)/g, '').replace(/\//g, '.')
-			};
+
+		var objects, path, settings;
+
+		objects  = this;
+		path     = Symphony.Context.get('path') + Symphony.Context.get('route');
+		path     = path.substr(1, path.length).replace(/\/(edit|new|created|saved)/g, '').replace(/\//g, '.');
+		settings = {
+
+			items      : '.instance',
+			handles    : '.header:first',
+			content    : '.content',
+			ignore     : '.ignore',
+			save_state : true,
+			storage    : 'symphony.collapsible.' + path
+		};
 
 		$.extend(settings, options);
 
@@ -52,7 +58,7 @@
 			object.on('collapse.collapsible', settings.items, function collapse(event, duration) {
 				var item = $(this),
 					heightMin = item.data('heightMin') || item.find(settings.handles).outerHeight() - 1;
-			
+
 				// Check duration
 				if(duration !== 0) {
 					item.addClass('js-animate');
@@ -104,7 +110,7 @@
 					items.not(firsts).each(function() {
 						var item = $(this);
 						item.css('max-height', item.data('heightMax'));
-					}).removeClass('collapsed').trigger('expandstop.collapsible');			
+					}).removeClass('collapsed').trigger('expandstop.collapsible');
 				}, 250);
 			});
 

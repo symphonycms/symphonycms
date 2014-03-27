@@ -128,7 +128,7 @@ module.exports = function (grunt) {
     //grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    
+
     grunt.registerTask('default', ['concat', 'autoprefixer', 'csso', 'uglify']);
     grunt.registerTask('css', ['concat', 'autoprefixer', 'csso']);
     grunt.registerTask('js', ['uglify']);
