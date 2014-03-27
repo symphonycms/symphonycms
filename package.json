@@ -1,6 +1,15 @@
 {
   "name": "symphonycms",
   "version": "2.4.0",
+  "description": "Symphony is a XSLT-powered open source content management system",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/symphonycms/symphony-2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/symphonycms/symphony-2/issues"
+  },
+  "homepage": "http://getsymphony.com/",
   "devDependencies": {
     "grunt": "~0.4.4",
     "grunt-autoprefixer": "~0.5.0",

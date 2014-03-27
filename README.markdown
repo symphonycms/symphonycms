@@ -184,3 +184,23 @@ Follow the instructions below if you are updating from Symphony 2.0 (not from Gi
 1. Go to `http://example.com/install/` to complete the update process.
 
 1. Call a friend and brag that your copy of Symphony is newer than theirs.
+
+## Contributing
+
+SymphonyCMS uses `grunt` to build dist version.
+
+First you need to have `grunt-cli` which you should install globally.
+
+	npm install -g grunt-cli
+
+Then install all dependencies, in repo's root:
+
+	npm install
+
+Use the following command to start the `watch` task:
+
+	grunt watch
+
+Symphony's `css` and `js` minified files will be updated automatically when saving source files.
+
+More information about contributing on [Contributing to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony) wiki page.
