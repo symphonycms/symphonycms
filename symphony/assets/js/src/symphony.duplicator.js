@@ -275,7 +275,7 @@
 				// Populate selector
 				templates.detach().each(function createTemplates() {
 					var template = $(this),
-						title = $.trim(template.find(settings.headers).attr('data-name')) 
+						title = $.trim(template.find(settings.headers).attr('data-name'))
 								|| $.trim(template.find(settings.headers).text()),
 						value = $.trim(template.attr('data-type'));
 

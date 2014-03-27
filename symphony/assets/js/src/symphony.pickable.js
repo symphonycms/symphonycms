@@ -5,16 +5,16 @@
 (function($) {
 
 	/**
-	 * Pickable allows to show and hide elements based on the value of a select box. 
-	 * 
-	 * Each option is mapped to its associated content by matching the option `value` 
-	 * with the content `id`. If the option value is numeric, Pickable prefices it 
-	 * with `choice`. Only the content of the currently selected option is 
-	 * shown, all other elements associated with the given select box are hidden. 
+	 * Pickable allows to show and hide elements based on the value of a select box.
 	 *
-	 * If no content element of the given `id` is found, Pickable checks for a 
-	 * `data-request` attribute on the selected option. If a `data-request` URL is set, 
-	 * Pickable tries to fetch the content remotely and expects an content element with 
+	 * Each option is mapped to its associated content by matching the option `value`
+	 * with the content `id`. If the option value is numeric, Pickable prefices it
+	 * with `choice`. Only the content of the currently selected option is
+	 * shown, all other elements associated with the given select box are hidden.
+	 *
+	 * If no content element of the given `id` is found, Pickable checks for a
+	 * `data-request` attribute on the selected option. If a `data-request` URL is set,
+	 * Pickable tries to fetch the content remotely and expects an content element with
 	 * no additional markup in return.
 	 *
 	 * @name $.symphonyPickable
