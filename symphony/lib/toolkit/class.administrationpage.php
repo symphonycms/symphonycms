@@ -327,10 +327,6 @@
 			if($callback['driver'] == 'publish' && $callback['context']['page'] == 'index') {
 				$this->getFields($callback['context']['section_handle']);
 
-				// Append assets
-				//Administration::instance()->Page->addScriptToHead(URL . '/extensions/publishfiltering/assets/selectize.js', 1001);
-				//Administration::instance()->Page->addStylesheetToHead(URL . '/extensions/publishfiltering/assets/publishfiltering.publish.css', 'screen', 1002);
-				//Administration::instance()->Page->addScriptToHead(URL . '/extensions/publishfiltering/assets/publishfiltering.publish.js', 1003);
 				Administration::instance()->Page->addElementToHead(new XMLElement(
 					'script',
 					"Symphony.Context.add('publishfiltering', " . json_encode($this->_options) . ")",
