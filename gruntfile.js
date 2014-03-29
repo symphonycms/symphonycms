@@ -17,6 +17,7 @@ module.exports = function (grunt) {
                         'symphony/assets/css/src/symphony.drawers.css',
                         'symphony/assets/css/src/symphony.associations.css',
                         'symphony/assets/css/src/symphony.notices.css',
+                        'symphony/assets/css/src/symphony.filtering.css',
                         'symphony/assets/css/src/admin.css'
                     ],
                     'symphony/assets/css/installer.min.css': [
@@ -91,6 +92,7 @@ module.exports = function (grunt) {
                         'symphony/assets/js/lib/jquery.js',
                         'symphony/assets/js/lib/signals.js',
                         'symphony/assets/js/lib/crossroads.js',
+                        'symphony/assets/js/lib/selectize.js',
                         'symphony/assets/js/src/symphony.js',
                         'symphony/assets/js/src/symphony.collapsible.js',
                         'symphony/assets/js/src/symphony.orderable.js',
@@ -102,6 +104,7 @@ module.exports = function (grunt) {
                         'symphony/assets/js/src/symphony.timeago.js',
                         'symphony/assets/js/src/symphony.notify.js',
                         'symphony/assets/js/src/symphony.drawer.js',
+                        'symphony/assets/js/src/symphony.filtering.js',
                         'symphony/assets/js/src/backend.js',
                         'symphony/assets/js/src/backend.views.js',
                     ]

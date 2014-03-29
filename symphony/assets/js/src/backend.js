@@ -24,7 +24,13 @@
 		'Collapse all fields': false,
 		'drag to reorder': false,
 		'Please reset your password': false,
-		'required': false
+		'required': false,
+		'Click to select': false,
+		'Type to search': false,
+		'Clear': false,
+		'Search for {$item}': false,
+		'Add filter': false,
+		'filtered': false
 	});
 
 	// Initialise backend

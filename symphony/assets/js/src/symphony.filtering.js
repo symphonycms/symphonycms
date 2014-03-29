@@ -1,31 +1,22 @@
 (function($, Symphony) {
 	'use strict';
 
-	Symphony.Language.add({
-		'Click to select': false,
-		'Type to search': false,
-		'Clear': false,
-		'Search for {$item}': false,
-		'Add filter': false,
-		'filtered': false
-	});
-
-	$(document).on('ready.publishfiltering', function() {
+	$(document).on('ready.filtering', function() {
 		var contents = $('#contents'),
-			rows = $('.publishfiltering-row'),
-			options = Symphony.Context.get('publishfiltering'),
-			maxRows = rows.filter('.template').find('.publishfiltering-fields option').length,
+			rows = $('.filtering-row'),
+			options = Symphony.Context.get('filtering'),
+			maxRows = rows.filter('.template').find('.filtering-fields option').length,
 			addRow;
 
-		var Publishfiltering = function() {
+		var Filtering = function() {
 			var filter, fields, comparison, search,
 				comparisonSelectize, searchSelectize, fieldsSelectize;
 
 			var init = function(context) {
 				filter = $(context);
-				fields = filter.find('.publishfiltering-fields');
-				comparison = filter.find('.publishfiltering-comparison');
-				search = filter.find('.publishfiltering-search');
+				fields = filter.find('.filtering-fields');
+				comparison = filter.find('.filtering-comparison');
+				search = filter.find('.filtering-search');
 
 				// Setup interface
 				fields.selectize().on('change', switchField);
@@ -56,7 +47,7 @@
 				highlightFiltering();
 
 				// Clear search
-				filter.on('mousedown.publishfiltering', '.destructor', clear);
+				filter.on('mousedown.filtering', '.destructor', clear);
 
 				// Finish initialisation
 				search.removeClass('init');
@@ -64,7 +55,7 @@
 
 			var reduceFields = function() {
 				var row = $(this),
-					value = row.find('.publishfiltering-fields').val();
+					value = row.find('.filtering-fields').val();
 
 				fieldsSelectize.removeOption(value);
 				fieldsSelectize.addItem(Object.keys(fieldsSelectize.options)[0]);
@@ -94,7 +85,7 @@
 				else {
 					comparisonSelectize.setValue('contains');
 					searchSelectize.$control_input.attr('placeholder', Symphony.Language.get('Type to search') + '…');
-				}		
+				}
 			};
 
 			var searchPreview = function(item) {
@@ -124,11 +115,11 @@
 			var buildFilters = function() {
 				var filters = [];
 
-				$('.publishfiltering-row').each(function() {
+				$('.filtering-row').each(function() {
 					var row = $(this),
-						fieldVal = row.find('.publishfiltering-fields').val(),
-						comparisonVal = row.find('.publishfiltering-comparison').val(),
-						searchVal = row.find('.publishfiltering-search').val(),
+						fieldVal = row.find('.filtering-fields').val(),
+						comparisonVal = row.find('.filtering-comparison').val(),
+						searchVal = row.find('.filtering-search').val(),
 						filterVal, method;
 
 					if(fieldVal && searchVal) {
@@ -195,17 +186,17 @@
 
 		// Init filter interface
 		rows.filter(':not(.template)').each(function() {
-			var filtering = new Publishfiltering();
+			var filtering = new Filtering();
 			filtering.init(this);
 		});
 
 		// Add filters
 		addRow = $('<a />', {
-			class: 'button publishfiltering-add',
+			class: 'button filtering-add',
 			text: Symphony.Language.get('Add filter'),
 			on: {
 				click: function() {
-					var filtering = new Publishfiltering(),
+					var filtering = new Filtering(),
 						template = rows.filter('.template').clone().removeClass('template');
 
 					template.insertBefore(this).css('display', 'block');
@@ -213,7 +204,7 @@
 					filtering.init(template);
 				}
 			}
-		}).appendTo('.publishfiltering');
+		}).appendTo('.filtering');
 	});
 
 })(window.jQuery, window.Symphony);

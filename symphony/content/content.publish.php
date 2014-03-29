@@ -19,9 +19,9 @@
 		public $_errors = array();
 
 		private $_incompatible_publishpanel = array('mediathek', 'imagecropper', 'readonlyinput');
-		private $_form = null;
-		private $_fields = array();
-		private $_options = array();
+		private $_filteringForm = null;
+		private $_filteringFields = array();
+		private $_filteringOptions = array();
 
 		public function sort(&$sort, &$order, $params) {
 			$section = $params['current-section'];
@@ -77,38 +77,33 @@
 
 		}
 
-
 		/**
-		 * Append publish filtering interface
+		 * Append filtering interface
 		 */
-		public function createInterface($context) {
-			$callback = Symphony::Engine()->getPageCallback();
+		public function createFilteringInterface() {
 
-			if($callback['driver'] == 'publish' && $callback['context']['page'] == 'index') {
-				$this->getFields($callback['context']['section_handle']);
+			// Get filtering fields
+			$this->getFilteringFields();
 
-				Administration::instance()->Page->addScriptToHead(SYMPHONY_URL . '/assets/js/selectize.js', 1001);
-				Administration::instance()->Page->addStylesheetToHead(SYMPHONY_URL . '/assets/css/publishfiltering.publish.css', 'screen', 1002);
-				Administration::instance()->Page->addScriptToHead(SYMPHONY_URL . '/assets/js/publishfiltering.publish.js', 1003);
-				Administration::instance()->Page->addElementToHead(new XMLElement(
-					'script',
-					"Symphony.Context.add('publishfiltering', " . json_encode($this->_options) . ")",
-					array('type' => 'text/javascript')
-				), 1004);
+			
+			Administration::instance()->Page->addElementToHead(new XMLElement(
+				'script',
+				"Symphony.Context.add('filtering', " . json_encode($this->_options) . ")",
+				array('type' => 'text/javascript')
+			), 1004);
 
-				// Append drawer
-				$this->insertDrawer(
-					Widget::Drawer('publishfiltering', __('Filter Entries'), $this->createDrawer())
-				);
-			}
+			// Append drawer
+			$this->insertDrawer(
+				Widget::Drawer('filtering', __('Filter Entries'), $this->createFilteringDrawer())
+			);
 		}
 
 		/**
-		 * Create drawer
+		 * Create filtering drawer
 		 */
-		public function createDrawer() {
+		public function createFilteringDrawer() {
 			$filters = $_GET['filter'];
-			$this->form = Widget::Form(null, 'get', 'publishfiltering');
+			$this->form = Widget::Form(null, 'get', 'filtering');
 
 			// Create existing filters
 			if(is_array($filters) && !empty($filters)) {
@@ -132,10 +127,10 @@
 			$row = new XMLElement('div');
 
 			if($class) {
-				$row->setAttribute('class', 'publishfiltering-row ' . $class);
+				$row->setAttribute('class', 'filtering-row ' . $class);
 			}
 			else {
-				$row->setAttribute('class', 'publishfiltering-row');
+				$row->setAttribute('class', 'filtering-row');
 			}
 
 			// Fields
@@ -146,10 +141,10 @@
 				}
 			}
 
-			$div = new XMLElement('div', null, array('class' => 'publishfiltering-controls'));
+			$div = new XMLElement('div', null, array('class' => 'filtering-controls'));
 			$div->appendChild(
 				Widget::Select('fields', $fields, array(
-					'class' => 'publishfiltering-fields'
+					'class' => 'filtering-fields'
 				))
 			);
 
@@ -160,7 +155,7 @@
 					array('contains', (strpos($search, 'regexp:') !== false), __('contains')),
 					array('is', (strpos($search, 'regexp:') === false), __('is'))
 				), array(
-					'class' => 'publishfiltering-comparison'
+					'class' => 'filtering-comparison'
 				))
 			);
 			$row->appendChild($div);
@@ -168,22 +163,23 @@
 			// Search
 			$row->appendChild(
 				Widget::Input('search', $needle, 'text', array(
-					'class' => 'publishfiltering-search',
+					'class' => 'filtering-search',
 					'placeholder' => __('Type to search') . ' …')
 				)
 			);
 
-			$this->form->appendChild($row);				
+			$this->form->appendChild($row);
 		}
 
 		/**
-		 * Get field names
+		 * Get filter field names
 		 */
-		public function getFields($section_handle) {
+		public function getFilteringFields() {
+			$context = $this->getContext();
 			$sectionManager = new SectionManager(Symphony::Engine());
-			$section_id = $sectionManager->fetchIDFromHandle($section_handle);
+			$section_id = $sectionManager->fetchIDFromHandle($context['section_handle']);
 			
-			if(!$section_id) return;			
+			if(!$section_id) return;
 
 			// Filterable sections
 			$section = $sectionManager->fetch($section_id);
@@ -191,14 +187,14 @@
 				if(in_array($field->get('type'), $this->_incompatible_publishpanel)) continue;
 
 				$this->_fields[] = array($field->get('element_name'), false, $field->get('label'));
-				$this->getFieldOptions($field);
+				$this->getFilteringOptions($field);
 			}
 		}
 
 		/**
-		 * Get default field options
+		 * Get default filter field options
 		 */
-		public function getFieldOptions($field) {
+		public function getFilteringOptions($field) {
 			if(method_exists($field, 'getToggleStates')) {
 				$options = $field->getToggleStates();
 				if(!empty($options)) $this->_options[$field->get('element_name')] = $options;
@@ -293,8 +289,8 @@
 
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter_querystring ? "&amp;" . $filter_querystring : ''));
 
-			// Build Publish Filtering Drawer
-			$this->createInterface(Administration::instance()->Page->getContext());
+			// Build filtering interface
+			$this->createFilteringInterface();
 
 			$subheading_buttons = array(
 				Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($prepopulate_querystring ? '?' . $prepopulate_querystring : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c'))
