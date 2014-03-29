@@ -1,8 +1,6 @@
 (function($, Symphony) {
 	'use strict';
 
-	var options = Symphony.Context.get('filtering');
-
 	Symphony.Extensions.Filtering = function() {
 		var filter, fields, comparison, search, rows, maxRows,
 			comparisonSelectize, searchSelectize, fieldsSelectize;
@@ -43,7 +41,7 @@
 							callback(result.filters);
 						}
 					});
-    			}
+				}
 			}).on('change', searchEntries);
 
 			// Store Selectize instances
@@ -75,10 +73,9 @@
 
 			fieldsSelectize.removeOption(value);
 			fieldsSelectize.addItem(Object.keys(fieldsSelectize.options)[0]);
-		}
+		};
 
 		var switchField = function() {
-			var field = fieldsSelectize.getValue();
 
 			// Clear
 			searchSelectize.clearOptions();
@@ -96,13 +93,13 @@
 			return '<div class="item">' + escape(item.text) + '<a href="' + location.href.replace(location.search, '') + '" class="destructor">' + Symphony.Language.get('Clear') + '</a></div>';
 		};
 
-		var searchEntries = function(event) {
+		var searchEntries = function() {
 			if(!search.is('.init')) {
 				var filters = buildFilters(),
 					base, url;
 
 				// Fetch entries
-				if(filters != '') {
+				if(filters !== '') {
 					base = location.href.replace(location.search, '');
 					url = base + '?' + filters;
 
@@ -130,7 +127,7 @@
 			});
 
 			return filters.join('&');
-		}
+		};
 
 		var fetchEntries = function(url) {
 			$.ajax({
@@ -158,7 +155,7 @@
 			if(Symphony.Elements.breadcrumbs.find('.inactive').length === 0 && location.search.indexOf('filter') !== -1) {
 				Symphony.Elements.breadcrumbs.append('<p class="inactive"><span>– ' + Symphony.Language.get('filtered') + '</span></p>');
 			}
-		}
+		};
 
 		var setURL = function(url) {
 			if(!!(window.history && history.pushState)) {
