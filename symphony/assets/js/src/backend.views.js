@@ -183,6 +183,28 @@ Symphony.View.add('/:context*:', function() {
 });
 
 Symphony.View.add('/publish/:context*:', function() {
+	var filtering = Symphony.Elements.context.find('.filtering');
+
+	// Filtering
+	filtering.find('.filtering-row:not(.template)').each(function() {
+		var filtering = new Symphony.Extensions.Filtering();
+		filtering.init(this);
+	});
+
+	// Add filters
+	filtering.append('<a />', {
+		class: 'button filtering-add',
+		text: Symphony.Language.get('Add filter'),
+		on: {
+			click: function() {
+				var filtering = new Symphony.Extensions.Filtering(),
+					template = filtering.filter('.template').clone().removeClass('template');
+
+				template.insertBefore(this).css('display', 'block');
+				filtering.init(template);
+			}
+		}
+	});
 
 	// Pagination
 	Symphony.Elements.contents.find('.pagination').each(function() {
