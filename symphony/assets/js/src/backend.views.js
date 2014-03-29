@@ -186,9 +186,9 @@ Symphony.View.add('/publish/:context*:', function() {
 	var filters = Symphony.Elements.context.find('.filtering');
 
 	// Filtering
-	filters.find('.filtering-row:not(.template)').each(function() {
+	filters.find('.filtering-row:not(.template)').each(function(index, filter) {
 		var filtering = new Symphony.Extensions.Filtering();
-		filtering.init(this);
+		filtering.init(filter);
 	});
 
 	// Add filters

@@ -12,8 +12,8 @@
 			fields = filter.find('.filtering-fields');
 			comparison = filter.find('.filtering-comparison');
 			search = filter.find('.filtering-search');
-			rows = filter.find('.filtering-row:not(.template)');
-			maxRows = $('.filtering-row.template').find('.filtering-fields option').length;
+			rows = Symphony.Elements.context.find('.filtering-row:not(.template)');
+			maxRows = Symphony.Elements.context.find('.filtering-row.template .filtering-fields option').length;
 
 			// Setup interface
 			fields.selectize().on('change', switchField);
@@ -84,25 +84,9 @@
 			// Clear
 			searchSelectize.clearOptions();
 
-			// Default options
-			if(hasOptions(field)) {
-				comparisonSelectize.setValue('is');
-				searchSelectize.$control_input.attr('placeholder', Symphony.Language.get('Click to select') + '…');
-				$.each(options[field], function(key, option) {
-					var value = (typeof key === 'string') ? key : option;
-
-					searchSelectize.addOption({
-						value: value,
-						text: option
-					});
-				});
-			}
-
-			// Text search
-			else {
-				comparisonSelectize.setValue('contains');
-				searchSelectize.$control_input.attr('placeholder', Symphony.Language.get('Type to search') + '…');
-			}
+			// Search
+			comparisonSelectize.setValue('contains');
+			searchSelectize.$control_input.attr('placeholder', Symphony.Language.get('Type to search') + '…');
 		};
 
 		var searchPreview = function(item) {
@@ -188,10 +172,6 @@
 			if(searchSelectize.isLocked) return;
 
 			searchSelectize.clear();
-		};
-
-		var hasOptions = function(name) {
-			return name in options;
 		};
 
 		// API
