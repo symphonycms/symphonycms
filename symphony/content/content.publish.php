@@ -18,7 +18,6 @@
 
 		public $_errors = array();
 
-		private $_incompatible_publishpanel = array('mediathek', 'imagecropper', 'readonlyinput');
 		private $_filteringForm = null;
 		private $_filteringFields = array();
 		private $_filteringOptions = array();
@@ -171,13 +170,13 @@
 			$context = $this->getContext();
 			$sectionManager = new SectionManager(Symphony::Engine());
 			$section_id = $sectionManager->fetchIDFromHandle($context['section_handle']);
-			
+
 			if(!$section_id) return;
 
 			// Filterable sections
 			$section = $sectionManager->fetch($section_id);
 			foreach($section->fetchFilterableFields() as $field) {
-				if(in_array($field->get('type'), $this->_incompatible_publishpanel)) continue;
+				if($field->canPublishFilter() === false) continue;
 
 				$this->_filteringFields[] = array($field->get('element_name'), false, $field->get('label'));
 			}

@@ -193,6 +193,19 @@
 		}
 
 		/**
+		 * Test whether this field can be filtered in the publish index. This default
+		 * implementation allows filtering. Publish Filtering allows the index view
+		 * to filter results. Subclasses should override this if
+		 * filtering is supported.
+		 *
+		 * @return boolean
+		 *	true if this can be publish-filtered, false otherwise.
+		 */
+		public function canPublishFilter(){
+			return true;
+		}
+
+		/**
 		 * Test whether this field can be prepopulated with data. This default
 		 * implementation does not support pre-population and, thus, returns false.
 		 *
@@ -656,7 +669,7 @@
 
 			$this->appendRequiredCheckbox($div);
 			$this->appendShowColumnCheckbox($div);
-			
+
 			$fieldset->appendChild($div);
 			$wrapper->appendChild($fieldset);
 		}
@@ -724,14 +737,14 @@
 				$errors['label'] = __('This is a required field.');
 			}
 			elseif (strtolower($label) == 'id') {
-				$errors['label'] = __('%s is a reserved name used by the system and is not allowed for a field handle. Try using %s instead.', array('<code>ID</code>', '<code>UID</code>'));				
+				$errors['label'] = __('%s is a reserved name used by the system and is not allowed for a field handle. Try using %s instead.', array('<code>ID</code>', '<code>UID</code>'));
 			}
 
 			if ($element_name == '') {
 				$errors['element_name'] = __('This is a required field.');
 			}
 			elseif ($element_name == 'id') {
-				$errors['element_name'] = __('%s is a reserved name used by the system and is not allowed for a field handle. Try using %s instead.', array('<code>id</code>', '<code>uid</code>'));				
+				$errors['element_name'] = __('%s is a reserved name used by the system and is not allowed for a field handle. Try using %s instead.', array('<code>id</code>', '<code>uid</code>'));
 			}
 			elseif (!$valid_name) {
 				$errors['element_name'] = __('Invalid element name. Must be valid %s.', array('<code>QName</code>'));
@@ -791,11 +804,11 @@
 
 			return $value;
 		}
-		
+
 		/**
 		 * Format this field value for display in the Associations Drawer publish index.
 		 * By default, Symphony will use the return value of the `prepareTableValue` function.
-		 * 
+		 *
 		 * @param Entry $e
 		 *   The associated entry
 		 * @param array $parent_association
@@ -811,7 +824,7 @@
 			$a = new XMLElement('a', strip_tags($value));
 			$a->setAttribute('href', SYMPHONY_URL . '/publish/' . $parent_association['handle'] . '/edit/' . $e->get('id') . '/');
 			$li->appendChild($a);
-			
+
 			return $li;
 		}
 
