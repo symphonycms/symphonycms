@@ -12,10 +12,13 @@
 	Class contentAjaxFilters extends JSONPage{
 		
 		public function view(){
-			$field_id = General::sanitize($_GET['field-id']);
+			$handle = General::sanitize($_GET['handle']);
+			$section = General::sanitize($_GET['section']);
 			$options = array();
 
-			if(!empty($field_id)) {
+ 			if(!empty($handle) && !empty($section)) {
+				$section_id = SectionManager::fetchIDFromHandle($section);
+				$field_id = FieldManager::fetchFieldIDFromElementName($handle, $section_id);
 				$field = FieldManager::fetch($field_id);
 
 				if(!empty($field)) {

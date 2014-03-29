@@ -24,7 +24,27 @@
 				render: {
 					item: itemPreview,
 					option_create: searchPreview
-				}
+				},
+				load: function(query, callback) {
+					if(!query.length) return callback();
+
+					$.ajax({
+						url: Symphony.Context.get('symphony') + '/ajax/filters',
+						type: 'GET',
+						dataType: 'json',
+						data: {
+							handle: fields.val(),
+							section: Symphony.Context.get('env')['section-handle']
+						},
+						error: function() {
+							callback();
+						},
+						success: function(result) {
+							console.log(result);
+							callback(result.filters);
+						}
+					});
+    			}
 			}).on('change', searchEntries);
 
 			// Store Selectize instances

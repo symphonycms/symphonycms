@@ -85,13 +85,6 @@
 			// Get filtering fields
 			$this->getFilteringFields();
 
-
-			Administration::instance()->Page->addElementToHead(new XMLElement(
-				'script',
-				"Symphony.Context.add('filtering', " . json_encode($this->_options) . ")",
-				array('type' => 'text/javascript')
-			), 1004);
-
 			// Append drawer
 			$this->insertDrawer(
 				Widget::Drawer('filtering', __('Filter Entries'), $this->createFilteringDrawer())
@@ -187,25 +180,8 @@
 				if(in_array($field->get('type'), $this->_incompatible_publishpanel)) continue;
 
 				$this->_filteringFields[] = array($field->get('element_name'), false, $field->get('label'));
-				$this->getFilteringOptions($field);
 			}
 		}
-
-		/**
-		 * Get default filter field options
-		 */
-		public function getFilteringOptions($field) {
-			if(method_exists($field, 'getToggleStates')) {
-				$options = $field->getToggleStates();
-				if(!empty($options)) $this->_filteringOptions[$field->get('element_name')] = $options;
-
-			}
-			if(method_exists($field, 'findAllTags')) {
-				$options = $field->findAllTags();
-				if(!empty($options)) $this->_filteringOptions[$field->get('element_name')] = $options;
-			}
-		}
-
 
 		public function action(){
 			$this->__switchboard('action');
