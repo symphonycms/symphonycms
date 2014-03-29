@@ -192,7 +192,7 @@ Symphony.View.add('/publish/:context*:', function() {
 	});
 
 	// Add filters
-	filtering.append('<a />', {
+	$('<a />', {
 		class: 'button filtering-add',
 		text: Symphony.Language.get('Add filter'),
 		on: {
@@ -204,7 +204,7 @@ Symphony.View.add('/publish/:context*:', function() {
 				filtering.init(template);
 			}
 		}
-	});
+	}).appendTo(filtering);
 
 	// Pagination
 	Symphony.Elements.contents.find('.pagination').each(function() {
