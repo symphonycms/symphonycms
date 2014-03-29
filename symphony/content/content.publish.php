@@ -176,7 +176,7 @@
 			// Filterable sections
 			$section = $sectionManager->fetch($section_id);
 			foreach($section->fetchFilterableFields() as $field) {
-				if($field->canPublishFilter() === false) continue;
+				if(!$field->canPublishFilter()) continue;
 
 				$this->_filteringFields[] = array($field->get('element_name'), false, $field->get('label'));
 			}
