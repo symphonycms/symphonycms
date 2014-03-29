@@ -87,6 +87,9 @@
 			if($callback['driver'] == 'publish' && $callback['context']['page'] == 'index') {
 				$this->getFields($callback['context']['section_handle']);
 
+				Administration::instance()->Page->addScriptToHead(SYMPHONY_URL . '/assets/js/selectize.js', 1001);
+				Administration::instance()->Page->addStylesheetToHead(SYMPHONY_URL . '/assets/css/publishfiltering.publish.css', 'screen', 1002);
+				Administration::instance()->Page->addScriptToHead(SYMPHONY_URL . '/assets/js/publishfiltering.publish.js', 1003);
 				Administration::instance()->Page->addElementToHead(new XMLElement(
 					'script',
 					"Symphony.Context.add('publishfiltering', " . json_encode($this->_options) . ")",
@@ -166,7 +169,7 @@
 			$row->appendChild(
 				Widget::Input('search', $needle, 'text', array(
 					'class' => 'publishfiltering-search',
-					'placeholder' => __('Type to search') . ' â€¦')
+					'placeholder' => __('Type to search') . ' …')
 				)
 			);
 
@@ -206,6 +209,7 @@
 				if(!empty($options)) $this->_options[$field->get('element_name')] = $options;
 			}
 		}
+
 
 		public function action(){
 			$this->__switchboard('action');

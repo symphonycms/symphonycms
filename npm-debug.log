@@ -1,0 +1,1286 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'c:\\Program Files (x86)\\nodejs\\node.exe',
+1 verbose cli   'c:\\Program Files (x86)\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install' ]
+2 info using npm@1.3.8
+3 info using node@v0.10.17
+4 warn package.json symphonycms@2.4.0 No repository field.
+5 verbose readDependencies using package.json deps
+6 verbose install where, deps [ 'c:\\wamp\\www\\sym24beta3',
+6 verbose install   [ 'grunt',
+6 verbose install     'grunt-autoprefixer',
+6 verbose install     'grunt-csso',
+6 verbose install     'grunt-contrib-jshint',
+6 verbose install     'grunt-contrib-uglify',
+6 verbose install     'grunt-contrib-concat',
+6 verbose install     'grunt-contrib-watch' ] ]
+7 info preinstall symphonycms@2.4.0
+8 verbose readDependencies using package.json deps
+9 verbose already installed skipping grunt@~0.4.4 c:\wamp\www\sym24beta3
+10 verbose already installed skipping grunt-autoprefixer@~0.5.0 c:\wamp\www\sym24beta3
+11 verbose already installed skipping grunt-csso@~0.5.3 c:\wamp\www\sym24beta3
+12 verbose already installed skipping grunt-contrib-jshint@~0.7.2 c:\wamp\www\sym24beta3
+13 verbose already installed skipping grunt-contrib-uglify@~0.2.7 c:\wamp\www\sym24beta3
+14 verbose already installed skipping grunt-contrib-concat@~0.3.0 c:\wamp\www\sym24beta3
+15 verbose cache add [ 'grunt-contrib-watch@~0.6.1', null ]
+16 verbose cache add name=undefined spec="grunt-contrib-watch@~0.6.1" args=["grunt-contrib-watch@~0.6.1",null]
+17 verbose parsed url { protocol: null,
+17 verbose parsed url   slashes: null,
+17 verbose parsed url   auth: null,
+17 verbose parsed url   host: null,
+17 verbose parsed url   port: null,
+17 verbose parsed url   hostname: null,
+17 verbose parsed url   hash: null,
+17 verbose parsed url   search: null,
+17 verbose parsed url   query: null,
+17 verbose parsed url   pathname: 'grunt-contrib-watch@~0.6.1',
+17 verbose parsed url   path: 'grunt-contrib-watch@~0.6.1',
+17 verbose parsed url   href: 'grunt-contrib-watch@~0.6.1' }
+18 verbose cache add name="grunt-contrib-watch" spec="~0.6.1" args=["grunt-contrib-watch","~0.6.1"]
+19 verbose parsed url { protocol: null,
+19 verbose parsed url   slashes: null,
+19 verbose parsed url   auth: null,
+19 verbose parsed url   host: null,
+19 verbose parsed url   port: null,
+19 verbose parsed url   hostname: null,
+19 verbose parsed url   hash: null,
+19 verbose parsed url   search: null,
+19 verbose parsed url   query: null,
+19 verbose parsed url   pathname: '~0.6.1',
+19 verbose parsed url   path: '~0.6.1',
+19 verbose parsed url   href: '~0.6.1' }
+20 verbose addNamed [ 'grunt-contrib-watch', '~0.6.1' ]
+21 verbose addNamed [ null, '>=0.6.1-0 <0.7.0-0' ]
+22 silly lockFile 82ce6ec8-grunt-contrib-watch-0-6-1 grunt-contrib-watch@~0.6.1
+23 verbose lock grunt-contrib-watch@~0.6.1 C:\Users\andrewminton\AppData\Roaming\npm-cache\82ce6ec8-grunt-contrib-watch-0-6-1.lock
+24 silly addNameRange { name: 'grunt-contrib-watch',
+24 silly addNameRange   range: '>=0.6.1-0 <0.7.0-0',
+24 silly addNameRange   hasData: false }
+25 verbose url raw grunt-contrib-watch
+26 verbose url resolving [ 'https://registry.npmjs.org/', './grunt-contrib-watch' ]
+27 verbose url resolved https://registry.npmjs.org/grunt-contrib-watch
+28 info trying registry request attempt 1 at 10:14:48
+29 verbose etag "DI69OKVC1WC6PEFS0DGXMK0JM"
+30 http GET https://registry.npmjs.org/grunt-contrib-watch
+31 http 304 https://registry.npmjs.org/grunt-contrib-watch
+32 silly registry.get cb [ 304,
+32 silly registry.get   { date: 'Sat, 29 Mar 2014 10:14:47 GMT',
+32 silly registry.get     server: 'Apache',
+32 silly registry.get     via: '1.1 varnish',
+32 silly registry.get     'last-modified': 'Sat, 29 Mar 2014 10:14:48 GMT',
+32 silly registry.get     'cache-control': 'max-age=1',
+32 silly registry.get     etag: '"DI69OKVC1WC6PEFS0DGXMK0JM"',
+32 silly registry.get     'x-served-by': 'cache-lcy1120-LCY',
+32 silly registry.get     'x-cache': 'HIT',
+32 silly registry.get     'x-cache-hits': '1',
+32 silly registry.get     'x-timer': 'S1396088087.967083216,VS0,VE183',
+32 silly registry.get     vary: 'Accept',
+32 silly registry.get     'content-length': '0',
+32 silly registry.get     'keep-alive': 'timeout=10, max=50',
+32 silly registry.get     connection: 'Keep-Alive' } ]
+33 verbose etag grunt-contrib-watch from cache
+34 silly addNameRange number 2 { name: 'grunt-contrib-watch',
+34 silly addNameRange   range: '>=0.6.1-0 <0.7.0-0',
+34 silly addNameRange   hasData: true }
+35 silly addNameRange versions [ 'grunt-contrib-watch',
+35 silly addNameRange   [ '0.1.0',
+35 silly addNameRange     '0.1.1',
+35 silly addNameRange     '0.1.2',
+35 silly addNameRange     '0.1.3',
+35 silly addNameRange     '0.1.4',
+35 silly addNameRange     '0.2.0',
+35 silly addNameRange     '0.3.0',
+35 silly addNameRange     '0.3.1',
+35 silly addNameRange     '0.4.0',
+35 silly addNameRange     '0.4.1',
+35 silly addNameRange     '0.4.2',
+35 silly addNameRange     '0.4.3',
+35 silly addNameRange     '0.4.4',
+35 silly addNameRange     '0.5.0',
+35 silly addNameRange     '0.5.1',
+35 silly addNameRange     '0.5.2',
+35 silly addNameRange     '0.5.3',
+35 silly addNameRange     '0.6.0',
+35 silly addNameRange     '0.6.1',
+35 silly addNameRange     '0.2.0-a',
+35 silly addNameRange     '0.2.0-rc5',
+35 silly addNameRange     '0.2.0-rc7' ] ]
+36 verbose addNamed [ 'grunt-contrib-watch', '0.6.1' ]
+37 verbose addNamed [ '0.6.1', '0.6.1' ]
+38 silly lockFile 08049756-grunt-contrib-watch-0-6-1 grunt-contrib-watch@0.6.1
+39 verbose lock grunt-contrib-watch@0.6.1 C:\Users\andrewminton\AppData\Roaming\npm-cache\08049756-grunt-contrib-watch-0-6-1.lock
+40 silly lockFile 08049756-grunt-contrib-watch-0-6-1 grunt-contrib-watch@0.6.1
+41 silly lockFile 08049756-grunt-contrib-watch-0-6-1 grunt-contrib-watch@0.6.1
+42 silly lockFile 82ce6ec8-grunt-contrib-watch-0-6-1 grunt-contrib-watch@~0.6.1
+43 silly lockFile 82ce6ec8-grunt-contrib-watch-0-6-1 grunt-contrib-watch@~0.6.1
+44 silly resolved [ { name: 'grunt-contrib-watch',
+44 silly resolved     description: 'Run predefined tasks whenever watched file patterns are added, changed or deleted.',
+44 silly resolved     version: '0.6.1',
+44 silly resolved     homepage: 'https://github.com/gruntjs/grunt-contrib-watch',
+44 silly resolved     author: { name: 'Grunt Team', url: 'http://gruntjs.com/' },
+44 silly resolved     repository:
+44 silly resolved      { type: 'git',
+44 silly resolved        url: 'git://github.com/gruntjs/grunt-contrib-watch.git' },
+44 silly resolved     bugs: { url: 'https://github.com/gruntjs/grunt-contrib-watch/issues' },
+44 silly resolved     licenses: [ [Object] ],
+44 silly resolved     engines: { node: '>= 0.8.0' },
+44 silly resolved     scripts: { test: 'grunt nodeunit -v' },
+44 silly resolved     dependencies:
+44 silly resolved      { gaze: '~0.5.1',
+44 silly resolved        'tiny-lr-fork': '0.0.5',
+44 silly resolved        lodash: '~2.4.1',
+44 silly resolved        async: '~0.2.9' },
+44 silly resolved     devDependencies:
+44 silly resolved      { grunt: '~0.4.0',
+44 silly resolved        'grunt-contrib-jshint': '~0.8.0',
+44 silly resolved        'grunt-contrib-nodeunit': '~0.3.3',
+44 silly resolved        'grunt-contrib-internal': '~0.4.7',
+44 silly resolved        'underscore.string': '~2.3.3' },
+44 silly resolved     peerDependencies: { grunt: '~0.4.0' },
+44 silly resolved     keywords: [ 'gruntplugin', 'watch' ],
+44 silly resolved     files: [ 'tasks', 'LICENSE-MIT' ],
+44 silly resolved     readme: '# grunt-contrib-watch v0.6.1 [![Build Status](https://travis-ci.org/gruntjs/grunt-contrib-watch.png?branch=master)](https://travis-ci.org/gruntjs/grunt-contrib-watch)\n\n> Run predefined tasks whenever watched file patterns are added, changed or deleted.\n\n\n\n## Getting Started\nThis plugin requires Grunt `~0.4.0`\n\nIf you haven\'t used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you\'re familiar with that process, you may install this plugin with this command:\n\n```shell\nnpm install grunt-contrib-watch --save-dev\n```\n\nOnce the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:\n\n```js\ngrunt.loadNpmTasks(\'grunt-contrib-watch\');\n```\n\n\n\n\n## Watch task\n_Run this task with the `grunt watch` command._\n\n\n### Settings\n\nThere are a number of options available. Please review the [minimatch options here](https://github.com/isaacs/minimatch#options). As well as some additional options as follows:\n\n#### files\nType: `String|Array`\n\nThis defines what file patterns this task will watch. Can be a string or an array of files and/or minimatch patterns.\n\n#### tasks\nType: `String|Array`\n\nThis defines which tasks to run when a watched file event occurs.\n\n#### options.spawn\nType: `Boolean`\nDefault: true\n\nWhether to spawn task runs in a child process. Setting this option to `false` speeds up the reaction time of the watch (usually 500ms faster for most) and allows subsequent task runs to share the same context. Not spawning task runs can make the watch more prone to failing so please use as needed.\n\nExample:\n```js\nwatch: {\n  scripts: {\n    files: [\'**/*.js\'],\n    tasks: [\'jshint\'],\n    options: {\n      spawn: false,\n    },\n  },\n},\n```\n\n*For backwards compatibility the option `nospawn` is still available and will do the opposite of `spawn`.*\n\n#### options.interrupt\nType: `Boolean`\nDefault: false\n\nAs files are modified this watch task will spawn tasks in child processes. The default behavior will only spawn a new child process per target when the previous process has finished. Set the `interrupt` option to true to terminate the previous process and spawn a new one upon later changes.\n\nExample:\n```js\nwatch: {\n  scripts: {\n    files: \'**/*.js\',\n    tasks: [\'jshint\'],\n    options: {\n      interrupt: true,\n    },\n  },\n},\n```\n\n#### options.debounceDelay\nType: `Integer`\nDefault: 500\n\nHow long to wait before emitting events in succession for the same filepath and status. For example if your `Gruntfile.js` file was `changed`, a `changed` event will only fire again after the given milliseconds.\n\nExample:\n```js\nwatch: {\n  scripts: {\n    files: \'**/*.js\',\n    tasks: [\'jshint\'],\n    options: {\n      debounceDelay: 250,\n    },\n  },\n},\n```\n\n#### options.interval\nType: `Integer`\nDefault: 100\n\nThe `interval` is passed to `fs.watchFile`. Since `interval` is only used by `fs.watchFile` and this watcher also uses `fs.watch`; it is recommended to ignore this option. *Default is 100ms*.\n\n#### options.event\nType: `String|Array`\nDefault: `\'all\'`\n\nSpecify the type watch event that trigger the specified task. This option can be one or many of: `\'all\'`, `\'changed\'`, `\'added\'` and `\'deleted\'`.\n\nExample:\n```js\nwatch: {\n  scripts: {\n    files: \'**/*.js\',\n    tasks: [\'generateFileManifest\'],\n    options: {\n      event: [\'added\', \'deleted\'],\n    },\n  },\n},\n```\n\n#### options.reload\nType: `Boolean`\nDefault: `false`\n\nBy default, if `Gruntfile.js` is being watched, then changes to it will trigger the watch task to restart, and reload the `Gruntfile.js` changes.\nWhen `reload` is set to `true`, changes to *any* of the watched files will trigger the watch task to restart.\nThis is especially useful if your `Gruntfile.js` is dependent on other files.\n\n```js\nwatch: {\n  configFiles: {\n    files: [ \'Gruntfile.js\', \'config/*.js\' ],\n    options: {\n      reload: true\n    }\n  }\n}\n```\n\n\n#### options.forever\nType: `Boolean`\nDefault: true\n\nThis is *only a task level option* and cannot be configured per target. By default the watch task will duck punch `grunt.fatal` and `grunt.warn` to try and prevent them from exiting the watch process. If you don\'t want `grunt.fatal` and `grunt.warn` to be overridden set the `forever` option to `false`.\n\n#### options.dateFormat\nType: `Function`\n\nThis is *only a task level option* and cannot be configured per target. By default when the watch has finished running tasks it will display the message `Completed in 1.301s at Thu Jul 18 2013 14:58:21 GMT-0700 (PDT) - Waiting...`. You can override this message by supplying your own function:\n\n```js\nwatch: {\n  options: {\n    dateFormat: function(time) {\n      grunt.log.writeln(\'The watch finished in \' + time + \'ms at\' + (new Date()).toString());\n      grunt.log.writeln(\'Waiting for more changes...\');\n    },\n  },\n  scripts: {\n    files: \'**/*.js\',\n    tasks: \'jshint\',\n  },\n},\n```\n\n#### options.atBegin\nType: `Boolean`\nDefault: false\n\nThis option will trigger the run of each specified task at startup of the watcher.\n\n#### options.livereload\nType: `Boolean|Number|Object`\nDefault: false\n\nSet to `true` or set `livereload: 1337` to a port number to enable live reloading. Default and recommended port is `35729`.\n\nIf enabled a live reload server will be started with the watch task per target. Then after the indicated tasks have ran, the live reload server will be triggered with the modified files.\n\nExample:\n```js\nwatch: {\n  css: {\n    files: \'**/*.sass\',\n    tasks: [\'sass\'],\n    options: {\n      livereload: true,\n    },\n  },\n},\n```\n\nIt\'s possible to get livereload working over https connections. To do this, pass an object to `livereload` with a `key` and `cert` paths specified.\n\nExample:\n```js\nwatch: {\n  css: {\n    files: \'**/*.sass\',\n    tasks: [\'sass\'],\n    options: {\n      livereload: {\n        port: 9000,\n        key: grunt.file.read(\'path/to/ssl.key\'),\n        cert: grunt.file.read(\'path/to/ssl.crt\')\n        // you can pass in any other options you\'d like to the https server, as listed here: http://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener\n      }\n    },\n  },\n},\n```\n\n\n#### options.cwd\nType: `String|Object`\nDefault: `process.cwd()`\n\nAbility to set the current working directory. Defaults to `process.cwd()`. Can either be a string to set the cwd to match files and spawn tasks. Or an object to set each independently. Such as `options: { cwd: { files: \'match/files/from/here\', spawn: \'but/spawn/files/from/here\' } }`.\n\n#### options.livereloadOnError\nType: `Boolean`  \nDefault: `true`  \n\nOption to prevent the livereload if the executed tasks encountered an error.  If set to `false`, the livereload will only be triggered if all tasks completed successfully.\n\n### Examples\n\n```js\n// Simple config to run jshint any time a file is added, changed or deleted\ngrunt.initConfig({\n  watch: {\n    files: [\'**/*\'],\n    tasks: [\'jshint\'],\n  },\n});\n```\n\n```js\n// Advanced config. Run specific tasks when specific files are added, changed or deleted.\ngrunt.initConfig({\n  watch: {\n    gruntfile: {\n      files: \'Gruntfile.js\',\n      tasks: [\'jshint:gruntfile\'],\n    },\n    src: {\n      files: [\'lib/*.js\', \'css/**/*.scss\', \'!lib/dontwatch.js\'],\n      tasks: [\'default\'],\n    },\n    test: {\n      files: \'<%= jshint.test.src %>\',\n      tasks: [\'jshint:test\', \'qunit\'],\n    },\n  },\n});\n```\n\n#### Using the `watch` event\nThis task will emit a `watch` event when watched files are modified. This is useful if you would like a simple notification when files are edited or if you\'re using this task in tandem with another task. Here is a simple example using the `watch` event:\n\n```js\ngrunt.initConfig({\n  watch: {\n    scripts: {\n      files: [\'lib/*.js\'],\n    },\n  },\n});\ngrunt.event.on(\'watch\', function(action, filepath, target) {\n  grunt.log.writeln(target + \': \' + filepath + \' has \' + action);\n});\n```\n\n**The `watch` event is not intended for replacing the standard Grunt API for configuring and running tasks. If you\'re trying to run tasks from within the `watch` event you\'re more than likely doing it wrong. Please read [configuring tasks](http://gruntjs.com/configuring-tasks).**\n\n##### Compiling Files As Needed\nA very common request is to only compile files as needed. Here is an example that will only lint changed files with the `jshint` task:\n\n```js\ngrunt.initConfig({\n  watch: {\n    scripts: {\n      files: [\'lib/*.js\'],\n      tasks: [\'jshint\'],\n      options: {\n        spawn: false,\n      },\n    },\n  },\n  jshint: {\n    all: {\n      src: [\'lib/*.js\'],\n    },\n  },\n});\n\n// on watch events configure jshint:all to only run on changed file\ngrunt.event.on(\'watch\', function(action, filepath) {\n  grunt.config(\'jshint.all.src\', filepath);\n});\n```\n\nIf you need to dynamically modify your config, the `spawn` option must be disabled to keep the watch running under the same context.\n\nIf you save multiple files simultaneously you may opt for a more robust method:\n\n```js\nvar changedFiles = Object.create(null);\nvar onChange = grunt.util._.debounce(function() {\n  grunt.config(\'jshint.all.src\', Object.keys(changedFiles));\n  changedFiles = Object.create(null);\n}, 200);\ngrunt.event.on(\'watch\', function(action, filepath) {\n  changedFiles[filepath] = action;\n  onChange();\n});\n```\n\n#### Live Reloading\nLive reloading is built into the watch task. Set the option `livereload` to `true` to enable on the default port `35729` or set to a custom port: `livereload: 1337`.\n\nThe simplest way to add live reloading to all your watch targets is by setting `livereload` to `true` at the task level. This will run a single live reload server and trigger the live reload for all your watch targets:\n\n```js\ngrunt.initConfig({\n  watch: {\n    options: {\n      livereload: true,\n    },\n    css: {\n      files: [\'public/scss/*.scss\'],\n      tasks: [\'compass\'],\n    },\n  },\n});\n```\n\nYou can also configure live reload for individual watch targets or run multiple live reload servers. Just be sure if you\'re starting multiple servers they operate on different ports:\n\n```js\ngrunt.initConfig({\n  watch: {\n    css: {\n      files: [\'public/scss/*.scss\'],\n      tasks: [\'compass\'],\n      options: {\n        // Start a live reload server on the default port 35729\n        livereload: true,\n      },\n    },\n    another: {\n      files: [\'lib/*.js\'],\n      tasks: [\'anothertask\'],\n      options: {\n        // Start another live reload server on port 1337\n        livereload: 1337,\n      },\n    },\n    dont: {\n      files: [\'other/stuff/*\'],\n      tasks: [\'dostuff\'],\n    },\n  },\n});\n```\n\n##### Enabling Live Reload in Your HTML\nOnce you\'ve started a live reload server you\'ll be able to access the live reload script. To enable live reload on your page, add a script tag before your closing `</body>` tag pointing to the `livereload.js` script:\n\n```html\n<script src="//localhost:35729/livereload.js"></script>\n```\n\nFeel free to add this script to your template situation and toggle with some sort of `dev` flag.\n\n##### Using Live Reload with the Browser Extension\nInstead of adding a script tag to your page, you can live reload your page by installing a browser extension. Please visit [how do I install and use the browser extensions](http://feedback.livereload.com/knowledgebase/articles/86242-how-do-i-install-and-use-the-browser-extensions-) for help installing an extension for your browser.\n\nOnce installed please use the default live reload port `35729` and the browser extension will automatically reload your page without needing the `<script>` tag.\n\n##### Using Connect Middleware\nSince live reloading is used when developing, you may want to disable building for production (and are not using the browser extension). One method is to use Connect middleware to inject the script tag into your page. Try the [connect-livereload](https://github.com/intesso/connect-livereload) middleware for injecting the live reload script into your page.\n\n##### Rolling Your Own Live Reload\nLive reloading is made easy by the library [tiny-lr](https://github.com/mklabs/tiny-lr). It is encouraged to read the documentation for `tiny-lr`. If you would like to trigger the live reload server yourself, simply POST files to the URL: `http://localhost:35729/changed`. Or if you rather roll your own live reload implementation use the following example:\n\n```js\n// Create a live reload server instance\nvar lrserver = require(\'tiny-lr\')();\n\n// Listen on port 35729\nlrserver.listen(35729, function(err) { console.log(\'LR Server Started\'); });\n\n// Then later trigger files or POST to localhost:35729/changed\nlrserver.changed({body:{files:[\'public/css/changed.css\']}});\n```\n\n##### Live Reload with Preprocessors\nAny time a watched file is edited with the `livereload` option enabled, the file will be sent to the live reload server. Some edited files you may desire to have sent to the live reload server, such as when preprocessing (`sass`, `less`, `coffeescript`, etc). As any file not recognized will reload the entire page as opposed to just the `css` or `javascript`.\n\nThe solution is to point a `livereload` watch target to your destination files:\n\n```js\ngrunt.initConfig({\n  sass: {\n    dev: {\n      src: [\'src/sass/*.sass\'],\n      dest: \'dest/css/index.css\',\n    },\n  },\n  watch: {\n    sass: {\n      // We watch and compile sass files as normal but don\'t live reload here\n      files: [\'src/sass/*.sass\'],\n      tasks: [\'sass\'],\n    },\n    livereload: {\n      // Here we watch the files the sass task will compile to\n      // These files are sent to the live reload server after sass compiles to them\n      options: { livereload: true },\n      files: [\'dest/**/*\'],\n    },\n  },\n});\n```\n\n### FAQs\n\n#### How do I fix the error `EMFILE: Too many opened files.`?\nThis is because of your system\'s max opened file limit. For OSX the default is very low (256). Temporarily increase your limit with `ulimit -n 10480`, the number being the new max limit.\n\nIn some versions of OSX the above solution doesn\'t work. In that case try `launchctl limit maxfiles 10480 10480 ` and restart your terminal. See [here](http://superuser.com/questions/261023/how-to-change-default-ulimit-values-in-mac-os-x-10-6).\n\n#### Can I use this with Grunt v0.3?\n`grunt-contrib-watch@0.1.x` is compatible with Grunt v0.3 but it is highly recommended to upgrade Grunt instead.\n\n#### Why is the watch devouring all my memory/cpu?\nLikely because of an enthusiastic pattern trying to watch thousands of files. Such as `\'**/*.js\'` but forgetting to exclude the `node_modules` folder with `\'!**/node_modules/**\'`. Try grouping your files within a subfolder or be more explicit with your file matching pattern.\n\nAnother reason if you\'re watching a large number of files could be the low default `interval`. Try increasing with `options: { interval: 5007 }`. Please see issues [#35](https://github.com/gruntjs/grunt-contrib-watch/issues/145) and [#145](https://github.com/gruntjs/grunt-contrib-watch/issues/145) for more information.\n\n#### Why spawn as child processes as a default?\nThe goal of this watch task is as files are changed, run tasks as if they were triggered by the user themself. Each time a user runs `grunt` a process is spawned and tasks are ran in succession. In an effort to keep the experience consistent and continually produce expected results, this watch task spawns tasks as child processes by default.\n\nSandboxing task runs also allows this watch task to run more stable over long periods of time. As well as more efficiently with more complex tasks and file structures.\n\nSpawning does cause a performance hit (usually 500ms for most environments). It also cripples tasks that rely on the watch task to share the context with each subsequent run (i.e., reload tasks). If you would like a faster watch task or need to share the context please set the `spawn` option to `false`. Just be aware that with this option enabled, the watch task is more prone to failure.\n\n\n## Release History\n\n * 2014-03-19   v0.6.1   Fix for watch targets named "default"\n * 2014-03-11   v0.6.0   Clear changed files after triggering live reload to ensure they\'re only triggered once. cwd option now accepts separate settings for files and spawn. Fix to make interrupt work more than once. Enable live reload over HTTPS. Print newline after initial \'Waiting...\' Remove deprecated grunt.util libs Add reload option to specify files other than Gruntfile files to reload. Update to gaze@0.5.1 Use fork of tiny-lr (which has quiter operation, support for HTTPS and windows path fixes) Add livereloadOnError, which if set to false will not trigger live reload if there is an error.\n * 2013-08-25   v0.5.3   Fixed for live reload missing files.\n * 2013-08-16   v0.5.2   Fixed issue running tasks after gruntfile is reloaded. Ignores empty file paths.\n * 2013-07-20   v0.5.1   Fixed issue with options resetting.\n * 2013-07-18   v0.5.0   Added target name to watch event. Added atBegin option to run tasks when watcher starts. Changed nospawn option to spawn (nospawn still available for backwards compatibility). Moved libs/vars into top scope to prevent re-init. Bumped Gaze version to ~0.4. Re-grab task/target options upon each task run. Add dateFormat option to override the date/time output upon completion.\n * 2013-05-27   v0.4.4   Remove gracefully closing SIGINT. Not needed and causes problems for Windows. Ensure tasks are an array to not conflict with cliArgs.\n * 2013-05-11   v0.4.3   Only group changed files per target to send correct files to live reload.\n * 2013-05-09   v0.4.2   Fix for closing watchers.\n * 2013-05-09   v0.4.1   Removed "beep" notification. Tasks now optional with livereload option. Reverted "run again" with interrupt off to fix infinite recursion issue. Watchers now close more properly on task run.\n * 2013-05-03   v0.4.0   Option livereload to start live reload servers. Will reload a Gruntfile before running tasks if Gruntfile is modified. Option event to only trigger watch on certain events. Refactor watch task into separate task runs per target. Option forever to override grunt.fatal/warn to help keeping the watch alive with nospawn enabled. Emit a beep upon complete. Logs all watched files with verbose flag set. If interrupt is off, will run the tasks once more if watch triggered during a previous task run. tasks property is optional for use with watch event. Watchers properly closed when exiting.\n * 2013-02-28   v0.3.1   Fix for top level options.\n * 2013-02-27   v0.3.0   nospawn option added to run tasks without spawning as child processes. Watch emits \'watch\' events upon files being triggered with grunt.event. Completion time in seconds and date/time shown after tasks ran. Negate file patterns fixed. Tasks debounced individually to handle simultaneous triggering for multiple targets. Errors handled better and viewable with --stack cli option. Code complexity reduced making the watch task code easier to read.\n * 2013-02-15   v0.2.0   First official release for Grunt 0.4.0.\n * 2013-01-18   v0.2.0rc7   Updating grunt/gruntplugin dependencies to rc6. Changing in-development grunt/gruntplugin dependency versions from tilde version ranges to specific versions.\n * 2013-01-09   v0.2.0rc5   Updating to work with grunt v0.4.0rc5.\n * 2012-12-15   v0.2.0a   Conversion to grunt v0.4 conventions. Remove node v0.6 and grunt v0.3 support. Allow watch task to be renamed. Use grunt.util.spawn "grunt" option. Updated to gaze@0.3.0, forceWatchMethod option removed.\n * 2012-11-01   v0.1.4   Prevent watch from spawning duplicate watch tasks\n * 2012-10-28   v0.1.3   Better method to spawn the grunt bin Bump gaze to v0.2.0. Better handles some events and new option forceWatchMethod Only support Node.js >= v0.8\n * 2012-10-17   v0.1.2   Only spawn a process per task one at a time Add interrupt option to cancel previous spawned process Grunt v0.3 compatibility changes\n * 2012-10-16   v0.1.1   Fallback to global grunt bin if local doesnt exist. Fatal if bin cannot be found Update to gaze 0.1.6\n * 2012-10-08   v0.1.0   Release watch task Remove spawn from helper Run on Grunt v0.4\n\n---\n\nTask submitted by [Kyle Robinson Young](http://dontkry.com)\n\n*This file was generated on Wed Mar 19 2014 13:09:11.*\n',
+44 silly resolved     readmeFilename: 'README.md',
+44 silly resolved     _id: 'grunt-contrib-watch@0.6.1',
+44 silly resolved     _from: 'grunt-contrib-watch@~0.6.1' } ]
+45 info install grunt-contrib-watch@0.6.1 into c:\wamp\www\sym24beta3
+46 info installOne grunt-contrib-watch@0.6.1
+47 info c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch unbuild
+48 verbose tar unpack C:\Users\andrewminton\AppData\Roaming\npm-cache\grunt-contrib-watch\0.6.1\package.tgz
+49 silly lockFile f3b1dfec-node-modules-grunt-contrib-watch tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch
+50 verbose lock tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch C:\Users\andrewminton\AppData\Roaming\npm-cache\f3b1dfec-node-modules-grunt-contrib-watch.lock
+51 silly lockFile 33ed4939--contrib-watch-0-6-1-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\grunt-contrib-watch\0.6.1\package.tgz
+52 verbose lock tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\grunt-contrib-watch\0.6.1\package.tgz C:\Users\andrewminton\AppData\Roaming\npm-cache\33ed4939--contrib-watch-0-6-1-package-tgz.lock
+53 silly gunzTarPerm modes [ '755', '644' ]
+54 silly gunzTarPerm extractEntry package.json
+55 silly gunzTarPerm modified mode [ 'package.json', 438, 420 ]
+56 silly gunzTarPerm extractEntry README.md
+57 silly gunzTarPerm modified mode [ 'README.md', 438, 420 ]
+58 silly gunzTarPerm extractEntry LICENSE-MIT
+59 silly gunzTarPerm modified mode [ 'LICENSE-MIT', 438, 420 ]
+60 silly gunzTarPerm extractEntry tasks/watch.js
+61 silly gunzTarPerm modified mode [ 'tasks/watch.js', 438, 420 ]
+62 silly gunzTarPerm extractEntry tasks/lib/livereload.js
+63 silly gunzTarPerm modified mode [ 'tasks/lib/livereload.js', 438, 420 ]
+64 silly gunzTarPerm extractEntry tasks/lib/taskrun.js
+65 silly gunzTarPerm modified mode [ 'tasks/lib/taskrun.js', 438, 420 ]
+66 silly gunzTarPerm extractEntry tasks/lib/taskrunner.js
+67 silly gunzTarPerm modified mode [ 'tasks/lib/taskrunner.js', 438, 420 ]
+68 silly lockFile f3b1dfec-node-modules-grunt-contrib-watch tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch
+69 silly lockFile f3b1dfec-node-modules-grunt-contrib-watch tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch
+70 silly lockFile 33ed4939--contrib-watch-0-6-1-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\grunt-contrib-watch\0.6.1\package.tgz
+71 silly lockFile 33ed4939--contrib-watch-0-6-1-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\grunt-contrib-watch\0.6.1\package.tgz
+72 info preinstall grunt-contrib-watch@0.6.1
+73 verbose readDependencies using package.json deps
+74 verbose readDependencies using package.json deps
+75 verbose cache add [ 'gaze@~0.5.1', null ]
+76 verbose cache add name=undefined spec="gaze@~0.5.1" args=["gaze@~0.5.1",null]
+77 verbose parsed url { protocol: null,
+77 verbose parsed url   slashes: null,
+77 verbose parsed url   auth: null,
+77 verbose parsed url   host: null,
+77 verbose parsed url   port: null,
+77 verbose parsed url   hostname: null,
+77 verbose parsed url   hash: null,
+77 verbose parsed url   search: null,
+77 verbose parsed url   query: null,
+77 verbose parsed url   pathname: 'gaze@~0.5.1',
+77 verbose parsed url   path: 'gaze@~0.5.1',
+77 verbose parsed url   href: 'gaze@~0.5.1' }
+78 verbose cache add name="gaze" spec="~0.5.1" args=["gaze","~0.5.1"]
+79 verbose parsed url { protocol: null,
+79 verbose parsed url   slashes: null,
+79 verbose parsed url   auth: null,
+79 verbose parsed url   host: null,
+79 verbose parsed url   port: null,
+79 verbose parsed url   hostname: null,
+79 verbose parsed url   hash: null,
+79 verbose parsed url   search: null,
+79 verbose parsed url   query: null,
+79 verbose parsed url   pathname: '~0.5.1',
+79 verbose parsed url   path: '~0.5.1',
+79 verbose parsed url   href: '~0.5.1' }
+80 verbose addNamed [ 'gaze', '~0.5.1' ]
+81 verbose addNamed [ null, '>=0.5.1-0 <0.6.0-0' ]
+82 silly lockFile b222c948-gaze-0-5-1 gaze@~0.5.1
+83 verbose lock gaze@~0.5.1 C:\Users\andrewminton\AppData\Roaming\npm-cache\b222c948-gaze-0-5-1.lock
+84 verbose cache add [ 'tiny-lr-fork@0.0.5', null ]
+85 verbose cache add name=undefined spec="tiny-lr-fork@0.0.5" args=["tiny-lr-fork@0.0.5",null]
+86 verbose parsed url { protocol: null,
+86 verbose parsed url   slashes: null,
+86 verbose parsed url   auth: null,
+86 verbose parsed url   host: null,
+86 verbose parsed url   port: null,
+86 verbose parsed url   hostname: null,
+86 verbose parsed url   hash: null,
+86 verbose parsed url   search: null,
+86 verbose parsed url   query: null,
+86 verbose parsed url   pathname: 'tiny-lr-fork@0.0.5',
+86 verbose parsed url   path: 'tiny-lr-fork@0.0.5',
+86 verbose parsed url   href: 'tiny-lr-fork@0.0.5' }
+87 verbose cache add name="tiny-lr-fork" spec="0.0.5" args=["tiny-lr-fork","0.0.5"]
+88 verbose parsed url { protocol: null,
+88 verbose parsed url   slashes: null,
+88 verbose parsed url   auth: null,
+88 verbose parsed url   host: null,
+88 verbose parsed url   port: null,
+88 verbose parsed url   hostname: null,
+88 verbose parsed url   hash: null,
+88 verbose parsed url   search: null,
+88 verbose parsed url   query: null,
+88 verbose parsed url   pathname: '0.0.5',
+88 verbose parsed url   path: '0.0.5',
+88 verbose parsed url   href: '0.0.5' }
+89 verbose addNamed [ 'tiny-lr-fork', '0.0.5' ]
+90 verbose addNamed [ '0.0.5', '0.0.5' ]
+91 silly lockFile 2a35e3da-tiny-lr-fork-0-0-5 tiny-lr-fork@0.0.5
+92 verbose lock tiny-lr-fork@0.0.5 C:\Users\andrewminton\AppData\Roaming\npm-cache\2a35e3da-tiny-lr-fork-0-0-5.lock
+93 verbose cache add [ 'lodash@~2.4.1', null ]
+94 verbose cache add name=undefined spec="lodash@~2.4.1" args=["lodash@~2.4.1",null]
+95 verbose parsed url { protocol: null,
+95 verbose parsed url   slashes: null,
+95 verbose parsed url   auth: null,
+95 verbose parsed url   host: null,
+95 verbose parsed url   port: null,
+95 verbose parsed url   hostname: null,
+95 verbose parsed url   hash: null,
+95 verbose parsed url   search: null,
+95 verbose parsed url   query: null,
+95 verbose parsed url   pathname: 'lodash@~2.4.1',
+95 verbose parsed url   path: 'lodash@~2.4.1',
+95 verbose parsed url   href: 'lodash@~2.4.1' }
+96 verbose cache add name="lodash" spec="~2.4.1" args=["lodash","~2.4.1"]
+97 verbose parsed url { protocol: null,
+97 verbose parsed url   slashes: null,
+97 verbose parsed url   auth: null,
+97 verbose parsed url   host: null,
+97 verbose parsed url   port: null,
+97 verbose parsed url   hostname: null,
+97 verbose parsed url   hash: null,
+97 verbose parsed url   search: null,
+97 verbose parsed url   query: null,
+97 verbose parsed url   pathname: '~2.4.1',
+97 verbose parsed url   path: '~2.4.1',
+97 verbose parsed url   href: '~2.4.1' }
+98 verbose addNamed [ 'lodash', '~2.4.1' ]
+99 verbose addNamed [ null, '>=2.4.1-0 <2.5.0-0' ]
+100 silly lockFile 257f9ab3-lodash-2-4-1 lodash@~2.4.1
+101 verbose lock lodash@~2.4.1 C:\Users\andrewminton\AppData\Roaming\npm-cache\257f9ab3-lodash-2-4-1.lock
+102 verbose cache add [ 'async@~0.2.9', null ]
+103 verbose cache add name=undefined spec="async@~0.2.9" args=["async@~0.2.9",null]
+104 verbose parsed url { protocol: null,
+104 verbose parsed url   slashes: null,
+104 verbose parsed url   auth: null,
+104 verbose parsed url   host: null,
+104 verbose parsed url   port: null,
+104 verbose parsed url   hostname: null,
+104 verbose parsed url   hash: null,
+104 verbose parsed url   search: null,
+104 verbose parsed url   query: null,
+104 verbose parsed url   pathname: 'async@~0.2.9',
+104 verbose parsed url   path: 'async@~0.2.9',
+104 verbose parsed url   href: 'async@~0.2.9' }
+105 verbose cache add name="async" spec="~0.2.9" args=["async","~0.2.9"]
+106 verbose parsed url { protocol: null,
+106 verbose parsed url   slashes: null,
+106 verbose parsed url   auth: null,
+106 verbose parsed url   host: null,
+106 verbose parsed url   port: null,
+106 verbose parsed url   hostname: null,
+106 verbose parsed url   hash: null,
+106 verbose parsed url   search: null,
+106 verbose parsed url   query: null,
+106 verbose parsed url   pathname: '~0.2.9',
+106 verbose parsed url   path: '~0.2.9',
+106 verbose parsed url   href: '~0.2.9' }
+107 verbose addNamed [ 'async', '~0.2.9' ]
+108 verbose addNamed [ null, '>=0.2.9-0 <0.3.0-0' ]
+109 silly lockFile 5d51c871-async-0-2-9 async@~0.2.9
+110 verbose lock async@~0.2.9 C:\Users\andrewminton\AppData\Roaming\npm-cache\5d51c871-async-0-2-9.lock
+111 silly addNameRange { name: 'gaze', range: '>=0.5.1-0 <0.6.0-0', hasData: false }
+112 silly addNameRange { name: 'lodash', range: '>=2.4.1-0 <2.5.0-0', hasData: false }
+113 silly addNameRange { name: 'async', range: '>=0.2.9-0 <0.3.0-0', hasData: false }
+114 verbose url raw lodash
+115 verbose url resolving [ 'https://registry.npmjs.org/', './lodash' ]
+116 verbose url resolved https://registry.npmjs.org/lodash
+117 info trying registry request attempt 1 at 10:14:56
+118 verbose etag "7F45KLI1X8EJTRYDDPLLUXMX9"
+119 http GET https://registry.npmjs.org/lodash
+120 verbose url raw tiny-lr-fork/0.0.5
+121 verbose url resolving [ 'https://registry.npmjs.org/', './tiny-lr-fork/0.0.5' ]
+122 verbose url resolved https://registry.npmjs.org/tiny-lr-fork/0.0.5
+123 info trying registry request attempt 1 at 10:14:56
+124 verbose etag "J07648S4VA0YXFI8S3OLAQBX"
+125 http GET https://registry.npmjs.org/tiny-lr-fork/0.0.5
+126 verbose url raw async
+127 verbose url resolving [ 'https://registry.npmjs.org/', './async' ]
+128 verbose url resolved https://registry.npmjs.org/async
+129 info trying registry request attempt 1 at 10:14:56
+130 verbose etag "DZWRUX7WGCWUIMSTWUBR9ZQWF"
+131 http GET https://registry.npmjs.org/async
+132 verbose url raw gaze
+133 verbose url resolving [ 'https://registry.npmjs.org/', './gaze' ]
+134 verbose url resolved https://registry.npmjs.org/gaze
+135 info trying registry request attempt 1 at 10:14:56
+136 verbose etag "AP1A5RPNLUK305WMDJO0HAHO7"
+137 http GET https://registry.npmjs.org/gaze
+138 http 304 https://registry.npmjs.org/tiny-lr-fork/0.0.5
+139 silly registry.get cb [ 304,
+139 silly registry.get   { date: 'Sat, 29 Mar 2014 10:14:56 GMT',
+139 silly registry.get     server: 'Apache',
+139 silly registry.get     via: '1.1 varnish',
+139 silly registry.get     'last-modified': 'Sat, 29 Mar 2014 10:14:56 GMT',
+139 silly registry.get     'cache-control': 'max-age=1',
+139 silly registry.get     etag: '"J07648S4VA0YXFI8S3OLAQBX"',
+139 silly registry.get     'x-served-by': 'cache-lcy1134-LCY',
+139 silly registry.get     'x-cache': 'MISS',
+139 silly registry.get     'x-cache-hits': '0',
+139 silly registry.get     'x-timer': 'S1396088096.198700428,VS0,VE87',
+139 silly registry.get     vary: 'Accept',
+139 silly registry.get     'content-length': '0',
+139 silly registry.get     'keep-alive': 'timeout=10, max=50',
+139 silly registry.get     connection: 'Keep-Alive' } ]
+140 verbose etag tiny-lr-fork/0.0.5 from cache
+141 http 304 https://registry.npmjs.org/async
+142 silly registry.get cb [ 304,
+142 silly registry.get   { date: 'Sat, 29 Mar 2014 10:14:56 GMT',
+142 silly registry.get     server: 'Apache',
+142 silly registry.get     via: '1.1 varnish',
+142 silly registry.get     'last-modified': 'Sat, 29 Mar 2014 10:14:56 GMT',
+142 silly registry.get     'cache-control': 'max-age=1',
+142 silly registry.get     etag: '"DZWRUX7WGCWUIMSTWUBR9ZQWF"',
+142 silly registry.get     'x-served-by': 'cache-lcy1130-LCY',
+142 silly registry.get     'x-cache': 'HIT',
+142 silly registry.get     'x-cache-hits': '1',
+142 silly registry.get     'x-timer': 'S1396088096.255571127,VS0,VE85',
+142 silly registry.get     vary: 'Accept',
+142 silly registry.get     'content-length': '0',
+142 silly registry.get     'keep-alive': 'timeout=10, max=50',
+142 silly registry.get     connection: 'Keep-Alive' } ]
+143 verbose etag async from cache
+144 silly addNameRange number 2 { name: 'async', range: '>=0.2.9-0 <0.3.0-0', hasData: true }
+145 silly addNameRange versions [ 'async',
+145 silly addNameRange   [ '0.1.0',
+145 silly addNameRange     '0.1.1',
+145 silly addNameRange     '0.1.2',
+145 silly addNameRange     '0.1.3',
+145 silly addNameRange     '0.1.4',
+145 silly addNameRange     '0.1.5',
+145 silly addNameRange     '0.1.6',
+145 silly addNameRange     '0.1.7',
+145 silly addNameRange     '0.1.8',
+145 silly addNameRange     '0.1.9',
+145 silly addNameRange     '0.1.10',
+145 silly addNameRange     '0.1.11',
+145 silly addNameRange     '0.1.12',
+145 silly addNameRange     '0.1.13',
+145 silly addNameRange     '0.1.14',
+145 silly addNameRange     '0.1.15',
+145 silly addNameRange     '0.1.16',
+145 silly addNameRange     '0.1.17',
+145 silly addNameRange     '0.1.18',
+145 silly addNameRange     '0.1.19',
+145 silly addNameRange     '0.1.20',
+145 silly addNameRange     '0.1.21',
+145 silly addNameRange     '0.1.22',
+145 silly addNameRange     '0.2.0',
+145 silly addNameRange     '0.2.1',
+145 silly addNameRange     '0.2.2',
+145 silly addNameRange     '0.2.3',
+145 silly addNameRange     '0.2.4',
+145 silly addNameRange     '0.2.5',
+145 silly addNameRange     '0.2.6',
+145 silly addNameRange     '0.2.7',
+145 silly addNameRange     '0.2.8',
+145 silly addNameRange     '0.2.9',
+145 silly addNameRange     '0.2.10',
+145 silly addNameRange     '0.3.0',
+145 silly addNameRange     '0.4.0' ] ]
+146 verbose addNamed [ 'async', '0.2.10' ]
+147 verbose addNamed [ '0.2.10', '0.2.10' ]
+148 silly lockFile 098b530d-async-0-2-10 async@0.2.10
+149 verbose lock async@0.2.10 C:\Users\andrewminton\AppData\Roaming\npm-cache\098b530d-async-0-2-10.lock
+150 http 304 https://registry.npmjs.org/gaze
+151 silly registry.get cb [ 304,
+151 silly registry.get   { date: 'Sat, 29 Mar 2014 10:14:56 GMT',
+151 silly registry.get     server: 'Apache',
+151 silly registry.get     via: '1.1 varnish',
+151 silly registry.get     'last-modified': 'Sat, 29 Mar 2014 10:14:56 GMT',
+151 silly registry.get     'cache-control': 'max-age=1',
+151 silly registry.get     etag: '"AP1A5RPNLUK305WMDJO0HAHO7"',
+151 silly registry.get     'x-served-by': 'cache-lcy1131-LCY',
+151 silly registry.get     'x-cache': 'HIT',
+151 silly registry.get     'x-cache-hits': '1',
+151 silly registry.get     'x-timer': 'S1396088096.253280878,VS0,VE153',
+151 silly registry.get     vary: 'Accept',
+151 silly registry.get     'content-length': '0',
+151 silly registry.get     'keep-alive': 'timeout=10, max=50',
+151 silly registry.get     connection: 'Keep-Alive' } ]
+152 verbose etag gaze from cache
+153 silly addNameRange number 2 { name: 'gaze', range: '>=0.5.1-0 <0.6.0-0', hasData: true }
+154 silly addNameRange versions [ 'gaze',
+154 silly addNameRange   [ '0.1.0',
+154 silly addNameRange     '0.1.1',
+154 silly addNameRange     '0.1.2',
+154 silly addNameRange     '0.1.3',
+154 silly addNameRange     '0.1.4',
+154 silly addNameRange     '0.1.5',
+154 silly addNameRange     '0.1.6',
+154 silly addNameRange     '0.2.0',
+154 silly addNameRange     '0.2.1',
+154 silly addNameRange     '0.2.2',
+154 silly addNameRange     '0.3.0',
+154 silly addNameRange     '0.3.1',
+154 silly addNameRange     '0.3.2',
+154 silly addNameRange     '0.3.3',
+154 silly addNameRange     '0.3.4',
+154 silly addNameRange     '0.4.0',
+154 silly addNameRange     '0.4.1',
+154 silly addNameRange     '0.4.2',
+154 silly addNameRange     '0.4.3',
+154 silly addNameRange     '0.5.0',
+154 silly addNameRange     '0.5.1' ] ]
+155 verbose addNamed [ 'gaze', '0.5.1' ]
+156 verbose addNamed [ '0.5.1', '0.5.1' ]
+157 silly lockFile 52152b2d-gaze-0-5-1 gaze@0.5.1
+158 verbose lock gaze@0.5.1 C:\Users\andrewminton\AppData\Roaming\npm-cache\52152b2d-gaze-0-5-1.lock
+159 silly lockFile 2a35e3da-tiny-lr-fork-0-0-5 tiny-lr-fork@0.0.5
+160 silly lockFile 2a35e3da-tiny-lr-fork-0-0-5 tiny-lr-fork@0.0.5
+161 silly lockFile 098b530d-async-0-2-10 async@0.2.10
+162 silly lockFile 098b530d-async-0-2-10 async@0.2.10
+163 http 304 https://registry.npmjs.org/lodash
+164 silly registry.get cb [ 304,
+164 silly registry.get   { date: 'Sat, 29 Mar 2014 10:14:56 GMT',
+164 silly registry.get     server: 'Apache',
+164 silly registry.get     via: '1.1 varnish',
+164 silly registry.get     'last-modified': 'Sat, 29 Mar 2014 10:14:56 GMT',
+164 silly registry.get     'cache-control': 'max-age=1',
+164 silly registry.get     etag: '"7F45KLI1X8EJTRYDDPLLUXMX9"',
+164 silly registry.get     'x-served-by': 'cache-lcy1134-LCY',
+164 silly registry.get     'x-cache': 'HIT',
+164 silly registry.get     'x-cache-hits': '1',
+164 silly registry.get     'x-timer': 'S1396088096.214021444,VS0,VE240',
+164 silly registry.get     vary: 'Accept',
+164 silly registry.get     'content-length': '0',
+164 silly registry.get     'keep-alive': 'timeout=10, max=50',
+164 silly registry.get     connection: 'Keep-Alive' } ]
+165 verbose etag lodash from cache
+166 silly lockFile 5d51c871-async-0-2-9 async@~0.2.9
+167 silly lockFile 5d51c871-async-0-2-9 async@~0.2.9
+168 silly addNameRange number 2 { name: 'lodash', range: '>=2.4.1-0 <2.5.0-0', hasData: true }
+169 silly addNameRange versions [ 'lodash',
+169 silly addNameRange   [ '0.1.0',
+169 silly addNameRange     '0.2.0',
+169 silly addNameRange     '0.2.1',
+169 silly addNameRange     '0.2.2',
+169 silly addNameRange     '0.3.0',
+169 silly addNameRange     '0.3.1',
+169 silly addNameRange     '0.3.2',
+169 silly addNameRange     '0.4.0',
+169 silly addNameRange     '0.4.1',
+169 silly addNameRange     '0.4.2',
+169 silly addNameRange     '0.5.0-rc.1',
+169 silly addNameRange     '0.5.0',
+169 silly addNameRange     '0.5.1',
+169 silly addNameRange     '0.5.2',
+169 silly addNameRange     '0.6.0',
+169 silly addNameRange     '0.6.1',
+169 silly addNameRange     '0.7.0',
+169 silly addNameRange     '0.8.0',
+169 silly addNameRange     '0.8.1',
+169 silly addNameRange     '0.8.2',
+169 silly addNameRange     '0.9.0',
+169 silly addNameRange     '0.9.1',
+169 silly addNameRange     '0.9.2',
+169 silly addNameRange     '0.10.0',
+169 silly addNameRange     '1.0.0-rc.1',
+169 silly addNameRange     '1.0.0-rc.2',
+169 silly addNameRange     '1.0.0-rc.3',
+169 silly addNameRange     '1.0.0',
+169 silly addNameRange     '1.0.1',
+169 silly addNameRange     '1.1.0',
+169 silly addNameRange     '1.1.1',
+169 silly addNameRange     '1.2.0',
+169 silly addNameRange     '1.2.1',
+169 silly addNameRange     '1.3.0',
+169 silly addNameRange     '1.3.1',
+169 silly addNameRange     '2.0.0',
+169 silly addNameRange     '2.1.0',
+169 silly addNameRange     '2.2.0',
+169 silly addNameRange     '2.2.1',
+169 silly addNameRange     '2.3.0',
+169 silly addNameRange     '2.4.0',
+169 silly addNameRange     '2.4.1' ] ]
+170 verbose addNamed [ 'lodash', '2.4.1' ]
+171 verbose addNamed [ '2.4.1', '2.4.1' ]
+172 silly lockFile 8502be2a-lodash-2-4-1 lodash@2.4.1
+173 verbose lock lodash@2.4.1 C:\Users\andrewminton\AppData\Roaming\npm-cache\8502be2a-lodash-2-4-1.lock
+174 silly lockFile 8502be2a-lodash-2-4-1 lodash@2.4.1
+175 silly lockFile 8502be2a-lodash-2-4-1 lodash@2.4.1
+176 silly lockFile 257f9ab3-lodash-2-4-1 lodash@~2.4.1
+177 silly lockFile 257f9ab3-lodash-2-4-1 lodash@~2.4.1
+178 silly lockFile 52152b2d-gaze-0-5-1 gaze@0.5.1
+179 silly lockFile 52152b2d-gaze-0-5-1 gaze@0.5.1
+180 silly lockFile b222c948-gaze-0-5-1 gaze@~0.5.1
+181 silly lockFile b222c948-gaze-0-5-1 gaze@~0.5.1
+182 silly resolved [ { author: { name: 'mklabs' },
+182 silly resolved     name: 'tiny-lr-fork',
+182 silly resolved     description: 'Tiny LiveReload server, background-friendly',
+182 silly resolved     version: '0.0.5',
+182 silly resolved     homepage: 'https://github.com/mklabs/tiny-lr',
+182 silly resolved     repository: { url: 'git://github.com/mklabs/tiny-lr.git' },
+182 silly resolved     bin: { 'tiny-lr-fork': './bin/tiny-lr' },
+182 silly resolved     main: './lib',
+182 silly resolved     scripts:
+182 silly resolved      { 'prepublish:': 'npm test',
+182 silly resolved        test: 'mocha --reporter list',
+182 silly resolved        'test-debug': 'DEBUG=tinylr:* mocha --reporter list',
+182 silly resolved        'test-debug-all': 'DEBUG=* mocha --reporter list' },
+182 silly resolved     dependencies:
+182 silly resolved      { qs: '~0.5.2',
+182 silly resolved        'faye-websocket': '~0.4.3',
+182 silly resolved        noptify: '~0.0.3',
+182 silly resolved        debug: '~0.7.0' },
+182 silly resolved     devDependencies:
+182 silly resolved      { mocha: '~1.7.1',
+182 silly resolved        request: '~2.12.0',
+182 silly resolved        supertest: '~0.4.2',
+182 silly resolved        express: '~3.0.6',
+182 silly resolved        connect: '~2.7.2' },
+182 silly resolved     config: { test_port: '9001' },
+182 silly resolved     licenses: [ [Object] ],
+182 silly resolved     readme: 'This is a fork of tiny-lr. The maintainer of tiny-lr appears to be on a hiatus and this fork takes care of lingering issues until the maintainer of tiny-lr (hopefully) returns.\n\n**Changes made:**\n\n* Quieter, removes `console.log`s\n* Use WSS when livereload.js is on HTTPS\n* Normalize windows paths in livereload.js\n\n---\n\ntiny-lr\n-------\n\nThis script manages a tiny [LiveReload](http://livereload.com/) server\nimplementation you can spawn in the background.\n\nIt exposes:\n\n- a background-friendly bin wrapper (thanks to\n  [@FGRibreau](https://github.com/FGRibreau) [pid.js\n  gist](https://gist.github.com/1846952))\n\n- [Grunt tasks](https://github.com/mklabs/tiny-lr#using-grunt) to start the server and trigger reload notification. Every task\n  name is prefixed by `tinylr-`.\n\n- [Generic targets](https://github.com/mklabs/tiny-lr#using-make) to include in\n  your Makefile (`include node_modules/tiny-lr/tasks/tiny-lr.mk`)\n\nIt doesn\'t have any watch ability, it must be done at the build process or\napplication level.\n\nInstead, it exposes a very simple API to notify the server that some\nchanges have been made, that is then broadcasted to every livereload client\nconnected.\n\n    # notify a single change\n    curl http://localhost:35729/changed?files=style.css\n\n    # notify using a longer path\n    curl http://localhost:35729/changed?files=js/app.js\n\n    # notify multiple changes, comma or space delimited\n    curl http://localhost:35729/changed?files=index.html,style.css,docs/docco.css\n\nOr you can bulk the information into a POST request, with body as a JSON array of files.\n\n    curl -X POST http://localhost:35729/changed -d \'{ "files": ["style.css", "app.js"] }\'\n\nAs for the livereload client, you need to install the browser extension:\nhttp://feedback.livereload.com/knowledgebase/articles/86242-how-do-i-install-and-use-the-browser-extensions-\n(**note**: you need to listen on port 35729 to be able to use with your\nbrower extension)\n\nor add the livereload script tag manually:\nhttp://feedback.livereload.com/knowledgebase/articles/86180-how-do-i-add-the-script-tag-manually-\n(and here you can choose whatever port you want)\n\n## Integration\n\nThis package exposes a `bin` you can decide to install globally, but it\'s not recommended.\n\n    tiny-lr --help\n\n    Usage: tiny-lr [options]\n\n    Options:\n      -h, --help        - Show help usage\n      -v, --version     - Show package version\n      -p, --port        - Port to listen on (default: 35729)\n      --pid             - Path to the generated PID file (default: ./tiny-lr.pid)\n\n\nThe best way to integrate the runner in your workflow is to add it as a `reload`\nstep within your build tool. This build tool can then use the internal binary\nlinked by npm in `node_modules/.bin/tiny-lr` to not rely on global installs (or\nuse the server programmtically).\n\nYou can start the server using the binary provided, or use your own start script.\n\n```js\nvar tinylr = require(\'tiny-lr\');\n\n// standard LiveReload port\nvar port = 35729;\n\n// tinylr(opts) => new tinylr.Server(opts);\ntinylr().listen(port, function() {\n  if(err) {\n    // deal with err\n    return;\n  }\n\n  console.log(\'... Listening on %s (pid: %s) ...\', port);\n})\n```\n\nYou can define your own route and listen for specific request:\n\n```js\nvar server = tinylr();\n\nserver.on(\'GET /myplace\', function(req, res) {\n  res.write(\'Mine\');\n  res.end();\n})\n```\n\nAnd stop the server manually:\n\n```js\nserver.close();\n```\n\nThis will close any websocket connection established and emit a close event.\n\n### Middleware\n\nTo use as a connect / express middleware, tiny-lr needs query /\nbodyParse middlewares prior in the stack.\n\nAny handled requests ends at the tinylr level, not found and errors are\nnexted to the rest of the stack.\n\n```js\n// This binds both express app and tinylr on the same port\nvar app = express();\napp.use(express.query())\n  .use(express.bodyParser())\n  .use(tinylr.middleware({ app: app }))\n  .use(express.static(path.resolve(\'./\')))\n  .use(express.directory(path.resolve(\'./\')))\n  .listen(35729, function() {\n    console.log(\'Listening on %d\', 35729);\n  })\n```\n\nThe port you listen on is important, and tinylr should **always** listen on\nthe LiveReload standard one: `35729`. Otherwise, you won\'t be able to rely\non the browser extensions, though you can still use the manual snippet\napproach.\n\nYou can also start two different servers, one on your app port, the\nother listening on the LiveReload port. Check the\n`examples/express/server.js` file to see how.\n\n### Using grunt\n\nThis package exposes a `tasks/` directory, that you can use within your Gruntfile with:\n\n```js\ngrunt.loadNpmTasks(\'tiny-lr\');\n```\n\n- tinylr-start    - Starts a new tiny-lr Server, with the provided port.\n- tinylr-reload   - Sends a reload notification to the previously started server.\n\n`tinylr-start` should be used with the `watch` task, probably with an alias\nthat triggers both `tinylr-start watch` tasks.\n\n`tinylr-reload` should be configured as a "watch" task in your Gruntfile.\n\n```js\ngrunt.initConfig({\n  watch: {\n    reload: {\n      files: [\'**/*.html\', \'**/*.js\', \'**/*.css\', \'**/*.{png,jpg}\'],\n      tasks: \'tinylr-reload\'\n    }\n  }\n});\n\ngrunt.registerTask(\'reload\', [\'tinylr-start\', \'watch\']);\n```\n\n\n### Using make\n\nSee `tasks/tiny-lr.mk`.\n\nInclude this file into your project Makefile to bring in the following targets:\n\n- start \t\t\t\t\t\t- Start the LiveReload server\n- stop \t\t\t\t\t\t\t- Stops the LiveReload server\n- livereload \t\t\t\t- alias to start\n- livereload-stop \t- aias to stop\n\nThen define your "empty" targets, and the list of files you want to monitor.\n\n```make\nCSS_DIR = app/styles\nCSS_FILES = $(shell find $(CSS_DIR) -name \'*.css\')\n\n# include the livereload targets\ninclude node_modules/tiny-lr/tasks/*.mk\n\n$(CSS_DIR): $(CSS_FILES)\n  @echo CSS files changed: $?\n    @touch $@\n  curl -X POST http://localhost:35729/changed -d \'{ "files": "$?" }\'\n\nreload-css: livereload $(CSS_DIR)\n\n.PHONY: reload-css\n```\n\nThe pattern is always the same:\n\n- define a target for your root directory that triggers a POST request\n- `touch` the directory to update its mtime\n- add reload target with `livereload` and the list of files to "watch" as\n  prerequisites\n\nYou can chain multiple "reload" targets in a single one:\n\n```make\nreload: reload-js reload-css reload-img reload-EVERYTHING\n```\n\nCombine this with [visionmedia/watch](https://github.com/visionmedia/watch) and\nyou have a livereload environment.\n\n    watch make reload\n\n    # add a -q flag to the watch command to suppress most of the annoying output\n    watch -q reload\n\nThe `-q` flag only outputs STDERR, you can in your Makefile redirect the\noutput of your commands to `>&2` to see them in `watch -q` mode.\n\n\n## Tests\n\n    npm test\n\n---\n\n\n# TOC\n   - [tiny-lr](#tiny-lr)\n     - [GET /](#tiny-lr-get-)\n     - [GET /changed](#tiny-lr-get-changed)\n     - [POST /changed](#tiny-lr-post-changed)\n     - [GET /livereload.js](#tiny-lr-get-livereloadjs)\n     - [GET /kill](#tiny-lr-get-kill)\n<a name="" />\n\n<a name="tiny-lr" />\n# tiny-lr\naccepts ws clients.\n\n```js\nvar url = parse(this.request.url);\nvar server = this.app;\n\nvar ws = this.ws = new WebSocket(\'ws://\' + url.host + \'/livereload\');\n\nws.onopen = function(event) {\n  var hello = {\n    command: \'hello\',\n    protocols: [\'http://livereload.com/protocols/official-7\']\n  };\n\n  ws.send(JSON.stringify(hello));\n};\n\nws.onmessage = function(event) {\n  assert.deepEqual(event.data, JSON.stringify({\n    command: \'hello\',\n    protocols: [\'http://livereload.com/protocols/official-7\'],\n    serverName: \'tiny-lr\'\n  }));\n\n  assert.ok(Object.keys(server.clients).length);\n  done();\n};\n```\n\nproperly cleans up established connection on exit.\n\n```js\nvar ws = this.ws;\n\nws.onclose = done.bind(null, null);\n\nrequest(this.server)\n  .get(\'/kill\')\n  .expect(200, function() {\n    console.log(\'server shutdown\');\n  });\n```\n\n<a name="tiny-lr" />\n# tiny-lr\n<a name="tiny-lr-get-" />\n## GET /\nrespond with nothing, but respond.\n\n```js\nrequest(this.server)\n  .get(\'/\')\n  .expect(\'Content-Type\', /json/)\n  .expect(\'{"tinylr":"Welcome","version":"0.0.1"}\')\n  .expect(200, done);\n```\n\nunknown route respond with proper 404 and error message.\n\n```js\nrequest(this.server)\n  .get(\'/whatev\')\n  .expect(\'Content-Type\', /json/)\n  .expect(\'{"error":"not_found","reason":"no such route"}\')\n  .expect(404, done);\n```\n\n<a name="tiny-lr-get-changed" />\n## GET /changed\nwith no clients, no files.\n\n```js\nrequest(this.server)\n  .get(\'/changed\')\n  .expect(\'Content-Type\', /json/)\n  .expect(/"clients":\\[\\]/)\n  .expect(/"files":\\[\\]/)\n  .expect(200, done);\n```\n\nwith no clients, some files.\n\n```js\nrequest(this.server)\n  .get(\'/changed?files=gonna.css,test.css,it.css\')\n  .expect(\'Content-Type\', /json/)\n  .expect(\'{"clients":[],"files":["gonna.css","test.css","it.css"]}\')\n  .expect(200, done);\n```\n\n<a name="tiny-lr-post-changed" />\n## POST /changed\nwith no clients, no files.\n\n```js\nrequest(this.server)\n  .post(\'/changed\')\n  .expect(\'Content-Type\', /json/)\n  .expect(/"clients":\\[\\]/)\n  .expect(/"files":\\[\\]/)\n  .expect(200, done);\n```\n\nwith no clients, some files.\n\n```js\nvar data = { clients: [], files: [\'cat.css\', \'sed.css\', \'ack.js\'] };\n\nrequest(this.server)\n  .post(\'/changed\')\n  .send({ files: data.files })\n  .expect(\'Content-Type\', /json/)\n  .expect(JSON.stringify(data))\n  .expect(200, done);\n```\n\n<a name="tiny-lr-get-livereloadjs" />\n## GET /livereload.js\nrespond with livereload script.\n\n```js\nrequest(this.server)\n  .get(\'/livereload.js\')\n  .expect(/LiveReload/)\n  .expect(200, done);\n```\n\n<a name="tiny-lr-get-kill" />\n## GET /kill\nshutdown the server.\n\n```js\nvar server = this.server;\nrequest(server)\n  .get(\'/kill\')\n  .expect(200, function(err) {\n    if(err) return done(err);\n    assert.ok(!server._handle);\n    done();\n  });\n```\n\n---\n\n- 2013-01-21 - v0.0.5 - [PR #18](https://github.com/mklabs/tiny-lr/pull/18) / [PR #21](https://github.com/mklabs/tiny-lr/pull/21) - https support / expose reload flags through options\n- 2013-01-21 - v0.0.4 - middleware support\n- 2013-01-20 - v0.0.3 - serve livereload from repo (#4)\n- 2013-01-12 - v0.0.2 - tasks - support for grunt 0.3.x (#1)\n- 2013-01-05 - v0.0.1 - Initial release\n',
+182 silly resolved     readmeFilename: 'readme.md',
+182 silly resolved     bugs: { url: 'https://github.com/mklabs/tiny-lr/issues' },
+182 silly resolved     _id: 'tiny-lr-fork@0.0.5',
+182 silly resolved     _from: 'tiny-lr-fork@0.0.5' },
+182 silly resolved   { name: 'async',
+182 silly resolved     description: 'Higher-order functions and common patterns for asynchronous code',
+182 silly resolved     main: './lib/async',
+182 silly resolved     author: { name: 'Caolan McMahon' },
+182 silly resolved     version: '0.2.10',
+182 silly resolved     repository: { type: 'git', url: 'https://github.com/caolan/async.git' },
+182 silly resolved     bugs: { url: 'https://github.com/caolan/async/issues' },
+182 silly resolved     licenses: [ [Object] ],
+182 silly resolved     devDependencies: { nodeunit: '>0.0.0', 'uglify-js': '1.2.x', nodelint: '>0.0.0' },
+182 silly resolved     jam: { main: 'lib/async.js', include: [Object] },
+182 silly resolved     scripts: { test: 'nodeunit test/test-async.js' },
+182 silly resolved     readme: '# Async.js\n\nAsync is a utility module which provides straight-forward, powerful functions\nfor working with asynchronous JavaScript. Although originally designed for\nuse with [node.js](http://nodejs.org), it can also be used directly in the\nbrowser. Also supports [component](https://github.com/component/component).\n\nAsync provides around 20 functions that include the usual \'functional\'\nsuspects (map, reduce, filter, each…) as well as some common patterns\nfor asynchronous control flow (parallel, series, waterfall…). All these\nfunctions assume you follow the node.js convention of providing a single\ncallback as the last argument of your async function.\n\n\n## Quick Examples\n\n```javascript\nasync.map([\'file1\',\'file2\',\'file3\'], fs.stat, function(err, results){\n    // results is now an array of stats for each file\n});\n\nasync.filter([\'file1\',\'file2\',\'file3\'], fs.exists, function(results){\n    // results now equals an array of the existing files\n});\n\nasync.parallel([\n    function(){ ... },\n    function(){ ... }\n], callback);\n\nasync.series([\n    function(){ ... },\n    function(){ ... }\n]);\n```\n\nThere are many more functions available so take a look at the docs below for a\nfull list. This module aims to be comprehensive, so if you feel anything is\nmissing please create a GitHub issue for it.\n\n## Common Pitfalls\n\n### Binding a context to an iterator\n\nThis section is really about bind, not about async. If you are wondering how to\nmake async execute your iterators in a given context, or are confused as to why\na method of another library isn\'t working as an iterator, study this example:\n\n```js\n// Here is a simple object with an (unnecessarily roundabout) squaring method\nvar AsyncSquaringLibrary = {\n  squareExponent: 2,\n  square: function(number, callback){ \n    var result = Math.pow(number, this.squareExponent);\n    setTimeout(function(){\n      callback(null, result);\n    }, 200);\n  }\n};\n\nasync.map([1, 2, 3], AsyncSquaringLibrary.square, function(err, result){\n  // result is [NaN, NaN, NaN]\n  // This fails because the `this.squareExponent` expression in the square\n  // function is not evaluated in the context of AsyncSquaringLibrary, and is\n  // therefore undefined.\n});\n\nasync.map([1, 2, 3], AsyncSquaringLibrary.square.bind(AsyncSquaringLibrary), function(err, result){\n  // result is [1, 4, 9]\n  // With the help of bind we can attach a context to the iterator before\n  // passing it to async. Now the square function will be executed in its \n  // \'home\' AsyncSquaringLibrary context and the value of `this.squareExponent`\n  // will be as expected.\n});\n```\n\n## Download\n\nThe source is available for download from\n[GitHub](http://github.com/caolan/async).\nAlternatively, you can install using Node Package Manager (npm):\n\n    npm install async\n\n__Development:__ [async.js](https://github.com/caolan/async/raw/master/lib/async.js) - 29.6kb Uncompressed\n\n## In the Browser\n\nSo far it\'s been tested in IE6, IE7, IE8, FF3.6 and Chrome 5. Usage:\n\n```html\n<script type="text/javascript" src="async.js"></script>\n<script type="text/javascript">\n\n    async.map(data, asyncProcess, function(err, results){\n        alert(results);\n    });\n\n</script>\n```\n\n## Documentation\n\n### Collections\n\n* [each](#each)\n* [eachSeries](#eachSeries)\n* [eachLimit](#eachLimit)\n* [map](#map)\n* [mapSeries](#mapSeries)\n* [mapLimit](#mapLimit)\n* [filter](#filter)\n* [filterSeries](#filterSeries)\n* [reject](#reject)\n* [rejectSeries](#rejectSeries)\n* [reduce](#reduce)\n* [reduceRight](#reduceRight)\n* [detect](#detect)\n* [detectSeries](#detectSeries)\n* [sortBy](#sortBy)\n* [some](#some)\n* [every](#every)\n* [concat](#concat)\n* [concatSeries](#concatSeries)\n\n### Control Flow\n\n* [series](#series)\n* [parallel](#parallel)\n* [parallelLimit](#parallellimittasks-limit-callback)\n* [whilst](#whilst)\n* [doWhilst](#doWhilst)\n* [until](#until)\n* [doUntil](#doUntil)\n* [forever](#forever)\n* [waterfall](#waterfall)\n* [compose](#compose)\n* [applyEach](#applyEach)\n* [applyEachSeries](#applyEachSeries)\n* [queue](#queue)\n* [cargo](#cargo)\n* [auto](#auto)\n* [iterator](#iterator)\n* [apply](#apply)\n* [nextTick](#nextTick)\n* [times](#times)\n* [timesSeries](#timesSeries)\n\n### Utils\n\n* [memoize](#memoize)\n* [unmemoize](#unmemoize)\n* [log](#log)\n* [dir](#dir)\n* [noConflict](#noConflict)\n\n\n## Collections\n\n<a name="forEach" />\n<a name="each" />\n### each(arr, iterator, callback)\n\nApplies an iterator function to each item in an array, in parallel.\nThe iterator is called with an item from the list and a callback for when it\nhas finished. If the iterator passes an error to this callback, the main\ncallback for the each function is immediately called with the error.\n\nNote, that since this function applies the iterator to each item in parallel\nthere is no guarantee that the iterator functions will complete in order.\n\n__Arguments__\n\n* arr - An array to iterate over.\n* iterator(item, callback) - A function to apply to each item in the array.\n  The iterator is passed a callback(err) which must be called once it has \n  completed. If no error has occured, the callback should be run without \n  arguments or with an explicit null argument.\n* callback(err) - A callback which is called after all the iterator functions\n  have finished, or an error has occurred.\n\n__Example__\n\n```js\n// assuming openFiles is an array of file names and saveFile is a function\n// to save the modified contents of that file:\n\nasync.each(openFiles, saveFile, function(err){\n    // if any of the saves produced an error, err would equal that error\n});\n```\n\n---------------------------------------\n\n<a name="forEachSeries" />\n<a name="eachSeries" />\n### eachSeries(arr, iterator, callback)\n\nThe same as each only the iterator is applied to each item in the array in\nseries. The next iterator is only called once the current one has completed\nprocessing. This means the iterator functions will complete in order.\n\n\n---------------------------------------\n\n<a name="forEachLimit" />\n<a name="eachLimit" />\n### eachLimit(arr, limit, iterator, callback)\n\nThe same as each only no more than "limit" iterators will be simultaneously \nrunning at any time.\n\nNote that the items are not processed in batches, so there is no guarantee that\n the first "limit" iterator functions will complete before any others are \nstarted.\n\n__Arguments__\n\n* arr - An array to iterate over.\n* limit - The maximum number of iterators to run at any time.\n* iterator(item, callback) - A function to apply to each item in the array.\n  The iterator is passed a callback(err) which must be called once it has \n  completed. If no error has occured, the callback should be run without \n  arguments or with an explicit null argument.\n* callback(err) - A callback which is called after all the iterator functions\n  have finished, or an error has occurred.\n\n__Example__\n\n```js\n// Assume documents is an array of JSON objects and requestApi is a\n// function that interacts with a rate-limited REST api.\n\nasync.eachLimit(documents, 20, requestApi, function(err){\n    // if any of the saves produced an error, err would equal that error\n});\n```\n\n---------------------------------------\n\n<a name="map" />\n### map(arr, iterator, callback)\n\nProduces a new array of values by mapping each value in the given array through\nthe iterator function. The iterator is called with an item from the array and a\ncallback for when it has finished processing. The callback takes 2 arguments, \nan error and the transformed item from the array. If the iterator passes an\nerror to this callback, the main callback for the map function is immediately\ncalled with the error.\n\nNote, that since this function applies the iterator to each item in parallel\nthere is no guarantee that the iterator functions will complete in order, however\nthe results array will be in the same order as the original array.\n\n__Arguments__\n\n* arr - An array to iterate over.\n* iterator(item, callback) - A function to apply to each item in the array.\n  The iterator is passed a callback(err, transformed) which must be called once \n  it has completed with an error (which can be null) and a transformed item.\n* callback(err, results) - A callback which is called after all the iterator\n  functions have finished, or an error has occurred. Results is an array of the\n  transformed items from the original array.\n\n__Example__\n\n```js\nasync.map([\'file1\',\'file2\',\'file3\'], fs.stat, function(err, results){\n    // results is now an array of stats for each file\n});\n```\n\n---------------------------------------\n\n<a name="mapSeries" />\n### mapSeries(arr, iterator, callback)\n\nThe same as map only the iterator is applied to each item in the array in\nseries. The next iterator is only called once the current one has completed\nprocessing. The results array will be in the same order as the original.\n\n\n---------------------------------------\n\n<a name="mapLimit" />\n### mapLimit(arr, limit, iterator, callback)\n\nThe same as map only no more than "limit" iterators will be simultaneously \nrunning at any time.\n\nNote that the items are not processed in batches, so there is no guarantee that\n the first "limit" iterator functions will complete before any others are \nstarted.\n\n__Arguments__\n\n* arr - An array to iterate over.\n* limit - The maximum number of iterators to run at any time.\n* iterator(item, callback) - A function to apply to each item in the array.\n  The iterator is passed a callback(err, transformed) which must be called once \n  it has completed with an error (which can be null) and a transformed item.\n* callback(err, results) - A callback which is called after all the iterator\n  functions have finished, or an error has occurred. Results is an array of the\n  transformed items from the original array.\n\n__Example__\n\n```js\nasync.mapLimit([\'file1\',\'file2\',\'file3\'], 1, fs.stat, function(err, results){\n    // results is now an array of stats for each file\n});\n```\n\n---------------------------------------\n\n<a name="filter" />\n### filter(arr, iterator, callback)\n\n__Alias:__ select\n\nReturns a new array of all the values which pass an async truth test.\n_The callback for each iterator call only accepts a single argument of true or\nfalse, it does not accept an error argument first!_ This is in-line with the\nway node libraries work with truth tests like fs.exists. This operation is\nperformed in parallel, but the results array will be in the same order as the\noriginal.\n\n__Arguments__\n\n* arr - An array to iterate over.\n* iterator(item, callback) - A truth test to apply to each item in the array.\n  The iterator is passed a callback(truthValue) which must be called with a \n  boolean argument once it has completed.\n* callback(results) - A callback which is called after all the iterator\n  functions have finished.\n\n__Example__\n\n```js\nasync.filter([\'file1\',\'file2\',\'file3\'], fs.exists, function(results){\n    // results now equals an array of the existing files\n});\n```\n\n---------------------------------------\n\n<a name="filterSeries" />\n### filterSeries(arr, iterator, callback)\n\n__alias:__ selectSeries\n\nThe same as filter only the iterator is applied to each item in the array in\nseries. The next iterator is only called once the current one has completed\nprocessing. The results array will be in the same order as the original.\n\n---------------------------------------\n\n<a name="reject" />\n### reject(arr, iterator, callback)\n\nThe opposite of filter. Removes values that pass an async truth test.\n\n---------------------------------------\n\n<a name="rejectSeries" />\n### rejectSeries(arr, iterator, callback)\n\nThe same as reject, only the iterator is applied to each item in the array\nin series.\n\n\n---------------------------------------\n\n<a name="reduce" />\n### reduce(arr, memo, iterator, callback)\n\n__aliases:__ inject, foldl\n\nReduces a list of values into a single value using an async iterator to return\neach successive step. Memo is the initial state of the reduction. This\nfunction only operates in series. For performance reasons, it may make sense to\nsplit a call to this function into a parallel map, then use the normal\nArray.prototype.reduce on the results. This function is for situations where\neach step in the reduction needs to be async, if you can get the data before\nreducing it then it\'s probably a good idea to do so.\n\n__Arguments__\n\n* arr - An array to iterate over.\n* memo - The initial state of the reduction.\n* iterator(memo, item, callback) - A function applied to each item in the\n  array to produce the next step in the reduction. The iterator is passed a\n  callback(err, reduction) which accepts an optional error as its first \n  argument, and the state of the reduction as the second. If an error is \n  passed to the callback, the reduction is stopped and the main callback is \n  immediately called with the error.\n* callback(err, result) - A callback which is called after all the iterator\n  functions have finished. Result is the reduced value.\n\n__Example__\n\n```js\nasync.reduce([1,2,3], 0, function(memo, item, callback){\n    // pointless async:\n    process.nextTick(function(){\n        callback(null, memo + item)\n    });\n}, function(err, result){\n    // result is now equal to the last value of memo, which is 6\n});\n```\n\n---------------------------------------\n\n<a name="reduceRight" />\n### reduceRight(arr, memo, iterator, callback)\n\n__Alias:__ foldr\n\nSame as reduce, only operates on the items in the array in reverse order.\n\n\n---------------------------------------\n\n<a name="detect" />\n### detect(arr, iterator, callback)\n\nReturns the first value in a list that passes an async truth test. The\niterator is applied in parallel, meaning the first iterator to return true will\nfire the detect callback with that result. That means the result might not be\nthe first item in the original array (in terms of order) that passes the test.\n\nIf order within the original array is important then look at detectSeries.\n\n__Arguments__\n\n* arr - An array to iterate over.\n* iterator(item, callback) - A truth test to apply to each item in the array.\n  The iterator is passed a callback(truthValue) which must be called with a \n  boolean argument once it has completed.\n* callback(result) - A callback which is called as soon as any iterator returns\n  true, or after all the iterator functions have finished. Result will be\n  the first item in the array that passes the truth test (iterator) or the\n  value undefined if none passed.\n\n__Example__\n\n```js\nasync.detect([\'file1\',\'file2\',\'file3\'], fs.exists, function(result){\n    // result now equals the first file in the list that exists\n});\n```\n\n---------------------------------------\n\n<a name="detectSeries" />\n### detectSeries(arr, iterator, callback)\n\nThe same as detect, only the iterator is applied to each item in the array\nin series. This means the result is always the first in the original array (in\nterms of array order) that passes the truth test.\n\n\n---------------------------------------\n\n<a name="sortBy" />\n### sortBy(arr, iterator, callback)\n\nSorts a list by the results of running each value through an async iterator.\n\n__Arguments__\n\n* arr - An array to iterate over.\n* iterator(item, callback) - A function to apply to each item in the array.\n  The iterator is passed a callback(err, sortValue) which must be called once it\n  has completed with an error (which can be null) and a value to use as the sort\n  criteria.\n* callback(err, results) - A callback which is called after all the iterator\n  functions have finished, or an error has occurred. Results is the items from\n  the original array sorted by the values returned by the iterator calls.\n\n__Example__\n\n```js\nasync.sortBy([\'file1\',\'file2\',\'file3\'], function(file, callback){\n    fs.stat(file, function(err, stats){\n        callback(err, stats.mtime);\n    });\n}, function(err, results){\n    // results is now the original array of files sorted by\n    // modified date\n});\n```\n\n---------------------------------------\n\n<a name="some" />\n### some(arr, iterator, callback)\n\n__Alias:__ any\n\nReturns true if at least one element in the array satisfies an async test.\n_The callback for each iterator call only accepts a single argument of true or\nfalse, it does not accept an error argument first!_ This is in-line with the\nway node libraries work with truth tests like fs.exists. Once any iterator\ncall returns true, the main callback is immediately called.\n\n__Arguments__\n\n* arr - An array to iterate over.\n* iterator(item, callback) - A truth test to apply to each item in the array.\n  The iterator is passed a callback(truthValue) which must be called with a \n  boolean argument once it has completed.\n* callback(result) - A callback which is called as soon as any iterator returns\n  true, or after all the iterator functions have finished. Result will be\n  either true or false depending on the values of the async tests.\n\n__Example__\n\n```js\nasync.some([\'file1\',\'file2\',\'file3\'], fs.exists, function(result){\n    // if result is true then at least one of the files exists\n});\n```\n\n---------------------------------------\n\n<a name="every" />\n### every(arr, iterator, callback)\n\n__Alias:__ all\n\nReturns true if every element in the array satisfies an async test.\n_The callback for each iterator call only accepts a single argument of true or\nfalse, it does not accept an error argument first!_ This is in-line with the\nway node libraries work with truth tests like fs.exists.\n\n__Arguments__\n\n* arr - An array to iterate over.\n* iterator(item, callback) - A truth test to apply to each item in the array.\n  The iterator is passed a callback(truthValue) which must be called with a \n  boolean argument once it has completed.\n* callback(result) - A callback which is called after all the iterator\n  functions have finished. Result will be either true or false depending on\n  the values of the async tests.\n\n__Example__\n\n```js\nasync.every([\'file1\',\'file2\',\'file3\'], fs.exists, function(result){\n    // if result is true then every file exists\n});\n```\n\n---------------------------------------\n\n<a name="concat" />\n### concat(arr, iterator, callback)\n\nApplies an iterator to each item in a list, concatenating the results. Returns the\nconcatenated list. The iterators are called in parallel, and the results are\nconcatenated as they return. There is no guarantee that the results array will\nbe returned in the original order of the arguments passed to the iterator function.\n\n__Arguments__\n\n* arr - An array to iterate over\n* iterator(item, callback) - A function to apply to each item in the array.\n  The iterator is passed a callback(err, results) which must be called once it \n  has completed with an error (which can be null) and an array of results.\n* callback(err, results) - A callback which is called after all the iterator\n  functions have finished, or an error has occurred. Results is an array containing\n  the concatenated results of the iterator function.\n\n__Example__\n\n```js\nasync.concat([\'dir1\',\'dir2\',\'dir3\'], fs.readdir, function(err, files){\n    // files is now a list of filenames that exist in the 3 directories\n});\n```\n\n---------------------------------------\n\n<a name="concatSeries" />\n### concatSeries(arr, iterator, callback)\n\nSame as async.concat, but executes in series instead of parallel.\n\n\n## Control Flow\n\n<a name="series" />\n### series(tasks, [callback])\n\nRun an array of functions in series, each one running once the previous\nfunction has completed. If any functions in the series pass an error to its\ncallback, no more functions are run and the callback for the series is\nimmediately called with the value of the error. Once the tasks have completed,\nthe results are passed to the final callback as an array.\n\nIt is also possible to use an object instead of an array. Each property will be\nrun as a function and the results will be passed to the final callback as an object\ninstead of an array. This can be a more readable way of handling results from\nasync.series.\n\n\n__Arguments__\n\n* tasks - An array or object containing functions to run, each function is passed\n  a callback(err, result) it must call on completion with an error (which can\n  be null) and an optional result value.\n* callback(err, results) - An optional callback to run once all the functions\n  have completed. This function gets a results array (or object) containing all \n  the result arguments passed to the task callbacks.\n\n__Example__\n\n```js\nasync.series([\n    function(callback){\n        // do some stuff ...\n        callback(null, \'one\');\n    },\n    function(callback){\n        // do some more stuff ...\n        callback(null, \'two\');\n    }\n],\n// optional callback\nfunction(err, results){\n    // results is now equal to [\'one\', \'two\']\n});\n\n\n// an example using an object instead of an array\nasync.series({\n    one: function(callback){\n        setTimeout(function(){\n            callback(null, 1);\n        }, 200);\n    },\n    two: function(callback){\n        setTimeout(function(){\n            callback(null, 2);\n        }, 100);\n    }\n},\nfunction(err, results) {\n    // results is now equal to: {one: 1, two: 2}\n});\n```\n\n---------------------------------------\n\n<a name="parallel" />\n### parallel(tasks, [callback])\n\nRun an array of functions in parallel, without waiting until the previous\nfunction has completed. If any of the functions pass an error to its\ncallback, the main callback is immediately called with the value of the error.\nOnce the tasks have completed, the results are passed to the final callback as an\narray.\n\nIt is also possible to use an object instead of an array. Each property will be\nrun as a function and the results will be passed to the final callback as an object\ninstead of an array. This can be a more readable way of handling results from\nasync.parallel.\n\n\n__Arguments__\n\n* tasks - An array or object containing functions to run, each function is passed \n  a callback(err, result) it must call on completion with an error (which can\n  be null) and an optional result value.\n* callback(err, results) - An optional callback to run once all the functions\n  have completed. This function gets a results array (or object) containing all \n  the result arguments passed to the task callbacks.\n\n__Example__\n\n```js\nasync.parallel([\n    function(callback){\n        setTimeout(function(){\n            callback(null, \'one\');\n        }, 200);\n    },\n    function(callback){\n        setTimeout(function(){\n            callback(null, \'two\');\n        }, 100);\n    }\n],\n// optional callback\nfunction(err, results){\n    // the results array will equal [\'one\',\'two\'] even though\n    // the second function had a shorter timeout.\n});\n\n\n// an example using an object instead of an array\nasync.parallel({\n    one: function(callback){\n        setTimeout(function(){\n            callback(null, 1);\n        }, 200);\n    },\n    two: function(callback){\n        setTimeout(function(){\n            callback(null, 2);\n        }, 100);\n    }\n},\nfunction(err, results) {\n    // results is now equals to: {one: 1, two: 2}\n});\n```\n\n---------------------------------------\n\n<a name="parallel" />\n### parallelLimit(tasks, limit, [callback])\n\nThe same as parallel only the tasks are executed in parallel with a maximum of "limit" \ntasks executing at any time.\n\nNote that the tasks are not executed in batches, so there is no guarantee that \nthe first "limit" tasks will complete before any others are started.\n\n__Arguments__\n\n* tasks - An array or object containing functions to run, each function is passed \n  a callback(err, result) it must call on completion with an error (which can\n  be null) and an optional result value.\n* limit - The maximum number of tasks to run at any time.\n* callback(err, results) - An optional callback to run once all the functions\n  have completed. This function gets a results array (or object) containing all \n  the result arguments passed to the task callbacks.\n\n---------------------------------------\n\n<a name="whilst" />\n### whilst(test, fn, callback)\n\nRepeatedly call fn, while test returns true. Calls the callback when stopped,\nor an error occurs.\n\n__Arguments__\n\n* test() - synchronous truth test to perform before each execution of fn.\n* fn(callback) - A function to call each time the test passes. The function is\n  passed a callback(err) which must be called once it has completed with an \n  optional error argument.\n* callback(err) - A callback which is called after the test fails and repeated\n  execution of fn has stopped.\n\n__Example__\n\n```js\nvar count = 0;\n\nasync.whilst(\n    function () { return count < 5; },\n    function (callback) {\n        count++;\n        setTimeout(callback, 1000);\n    },\n    function (err) {\n        // 5 seconds have passed\n    }\n);\n```\n\n---------------------------------------\n\n<a name="doWhilst" />\n### doWhilst(fn, test, callback)\n\nThe post check version of whilst. To reflect the difference in the order of operations `test` and `fn` arguments are switched. `doWhilst` is to `whilst` as `do while` is to `while` in plain JavaScript.\n\n---------------------------------------\n\n<a name="until" />\n### until(test, fn, callback)\n\nRepeatedly call fn, until test returns true. Calls the callback when stopped,\nor an error occurs.\n\nThe inverse of async.whilst.\n\n---------------------------------------\n\n<a name="doUntil" />\n### doUntil(fn, test, callback)\n\nLike doWhilst except the test is inverted. Note the argument ordering differs from `until`.\n\n---------------------------------------\n\n<a name="forever" />\n### forever(fn, callback)\n\nCalls the asynchronous function \'fn\' repeatedly, in series, indefinitely.\nIf an error is passed to fn\'s callback then \'callback\' is called with the\nerror, otherwise it will never be called.\n\n---------------------------------------\n\n<a name="waterfall" />\n### waterfall(tasks, [callback])\n\nRuns an array of functions in series, each passing their results to the next in\nthe array. However, if any of the functions pass an error to the callback, the\nnext function is not executed and the main callback is immediately called with\nthe error.\n\n__Arguments__\n\n* tasks - An array of functions to run, each function is passed a \n  callback(err, result1, result2, ...) it must call on completion. The first\n  argument is an error (which can be null) and any further arguments will be \n  passed as arguments in order to the next task.\n* callback(err, [results]) - An optional callback to run once all the functions\n  have completed. This will be passed the results of the last task\'s callback.\n\n\n\n__Example__\n\n```js\nasync.waterfall([\n    function(callback){\n        callback(null, \'one\', \'two\');\n    },\n    function(arg1, arg2, callback){\n        callback(null, \'three\');\n    },\n    function(arg1, callback){\n        // arg1 now equals \'three\'\n        callback(null, \'done\');\n    }\n], function (err, result) {\n   // result now equals \'done\'    \n});\n```\n\n---------------------------------------\n<a name="compose" />\n### compose(fn1, fn2...)\n\nCreates a function which is a composition of the passed asynchronous\nfunctions. Each function consumes the return value of the function that\nfollows. Composing functions f(), g() and h() would produce the result of\nf(g(h())), only this version uses callbacks to obtain the return values.\n\nEach function is executed with the `this` binding of the composed function.\n\n__Arguments__\n\n* functions... - the asynchronous functions to compose\n\n\n__Example__\n\n```js\nfunction add1(n, callback) {\n    setTimeout(function () {\n        callback(null, n + 1);\n    }, 10);\n}\n\nfunction mul3(n, callback) {\n    setTimeout(function () {\n        callback(null, n * 3);\n    }, 10);\n}\n\nvar add1mul3 = async.compose(mul3, add1);\n\nadd1mul3(4, function (err, result) {\n   // result now equals 15\n});\n```\n\n---------------------------------------\n<a name="applyEach" />\n### applyEach(fns, args..., callback)\n\nApplies the provided arguments to each function in the array, calling the\ncallback after all functions have completed. If you only provide the first\nargument then it will return a function which lets you pass in the\narguments as if it were a single function call.\n\n__Arguments__\n\n* fns - the asynchronous functions to all call with the same arguments\n* args... - any number of separate arguments to pass to the function\n* callback - the final argument should be the callback, called when all\n  functions have completed processing\n\n\n__Example__\n\n```js\nasync.applyEach([enableSearch, updateSchema], \'bucket\', callback);\n\n// partial application example:\nasync.each(\n    buckets,\n    async.applyEach([enableSearch, updateSchema]),\n    callback\n);\n```\n\n---------------------------------------\n\n<a name="applyEachSeries" />\n### applyEachSeries(arr, iterator, callback)\n\nThe same as applyEach only the functions are applied in series.\n\n---------------------------------------\n\n<a name="queue" />\n### queue(worker, concurrency)\n\nCreates a queue object with the specified concurrency. Tasks added to the\nqueue will be processed in parallel (up to the concurrency limit). If all\nworkers are in progress, the task is queued until one is available. Once\na worker has completed a task, the task\'s callback is called.\n\n__Arguments__\n\n* worker(task, callback) - An asynchronous function for processing a queued\n  task, which must call its callback(err) argument when finished, with an \n  optional error as an argument.\n* concurrency - An integer for determining how many worker functions should be\n  run in parallel.\n\n__Queue objects__\n\nThe queue object returned by this function has the following properties and\nmethods:\n\n* length() - a function returning the number of items waiting to be processed.\n* concurrency - an integer for determining how many worker functions should be\n  run in parallel. This property can be changed after a queue is created to\n  alter the concurrency on-the-fly.\n* push(task, [callback]) - add a new task to the queue, the callback is called\n  once the worker has finished processing the task.\n  instead of a single task, an array of tasks can be submitted. the respective callback is used for every task in the list.\n* unshift(task, [callback]) - add a new task to the front of the queue.\n* saturated - a callback that is called when the queue length hits the concurrency and further tasks will be queued\n* empty - a callback that is called when the last item from the queue is given to a worker\n* drain - a callback that is called when the last item from the queue has returned from the worker\n\n__Example__\n\n```js\n// create a queue object with concurrency 2\n\nvar q = async.queue(function (task, callback) {\n    console.log(\'hello \' + task.name);\n    callback();\n}, 2);\n\n\n// assign a callback\nq.drain = function() {\n    console.log(\'all items have been processed\');\n}\n\n// add some items to the queue\n\nq.push({name: \'foo\'}, function (err) {\n    console.log(\'finished processing foo\');\n});\nq.push({name: \'bar\'}, function (err) {\n    console.log(\'finished processing bar\');\n});\n\n// add some items to the queue (batch-wise)\n\nq.push([{name: \'baz\'},{name: \'bay\'},{name: \'bax\'}], function (err) {\n    console.log(\'finished processing bar\');\n});\n\n// add some items to the front of the queue\n\nq.unshift({name: \'bar\'}, function (err) {\n    console.log(\'finished processing bar\');\n});\n```\n\n---------------------------------------\n\n<a name="cargo" />\n### cargo(worker, [payload])\n\nCreates a cargo object with the specified payload. Tasks added to the\ncargo will be processed altogether (up to the payload limit). If the\nworker is in progress, the task is queued until it is available. Once\nthe worker has completed some tasks, each callback of those tasks is called.\n\n__Arguments__\n\n* worker(tasks, callback) - An asynchronous function for processing an array of\n  queued tasks, which must call its callback(err) argument when finished, with \n  an optional error as an argument.\n* payload - An optional integer for determining how many tasks should be\n  processed per round; if omitted, the default is unlimited.\n\n__Cargo objects__\n\nThe cargo object returned by this function has the following properties and\nmethods:\n\n* length() - a function returning the number of items waiting to be processed.\n* payload - an integer for determining how many tasks should be\n  process per round. This property can be changed after a cargo is created to\n  alter the payload on-the-fly.\n* push(task, [callback]) - add a new task to the queue, the callback is called\n  once the worker has finished processing the task.\n  instead of a single task, an array of tasks can be submitted. the respective callback is used for every task in the list.\n* saturated - a callback that is called when the queue length hits the concurrency and further tasks will be queued\n* empty - a callback that is called when the last item from the queue is given to a worker\n* drain - a callback that is called when the last item from the queue has returned from the worker\n\n__Example__\n\n```js\n// create a cargo object with payload 2\n\nvar cargo = async.cargo(function (tasks, callback) {\n    for(var i=0; i<tasks.length; i++){\n      console.log(\'hello \' + tasks[i].name);\n    }\n    callback();\n}, 2);\n\n\n// add some items\n\ncargo.push({name: \'foo\'}, function (err) {\n    console.log(\'finished processing foo\');\n});\ncargo.push({name: \'bar\'}, function (err) {\n    console.log(\'finished processing bar\');\n});\ncargo.push({name: \'baz\'}, function (err) {\n    console.log(\'finished processing baz\');\n});\n```\n\n---------------------------------------\n\n<a name="auto" />\n### auto(tasks, [callback])\n\nDetermines the best order for running functions based on their requirements.\nEach function can optionally depend on other functions being completed first,\nand each function is run as soon as its requirements are satisfied. If any of\nthe functions pass an error to their callback, that function will not complete\n(so any other functions depending on it will not run) and the main callback\nwill be called immediately with the error. Functions also receive an object\ncontaining the results of functions which have completed so far.\n\nNote, all functions are called with a results object as a second argument, \nso it is unsafe to pass functions in the tasks object which cannot handle the\nextra argument. For example, this snippet of code:\n\n```js\nasync.auto({\n  readData: async.apply(fs.readFile, \'data.txt\', \'utf-8\')\n}, callback);\n```\n\nwill have the effect of calling readFile with the results object as the last\nargument, which will fail:\n\n```js\nfs.readFile(\'data.txt\', \'utf-8\', cb, {});\n```\n\nInstead, wrap the call to readFile in a function which does not forward the \nresults object:\n\n```js\nasync.auto({\n  readData: function(cb, results){\n    fs.readFile(\'data.txt\', \'utf-8\', cb);\n  }\n}, callback);\n```\n\n__Arguments__\n\n* tasks - An object literal containing named functions or an array of\n  requirements, with the function itself the last item in the array. The key\n  used for each function or array is used when specifying requirements. The \n  function receives two arguments: (1) a callback(err, result) which must be \n  called when finished, passing an error (which can be null) and the result of \n  the function\'s execution, and (2) a results object, containing the results of\n  the previously executed functions.\n* callback(err, results) - An optional callback which is called when all the\n  tasks have been completed. The callback will receive an error as an argument\n  if any tasks pass an error to their callback. Results will always be passed\n\tbut if an error occurred, no other tasks will be performed, and the results\n\tobject will only contain partial results.\n  \n\n__Example__\n\n```js\nasync.auto({\n    get_data: function(callback){\n        // async code to get some data\n    },\n    make_folder: function(callback){\n        // async code to create a directory to store a file in\n        // this is run at the same time as getting the data\n    },\n    write_file: [\'get_data\', \'make_folder\', function(callback){\n        // once there is some data and the directory exists,\n        // write the data to a file in the directory\n        callback(null, filename);\n    }],\n    email_link: [\'write_file\', function(callback, results){\n        // once the file is written let\'s email a link to it...\n        // results.write_file contains the filename returned by write_file.\n    }]\n});\n```\n\nThis is a fairly trivial example, but to do this using the basic parallel and\nseries functions would look like this:\n\n```js\nasync.parallel([\n    function(callback){\n        // async code to get some data\n    },\n    function(callback){\n        // async code to create a directory to store a file in\n        // this is run at the same time as getting the data\n    }\n],\nfunction(err, results){\n    async.series([\n        function(callback){\n            // once there is some data and the directory exists,\n            // write the data to a file in the directory\n        },\n        function(callback){\n            // once the file is written let\'s email a link to it...\n        }\n    ]);\n});\n```\n\nFor a complicated series of async tasks using the auto function makes adding\nnew tasks much easier and makes the code more readable.\n\n\n---------------------------------------\n\n<a name="iterator" />\n### iterator(tasks)\n\nCreates an iterator function which calls the next function in the array,\nreturning a continuation to call the next one after that. It\'s also possible to\n\'peek\' the next iterator by doing iterator.next().\n\nThis function is used internally by the async module but can be useful when\nyou want to manually control the flow of functions in series.\n\n__Arguments__\n\n* tasks - An array of functions to run.\n\n__Example__\n\n```js\nvar iterator = async.iterator([\n    function(){ sys.p(\'one\'); },\n    function(){ sys.p(\'two\'); },\n    function(){ sys.p(\'three\'); }\n]);\n\nnode> var iterator2 = iterator();\n\'one\'\nnode> var iterator3 = iterator2();\n\'two\'\nnode> iterator3();\n\'three\'\nnode> var nextfn = iterator2.next();\nnode> nextfn();\n\'three\'\n```\n\n---------------------------------------\n\n<a name="apply" />\n### apply(function, arguments..)\n\nCreates a continuation function with some arguments already applied, a useful\nshorthand when combined with other control flow functions. Any arguments\npassed to the returned function are added to the arguments originally passed\nto apply.\n\n__Arguments__\n\n* function - The function you want to eventually apply all arguments to.\n* arguments... - Any number of arguments to automatically apply when the\n  continuation is called.\n\n__Example__\n\n```js\n// using apply\n\nasync.parallel([\n    async.apply(fs.writeFile, \'testfile1\', \'test1\'),\n    async.apply(fs.writeFile, \'testfile2\', \'test2\'),\n]);\n\n\n// the same process without using apply\n\nasync.parallel([\n    function(callback){\n        fs.writeFile(\'testfile1\', \'test1\', callback);\n    },\n    function(callback){\n        fs.writeFile(\'testfile2\', \'test2\', callback);\n    }\n]);\n```\n\nIt\'s possible to pass any number of additional arguments when calling the\ncontinuation:\n\n```js\nnode> var fn = async.apply(sys.puts, \'one\');\nnode> fn(\'two\', \'three\');\none\ntwo\nthree\n```\n\n---------------------------------------\n\n<a name="nextTick" />\n### nextTick(callback)\n\nCalls the callback on a later loop around the event loop. In node.js this just\ncalls process.nextTick, in the browser it falls back to setImmediate(callback)\nif available, otherwise setTimeout(callback, 0), which means other higher priority\nevents may precede the execution of the callback.\n\nThis is used internally for browser-compatibility purposes.\n\n__Arguments__\n\n* callback - The function to call on a later loop around the event loop.\n\n__Example__\n\n```js\nvar call_order = [];\nasync.nextTick(function(){\n    call_order.push(\'two\');\n    // call_order now equals [\'one\',\'two\']\n});\ncall_order.push(\'one\')\n```\n\n<a name="times" />\n### times(n, callback)\n\nCalls the callback n times and accumulates results in the same manner\nyou would use with async.map.\n\n__Arguments__\n\n* n - The number of times to run the function.\n* callback - The function to call n times.\n\n__Example__\n\n```js\n// Pretend this is some complicated async factory\nvar createUser = function(id, callback) {\n  callback(null, {\n    id: \'user\' + id\n  })\n}\n// generate 5 users\nasync.times(5, function(n, next){\n    createUser(n, function(err, user) {\n      next(err, user)\n    })\n}, function(err, users) {\n  // we should now have 5 users\n});\n```\n\n<a name="timesSeries" />\n### timesSeries(n, callback)\n\nThe same as times only the iterator is applied to each item in the array in\nseries. The next iterator is only called once the current one has completed\nprocessing. The results array will be in the same order as the original.\n\n\n## Utils\n\n<a name="memoize" />\n### memoize(fn, [hasher])\n\nCaches the results of an async function. When creating a hash to store function\nresults against, the callback is omitted from the hash and an optional hash\nfunction can be used.\n\nThe cache of results is exposed as the `memo` property of the function returned\nby `memoize`.\n\n__Arguments__\n\n* fn - the function you to proxy and cache results from.\n* hasher - an optional function for generating a custom hash for storing\n  results, it has all the arguments applied to it apart from the callback, and\n  must be synchronous.\n\n__Example__\n\n```js\nvar slow_fn = function (name, callback) {\n    // do something\n    callback(null, result);\n};\nvar fn = async.memoize(slow_fn);\n\n// fn can now be used as if it were slow_fn\nfn(\'some name\', function () {\n    // callback\n});\n```\n\n<a name="unmemoize" />\n### unmemoize(fn)\n\nUndoes a memoized function, reverting it to the original, unmemoized\nform. Comes handy in tests.\n\n__Arguments__\n\n* fn - the memoized function\n\n<a name="log" />\n### log(function, arguments)\n\nLogs the result of an async function to the console. Only works in node.js or\nin browsers that support console.log and console.error (such as FF and Chrome).\nIf multiple arguments are returned from the async function, console.log is\ncalled on each argument in order.\n\n__Arguments__\n\n* function - The function you want to eventually apply all arguments to.\n* arguments... - Any number of arguments to apply to the function.\n\n__Example__\n\n```js\nvar hello = function(name, callback){\n    setTimeout(function(){\n        callback(null, \'hello \' + name);\n    }, 1000);\n};\n```\n```js\nnode> async.log(hello, \'world\');\n\'hello world\'\n```\n\n---------------------------------------\n\n<a name="dir" />\n### dir(function, arguments)\n\nLogs the result of an async function to the console using console.dir to\ndisplay the properties of the resulting object. Only works in node.js or\nin browsers that support console.dir and console.error (such as FF and Chrome).\nIf multiple arguments are returned from the async function, console.dir is\ncalled on each argument in order.\n\n__Arguments__\n\n* function - The function you want to eventually apply all arguments to.\n* arguments... - Any number of arguments to apply to the function.\n\n__Example__\n\n```js\nvar hello = function(name, callback){\n    setTimeout(function(){\n        callback(null, {hello: name});\n    }, 1000);\n};\n```\n```js\nnode> async.dir(hello, \'world\');\n{hello: \'world\'}\n```\n\n---------------------------------------\n\n<a name="noConflict" />\n### noConflict()\n\nChanges the value of async back to its original value, returning a reference to the\nasync object.\n',
+182 silly resolved     readmeFilename: 'README.md',
+182 silly resolved     _id: 'async@0.2.10',
+182 silly resolved     _from: 'async@~0.2.9' },
+182 silly resolved   { name: 'lodash',
+182 silly resolved     version: '2.4.1',
+182 silly resolved     description: 'A utility library delivering consistency, customization, performance, & extras.',
+182 silly resolved     homepage: 'http://lodash.com/',
+182 silly resolved     license: 'MIT',
+182 silly resolved     main: 'dist/lodash.js',
+182 silly resolved     keywords:
+182 silly resolved      [ 'amd',
+182 silly resolved        'browser',
+182 silly resolved        'client',
+182 silly resolved        'customize',
+182 silly resolved        'functional',
+182 silly resolved        'server',
+182 silly resolved        'util' ],
+182 silly resolved     author:
+182 silly resolved      { name: 'John-David Dalton',
+182 silly resolved        email: 'john.david.dalton@gmail.com',
+182 silly resolved        url: 'http://allyoucanleet.com/' },
+182 silly resolved     contributors: [ [Object], [Object], [Object], [Object] ],
+182 silly resolved     bugs: { url: 'https://github.com/lodash/lodash/issues' },
+182 silly resolved     repository: { type: 'git', url: 'https://github.com/lodash/lodash.git' },
+182 silly resolved     engines: [ 'node', 'rhino' ],
+182 silly resolved     files:
+182 silly resolved      [ 'LICENSE.txt',
+182 silly resolved        'lodash.js',
+182 silly resolved        'dist/lodash.js',
+182 silly resolved        'dist/lodash.min.js',
+182 silly resolved        'dist/lodash.compat.js',
+182 silly resolved        'dist/lodash.compat.min.js',
+182 silly resolved        'dist/lodash.underscore.js',
+182 silly resolved        'dist/lodash.underscore.min.js' ],
+182 silly resolved     jam: { main: 'dist/lodash.compat.js', include: [Object] },
+182 silly resolved     volo: { type: 'directory', ignore: [Object] },
+182 silly resolved     readme: '# Lo-Dash v2.4.1\nA utility library delivering consistency, [customization](http://lodash.com/custom-builds), [performance](http://lodash.com/benchmarks), & [extras](http://lodash.com/#features).\n\n## Download\n\nCheck out our [wiki]([https://github.com/lodash/lodash/wiki/build-differences]) for details over the differences between builds.\n\n* Modern builds perfect for newer browsers/environments:<br>\n[Development](https://raw.github.com/lodash/lodash/2.4.1/dist/lodash.js) &\n[Production](https://raw.github.com/lodash/lodash/2.4.1/dist/lodash.min.js)\n\n* Compatibility builds for older environment support too:<br>\n[Development](https://raw.github.com/lodash/lodash/2.4.1/dist/lodash.compat.js) &\n[Production](https://raw.github.com/lodash/lodash/2.4.1/dist/lodash.compat.min.js)\n\n* Underscore builds to use as a drop-in replacement:<br>\n[Development](https://raw.github.com/lodash/lodash/2.4.1/dist/lodash.underscore.js) &\n[Production](https://raw.github.com/lodash/lodash/2.4.1/dist/lodash.underscore.min.js)\n\nCDN copies are available on [cdnjs](http://cdnjs.com/libraries/lodash.js/) & [jsDelivr](http://www.jsdelivr.com/#!lodash). For smaller file sizes, create [custom builds](http://lodash.com/custom-builds) with only the features needed.\n\nLove modules? We’ve got you covered with [lodash-amd](https://npmjs.org/package/lodash-amd), [lodash-es6](https://github.com/lodash/lodash-es6), [lodash-node](https://npmjs.org/package/lodash-node), & [npm packages](https://npmjs.org/browse/keyword/lodash-modularized) per method.\n\n## Dive in\n\nThere’s plenty of **[documentation](http://lodash.com/docs)**, [unit tests](http://lodash.com/tests), & [benchmarks](http://lodash.com/benchmarks).<br>\nCheck out <a href="http://devdocs.io/lodash/">DevDocs</a> as a fast, organized, & searchable interface for our documentation.\n\nThe full changelog for this release is available on our [wiki](https://github.com/lodash/lodash/wiki/Changelog).<br>\nA list of upcoming features is available on our [roadmap](https://github.com/lodash/lodash/wiki/Roadmap).\n\n## Features *not* in Underscore\n\n * AMD loader support ([curl](https://github.com/cujojs/curl), [dojo](http://dojotoolkit.org/), [requirejs](http://requirejs.org/), etc.)\n * [_(…)](http://lodash.com/docs#_) supports intuitive chaining\n * [_.at](http://lodash.com/docs#at) for cherry-picking collection values\n * [_.bindKey](http://lodash.com/docs#bindKey) for binding [*“lazy”*](http://michaux.ca/articles/lazy-function-definition-pattern) defined methods\n * [_.clone](http://lodash.com/docs#clone) supports shallow cloning of `Date` & `RegExp` objects\n * [_.cloneDeep](http://lodash.com/docs#cloneDeep) for deep cloning arrays & objects\n * [_.constant](http://lodash.com/docs#constant) & [_.property](http://lodash.com/docs#property) function generators for composing functions\n * [_.contains](http://lodash.com/docs#contains) accepts a `fromIndex`\n * [_.create](http://lodash.com/docs#create) for easier object inheritance\n * [_.createCallback](http://lodash.com/docs#createCallback) for extending callbacks in methods & mixins\n * [_.curry](http://lodash.com/docs#curry) for creating [curried](http://hughfdjackson.com/javascript/2013/07/06/why-curry-helps/) functions\n * [_.debounce](http://lodash.com/docs#debounce) & [_.throttle](http://lodash.com/docs#throttle) accept additional `options` for more control\n * [_.findIndex](http://lodash.com/docs#findIndex) & [_.findKey](http://lodash.com/docs#findKey) for finding indexes & keys\n * [_.forEach](http://lodash.com/docs#forEach) is chainable & supports exiting early\n * [_.forIn](http://lodash.com/docs#forIn) for iterating own & inherited properties\n * [_.forOwn](http://lodash.com/docs#forOwn) for iterating own properties\n * [_.isPlainObject](http://lodash.com/docs#isPlainObject) for checking if values are created by `Object`\n * [_.mapValues](http://lodash.com/docs#mapValues) for [mapping](http://lodash.com/docs#map) values to an object\n * [_.memoize](http://lodash.com/docs#memoize) exposes the `cache` of memoized functions\n * [_.merge](http://lodash.com/docs#merge) for a deep [_.extend](http://lodash.com/docs#extend)\n * [_.noop](http://lodash.com/docs#noop) for function placeholders\n * [_.now](http://lodash.com/docs#now) as a cross-browser `Date.now` alternative\n * [_.parseInt](http://lodash.com/docs#parseInt) for consistent behavior\n * [_.pull](http://lodash.com/docs#pull) & [_.remove](http://lodash.com/docs#remove) for mutating arrays\n * [_.random](http://lodash.com/docs#random) supports returning floating-point numbers\n * [_.runInContext](http://lodash.com/docs#runInContext) for easier mocking\n * [_.sortBy](http://lodash.com/docs#sortBy) supports sorting by multiple properties\n * [_.support](http://lodash.com/docs#support) for flagging environment features\n * [_.template](http://lodash.com/docs#template) supports [*“imports”*](http://lodash.com/docs#templateSettings_imports) options & [ES6 template delimiters](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-literals-string-literals)\n * [_.transform](http://lodash.com/docs#transform) as a powerful alternative to [_.reduce](http://lodash.com/docs#reduce) for transforming objects\n * [_.where](http://lodash.com/docs#where) supports deep object comparisons\n * [_.xor](http://lodash.com/docs#xor) as a companion to [_.difference](http://lodash.com/docs#difference), [_.intersection](http://lodash.com/docs#intersection), & [_.union](http://lodash.com/docs#union)\n * [_.zip](http://lodash.com/docs#zip) is capable of unzipping values\n * [_.omit](http://lodash.com/docs#omit), [_.pick](http://lodash.com/docs#pick), &\n   [more](http://lodash.com/docs "_.assign, _.clone, _.cloneDeep, _.first, _.initial, _.isEqual, _.last, _.merge, _.rest") accept callbacks\n * [_.contains](http://lodash.com/docs#contains), [_.toArray](http://lodash.com/docs#toArray), &\n   [more](http://lodash.com/docs "_.at, _.countBy, _.every, _.filter, _.find, _.forEach, _.forEachRight, _.groupBy, _.invoke, _.map, _.max, _.min, _.pluck, _.reduce, _.reduceRight, _.reject, _.shuffle, _.size, _.some, _.sortBy, _.where") accept strings\n * [_.filter](http://lodash.com/docs#filter), [_.map](http://lodash.com/docs#map), &\n   [more](http://lodash.com/docs "_.countBy, _.every, _.find, _.findKey, _.findLast, _.findLastIndex, _.findLastKey, _.first, _.groupBy, _.initial, _.last, _.max, _.min, _.reject, _.rest, _.some, _.sortBy, _.sortedIndex, _.uniq") support *“_.pluck”* & *“_.where”* shorthands\n * [_.findLast](http://lodash.com/docs#findLast), [_.findLastIndex](http://lodash.com/docs#findLastIndex), &\n   [more](http://lodash.com/docs "_.findLastKey, _.forEachRight, _.forInRight, _.forOwnRight, _.partialRight") right-associative methods\n\n## Resources\n\n * Podcasts\n  - [JavaScript Jabber](http://javascriptjabber.com/079-jsj-lo-dash-with-john-david-dalton/)\n\n * Posts\n  - [Say “Hello” to Lo-Dash](http://kitcambridge.be/blog/say-hello-to-lo-dash/)\n  - [Custom builds in Lo-Dash 2.0](http://kitcambridge.be/blog/custom-builds-in-lo-dash-2-dot-0/)\n\n * Videos\n  - [Introduction](https://vimeo.com/44154599)\n  - [Origins](https://vimeo.com/44154600)\n  - [Optimizations & builds](https://vimeo.com/44154601)\n  - [Native method use](https://vimeo.com/48576012)\n  - [Testing](https://vimeo.com/45865290)\n  - [CascadiaJS ’12](http://www.youtube.com/watch?v=dpPy4f_SeEk)\n\n A list of other community created podcasts, posts, & videos is available on our [wiki](https://github.com/lodash/lodash/wiki/Resources).\n\n## Support\n\nTested in Chrome 5~31, Firefox 2~25, IE 6-11, Opera 9.25~17, Safari 3-7, Node.js 0.6.21~0.10.22, Narwhal 0.3.2, PhantomJS 1.9.2, RingoJS 0.9, & Rhino 1.7RC5.<br>\nAutomated browser test results [are available](https://saucelabs.com/u/lodash) as well as [Travis CI](https://travis-ci.org/) builds for [lodash](https://travis-ci.org/lodash/lodash/), [lodash-cli](https://travis-ci.org/lodash/lodash-cli/), [lodash-amd](https://travis-ci.org/lodash/lodash-amd/), [lodash-node](https://travis-ci.org/lodash/lodash-node/), & [grunt-lodash](https://travis-ci.org/lodash/grunt-lodash).\n\nSpecial thanks to [Sauce Labs](https://saucelabs.com/) for providing automated browser testing.<br>\n[![Sauce Labs](http://lodash.com/_img/sauce.png)](https://saucelabs.com/ "Sauce Labs: Selenium Testing & More")\n\n## Installation & usage\n\nIn browsers:\n\n```html\n<script src="lodash.js"></script>\n```\n\nUsing [`npm`](http://npmjs.org/):\n\n```bash\nnpm i --save lodash\n\n{sudo} npm i -g lodash\nnpm ln lodash\n```\n\nIn [Node.js](http://nodejs.org/) & [Ringo](http://ringojs.org/):\n\n```js\nvar _ = require(\'lodash\');\n// or as Underscore\nvar _ = require(\'lodash/dist/lodash.underscore\');\n```\n\n**Notes:**\n * Don’t assign values to [special variable](http://nodejs.org/api/repl.html#repl_repl_features) `_` when in the REPL\n * If Lo-Dash is installed globally, run [`npm ln lodash`](http://blog.nodejs.org/2011/03/23/npm-1-0-global-vs-local-installation/) in your project’s root directory *before* requiring it\n\nIn [Rhino](http://www.mozilla.org/rhino/):\n\n```js\nload(\'lodash.js\');\n```\n\nIn an AMD loader:\n\n```js\nrequire({\n  \'packages\': [\n    { \'name\': \'lodash\', \'location\': \'path/to/lodash\', \'main\': \'lodash\' }\n  ]\n},\n[\'lodash\'], function(_) {\n  console.log(_.VERSION);\n});\n```\n\n## Author\n\n| [![twitter/jdalton](http://gravatar.com/avatar/299a3d891ff1920b69c364d061007043?s=70)](https://twitter.com/jdalton "Follow @jdalton on Twitter") |\n|---|\n| [John-David Dalton](http://allyoucanleet.com/) |\n\n## Contributors\n\n| [![twitter/blainebublitz](http://gravatar.com/avatar/ac1c67fd906c9fecd823ce302283b4c1?s=70)](https://twitter.com/blainebublitz "Follow @BlaineBublitz on Twitter") | [![twitter/kitcambridge](http://gravatar.com/avatar/6662a1d02f351b5ef2f8b4d815804661?s=70)](https://twitter.com/kitcambridge "Follow @kitcambridge on Twitter") | [![twitter/mathias](http://gravatar.com/avatar/24e08a9ea84deb17ae121074d0f17125?s=70)](https://twitter.com/mathias "Follow @mathias on Twitter") |\n|---|---|---|\n| [Blaine Bublitz](http://www.iceddev.com/) | [Kit Cambridge](http://kitcambridge.be/) | [Mathias Bynens](http://mathiasbynens.be/) |\n\n[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/lodash/lodash/trend.png)](https://bitdeli.com/free "Bitdeli Badge")\n',
+182 silly resolved     readmeFilename: 'README.md',
+182 silly resolved     _id: 'lodash@2.4.1',
+182 silly resolved     _from: 'lodash@~2.4.1' },
+182 silly resolved   { name: 'gaze',
+182 silly resolved     description: 'A globbing fs.watch wrapper built from the best parts of other fine watch libs.',
+182 silly resolved     version: '0.5.1',
+182 silly resolved     homepage: 'https://github.com/shama/gaze',
+182 silly resolved     author: { name: 'Kyle Robinson Young', email: 'kyle@dontkry.com' },
+182 silly resolved     repository: { type: 'git', url: 'git://github.com/shama/gaze.git' },
+182 silly resolved     bugs: { url: 'https://github.com/shama/gaze/issues' },
+182 silly resolved     licenses: [ [Object] ],
+182 silly resolved     main: 'lib/gaze',
+182 silly resolved     engines: { node: '>= 0.8.0' },
+182 silly resolved     scripts: { test: 'grunt nodeunit -v' },
+182 silly resolved     dependencies: { globule: '~0.1.0' },
+182 silly resolved     devDependencies:
+182 silly resolved      { grunt: '~0.4.1',
+182 silly resolved        'grunt-contrib-nodeunit': '~0.2.0',
+182 silly resolved        'grunt-contrib-jshint': '~0.6.0',
+182 silly resolved        'grunt-benchmark': '~0.2.0',
+182 silly resolved        'grunt-cli': '~0.1.13',
+182 silly resolved        async: '~0.2.10',
+182 silly resolved        rimraf: '~2.2.6' },
+182 silly resolved     keywords: [ 'watch', 'glob' ],
+182 silly resolved     files: [ 'lib', 'LICENSE-MIT' ],
+182 silly resolved     readme: '# gaze [![Build Status](https://travis-ci.org/shama/gaze.png?branch=master)](https://travis-ci.org/shama/gaze)\n\nA globbing fs.watch wrapper built from the best parts of other fine watch libs.  \nCompatible with Node.js 0.10/0.8, Windows, OSX and Linux.\n\n![gaze](http://dontkry.com/images/repos/gaze.png)\n\n## Usage\nInstall the module with: `npm install gaze` or place into your `package.json`\nand run `npm install`.\n\n```javascript\nvar gaze = require(\'gaze\');\n\n// Watch all .js files/dirs in process.cwd()\ngaze(\'**/*.js\', function(err, watcher) {\n  // Files have all started watching\n  // watcher === this\n\n  // Get all watched files\n  console.log(this.watched());\n\n  // On file changed\n  this.on(\'changed\', function(filepath) {\n    console.log(filepath + \' was changed\');\n  });\n\n  // On file added\n  this.on(\'added\', function(filepath) {\n    console.log(filepath + \' was added\');\n  });\n\n  // On file deleted\n  this.on(\'deleted\', function(filepath) {\n    console.log(filepath + \' was deleted\');\n  });\n\n  // On changed/added/deleted\n  this.on(\'all\', function(event, filepath) {\n    console.log(filepath + \' was \' + event);\n  });\n\n  // Get watched files with relative paths\n  console.log(this.relative());\n});\n\n// Also accepts an array of patterns\ngaze([\'stylesheets/*.css\', \'images/**/*.png\'], function() {\n  // Add more patterns later to be watched\n  this.add([\'js/*.js\']);\n});\n```\n\n### Alternate Interface\n\n```javascript\nvar Gaze = require(\'gaze\').Gaze;\n\nvar gaze = new Gaze(\'**/*\');\n\n// Files have all started watching\ngaze.on(\'ready\', function(watcher) { });\n\n// A file has been added/changed/deleted has occurred\ngaze.on(\'all\', function(event, filepath) { });\n```\n\n### Errors\n\n```javascript\ngaze(\'**/*\', function() {\n  this.on(\'error\', function(err) {\n    // Handle error here\n  });\n});\n```\n\n### Minimatch / Glob\n\nSee [isaacs\'s minimatch](https://github.com/isaacs/minimatch) for more\ninformation on glob patterns.\n\n## Documentation\n\n### gaze(patterns, [options], callback)\n\n* `patterns` {String|Array} File patterns to be matched\n* `options` {Object}\n* `callback` {Function}\n  * `err` {Error | null}\n  * `watcher` {Object} Instance of the Gaze watcher\n\n### Class: gaze.Gaze\n\nCreate a Gaze object by instanting the `gaze.Gaze` class.\n\n```javascript\nvar Gaze = require(\'gaze\').Gaze;\nvar gaze = new Gaze(pattern, options, callback);\n```\n\n#### Properties\n\n* `options` The options object passed in.\n  * `interval` {integer} Interval to pass to fs.watchFile\n  * `debounceDelay` {integer} Delay for events called in succession for the same\n    file/event\n\n#### Events\n\n* `ready(watcher)` When files have been globbed and watching has begun.\n* `all(event, filepath)` When an `added`, `changed` or `deleted` event occurs.\n* `added(filepath)` When a file has been added to a watch directory.\n* `changed(filepath)` When a file has been changed.\n* `deleted(filepath)` When a file has been deleted.\n* `renamed(newPath, oldPath)` When a file has been renamed.\n* `end()` When the watcher is closed and watches have been removed.\n* `error(err)` When an error occurs.\n* `nomatch` When no files have been matched.\n\n#### Methods\n\n* `emit(event, [...])` Wrapper for the EventEmitter.emit.\n  `added`|`changed`|`deleted` events will also trigger the `all` event.\n* `close()` Unwatch all files and reset the watch instance.\n* `add(patterns, callback)` Adds file(s) patterns to be watched.\n* `remove(filepath)` removes a file or directory from being watched. Does not\n  recurse directories.\n* `watched()` Returns the currently watched files.\n* `relative([dir, unixify])` Returns the currently watched files with relative paths.\n  * `dir` {string} Only return relative files for this directory.\n  * `unixify` {boolean} Return paths with `/` instead of `\\\\` if on Windows.\n\n## FAQs\n\n### Why Another `fs.watch` Wrapper?\nI liked parts of other `fs.watch` wrappers but none had all the features I\nneeded. This lib combines the features I needed from other fine watch libs:\nSpeedy data behavior from\n[paulmillr\'s chokidar](https://github.com/paulmillr/chokidar), API interface\nfrom [mikeal\'s watch](https://github.com/mikeal/watch) and file globbing using\n[isaacs\'s glob](https://github.com/isaacs/node-glob) which is also used by\n[cowboy\'s Grunt](https://github.com/gruntjs/grunt).\n\n### How do I fix the error `EMFILE: Too many opened files.`?\nThis is because of your system\'s max opened file limit. For OSX the default is\nvery low (256). Increase your limit temporarily with `ulimit -n 10480`, the\nnumber being the new max limit.\n\n## Contributing\nIn lieu of a formal styleguide, take care to maintain the existing coding style.\nAdd unit tests for any new or changed functionality. Lint and test your code\nusing [grunt](http://gruntjs.com/).\n\n## Release History\n* 0.5.1 - Use setImmediate (process.nextTick for node v0.8) to defer ready/nomatch events (@amasad).\n* 0.5.0 - Process is now kept alive while watching files. Emits a nomatch event when no files are matching.\n* 0.4.3 - Track file additions in newly created folders (@brett-shwom).\n* 0.4.2 - Fix .remove() method to remove a single file in a directory (@kaelzhang). Fixing Cannot call method \'call\' of undefined (@krasimir). Track new file additions within folders (@brett-shwom).\n* 0.4.1 - Fix watchDir not respecting close in race condition (@chrisirhc).\n* 0.4.0 - Drop support for node v0.6. Use globule for file matching. Avoid node v0.10 path.resolve/join errors. Register new files when added to non-existent folder. Multiple instances can now poll the same files (@jpommerening).\n* 0.3.4 - Code clean up. Fix path must be strings errors (@groner). Fix incorrect added events (@groner).\n* 0.3.3 - Fix for multiple patterns with negate.\n* 0.3.2 - Emit `end` before removeAllListeners.\n* 0.3.1 - Fix added events within subfolder patterns.\n* 0.3.0 - Handle safewrite events, `forceWatchMethod` option removed, bug fixes and watch optimizations (@rgaskill).\n* 0.2.2 - Fix issue where subsequent add calls dont get watched (@samcday). removeAllListeners on close.\n* 0.2.1 - Fix issue with invalid `added` events in current working dir.\n* 0.2.0 - Support and mark folders with `path.sep`. Add `forceWatchMethod` option. Support `renamed` events.\n* 0.1.6 - Recognize the `cwd` option properly\n* 0.1.5 - Catch too many open file errors\n* 0.1.4 - Really fix the race condition with 2 watches\n* 0.1.3 - Fix race condition with 2 watches\n* 0.1.2 - Read triggering changed event fix\n* 0.1.1 - Minor fixes\n* 0.1.0 - Initial release\n\n## License\nCopyright (c) 2013 Kyle Robinson Young  \nLicensed under the MIT license.\n',
+182 silly resolved     readmeFilename: 'README.md',
+182 silly resolved     _id: 'gaze@0.5.1',
+182 silly resolved     _from: 'gaze@~0.5.1' } ]
+183 info install tiny-lr-fork@0.0.5 into c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch
+184 info install async@0.2.10 into c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch
+185 info install lodash@2.4.1 into c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch
+186 info install gaze@0.5.1 into c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch
+187 info installOne tiny-lr-fork@0.0.5
+188 info installOne async@0.2.10
+189 info installOne lodash@2.4.1
+190 info installOne gaze@0.5.1
+191 info c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\tiny-lr-fork unbuild
+192 info c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\async unbuild
+193 info c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\lodash unbuild
+194 info c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\gaze unbuild
+195 verbose tar unpack C:\Users\andrewminton\AppData\Roaming\npm-cache\tiny-lr-fork\0.0.5\package.tgz
+196 silly lockFile fd7d457d--watch-node-modules-tiny-lr-fork tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\tiny-lr-fork
+197 verbose lock tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\tiny-lr-fork C:\Users\andrewminton\AppData\Roaming\npm-cache\fd7d457d--watch-node-modules-tiny-lr-fork.lock
+198 silly lockFile 9174bcdd-e-tiny-lr-fork-0-0-5-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\tiny-lr-fork\0.0.5\package.tgz
+199 verbose lock tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\tiny-lr-fork\0.0.5\package.tgz C:\Users\andrewminton\AppData\Roaming\npm-cache\9174bcdd-e-tiny-lr-fork-0-0-5-package-tgz.lock
+200 verbose tar unpack C:\Users\andrewminton\AppData\Roaming\npm-cache\async\0.2.10\package.tgz
+201 silly lockFile d5c79d98-contrib-watch-node-modules-async tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\async
+202 verbose lock tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\async C:\Users\andrewminton\AppData\Roaming\npm-cache\d5c79d98-contrib-watch-node-modules-async.lock
+203 silly lockFile 694ac892-m-cache-async-0-2-10-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\async\0.2.10\package.tgz
+204 verbose lock tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\async\0.2.10\package.tgz C:\Users\andrewminton\AppData\Roaming\npm-cache\694ac892-m-cache-async-0-2-10-package-tgz.lock
+205 verbose tar unpack C:\Users\andrewminton\AppData\Roaming\npm-cache\lodash\2.4.1\package.tgz
+206 silly lockFile b23643d2-ontrib-watch-node-modules-lodash tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\lodash
+207 verbose lock tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\lodash C:\Users\andrewminton\AppData\Roaming\npm-cache\b23643d2-ontrib-watch-node-modules-lodash.lock
+208 silly lockFile e9ed1610-m-cache-lodash-2-4-1-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\lodash\2.4.1\package.tgz
+209 verbose lock tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\lodash\2.4.1\package.tgz C:\Users\andrewminton\AppData\Roaming\npm-cache\e9ed1610-m-cache-lodash-2-4-1-package-tgz.lock
+210 verbose tar unpack C:\Users\andrewminton\AppData\Roaming\npm-cache\gaze\0.5.1\package.tgz
+211 silly lockFile bddb60f0--contrib-watch-node-modules-gaze tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\gaze
+212 verbose lock tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\gaze C:\Users\andrewminton\AppData\Roaming\npm-cache\bddb60f0--contrib-watch-node-modules-gaze.lock
+213 silly lockFile b40e2cb8-npm-cache-gaze-0-5-1-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\gaze\0.5.1\package.tgz
+214 verbose lock tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\gaze\0.5.1\package.tgz C:\Users\andrewminton\AppData\Roaming\npm-cache\b40e2cb8-npm-cache-gaze-0-5-1-package-tgz.lock
+215 silly gunzTarPerm modes [ '755', '644' ]
+216 silly gunzTarPerm modes [ '755', '644' ]
+217 silly gunzTarPerm modes [ '755', '644' ]
+218 silly gunzTarPerm modes [ '755', '644' ]
+219 silly gunzTarPerm extractEntry package.json
+220 silly gunzTarPerm modified mode [ 'package.json', 438, 420 ]
+221 silly gunzTarPerm extractEntry package.json
+222 silly gunzTarPerm modified mode [ 'package.json', 438, 420 ]
+223 silly gunzTarPerm extractEntry package.json
+224 silly gunzTarPerm modified mode [ 'package.json', 438, 420 ]
+225 silly gunzTarPerm extractEntry package.json
+226 silly gunzTarPerm modified mode [ 'package.json', 438, 420 ]
+227 silly gunzTarPerm extractEntry .npmignore
+228 silly gunzTarPerm modified mode [ '.npmignore', 438, 420 ]
+229 silly gunzTarPerm extractEntry .travis.yml
+230 silly gunzTarPerm modified mode [ '.travis.yml', 438, 420 ]
+231 silly gunzTarPerm extractEntry README.md
+232 silly gunzTarPerm modified mode [ 'README.md', 438, 420 ]
+233 silly gunzTarPerm extractEntry lib/gaze.js
+234 silly gunzTarPerm modified mode [ 'lib/gaze.js', 438, 420 ]
+235 silly gunzTarPerm extractEntry README.md
+236 silly gunzTarPerm modified mode [ 'README.md', 438, 420 ]
+237 silly gunzTarPerm extractEntry LICENSE
+238 silly gunzTarPerm modified mode [ 'LICENSE', 438, 420 ]
+239 silly gunzTarPerm extractEntry component.json
+240 silly gunzTarPerm modified mode [ 'component.json', 438, 420 ]
+241 silly gunzTarPerm extractEntry lib/async.js
+242 silly gunzTarPerm modified mode [ 'lib/async.js', 438, 420 ]
+243 silly gunzTarPerm extractEntry README.md
+244 silly gunzTarPerm modified mode [ 'README.md', 438, 420 ]
+245 silly gunzTarPerm extractEntry lodash.js
+246 silly gunzTarPerm modified mode [ 'lodash.js', 438, 420 ]
+247 silly gunzTarPerm extractEntry bin/tiny-lr
+248 silly gunzTarPerm modified mode [ 'bin/tiny-lr', 438, 420 ]
+249 silly gunzTarPerm extractEntry bin/update-livereload
+250 silly gunzTarPerm modified mode [ 'bin/update-livereload', 438, 420 ]
+251 silly gunzTarPerm extractEntry lib/helper.js
+252 silly gunzTarPerm modified mode [ 'lib/helper.js', 438, 420 ]
+253 silly gunzTarPerm extractEntry dist/lodash.compat.js
+254 silly gunzTarPerm modified mode [ 'dist/lodash.compat.js', 438, 420 ]
+255 silly gunzTarPerm extractEntry lib/client.js
+256 silly gunzTarPerm modified mode [ 'lib/client.js', 438, 420 ]
+257 silly gunzTarPerm extractEntry lib/index.js
+258 silly gunzTarPerm modified mode [ 'lib/index.js', 438, 420 ]
+259 silly gunzTarPerm extractEntry LICENSE-MIT
+260 silly gunzTarPerm modified mode [ 'LICENSE-MIT', 438, 420 ]
+261 silly gunzTarPerm extractEntry lib/server.js
+262 silly gunzTarPerm modified mode [ 'lib/server.js', 438, 420 ]
+263 silly gunzTarPerm extractEntry lib/public/livereload.js
+264 silly gunzTarPerm modified mode [ 'lib/public/livereload.js', 438, 420 ]
+265 silly gunzTarPerm extractEntry LICENSE-MIT
+266 silly gunzTarPerm modified mode [ 'LICENSE-MIT', 438, 420 ]
+267 silly gunzTarPerm extractEntry readme.md
+268 silly gunzTarPerm modified mode [ 'readme.md', 438, 420 ]
+269 silly gunzTarPerm extractEntry tasks/tiny-lr.js
+270 silly gunzTarPerm modified mode [ 'tasks/tiny-lr.js', 438, 420 ]
+271 silly gunzTarPerm extractEntry tasks/tiny-lr.mk
+272 silly gunzTarPerm modified mode [ 'tasks/tiny-lr.mk', 438, 420 ]
+273 silly gunzTarPerm extractEntry test/client.js
+274 silly gunzTarPerm modified mode [ 'test/client.js', 438, 420 ]
+275 silly gunzTarPerm extractEntry test/middleware.js
+276 silly gunzTarPerm modified mode [ 'test/middleware.js', 438, 420 ]
+277 silly gunzTarPerm extractEntry test/server.js
+278 silly gunzTarPerm modified mode [ 'test/server.js', 438, 420 ]
+279 silly gunzTarPerm extractEntry dist/lodash.compat.min.js
+280 silly gunzTarPerm modified mode [ 'dist/lodash.compat.min.js', 438, 420 ]
+281 silly lockFile bddb60f0--contrib-watch-node-modules-gaze tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\gaze
+282 silly lockFile bddb60f0--contrib-watch-node-modules-gaze tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\gaze
+283 silly lockFile b40e2cb8-npm-cache-gaze-0-5-1-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\gaze\0.5.1\package.tgz
+284 silly lockFile b40e2cb8-npm-cache-gaze-0-5-1-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\gaze\0.5.1\package.tgz
+285 info preinstall gaze@0.5.1
+286 verbose readDependencies using package.json deps
+287 verbose readDependencies using package.json deps
+288 verbose cache add [ 'globule@~0.1.0', null ]
+289 verbose cache add name=undefined spec="globule@~0.1.0" args=["globule@~0.1.0",null]
+290 verbose parsed url { protocol: null,
+290 verbose parsed url   slashes: null,
+290 verbose parsed url   auth: null,
+290 verbose parsed url   host: null,
+290 verbose parsed url   port: null,
+290 verbose parsed url   hostname: null,
+290 verbose parsed url   hash: null,
+290 verbose parsed url   search: null,
+290 verbose parsed url   query: null,
+290 verbose parsed url   pathname: 'globule@~0.1.0',
+290 verbose parsed url   path: 'globule@~0.1.0',
+290 verbose parsed url   href: 'globule@~0.1.0' }
+291 verbose cache add name="globule" spec="~0.1.0" args=["globule","~0.1.0"]
+292 verbose parsed url { protocol: null,
+292 verbose parsed url   slashes: null,
+292 verbose parsed url   auth: null,
+292 verbose parsed url   host: null,
+292 verbose parsed url   port: null,
+292 verbose parsed url   hostname: null,
+292 verbose parsed url   hash: null,
+292 verbose parsed url   search: null,
+292 verbose parsed url   query: null,
+292 verbose parsed url   pathname: '~0.1.0',
+292 verbose parsed url   path: '~0.1.0',
+292 verbose parsed url   href: '~0.1.0' }
+293 verbose addNamed [ 'globule', '~0.1.0' ]
+294 verbose addNamed [ null, '>=0.1.0-0 <0.2.0-0' ]
+295 silly lockFile 95d0eb0c-globule-0-1-0 globule@~0.1.0
+296 verbose lock globule@~0.1.0 C:\Users\andrewminton\AppData\Roaming\npm-cache\95d0eb0c-globule-0-1-0.lock
+297 silly addNameRange { name: 'globule', range: '>=0.1.0-0 <0.2.0-0', hasData: false }
+298 silly lockFile d5c79d98-contrib-watch-node-modules-async tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\async
+299 silly lockFile d5c79d98-contrib-watch-node-modules-async tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\async
+300 silly lockFile 694ac892-m-cache-async-0-2-10-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\async\0.2.10\package.tgz
+301 silly lockFile 694ac892-m-cache-async-0-2-10-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\async\0.2.10\package.tgz
+302 info preinstall async@0.2.10
+303 verbose readDependencies using package.json deps
+304 verbose readDependencies using package.json deps
+305 silly resolved []
+306 verbose about to build c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\async
+307 info build c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\async
+308 verbose linkStuff [ false,
+308 verbose linkStuff   false,
+308 verbose linkStuff   false,
+308 verbose linkStuff   'c:\\wamp\\www\\sym24beta3\\node_modules\\grunt-contrib-watch\\node_modules' ]
+309 info linkStuff async@0.2.10
+310 verbose linkBins async@0.2.10
+311 verbose linkMans async@0.2.10
+312 verbose rebuildBundles async@0.2.10
+313 info install async@0.2.10
+314 info postinstall async@0.2.10
+315 verbose url raw globule
+316 verbose url resolving [ 'https://registry.npmjs.org/', './globule' ]
+317 verbose url resolved https://registry.npmjs.org/globule
+318 info trying registry request attempt 1 at 10:14:57
+319 verbose etag "EFJZ9H7S1QLF9EP4SGFX2JV8W"
+320 http GET https://registry.npmjs.org/globule
+321 silly gunzTarPerm extractEntry dist/lodash.js
+322 silly gunzTarPerm modified mode [ 'dist/lodash.js', 438, 420 ]
+323 silly gunzTarPerm extractEntry dist/lodash.min.js
+324 silly gunzTarPerm modified mode [ 'dist/lodash.min.js', 438, 420 ]
+325 silly gunzTarPerm extractEntry dist/lodash.underscore.js
+326 silly gunzTarPerm modified mode [ 'dist/lodash.underscore.js', 438, 420 ]
+327 silly gunzTarPerm extractEntry dist/lodash.underscore.min.js
+328 silly gunzTarPerm modified mode [ 'dist/lodash.underscore.min.js', 438, 420 ]
+329 silly gunzTarPerm extractEntry LICENSE.txt
+330 silly gunzTarPerm modified mode [ 'LICENSE.txt', 438, 420 ]
+331 silly lockFile fd7d457d--watch-node-modules-tiny-lr-fork tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\tiny-lr-fork
+332 silly lockFile fd7d457d--watch-node-modules-tiny-lr-fork tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\tiny-lr-fork
+333 silly lockFile 9174bcdd-e-tiny-lr-fork-0-0-5-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\tiny-lr-fork\0.0.5\package.tgz
+334 silly lockFile 9174bcdd-e-tiny-lr-fork-0-0-5-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\tiny-lr-fork\0.0.5\package.tgz
+335 info preinstall tiny-lr-fork@0.0.5
+336 verbose readDependencies using package.json deps
+337 verbose readDependencies using package.json deps
+338 verbose cache add [ 'qs@~0.5.2', null ]
+339 verbose cache add name=undefined spec="qs@~0.5.2" args=["qs@~0.5.2",null]
+340 verbose parsed url { protocol: null,
+340 verbose parsed url   slashes: null,
+340 verbose parsed url   auth: null,
+340 verbose parsed url   host: null,
+340 verbose parsed url   port: null,
+340 verbose parsed url   hostname: null,
+340 verbose parsed url   hash: null,
+340 verbose parsed url   search: null,
+340 verbose parsed url   query: null,
+340 verbose parsed url   pathname: 'qs@~0.5.2',
+340 verbose parsed url   path: 'qs@~0.5.2',
+340 verbose parsed url   href: 'qs@~0.5.2' }
+341 verbose cache add name="qs" spec="~0.5.2" args=["qs","~0.5.2"]
+342 verbose parsed url { protocol: null,
+342 verbose parsed url   slashes: null,
+342 verbose parsed url   auth: null,
+342 verbose parsed url   host: null,
+342 verbose parsed url   port: null,
+342 verbose parsed url   hostname: null,
+342 verbose parsed url   hash: null,
+342 verbose parsed url   search: null,
+342 verbose parsed url   query: null,
+342 verbose parsed url   pathname: '~0.5.2',
+342 verbose parsed url   path: '~0.5.2',
+342 verbose parsed url   href: '~0.5.2' }
+343 verbose addNamed [ 'qs', '~0.5.2' ]
+344 verbose addNamed [ null, '>=0.5.2-0 <0.6.0-0' ]
+345 silly lockFile 60f93a07-qs-0-5-2 qs@~0.5.2
+346 verbose lock qs@~0.5.2 C:\Users\andrewminton\AppData\Roaming\npm-cache\60f93a07-qs-0-5-2.lock
+347 verbose cache add [ 'faye-websocket@~0.4.3', null ]
+348 verbose cache add name=undefined spec="faye-websocket@~0.4.3" args=["faye-websocket@~0.4.3",null]
+349 verbose parsed url { protocol: null,
+349 verbose parsed url   slashes: null,
+349 verbose parsed url   auth: null,
+349 verbose parsed url   host: null,
+349 verbose parsed url   port: null,
+349 verbose parsed url   hostname: null,
+349 verbose parsed url   hash: null,
+349 verbose parsed url   search: null,
+349 verbose parsed url   query: null,
+349 verbose parsed url   pathname: 'faye-websocket@~0.4.3',
+349 verbose parsed url   path: 'faye-websocket@~0.4.3',
+349 verbose parsed url   href: 'faye-websocket@~0.4.3' }
+350 verbose cache add name="faye-websocket" spec="~0.4.3" args=["faye-websocket","~0.4.3"]
+351 verbose parsed url { protocol: null,
+351 verbose parsed url   slashes: null,
+351 verbose parsed url   auth: null,
+351 verbose parsed url   host: null,
+351 verbose parsed url   port: null,
+351 verbose parsed url   hostname: null,
+351 verbose parsed url   hash: null,
+351 verbose parsed url   search: null,
+351 verbose parsed url   query: null,
+351 verbose parsed url   pathname: '~0.4.3',
+351 verbose parsed url   path: '~0.4.3',
+351 verbose parsed url   href: '~0.4.3' }
+352 verbose addNamed [ 'faye-websocket', '~0.4.3' ]
+353 verbose addNamed [ null, '>=0.4.3-0 <0.5.0-0' ]
+354 silly lockFile 20d63c72-faye-websocket-0-4-3 faye-websocket@~0.4.3
+355 verbose lock faye-websocket@~0.4.3 C:\Users\andrewminton\AppData\Roaming\npm-cache\20d63c72-faye-websocket-0-4-3.lock
+356 verbose cache add [ 'noptify@~0.0.3', null ]
+357 verbose cache add name=undefined spec="noptify@~0.0.3" args=["noptify@~0.0.3",null]
+358 verbose parsed url { protocol: null,
+358 verbose parsed url   slashes: null,
+358 verbose parsed url   auth: null,
+358 verbose parsed url   host: null,
+358 verbose parsed url   port: null,
+358 verbose parsed url   hostname: null,
+358 verbose parsed url   hash: null,
+358 verbose parsed url   search: null,
+358 verbose parsed url   query: null,
+358 verbose parsed url   pathname: 'noptify@~0.0.3',
+358 verbose parsed url   path: 'noptify@~0.0.3',
+358 verbose parsed url   href: 'noptify@~0.0.3' }
+359 verbose cache add name="noptify" spec="~0.0.3" args=["noptify","~0.0.3"]
+360 verbose parsed url { protocol: null,
+360 verbose parsed url   slashes: null,
+360 verbose parsed url   auth: null,
+360 verbose parsed url   host: null,
+360 verbose parsed url   port: null,
+360 verbose parsed url   hostname: null,
+360 verbose parsed url   hash: null,
+360 verbose parsed url   search: null,
+360 verbose parsed url   query: null,
+360 verbose parsed url   pathname: '~0.0.3',
+360 verbose parsed url   path: '~0.0.3',
+360 verbose parsed url   href: '~0.0.3' }
+361 verbose addNamed [ 'noptify', '~0.0.3' ]
+362 verbose addNamed [ null, '>=0.0.3-0 <0.1.0-0' ]
+363 silly lockFile 76ed0893-noptify-0-0-3 noptify@~0.0.3
+364 verbose lock noptify@~0.0.3 C:\Users\andrewminton\AppData\Roaming\npm-cache\76ed0893-noptify-0-0-3.lock
+365 verbose cache add [ 'debug@~0.7.0', null ]
+366 verbose cache add name=undefined spec="debug@~0.7.0" args=["debug@~0.7.0",null]
+367 verbose parsed url { protocol: null,
+367 verbose parsed url   slashes: null,
+367 verbose parsed url   auth: null,
+367 verbose parsed url   host: null,
+367 verbose parsed url   port: null,
+367 verbose parsed url   hostname: null,
+367 verbose parsed url   hash: null,
+367 verbose parsed url   search: null,
+367 verbose parsed url   query: null,
+367 verbose parsed url   pathname: 'debug@~0.7.0',
+367 verbose parsed url   path: 'debug@~0.7.0',
+367 verbose parsed url   href: 'debug@~0.7.0' }
+368 verbose cache add name="debug" spec="~0.7.0" args=["debug","~0.7.0"]
+369 verbose parsed url { protocol: null,
+369 verbose parsed url   slashes: null,
+369 verbose parsed url   auth: null,
+369 verbose parsed url   host: null,
+369 verbose parsed url   port: null,
+369 verbose parsed url   hostname: null,
+369 verbose parsed url   hash: null,
+369 verbose parsed url   search: null,
+369 verbose parsed url   query: null,
+369 verbose parsed url   pathname: '~0.7.0',
+369 verbose parsed url   path: '~0.7.0',
+369 verbose parsed url   href: '~0.7.0' }
+370 verbose addNamed [ 'debug', '~0.7.0' ]
+371 verbose addNamed [ null, '>=0.7.0-0 <0.8.0-0' ]
+372 silly lockFile 88a35dfc-debug-0-7-0 debug@~0.7.0
+373 verbose lock debug@~0.7.0 C:\Users\andrewminton\AppData\Roaming\npm-cache\88a35dfc-debug-0-7-0.lock
+374 silly addNameRange { name: 'faye-websocket',
+374 silly addNameRange   range: '>=0.4.3-0 <0.5.0-0',
+374 silly addNameRange   hasData: false }
+375 silly addNameRange { name: 'noptify', range: '>=0.0.3-0 <0.1.0-0', hasData: false }
+376 silly addNameRange { name: 'qs', range: '>=0.5.2-0 <0.6.0-0', hasData: false }
+377 silly addNameRange { name: 'debug', range: '>=0.7.0-0 <0.8.0-0', hasData: false }
+378 verbose url raw debug
+379 verbose url resolving [ 'https://registry.npmjs.org/', './debug' ]
+380 verbose url resolved https://registry.npmjs.org/debug
+381 info trying registry request attempt 1 at 10:14:57
+382 verbose etag "24DTBAYIHV0M2FS1ATKGCSCG8"
+383 http GET https://registry.npmjs.org/debug
+384 verbose url raw faye-websocket
+385 verbose url resolving [ 'https://registry.npmjs.org/', './faye-websocket' ]
+386 verbose url resolved https://registry.npmjs.org/faye-websocket
+387 info trying registry request attempt 1 at 10:14:57
+388 verbose etag "8MKY1MPTLVESUMJTO92QNSD7W"
+389 http GET https://registry.npmjs.org/faye-websocket
+390 verbose url raw qs
+391 verbose url resolving [ 'https://registry.npmjs.org/', './qs' ]
+392 verbose url resolved https://registry.npmjs.org/qs
+393 info trying registry request attempt 1 at 10:14:57
+394 verbose etag "AVG9XKSRXQEXMFJNJ91M185FB"
+395 http GET https://registry.npmjs.org/qs
+396 verbose url raw noptify
+397 verbose url resolving [ 'https://registry.npmjs.org/', './noptify' ]
+398 verbose url resolved https://registry.npmjs.org/noptify
+399 info trying registry request attempt 1 at 10:14:57
+400 verbose etag "2VEU2EC8GWUFGTLG6J0HDPKE3"
+401 http GET https://registry.npmjs.org/noptify
+402 http 304 https://registry.npmjs.org/globule
+403 silly registry.get cb [ 304,
+403 silly registry.get   { date: 'Sat, 29 Mar 2014 10:14:56 GMT',
+403 silly registry.get     server: 'Apache',
+403 silly registry.get     via: '1.1 varnish',
+403 silly registry.get     'last-modified': 'Sat, 29 Mar 2014 10:14:57 GMT',
+403 silly registry.get     'cache-control': 'max-age=1',
+403 silly registry.get     etag: '"EFJZ9H7S1QLF9EP4SGFX2JV8W"',
+403 silly registry.get     'x-served-by': 'cache-lcy1128-LCY',
+403 silly registry.get     'x-cache': 'MISS',
+403 silly registry.get     'x-cache-hits': '0',
+403 silly registry.get     'x-timer': 'S1396088096.986711025,VS0,VE91',
+403 silly registry.get     vary: 'Accept',
+403 silly registry.get     'content-length': '0',
+403 silly registry.get     'keep-alive': 'timeout=10, max=50',
+403 silly registry.get     connection: 'Keep-Alive' } ]
+404 verbose etag globule from cache
+405 silly addNameRange number 2 { name: 'globule', range: '>=0.1.0-0 <0.2.0-0', hasData: true }
+406 silly addNameRange versions [ 'globule', [ '0.1.0', '0.2.0' ] ]
+407 verbose addNamed [ 'globule', '0.1.0' ]
+408 verbose addNamed [ '0.1.0', '0.1.0' ]
+409 silly lockFile 4277c43c-globule-0-1-0 globule@0.1.0
+410 verbose lock globule@0.1.0 C:\Users\andrewminton\AppData\Roaming\npm-cache\4277c43c-globule-0-1-0.lock
+411 silly lockFile 4277c43c-globule-0-1-0 globule@0.1.0
+412 silly lockFile 4277c43c-globule-0-1-0 globule@0.1.0
+413 silly lockFile 95d0eb0c-globule-0-1-0 globule@~0.1.0
+414 silly lockFile 95d0eb0c-globule-0-1-0 globule@~0.1.0
+415 silly resolved [ { name: 'globule',
+415 silly resolved     description: 'An easy-to-use wildcard globbing library.',
+415 silly resolved     version: '0.1.0',
+415 silly resolved     homepage: 'https://github.com/cowboy/node-globule',
+415 silly resolved     author: { name: '"Cowboy" Ben Alman', url: 'http://benalman.com/' },
+415 silly resolved     repository: { type: 'git', url: 'git://github.com/cowboy/node-globule.git' },
+415 silly resolved     bugs: { url: 'https://github.com/cowboy/node-globule/issues' },
+415 silly resolved     licenses: [ [Object] ],
+415 silly resolved     main: 'lib/globule',
+415 silly resolved     engines: { node: '>= 0.8.0' },
+415 silly resolved     scripts: { test: 'grunt nodeunit' },
+415 silly resolved     devDependencies:
+415 silly resolved      { 'grunt-contrib-jshint': '~0.1.1',
+415 silly resolved        'grunt-contrib-nodeunit': '~0.1.2',
+415 silly resolved        'grunt-contrib-watch': '~0.2.0',
+415 silly resolved        grunt: '~0.4.1' },
+415 silly resolved     keywords:
+415 silly resolved      [ 'glob',
+415 silly resolved        'file',
+415 silly resolved        'match',
+415 silly resolved        'mapping',
+415 silly resolved        'expand',
+415 silly resolved        'wildcard',
+415 silly resolved        'pattern',
+415 silly resolved        'sync',
+415 silly resolved        'awesome' ],
+415 silly resolved     dependencies: { lodash: '~1.0.1', glob: '~3.1.21', minimatch: '~0.2.11' },
+415 silly resolved     readme: '# globule [![Build Status](https://secure.travis-ci.org/cowboy/node-globule.png?branch=master)](http://travis-ci.org/cowboy/node-globule)\n\nAn easy-to-use wildcard globbing library.\n\n## Getting Started\nInstall the module with: `npm install globule`\n\n```javascript\nvar globule = require(\'globule\');\nvar filepaths = globule.find(\'**/*.js\');\n```\n\n## Documentation\n\n### globule.find\nReturns a unique array of all file or directory paths that match the given globbing pattern(s). This method accepts either comma separated globbing patterns or an array of globbing patterns. Paths matching patterns that begin with `!` will be excluded from the returned array. Patterns are processed in order, so inclusion and exclusion order is significant.\n\n```js\nglobule.find(patterns [, options])\n```\n\nThe `options` object supports all [glob][] library options, along with a few extras. These are the most commonly used:\n\n* `filter` Either a valid [fs.Stats method name](http://nodejs.org/docs/latest/api/fs.html#fs_class_fs_stats) or a function that will be passed the matched `src` filepath and `options` object as arguments. This function should return a `Boolean` value.\n* `nonull` Retain globbing patterns in result set even if they fail to match files.\n* `matchBase` Patterns without slashes will match just the basename part. Eg. this makes `*.js` work like `**/*.js`.\n* `srcBase` Patterns will be matched relative to the specified path instead of the current working directory. This is a synonym for `cwd`.\n* `prefixBase` Any specified `srcBase` will be prefixed to all returned filepaths.\n\n[glob]: https://github.com/isaacs/node-glob\n\n### globule.match\nMatch one or more globbing patterns against one or more file paths. Returns a uniqued array of all file paths that match any of the specified globbing patterns. Both the `patterns` and `filepaths` arguments can be a single string or array of strings. Paths matching patterns that begin with `!` will be excluded from the returned array. Patterns are processed in order, so inclusion and exclusion order is significant.\n\n```js\ngrunt.file.match(patterns, filepaths [, options])\n```\n\n### globule.isMatch\nThis method contains the same signature and logic as the `globule.match` method, but returns `true` if any files were matched, otherwise `false`.\n\n```js\ngrunt.file.isMatch(patterns, filepaths [, options])\n```\n\n### globule.mapping\nGiven a set of source file paths, returns an array of src-dest file mapping objects. Both src and dest paths may be renamed, depending on the options specified.\n\n```js\nglobule.mapping(filepaths [, options])\n```\n\nIn addition to the options the `globule.find` method supports, the options object also supports these properties:\n\n* `srcBase` The directory from which patterns are matched. Any string specified as `srcBase` is effectively stripped from the beginning of all matched paths.\n* `destBase` The specified path is prefixed to all `dest` filepaths.\n* `ext` Remove anything after (and including) the first `.` in the destination path, then append this value.\n* `extDot` Change the behavior of `ext`, `"first"` and `"last"` will remove anything after the first or last `.` in the destination filename, respectively. Defaults to `"first"`.\n* `flatten` Remove the path component from all matched src files. The src file path is still joined to the specified destBase.\n* `rename` If specified, this function will be responsible for returning the final `dest` filepath. By default, it flattens paths (if specified), changes extensions (if specified) and joins the matched path to the `destBase`.\n\n### globule.findMapping\nThis method is a convenience wrapper around the `globule.find` and `globule.mapping` methods.\n\n```js\nglobule.findMapping(patterns [, options])\n```\n\n\n## Examples\n\nGiven the files `foo/a.js` and `foo/b.js`:\n\n### srcBase and destBase\n\n```js\nglobule.find("foo/*.js")\n// ["foo/a.js", "foo/b.js"]\n\nglobule.find("*.js", {srcBase: "foo"})\n// ["a.js", "b.js"]\n\nglobule.find("*.js", {srcBase: "foo", prefixBase: true})\n// ["foo/a.js", "foo/b.js"]\n```\n\n```js\nglobule.findMapping("foo/*.js")\n// [{src: "foo/a.js", dest: "foo/a.js"}, {src: "foo/b.js", dest: "foo/b.js"}]\n\nglobule.findMapping("foo/*.js", {destBase: "bar"})\n// [{src: "foo/a.js", dest: "bar/foo/a.js"}, {src: "foo/b.js", dest: "bar/foo/b.js"}]\n\nglobule.findMapping("*.js", {srcBase: "foo", destBase: "bar"})\n// [{src: "foo/a.js", dest: "bar/a.js"}, {src: "foo/b.js", dest: "bar/b.js"}]\n```\n\n```js\nglobule.mapping(["foo/a.js", "foo/b.js"])\n// [{src: "foo/a.js", dest: "foo/a.js"}, {src: "foo/b.js", dest: "foo/b.js"}]\n\nglobule.mapping(["foo/a.js", "foo/b.js"], {destBase: "bar"})\n// [{src: "foo/a.js", dest: "bar/foo/a.js"}, {src: "foo/b.js", dest: "bar/foo/b.js"}]\n\nglobule.mapping(["a.js", "b.js"], {srcBase: "foo", destBase: "bar"})\n// [{src: "foo/a.js", dest: "bar/a.js"}, {src: "foo/b.js", dest: "bar/b.js"}]\n```\n\n## Contributing\nIn lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).\n\n## Release History\n_(Nothing yet)_\n\n## License\nCopyright (c) 2013 "Cowboy" Ben Alman  \nLicensed under the MIT license.\n',
+415 silly resolved     readmeFilename: 'README.md',
+415 silly resolved     _id: 'globule@0.1.0',
+415 silly resolved     _from: 'globule@~0.1.0' } ]
+416 info install globule@0.1.0 into c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\gaze
+417 info installOne globule@0.1.0
+418 info c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\gaze\node_modules\globule unbuild
+419 verbose tar unpack C:\Users\andrewminton\AppData\Roaming\npm-cache\globule\0.1.0\package.tgz
+420 silly lockFile 0104675c-odules-gaze-node-modules-globule tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\gaze\node_modules\globule
+421 verbose lock tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\gaze\node_modules\globule C:\Users\andrewminton\AppData\Roaming\npm-cache\0104675c-odules-gaze-node-modules-globule.lock
+422 silly lockFile 2265b3a4--cache-globule-0-1-0-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\globule\0.1.0\package.tgz
+423 verbose lock tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\globule\0.1.0\package.tgz C:\Users\andrewminton\AppData\Roaming\npm-cache\2265b3a4--cache-globule-0-1-0-package-tgz.lock
+424 silly gunzTarPerm modes [ '755', '644' ]
+425 silly gunzTarPerm extractEntry package.json
+426 silly gunzTarPerm modified mode [ 'package.json', 438, 420 ]
+427 silly gunzTarPerm extractEntry .npmignore
+428 silly gunzTarPerm modified mode [ '.npmignore', 438, 420 ]
+429 silly gunzTarPerm extractEntry README.md
+430 silly gunzTarPerm modified mode [ 'README.md', 438, 420 ]
+431 silly gunzTarPerm extractEntry Gruntfile.js
+432 silly gunzTarPerm modified mode [ 'Gruntfile.js', 438, 420 ]
+433 silly gunzTarPerm extractEntry .jshintrc
+434 silly gunzTarPerm modified mode [ '.jshintrc', 438, 420 ]
+435 http 304 https://registry.npmjs.org/debug
+436 silly registry.get cb [ 304,
+436 silly registry.get   { date: 'Sat, 29 Mar 2014 10:14:57 GMT',
+436 silly registry.get     server: 'Apache',
+436 silly registry.get     via: '1.1 varnish',
+436 silly registry.get     'last-modified': 'Sat, 29 Mar 2014 10:14:57 GMT',
+436 silly registry.get     'cache-control': 'max-age=1',
+436 silly registry.get     etag: '"24DTBAYIHV0M2FS1ATKGCSCG8"',
+436 silly registry.get     'x-served-by': 'cache-lcy1132-LCY',
+436 silly registry.get     'x-cache': 'HIT',
+436 silly registry.get     'x-cache-hits': '1',
+436 silly registry.get     'x-timer': 'S1396088097.254342556,VS0,VE85',
+436 silly registry.get     vary: 'Accept',
+436 silly registry.get     'content-length': '0',
+436 silly registry.get     'keep-alive': 'timeout=10, max=50',
+436 silly registry.get     connection: 'Keep-Alive' } ]
+437 verbose etag debug from cache
+438 silly gunzTarPerm extractEntry .travis.yml
+439 silly gunzTarPerm modified mode [ '.travis.yml', 438, 420 ]
+440 silly gunzTarPerm extractEntry lib/globule.js
+441 silly gunzTarPerm modified mode [ 'lib/globule.js', 438, 420 ]
+442 silly addNameRange number 2 { name: 'debug', range: '>=0.7.0-0 <0.8.0-0', hasData: true }
+443 silly addNameRange versions [ 'debug',
+443 silly addNameRange   [ '0.0.1',
+443 silly addNameRange     '0.1.0',
+443 silly addNameRange     '0.2.0',
+443 silly addNameRange     '0.3.0',
+443 silly addNameRange     '0.4.0',
+443 silly addNameRange     '0.4.1',
+443 silly addNameRange     '0.5.0',
+443 silly addNameRange     '0.6.0',
+443 silly addNameRange     '0.7.0',
+443 silly addNameRange     '0.7.1',
+443 silly addNameRange     '0.7.2',
+443 silly addNameRange     '0.7.3',
+443 silly addNameRange     '0.7.4' ] ]
+444 verbose addNamed [ 'debug', '0.7.4' ]
+445 verbose addNamed [ '0.7.4', '0.7.4' ]
+446 silly lockFile 16160008-debug-0-7-4 debug@0.7.4
+447 verbose lock debug@0.7.4 C:\Users\andrewminton\AppData\Roaming\npm-cache\16160008-debug-0-7-4.lock
+448 http 304 https://registry.npmjs.org/qs
+449 silly registry.get cb [ 304,
+449 silly registry.get   { date: 'Sat, 29 Mar 2014 10:14:57 GMT',
+449 silly registry.get     server: 'Apache',
+449 silly registry.get     via: '1.1 varnish',
+449 silly registry.get     'last-modified': 'Sat, 29 Mar 2014 10:14:57 GMT',
+449 silly registry.get     'cache-control': 'max-age=1',
+449 silly registry.get     etag: '"AVG9XKSRXQEXMFJNJ91M185FB"',
+449 silly registry.get     'x-served-by': 'cache-lcy1134-LCY',
+449 silly registry.get     'x-cache': 'HIT',
+449 silly registry.get     'x-cache-hits': '1',
+449 silly registry.get     'x-timer': 'S1396088097.299618959,VS0,VE85',
+449 silly registry.get     vary: 'Accept',
+449 silly registry.get     'content-length': '0',
+449 silly registry.get     'keep-alive': 'timeout=10, max=50',
+449 silly registry.get     connection: 'Keep-Alive' } ]
+450 verbose etag qs from cache
+451 silly gunzTarPerm extractEntry LICENSE-MIT
+452 silly gunzTarPerm modified mode [ 'LICENSE-MIT', 438, 420 ]
+453 silly addNameRange number 2 { name: 'qs', range: '>=0.5.2-0 <0.6.0-0', hasData: true }
+454 silly addNameRange versions [ 'qs',
+454 silly addNameRange   [ '0.0.1',
+454 silly addNameRange     '0.0.2',
+454 silly addNameRange     '0.0.3',
+454 silly addNameRange     '0.0.4',
+454 silly addNameRange     '0.0.5',
+454 silly addNameRange     '0.0.6',
+454 silly addNameRange     '0.0.7',
+454 silly addNameRange     '0.1.0',
+454 silly addNameRange     '0.2.0',
+454 silly addNameRange     '0.3.0',
+454 silly addNameRange     '0.3.1',
+454 silly addNameRange     '0.3.2',
+454 silly addNameRange     '0.4.0',
+454 silly addNameRange     '0.4.1',
+454 silly addNameRange     '0.4.2',
+454 silly addNameRange     '0.5.0',
+454 silly addNameRange     '0.5.1',
+454 silly addNameRange     '0.5.2',
+454 silly addNameRange     '0.5.3',
+454 silly addNameRange     '0.5.4',
+454 silly addNameRange     '0.5.5',
+454 silly addNameRange     '0.5.6',
+454 silly addNameRange     '0.6.0',
+454 silly addNameRange     '0.6.1',
+454 silly addNameRange     '0.6.2',
+454 silly addNameRange     '0.6.3',
+454 silly addNameRange     '0.6.4',
+454 silly addNameRange     '0.6.5',
+454 silly addNameRange     '0.6.6' ] ]
+455 verbose addNamed [ 'qs', '0.5.6' ]
+456 verbose addNamed [ '0.5.6', '0.5.6' ]
+457 silly lockFile 84168241-qs-0-5-6 qs@0.5.6
+458 verbose lock qs@0.5.6 C:\Users\andrewminton\AppData\Roaming\npm-cache\84168241-qs-0-5-6.lock
+459 silly lockFile 84168241-qs-0-5-6 qs@0.5.6
+460 silly lockFile 84168241-qs-0-5-6 qs@0.5.6
+461 silly gunzTarPerm extractEntry test/globule_test.js
+462 silly gunzTarPerm modified mode [ 'test/globule_test.js', 438, 420 ]
+463 silly gunzTarPerm extractEntry test/fixtures/expand/README.md
+464 silly gunzTarPerm modified mode [ 'test/fixtures/expand/README.md', 438, 420 ]
+465 silly lockFile 60f93a07-qs-0-5-2 qs@~0.5.2
+466 silly lockFile 60f93a07-qs-0-5-2 qs@~0.5.2
+467 verbose about to build c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\tiny-lr-fork
+468 info c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\tiny-lr-fork unbuild
+469 info preuninstall tiny-lr-fork@0.0.5
+470 info uninstall tiny-lr-fork@0.0.5
+471 verbose false,c:\wamp\www\sym24beta3\node_modules,c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules unbuild tiny-lr-fork@0.0.5
+472 verbose c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\.bin,[object Object] binRoot
+473 info postuninstall tiny-lr-fork@0.0.5
+474 silly gunzTarPerm extractEntry test/fixtures/expand/css/baz.css
+475 silly gunzTarPerm modified mode [ 'test/fixtures/expand/css/baz.css', 438, 420 ]
+476 silly gunzTarPerm extractEntry test/fixtures/expand/css/qux.css
+477 silly gunzTarPerm modified mode [ 'test/fixtures/expand/css/qux.css', 438, 420 ]
+478 silly gunzTarPerm extractEntry test/fixtures/expand/deep/deep.txt
+479 silly gunzTarPerm modified mode [ 'test/fixtures/expand/deep/deep.txt', 438, 420 ]
+480 silly gunzTarPerm extractEntry test/fixtures/expand/deep/deeper/deeper.txt
+481 silly gunzTarPerm modified mode [ 'test/fixtures/expand/deep/deeper/deeper.txt', 438, 420 ]
+482 http 304 https://registry.npmjs.org/noptify
+483 silly registry.get cb [ 304,
+483 silly registry.get   { date: 'Sat, 29 Mar 2014 10:14:57 GMT',
+483 silly registry.get     server: 'Apache',
+483 silly registry.get     via: '1.1 varnish',
+483 silly registry.get     'last-modified': 'Sat, 29 Mar 2014 10:14:57 GMT',
+483 silly registry.get     'cache-control': 'max-age=1',
+483 silly registry.get     etag: '"2VEU2EC8GWUFGTLG6J0HDPKE3"',
+483 silly registry.get     'x-served-by': 'cache-lcy1135-LCY',
+483 silly registry.get     'x-cache': 'HIT',
+483 silly registry.get     'x-cache-hits': '1',
+483 silly registry.get     'x-timer': 'S1396088097.293240786,VS0,VE167',
+483 silly registry.get     vary: 'Accept',
+483 silly registry.get     'content-length': '0',
+483 silly registry.get     'keep-alive': 'timeout=10, max=50',
+483 silly registry.get     connection: 'Keep-Alive' } ]
+484 verbose etag noptify from cache
+485 http 304 https://registry.npmjs.org/faye-websocket
+486 silly registry.get cb [ 304,
+486 silly registry.get   { date: 'Sat, 29 Mar 2014 10:14:57 GMT',
+486 silly registry.get     server: 'Apache',
+486 silly registry.get     via: '1.1 varnish',
+486 silly registry.get     'last-modified': 'Sat, 29 Mar 2014 10:14:57 GMT',
+486 silly registry.get     'cache-control': 'max-age=1',
+486 silly registry.get     etag: '"8MKY1MPTLVESUMJTO92QNSD7W"',
+486 silly registry.get     'x-served-by': 'cache-lcy1125-LCY',
+486 silly registry.get     'x-cache': 'MISS',
+486 silly registry.get     'x-cache-hits': '0',
+486 silly registry.get     'x-timer': 'S1396088097.297067404,VS0,VE160',
+486 silly registry.get     vary: 'Accept',
+486 silly registry.get     'content-length': '0',
+486 silly registry.get     'keep-alive': 'timeout=10, max=50',
+486 silly registry.get     connection: 'Keep-Alive' } ]
+487 verbose etag faye-websocket from cache
+488 verbose about to build c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch
+489 info c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch unbuild
+490 info preuninstall grunt-contrib-watch@0.6.1
+491 info uninstall grunt-contrib-watch@0.6.1
+492 silly lockFile 16160008-debug-0-7-4 debug@0.7.4
+493 silly lockFile 16160008-debug-0-7-4 debug@0.7.4
+494 verbose true,c:\wamp\www\sym24beta3\node_modules,c:\wamp\www\sym24beta3\node_modules unbuild grunt-contrib-watch@0.6.1
+495 info postuninstall grunt-contrib-watch@0.6.1
+496 silly lockFile 88a35dfc-debug-0-7-0 debug@~0.7.0
+497 silly lockFile 88a35dfc-debug-0-7-0 debug@~0.7.0
+498 silly addNameRange number 2 { name: 'noptify', range: '>=0.0.3-0 <0.1.0-0', hasData: true }
+499 silly addNameRange versions [ 'noptify', [ '0.0.1', '0.0.2', '0.0.3' ] ]
+500 verbose addNamed [ 'noptify', '0.0.3' ]
+501 verbose addNamed [ '0.0.3', '0.0.3' ]
+502 silly lockFile d8f631c4-noptify-0-0-3 noptify@0.0.3
+503 verbose lock noptify@0.0.3 C:\Users\andrewminton\AppData\Roaming\npm-cache\d8f631c4-noptify-0-0-3.lock
+504 silly gunzTarPerm extractEntry test/fixtures/expand/deep/deeper/deepest/deepest.txt
+505 silly gunzTarPerm modified mode [ 'test/fixtures/expand/deep/deeper/deepest/deepest.txt',
+505 silly gunzTarPerm   438,
+505 silly gunzTarPerm   420 ]
+506 silly gunzTarPerm extractEntry test/fixtures/expand/js/bar.js
+507 silly gunzTarPerm modified mode [ 'test/fixtures/expand/js/bar.js', 438, 420 ]
+508 silly addNameRange number 2 { name: 'faye-websocket',
+508 silly addNameRange   range: '>=0.4.3-0 <0.5.0-0',
+508 silly addNameRange   hasData: true }
+509 silly addNameRange versions [ 'faye-websocket',
+509 silly addNameRange   [ '0.1.0',
+509 silly addNameRange     '0.1.1',
+509 silly addNameRange     '0.1.2',
+509 silly addNameRange     '0.2.0',
+509 silly addNameRange     '0.3.0',
+509 silly addNameRange     '0.3.1',
+509 silly addNameRange     '0.4.0',
+509 silly addNameRange     '0.4.1',
+509 silly addNameRange     '0.4.2',
+509 silly addNameRange     '0.4.3',
+509 silly addNameRange     '0.4.4',
+509 silly addNameRange     '0.5.0',
+509 silly addNameRange     '0.6.0',
+509 silly addNameRange     '0.6.1',
+509 silly addNameRange     '0.7.0',
+509 silly addNameRange     '0.7.1',
+509 silly addNameRange     '0.7.2' ] ]
+510 verbose addNamed [ 'faye-websocket', '0.4.4' ]
+511 verbose addNamed [ '0.4.4', '0.4.4' ]
+512 silly lockFile f9b80149-faye-websocket-0-4-4 faye-websocket@0.4.4
+513 verbose lock faye-websocket@0.4.4 C:\Users\andrewminton\AppData\Roaming\npm-cache\f9b80149-faye-websocket-0-4-4.lock
+514 silly gunzTarPerm extractEntry test/fixtures/expand/js/foo.js
+515 silly gunzTarPerm modified mode [ 'test/fixtures/expand/js/foo.js', 438, 420 ]
+516 silly lockFile b23643d2-ontrib-watch-node-modules-lodash tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\lodash
+517 silly lockFile b23643d2-ontrib-watch-node-modules-lodash tar://c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\lodash
+518 silly lockFile e9ed1610-m-cache-lodash-2-4-1-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\lodash\2.4.1\package.tgz
+519 silly lockFile e9ed1610-m-cache-lodash-2-4-1-package-tgz tar://C:\Users\andrewminton\AppData\Roaming\npm-cache\lodash\2.4.1\package.tgz
+520 info preinstall lodash@2.4.1
+521 verbose readDependencies using package.json deps
+522 verbose readDependencies using package.json deps
+523 silly resolved []
+524 verbose about to build c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\lodash
+525 info build c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\lodash
+526 verbose linkStuff [ false,
+526 verbose linkStuff   false,
+526 verbose linkStuff   false,
+526 verbose linkStuff   'c:\\wamp\\www\\sym24beta3\\node_modules\\grunt-contrib-watch\\node_modules' ]
+527 info linkStuff lodash@2.4.1
+528 verbose linkBins lodash@2.4.1
+529 verbose linkMans lodash@2.4.1
+530 verbose rebuildBundles lodash@2.4.1
+531 info install lodash@2.4.1
+532 info postinstall lodash@2.4.1
+533 error error rolling back Error: ENOTEMPTY, rmdir 'c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\gaze\node_modules\globule\test'
+533 error error rolling back  grunt-contrib-watch@0.6.1 { [Error: ENOTEMPTY, rmdir 'c:\wamp\www\sym24beta3\node_modules\grunt-contrib-watch\node_modules\gaze\node_modules\globule\test']
+533 error error rolling back   errno: 53,
+533 error error rolling back   code: 'ENOTEMPTY',
+533 error error rolling back   path: 'c:\\wamp\\www\\sym24beta3\\node_modules\\grunt-contrib-watch\\node_modules\\gaze\\node_modules\\globule\\test' }
+534 error Failed to parse json
+534 error Unexpected token  
+535 error File: C:\Users\andrewminton\AppData\Roaming\npm-cache\qs\0.5.6\package\package.json
+536 error Failed to parse package.json data.
+536 error package.json must be actual JSON, not just JavaScript.
+536 error
+536 error This is not a bug in npm.
+536 error Tell the package author to fix their package.json file. JSON.parse
+537 error System Windows_NT 6.1.7601
+538 error command "c:\\Program Files (x86)\\nodejs\\node.exe" "c:\\Program Files (x86)\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install"
+539 error cwd c:\wamp\www\sym24beta3
+540 error node -v v0.10.17
+541 error npm -v 1.3.8
+542 error file C:\Users\andrewminton\AppData\Roaming\npm-cache\qs\0.5.6\package\package.json
+543 error code EJSONPARSE
+544 verbose exit [ 1, true ]
