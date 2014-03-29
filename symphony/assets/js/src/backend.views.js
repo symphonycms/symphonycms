@@ -183,10 +183,10 @@ Symphony.View.add('/:context*:', function() {
 });
 
 Symphony.View.add('/publish/:context*:', function() {
-	var filtering = Symphony.Elements.context.find('.filtering');
+	var filters = Symphony.Elements.context.find('.filtering');
 
 	// Filtering
-	filtering.find('.filtering-row:not(.template)').each(function() {
+	filters.find('.filtering-row:not(.template)').each(function() {
 		var filtering = new Symphony.Extensions.Filtering();
 		filtering.init(this);
 	});
@@ -198,13 +198,13 @@ Symphony.View.add('/publish/:context*:', function() {
 		on: {
 			click: function() {
 				var filtering = new Symphony.Extensions.Filtering(),
-					template = filtering.filter('.template').clone().removeClass('template');
+					template = filters.find('.template').clone().removeClass('template');
 
 				template.insertBefore(this).css('display', 'block');
 				filtering.init(template);
 			}
 		}
-	}).appendTo(filtering);
+	}).appendTo(filters);
 
 	// Pagination
 	Symphony.Elements.contents.find('.pagination').each(function() {
