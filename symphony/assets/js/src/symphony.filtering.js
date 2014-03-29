@@ -40,7 +40,6 @@
 							callback();
 						},
 						success: function(result) {
-							console.log(result);
 							callback(result.filters);
 						}
 					});
