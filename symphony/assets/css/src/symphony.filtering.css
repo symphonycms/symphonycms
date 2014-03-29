@@ -22,7 +22,6 @@
 	padding: 0 1rem;
 	border: 0.1rem solid rgba(0, 0, 0, 0.25);
 	box-shadow: inset 0.1rem 0.1rem 0.2rem rgba(0, 0, 0, 0.05);
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	width: 100%;
 	font-family: inherit;
@@ -30,7 +29,7 @@
 	background: #fff;
 	color: rgba(85, 85, 85, 0.95);
 	font-size: 1em;
-	line-height: 1.85;
+	line-height: 2rem;
 }
 
 .filtering .selectize-input > * {
@@ -50,11 +49,9 @@
 	width: 35%;
 	float: left;
 	position: relative;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	padding: 0 1rem 0 0;
 	position: relative;
-	-webkit-transition: width 0.25s ease-in;
 	transition: width 0.25s ease-in;
 }
 
@@ -90,8 +87,6 @@
 	border-radius: 0 0.4rem 0.4rem 0;
 	background-color: #fbfbfa;
 	background-image: -webkit-linear-gradient(top, #fbfbfa 0%, #e3e3df 100%);
-	background-image: -moz-linear-gradient(top, #fbfbfa 0%, #e3e3df 100%);
-	background-image: -ms-linear-gradient(top, #fbfbfa 0%, #e3e3df 100%);
 	background-image: linear-gradient(top, #fbfbfa 0%, #e3e3df 100%);
 }
 
@@ -104,15 +99,12 @@
 .filtering-search {
 	width: 65%;
 	float: left;
-	-webkit-transition: width 0.25s ease-in;
 	transition: width 0.25s ease-in;
 	position: relative;
 }
 
 .filtering-search .selectize-input.has-items {
 	background: -webkit-linear-gradient(top, #fbfbfa 0%, #e3e3df 100%);
-	background: -moz-linear-gradient(top, #fbfbfa 0%, #e3e3df 100%);
-	background: -ms-linear-gradient(top, #fbfbfa 0%, #e3e3df 100%);
 	background: linear-gradient(top, #fbfbfa 0%, #e3e3df 100%);
 	border-radius: 0.4rem;
 }
@@ -136,7 +128,6 @@
 	background: #ffffff;
 	border: 0.1rem solid #d0d0d0;
 	border-radius: 0.4rem;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.2);
 	z-index: 10000;

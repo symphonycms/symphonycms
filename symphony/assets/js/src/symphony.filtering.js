@@ -156,7 +156,7 @@
 
 			var highlightFiltering = function() {
 				if(Symphony.Elements.breadcrumbs.find('.inactive').length === 0 && location.search.indexOf('filter') !== -1) {
-					Symphony.Elements.breadcrumbs.append('<p class="inactive"><span>' + Symphony.Language.get('filtered') + '</span></p>');
+					Symphony.Elements.breadcrumbs.append('<p class="inactive"><span>– ' + Symphony.Language.get('filtered') + '</span></p>');
 				}
 			}
 
