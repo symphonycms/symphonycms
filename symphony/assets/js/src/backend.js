@@ -4,7 +4,7 @@
  * @package assets
  */
 
-(function($) {
+(function($, Symphony) {
 
 	// Set environment
 	var environment = JSON.parse(document.getElementById('environment').textContent);
@@ -58,4 +58,4 @@
 		Symphony.View.render();
 	});
 
-})(window.jQuery);
+})(window.jQuery, window.Symphony);

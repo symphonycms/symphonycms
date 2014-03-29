@@ -2,7 +2,7 @@
  * @package assets
  */
 
-(function($) {
+(function($, Symphony) {
 
 	/**
 	 * Notify combines multiple system messages to an interface that focusses
@@ -112,7 +112,7 @@
 
 				// No other items
 				if(item.siblings().length == 0) {
-					notifier.trigger('resize.notify', [jQuery('<div />')]);
+					notifier.trigger('resize.notify', [$('<div />')]);
 				}
 
 				// More item
@@ -265,4 +265,4 @@
 		return objects;
 	};
 
-})(window.jQuery);
+})(window.jQuery, window.Symphony);

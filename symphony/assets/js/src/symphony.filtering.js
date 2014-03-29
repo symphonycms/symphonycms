@@ -53,7 +53,9 @@
 			rows.not(filter).each(reduceFields);
 
 			// Remove add button
+			console.log(rows.length, maxRows, rows.length > maxRows - 1);
 			if(rows.length >= maxRows) {
+				console.log(Symphony.Elements.context.find('.filtering-add'));
 				Symphony.Elements.context.find('.filtering-add').hide();
 			}
 

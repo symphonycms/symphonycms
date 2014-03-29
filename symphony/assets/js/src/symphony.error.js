@@ -2,7 +2,7 @@
  * @package assets
  */
 
-(function($) {
+(function($, Symphony) {
 
 	$(document).ready(function() {
 
@@ -18,7 +18,7 @@
 		// Hide backtrace and query log by default
 		if(!('symphony.collapsible.error.0.collapsed' in window.localStorage)) {
 			collapsible.trigger('collapse.collapsible', [0]);
-		};
+		}
 	});
 
-})(window.jQuery);
+})(window.jQuery, window.Symphony);

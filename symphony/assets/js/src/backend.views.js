@@ -4,7 +4,7 @@
  * @package assets
  */
 
-(function($) {
+(function($, Symphony) {
 
 /*--------------------------------------------------------------------------
 	General backend view
@@ -185,12 +185,6 @@ Symphony.View.add('/:context*:', function() {
 Symphony.View.add('/publish/:context*:', function() {
 	var filters = Symphony.Elements.context.find('.filtering');
 
-	// Filtering
-	filters.find('.filtering-row:not(.template)').each(function(index, filter) {
-		var filtering = new Symphony.Extensions.Filtering();
-		filtering.init(filter);
-	});
-
 	// Add filters
 	$('<a />', {
 		class: 'button filtering-add',
@@ -205,6 +199,12 @@ Symphony.View.add('/publish/:context*:', function() {
 			}
 		}
 	}).appendTo(filters);
+
+	// Filtering
+	filters.find('.filtering-row:not(.template)').each(function(index, filter) {
+		var filtering = new Symphony.Extensions.Filtering();
+		filtering.init(filter);
+	});
 
 	// Pagination
 	Symphony.Elements.contents.find('.pagination').each(function() {
@@ -751,4 +751,4 @@ Symphony.View.add('/system/extensions/:context*:', function() {
 	});
 });
 
-})(window.jQuery);
+})(window.jQuery, window.Symphony);
