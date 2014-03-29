@@ -23,6 +23,11 @@ select[multiple] {
 	font-family: inherit;
 }
 
+input,
+select[multiple] {
+	background-color: white;
+}
+
 input {
 	height: 2.2rem;
 }
@@ -93,8 +98,8 @@ fieldset {
 	outline: 0;
 }
 
-input[type="reset"], 
-input[type="button"], 
+input[type="reset"],
+input[type="button"],
 input[type="submit"] {
 	width: auto;
 	font-size: inherit;
