@@ -86,8 +86,7 @@
 	padding: 0 1rem;
 	border-radius: 0 0.4rem 0.4rem 0;
 	background-color: #fbfbfa;
-	background-image: -webkit-linear-gradient(top, #fbfbfa 0%, #e3e3df 100%);
-	background-image: linear-gradient(top, #fbfbfa 0%, #e3e3df 100%);
+	background-image: linear-gradient(to bottom, #fbfbfa 0%, #e3e3df 100%);
 }
 
 .filtering-comparison input {
@@ -104,8 +103,7 @@
 }
 
 .filtering-search .selectize-input.has-items {
-	background: -webkit-linear-gradient(top, #fbfbfa 0%, #e3e3df 100%);
-	background: linear-gradient(top, #fbfbfa 0%, #e3e3df 100%);
+	background: linear-gradient(to bottom, #fbfbfa 0%, #e3e3df 100%);
 	border-radius: 0.4rem;
 }
 
