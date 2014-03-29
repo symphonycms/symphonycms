@@ -85,7 +85,7 @@
 			// Get filtering fields
 			$this->getFilteringFields();
 
-			
+
 			Administration::instance()->Page->addElementToHead(new XMLElement(
 				'script',
 				"Symphony.Context.add('filtering', " . json_encode($this->_options) . ")",
@@ -103,7 +103,7 @@
 		 */
 		public function createFilteringDrawer() {
 			$filters = $_GET['filter'];
-			$this->form = Widget::Form(null, 'get', 'filtering');
+			$this->filteringForm = Widget::Form(null, 'get', 'filtering');
 
 			// Create existing filters
 			if(is_array($filters) && !empty($filters)) {
@@ -120,7 +120,7 @@
 			// Create template
 			$this->createFilter(null, null, 'template');
 
-			return $this->form;
+			return $this->filteringForm;
 		}
 
 		public function createFilter($field = null, $search = null, $class = null) {
@@ -134,7 +134,7 @@
 			}
 
 			// Fields
-			$fields = $this->_fields;
+			$fields = $this->_filteringFields;
 			for($i = 1; $i < count($fields); $i++) {
 				if($fields[$i][0] === $field) {
 					$fields[$i][1] = true;
@@ -168,7 +168,7 @@
 				)
 			);
 
-			$this->form->appendChild($row);
+			$this->filteringForm->appendChild($row);
 		}
 
 		/**
@@ -186,7 +186,7 @@
 			foreach($section->fetchFilterableFields() as $field) {
 				if(in_array($field->get('type'), $this->_incompatible_publishpanel)) continue;
 
-				$this->_fields[] = array($field->get('element_name'), false, $field->get('label'));
+				$this->_filteringFields[] = array($field->get('element_name'), false, $field->get('label'));
 				$this->getFilteringOptions($field);
 			}
 		}
@@ -197,12 +197,12 @@
 		public function getFilteringOptions($field) {
 			if(method_exists($field, 'getToggleStates')) {
 				$options = $field->getToggleStates();
-				if(!empty($options)) $this->_options[$field->get('element_name')] = $options;
+				if(!empty($options)) $this->_filteringOptions[$field->get('element_name')] = $options;
 
 			}
 			if(method_exists($field, 'findAllTags')) {
 				$options = $field->findAllTags();
-				if(!empty($options)) $this->_options[$field->get('element_name')] = $options;
+				if(!empty($options)) $this->_filteringOptions[$field->get('element_name')] = $options;
 			}
 		}
 
