@@ -132,17 +132,18 @@
 					$page_url = URL . '/' . PageManager::resolvePagePath($page['id']) . '/';
 					$page_edit_url = Administration::instance()->getCurrentPageURL() . 'edit/' . $page['id'] . '/';
 					$page_template = PageManager::createFilePath($page['path'], $page['handle']);
-					$page_template_url = Administration::instance()->getCurrentPageURL() . 'template/' . $page_template . '/';
 
 					$col_title = Widget::TableData(Widget::Anchor(
 						$page_title, $page_edit_url, $page['handle']
 					));
-					$col_title->appendChild(Widget::Input("items[{$page['id']}]", null, 'checkbox'));
+					$col_title->appendChild(Widget::Label(__('Select Page %s', array($page_title)), null, 'accessible', null, array(
+						'for' => 'page-' . $page['id']
+					)));
+					$col_title->appendChild(Widget::Input('items['.$page['id'].']', 'on', 'checkbox', array(
+						'id' => 'page-' . $page['id']
+					)));
 
-					$col_template = Widget::TableData(Widget::Anchor(
-						$page_template . '.xsl',
-						$page_template_url
-					));
+					$col_template = Widget::TableData($page_template . '.xsl');
 
 					$col_url = Widget::TableData(Widget::Anchor($page_url, $page_url));
 
@@ -187,10 +188,16 @@
 
 			$table = Widget::Table(
 				Widget::TableHead($aTableHead), null,
-				Widget::TableBody($aTableBody), 'orderable selectable'
+				Widget::TableBody($aTableBody), 'orderable selectable',
+				null, array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
 			);
 
 			$this->Form->appendChild($table);
+			
+			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array(
+				'id' => 'version'
+			));
+			$this->Form->appendChild($version);
 
 			$tableActions = new XMLElement('div');
 			$tableActions->setAttribute('class', 'actions');
@@ -255,8 +262,10 @@
 			}
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
+				$time = Widget::Time();
+
 				$this->pageAlert(
-					__('Page updated at %s.', array(DateTimeObj::getTimeAgo()))
+					__('Page updated at %s.', array($time->generate()))
 					. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
 					. __('Create another?')
 					. '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
@@ -369,6 +378,7 @@
 			if(isset($this->_context[2])){
 				$flag = $this->_context[2];
 				$link_suffix = '';
+				$time = Widget::Time();
 
 				if(isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])){
 					$link_suffix = "?parent=" . $_REQUEST['parent'];
@@ -382,7 +392,7 @@
 
 					case 'saved':
 						$this->pageAlert(
-							__('Page updated at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Page updated at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
@@ -394,7 +404,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Page created at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Page created at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
@@ -448,8 +458,7 @@
 				}
 
 				$this->appendSubheading($title, array(
-					Widget::Anchor(__('View Page'), $page_url, __('View Page on Frontend'), 'button', NULL, array('target' => '_blank', 'accesskey' => 'v')),
-					Widget::Anchor(__('Edit Page Template'), SYMPHONY_URL . '/blueprints/pages/template/' . $template_name, __('Edit Page Template'), 'button', NULL, array('accesskey' => 't'))
+					Widget::Anchor(__('View Page'), $page_url, __('View Page on Frontend'), 'button', NULL, array('target' => '_blank', 'accesskey' => 'v'))
 				));
 			}
 			else {
@@ -1104,20 +1113,4 @@
 			}
 		}
 
-		/**
-		 * Returns boolean if a the given `$type` is set for
-		 * the given `$page_id`.
-		 *
-		 * @deprecated This will be removed in Symphony 2.4.
-		 *  The preferred function is `PageManger::hasPageTypeBeenUsed`
-		 * @see toolkit.PageManager#hasPageTypeBeenUsed
-		 * @param integer $page_id
-		 *  The ID of the Page to check
-		 * @param string $type
-		 * @return boolean
-		 *  True if the type is used, false otherwise
-		 */
-		public static function typeUsed($page_id, $type) {
-			return PageManager::hasPageTypeBeenUsed($page_id, $type);
-		}
 	}

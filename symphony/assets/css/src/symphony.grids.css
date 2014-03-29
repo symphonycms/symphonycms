@@ -1,0 +1,144 @@
+/**
+ * Grids and columns
+ *
+ * @since: Symphony 2.3
+ */
+
+
+/*-----------------------------------------------------------------------------
+	General column definitions
+-----------------------------------------------------------------------------*/
+
+.columns {
+	margin-left: -1.5rem;
+	clear: both;
+}
+
+.columns:after {
+	content: "";
+	clear: both;
+	display: block;
+}
+
+.columns .column,
+.columns > .invalid {
+	box-sizing: border-box;
+	float: left;
+	margin: 0 0 1.5rem;
+	padding: 0 0 0 1.5rem;
+}
+
+/* Equal columns */
+
+.two.columns .column,
+.two.columns > .invalid {
+	width: 50%;
+}
+
+.three.columns .column,
+.three.columns > .invalid {
+	width: 33.33%;
+}
+
+.four.columns .column,
+.four.columns > .invalid {
+	width: 25%;
+}
+
+.columns legend {
+	margin: 0 0 0 -1.5rem !important;
+	padding: 0 0.5rem 0 1.5rem !important;
+}
+
+.columns legend + * {
+	margin-top: 1rem;
+}
+
+/* Unequal columns */
+
+form.columns {
+	margin: 0;
+	padding: 1rem 1.8rem 0;
+}
+
+form.columns .column.primary {
+	padding: 0;
+	width: 100%;
+}
+
+.two.columns .column.primary {
+	margin: 0;
+	width: 65%;
+}
+
+.two.columns .column.secondary {
+	margin: 0;
+	width: 35%;
+}
+
+@media screen and (max-width: 700px) {
+
+	.two.columns .column,
+	.two.columns > .invalid,
+	.two.columns .column.primary,
+	.two.columns .column.secondary {
+		width: 100%;
+	}
+
+	.two.columns .column.secondary {
+		padding: 1.5rem 0 0 0;
+		margin-top: 0.5rem;
+		border-top: 0.1rem solid rgba(0, 0, 0, 0.1);
+	}
+
+	.two.columns .column.secondary p.label {
+		margin-top: 1rem;
+	}
+
+}
+
+/* Errors in columns */
+
+.columns > .invalid {
+	background: none;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+.columns > .invalid .column {
+	background-color: #eb6347;
+	border: 0.1rem solid #c31;
+	border-bottom: 0;
+	border-radius: 0.4rem 0.4rem 0 0;
+	padding: 1rem;
+	width: 100%;
+	float: none;
+	margin: 0;
+}
+
+.columns > .invalid > .column > i {
+	top: 1rem;
+	right: 1rem;
+}
+
+.columns > .invalid > .column > .tags {
+	margin-bottom: 0;
+}
+
+.columns > .invalid > p {
+	background-color: #eb6347;
+	border: 0.1rem solid #c31;
+	border-top: 0;
+	border-radius: 0 0 0.4rem 0.4rem;
+	box-shadow: 0 0.1rem 0.2rem rgba(204, 51, 17, 0.3);
+	padding: 0 1rem 1rem;
+}
+
+/*-----------------------------------------------------------------------------
+	Special definition
+-----------------------------------------------------------------------------*/
+
+.columns .column.justified {
+	padding-top: 2.1rem;
+}

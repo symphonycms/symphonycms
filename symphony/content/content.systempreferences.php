@@ -97,6 +97,49 @@
 				}
 			}
 
+			// Get available cache drivers
+			$caches = Symphony::ExtensionManager()->getProvidersOf('cache');
+			// Add default Symphony cache driver..
+			$caches['database'] = 'Database';
+
+			if(count($caches) > 1) {
+				$group = new XMLElement('fieldset', NULL, array('class' => 'settings condensed'));
+				$group->appendChild(new XMLElement('legend', __('Default Cache Settings')));
+
+				/**
+				 * Add custom Caching groups. For example a Datasource extension might want to add in the ability
+				 * for set a cache driver for it's functionality. This should usually be a dropdown, which allows 
+				 * a developer to select what driver they want to use for caching. This choice is stored in the
+				 * Configuration in a Caching node.
+				 * eg.
+				 *  'caching' => array (
+				 *		'remote_datasource' => 'database',
+				 *		'dynamic_ds' => 'YourCachingExtensionClassName'
+				 *  )
+				 *
+				 * @since Symphony 2.4
+				 * @delegate AddCachingOpportunity
+				 * @param string $context
+				 * '/system/preferences/'
+				 * @param XMLElement $wrapper
+				 *  An XMLElement of the current Caching fieldset
+				 * @param string $config_path
+				 *  The node in the Configuration where this information will be stored. Read only.
+				 * @param array $available_caches
+				 *  An array of the available cache providers
+				 * @param array $errors
+				 *  An array of errors
+				 */
+				Symphony::ExtensionManager()->notifyMembers('AddCachingOpportunity', '/system/preferences/', array(
+					'wrapper' => &$group,
+					'config_path' => 'caching',
+					'available_caches' => $caches,
+					'errors' => $this->_errors
+				));
+
+				$this->Form->appendChild($group);
+			}
+
 			/**
 			 * Add Extension custom preferences. Use the $wrapper reference to append objects.
 			 *
@@ -115,6 +158,11 @@
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
+			
+			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array(
+				'id' => 'version'
+			));
+			$div->appendChild($version);
 
 			$attr = array('accesskey' => 's');
 			if(!$bIsWritable) $attr['disabled'] = 'disabled';

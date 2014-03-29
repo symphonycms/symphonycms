@@ -192,8 +192,9 @@
 				 * '/frontend/'
 				 * @param FrontendPage $page
 				 *  This FrontendPage object, by reference
-				 * @param string $xml
-				 *  This pages XML, including the Parameters, Datasource and Event XML, by reference
+				 * @param XMLElement $xml
+				 *  This pages XML, including the Parameters, Datasource and Event XML, by reference as
+				 *  an XMLElement
 				 * @param string $xsl
 				 *  This pages XSLT, by reference
 				 */
@@ -232,6 +233,13 @@
 
 				$backup_param = $this->_param;
 				$this->_param['current-query-string'] = General::wrapInCDATA($this->_param['current-query-string']);
+
+				// In Symphony 2.4, the XML structure stays as an object until
+				// the very last moment.
+				if($this->_xml instanceof XMLElement) {
+					$this->setXML($this->_xml->generate(true, 0));
+				}
+
 				$output = parent::generate();
 				$this->_param = $backup_param;
 
@@ -327,7 +335,7 @@
 			$current_path = '/' . ltrim(end($current_path), '/');
 			$split_path = explode('?', $current_path, 3);
 			$current_path = rtrim(current($split_path), '/');
-			$querystring = '?' . next($split_path);
+			$querystring = next($split_path);
 
 			// Get max upload size from php and symphony config then choose the smallest
 			$upload_size_php = ini_size_to_bytes(ini_get('upload_max_filesize'));
@@ -499,7 +507,7 @@
 			$xml->prependChild($params);
 
 			Symphony::Profiler()->seed();
-			$this->setXML($xml->generate(true, 0));
+			$this->setXML($xml);
 			Symphony::Profiler()->sample('XML Generation', PROFILE_LAP);
 
 			$xsl = '<?xml version="1.0" encoding="UTF-8"?>
@@ -973,40 +981,6 @@
 		 */
 		public static function sanitizeParameter($parameter) {
 			return XMLElement::stripInvalidXMLCharacters($parameter);
-		}
-
-		/**
-		 * Given a page ID, return it's type from `tbl_pages`
-		 *
-		 * @deprecated This function will be removed in Symphony 2.4. Use
-		 * `PageManager::fetchPageTypes` instead.
-		 * @param integer $page_id
-		 *  The page ID to find it's type
-		 * @return array
-		 *  An array of types that this page is set as
-		 */
-		public static function fetchPageTypes($page_id) {
-			return PageManager::fetchPageTypes($page_id);
-		}
-
-		/**
-		 * Resolves the path to this page's XSLT file. The Symphony convention
-		 * is that they are stored in the `PAGES` folder. If this page has a parent
-		 * it will be as if all the / in the URL have been replaced with _. ie.
-		 * /articles/read/ will produce a file `articles_read.xsl`
-		 *
-		 * @deprecated This function will be removed in Symphony 2.4. Use
-		 *  `PageManager::resolvePageFileLocation`
-		 * @param string $path
-		 *  The URL path to this page, excluding the current page. ie, /articles/read
-		 *  would make `$path` become articles/
-		 * @param string $handle
-		 *  The handle of the resolved page.
-		 * @return string
-		 *  The path to the XSLT of this page
-		 */
-		public static function resolvePageFileLocation($path, $handle) {
-			return PageManager::resolvePageFileLocation($path, $handle);
 		}
 
 	}

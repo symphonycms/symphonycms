@@ -218,8 +218,6 @@
 		/**
 		 * Returns an array of all the fields that can be filtered.
 		 *
-		 * @deprecated This function will be removed in the next major release. It
-		 *	is unused by Symphony.
 		 * @param string $location
 		 *	The location of the fields in the entry creator, whether they are
 		 *	'main' or 'sidebar'

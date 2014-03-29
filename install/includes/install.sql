@@ -119,7 +119,7 @@ DROP TABLE IF EXISTS `tbl_fields_date`;
 CREATE TABLE `tbl_fields_date` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `field_id` int(11) unsigned NOT NULL,
-  `pre_populate` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
+  `pre_populate` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `field_id` (`field_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -186,7 +186,7 @@ CREATE TABLE `tbl_fields_upload` (
 DROP TABLE IF EXISTS `tbl_forgotpass`;
 CREATE TABLE `tbl_forgotpass` (
   `author_id` int(11) NOT NULL DEFAULT '0',
-  `token` varchar(6) COLLATE utf8_unicode_ci NOT NULL,
+  `token` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
   `expiry` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`author_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

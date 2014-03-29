@@ -1,0 +1,120 @@
+/**
+ * System notification
+ *
+ * @since Symphony 2.3
+ */
+
+
+/*-----------------------------------------------------------------------------
+	Notifier
+-----------------------------------------------------------------------------*/
+
+.notifier {
+	overflow: hidden;
+	background: #383838;
+	border-bottom: 0.1rem solid #575757;
+}
+
+.notifier nav {
+	position: absolute;
+	top: 0;
+	right: 1.8rem;
+	display: block;
+	padding: 0.4rem 0;
+	cursor: pointer;
+}
+
+.notifier nav:before {
+	content: "\2193";
+	padding-right: 0.3rem;
+	opacity: 0.2;
+}
+
+.notifier .notice:last-child nav:before {
+	content: "\2191";
+}
+
+.notifier nav:hover:before {
+	opacity: 0.5;
+}
+
+@keyframes success {
+	to {
+		background-color: #383838;
+		border-color: #575757;
+		color: #9b9b9b;
+	}
+}
+
+@keyframes successlink {
+	to {
+		color: #bdc3c3;
+		border-color: #7c7c7c;
+	}
+}
+
+/*-----------------------------------------------------------------------------
+	Message types
+-----------------------------------------------------------------------------*/
+
+.notice {
+	position: relative;
+	margin: 0;
+	padding: 0.4rem 9rem 0.3rem 1.8rem;
+	border-bottom: 0.1rem solid #575757;
+	color: #9b9b9b;
+	background: #383838;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.notice a {
+	color: #bdc3c3;
+	border-bottom: 0.1rem solid rgba(189, 195, 195, 0.2);
+	margin: 0 0.3rem;
+}
+
+.notice a:hover,
+.notice a:active,
+.notice a:focus {
+	color: #e4ece4;
+	border-color: #9b9b9b;
+}
+
+/* Success messages */
+
+.notice.success {
+	background-color: #bfdc96;
+	border-color: #90c349;
+	color: #6d7841;
+	animation: success 0.5s ease-out 10s 1 forwards;
+}
+
+.notice.success a {
+	color: #4e5b39;
+	border-color: #a1bf7e;
+	animation: successlink 0.5s ease-out 10s 1 forwards;
+}
+
+.notice.success a:hover {
+	color: #333c25;
+	border-color: #4e5b39;
+}
+
+/* Errors messages */
+
+.notice.error {
+	background-color: #fff9a2;
+	border-color: #e7a973;
+	color: #bd7053;
+}
+
+.notice.error a {
+	color: #b02d3c;
+	border-bottom: 0.1rem solid #eed08a;
+}
+
+.notice.error a:hover {
+	color: #87232e;
+	border-bottom: 0.1rem solid #b02d3c;
+}

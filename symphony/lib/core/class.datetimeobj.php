@@ -165,8 +165,6 @@
 		 * Formats the given date and time `$string` based on the given `$format`.
 		 * Optionally the result will be localized and respect a timezone differing
 		 * from the system default. The default output is ISO 8601.
-		 * Please note that for best compatibility with European dates it is recommended
-		 * that your site be in a PHP5.3 environment.
 		 *
 		 * @since Symphony 2.2.1
 		 * @param string $string (optional)
@@ -212,8 +210,6 @@
 
 		/**
 		 * Parses the given string and returns a DateTime object.
-		 * Please note that for best compatibility with European dates it is recommended
-		 * that your site be in a PHP5.3 environment.
 		 *
 		 * @since Symphony 2.3
 		 * @param string $string (optional)
@@ -243,29 +239,15 @@
 				$string = Lang::standardizeDate($string);
 
 				// PHP 5.3: Apply Symphony date format using `createFromFormat`
-				if(method_exists('DateTime', 'createFromFormat')) {
-					$date = DateTime::createFromFormat(self::$settings['datetime_format'], $string);
-					if($date === false) {
-						$date = DateTime::createFromFormat(self::$settings['date_format'], $string);
-					}
-
-					// Handle dates that are in a different format to Symphony's config
-					// DateTime is much the same as `strtotime` and will handle relative
-					// dates.
-					if($date === false) {
-						try {
-							$date = new DateTime($string);
-						}
-						catch(Exception $ex) {
-							// Invalid date, it can't be parsed
-							return false;
-						}
-					}
+				$date = DateTime::createFromFormat(self::$settings['datetime_format'], $string);
+				if($date === false) {
+					$date = DateTime::createFromFormat(self::$settings['date_format'], $string);
 				}
 
-				// PHP 5.2: Fallback to DateTime parsing.
-				// Note that this parsing will not respect European dates.
-				else {
+				// Handle dates that are in a different format to Symphony's config
+				// DateTime is much the same as `strtotime` and will handle relative
+				// dates.
+				if($date === false) {
 					try {
 						$date = new DateTime($string);
 					}
@@ -301,54 +283,16 @@
 		}
 
 		/**
-		 * A wrapper for get, this function will return a HTML string representing
-		 * an `<abbr>` element which contained the formatted date of now, and an
-		 * RFC 2822 formatted date (Thu, 21 Dec 2000 16:01:07 +0200) as the title
-		 * attribute. Symphony uses this in it's status messages so that it can
-		 * dynamically update how long ago the action took place using Javascript.
-		 *
-		 * @deprecated This will be removed in the next version of Symphony
-		 * @param string $format
-		 *  A valid PHP date format
-		 * @return string
-		 *  A HTML string of an `<abbr>` element with a class of 'timeago' and the current
-		 *  date (RFC 2822) as the title element. The value is the current time as
-		 *  specified by the `$format`.
-		 */
-		public static function getTimeAgo($format = __SYM_TIME_FORMAT__){
-			$time = Widget::Time('', $format);
-			return $time->generate();
-		}
-
-		/**
 		 * This functions acts as a standard way to get the zones
-		 * available on the system. For PHP5.2, these constants are
-		 * just copied from PHP5.3
+		 * available on the system.
 		 *
 		 * @since Symphony 2.3
 		 * @link http://au2.php.net/manual/en/class.datetimezone.php
 		 * @return array
 		 */
 		public static function getZones() {
-			if(PHP_VERSION_ID >= 50300) {
-				$ref = new ReflectionClass('DateTimeZone');
-				return $ref->getConstants();
-			}
-			else {
-				return array(
-					'AFRICA' => 1,
-					'AMERICA' => 2,
-					'ANTARCTICA' => 4,
-					'ARCTIC' => 8,
-					'ASIA' => 16,
-					'ATLANTIC' => 32,
-					'AUSTRALIA' => 64,
-					'EUROPE' => 128,
-					'INDIAN' => 256,
-					'PACIFIC' => 512,
-					'UTC' => 1024
-				);
-			}
+			$ref = new ReflectionClass('DateTimeZone');
+			return $ref->getConstants();
 		}
 
 		/**
@@ -365,19 +309,7 @@
 		 * @return array
 		 */
 		public static function getTimezones($zone = null) {
-			// PHP5.3 supports the `$what` parameter of the listIdentifiers function
-			if(PHP_VERSION_ID >= 50300) {
-				return DateTimeZone::listIdentifiers(constant('DateTimeZone::' . $zone));
-			}
-			else {
-				$timezones = DateTimeZone::listIdentifiers();
-
-				foreach($timezones as $index => $timezone) {
-					if(stripos($timezone, $zone) === false) unset($timezones[$index]);
-				}
-
-				return $timezones;
-			}
+			return DateTimeZone::listIdentifiers(constant('DateTimeZone::' . $zone));
 		}
 
 		/**
@@ -429,20 +361,22 @@
 		 */
 		public static function getDateFormats(){
 			return array(
-				'Y/m/d',	// e. g. 2011/01/20
-				'm/d/Y',	// e. g. 01/20/2011
-				'm/d/y',	// e. g. 10/20/11
-				'Y-m-d',	// e. g. 2011-01-20
-				'm-d-Y',	// e. g. 01-20-2011
-				'm-d-y',	// e. g. 01-20-11
-				'd.m.Y',	// e. g. 20.01.2011
-				'j.n.Y',	// e. g. 20.1.2011 - no leading zeros
-				'd.m.y',	// e. g. 20.01.11
-				'j.n.y',	// e. g. 20.1.11 - no leading zeros
-				'd F Y',	// e. g. 20 January 2011
-				'd M Y',	// e. g. 20 Jan 2011
-				'j. F Y',	// e. g. 20. January 2011 - no leading zeros
-				'j. M. Y',	// e. g. 20. Jan. 2011 - no leading zeros
+				'Y/m/d',	// e. g. 2014/01/02
+				'd/m/Y',	// e. g. 01/02/2014
+				'm/d/Y',	// e. g. 01/02/2014
+				'm/d/y',	// e. g. 01/02/14
+				'Y-m-d',	// e. g. 2014-01-02
+				'm-d-Y',	// e. g. 01-02-2014
+				'm-d-y',	// e. g. 01-02-14
+				'd.m.Y',	// e. g. 02.01.2014
+				'j.n.Y',	// e. g. 2.1.2014 - no leading zeros
+				'j.n.y',	// e. g. 2.1.14 - no leading zeros
+				'd.m.Y',	// e. g. 02.01.2014
+				'd.m.y',	// e. g. 02.01.14
+				'd F Y',	// e. g. 02 January 2014
+				'd M Y',	// e. g. 02 Jan 2014
+				'j. F Y',	// e. g. 2. January 2014 - no leading zeros
+				'j. M. Y',	// e. g. 2. Jan. 2014 - no leading zeros
 			);
 		}
 

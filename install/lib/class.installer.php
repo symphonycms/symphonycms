@@ -254,7 +254,8 @@
 					$fields['database']['host'],
 					$fields['database']['user'],
 					$fields['database']['password'],
-					$fields['database']['port']
+					$fields['database']['port'],
+					$fields['database']['db']
 				);
 			}
 			catch(DatabaseException $e){
@@ -285,9 +286,6 @@
 				}
 				// Check the database credentials
 				else if(Symphony::Database()->isConnected()) {
-					// Looking for the given database name
-					Symphony::Database()->select($fields['database']['db']);
-
 					// Incorrect MySQL version
 					$version = Symphony::Database()->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
 					if(version_compare($version, '5.0', '<')){
@@ -301,8 +299,8 @@
 						// Existing table prefix
 						$tables = Symphony::Database()->fetch(sprintf(
 							"SHOW TABLES FROM `%s` LIKE '%s'",
-							mysql_real_escape_string($fields['database']['db'], Symphony::Database()->getConnectionResource()),
-							mysql_real_escape_string($fields['database']['tbl_prefix'], Symphony::Database()->getConnectionResource()) . '%'
+							mysqli_real_escape_string(Symphony::Database()->getConnectionResource(), $fields['database']['db']),
+							mysqli_real_escape_string(Symphony::Database()->getConnectionResource(), $fields['database']['tbl_prefix']) . '%'
 						));
 
 						if(is_array($tables) && !empty($tables)) {
@@ -366,6 +364,14 @@
 				$errors['user-invalid-email']  = array(
 					'msg' => 'Invalid email address supplied.',
 					'details' =>  __('This is not a valid email address. You must provide an email address since you will need it if you forget your password.')
+				);
+			}
+
+			// Admin path not entered
+			if(trim($fields['symphony']['admin-path']) == ''){
+				$errors['no-symphony-path']  = array(
+					'msg' => 'No Symphony path entered.',
+					'details' => __('You must enter a path for accessing Symphony, or leave the default. This will be used to access Symphony\'s backend.')
 				);
 			}
 

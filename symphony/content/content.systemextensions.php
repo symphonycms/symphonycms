@@ -35,12 +35,17 @@
 					'handle' => 'name'
 				),
 				array(
-					'label' => __('Installed Version'),
+					'label' => __('Version'),
 					'sortable' => false,
 				),
 				array(
-					'label' => __('Enabled'),
+					'label' => __('Status'),
 					'sortable' => false,
+				),
+				array(
+					'label' => __('Links'),
+					'sortable' => false,
+					'handle' => 'links'
 				),
 				array(
 					'label' => __('Authors'),
@@ -64,67 +69,105 @@
 			else{
 				foreach($extensions as $name => $about){
 
+					// Name
 					$td1 = Widget::TableData($about['name']);
+					$td1->appendChild(Widget::Label(__('Select %s Extension', array($about['name'])), null, 'accessible', null, array(
+						'for' => 'extension-' . $name
+					)));
+					$td1->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox', array(
+						'id' => 'extension-' . $name
+					)));
+
+					// Version
 					$installed_version = Symphony::ExtensionManager()->fetchInstalledVersion($name);
-					$td2 = Widget::TableData(is_null($installed_version) ? __('Not Installed') : $installed_version);
 
-					// If the extension is using the new `extension.meta.xml` format, check the
-					// compatibility of the extension. This won't prevent a user from installing
-					// it, but it will let them know that it requires a version of Symphony greater
-					// then what they have.
 					if(in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
-						$td3 = Widget::TableData(__('Enable to install %s', array($about['version'])));
+						$td2 = Widget::TableData($about['version']);
 					}
-					if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
-						$td3 = Widget::TableData(__('Requires Symphony %s', array($about['required_version'])));
-					}
-					if(in_array(EXTENSION_ENABLED, $about['status'])) {
-						$td3 = Widget::TableData(__('Yes'));
-					}
-					if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
-						if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status']))
-							$td3 = Widget::TableData(__('New version %1$s, Requires Symphony %2$s', array($about['version'], $about['required_version'])));
-						else
-							$td3 = Widget::TableData(__('Enable to update to %s', array($about['version'])));
-					}
-					if(in_array(EXTENSION_DISABLED, $about['status'])) {
-						$td3 = Widget::TableData(__('Disabled'));
-					}
-
-					$td4 = Widget::TableData(NULL);
-					if(isset($about['author'][0]) && is_array($about['author'][0])) {
-						$authors = '';
-						foreach($about['author'] as $i => $author) {
-
-							if(isset($author['website']))
-								$link = Widget::Anchor($author['name'], General::validateURL($author['website']));
-							else if(isset($author['email']))
-								$link = Widget::Anchor($author['name'], 'mailto:' . $author['email']);
-							else
-								$link = $author['name'];
-
-							$authors .= ($link instanceof XMLElement ? $link->generate() : $link)
-									. ($i != count($about['author']) - 1 ? ", " : "");
-						}
-
-						$td4->setValue($authors);
+					elseif(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+						$td2 = Widget::TableData($installed_version . '<i> → ' . $about['version'] . '</i>');
 					}
 					else {
-						if(isset($about['author']['website']))
-							$link = Widget::Anchor($about['author']['name'], General::validateURL($about['author']['website']));
-						else if(isset($about['author']['email']))
-							$link = Widget::Anchor($about['author']['name'], 'mailto:' . $about['author']['email']);
-						else
-							$link = $about['author']['name'];
-
-						$td4->setValue($link instanceof XMLElement ? $link->generate() : $link);
+						$td2 = Widget::TableData($installed_version);
 					}
 
-					$td4->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox'));
+					// Status
+					$trClasses = array();
+					$trStatus = '';
+					$tdMessage = __('Status unavailable');
+
+					if(in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
+						$tdMessage = __('Not installed');
+						$trClasses[] = 'inactive';
+						$trClasses[] = 'extension-can-install';
+					}
+					if(in_array(EXTENSION_DISABLED, $about['status'])) {
+						$tdMessage = __('Disabled');
+						$trStatus = 'status-notice';
+					}
+					if(in_array(EXTENSION_ENABLED, $about['status'])) {
+						$tdMessage = __('Enabled');
+					}
+					if(in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+						$tdMessage = __('Update available');
+						$trClasses[] = 'extension-can-update';
+						$trStatus = 'status-ok';
+					}
+					if(in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
+						$tdMessage .= ', ' . __('requires Symphony %s', array($about['required_version']));
+						$trStatus = 'status-error';
+					}
+
+					$trClasses[] = $trStatus;
+					$td3 = Widget::TableData($tdMessage);
+
+					// Links
+					$tdLinks = array();
+
+					if($about['github'] != '') {
+						$tdLinks['github'] = Widget::Anchor('GitHub', General::validateURL($about['github']))->generate();
+					}
+					if($about['discuss'] != '') {
+						$tdLinks['discuss'] = Widget::Anchor('Discuss', General::validateURL($about['discuss']))->generate();
+					}
+					if($about['homepage'] != '') {
+						$tdLinks['homepage'] = Widget::Anchor('Homepage', General::validateURL($about['homepage']))->generate();
+					}
+					if($about['wiki'] != '') {
+						$tdLinks['wiki'] = Widget::Anchor('Wiki', General::validateURL($about['wiki']))->generate();
+					}
+					if($about['issues'] != '') {
+						$tdLinks['issues'] = Widget::Anchor('Issues', General::validateURL($about['issues']))->generate();
+					}
+
+					$td4 = Widget::TableData($tdLinks);
+
+					// Authors
+					$tdAuthors = array();
+
+					if(!is_array($about['author'])) {
+						$about['author'] = array($about['author']);
+					}
+
+					foreach($about['author'] as $author) {
+						if(isset($author['website'])) {
+							$tdAuthors[] = Widget::Anchor($author['name'], General::validateURL($author['website']))->generate();
+						}
+						elseif(isset($author['github'])) {
+							$tdAuthors[] = Widget::Anchor($author['name'],  General::validateURL('https://github.com/' . $author['github']))->generate();
+						}
+						elseif(isset($author['email'])) {
+							$tdAuthors[] = Widget::Anchor($author['name'], 'mailto:' . $author['email'])->generate();
+						}
+						else {
+							$tdAuthors[] = $author['name'];
+						}
+					}
+
+					$td5 = Widget::TableData($tdAuthors);
 
 					// Add a row to the body array, assigning each cell to the row
-					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4), (in_array(EXTENSION_NOT_INSTALLED, $about['status']) ? 'inactive' : NULL));
-
+					$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5), implode(' ', $trClasses));
 				}
 			}
 
@@ -132,7 +175,9 @@
 				Widget::TableHead($aTableHead),
 				NULL,
 				Widget::TableBody($aTableBody),
-				'selectable'
+				'selectable',
+				null,
+				array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
 			);
 
 			$this->Form->appendChild($table);
@@ -147,7 +192,7 @@
 
 			$options = array(
 				array(NULL, false, __('With Selected...')),
-				array('enable', false, __('Enable/Install')),
+				array('enable', false, __('Enable')),
 				array('disable', false, __('Disable')),
 				array('uninstall', false, __('Uninstall'), 'confirm', null, array(
 					'data-message' => __('Are you sure you want to uninstall the selected extensions?')

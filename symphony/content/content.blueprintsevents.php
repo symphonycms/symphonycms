@@ -35,6 +35,7 @@
 
 		public function __form($readonly=false) {
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
+			
 			if($formHasErrors) {
 				$this->pageAlert(
 					__('An error occurred while processing this form. See below for details.')
@@ -43,10 +44,12 @@
 			}
 			// These alerts are only valid if the form doesn't have errors
 			else if(isset($this->_context[2])) {
+				$time = Widget::Time();
+
 				switch($this->_context[2]) {
 					case 'saved':
 						$this->pageAlert(
-							__('Event updated at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Event updated at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'
@@ -57,7 +60,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Event created at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Event created at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'
@@ -132,25 +135,13 @@
 				$fieldset->setAttribute('class', 'settings');
 				$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-				$group = new XMLElement('div');
-				$group->setAttribute('class', 'two columns');
-
-			// Name
-				$label = Widget::Label(__('Name'));
-				$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
-
+			// Target
+				$sources = new XMLElement('div', null, array('class' => 'apply actions'));
 				$div = new XMLElement('div');
-				$div->setAttribute('class', 'column');
-				if(isset($this->_errors['name'])) {
-					$div->appendChild(Widget::Error($label, $this->_errors['name']));
-				}
-				else {
-					$div->appendChild($label);
-				}
-				$group->appendChild($div);
+				$label = Widget::Label(__('Target'), null, 'apply-label-left');
+				$sources->appendChild($label);
+				$sources->appendChild($div);
 
-			// Source
-				$label = Widget::Label(__('Source'));
 				$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 				$options = array();
 				$section_options = array();
@@ -178,28 +169,41 @@
 					$options[] = $p;
 				}
 
-				$label->appendChild(
-					Widget::Select('fields[source]', $options, array('id' => 'event-context'))
+				$div->appendChild(
+					Widget::Select('source', $options, array('id' => 'event-context'))
 				);
+
+				if(isset($this->_errors['source'])) {
+					$this->Context->prependChild(Widget::Error($sources, $this->_errors['source']));
+				}
+				else {
+					$this->Context->prependChild($sources);
+				}
+
+				$this->Form->appendChild(
+					Widget::Input('fields[source]', $options[0]['options'][0][0], 'hidden', array('id' => 'event-source'))
+				);
+
+			// Name
+				$group = new XMLElement('div');
+				$label = Widget::Label(__('Name'));
+				$label->appendChild(Widget::Input('fields[name]', General::sanitize($fields['name'])));
 
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'column');
-				if(isset($this->_errors['source'])) {
-					$div->appendChild(Widget::Error($label, $this->_errors['source']));
+				if(isset($this->_errors['name'])) {
+					$div->appendChild(Widget::Error($label, $this->_errors['name']));
 				}
 				else {
 					$div->appendChild($label);
 				}
-
 				$group->appendChild($div);
 				$fieldset->appendChild($group);
 				$this->Form->appendChild($fieldset);
 
 				// Filters
 				$fieldset = new XMLElement('fieldset');
-				$fieldset->setAttribute('id', 'sections');
 				$fieldset->setAttribute('class', 'settings pickable');
-				$fieldset->setAttribute('data-relation', 'event-context');
 				$fieldset->appendChild(new XMLElement('legend', __('Filters')));
 				$p = new XMLElement('p',
 					__('Event Filters add additional conditions or actions to an event.')
@@ -230,8 +234,37 @@
 					'options' => &$options
 				));
 
-				$fieldset->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple')));
+				$fieldset->appendChild(Widget::Select('fields[filters][]', $options, array('multiple' => 'multiple', 'id' => 'event-filters')));
+				$this->Form->appendChild($fieldset);
 
+				// Connections
+				$fieldset = new XMLElement('fieldset');
+				$fieldset->setAttribute('class', 'settings');
+				$fieldset->appendChild(new XMLElement('legend', __('Attach to Pages')));
+				$p = new XMLElement('p', __('The event will only be available on the selected pages.'));
+				$p->setAttribute('class', 'help');
+				$fieldset->appendChild($p);
+
+				$div = new XMLElement('div');
+				$label = Widget::Label(__('Pages'));
+
+				$pages = PageManager::fetch();
+				$event_handle = str_replace('-', '_', General::createHandle($fields['name']));
+				$connections = ResourceManager::getAttachedPages(RESOURCE_TYPE_EVENT, $event_handle);
+				$selected = array();
+				foreach($connections as $connection) {
+					$selected[] = $connection['id'];
+				}
+
+				$options = array();
+				foreach($pages as $page) {
+					$options[] = array($page['id'], in_array($page['id'], $selected), $page['title']);
+				}
+
+				$label->appendChild(Widget::Select('fields[connections][]', $options, array('multiple' => 'multiple')));
+				$div->appendChild($label);
+
+				$fieldset->appendChild($div);
 				$this->Form->appendChild($fieldset);
 
 			// Providers
@@ -290,20 +323,19 @@
 			}
 
 			// If we are editing an event, it assumed that the event has documentation
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('id', 'event-documentation');
+			$fieldset->setAttribute('class', 'settings');
 			if($isEditing && method_exists($existing, 'documentation')) {
-				// Description
-				$fieldset = new XMLElement('fieldset');
-				$fieldset->setAttribute('class', 'settings');
-
 				$doc = $existing->documentation();
 				if($doc) {
 					$fieldset->setValue(
-						'<legend>' . __('Description') . '</legend>' . PHP_EOL .
-						General::tabsToSpaces(is_object($doc) ? $doc->generate(true) : $doc, 2)
+						'<legend>' . __('Documentation') . '</legend>' . PHP_EOL .
+						General::tabsToSpaces(is_object($doc) ? $doc->generate(true, 4) : $doc)
 					);
-					$this->Form->appendChild($fieldset);
 				}
 			}
+			$this->Form->appendChild($fieldset);
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
@@ -457,129 +489,21 @@
 					$this->__injectFilters($eventShell, $filters);
 
 				// Add Documentation
+					require_once(CONTENT . '/content.ajaxeventdocumentation.php');
+					$ajaxEventDoc = new contentAjaxEventDocumentation();
 					$documentation = NULL;
-					$documentation_parts = array();
-					$documentation_parts[] = new XMLElement('h3', __('Success and Failure XML Examples'));
-					$documentation_parts[] = new XMLElement('p', __('When saved successfully, the following XML will be returned:'));
+					$doc_parts = array();
 
-					if($multiple) {
-						$code = new XMLElement($rootelement);
-						$entry = new XMLElement('entry', NULL, array('index' => '0', 'result' => 'success' , 'type' => 'create | edit'));
-						$entry->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
+					// Add Documentation (Success/Failure)
+					$ajaxEventDoc->addEntrySuccessDoc($doc_parts, $rootelement, $fields['source'], $filters);
+					$ajaxEventDoc->addEntryFailureDoc($doc_parts, $rootelement, $fields['source'], $filters);
 
-						$code->appendChild($entry);
-					}
+					// Filters
+					$ajaxEventDoc->addDefaultFiltersDoc($doc_parts, $rootelement, $fields['source'], $filters);
 
-					else {
-						$code = new XMLElement($rootelement, NULL, array('result' => 'success' , 'type' => 'create | edit'));
-						$code->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
-					}
-
-					$documentation_parts[] = self::processDocumentationCode($code);
-					$documentation_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? ' (<strong> ' . __('Notice that it is possible to get mixtures of success and failure messages when using the ‘Allow Multiple’ option') . '</strong>)' : NULL) . ':');
-
-					if($multiple) {
-						$code = new XMLElement($rootelement);
-
-						$entry = new XMLElement('entry', NULL, array('index' => '0', 'result' => 'error'));
-						$entry->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
-						$entry->appendChild(new XMLElement('field-name', NULL, array('type' => 'invalid | missing')));
-						$code->appendChild($entry);
-
-						$entry = new XMLElement('entry', NULL, array('index' => '1', 'result' => 'success' , 'type' => 'create | edit'));
-						$entry->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
-						$code->appendChild($entry);
-					}
-
-					else {
-						$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
-						$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
-						$code->appendChild(new XMLElement('field-name', NULL, array('type' => 'invalid | missing')));
-					}
-
-					$code->setValue('...', false);
-					$documentation_parts[] = self::processDocumentationCode($code);
-
-					if(is_array($filters) && !empty($filters)) {
-						$documentation_parts[] = new XMLElement('p', __('The following is an example of what is returned if any options return an error:'));
-
-						$code = new XMLElement($rootelement, NULL, array('result' => 'error'));
-						$code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
-						$code->appendChild(new XMLElement('filter', NULL, array('name' => 'admin-only', 'status' => 'failed')));
-						$code->appendChild(new XMLElement('filter', __('Recipient not found'), array('name' => 'send-email', 'status' => 'failed')));
-						$code->setValue('...', false);
-						$documentation_parts[] = self::processDocumentationCode($code);
-					}
-
-					$documentation_parts[] = new XMLElement('h3', __('Example Front-end Form Markup'));
-					$documentation_parts[] = new XMLElement('p', __('This is an example of the form markup you can use on your frontend:'));
-					$container = new XMLElement('form', NULL, array('method' => 'post', 'action' => '', 'enctype' => 'multipart/form-data'));
-					$container->appendChild(Widget::Input('MAX_FILE_SIZE', (string)min(ini_size_to_bytes(ini_get('upload_max_filesize')), Symphony::Configuration()->get('max_upload_size', 'admin')), 'hidden'));
-
-					if(is_numeric($fields['source'])) {
-						$section = SectionManager::fetch($fields['source']);
-						if($section instanceof Section) {
-							$section_fields = $section->fetchFields();
-							if(is_array($section_fields) && !empty($section_fields)) {
-								foreach($section_fields as $f) {
-									if ($f->getExampleFormMarkup() instanceof XMLElement) {
-										$container->appendChild($f->getExampleFormMarkup());
-									}
-								}
-							}
-						}
-					}
-
-					$container->appendChild(Widget::Input('action['.$rootelement.']', __('Submit'), 'submit'));
-					$code = $container->generate(true);
-
-					$documentation_parts[] = self::processDocumentationCode(($multiple ? str_replace('fields[', 'fields[0][', $code) : $code));
-
-					$documentation_parts[] = new XMLElement('p', __('To edit an existing entry, include the entry ID value of the entry in the form. This is best as a hidden field like so:'));
-					$documentation_parts[] = self::processDocumentationCode(Widget::Input('id' . ($multiple ? '[0]' : NULL), '23', 'hidden'));
-
-					$documentation_parts[] = new XMLElement('p', __('To redirect to a different location upon a successful save, include the redirect location in the form. This is best as a hidden field like so, where the value is the URL to redirect to:'));
-					$documentation_parts[] = self::processDocumentationCode(Widget::Input('redirect', URL.'/success/', 'hidden'));
-
-					if(in_array('send-email', $filters)) {
-						$documentation_parts[] = new XMLElement('h3', __('Send Notification Email'));
-
-						$documentation_parts[] = new XMLElement('p',
-							__('Upon the event successfully saving the entry, this option takes input from the form and send an email to the desired recipient.')
-							. ' <strong>'
-							. __('It currently does not work with ‘Allow Multiple’')
-							. '</strong>. '
-							. __('The following are the recognised fields:')
-						);
-
-						$documentation_parts[] = self::processDocumentationCode(
-							'send-email[sender-email] // '.__('Optional').PHP_EOL.
-							'send-email[sender-name] // '.__('Optional').PHP_EOL.
-							'send-email[reply-to-email] // '.__('Optional').PHP_EOL.
-							'send-email[reply-to-name] // '.__('Optional').PHP_EOL.
-							'send-email[subject]'.PHP_EOL.
-							'send-email[body]'.PHP_EOL.
-							'send-email[recipient] // '.__('list of comma-separated author usernames.'));
-
-						$documentation_parts[] = new XMLElement('p', __('All of these fields can be set dynamically using the exact field name of another field in the form as shown below in the example form:'));
-
-						$documentation_parts[] = self::processDocumentationCode('<form action="" method="post">
-		<fieldset>
-			<label>'.__('Name').' <input type="text" name="fields[author]" value="" /></label>
-			<label>'.__('Email').' <input type="text" name="fields[email]" value="" /></label>
-			<label>'.__('Message').' <textarea name="fields[message]" rows="5" cols="21"></textarea></label>
-			<input name="send-email[sender-email]" value="fields[email]" type="hidden" />
-			<input name="send-email[sender-name]" value="fields[author]" type="hidden" />
-			<input name="send-email[reply-to-email]" value="fields[email]" type="hidden" />
-			<input name="send-email[reply-to-name]" value="fields[author]" type="hidden" />
-			<input name="send-email[subject]" value="You are being contacted" type="hidden" />
-			<input name="send-email[body]" value="fields[message]" type="hidden" />
-			<input name="send-email[recipient]" value="fred" type="hidden" />
-			<input id="submit" type="submit" name="action[save-contact-form]" value="Send" />
-		</fieldset>
-	</form>');
-
-					}
+					// Frontend Markup
+					$ajaxEventDoc->addFrontendMarkupDoc($doc_parts, $rootelement, $fields['source'], $filters);
+					$ajaxEventDoc->addSendMailFilterDoc($doc_parts, $rootelement, $fields['source'], $filters);
 
 					/**
 					 * Allows adding documentation for new filters. A reference to the $documentation
@@ -592,16 +516,16 @@
 					 * @param array $documentation
 					 *  An array of all the documentation XMLElements, passed by reference
 					 */
-					Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $this->_context[0] . '/', array(
+					Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $rootelement . '/', array(
 						'selected' => $filters,
-						'documentation' => &$documentation_parts
+						'documentation' => &$doc_parts
 					));
 
-					$documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $documentation_parts));
+					$documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $doc_parts));
 					$documentation = str_replace('\'', '\\\'', $documentation);
 
 					$eventShell = str_replace('<!-- CLASS EXTENDS -->', $extends, $eventShell);
-					$eventShell = str_replace('<!-- DOCUMENTATION -->', General::tabsToSpaces($documentation, 2), $eventShell);
+					$eventShell = str_replace('<!-- DOCUMENTATION -->', General::tabsToSpaces($documentation, 4), $eventShell);
 				}
 
 				$eventShell = str_replace('<!-- ROOT ELEMENT -->', $rootelement, $eventShell);
@@ -664,8 +588,11 @@
 						, Alert::ERROR
 					);
 				}
-				// Write Successful, add record to the database
+				// Write successful
 				else {
+					// Attach this event to pages
+					$connections = $fields['connections'];
+					ResourceManager::setPages(RESOURCE_TYPE_EVENT, is_null($existing_handle) ? $classname : $existing_handle, $connections);
 
 					if($queueForDeletion) {
 						General::deleteFile($queueForDeletion);
@@ -724,10 +651,6 @@
 
 				}
 			}
-		}
-
-		public static function processDocumentationCode($code) {
-			return new XMLElement('pre', '<code>' . str_replace('<', '&lt;', str_replace('&', '&amp;', trim((is_object($code) ? $code->generate(true) : $code)))) . '</code>', array('class' => 'XML'));
 		}
 
 		public function __injectFilters(&$shell, $elements) {

@@ -617,7 +617,12 @@
 		public static function Apply(array $options = null){
 			$fieldset = new XMLElement('fieldset', NULL, array('class' => 'apply'));
 			$div = new XMLElement('div');
-			$div->appendChild(Widget::Select('with-selected', $options));
+			$div->appendChild(Widget::Label(__('Actions'), null, 'accessible', null, array(
+				'for' => 'with-selected'
+			)));
+			$div->appendChild(Widget::Select('with-selected', $options, array(
+				'id' => 'with-selected'
+			)));
 			$fieldset->appendChild($div);
 			$fieldset->appendChild(new XMLElement('button', __('Apply'), array('name' => 'action[apply]', 'type' => 'submit')));
 
@@ -691,21 +696,4 @@
 			return $drawer;
 		}
 
-		/**
-		 * Will wrap a `<div>` around a desired element to trigger the default
-		 * Symphony error styling.
-		 *
-		 * @deprecated Since Symphony 2.3. This function will be removed in a
-		 *  future Symphony release. Use `Widget::Error` instead.
-		 * @see core.Widget#Error()
-		 * @param XMLElement $element
-		 *  The element that should be wrapped with an error
-		 * @param string $message
-		 *  The text for this error. This will be appended after the $element,
-		 *  but inside the wrapping `<div>`
-		 * @return XMLElement
-		 */
-		public static function wrapFormElementWithError(XMLElement $element, $message){
-			return Widget::Error($element, $message);
-		}
 	}

@@ -98,29 +98,6 @@
 		}
 
 		/**
-		 * The about method allows an extension to provide
-		 * information about itself as an associative array. eg.
-		 * `
-		 *		'name' => 'Name of Extension',
-		 *		'version' => '1.8',
-		 *		'release-date' => 'YYYY-MM-DD',
-		 *		'author' => array(
-		 *			'name' => 'Author Name',
-		 *			'website' => 'Author Website',
-		 *			'email' => 'Author Email'
-		 *		),
-		 *		'description' => 'A description about this extension'
-		 * `
-		 * @deprecated Since Symphony 2.3, the `about()` function is deprecated for extensions
-		 *  in favour of the `extension.meta.xml` file. It will be removed in Symphony 2.4.
-		 * @return array
-		 *  An associative array describing this extension.
-		 */
-		public function about() {
-			return array();
-		}
-
-		/**
 		 * Extensions use delegates to perform logic at certain times
 		 * throughout Symphony. This function allows an extension to
 		 * subscribe to a delegate which will notify the extension when it
@@ -153,7 +130,7 @@
 		 * The extension can also inject link items into existing
 		 * group's of the navigation using the 'location' key, which will accept a numeric
 		 * index of the existing group, or the handle of an existing group. Navigation items
-		 * in Symphony are initially provided from the `ASSETS . /navigation.xml` file
+		 * in Symphony are initially provided from the `ASSETS . /xml/navigation.xml` file
 		 * which defines the default Blueprints and System groups. The indexes for these
 		 * groups are 100 and 200 respectively.
 		 *
@@ -246,7 +223,7 @@
 		 * this is not possible through this function and rather it should be done using the
 		 * `NavigationPreRender` delegate.
 		 *
-		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
+		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
 		 * @return array
 		 *  An associative array of navigation items to add to the Navigation. This function
 		 *  defaults to returning null, which adds nothing to the Symphony navigation

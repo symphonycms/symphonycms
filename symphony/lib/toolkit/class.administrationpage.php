@@ -203,7 +203,7 @@
 				$this->insertAction($a);
 			}
 
-			$this->Breadcrumbs->appendChild(new XMLElement('h2', $value));
+			$this->Breadcrumbs->appendChild(new XMLElement('h2', $value, array('role' => 'heading', 'id' => 'symphony-subheading')));
 		}
 
 		/**
@@ -242,6 +242,7 @@
 			else {
 				$ul->appendChild($li);
 			}
+
 		}
 
 		/**
@@ -300,6 +301,7 @@
 		public function insertDrawer(XMLElement $drawer, $position = 'horizontal', $button = 'append') {
 			$drawer->addClass($position);
 			$drawer->setAttribute('data-position', $position);
+			$drawer->setAttribute('role', 'complementary');
 			$this->Drawer[$position][] = $drawer;
 
 			if(in_array($button, array('prepend', 'append'))) {
@@ -343,50 +345,46 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge,chrome=1')), 1);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1')), 2);
 
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.css', 'screen', 30);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.legacy.css', 'screen', 31);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.grids.css', 'screen', 32);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.forms.css', 'screen', 33);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.tables.css', 'screen', 34);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.frames.css', 'screen', 35);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.tabs.css', 'screen', 36);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.drawers.css', 'screen', 37);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.associations.css', 'screen', 38);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.notices.css', 'screen', 39);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/admin.css', 'screen', 40);
+			// Add styles
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.min.css', 'screen', null, false);
 
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/jquery.js', 50);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.js', 60);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.collapsible.js', 61);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.orderable.js', 62);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.selectable.js', 63);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.duplicator.js', 64);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.tags.js', 65);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.suggestions.js', 66);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.pickable.js', 67);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.timeago.js', 68);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.notify.js', 69);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.drawer.js', 70);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/admin.js', 80);
+			// Add scripts
+			$environment = array(
+
+				'root'     => URL,
+				'symphony' => SYMPHONY_URL,
+				'path'     => '/' . Symphony::Configuration()->get('admin-path', 'symphony'),
+				'route'    => getCurrentPage(),
+				'lang'     => Lang::get(),
+				'user'     => array(
+
+					'fullname' => Administration::instance()->Author->getFullName(),
+					'name'     => Administration::instance()->Author->get('first_name'),
+					'type'     => Administration::instance()->Author->get('user_type'),
+					'id'       => Administration::instance()->Author->get('id')
+				),
+
+				'env' => array_merge(
+
+					array('page-namespace' => Symphony::getPageNamespace()), $this->_context
+				)
+			);
 
 			$this->addElementToHead(
-				new XMLElement(
-					'script',
-					"Symphony.Context.add('env', " . json_encode(array_merge(
-						array('page-namespace' => Symphony::getPageNamespace()),
-						$this->_context
-					)) . "); Symphony.Context.add('root', '" . URL . "');",
-					array('type' => 'text/javascript')
-				), 72
+				new XMLElement('script', json_encode($environment), array(
+					'type' => 'application/json',
+					'id' => 'environment'
+				)), 1
 			);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.min.js', null, false);
 
 			// Initialise page containers
 			$this->Wrapper = new XMLElement('div', NULL, array('id' => 'wrapper'));
 			$this->Header = new XMLElement('header', NULL, array('id' => 'header'));
 			$this->Context = new XMLElement('div', NULL, array('id' => 'context'));
 			$this->Breadcrumbs = new XMLElement('div', NULL, array('id' => 'breadcrumbs'));
-			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents'));
-			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post');
+			$this->Contents = new XMLElement('div', NULL, array('id' => 'contents', 'role' => 'main'));
+			$this->Form = Widget::Form(Administration::instance()->getCurrentPageURL(), 'post', null, null, array('role' => 'form'));
 
 			/**
 			 * Allows developers to insert items into the page HEAD. Use
@@ -436,11 +434,11 @@
 
 		/**
 		 * Checks the current Symphony Author can access the current page.
-		 * This check uses the `ASSETS . /navigation.xml` file to determine
+		 * This check uses the `ASSETS . /xml/navigation.xml` file to determine
 		 * if the current page (or the current page namespace) can be viewed
 		 * by the currently logged in Author.
 		 *
-		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
+		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
 		 * @return boolean
 		 *  True if the Author can access the current page, false otherwise
 		 */
@@ -709,9 +707,9 @@
 			 */
 			Symphony::ExtensionManager()->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
 
-			$navElement = new XMLElement('nav', NULL, array('id' => 'nav'));
-			$contentNav = new XMLElement('ul', NULL, array('class' => 'content'));
-			$structureNav = new XMLElement('ul', NULL, array('class' => 'structure'));
+			$navElement = new XMLElement('nav', NULL, array('id' => 'nav', 'role' => 'navigation'));
+			$contentNav = new XMLElement('ul', NULL, array('class' => 'content', 'role' => 'menubar'));
+			$structureNav = new XMLElement('ul', NULL, array('class' => 'structure', 'role' => 'menubar'));
 
 			foreach($nav as $n){
 				if(isset($n['visible']) && $n['visible'] == 'no') continue;
@@ -728,11 +726,11 @@
 					$can_access = true;
 
 				if($can_access) {
-					$xGroup = new XMLElement('li', $n['name']);
+					$xGroup = new XMLElement('li', $n['name'], array('role' => 'presentation'));
 					if(isset($n['class']) && trim($n['name']) != '') $xGroup->setAttribute('class', $n['class']);
 
 					$hasChildren = false;
-					$xChildren = new XMLElement('ul');
+					$xChildren = new XMLElement('ul', null, array('role' => 'menu'));
 
 					if(is_array($n['children']) && !empty($n['children'])){
 						foreach($n['children'] as $c){
@@ -753,6 +751,7 @@
 
 							if($can_access_child) {
 								$xChild = new XMLElement('li');
+								$xChild->setAttribute('role', 'menuitem');
 								$linkChild = Widget::Anchor($c['name'], SYMPHONY_URL . $c['link']);
 								if (isset($c['target'])) {
 									$linkChild->setAttribute('target', $c['target']);
@@ -764,6 +763,7 @@
 						}
 
 						if($hasChildren){
+							$xGroup->setAttribute('aria-haspopup', 'true');
 							$xGroup->appendChild($xChildren);
 
 							if ($n['type'] === 'content')
@@ -795,9 +795,9 @@
 
 		/**
 		 * This method fills the `$nav` array with value
-		 * from the `ASSETS/navigation.xml` file
+		 * from the `ASSETS/xml/navigation.xml` file
 		 *
-		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
+		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
 		 *
 		 * @since Symphony 2.3.2
 		 *
@@ -805,7 +805,7 @@
 		 *  The navigation array that will receive nav nodes
 		 */
 		private function buildXmlNavigation(&$nav){
-			$xml = simplexml_load_file(ASSETS . '/navigation.xml');
+			$xml = simplexml_load_file(ASSETS . '/xml/navigation.xml');
 
 			// Loop over the default Symphony navigation file, converting
 			// it into an associative array representation
@@ -998,12 +998,12 @@
 		 * This function populates the `$_navigation` array with an associative array
 		 * of all the navigation groups and their links. Symphony only supports one
 		 * level of navigation, so children links cannot have children links. The default
-		 * Symphony navigation is found in the `ASSETS/navigation.xml` folder. This is
+		 * Symphony navigation is found in the `ASSETS/xml/navigation.xml` folder. This is
 		 * loaded first, and then the Section navigation is built, followed by the Extension
 		 * navigation. Additionally, this function will set the active group of the navigation
 		 * by checking the current page against the array of links.
 		 *
-		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/navigation.xml
+		 * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
 		 * @link https://github.com/symphonycms/symphony-2/blob/master/symphony/lib/toolkit/class.extension.php
 		 */
 		public function __buildNavigation(){
@@ -1012,24 +1012,6 @@
 			$this->buildXmlNavigation($nav);
 			$this->buildSectionNavigation($nav);
 			$this->buildExtensionsNavigation($nav);
-
-			/**
-			 * After building the Navigation properties array. This is specifically
-			 * for extensions to add their groups to the navigation or items to groups,
-			 * already in the navigation. Note: THIS IS FOR ADDING ONLY! If you need
-			 * to edit existing navigation elements, use the `NavigationPreRender` delegate.
-			 *
-			 * @deprecated This delegate is deprecated and will be removed in the next
-			 *  major release of Symphony. Extensions are encouraged to use provide the
-			 *  `fetchNavigation` method instead.
-			 * @delegate ExtensionsAddToNavigation
-			 * @param string $context
-			 * '/backend/'
-			 * @param array $navigation
-			 */
-			Symphony::ExtensionManager()->notifyMembers(
-				'ExtensionsAddToNavigation', '/backend/', array('navigation' => &$nav)
-			);
 
 			$pageCallback = Administration::instance()->getPageCallback();
 
@@ -1127,15 +1109,7 @@
 			$li->appendChild(
 				Widget::Anchor(
 					Administration::instance()->Author->getFullName(),
-					SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/',
-					null,
-					null,
-					null,
-					array(
-						'data-id' => Administration::instance()->Author->get('id'),
-						'data-name' => Administration::instance()->Author->get('first_name'),
-						'data-type' => Administration::instance()->Author->get('user_type')
-					)
+					SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/'
 				)
 			);
 			$ul->appendChild($li);
@@ -1145,24 +1119,6 @@
 			$ul->appendChild($li);
 
 			$this->Header->appendChild($ul);
-		}
-
-		/**
-		 * Returns all the page types that exist in this Symphony install.
-		 * There are 5 default system page types, and new types can be added
-		 * by Developers via the Page Editor.
-		 *
-		 * @deprecated This function will be removed in Symphony 2.4.
-		 *  The preferred way to access the page types is via
-		 *  `PageManager::fetchAvailablePageTypes()`
-		 * @see toolkit.PageManager#fetchAvailablePageTypes
-		 * @return array
-		 *  An array of strings of the page types used in this Symphony
-		 *  install. At the minimum, this will be an array with the values
-		 * 'index', 'XML', 'admin', '404' and '403'.
-		 */
-		public function __fetchAvailablePageTypes(){
-			return PageManager::fetchAvailablePageTypes();
 		}
 
 	}

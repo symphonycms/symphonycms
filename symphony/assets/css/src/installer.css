@@ -1,0 +1,203 @@
+/**
+ * Symphony Installer
+ */
+
+
+body {
+	padding: 8rem 10rem 5rem 5rem;
+	cursor: default;
+}
+
+form {
+	margin: 0 auto;
+	position: relative;
+	width: 45rem;
+	padding-left: 20rem;
+}
+
+/* Sidebar */
+
+h1 {
+	position: fixed;
+	margin-left: -20rem;
+	padding: 0 0 1.8rem 0;
+	text-align: right;
+	font-weight: normal;
+	font-size: 1.25rem;
+	width: 15rem;
+}
+
+h1 em {
+	display: block;
+	margin-top: 0.5rem;
+	color: rgba(0, 0, 0, 0.4);
+	text-align: right;
+	font-style: normal;
+	font-size: 1rem;
+}
+
+h1 + ul {
+	position: fixed;
+	color: rgba(0, 0, 0, 0.4);
+	text-align: right;
+	font-style: normal;
+	list-style: none;
+	margin: 5.5rem 0 0 -20rem;
+	padding: 0 0 1.8rem 0;
+	text-align: right;
+	font-weight: normal;
+	width: 15rem;
+}
+
+h1 + ul li.selected a {
+	color: #000;
+	text-decoration: none;
+}
+
+h1 + ul li.more {
+	margin-top: 1.2rem;
+}
+
+h1 + ul li.more a {
+	width: 15rem;
+	color: rgba(0, 0, 0, 0.4);
+	display: block;
+	text-decoration: none;
+}
+
+h1 + ul li.more a:hover {
+	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.3);
+}
+
+/* Multiple errors */
+
+.invalid ul {
+	position: static;
+	margin: 0 0 0 1.3rem;
+	padding: 0;
+	width: auto;
+	text-align: left;
+}
+
+.invalid li {
+	color: rgba(255, 255, 255, 0.7);
+	list-style-type: square;
+}
+
+.invalid li + li {
+	margin-top: 1rem;
+}
+
+/* Content */
+
+h2 {
+	margin-bottom: 1rem;
+	margin-right: 5rem;
+}
+
+fieldset + h2,
+p + h2 {
+	margin-top: 5rem;
+}
+
+fieldset {
+	margin: 5rem 0 0;
+	padding: 1rem 0 0;
+}
+
+fieldset legend {
+	font-size: 127.28%;
+	font-weight: normal;
+	color: #222;
+}
+
+fieldset > .columns:last-child .column {
+	margin-bottom: 0;
+}
+
+fieldset fieldset {
+	padding-top: 3rem !important;
+	margin: 0.5rem 0 0 !important;
+}
+
+fieldset label + fieldset {
+	margin-top: 2rem !important;
+}
+
+fieldset fieldset legend {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	font-size: 1rem;
+	color: rgba(0, 0, 0, 0.4);
+}
+
+.option {
+	margin: 0 0 0 2rem;
+}
+
+.option input {
+	margin-left: -2rem;
+	float: left;
+	min-width: 0;
+}
+
+.option + p {
+	margin: 0.5rem 3rem 0 2rem;
+	color: rgba(0, 0, 0, 0.4);
+}
+
+.submit {
+	text-align: right;
+	padding-bottom: 5rem;
+}
+
+dt {
+	font-weight: normal;
+	color: rgba(0, 0, 0, 0.4);
+	margin-bottom: 0.5rem;
+}
+
+ul {
+	margin-left: 0;
+}
+
+dd,
+ul li {
+	margin: 0 0 1.5rem 1rem;
+	font-weight: normal;
+	position: relative;
+}
+
+ul li {
+	margin: 0 0 0 1rem;
+}
+
+dd:before,
+ul li:before {
+	content: "\00b7";
+	float: left;
+	margin: 0 0 0 -1rem;
+}
+
+/* Log */
+
+pre {
+	margin-bottom: 1.5rem;
+	color: #474742;
+	white-space: normal;
+	font: inherit;
+}
+
+pre code {
+	display: block;
+	white-space: pre;
+	border: 0.1rem dashed #a1a19a;
+	padding: 0.5rem 0.7rem;
+	overflow: auto;
+}
+
+code {
+	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
+	tab-size: 4;
+}

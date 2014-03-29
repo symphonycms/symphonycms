@@ -97,10 +97,8 @@
 		/**
 		 * An associative array of the settings for this `Field` instance
 		 * @var array
-		 * @deprecated This variable will be renamed to `$_settings` in the next major
-		 *  release.
 		 */
-		protected $_fields = array();
+		protected $_settings = array();
 
 		/**
 		 * Whether this field is required inherently, defaults to false.
@@ -318,7 +316,7 @@
 		 *	the value of the setting.
 		 */
 		public function set($setting, $value){
-			$this->_fields[$setting] = $value;
+			$this->_settings[$setting] = $value;
 		}
 
 		/**
@@ -367,11 +365,11 @@
 		 *  for that setting.
 		 */
 		public function get($setting = null){
-			if(is_null($setting)) return $this->_fields;
+			if(is_null($setting)) return $this->_settings;
 
-			if(!isset($this->_fields[$setting])) return null;
+			if(!isset($this->_settings[$setting])) return null;
 
-			return $this->_fields[$setting];
+			return $this->_settings[$setting];
 		}
 
 		/**
@@ -381,7 +379,7 @@
 		 *  the key of the setting to unset.
 		 */
 		public function remove($setting){
-			unset($this->_fields[$setting]);
+			unset($this->_settings[$setting]);
 		}
 
 		/**
@@ -419,7 +417,7 @@
 
 			// Create header
 			$location = ($this->get('location') ? $this->get('location') : 'main');
-			$header = new XMLElement('header', NULL, array('class' => $location, 'data-name' => $this->name()));
+			$header = new XMLElement('header', NULL, array('class' => 'frame-header ' . $location, 'data-name' => $this->name()));
 			$label = (($this->get('label')) ? $this->get('label') : __('New Field'));
 			$header->appendChild(new XMLElement('h4', '<strong>' . $label . '</strong> <span class="type">' . $this->name() . '</span>'));
 			$wrapper->appendChild($header);
@@ -552,7 +550,7 @@
 		 * @param XMLElement $wrapper
 		 *	the parent element to append the XMLElement of the Validation select to,
 		 *  passed by reference.
-		 * @param string $selection (optional)
+		 * @param string $selected (optional)
 		 *	the current validator selection if there is one. defaults to null if there
 		 *	isn't.
 		 * @param string $name (optional)
@@ -560,8 +558,10 @@
 		 * @param string $type (optional)
 		 *	the type of input for the validation to apply to. this defaults to 'input'
 		 *	but also accepts 'upload'.
+		 * @param array $errors (optional)
+		 *	an associative array of errors
 		 */
-		public function buildValidationSelect(XMLElement &$wrapper, $selected = null, $name='fields[validator]', $type='input'){
+		public function buildValidationSelect(XMLElement &$wrapper, $selected = null, $name='fields[validator]', $type='input', array $errors = null) {
 
 			include(TOOLKIT . '/util.validators.php');
 			$rules = ($type == 'upload' ? $upload : $validators);
@@ -570,11 +570,23 @@
 			$label->setAttribute('class', 'column');
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input($name, $selected));
-			$wrapper->appendChild($label);
 
 			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
-			foreach($rules as $name => $rule) $ul->appendChild(new XMLElement('li', $name, array('class' => $rule)));
-			$wrapper->appendChild($ul);
+			foreach($rules as $name => $rule) {
+				$ul->appendChild(new XMLElement('li', $name, array('class' => $rule)));
+			}
+
+			if(isset($errors['validator'])) {
+				$div = new XMLElement('div');
+				$div->appendChild($label);
+				$div->appendChild($ul);
+
+				$wrapper->appendChild(Widget::Error($div, $errors['validator']));
+			}
+			else {
+				$wrapper->appendChild($label);
+				$wrapper->appendChild($ul);
+			}
 
 		}
 
@@ -632,6 +644,24 @@
 		}
 
 		/**
+		 * Append the default status footer to the field settings panel.
+		 * Displays the required and show column checkboxes.
+		 *
+		 * @param XMLElement $wrapper
+		 *	the parent XML element to append the checkbox to.
+		 */
+		public function appendStatusFooter(XMLElement &$wrapper) {
+			$fieldset = new XMLElement('fieldset');
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+
+			$this->appendRequiredCheckbox($div);
+			$this->appendShowColumnCheckbox($div);
+			
+			$fieldset->appendChild($div);
+			$wrapper->appendChild($fieldset);
+		}
+
+		/**
 		 * Append the show association html widget to the input parent XML element. This
 		 * widget allows fields that provide linking to hide or show the column in the linked
 		 * section, similar to how the Show Column functionality works, but for the linked
@@ -651,7 +681,7 @@
 			$wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
 
 			$label = Widget::Label();
-			$label->setAttribute('class', 'column');
+			$label->setAttribute('class', 'column show-associations');
 			if($help) $label->addClass('inline-help');
 			$input = Widget::Input($name, 'yes', 'checkbox');
 
@@ -680,21 +710,28 @@
 		 */
 		public function checkFields(array &$errors, $checkForDuplicates = true) {
 			$parent_section = $this->get('parent_section');
+			$label = $this->get('label');
 			$element_name = $this->get('element_name');
 
 			if(Lang::isUnicodeCompiled()) {
-				$valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $this->get('element_name'));
+				$valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $element_name);
 			}
 			else {
-				$valid_name = preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $this->get('element_name'));
+				$valid_name = preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $element_name);
 			}
 
-			if ($this->get('label') == '') {
+			if ($label == '') {
 				$errors['label'] = __('This is a required field.');
 			}
+			elseif (strtolower($label) == 'id') {
+				$errors['label'] = __('%s is a reserved name used by the system and is not allowed for a field handle. Try using %s instead.', array('<code>ID</code>', '<code>UID</code>'));				
+			}
 
-			if ($this->get('element_name') == '') {
+			if ($element_name == '') {
 				$errors['element_name'] = __('This is a required field.');
+			}
+			elseif ($element_name == 'id') {
+				$errors['element_name'] = __('%s is a reserved name used by the system and is not allowed for a field handle. Try using %s instead.', array('<code>id</code>', '<code>uid</code>'));				
 			}
 			elseif (!$valid_name) {
 				$errors['element_name'] = __('Invalid element name. Must be valid %s.', array('<code>QName</code>'));
@@ -702,6 +739,13 @@
 			elseif($checkForDuplicates) {
 				if(FieldManager::fetchFieldIDFromElementName($element_name, $parent_section) != $this->get('id')) {
 					$errors['element_name'] = __('A field with that element name already exists. Please choose another.');
+				}
+			}
+
+			// Check that if the validator is provided that it's a valid regular expression
+			if(!is_null($this->get('validator')) && $this->get('validator') !== '') {
+				if(@preg_match($this->get('validator'), 'teststring') === false) {
+					$errors['validator'] = __('Validation rule is not a valid regular expression');
 				}
 			}
 
@@ -1204,40 +1248,6 @@
 		}
 
 		/**
-		 * Create an association between a section and a field.
-		 *
-		 * @deprecated This function will be removed in a future Symphony release,
-		 *  Use `SectionManager::createSectionAssociation` instead.
-		 * @param integer $parent_section_id
-		 *  The linked section id.
-		 * @param integer $child_field_id
-		 *  The field ID of the field that is creating the association
-		 * @param integer $parent_field_id (optional)
-		 *  The field ID of the linked field in the linked section
-		 * @param boolean $show_association (optional)
-		 *  Whether of not the link should be shown on the entries table of the
-		 *  linked section. This defaults to true.
-		 * @return boolean
-		 *  true if the association was successfully made, false otherwise.
-		 */
-		public function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true){
-			return SectionManager::createSectionAssociation($parent_section_id, $child_field_id, $parent_field_id, $show_association);
-		}
-
-		/**
-		 * Permanently remove a section association for this field in the database.
-		 *
-		 * @deprecated This function will be removed in a future Symphony release,
-		 *  Use `SectionManager::removeSectionAssociation` instead.
-		 * @param integer $child_field_id
-		 *  the field ID of the linked section's linked field.
-		 * @return boolean
-		 */
-		public function removeSectionAssociation($child_field_id){
-			return SectionManager::removeSectionAssociation($child_field_id);
-		}
-
-		/**
 		 * Accessor to the associated entry search value for this field
 		 * instance. This default implementation simply returns `$data`
 		 *
@@ -1282,11 +1292,4 @@
 		 */
 		public function fetchAssociatedEntryIDs($value){}
 
-		/**
-		 * @deprecated This function name has a typo that has withstood many versions of
-		 *  Symphony. The correct function is `$this->buildDSRetrievalSQL`.
-		 */
-		public function buildDSRetrivalSQL($data, &$joins, &$where, $andOperation = false) {
-			return $this->buildDSRetrievalSQL($data, $joins, $where, $andOperation);
-		}
 	}

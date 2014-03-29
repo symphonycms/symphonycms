@@ -89,7 +89,7 @@
 			if($field === 'author_types' && !is_array($value)){
 				$value = explode(',', $value);
 			}
-			$this->_fields[$field] = $value;
+			$this->_settings[$field] = $value;
 		}
 
 		/**
@@ -116,11 +116,9 @@
 
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
 
-			// Choose between Authors/Developers or both
+			// Author types
 			$label = Widget::Label(__('Author types'));
-			$label->setAttribute('class', 'column');
 			$types = $this->get('author_types');
 			$options = array(
 				array('author', empty($types) ? true : in_array('author', $types), __('Author')),
@@ -132,19 +130,24 @@
 					'multiple' => 'multiple'
 				))
 			);
-			$div->appendChild($label);
 
 			if(isset($errors['author_types'])) {
-				$wrapper->appendChild(Widget::Error($div, $errors['author_types']));
+				$wrapper->appendChild(Widget::Error($label, $errors['author_types']));
 			}
-			else $wrapper->appendChild($div);
+			else $wrapper->appendChild($label);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+			// Options
+			$div = new XMLElement('div', null, array('class' => 'two columns'));
+
 			// Allow multiple selection
 			$label = Widget::Label();
 			$label->setAttribute('class', 'column');
 			$input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
-			if($this->get('allow_multiple_selection') == 'yes') $input->setAttribute('checked', 'checked');
+
+			if($this->get('allow_multiple_selection') == 'yes') {
+				$input->setAttribute('checked', 'checked');
+			}
+
 			$label->setValue(__('%s Allow selection of multiple authors', array($input->generate())));
 			$div->appendChild($label);
 
@@ -152,15 +155,17 @@
 			$label = Widget::Label();
 			$label->setAttribute('class', 'column');
 			$input = Widget::Input('fields['.$this->get('sortorder').'][default_to_current_user]', 'yes', 'checkbox');
-			if($this->get('default_to_current_user') == 'yes') $input->setAttribute('checked', 'checked');
+
+			if($this->get('default_to_current_user') == 'yes') {
+				$input->setAttribute('checked', 'checked');
+			}
+
 			$label->setValue(__('%s Select current user by default', array($input->generate())));
 			$div->appendChild($label);
 			$wrapper->appendChild($div);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-			$this->appendRequiredCheckbox($div);
-			$this->appendShowColumnCheckbox($div);
-			$wrapper->appendChild($div);
+			// Requirements and table display
+			$this->appendStatusFooter($wrapper);
 		}
 
 		public function checkFields(array &$errors, $checkForDuplicates = true) {
@@ -272,6 +277,7 @@
 					$author->getFullName(),
 					array(
 						'id' => (string)$author->get('id'),
+						'handle' => Lang::createHandle($author->getFullName()),
 						'username' => General::sanitize($author->get('username'))
 					)
 				));

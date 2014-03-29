@@ -132,14 +132,21 @@
 
 			// Load the xml document
 			set_error_handler(array($this, 'trapXMLError'));
-			$xmlDoc->loadXML($xml);
+			// Prevent remote entities from being loaded, RE: #1939
+			$elOLD = libxml_disable_entity_loader(true);
+			$xmlDoc->loadXML($xml, LIBXML_NONET | LIBXML_DTDLOAD | LIBXML_DTDATTR | defined('LIBXML_COMPACT') ? LIBXML_COMPACT : 0);
+			libxml_disable_entity_loader($elOLD);
 
 			// Must restore the error handler to avoid problems
 			restore_error_handler();
 
-			// Load the xml document
+			// Load the xsl document
 			set_error_handler(array($this, 'trapXSLError'));
-			$xslDoc->loadXML($xsl);
+			// Ensure that the XSLT can be loaded with `false`. RE: #1939
+			// Note that `true` will cause `<xsl:import />` to fail.
+			$elOLD = libxml_disable_entity_loader(false);
+			$xslDoc->loadXML($xsl, LIBXML_NONET | LIBXML_DTDLOAD | LIBXML_DTDATTR | defined('LIBXML_COMPACT') ? LIBXML_COMPACT : 0);
+			libxml_disable_entity_loader($elOLD);
 
 			// Load the xsl template
 			$XSLProc->importStyleSheet($xslDoc);
@@ -151,6 +158,7 @@
 				$XSLProc->setParameter('', $parameters);
 			}
 
+			// Must restore the error handler to avoid problems
 			restore_error_handler();
 
 			// Start the transformation
@@ -162,6 +170,7 @@
 				ini_set('html_errors', $ehOLD);
 			}
 
+			// Must restore the error handler to avoid problems
 			restore_error_handler();
 
 			return $processed;
@@ -199,7 +208,9 @@
 
 			// Load the xml document
 			set_error_handler(array($this, 'trapXMLError'));
-			$xmlDoc->loadXML($xml);
+			$elOLD = libxml_disable_entity_loader(true);
+			$xmlDoc->loadXML($xml, LIBXML_NONET | LIBXML_DTDLOAD | LIBXML_DTDATTR | defined('LIBXML_COMPACT') ? LIBXML_COMPACT : 0);
+			libxml_disable_entity_loader($elOLD);
 
 			// Must restore the error handler to avoid problems
 			restore_error_handler();

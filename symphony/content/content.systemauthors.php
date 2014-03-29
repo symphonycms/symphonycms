@@ -83,10 +83,6 @@
 			}
 			else{
 				foreach($authors as $a){
-
-					if(Administration::instance()->Author->isManager() && $a->isDeveloper()) {
-						continue;
-					}
 					// Setup each cell
 					if(
 						(Administration::instance()->Author->isDeveloper() || (Administration::instance()->Author->isManager() && !$a->isDeveloper()))
@@ -97,6 +93,18 @@
 						);
 					} else {
 						$td1 = Widget::TableData($a->getFullName(), 'inactive');
+					}
+
+					// Can this Author be edited by the current Author?
+					if (Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
+						if ($a->get('id') != Administration::instance()->Author->get('id')) {
+							$td1->appendChild(Widget::Label(__('Select Author %s', array($a->getFullName())), null, 'accessible', null, array(
+								'for' => 'author-' . $a->get('id')
+							)));
+							$td1->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox', array(
+								'id' => 'author-' . $a->get('id')
+							)));
+						}
 					}
 
 					$td2 = Widget::TableData(Widget::Anchor($a->get('email'), 'mailto:'.$a->get('email'), __('Email this author')));
@@ -124,12 +132,6 @@
 
 					$td5 = Widget::TableData($a->get("language") == NULL ? __("System Default") : $languages[$a->get("language")]);
 
-					if (Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
-						if ($a->get('id') != Administration::instance()->Author->get('id')) {
-							$td3->appendChild(Widget::Input('items['.$a->get('id').']', NULL, 'checkbox'));
-						}
-					}
-
 					// Add a row to the body array, assigning each cell to the row
 					if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
 						$aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5));
@@ -144,10 +146,17 @@
 				Widget::TableHead($aTableHead),
 				NULL,
 				Widget::TableBody($aTableBody),
-				'selectable'
+				'selectable',
+				null,
+				array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
 			);
 
 			$this->Form->appendChild($table);
+			
+			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array(
+				'id' => 'version'
+			));
+			$this->Form->appendChild($version);
 
 			if(Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
 				$tableActions = new XMLElement('div');
@@ -257,10 +266,12 @@
 			}
 
 			if(isset($this->_context[2])){
+				$time = Widget::Time();
+
 				switch($this->_context[2]){
 					case 'saved':
 						$this->pageAlert(
-							__('Author updated at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Author updated at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
@@ -271,7 +282,7 @@
 
 					case 'created':
 						$this->pageAlert(
-							__('Author created at %s.', array(DateTimeObj::getTimeAgo()))
+							__('Author created at %s.', array($time->generate()))
 							. ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
 							. __('Create another?')
 							. '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
@@ -386,8 +397,23 @@
 			$fieldset->appendChild($legend);
 			$fieldset->appendChild($help);
 
-			// Password reset
-			if($this->_context[0] == 'edit' && (!Administration::instance()->Author->isDeveloper() || !Administration::instance()->Author->isManager() || $isOwner === true)) {
+			/*
+				Password reset rules:
+				- Primary account can edit all accounts.
+				- Developers can edit all developers, managers and authors, and their own.
+				- Managers can edit all Authors, and their own.
+				- Authors can edit their own.
+			*/
+			if($this->_context[0] == 'edit' && !(
+				// All accounts can edit their own
+				$isOwner
+				// Managers can edit all Authors, and their own.
+				|| (Administration::instance()->Author->isManager() && $author->isAuthor())
+				// Primary account can edit all accounts.
+				|| Administration::instance()->Author->isPrimaryAccount()
+				// Developers can edit all developers, managers and authors, and their own.
+				|| Administration::instance()->Author->isDeveloper() && $author->isPrimaryAccount() === false
+			)) {
 				$fieldset->setAttribute('class', 'three columns');
 
 				$label = Widget::Label(NULL, NULL, 'column');
@@ -606,7 +632,16 @@
 					$authenticated = true;
 				}
 				// Developers don't need to specify the old password, unless it's their own account
-				else if(Administration::instance()->Author->isDeveloper()){
+				else if(
+					// All accounts can edit their own
+					$isOwner
+						// Managers can edit all Authors, and their own.
+					|| (Administration::instance()->Author->isManager() && $this->_Author->isAuthor())
+						// Primary account can edit all accounts.
+					|| Administration::instance()->Author->isPrimaryAccount()
+						// Developers can edit all developers, managers and authors, and their own.
+					|| Administration::instance()->Author->isDeveloper() && $this->_Author->isPrimaryAccount() === false
+				) {
 					$authenticated = true;
 				}
 

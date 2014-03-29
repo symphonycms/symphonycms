@@ -66,10 +66,17 @@
 
 		public function set($field, $value){
 			if($field == 'pre_populate_source' && !is_array($value)) $value = preg_split('/\s*,\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
-			$this->_fields[$field] = $value;
+			$this->_settings[$field] = $value;
 		}
 
+		/**
+		 * @depracted Will be removed in Symphony 2.5, use `getToggleStates()` instead
+		 */
 		public function findAllTags(){
+			$this->getToggleStates();
+		}
+
+		public function getToggleStates(){
 			if(!is_array($this->get('pre_populate_source'))) return;
 
 			$values = array();
@@ -107,39 +114,45 @@
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null) {
 			parent::displaySettingsPanel($wrapper, $errors);
 
+			// Suggestions
 			$label = Widget::Label(__('Suggestion List'));
 
 			$sections = SectionManager::fetch(NULL, 'ASC', 'name');
 			$field_groups = array();
 
-			if(is_array($sections) && !empty($sections))
-				foreach($sections as $section) $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
+			if(is_array($sections) && !empty($sections)) {
+				foreach($sections as $section) {
+					$field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
+				}
+			}
 
 			$options = array(
 				array('existing', (in_array('existing', $this->get('pre_populate_source'))), __('Existing Values')),
 			);
 
 			foreach($field_groups as $group){
-
 				if(!is_array($group['fields'])) continue;
 
 				$fields = array();
 				foreach($group['fields'] as $f){
-					if($f->get('id') != $this->get('id') && $f->canPrePopulate()) $fields[] = array($f->get('id'), (in_array($f->get('id'), $this->get('pre_populate_source'))), $f->get('label'));
+					if($f->get('id') != $this->get('id') && $f->canPrePopulate()) {
+						$fields[] = array($f->get('id'), (in_array($f->get('id'), $this->get('pre_populate_source'))), $f->get('label'));
+					}
 				}
 
-				if(is_array($fields) && !empty($fields)) $options[] = array('label' => $group['section']->get('name'), 'options' => $fields);
+				if(is_array($fields) && !empty($fields)) {
+					$options[] = array('label' => $group['section']->get('name'), 'options' => $fields);
+				}
 			}
 
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][pre_populate_source][]', $options, array('multiple' => 'multiple')));
 			$wrapper->appendChild($label);
 
-			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]');
+			// Validation rule
+			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'input', $errors);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-			$this->appendRequiredCheckbox($div);
-			$this->appendShowColumnCheckbox($div);
-			$wrapper->appendChild($div);
+			// Requirements and table display
+			$this->appendStatusFooter($wrapper);
 		}
 
 		public function commit(){
@@ -179,7 +192,7 @@
 
 			if($this->get('pre_populate_source') != NULL){
 
-				$existing_tags = $this->findAllTags();
+				$existing_tags = $this->getToggleStates();
 
 				if(is_array($existing_tags) && !empty($existing_tags)){
 					$taglist = new XMLElement('ul');
@@ -199,7 +212,7 @@
 		public function checkPostFieldData($data, &$message, $entry_id = null){
 			$message = NULL;
 
-			if($this->get('required') == 'yes' && strlen($data) == 0){
+			if($this->get('required') == 'yes' && strlen(trim($data)) == 0){
 				$message = __('‘%s’ is a required field.', array($this->get('label')));
 				return self::__MISSING_FIELDS__;
 			}
@@ -400,7 +413,7 @@
 
 			if($this->get('pre_populate_source') != NULL){
 
-				$existing_tags = $this->findAllTags();
+				$existing_tags = $this->getToggleStates();
 
 				if(is_array($existing_tags) && !empty($existing_tags)){
 					$taglist = new XMLElement('ul');

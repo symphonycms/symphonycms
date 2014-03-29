@@ -105,12 +105,17 @@
 	 */
 	define_safe('CACHE', MANIFEST . '/cache');
 
+	$dir = @sys_get_temp_dir();
+	if($dir == false || !is_writable($dir)) $dir = @ini_get('upload_tmp_dir');
+	if($dir == false || !is_writable($dir)) $dir = MANIFEST . '/tmp';
 	/**
 	 * The filesystem path to the `tmp` folder which is contained within
-	 * the `manifest` folder.
+	 * the system's temp directory (sys_get_temp_dir()), or the `upload_tmp_dir`
+	 * or falling back to use `manifest/tmp`.
 	 * @var string
 	 */
-	define_safe('TMP', MANIFEST . '/tmp');
+	define_safe('TMP', $dir);
+	unset($dir);
 
 	/**
 	 * The filesystem path to the `logs` folder which is contained within
@@ -241,7 +246,7 @@
 	 * @since Symphony 2.2
 	 * @var string
 	 */
-	define_safe('SYMPHONY_URL', URL . '/symphony');
+	define_safe('SYMPHONY_URL', URL . '/' . $Configuration->get('admin-path', 'symphony'));
 
 	/**
 	 * Returns the folder name for Symphony as an application

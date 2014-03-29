@@ -1,0 +1,41 @@
+<navigation>
+	<group name="Blueprints" limit="developer" index="200">
+		<children>
+			<item link="/blueprints/pages/" name="Pages" />
+			<item link="/blueprints/pages/new/" name="Pages New" visible="no" />
+			<item link="/blueprints/pages/edit/" name="Pages Edit" visible="no" />
+
+			<item link="/blueprints/sections/" name="Sections" />
+			<item link="/blueprints/sections/new/" name="Section New" visible="no" />
+			<item link="/blueprints/sections/edit/" name="Section Edit" visible="no" />
+
+			<item link="/blueprints/datasources/" name="Data Sources" />
+			<item link="/blueprints/datasources/new/" name="Data Source New" visible="no" />
+			<item link="/blueprints/datasources/edit/" name="Data Source Edit" visible="no" />
+			<item link="/blueprints/datasources/info/" name="Data Source Info" visible="no" />
+
+			<item link="/blueprints/events/" name="Events" />
+			<item link="/blueprints/events/new/" name="Event New" visible="no" />
+			<item link="/blueprints/events/edit/" name="Event Edit" visible="no" />
+			<item link="/blueprints/events/info/" name="Event Info" visible="no" />
+		</children>
+	</group>
+
+	<group name="System" index="100">
+		<children>
+			<item link="/system/authors/" name="Authors" />
+			<item link="/system/authors/edit/" name="Author Edit" visible="no" />
+			<item link="/system/authors/new/" name="Author New" visible="no" limit="manager" />
+			<item link="/system/authors/summary/" name="Author Summary" visible="no" />
+
+			<item link="/system/preferences/" limit="developer" name="Preferences" />
+
+			<item link="/system/extensions/" limit="developer" name="Extensions" />
+			<item link="/system/extensions/info/" name="Extension Information" visible="no" />
+
+			<item link="/system/actions/" limit="primary" visible="no" name="File Actions" />
+			<item link="/system/log/" limit="primary" visible="no" name="Activity Log" />
+		</children>
+	</group>
+
+</navigation>

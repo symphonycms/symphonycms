@@ -1,0 +1,561 @@
+/**
+ * Frames are used in different areas of the system to group content,
+ * e. g. in the section or data source editor.
+ *
+ * @since: Symphony 2.3
+ */
+
+.frame {
+	position: relative;
+	margin: 0 0 4.5rem;
+	padding: 0;
+	list-style: none;
+	background: #f5f5f5;
+	border-radius: 0.4rem;
+	box-sizing: border-box;
+	border: 0.1rem solid #c5c5c5;
+}
+
+.frame h1 {
+	background: #282828;
+	color: #fff;
+	margin: -1.1rem -1.1rem 1.5rem;
+	padding: 1.8rem 1.1rem;
+	border-radius: 0.4rem 0.4rem 0 0;
+	line-height: 1.5;
+	font-size: 1.5rem;
+	font-weight: normal;
+}
+
+.frame.empty {
+	border: 0.1rem dashed #b8b8b8;
+	height: 3rem;
+}
+
+.frame::after {
+	content: "";
+	clear: both;
+	display: block;
+}
+
+.frame ol,
+.frame ul {
+	padding: 0;
+	margin: 0;
+}
+
+.frame .tags {
+	margin-top: -1rem;
+	margin-bottom: 1.5rem;
+}
+
+/* Headers */
+
+.frame-header {
+	position: relative;
+	color: #3d3d3d;
+	padding: 0.8rem 1rem 0.7rem;
+	border-top: 0.1rem solid #d0d0d0;
+	border-bottom: 0.1rem solid #dcdcdc;
+}
+
+.frame:not(.collapsible) .frame-header {
+	box-shadow: 0 0.1rem 0.4rem #e5e5e5;
+}
+
+.frame-header h4 {
+	display: inline;
+	font-weight: bold;
+}
+
+.frame-header span {
+	margin: 0 0 0 1rem;
+	font-weight: normal;
+	color: #a1a1a1;
+}
+
+.main::before,
+.sidebar::before {
+	content: "";
+	display: block;
+	width: 0.1rem;
+	height: 1rem;
+	float: left;
+	margin: 0.3rem 0.7rem 0 0;
+	border-left: 0.6rem solid #b8b8b8;
+	border-right: 0.3rem solid #dcdcdc;
+}
+
+.sidebar::before {
+	border-left: 0.6rem solid #dcdcdc;
+	border-right: 0.3rem solid #b8b8b8;
+}
+
+.highlight .main::before {
+	border-left: 0.6rem solid #747474;
+	border-right: 0.3rem solid #b9b9b9;
+}
+
+.highlight .sidebar::before {
+	border-left: 0.6rem solid #b9b9b9;
+	border-right: 0.3rem solid #747474;
+}
+
+/* Content: light scheme */
+
+.frame .content {
+	box-sizing: border-box;
+	padding: 1rem;
+}
+
+.frame .instance:last-of-type .content {
+	border-radius: 0 0 0.4rem 0.4rem;
+}
+
+.frame .content::after {
+	content: '';
+	display: block;
+	clear: both;
+}
+
+.frame .content fieldset {
+	border-top-color: #d0d0d0;
+}
+
+/* Content: dark scheme */
+
+.frame.dark .content {
+	background: #323230;
+	color: #fff;
+}
+
+.frame.dark legend {
+	background: transparent;
+}
+
+.frame.dark i,
+.frame.dark ul.tags {
+	color: #6f6f6e;
+}
+
+.frame.dark fieldset {
+	border-top-color: #464644;
+}
+
+/*--------------------------------------------------------------------------
+	Inline frames (e. g. upload fields)
+--------------------------------------------------------------------------*/
+
+span.frame,
+fieldset.frame,
+.frame.inline {
+	display: block;
+	margin-bottom: 1.5rem;
+	padding: 1rem;
+}
+
+/*--------------------------------------------------------------------------
+	Login
+--------------------------------------------------------------------------*/
+
+#login .frame {
+	width: 28rem;
+	margin: 10rem auto;
+	overflow: visible;
+	padding: 1rem 1rem 1.5rem;
+	text-align: left;
+}
+
+#login fieldset {
+	padding: 0;
+}
+
+#login legend {
+	display: none;
+}
+
+#login .action-link  {
+	margin-top: 0.3rem;
+	float: left;
+}
+
+#login button {
+	float: right;
+}
+
+/*--------------------------------------------------------------------------
+	Controls
+--------------------------------------------------------------------------*/
+
+.frame .destructor,
+.frame .button,
+.frame .debug {
+	position: absolute;
+	top: 0.8rem;
+	right: 1rem;
+	color: #aeaeae;
+	border-bottom: none;
+	font-weight: normal;
+	margin: 0;
+}
+
+.frame .destructor:hover,
+.frame .button:hover,
+.frame .debug:hover,
+.frame .constructor:hover {
+	color: #494949;
+}
+
+.frame .disabled {
+	color: #adadad;
+	cursor: not-allowed;
+	opacity: 0.4;
+}
+
+/* Applicators */
+
+.frame .apply {
+	clear: left;
+	cursor: default;
+	margin: 1rem 0 0;
+	text-align: right;
+	position: absolute;
+	bottom: -3.5rem;
+	right: 0;
+	border-color: rgba(0, 0, 0, 0.25);
+}
+
+.frame .apply:hover {
+	border-color: rgba(0, 0, 0, 0.4);
+}
+
+.frame .actions {
+	margin: 0 0 0.7rem;
+	height: 2rem;
+}
+
+.frame .actions button {
+	float: right;
+}
+
+/*-----------------------------------------------------------------------------
+	Orderables and Selectables
+-----------------------------------------------------------------------------*/
+
+.orderable .frame-header {
+	cursor: move;
+}
+
+.frame .selected,
+.frame .ordering {
+	background-color: #668abe;
+	position: relative;
+}
+
+.frame .selected::before,
+.frame .selected::after,
+.frame .ordering::before,
+.frame .ordering::after {
+	content: '';
+	display: block;
+	position: absolute;
+	width: 0.1rem;
+	height: 100%;
+	background: #4D78B4;
+	top: 0;
+	left: -0.1rem;
+	z-index: 1000;
+}
+
+.frame .selected::after,
+.frame .ordering::after {
+	left: auto;
+	right: 0;
+}
+
+.frame .ordering + .instance .frame-header {
+	border-top: 0.1rem solid #4D78B4;
+}
+
+.ordering .frame-header {
+	color: #fff;
+	background: #5c83ba;
+	border-top: 0.1rem solid #4D78B4;
+	border-bottom-color: #7093c3;
+	cursor: move;
+	transition: none;
+}
+
+.frame .ordering .frame-header span,
+.frame .ordering .frame-header .destructor,
+.frame .ordering .content i,
+.frame .ordering ul.tags {
+	color: #bdcbdd;
+}
+
+.frame .ordering .content,
+.frame .ordering .content legend {
+	background: #668abe;
+	color: #fff;
+}
+
+.frame.dark .ordering .content,
+.frame.dark .ordering .content legend {
+	background: #4D78B4;
+	color: #fff;
+}
+
+.frame .ordering .content input,
+.frame .ordering .content textarea {
+	border-color: #4b76b1;
+}
+
+.frame .ordering .content fieldset {
+	border-top-color: #7093c3;
+}
+
+.frame .ordering .main::before {
+	border-left: 0.6rem solid #cedaea;
+	border-right: 0.3rem solid #7c9bc7;
+}
+
+.frame .ordering .sidebar::before {
+	border-left: 0.6rem solid #7c9bc7;
+	border-right: 0.3rem solid #cedaea;
+}
+
+.frame .highlight {
+	background: #e8e8e8;
+}
+
+/*-----------------------------------------------------------------------------
+	Collapsibles
+
+	The duration of all transitions has to be set to the same time to prevent
+	a "jump" in the animation because the class `.js-animate` is removed on 
+	the first `transitionend` event.
+-----------------------------------------------------------------------------*/
+
+.collapsible {
+	transform: translatez(0);
+}
+
+.collapsible .instance {
+	overflow: hidden;
+}
+
+.collapsible .instance,
+.collapsible input,
+.collapsible textarea, 
+.collapsible select,
+.collapsible option {
+	-webkit-font-smoothing: subpixel-antialiased !important;
+}
+
+.collapsible .frame-header {
+	cursor: pointer;
+}
+
+.collapsible .content {
+	transition: padding 0.25s ease-in;
+	background: #e8e8e8;
+}
+
+.collapsible legend {
+	background: #e8e8e8;
+	padding-right: 0.5rem;
+}
+
+.frame .js-animate {
+	transition: max-height 0.25s linear;
+	overflow: hidden;
+}
+
+.collapsed.js-animate,
+.destructed.js-animate {
+	transition: max-height 0.25s ease-out;
+}
+
+.collapsed.js-animate .frame-header {
+	border-bottom-color: rgba(0, 0, 0, 0);
+	transition: border-color 0.25s ease-in;
+}
+
+.collapsed .content {
+	padding-top: 0;
+}
+
+/*-----------------------------------------------------------------------------
+	Duplicators
+-----------------------------------------------------------------------------*/
+
+.duplicator ol {
+	border-radius: 0.4rem;
+	margin-top: -0.1rem;
+}
+
+.duplicator .template {
+	display: none;
+}
+
+/*-----------------------------------------------------------------------------
+	Invalid states
+-----------------------------------------------------------------------------*/
+
+.invalid {
+	background: #eb6347;
+	border: 0.1rem solid #c31;
+	padding: 1rem;
+	margin: 0 0 1.5rem;
+	box-sizing: border-box;
+	display: block;
+	color: #fff;
+	border-radius: 0.4rem;
+}
+
+.invalid p {
+	clear: both;
+	margin: 0;
+}
+
+.invalid p,
+.invalid a {
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.invalid a:hover {
+	color: #fff;
+}
+
+.invalid label {
+	margin-bottom: 1rem;
+}
+
+.invalid i {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+/* Errors */
+
+.conflict.collapsed .frame-header {
+	background: #fff9a2;
+}
+
+.conflict.ordering .frame-header {
+	background: none;
+}
+
+.conflict.collapsed .frame-header span,
+.conflict.collapsed .destructor {
+	color: #BD7053;
+}
+
+.conflict.collapsed .frame-header::before {
+	border-left: 0.6rem solid #BD7053;
+	border-right: 0.3rem solid #E7A973;
+}
+
+.conflict.collapsed .frame-header.sidebar::before {
+	border-left: 0.6rem solid #E7A973;
+	border-right: 0.3rem solid #BD7053;
+}
+
+/*--------------------------------------------------------------------------
+	Error messages
+--------------------------------------------------------------------------*/
+
+#error {
+	padding: 10rem 5rem;
+}
+
+#error .frame {
+	display: block;
+	min-width: 50rem;
+	max-width: 80rem;
+	margin: 0 auto;
+	overflow: hidden;
+}
+
+#error .frame::after {
+	content: "";
+	display: block;
+	clear: both;
+}
+
+#error h1 {
+	margin: 0;
+}
+
+#error .frame h1 em {
+	color: rgba(255, 255, 255, 0.5);
+	font-style: normal;
+	font-family: inherit;
+}
+
+#error p {
+	padding: 1rem;
+	margin: 0;
+}
+
+#error .frame pre {
+	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
+}
+
+#error .frame pre,
+#error .frame ul ul {
+	background: #fefefe;
+	padding: 1rem 0;
+	overflow: auto;
+}
+
+#error .content ul {
+	margin: 0 -1rem;
+}
+
+#error .frame ul ul li {
+	border-top: 0.1rem solid rgba(0, 0, 0, 0.05);
+	line-height: 1.8;
+	padding: 0 1rem;
+	white-space: nowrap;
+}
+
+#error .frame ul ul li.full {
+	white-space: normal;
+}
+
+#error .frame ul ul:first-of-type li:first-of-type {
+	border-top: none;
+}
+
+#error .frame .error {
+	background-color: #fff9a2;
+	color: #bd7053;
+}
+#error .frame .error b {
+	background: rgba(167, 31, 45, 0.7);
+	color: #fff;
+	display: inline-block;
+	line-height: 1.8;
+	margin: -0.2rem 0 -0.1rem;
+	padding: 0.2rem 0 0.1rem;
+}
+
+#error .frame code a {
+	margin: 0;
+}
+
+#error .frame strong,
+#error .frame em {
+	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
+	color: rgba(0, 0, 0, 0.5);
+	font-style: normal;
+}
+
+#error .frame .content {
+	background: #fefefe;
+	padding-bottom: 0;
+}
+
+#error .frame .content:last-of-type ul {
+	border-radius: 0 0 0.4rem 0.4rem;
+}

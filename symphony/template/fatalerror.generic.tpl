@@ -3,15 +3,11 @@
 <head>
 	<meta charset="utf-8">
 	<title>Symphony Error</title>
-	<link media="screen" href="{SYMPHONY_URL}/assets/css/symphony.css" type="text/css" rel="stylesheet">
-	<link media="screen" href="{SYMPHONY_URL}/assets/css/symphony.frames.css" type="text/css" rel="stylesheet">
-	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/jquery.js"></script>
-	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/symphony.js"></script>
+	<link media="screen" href="{SYMPHONY_URL}/assets/css/symphony.min.css" type="text/css" rel="stylesheet">
+	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/symphony.min.js"></script>
 	<script type='text/javascript'>Symphony.Context.add('root', '{URL}');Symphony.Context.add('env', {});</script>
-	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/symphony.collapsible.js"></script>
-	<script type="text/javascript" src="{SYMPHONY_URL}/assets/js/symphony.error.js"></script>
 </head>
-<body id="fatalerror">
+<body id="error">
 	<div class="frame">
 		<ul>
 			<li>
@@ -20,13 +16,13 @@
 				<ul>%s</ul>
 			</li>
 			<li>
-				<header>Backtrace</header>
+				<header class="frame-header">Backtrace</header>
 				<div class="content">
 					<ul>%s</ul>
 				</div>
 			</li>
 			<li>
-				<header>Database Query Log</header>
+				<header class="frame-header">Database Query Log</header>
 				<div class="content">
 					<ul>%s</ul>
 				</div>

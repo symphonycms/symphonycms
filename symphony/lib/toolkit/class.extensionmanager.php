@@ -239,6 +239,30 @@
 		}
 
 		/**
+		 * This function will return the `Cacheable` object with the appropriate
+		 * caching layer for the given `$key`. This `$key` should be stored in
+		 * the Symphony configuration in the caching group with a reference
+		 * to the class of the caching object. If the key is not found, this
+		 * will return a default `Cacheable` object created with the MySQL driver.
+		 *
+		 * @since Symphony 2.4
+		 * @param string $key
+		 *  Should be a reference in the Configuration file to the Caching class
+		 * @return Cacheable
+		 */
+		public static function getCacheProvider($key = null) {
+			$cacheDriver = Symphony::Configuration()->get($key, 'caching');
+			if(in_array($cacheDriver, array_keys(Symphony::ExtensionManager()->getProvidersOf('cache')))) {
+				$cacheable = new $cacheDriver;
+			}
+			else {
+				$cacheable = Symphony::Database();
+			}
+
+			return new Cacheable($cacheable);
+		}
+
+		/**
 		 * Determines whether the current extension is installed or not by checking
 		 * for an id in `tbl_extensions`
 		 *
@@ -753,8 +777,6 @@
 		 * If the `$rawXML` parameter is passed true, and the extension has a `extension.meta.xml`
 		 * file, this function will return `DOMDocument` of the file.
 		 *
-		 * @deprecated Since Symphony 2.3, the `about()` function is deprecated for extensions
-		 *  in favour of the `extension.meta.xml` file.
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
 		 * @param boolean $rawXML
@@ -805,6 +827,12 @@
 
 				$about = array(
 					'name' => $xpath->evaluate('string(ext:name)', $extension),
+					'handle' => $name,
+					'github' => $xpath->evaluate('string(ext:repo)', $extension),
+					'discuss' => $xpath->evaluate('string(ext:url[@type="discuss"])', $extension),
+					'homepage' => $xpath->evaluate('string(ext:url[@type="homepage"])', $extension),
+					'wiki' => $xpath->evaluate('string(ext:url[@type="wiki"])', $extension),
+					'issues' => $xpath->evaluate('string(ext:url[@type="issues"])', $extension),
 					'status' => array()
 				);
 
@@ -829,6 +857,10 @@
 					$required_min_version = $xpath->evaluate('string(@min)', $release);
 					$required_max_version = $xpath->evaluate('string(@max)', $release);
 					$current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
+
+					// Remove pre-release notes fro the current Symphony version so that
+					// we don't get false erros in the backend
+					$current_symphony_version = str_replace(array('dev', 'beta1', 'beta2', 'rc1', 'rc2'), '', $current_symphony_version);
 
 					// Munge the version number so that it makes sense in the backend.
 					// Consider, 2.3.x. As the min version, this means 2.3 onwards,
@@ -858,31 +890,21 @@
 					$a = array(
 						'name' => $xpath->evaluate('string(ext:name)', $author),
 						'website' => $xpath->evaluate('string(ext:website)', $author),
+						'github' => $xpath->evaluate('string(ext:name/@github)', $author),
 						'email' => $xpath->evaluate('string(ext:email)', $author)
 					);
 
 					$about['author'][] = array_filter($a);
 				}
-			}
 
-			// It doesn't, fallback to loading the extension using the built in
-			// `about()` array.
+				$about['status'] = array_merge($about['status'], self::fetchStatus($about));
+				return $about;
+			}
 			else {
-				$obj = self::getInstance($name);
-				$about = $obj->about();
+				Symphony::Log()->pushToLog(sprintf('%s does not have an extension.meta.xml file', $name), E_DEPRECATED, true);
 
-				// If this is empty then the extension has managed to not provide
-				// an `about()` function or an `extension.meta.xml` file. So
-				// ignore this extension even exists
-				if(empty($about)) return array();
-
-				$about['status'] = array();
+				return;
 			}
-
-			$about['handle'] = $name;
-			$about['status'] = array_merge($about['status'], self::fetchStatus($about));
-
-			return $about;
 		}
 
 		/**

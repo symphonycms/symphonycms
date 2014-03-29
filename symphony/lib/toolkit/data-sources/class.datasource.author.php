@@ -90,6 +90,8 @@
 
 			else{
 
+				if($this->_negate_result === true) return $this->negateXMLSet();
+
 				if(!$this->_param_output_only) $result = new XMLElement($this->dsParamROOTELEMENT);
 
 				$singleParam = false;

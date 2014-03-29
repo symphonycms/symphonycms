@@ -1,0 +1,114 @@
+/**
+ * Associations are visualisations of associated entries in Symphony's backend.
+ * They are hidden in Drawers by default and can be expanded on click.
+ *
+ * @since Symphony 2.3
+ */
+
+
+/*-----------------------------------------------------------------------------
+	Vertical drawers
+-----------------------------------------------------------------------------*/
+
+#drawer-section-associations .contents {
+	padding: 0.5rem 2rem;
+}
+
+.association {
+	min-height: 3rem;
+	margin-top: 2rem;
+	color: #666;
+}
+
+.association + .association {
+	margin-top: 1.5rem;
+}
+
+.empty + .empty {
+	margin-top:  0;
+}
+
+.association:last-of-type {
+	padding-bottom: 1rem;
+}
+
+.association a {
+	color: #666;
+}
+
+.association a:hover {
+	color: #323232;
+}
+
+.association:first-of-type header {
+	padding-top: 0.6rem;
+}
+
+.association header {
+	padding-top: 1rem;
+}
+
+.association header p {
+	margin: 0;
+	padding: 0;
+}
+
+.association header i a {
+	color: rgb(169, 169, 169);
+	border-bottom: none;
+}
+
+.association header i {
+	margin-left: 0.3rem;
+	float: right;
+}
+
+.association .association-section {
+	color: #323232;
+}
+
+.association-links {
+	padding: 1rem 0 0;
+	margin: 0;
+	width: 26rem;
+}
+
+.association-links li {
+	display: block;
+	line-height: 2;
+	box-sizing: border-box;
+	white-space: nowrap;
+}
+
+.association-links a,
+.association-links a:hover {
+	width: 26rem;
+	line-height: 3rem;
+	display: inline-block;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	border-color: #E8E8E8;
+}
+
+.association-links li a::before {
+	content: "\2192 ";
+	margin-right: 0.3rem;
+}
+
+.association-links.parent li a::before {
+	content: "\2190 ";
+	margin-right: 0.3rem;
+}
+
+.association-more a {
+	color: #a9a9a9;
+}
+
+.association-more a::before {
+	content: "\00B7\00B7\00B7" !important;
+}
+
+.association-new {
+	float: right;
+	margin-top: -1.9rem;
+}

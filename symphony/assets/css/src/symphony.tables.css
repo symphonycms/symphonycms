@@ -1,0 +1,219 @@
+/**
+ * Backend tables
+ */
+
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+	margin-top: 0.8rem;
+}
+
+table.fixed {
+	table-layout: fixed;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+}
+
+th {
+	padding-right: 1.9rem;
+	color: rgba(0, 0, 0, 0.6);
+	text-align: left;
+	font-weight: normal;
+	line-height: 2;
+	white-space: nowrap;
+}
+
+td {
+	border: 0.1rem solid #e6e6e5;
+	border-width: 0.1rem 0;
+	padding: 0.8rem 1.9rem 0.8rem 0;
+	background-color: #f5f5f5;
+}
+
+th:first-child,
+td:first-child {
+	padding-left: 1.9rem;
+}
+
+tr:nth-child(even) td {
+	background-color: transparent;
+}
+
+tbody a {
+	padding-top: 0.67rem;
+}
+
+table input {
+	float: right;
+	margin-right: 1.9rem;
+}
+
+th span {
+	float: left;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	max-width: 90%;
+}
+
+th a {
+	border-bottom: none;
+}
+
+th a,
+th a:hover,
+th a:hover:after {
+	color: rgba(0, 0, 0, 0.6);
+}
+
+th a:after {
+	color: rgba(0, 0, 0, 0.2);
+}
+
+th a:active,
+th a.active,
+th a.active:after {
+	color: #808080;
+}
+
+th a:after,
+th a.active:hover:after,
+th a.active[href$=asc]:after {
+	margin-left: 0.3rem;
+	content: "\2193"
+}
+
+th a.active:after,
+th a[href$=asc]:after,
+th a.active[href$=asc]:hover:after {
+	content: "\2191";
+}
+
+table.busy td {
+	border-top: 0.1rem solid #e6e6e5;
+	border-bottom: 0.1rem solid #e6e6e5;
+	background-color: #fff;
+}
+
+table.busy tr:nth-child(odd) td {
+	border-top: 0.1rem solid #e6e6e5;
+	border-bottom: 0.1rem solid #e6e6e5;
+	background-color: #f5f5f4;
+}
+
+table.busy a {
+	color: #5072bf;
+}
+
+table + fieldset {
+	margin-top: 5rem !important;
+}
+
+td img {
+	vertical-align: middle;
+}
+
+/*-----------------------------------------------------------------------------
+	Selectable rows
+-----------------------------------------------------------------------------*/
+
+table.selectable input {
+	display: none;
+}
+
+tr.selected td {
+	background-color: #668abe;
+	border-bottom: 0.1rem solid #7492bc;
+	border-top: 0.1rem solid #4D78B4;
+}
+
+tr:nth-child(odd).selected td {
+	background: #5c83ba;
+}
+
+tr.selected td,
+tr.selected a,
+tr.selecting td,
+tr.selecting a {
+	color: #fff;
+}
+
+tr.selected td a:hover {
+	color: white;
+	border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+tr.selected td a:focus {
+	color: white;
+	border-bottom-color: white;
+}
+
+tr.selected .inactive,
+tr.selected i {
+	color: rgba(255, 255, 255, 0.6);
+}
+
+/*-----------------------------------------------------------------------------
+	Orderable rows
+-----------------------------------------------------------------------------*/
+
+tr.ordering {
+	cursor: move;
+}
+
+tr.ordering td,
+tr:nth-child(odd).ordering td {
+	background-color: #4870a9;
+	border-bottom: 0.1rem solid #3c5e8e;
+	border-top: 0.1rem solid #2d466a;
+	text-shadow: 0.1rem 0.1rem rgba(0, 0, 0, 0.2);
+}
+
+tr.ordering td,
+tr.ordering a {
+	color: #fff;
+}
+
+/*-----------------------------------------------------------------------------
+	Status information
+-----------------------------------------------------------------------------*/
+
+tr[class*=status-] {
+	border-left-width: 0.8rem;
+	border-left-style: solid;
+}
+
+tr.status-notice {
+	border-left-color: #f9ba4b;
+}
+
+tr.status-ok {
+	border-left-color: #90c648;
+}
+
+tr.status-error {
+	border-left-color: #c4301e;
+}
+
+tr[class*=status-].selected {
+	border-left-color: #4967a1;
+}
+
+tr[class*=status-] td:first-of-type {
+	padding-left: 1.5rem;
+}
+
+tr[class*=status-] a:first-of-type::after {
+	content: attr(data-status);
+	color: transparent;
+	border-bottom: 1px solid #f5f5f5;
+}
+
+tr[class*=status-]:nth-child(even):hover a:first-of-type::after {
+	border-bottom-color: #fff;
+}
+
+tr[class*=status-]:hover a:first-of-type::after {
+	color: #b4b4b4;
+}

@@ -1,0 +1,62 @@
+/**
+ * Drawers are areas in the backend that contain additional information
+ * like settings or documentation. They are hidden by default and can be
+ * expanded on click.
+ *
+ * @since Symphony 2.3
+ */
+
+
+/*-----------------------------------------------------------------------------
+	Horizontal drawers
+-----------------------------------------------------------------------------*/
+
+div.drawer.horizontal {
+	position: relative;
+}
+
+div.drawer.horizontal .contents {
+	margin-top: 1.7rem;
+	padding: 2rem 0;
+	border-top: 0.1rem solid rgba(0, 0, 0, 0.05);
+}
+
+div.drawer.horizontal .contents:after {
+	content: ' ';
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	clear: both;
+	height: 0;
+}
+
+/*-----------------------------------------------------------------------------
+	Vertical drawers
+-----------------------------------------------------------------------------*/
+
+div.drawer.vertical-left,
+div.drawer.vertical-right {
+	position: absolute;
+	overflow: scroll;
+	-webkit-overflow-scrolling: touch;
+	width: 30rem;
+	top: 0;
+	bottom: 0;
+	/* height is set implicitly via `top` and `bottom` to allow for dynamic height */
+	background: #F4F4F4;
+}
+
+div.drawer.vertical-left {
+	left: 0;
+	border-right: 0.1rem solid rgba(0, 0, 0, 0.05);
+}
+
+div.drawer.vertical-right {
+	right: 0;
+	border-left: 0.1rem solid rgba(0, 0, 0, 0.05);
+}
+
+div.drawer.vertical-left .contents,
+div.drawer.vertical-right .contents {
+	padding: 2rem;
+}

@@ -533,7 +533,8 @@
 		public static function createFilename($string, $delim='-', $apply_transliteration = true) {
 			// Use the transliteration table if provided
 			if($apply_transliteration == true){
-				$string = self::applyTransliterations($string);
+				$file = pathinfo($string);
+				$string = self::applyTransliterations($file['filename']) . '.' . $file['extension'];
 			}
 
 			return General::createFilename($string, $delim);
@@ -574,17 +575,3 @@
 		}
 
 	}
-
-	/**
-	 * Status when a language is installed and enabled (will be removed in Symphony 2.4)
-	 * @deprecated
-	 * @var integer
-	 */
-	define_safe('LANGUAGE_ENABLED', 10);
-
-	/**
-	 * Status when a language is disabled (will be removed in Symphony 2.4)
-	 * @deprecated
-	 * @var integer
-	 */
-	define_safe('LANGUAGE_DISABLED', 11);

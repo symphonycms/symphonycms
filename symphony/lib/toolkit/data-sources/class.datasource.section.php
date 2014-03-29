@@ -278,7 +278,7 @@
 					$this->_param_pool[$param_key] = array_merge($param_pool_values, $this->_param_pool[$param_key]);
 					if($singleParam) $this->_param_pool[$key] = array_merge($param_pool_values, $this->_param_pool[$key]);
 				}
-				else{
+				else if(!is_null($param_pool_values)){
 					$this->_param_pool[$param_key][] = $param_pool_values;
 					if($singleParam) $this->_param_pool[$key][] = $param_pool_values;
 				}
@@ -365,7 +365,7 @@
 				else {
 					// For deprecated reasons, call the old, typo'd function name until the switch to the
 					// properly named buildDSRetrievalSQL function.
-					if(!self::$_fieldPool[$field_id]->buildDSRetrivalSQL($value, $joins, $where, ($filter_type == DataSource::FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
+					if(!self::$_fieldPool[$field_id]->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == DataSource::FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
 					if(!$group) $group = self::$_fieldPool[$field_id]->requiresSQLGrouping();
 				}
 			}
@@ -391,6 +391,13 @@
 			if($this->_force_empty_result == true){
 				$this->_force_empty_result = false; //this is so the section info element doesn't disappear.
 				$result = $this->emptyXMLSet();
+				$result->prependChild($sectioninfo);
+				return $result;
+			}
+
+			if($this->_negate_result == true){
+				$this->_negate_result = false; //this is so the section info element doesn't disappear.
+				$result = $this->negateXMLSet();
 				$result->prependChild($sectioninfo);
 				return $result;
 			}

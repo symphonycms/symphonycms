@@ -1,10 +1,9 @@
 # Symphony 2
 
-- Version: 2.3.6
-- Date: 29th January 2014
-- Release Notes: <http://getsymphony.com/download/releases/version/2.3.6/>
-- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.3.6>
-
+- Version: 2.4 Beta 2
+- Date: 8th March 2014
+- Release Notes: <http://getsymphony.com/download/releases/version/2.4/>
+- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.4beta2>
 
 
 ## Contents
@@ -23,22 +22,18 @@
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.3.6` and is considered stable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.4 Beta 1` and is considered unstable.
 
 Visit [the Symphony website](http://getsymphony.com/), [the forum](http://getsymphony.com/discuss/) or learn how you can [contribute to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony).
 
 ## Server requirements
 
-- PHP 5.2 or above (PHP 5.3 recommended)
+- PHP 5.3 or above
 - PHP’s LibXML module, with the XSLT extension enabled (`--with-xsl`)
 - MySQL 5.0 or above
 - A webserver (known to be used with Apache, Litespeed, Nginx and Hiawatha)
 - Apache’s `mod_rewrite` module or equivalent
 - PHP’s built in `json` functions, which are enabled by default in PHP 5.2 and above; if they are missing, ensure PHP wasn’t compiled with `--disable-json`
-
-### A note for Windows developers
-
-While Windows is not officially supported for production, we understand many developers use WAMP for Symphony development before deploying to a production server. The Symphony team recommends that while using WAMP, developers use the latest PHP 5.3.x version during development to minimise any potential issues. PHP 5.3 provides numerous fixes and improvements to help minimise and standardise the result of several functions that behave slightly differently depending on the OS.
 
 
 
@@ -56,7 +51,7 @@ Before installation, see the [notes on file permissions](#file-permissions).
 
 	[Markdown](http://github.com/symphonycms/markdown)  
 	[Maintenance Mode](http://github.com/symphonycms/maintenance_mode)  
-	[Select Box Link Field](http://github.com/symphonycms/selectbox_link_field)  
+	[Select Box Link Field](http://github.com/symphonycms/selectbox_link_field) 
 	[JIT Image Manipulation](http://github.com/symphonycms/jit_image_manipulation)  
 	[Export Ensemble](http://github.com/symphonycms/export_ensemble)  
 	[Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)  
@@ -189,3 +184,23 @@ Follow the instructions below if you are updating from Symphony 2.0 (not from Gi
 1. Go to `http://example.com/install/` to complete the update process.
 
 1. Call a friend and brag that your copy of Symphony is newer than theirs.
+
+## Contributing
+
+Symphony uses [Grunt](http://gruntjs.com/) to build bundled and minified assets:
+
+1. Install `grunt-cli` globally, [see the Grunt documentation](http://gruntjs.com/getting-started):
+
+		npm install -g grunt-cli
+
+2. Install all dependencies from the repository's root:
+
+		npm install
+
+3. Use the following command to start the automatic `watch` task:
+
+		grunt watch
+
+Symphony's minified script and style files will be updated automatically when saving source files.
+
+More information about [Contributing to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony) can be found in the Github wiki.

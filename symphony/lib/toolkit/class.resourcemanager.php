@@ -356,6 +356,48 @@
 			return false;
 		}
 
+		/**
+		 * Given a resource type, a handle and an array of pages, this function will
+		 * ensure that the resource is attached to the given pages. Note that this
+		 * function will also remove the resource from all pages that are not provided
+		 * in the `$pages` parameter.
+		 *
+		 * @since Symphony 2.4
+		 * @param integer $type
+		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+		 * @param string $r_handle
+		 *  The handle of the resource.
+		 * @param array $page_id
+		 *  An array of Page ID's to attach this resource to.
+		 * @return boolean
+		 */
+		public static function setPages($type, $r_handle, $pages = array()) {
+			if(!is_array($pages)) {
+				$pages = array();
+			}
+
+			// Get attached pages
+			$attached_pages = ResourceManager::getAttachedPages($type, $r_handle);
+			$currently_attached_pages = array();
+			foreach($attached_pages as $page) {
+				$currently_attached_pages[] = $page['id'];
+			}
+
+			// Attach this datasource to any page that is should be attached to
+			$diff_to_attach = array_diff($pages, $currently_attached_pages);
+			foreach($diff_to_attach as $diff_page) {
+				ResourceManager::attach($type, $r_handle, $diff_page);
+			}
+
+			// Remove this datasource from any page where it once was, but shouldn't be anymore
+			$diff_to_detach = array_diff($currently_attached_pages, $pages);
+			foreach($diff_to_detach as $diff_page) {
+				ResourceManager::detach($type, $r_handle, $diff_page);
+			}
+
+			return true;
+		}
+
 	}
 
 	/**

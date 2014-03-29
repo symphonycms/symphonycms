@@ -24,11 +24,9 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge,chrome=1')), 1);
 			$this->addElementToHead(new XMLElement('meta', NULL, array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1')), 2);
 
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.css', 'screen', 30);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.forms.css', 'screen', 31);
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.frames.css', 'screen', 32);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.min.css', 'screen', null, false);
 
-			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Login'), __('Symphony'))));
+			$this->setTitle(__('%1$s &ndash; %2$s', array(__('Login'), Symphony::Configuration()->get('sitename', 'general'))));
 
 			$this->Body->setAttribute('id', 'login');
 
@@ -46,14 +44,14 @@
 				if(!$this->__loginFromToken($this->_context[0])) {
 					if(Administration::instance()->isLoggedIn()) {
 						// Redirect to the Author's profile. RE: #1801
-						redirect(SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id'));
+						redirect(SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/reset-password/');
 					}
 				}
 			}
 
 			$this->Form = Widget::Form(SYMPHONY_URL . '/login/', 'post');
 			$this->Form->setAttribute('class', 'frame');
-			$this->Form->appendChild(new XMLElement('h1', __('Symphony')));
+			$this->Form->appendChild(new XMLElement('h1', Symphony::Configuration()->get('sitename', 'general')));
 
 			$fieldset = new XMLElement('fieldset');
 
@@ -91,7 +89,7 @@
 
 					$div = new XMLElement('div', NULL, array('class' => 'actions'));
 					$div->appendChild(
-						new XMLElement('button', __('Send Email'), array('name' => 'action[reset]', 'type' => 'submit'))
+						new XMLElement('button', __('Send Email'), array('name' => 'action[reset]', 'type' => 'submit', 'accesskey' => 's'))
 					);
 					$div->appendChild(
 						Widget::Anchor(__('Cancel'), SYMPHONY_URL.'/login/', null, 'action-link')
@@ -102,7 +100,7 @@
 			// Normal login
 			else:
 
-				$fieldset->appendChild(new XMLElement('legend', __('Login')));
+				$fieldset->appendChild(new XMLElement('legend', __('Login'), array('role' => 'heading')));
 
 				// Display error message
 				if($this->failedLoginAttempt){
@@ -141,7 +139,7 @@
 				// Actions
 				$div = new XMLElement('div', NULL, array('class' => 'actions'));
 				$div->appendChild(
-					new XMLElement('button', __('Login'), array('name' => 'action[login]', 'type' => 'submit', 'accesskey' => 's'))
+					new XMLElement('button', __('Login'), array('name' => 'action[login]', 'type' => 'submit', 'accesskey' => 'l'))
 				);
 				$div->appendChild(
 					Widget::Anchor(__('Retrieve password?'), SYMPHONY_URL.'/login/retrieve-password/', null, 'action-link')

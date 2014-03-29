@@ -138,15 +138,18 @@
 
 			$label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][destination]', $options));
 
-			if(isset($errors['destination'])) $wrapper->appendChild(Widget::Error($label, $errors['destination']));
-			else $wrapper->appendChild($label);
+			if(isset($errors['destination'])) {
+				$wrapper->appendChild(Widget::Error($label, $errors['destination']));
+			}
+			else {
+				$wrapper->appendChild($label);
+			}
 
-			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload');
+			// Validation rule
+			$this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'upload', $errors);
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-			$this->appendRequiredCheckbox($div);
-			$this->appendShowColumnCheckbox($div);
-			$wrapper->appendChild($div);
+			// Requirements and table display
+			$this->appendStatusFooter($wrapper);
 		}
 
 		public function checkFields(array &$errors, $checkForDuplicates = true){
@@ -506,14 +509,11 @@
 			}
 
 			$file = $this->getFilePath($data['file']);
+			$filesize = (file_exists($file) && is_readable($file)) ? filesize($file) : NULL;
 			$item = new XMLElement($this->get('element_name'));
 			$item->setAttributeArray(array(
-				'size' =>	(
-								file_exists($file)
-								&& is_readable($file)
-									? General::formatFilesize(filesize($file))
-									: 'unknown'
-							),
+				'size' =>	!is_null($filesize) ? General::formatFilesize($filesize) : 'unknown',
+				'bytes' =>	!is_null($filesize) ? $filesize : 'unknown',
 			 	'path' =>	General::sanitize(
 								str_replace(WORKSPACE, NULL, dirname($file))
 			 				),

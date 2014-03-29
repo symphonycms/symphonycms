@@ -1,0 +1,406 @@
+/**
+ * This file contains unified styles for inputs, text areas, multiple selects
+ * and buttons that are shared across the system. It does not contain general
+ * label and fieldset definitions that differ in the different areas of Symphony.
+ *
+ * @since Symphony 2.3
+ */
+
+
+/*--------------------------------------------------------------------------
+	Inputs, text areas, selects
+--------------------------------------------------------------------------*/
+
+input,
+textarea,
+select[multiple] {
+	padding: 0.2rem 0.3rem;
+	border: 0.1rem solid rgba(0, 0, 0, 0.25);
+	box-sizing: border-box;
+	margin-top: 0.2rem;
+	width: 100%;
+	font-size: 109.09%;
+	font-family: inherit;
+}
+
+input {
+	height: 2.2rem;
+}
+
+input[type=file] {
+	border: none;
+	padding: 0;
+	margin: 0;
+	height: auto;
+}
+
+input:active,
+input:focus,
+textarea:active,
+textarea:focus,
+select[multiple]:active,
+select[multiple]:focus {
+	outline: none;
+	border-color: rgba(0, 0, 0, 0.4);
+}
+
+select {
+	width: 100%;
+	display: block;
+	margin-top: 0.2rem;
+	box-sizing: border-box;
+}
+
+select[multiple] {
+	font-size: 1.1rem;
+	width: 100%;
+	height: 10rem;
+	padding: 0;
+}
+
+select[size] {
+	height: auto;
+	max-height: 10rem;
+}
+
+input[size] {
+	width: auto;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+	display: inline;
+	width: auto;
+	margin-right: 0.5rem;
+	height: auto;
+	padding: inherit;
+	border: none;
+	box-shadow: none;
+	margin-top: 0;
+	font-size: inherit;
+}
+
+button,
+input[type="submit"] {
+	font-family: 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+}
+
+a,
+select,
+textarea,
+option,
+fieldset {
+	outline: 0;
+}
+
+input[type="reset"], 
+input[type="button"], 
+input[type="submit"] {
+	width: auto;
+	font-size: inherit;
+}
+
+button::-moz-focus-inner,
+input[type="reset"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+select::-moz-focus-inner,
+input[type="file"] > input[type="button"]::-moz-focus-inner {
+	border: none;
+}
+
+/* Errors */
+
+.invalid input
+.invalid select[multiple],
+.invalid textarea {
+	border-color: #cc3311;
+}
+
+.invalid input:active,
+.invalid input:focus,
+.invalid textarea:active,
+.invalid textarea:focus {
+	border-color: #9d270d;
+	box-shadow: 0 0 0.6rem rgba(0, 0, 0, 0.3);
+}
+
+/*--------------------------------------------------------------------------
+	Buttons
+--------------------------------------------------------------------------*/
+
+input[type=submit],
+button,
+.button,
+.apply-button-left,
+.apply-button-right,
+.apply-label-left,
+.apply-label-right {
+	display: inline-block;
+	min-height: 2rem;
+	margin-left: 1rem;
+	padding: 0 1rem;
+	background-color: #f0f0ee;
+	color: rgba(85, 85, 85, 0.95);
+	border: 0.1rem solid rgba(0, 0, 0, 0.25);
+	border-radius: 0.4rem;
+	line-height: 1.85;
+}
+
+input[type=submit]:hover,
+input[type=submit]:active,
+input[type=submit]:focus,
+button:hover,
+button:active,
+button:focus,
+.button:hover,
+.button:active,
+.button:focus {
+	background-color: #deded9;
+	border-color: rgba(0, 0, 0, 0.35);
+	color: #3c3c3c;
+	cursor: pointer;
+}
+
+input[type=submit].selected,
+button.selected,
+.button.selected {
+	box-shadow: inset 0 0 0.1rem rgba(0, 0, 0, 0.3);
+	cursor: pointer;
+	color: rgba(0, 0, 0, 0.65);
+	border-color: rgba(0, 0, 0, 0.3);
+}
+
+textarea[disabled=disabled],
+textarea[disabled=disabled]:hover,
+textarea[disabled=disabled]:active,
+textarea[disabled=disabled]:focus,
+textarea[readonly=readonly],
+textarea[readonly=readonly]:hover,
+textarea[readonly=readonly]:active,
+textarea[readonly=readonly]:focus,
+input[type=submit][disabled=disabled]:hover,
+input[type=submit][disabled=disabled]:active,
+input[type=submit][disabled=disabled]:focus,
+input[readonly=readonly],
+input[readonly=readonly]:hover,
+input[readonly=readonly]:active,
+input[readonly=readonly]:focus,
+button[disabled=disabled],
+button[disabled=disabled]:hover,
+button[disabled=disabled]:active,
+button[disabled=disabled]:focus {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+/* Create buttons */
+
+button.create,
+.button.create {
+	background-color: #91c948;
+	color: #fff;
+}
+
+button.create:hover,
+button.create:active,
+button.create:focus,
+.button.create:hover,
+.button.create:active,
+.button.create:focus {
+	background-color: #70B418;
+}
+
+/* Delete buttons */
+
+button.delete:hover,
+button.delete:active,
+button.delete:focus,
+.button.delete:hover,
+.button.delete:active,
+.button.delete:focus {
+	background: #c4301e;
+	color: #fff;
+}
+
+/* Installer */
+
+.submit input {
+	margin-top: 1.5rem;
+}
+
+/* "With selected…" menu */
+
+.apply,
+.apply.inactive:hover {
+	background: #fbfbfa;
+	border: 0.1rem solid rgba(0, 0, 0, 0.25);
+	border-radius: 0.4rem;
+	display: block;
+	float: right;
+	height: 1.85em;
+	margin: 0;
+	min-height: 2rem;
+	padding: 0;
+}
+
+.apply.inactive {
+	opacity: 0.5;
+}
+
+.apply div {
+	text-align: left;
+	overflow: hidden;
+	float: left;
+	background-repeat: no-repeat;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAwCAYAAADHEYBIAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAORJREFUeNpiYIAAHiDuBmJWEOf///9YMRNUcRUQOwJxJgMeAFLsBcRuUH4cEFvhUsyITRBkJS6TiQYgxb5AfAYJW+FTvBmId0H5i4D4GCEbiAo6RlyeoYoHRxUPacWMjIwMQMwKxBZADOYTMtkQiKWAWIuQM+SAWAbKVwNicfrnQRYglgdiYySxo0D8EpfJD4H4CZR/C5dCZADKexYwZ43mwVHF5OZBEC3DCAEETZYEYl4gFiXkDH4g5oPyhaFVxgDkQX5omQEDj4H4Cy6TPwLxJyj/LS6FMJNB4DnU/a/xOQMgwACLFl2Yo1jbdgAAAABJRU5ErkJggg==);
+	background-position: right -1.4rem;
+}
+
+.apply:hover div {
+	background-position: right 0.6rem;
+}
+
+.apply.inactive div {
+	background: right -3.4rem;
+}
+
+.apply select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	-ms-appearance: none;
+	-o-appearance: none;
+	appearance: none;
+	background: transparent;
+	border: none;
+	border-radius: 0.5rem;
+	color: rgb(60, 60, 60);
+	cursor: pointer;
+	display: inline-block;
+	line-height: 1.5;
+	margin: 0.2rem 0 0 0;
+	outline: none;
+	padding: 0 0 0 0.7rem;
+	width: 110% !important;
+	min-width: 17rem;
+}
+
+.apply.inactive select {
+	cursor: default;
+}
+
+.apply select:hover {
+	background-position: right -1.6rem;
+}
+
+.apply button,
+.apply-button-right,
+.apply-button-left,
+.apply-label-right,
+.apply-label-left {
+	margin: 0;
+	border: none;
+	border-left: 0.1rem solid rgba(0, 0, 0, 0.15);
+	border-right: none;
+	border-radius: 0 0.4rem 0.4rem 0;
+	line-height: 1.85;
+	height: 1.85rem;
+	float: right;
+}
+
+.apply-button-left,
+.apply-label-left {
+	float: left;
+	border-left: none;
+	border-right: 0.1rem solid rgba(0, 0, 0, 0.15);
+	border-radius: 0.4rem 0 0 0.4rem;
+}
+
+.apply.inactive button,
+.apply.inactive button:hover {
+	color: rgba(60, 60, 60, 0.8);
+	border-left: 0.1rem solid rgba(0, 0, 0, 0.15);
+	box-shadow: none;
+	cursor: default;
+}
+
+.apply:hover button {
+	border-left: 0.1rem solid rgba(0, 0, 0, 0.25);
+}
+
+/* Single select "With selected…" */
+
+.apply.single {
+	border: none;
+}
+
+.apply.single select {
+	display: none;
+}
+
+.apply.single button {
+	border: 0.1rem solid rgba(0, 0, 0, 0.25);
+	border-bottom-color: rgba(0, 0, 0, 0.3);
+	border-radius: 0.4rem;
+	height: auto;
+	white-space: nowrap;
+}
+
+.apply.single button:before {
+	display: none;
+}
+
+/* Inline buttons, aligned left */
+
+fieldset input[type=submit],
+fieldset button,
+fieldset .button {
+	margin-left: 0;
+	margin-right: 1rem;
+}
+
+/*--------------------------------------------------------------------------
+	Dropdowns
+--------------------------------------------------------------------------*/
+
+.frame.suggestions {
+	overflow: visible;
+}
+
+.suggestions {
+	overflow: visible;
+}
+
+ul.suggestionlist {
+	position: absolute;
+	border-radius: 0 0 0.4rem 0.4rem;
+	border: 0.1rem solid #c0c0c0;
+	border-top: none;
+	margin: 0;
+	width: 100%;
+	box-sizing: border-box;
+	box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.2);
+	z-index: 10000;
+	max-height: 24rem;
+	overflow: auto;
+	transition: max-height .25s ease-out;
+	background: #fff;
+}
+
+ul.suggestionlist li {
+	height: 2.2rem;
+	padding: 0.2rem 0.5rem;
+	box-sizing: border-box;
+	border-bottom: 0.1rem solid #f3f3f3;
+}
+
+ul.suggestionlist li:last-of-type {
+	border-bottom: none;
+}
+
+ul.suggestionlist li.active {
+	background: #668ABE;
+	color: #fff;
+	cursor: pointer;
+}
+
