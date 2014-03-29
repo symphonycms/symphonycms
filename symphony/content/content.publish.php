@@ -18,7 +18,6 @@
 
 		public $_errors = array();
 
-		private $_incompatible_publishpanel = array('mediathek', 'imagecropper', 'readonlyinput');
 		private $_filteringForm = null;
 		private $_filteringFields = array();
 		private $_filteringOptions = array();
