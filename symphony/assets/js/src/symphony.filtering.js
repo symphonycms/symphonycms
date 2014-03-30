@@ -27,12 +27,12 @@
 					if(!query.length) return callback();
 
 					$.ajax({
-						url: Symphony.Context.get('symphony') + '/ajax/filters',
+						url: Symphony.Context.get('symphony') + '/ajax/filters/',
 						type: 'GET',
 						dataType: 'json',
 						data: {
 							handle: fields.val(),
-							section: Symphony.Context.get('env')['section-handle']
+							section: Symphony.Context.get('env')['section_handle']
 						},
 						error: function() {
 							callback();

@@ -168,13 +168,12 @@
 		 */
 		public function getFilteringFields() {
 			$context = $this->getContext();
-			$sectionManager = new SectionManager(Symphony::Engine());
-			$section_id = $sectionManager->fetchIDFromHandle($context['section_handle']);
+			$section_id = SectionManager::fetchIDFromHandle($context['section_handle']);
 
 			if(!$section_id) return;
 
 			// Filterable sections
-			$section = $sectionManager->fetch($section_id);
+			$section = SectionManager::fetch($section_id);
 			foreach($section->fetchFilterableFields() as $field) {
 				if(!$field->canPublishFilter()) continue;
 
