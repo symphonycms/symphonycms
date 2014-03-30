@@ -104,7 +104,6 @@
 			}
 			catch(Exception $e){
 				try {
-
 					if(!headers_sent()) {
 						Page::renderStatusCode(Page::HTTP_STATUS_ERROR);
 						header('Content-Type: text/html; charset=utf-8');
@@ -117,9 +116,8 @@
 				}
 				catch(Exception $e) {
 					echo "<pre>";
-					echo 'A severe error occurred whilst trying to handle an exception:' . PHP_EOL;
-					echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile();
-					exit;
+					echo 'A severe error occurred whilst trying to handle an exception, check the Symphony log for more details' . PHP_EOL;
+					echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
 				}
 			}
 		}
@@ -224,28 +222,35 @@
 				$file = $last_error['file'];
 				$line = $last_error['line'];
 
-				// Log the error message
-				if(self::$_Log instanceof Log) {
-					self::$_Log->pushToLog(
-						sprintf(
-							'%s %s: %s%s%s',
-							__CLASS__, $code, $message, ($line ? " on line $line" : null), ($file ? " of file $file" : null)
-						), $code, true
+				try {
+					// Log the error message
+					if(self::$_Log instanceof Log) {
+						self::$_Log->pushToLog(
+							sprintf(
+								'%s %s: %s%s%s',
+								__CLASS__, $code, $message, ($line ? " on line $line" : null), ($file ? " of file $file" : null)
+							), $code, true
+						);
+					}
+					ob_clean();
+
+					// Display the error message
+					$html = sprintf(file_get_contents(self::getTemplate('fatalerror.fatal')),
+						'Fatal Error',
+						$message,
+						$file,
+						$line
 					);
+					$html = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $html);
+					$html = str_replace('{URL}', URL, $html);
+
+					echo $html;
 				}
-				ob_clean();
-
-				// Display the error message
-				$html = sprintf(file_get_contents(self::getTemplate('fatalerror.fatal')),
-					'Fatal Error',
-					$message,
-					$file,
-					$line
-				);
-				$html = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $html);
-				$html = str_replace('{URL}', URL, $html);
-
-				echo $html;
+				catch(Exception $e) {
+					echo "<pre>";
+					echo 'A severe error occurred whilst trying to handle an exception, check the Symphony log for more details' . PHP_EOL;
+					echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
+				}
 			}
 		}
 	}
