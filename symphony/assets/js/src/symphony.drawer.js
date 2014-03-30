@@ -2,7 +2,7 @@
  * @package assets
  */
 
-(function($) {
+(function($, Symphony) {
 
 	/**
 	 * Drawers are hidden areas in the backend that are used to
@@ -260,4 +260,4 @@
 		return objects;
 	};
 
-})(window.jQuery);
+})(window.jQuery, window.Symphony);

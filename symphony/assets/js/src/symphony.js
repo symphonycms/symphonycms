@@ -11,7 +11,7 @@
  *
  * @class
  */
-var Symphony = (function($) {
+var Symphony = (function($, crossroads) {
 
 	// Internal Symphony storage
 	var Storage = {
@@ -32,7 +32,7 @@ var Symphony = (function($) {
 			});
 		}
 		return string;
-	};
+	}
 
 	// Get localised strings
 	function translate(strings) {
@@ -43,7 +43,7 @@ var Symphony = (function($) {
 
 		// Validate and set namespace
 		if($.type(namespace) === 'string' && namespace !== '') {
-			data['namespace'] = namespace;
+			data.namespace = namespace;
 		}
 
 		// Request translations
@@ -64,7 +64,7 @@ var Symphony = (function($) {
 				$.extend(true, Storage.Dictionary, strings);
 			}
 		});
-	};
+	}
 
 /*-----------------------------------------------------------------------*/
 
@@ -168,9 +168,9 @@ var Symphony = (function($) {
 		 *
 		 * @class
 		 */
-	 	Context: {
+		Context: {
 
-	 		/**
+			/**
 			 * Add data to the Context object
 			 *
 			 * @param {String} group
@@ -344,4 +344,4 @@ var Symphony = (function($) {
 			}
 		}
 	};
-}(window.jQuery));
+}(window.jQuery, window.crossroads));

@@ -2,7 +2,7 @@
  * @package assets
  */
 
-(function($) {
+(function($, Symphony) {
 
 	/**
 	 * Create collapsible elements.
@@ -227,4 +227,4 @@
 		return objects;
 	};
 
-})(window.jQuery);
+})(window.jQuery, window.Symphony);

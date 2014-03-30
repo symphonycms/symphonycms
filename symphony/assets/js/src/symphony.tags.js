@@ -2,7 +2,7 @@
  * @package assets
  */
 
-(function($) {
+(function($, Symphony) {
 
 	/**
 	 * Insert tags from a list into an input field based on three modes:
@@ -32,7 +32,7 @@
 		Events
 	-------------------------------------------------------------------------*/
 
-		objects.on('click.tags', settings.items, function tag(event) {
+		objects.on('click.tags', settings.items, function tagging(event) {
 			var item = $(this),
 				object = item.parent(),
 				input = object.prev().find('input, textarea'),
@@ -105,4 +105,4 @@
 		return objects;
 	};
 
-})(window.jQuery);
+})(window.jQuery, window.Symphony);

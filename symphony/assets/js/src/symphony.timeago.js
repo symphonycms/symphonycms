@@ -2,7 +2,7 @@
  * @package assets
  */
 
-(function($) {
+(function($, Symphony) {
 
 	/**
 	 * Convert absolute to relative dates.
@@ -100,7 +100,7 @@
 					'hours': Math.floor(time / 60)
 				});
 			}
-		};
+		}
 
 	/*-------------------------------------------------------------------------
 		Initialisation
@@ -120,4 +120,4 @@
 		return objects;
 	};
 
-})(window.jQuery);
+})(window.jQuery, window.Symphony);

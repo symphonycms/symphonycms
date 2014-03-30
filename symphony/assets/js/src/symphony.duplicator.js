@@ -2,7 +2,7 @@
  * @package assets
  */
 
-(function($) {
+(function($, Symphony) {
 
 	/**
 	 * Duplicators are advanced lists used throughout the
@@ -65,7 +65,7 @@
 				constructor = $('<button type="button" class="constructor" />'),
 				duplicator = object,
 				list = duplicator.find('> ol'),
-				instances, templates, items, headers, constructor, apply, selector;
+				instances, templates, items, headers;
 
 			// Initialise duplicator components
 			duplicator.addClass('duplicator').addClass('empty');
@@ -359,4 +359,4 @@
 		return objects;
 	};
 
-})(window.jQuery);
+})(window.jQuery, window.Symphony);

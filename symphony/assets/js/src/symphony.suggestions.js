@@ -2,7 +2,7 @@
  * @package assets
  */
 
-(function($) {
+(function($, Symphony) {
 
 	$.fn.symphonySuggestions = function(options) {
 		var objects = this,
@@ -110,7 +110,7 @@
 
 			setTimeout(function hideSuggestions() {
 				current.hide();
-			}, 200)
+			}, 200);
 		});
 
 		// Keyboard interactions
@@ -209,4 +209,4 @@
 		return objects;
 	};
 
-})(jQuery.noConflict());
+})(window.jQuery, window.Symphony);

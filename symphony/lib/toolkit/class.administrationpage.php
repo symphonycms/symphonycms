@@ -242,6 +242,7 @@
 			else {
 				$ul->appendChild($li);
 			}
+
 		}
 
 		/**

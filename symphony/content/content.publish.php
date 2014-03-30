@@ -18,6 +18,10 @@
 
 		public $_errors = array();
 
+		private $_filteringForm = null;
+		private $_filteringFields = array();
+		private $_filteringOptions = array();
+
 		public function sort(&$sort, &$order, $params) {
 			$section = $params['current-section'];
 
@@ -70,6 +74,112 @@
 				}
 			}
 
+		}
+
+		/**
+		 * Append filtering interface
+		 */
+		public function createFilteringInterface() {
+
+			// Get filtering fields
+			$this->getFilteringFields();
+
+			// Append drawer
+			$this->insertDrawer(
+				Widget::Drawer('filtering', __('Filter Entries'), $this->createFilteringDrawer())
+			);
+		}
+
+		/**
+		 * Create filtering drawer
+		 */
+		public function createFilteringDrawer() {
+			$filters = $_GET['filter'];
+			$this->filteringForm = Widget::Form(null, 'get', 'filtering');
+
+			// Create existing filters
+			if(is_array($filters) && !empty($filters)) {
+				foreach($filters as $field => $search) {
+					$this->createFilter($field, $search);
+				}
+			}
+
+			// Create empty filter
+			else {
+				$this->createFilter();
+			}
+
+			// Create template
+			$this->createFilter(null, null, 'template');
+
+			return $this->filteringForm;
+		}
+
+		public function createFilter($field = null, $search = null, $class = null) {
+			$row = new XMLElement('div');
+
+			if($class) {
+				$row->setAttribute('class', 'filtering-row ' . $class);
+			}
+			else {
+				$row->setAttribute('class', 'filtering-row');
+			}
+
+			// Fields
+			$fields = $this->_filteringFields;
+			for($i = 1; $i < count($fields); $i++) {
+				if($fields[$i][0] === $field) {
+					$fields[$i][1] = true;
+				}
+			}
+
+			$div = new XMLElement('div', null, array('class' => 'filtering-controls'));
+			$div->appendChild(
+				Widget::Select('fields', $fields, array(
+					'class' => 'filtering-fields'
+				))
+			);
+
+			// Comparison
+			$needle = str_replace('regexp:', '', $search);
+			$div->appendChild(
+				Widget::Select('comparison', array(
+					array('contains', (strpos($search, 'regexp:') !== false), __('contains')),
+					array('is', (strpos($search, 'regexp:') === false), __('is'))
+				), array(
+					'class' => 'filtering-comparison'
+				))
+			);
+			$row->appendChild($div);
+
+			// Search
+			$row->appendChild(
+				Widget::Input('search', $needle, 'text', array(
+					'class' => 'filtering-search',
+					'placeholder' => __('Type to search') . ' …')
+				)
+			);
+
+			$this->filteringForm->appendChild($row);
+		}
+
+		/**
+		 * Get filter field names
+		 */
+		public function getFilteringFields() {
+			$context = $this->getContext();
+			$sectionManager = new SectionManager(Symphony::Engine());
+			$section_id = $sectionManager->fetchIDFromHandle($context['section_handle']);
+
+			if(!$section_id) return;
+
+			// Filterable sections
+			$section = $sectionManager->fetch($section_id);
+			foreach($section->fetchFilterableFields() as $field) {
+				if(!$field->canPublishFilter()) continue;
+
+				$this->_filteringFields[] = array($field->get('element_name'), false, $field->get('label'));
+			}
 		}
 
 		public function action(){
@@ -153,6 +263,9 @@
 			));
 
 			$this->Form->setAttribute('action', Administration::instance()->getCurrentPageURL(). '?pg=' . $current_page.($filter_querystring ? "&amp;" . $filter_querystring : ''));
+
+			// Build filtering interface
+			$this->createFilteringInterface();
 
 			$subheading_buttons = array(
 				Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/'.($prepopulate_querystring ? '?' . $prepopulate_querystring : ''), __('Create a new entry'), 'create button', NULL, array('accesskey' => 'c'))
