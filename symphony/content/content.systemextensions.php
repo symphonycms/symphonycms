@@ -129,6 +129,8 @@
 					}
 					if($about['discuss'] != '') {
 						$tdLinks['discuss'] = Widget::Anchor('Discuss', General::validateURL($about['discuss']))->generate();
+						// Update links to point to our 'new' domain, RE: #1995
+						$tdLinks['discuss'] = str_replace('symphony-cms.com', 'getsymphony.com', $tdLinks['discuss']);
 					}
 					if($about['homepage'] != '') {
 						$tdLinks['homepage'] = Widget::Anchor('Homepage', General::validateURL($about['homepage']))->generate();
