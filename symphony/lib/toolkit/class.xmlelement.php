@@ -681,7 +681,7 @@
 				}
 			}
 
-			$result = ($indent ? str_repeat("\t", $tab_depth) : null) . '<' . $this->getName();
+			$result .= ($indent ? str_repeat("\t", $tab_depth) : null) . '<' . $this->getName();
 
 			$attributes = $this->getAttributes();
 			if(!empty($attributes)){
