@@ -293,6 +293,7 @@ button.delete:focus,
 	padding: 0 0 0 0.7rem;
 	width: 110% !important;
 	min-width: 17rem;
+	font: 1.1rem/1.5 "Lucida Grande", Leelawadee, Tahoma, Verdana, ans-serif;
 }
 
 .apply.inactive select {
