@@ -145,7 +145,7 @@ button,
 	min-height: 2rem;
 	margin-left: 1rem;
 	padding: 0 1rem;
-	background-color: #f0f0ee;
+	background-image: linear-gradient(to bottom, #fbfbfa 0%, #e3e3df 100%);
 	color: rgba(85, 85, 85, 0.95);
 	border: 0.1rem solid rgba(0, 0, 0, 0.25);
 	border-radius: 0.4rem;
@@ -161,7 +161,7 @@ button:focus,
 .button:hover,
 .button:active,
 .button:focus {
-	background-color: #deded9;
+	background-image: linear-gradient(to bottom, #fbfbfa 0%, #e3e3df 50%);
 	border-color: rgba(0, 0, 0, 0.35);
 	color: #3c3c3c;
 	cursor: pointer;
@@ -170,9 +170,11 @@ button:focus,
 input[type=submit].selected,
 button.selected,
 .button.selected {
-	box-shadow: inset 0 0 0.1rem rgba(0, 0, 0, 0.3);
+	box-shadow: inset 0 0 0.15rem rgba(0, 0, 0, 0.2);
+	background: #e3e3df;
 	cursor: pointer;
-	color: rgba(0, 0, 0, 0.65);
+	color: rgba(0, 0, 0, 0.7);
+	text-shadow: 0.1rem 0.1rem 0 rgba(255, 255, 255, 0.7);
 	border-color: rgba(0, 0, 0, 0.3);
 }
 
@@ -203,7 +205,8 @@ button[disabled=disabled]:focus {
 
 button.create,
 .button.create {
-	background-color: #91c948;
+	background-image: linear-gradient(to bottom, #b3d47d 0%, #88bb33 100%);
+	border-color: #799747;
 	color: #fff;
 }
 
@@ -213,7 +216,8 @@ button.create:focus,
 .button.create:hover,
 .button.create:active,
 .button.create:focus {
-	background-color: #70B418;
+	background-image: linear-gradient(to bottom, #b3d47d 0%, #88bb33 50%);
+	border-color: #6b863f;
 }
 
 /* Delete buttons */
@@ -224,8 +228,9 @@ button.delete:focus,
 .button.delete:hover,
 .button.delete:active,
 .button.delete:focus {
-	background: #c4301e;
-	color: #fff;
+	background-image: linear-gradient(to bottom, #e90a20 0%, #9e0b19 100%);
+	border-color: #870915;
+	color: rgba(255, 255, 255, 0.8);
 }
 
 /* Installer */
