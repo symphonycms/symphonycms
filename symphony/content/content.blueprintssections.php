@@ -223,7 +223,7 @@
 
 			$label = Widget::Label();
 			$input = Widget::Input('meta[filter]', 'yes', 'checkbox', array('checked' => 'checked'));
-			$label->setValue(__('%s Enable filtering', array($input->generate(false))));
+			$label->setValue(__('%s Allow filtering of section entries', array($input->generate(false))));
 			$filterdiv->appendChild($label);
 
 			$div->appendChild($filterdiv);
@@ -467,7 +467,7 @@
 
 			$label = Widget::Label();
 			$input = Widget::Input('meta[filter]', 'yes', 'checkbox', ($meta['filter'] == 'yes' ? array('checked' => 'checked') : null));
-			$label->setValue(__('%s Enable filtering', array($input->generate(false))));
+			$label->setValue(__('%s Allow filtering of section entries', array($input->generate(false))));
 			$filterdiv->appendChild($label);
 
 			$div->appendChild($filterdiv);
