@@ -225,6 +225,7 @@ CREATE TABLE `tbl_sections` (
   `handle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `sortorder` int(11) NOT NULL DEFAULT '0',
   `hidden` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
+  `filter` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
   `navigation_group` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Content',
   PRIMARY KEY (`id`),
   UNIQUE KEY `handle` (`handle`)
