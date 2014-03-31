@@ -163,8 +163,6 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-
 			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
@@ -172,12 +170,18 @@
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
+			$fieldset->appendChild($namediv);
+
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+
+			$handlediv = new XMLElement('div', NULL, array('class' => 'column'));
+
 			$label = Widget::Label(__('Handle'));
 			$label->appendChild(Widget::Input('meta[handle]', (isset($meta['handle']) ? General::sanitize($meta['handle']) : null)));
-			if(isset($this->_errors['handle'])) $namediv->appendChild(Widget::Error($label, $this->_errors['handle']));
-			else $namediv->appendChild($label);
+			if(isset($this->_errors['handle'])) $handlediv->appendChild(Widget::Error($label, $this->_errors['handle']));
+			else $handlediv->appendChild($label);
 
-			$div->appendChild($namediv);
+			$div->appendChild($handlediv);
 
 			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
 
@@ -408,23 +412,28 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-
 			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
+			$label->appendChild(Widget::Input('meta[name]', (isset($meta['name']) ? General::sanitize($meta['name']) : null)));
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
-			$label = Widget::Label(__('Handle'));
-			$label->appendChild(Widget::Input('meta[handle]', General::sanitize($meta['handle'])));
-			if(isset($this->_errors['handle'])) $namediv->appendChild(Widget::Error($label, $this->_errors['handle']));
-			else $namediv->appendChild($label);
+			$fieldset->appendChild($namediv);
 
-			$div->appendChild($namediv);
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+
+			$handlediv = new XMLElement('div', NULL, array('class' => 'column'));
+
+			$label = Widget::Label(__('Handle'));
+			$label->appendChild(Widget::Input('meta[handle]', (isset($meta['handle']) ? General::sanitize($meta['handle']) : null)));
+			if(isset($this->_errors['handle'])) $handlediv->appendChild(Widget::Error($label, $this->_errors['handle']));
+			else $handlediv->appendChild($label);
+
+			$div->appendChild($handlediv);
 
 			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
+
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label(__('Navigation Group'));
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
