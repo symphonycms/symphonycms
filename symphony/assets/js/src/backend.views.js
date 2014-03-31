@@ -365,6 +365,9 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 				dataType: 'json',
 				url: Symphony.Context.get('symphony') + '/ajax/sections/',
 				success: function(result) {
+					if(result.sections.length) {
+						sections.prop('disabled', false);
+					}
 
 					// Append sections
 					$.each(result.sections, function(index, section) {
