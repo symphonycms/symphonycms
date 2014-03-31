@@ -163,8 +163,6 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-
 			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
@@ -172,12 +170,18 @@
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
+			$fieldset->appendChild($namediv);
+
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+
+			$handlediv = new XMLElement('div', NULL, array('class' => 'column'));
+
 			$label = Widget::Label(__('Handle'));
 			$label->appendChild(Widget::Input('meta[handle]', (isset($meta['handle']) ? General::sanitize($meta['handle']) : null)));
-			if(isset($this->_errors['handle'])) $namediv->appendChild(Widget::Error($label, $this->_errors['handle']));
-			else $namediv->appendChild($label);
+			if(isset($this->_errors['handle'])) $handlediv->appendChild(Widget::Error($label, $this->_errors['handle']));
+			else $handlediv->appendChild($label);
 
-			$div->appendChild($namediv);
+			$div->appendChild($handlediv);
 
 			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
 
@@ -200,15 +204,34 @@
 				$navgroupdiv->appendChild($ul);
 			}
 
+			$div->appendChild($navgroupdiv);
+			$fieldset->appendChild($div);
+			$this->Form->appendChild($fieldset);
+
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Options')));
+
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+
+			$hidediv = new XMLElement('div', NULL, array('class' => 'column'));
+
 			$label = Widget::Label();
 			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : null));
 			$label->setValue(__('%s Hide this section from the back-end menu', array($input->generate(false))));
-			$navgroupdiv->appendChild($label);
+			$hidediv->appendChild($label);
 
-			$div->appendChild($navgroupdiv);
+			$div->appendChild($hidediv);
 
+			$filterdiv = new XMLElement('div', NULL, array('class' => 'column'));
+
+			$label = Widget::Label();
+			$input = Widget::Input('meta[filter]', 'yes', 'checkbox', array('checked' => 'checked'));
+			$label->setValue(__('%s Allow filtering of section entries', array($input->generate(false))));
+			$filterdiv->appendChild($label);
+
+			$div->appendChild($filterdiv);
 			$fieldset->appendChild($div);
-
 			$this->Form->appendChild($fieldset);
 
 			/**
@@ -371,6 +394,7 @@
 			if(isset($_POST['meta'])){
 				$meta = $_POST['meta'];
 				$meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
+				$meta['filter'] = (isset($meta['filter']) ? 'yes' : 'no');
 
 				if($meta['name'] == '') $meta['name'] = $section->get('name');
 			}
@@ -388,23 +412,28 @@
 			$fieldset->setAttribute('class', 'settings');
 			$fieldset->appendChild(new XMLElement('legend', __('Essentials')));
 
-			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
-
 			$namediv = new XMLElement('div', NULL, array('class' => 'column'));
 
 			$label = Widget::Label(__('Name'));
-			$label->appendChild(Widget::Input('meta[name]', General::sanitize($meta['name'])));
+			$label->appendChild(Widget::Input('meta[name]', (isset($meta['name']) ? General::sanitize($meta['name']) : null)));
 			if(isset($this->_errors['name'])) $namediv->appendChild(Widget::Error($label, $this->_errors['name']));
 			else $namediv->appendChild($label);
 
-			$label = Widget::Label(__('Handle'));
-			$label->appendChild(Widget::Input('meta[handle]', General::sanitize($meta['handle'])));
-			if(isset($this->_errors['handle'])) $namediv->appendChild(Widget::Error($label, $this->_errors['handle']));
-			else $namediv->appendChild($label);
+			$fieldset->appendChild($namediv);
 
-			$div->appendChild($namediv);
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+
+			$handlediv = new XMLElement('div', NULL, array('class' => 'column'));
+
+			$label = Widget::Label(__('Handle'));
+			$label->appendChild(Widget::Input('meta[handle]', (isset($meta['handle']) ? General::sanitize($meta['handle']) : null)));
+			if(isset($this->_errors['handle'])) $handlediv->appendChild(Widget::Error($label, $this->_errors['handle']));
+			else $handlediv->appendChild($label);
+
+			$div->appendChild($handlediv);
 
 			$navgroupdiv = new XMLElement('div', NULL, array('class' => 'column'));
+
 			$sections = SectionManager::fetch(NULL, 'ASC', 'sortorder');
 			$label = Widget::Label(__('Navigation Group'));
 			$label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
@@ -424,15 +453,34 @@
 				$navgroupdiv->appendChild($ul);
 			}
 
-			$label = Widget::Label();
-			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : NULL));
-			$label->setValue(__('%s Hide this section from the back-end menu', array($input->generate(false))));
-			$navgroupdiv->appendChild($label);
-
 			$div->appendChild($navgroupdiv);
-
 			$fieldset->appendChild($div);
+			$this->Form->appendChild($fieldset);
 
+			$fieldset = new XMLElement('fieldset');
+			$fieldset->setAttribute('class', 'settings');
+			$fieldset->appendChild(new XMLElement('legend', __('Options')));
+
+			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
+
+			$hidediv = new XMLElement('div', NULL, array('class' => 'column'));
+
+			$label = Widget::Label();
+			$input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : null));
+			$label->setValue(__('%s Hide this section from the back-end menu', array($input->generate(false))));
+			$hidediv->appendChild($label);
+
+			$div->appendChild($hidediv);
+
+			$filterdiv = new XMLElement('div', NULL, array('class' => 'column'));
+
+			$label = Widget::Label();
+			$input = Widget::Input('meta[filter]', 'yes', 'checkbox', ($meta['filter'] == 'yes' ? array('checked' => 'checked') : null));
+			$label->setValue(__('%s Allow filtering of section entries', array($input->generate(false))));
+			$filterdiv->appendChild($label);
+
+			$div->appendChild($filterdiv);
+			$fieldset->appendChild($div);
 			$this->Form->appendChild($fieldset);
 
 			/**
@@ -732,6 +780,7 @@
 					// We are editing a Section
 					else {
 						$meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
+						$meta['filter'] = (isset($meta['filter']) ? 'yes' : 'no');
 
 						/**
 						 * Just prior to updating the Section settings. Use with caution as
