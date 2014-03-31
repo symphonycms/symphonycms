@@ -81,13 +81,23 @@
 		 */
 		public function createFilteringInterface() {
 
-			// Get filtering fields
-			$this->getFilteringFields();
+			//Check if section has filtering enabled
+			$context = Administration::instance()->Page->_context;
+			$handle = $context['section_handle'];
+			$section_id = SectionManager::fetchIDFromHandle($handle);
+			$section = SectionManager::fetch($section_id);
+			$filter = $section->get('filter');
 
-			// Append drawer
-			$this->insertDrawer(
-				Widget::Drawer('filtering', __('Filter Entries'), $this->createFilteringDrawer())
-			);
+			if(isset($filter) && $filter !='no'){
+
+				// Get filtering fields
+				$this->getFilteringFields();
+
+				// Append drawer
+				$this->insertDrawer(
+					Widget::Drawer('filtering', __('Filter Entries'), $this->createFilteringDrawer())
+				);
+			}
 		}
 
 		/**
