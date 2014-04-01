@@ -14,6 +14,9 @@
 		 * normal accessors.
 		 */
 		protected function __construct() {
+			self::$Profiler = Profiler::instance();
+			self::$Profiler->sample('Engine Initialisation');
+
 			if(get_magic_quotes_gpc()) {
 				General::cleanArray($_SERVER);
 				General::cleanArray($_COOKIE);

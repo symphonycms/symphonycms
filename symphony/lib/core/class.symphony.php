@@ -46,6 +46,12 @@
 		protected static $_instance = null;
 
 		/**
+		 * An instance of the Profiler class
+		 * @var Profiler
+		 */
+		protected static $Profiler = null;
+
+		/**
 		 * An instance of the `Configuration` class
 		 * @var Configuration
 		 */
@@ -68,12 +74,6 @@
 		 * @var Log
 		 */
 		private static $Log = null;
-
-		/**
-		 * An instance of the Profiler class
-		 * @var Profiler
-		 */
-		private static $Profiler = null;
 
 		/**
 		 * The current page namespace, used for translations
