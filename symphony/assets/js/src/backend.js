@@ -30,7 +30,8 @@
 		'Clear': false,
 		'Search for {$item}': false,
 		'Add filter': false,
-		'filtered': false
+		'filtered': false,
+		'None': false
 	});
 
 	// Initialise backend
