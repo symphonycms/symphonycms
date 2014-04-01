@@ -218,7 +218,7 @@
 
 			if(is_null($parent_section_id) && (is_null($parent_field_id) || !$parent_field_id)) return false;
 
-			if(is_null($parent_section_id )) {
+			if(is_null($parent_section_id)) {
 				$parent_field = FieldManager::fetch($parent_field_id);
 				$parent_section_id = $parent_field->get('parent_section');
 			}

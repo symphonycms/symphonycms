@@ -283,8 +283,8 @@
 			// Dynamic Options isn't an array like in Select Box Link
 			$field_id = $this->get('dynamic_options');
 
-			if (!is_null($field_id)) {
-				SectionManager::createSectionAssociation(NULL, $id, $field_id, $this->get('show_association') == 'yes' ? true : false);
+			if (!is_null($field_id) && is_numeric($field_id)) {
+				SectionManager::createSectionAssociation(NULL, $id, (int)$field_id, $this->get('show_association') == 'yes' ? true : false);
 			}
 
 			return true;
