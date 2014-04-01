@@ -73,7 +73,9 @@
 		 */
 		public static function appendErrors(XMLElement $result, array $fields, $errors, $post_values) {
 			$result->setAttribute('result', 'error');
-			$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
+			$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.'), array(
+				'message-id' => EventMessages::ENTRY_ERRORS
+			)));
 
 			foreach($errors as $field_id => $message){
 				$field = FieldManager::fetch($field_id);
@@ -88,6 +90,7 @@
 				$result->appendChild(new XMLElement($field->get('element_name'), null, array(
 					'label' => General::sanitize($field->get('label')),
 					'type' => $type,
+					'message-id' => ($type === 'missing') ? EventMessages::FIELD_MISSING : EventMessages::FIELD_INVALID,
 					'message' => General::sanitize($message)
 				)));
 			}
@@ -188,7 +191,9 @@
 
 			if(in_array('admin-only', $this->eParamFILTERS) && !Symphony::Engine()->isLoggedIn()){
 				$result->setAttribute('result', 'error');
-				$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
+				$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.'), array(
+					'message-id' => EventMessages::ENTRY_ERRORS
+				)));
 				$result->appendChild(self::buildFilterElement('admin-only', 'failed'));
 				return $result;
 			}
@@ -269,7 +274,9 @@
 			// Check to see if the Section of this Event is valid.
 			if(!$section = SectionManager::fetch($this->getSource())){
 				$result->setAttribute('result', 'error');
-				$result->appendChild(new XMLElement('message', __('The Section, %s, could not be found.', array($this->getSource()))));
+				$result->appendChild(new XMLElement('message', __('The Section, %s, could not be found.', array($this->getSource())), array(
+					'message-id' => EventMessages::SECTION_MISSING
+				)));
 				return false;
 			}
 
@@ -293,7 +300,10 @@
 
 				if(!is_object($entry)){
 					$result->setAttribute('result', 'error');
-					$result->appendChild(new XMLElement('message', __('The Entry, %s, could not be found.', array($entry_id))));
+					$result->appendChild(new XMLElement('message', __('The Entry, %s, could not be found.', array($entry_id)), array(
+						'message-id' => EventMessages::ENTRY_MISSING
+					)));
+
 					return false;
 				}
 			}
@@ -322,7 +332,9 @@
 			// Entry caused an error to occur, so abort and return.
 			else if($entry->commit() === false) {
 				$result->setAttribute('result', 'error');
-				$result->appendChild(new XMLElement('message', __('Unknown errors where encountered when saving.')));
+				$result->appendChild(new XMLElement('message', __('Unknown errors where encountered when saving.'), array(
+					'message-id' => EventMessages::ENTRY_UNKNOWN
+				)));
 
 				if(isset($post_values) && is_object($post_values)) {
 					$result->appendChild($post_values);
@@ -338,11 +350,17 @@
 					'type' => (isset($entry_id) ? 'edited' : 'created'),
 					'id' => $entry->get('id')
 				));
-				$result->appendChild(new XMLElement('message',
-					(isset($entry_id)
-						? __('Entry edited successfully.')
-						: __('Entry created successfully.'))
-				));
+
+				if(isset($entry_id)) {
+					$result->appendChild(new XMLElement('message', __('Entry edited successfully.'), array(
+						'message-id' => EventMessages::ENTRY_EDITED_SUCCESS
+					)));
+				}
+				else {
+					$result->appendChild(new XMLElement('message', __('Entry created successfully.'), array(
+						'message-id' => EventMessages::ENTRY_CREATED_SUCCESS
+					)));
+				}
 			}
 
 			// PASSIVE FILTERS ONLY AT THIS STAGE. ENTRY HAS ALREADY BEEN CREATED.
@@ -424,7 +442,9 @@
 				if ($can_proceed !== true) {
 					$result->appendChild($post_values);
 					$result->setAttribute('result', 'error');
-					$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
+					$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.'), array(
+						'message-id' => EventMessages::FILTER_FAILED
+					)));
 				}
 			}
 
@@ -674,5 +694,28 @@
 
 			return $result;
 		}
+
+	}
+
+	/**
+	 * Basic lookup class for Event messages, allows for frontend developers
+	 * to localise and change event messages without relying on string
+	 * comparision.
+	 *
+	 * @since Symphony 2.4
+	 */
+	Class EventMessages {
+
+		const UNKNOWN_ERROR = 0;
+
+		const ENTRY_CREATED_SUCCESS = 100;
+		const ENTRY_EDITED_SUCCESS = 101;
+		const ENTRY_ERRORS = 102;
+		const ENTRY_MISSING = 103;
+
+		const SECTION_MISSING = 200;
+
+		const FIELD_MISSING = 301;
+		const FIELD_INVALID = 302;
 
 	}
