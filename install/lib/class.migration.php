@@ -28,7 +28,25 @@
 		 * @return boolean
 		 *  True if successful, false otherwise
 		 */
-		abstract static function run($function, $existing_version = null);
+		static function run($function, $existing_version = null) {
+			static::$existing_version = $existing_version;
+
+			try{
+				$canProceed = static::$function();
+
+				return ($canProceed === false) ? false : true;
+			}
+			catch(DatabaseException $e) {
+				Symphony::Log()->writeToLog('Could not complete upgrading. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getMessage(), E_ERROR, true);
+
+				return false;
+			}
+			catch(Exception $e){
+				Symphony::Log()->writeToLog('Could not complete upgrading because of the following error: ' . $e->getMessage(), E_ERROR, true);
+
+				return false;
+			}
+		}
 
 		/**
 		 * Return's the most current version that this migration provides.

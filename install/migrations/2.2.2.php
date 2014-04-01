@@ -2,26 +2,6 @@
 
 	Class migration_222 extends Migration{
 
-		static function run($function, $existing_version = null) {
-			self::$existing_version = $existing_version;
-
-			try{
-				$canProceed = self::$function();
-
-				return ($canProceed === false) ? false : true;
-			}
-			catch(DatabaseException $e) {
-				Symphony::Log()->writeToLog('Could not complete upgrading. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(), E_ERROR, true);
-
-				return false;
-			}
-			catch(Exception $e){
-				Symphony::Log()->writeToLog('Could not complete upgrading because of the following error: ' . $e->getMessage(), E_ERROR, true);
-
-				return false;
-			}
-		}
-
 		static function getVersion(){
 			return '2.2.2';
 		}
