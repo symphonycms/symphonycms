@@ -294,8 +294,8 @@
 			}
 
 			$this->setPageType('form');
-
 			$isOwner = false;
+			$isEditing = ($this->_context[0] == 'edit');
 
 			if(isset($_POST['fields'])) {
 				$author = $this->_Author;
@@ -311,11 +311,15 @@
 					);
 				}
 			}
-			else $author = new Author;
+			else {
+				$author = new Author;
+			}
 
-			if($this->_context[0] == 'edit' && $author->get('id') == Administration::instance()->Author->get('id')) $isOwner = true;
+			if($isEditing && $author->get('id') == Administration::instance()->Author->get('id')) {
+				$isOwner = true;
+			}
 
-			if ($this->_context[0] == 'edit' && !$isOwner && !Administration::instance()->Author->isDeveloper() && !Administration::instance()->Author->isManager()) {
+			if($isEditing && !$isOwner && !Administration::instance()->Author->isDeveloper() && !Administration::instance()->Author->isManager()) {
 				Administration::instance()->throwCustomError(
 					__('You are not authorised to edit other authors.'),
 					__('Access Denied'),
@@ -404,7 +408,7 @@
 				- Managers can edit all Authors, and their own.
 				- Authors can edit their own.
 			*/
-			if($this->_context[0] == 'edit' && !(
+			if($isEditing && !(
 				// All accounts can edit their own
 				$isOwner
 				// Managers can edit all Authors, and their own.
@@ -423,7 +427,7 @@
 
 			// New password
 			$callback = Administration::instance()->getPageCallback();
-			$placeholder = ($callback['context'][0] == 'edit' ? __('New Password') : __('Password'));
+			$placeholder = ($isEditing ? __('New Password') : __('Password'));
 			$label = Widget::Label(NULL, NULL, 'column');
 			$label->appendChild(Widget::Input('fields[password]', NULL, 'password', array('placeholder' => $placeholder, 'autocomplete' => 'off')));
 			$fieldset->appendChild((isset($this->_errors['password']) ? Widget::Error($label, $this->_errors['password']) : $label));
@@ -524,12 +528,31 @@
 				$this->Form->appendChild($group);
 			}
 
+			// Administration password double check
+			if($isEditing && !$isOwner) {
+				$group = new XMLElement('fieldset');
+				$group->setAttribute('class', 'settings');
+				$group->appendChild(new XMLElement('legend', __('Confirm your Password')));
+				$group->appendChild(new XMLELement('p', __('Please confirm your password to make changes to this author.')));
+
+				$label = Widget::Label(__('Password'));
+				$label->appendChild(Widget::Input('fields[confirm-change-password]', NULL, 'password', array('autocomplete' => 'off')));
+				$group->appendChild(
+					isset($this->_errors['confirm-change-password']) 
+						? Widget::Error($label, $this->_errors['confirm-change-password']) 
+						: $label
+				);
+
+				$this->Form->appendChild($group);
+			}
+
+			// Actions
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
 
 			$div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Author')), 'submit', array('accesskey' => 's')));
 
-			if($this->_context[0] == 'edit' && !$isOwner && !$author->isPrimaryAccount()){
+			if($isEditing && !$isOwner && !$author->isPrimaryAccount()){
 				$button = new XMLElement('button', __('Delete'));
 				$button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this author'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this author?')));
 				$div->appendChild($button);
@@ -681,19 +704,36 @@
 				$this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
 
 				if($this->_Author->validate($this->_errors)) {
+					// Admin changing another profile
+					if(!$isOwner) {
+						$entered_password = Symphony::Database()->cleanValue($fields['confirm-change-password']);
+
+						if(!isset($fields['confirm-change-password']) || empty($fields['confirm-change-password'])) {
+							$this->_errors['confirm-change-password'] = __('Please provide your own password to make changes to this author.');
+						}
+						else if (Cryptography::compare($entered_password, Administration::instance()->Author->get('password')) !== true) {
+							$this->_errors['confirm-change-password'] = __('Wrong password, please enter your own password to make changes to this author.');
+						}
+					}
+
+					// Author is changing their password
 					if(!$authenticated && ($changing_password || $changing_email)){
 						if($changing_password) $this->_errors['old-password'] = __('Wrong password. Enter old password to change it.');
 						elseif($changing_email) $this->_errors['old-password'] = __('Wrong password. Enter old one to change email address.');
 					}
 
-					elseif(($fields['password'] != '' || $fields['password-confirmation'] != '') && $fields['password'] != $fields['password-confirmation']){
+					// Passwords provided, but doesn't match.
+					else if(($fields['password'] != '' || $fields['password-confirmation'] != '') && $fields['password'] != $fields['password-confirmation']){
 						$this->_errors['password'] = $this->_errors['password-confirmation'] = __('Passwords did not match');
 					}
-					elseif($this->_Author->commit()){
 
+					// All good, let's save the Author
+					if(is_array($this->_errors) && empty($this->_errors) && $this->_Author->commit()) {
 						Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' OR `author_id` = '".$author_id."' ");
 
-						if($isOwner) Administration::instance()->login($this->_Author->get('username'), $this->_Author->get('password'), true);
+						if($isOwner) {
+							Administration::instance()->login($this->_Author->get('username'), $this->_Author->get('password'), true);
+						}
 
 						/**
 						 * After editing an author, provided with the Author object
@@ -709,7 +749,7 @@
 
 						redirect(SYMPHONY_URL . '/system/authors/edit/' . $author_id . '/saved/');
 					}
-
+					// Problems.
 					else {
 						$this->pageAlert(
 							__('Unknown errors occurred while attempting to save.')
@@ -719,7 +759,9 @@
 							, Alert::ERROR);
 					}
 				}
-				else if(is_array($this->_errors) && !empty($this->_errors)) {
+
+				// Author doesn't have valid data, throw back.
+				if(is_array($this->_errors) && !empty($this->_errors)) {
 					$this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), Alert::ERROR);
 				}
 			}
