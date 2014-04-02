@@ -79,6 +79,7 @@
 	z-index: 3;
 	width: 100%;
 	box-sizing: border-box;
+	border-bottom: 0.1rem solid #E0E0E0;
 }
 
 #nav ul {
