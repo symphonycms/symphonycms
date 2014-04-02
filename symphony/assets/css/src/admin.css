@@ -72,12 +72,13 @@
 	padding: 0 0.8rem 0;
 	min-height: 3.1rem;
 	list-style: none;
-	background-image: linear-gradient(to bottom, #efefed 0%, #efefed 20%, #d7d7d2 80%);
+	background-image: linear-gradient(to bottom, #EFEFED 0px, #EFEFED 0.6rem, #D7D7D2 2.5rem, #D7D7D2 3rem, #BBBBB7 3rem);
+	background-size: 100% 3.1rem;
+	float: left;
 	font-size: 12px;
 	z-index: 3;
 	width: 100%;
 	box-sizing: border-box;
-	border-bottom: 0.1rem solid #bbbbb7;
 }
 
 #nav ul {
