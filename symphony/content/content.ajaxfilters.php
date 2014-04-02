@@ -15,6 +15,7 @@
 			$handle = General::sanitize($_GET['handle']);
 			$section = General::sanitize($_GET['section']);
 			$options = array();
+			$filters = array();
 
  			if(!empty($handle) && !empty($section)) {
 				$section_id = SectionManager::fetchIDFromHandle($section);
@@ -31,6 +32,13 @@
 				}
 			}
 
-			$this->_Result['filters'] = $options;
+			foreach($options as $value => $data) {
+				$filters[] = array(
+					'value' => ($value ? $value : $data),
+					'text' => ($data ? $data : $value)
+				);
+			}
+
+			$this->_Result['filters'] = $filters;
 		}
 	}

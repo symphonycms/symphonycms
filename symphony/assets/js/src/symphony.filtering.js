@@ -22,25 +22,6 @@
 				render: {
 					item: itemPreview,
 					option_create: searchPreview
-				},
-				load: function(query, callback) {
-					if(!query.length) return callback();
-
-					$.ajax({
-						url: Symphony.Context.get('symphony') + '/ajax/filters/',
-						type: 'GET',
-						dataType: 'json',
-						data: {
-							handle: fields.val(),
-							section: Symphony.Context.get('env')['section_handle']
-						},
-						error: function() {
-							callback();
-						},
-						success: function(result) {
-							callback(result.filters);
-						}
-					});
 				}
 			}).on('change', searchEntries);
 
@@ -79,10 +60,41 @@
 
 			// Clear
 			searchSelectize.clearOptions();
-
-			// Search
-			comparisonSelectize.setValue('contains');
 			searchSelectize.$control_input.attr('placeholder', Symphony.Language.get('Type to search') + '…');
+
+			// Add suggestions
+			$.ajax({
+				url: Symphony.Context.get('symphony') + '/ajax/filters/',
+				type: 'GET',
+				dataType: 'json',
+				data: {
+					handle: fields.val(),
+					section: Symphony.Context.get('env')['section_handle']
+				},
+				success: function(result) {
+					var contains = false;
+
+					// Add options
+					$.each(result.filters, function(index, data) {
+						searchSelectize.addOption(data);
+
+						if(isNaN(data.value)) {
+							contains = true;
+						}
+					});
+
+					// Set comparison mode
+					if(contains || !result.filters.length) {
+						comparisonSelectize.setValue('contains');
+					}
+					else {
+						comparisonSelectize.setValue('is');
+					}
+
+					// Refresh suggestions
+					searchSelectize.refreshOptions(false);
+				}
+			});
 		};
 
 		var searchPreview = function(item) {
