@@ -381,7 +381,7 @@ fieldset.settings.highlight {
 	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.1);
 }
 
-.single #contents fieldset.settings + .actions {
+.single #contents fieldset.highlight + .actions {
 	border-top: 0;
 }
 
