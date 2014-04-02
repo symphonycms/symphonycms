@@ -703,7 +703,7 @@ Symphony.View.add('/system/authors/:action:/:id:/:status:', function(action, id,
 						overlay.hide();
 					}
 				}
-			});
+			}).attr('type', 'button');
 
 		frame.append(button);
 		overlay.append(frame);

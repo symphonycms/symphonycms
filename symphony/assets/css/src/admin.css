@@ -243,7 +243,7 @@
 	clear: both;
 }
 
-#breadcrumbs a, 
+#breadcrumbs a,
 #breadcrumbs span {
 	padding: 0;
 	font: 127.28%/1.35 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
@@ -256,7 +256,7 @@
 	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.05);
 }
 
-#breadcrumbs a:hover, 
+#breadcrumbs a:hover,
 #breadcrumbs a:focus {
 	border-bottom-color: #a9a9a9;
 	color: #2E2E2E;
@@ -373,10 +373,26 @@ fieldset.settings fieldset legend {
 	color: #665;
 }
 
+fieldset.settings.highlight {
+	background: #fff9a2;
+	margin: 0;
+	padding-right: 1.8rem;
+	padding-left: 29.3rem;
+	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.1);
+}
+
+.single #contents fieldset.settings + .actions {
+	border-top: 0;
+}
+
 @media screen and (max-width: 700px) {
 
 	fieldset.settings {
 		padding-left: 0;
+	}
+
+	fieldset.settings.highlight {
+		padding-left: 1.8rem;
 	}
 
 	fieldset.settings:first-of-type {

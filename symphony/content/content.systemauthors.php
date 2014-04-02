@@ -531,15 +531,18 @@
 			// Administration password double check
 			if($isEditing && !$isOwner) {
 				$group = new XMLElement('fieldset');
-				$group->setAttribute('class', 'settings');
-				$group->appendChild(new XMLElement('legend', __('Confirm your Password')));
-				$group->appendChild(new XMLELement('p', __('Please confirm your password to make changes to this author.')));
+				$group->setAttribute('class', 'settings highlight');
+				$group->appendChild(new XMLElement('legend', __('Confirmation')));
+				$group->appendChild(new XMLELement('p', __('Please confirm changes to this author with your password.'), array('class' => 'help')));
 
 				$label = Widget::Label(__('Password'));
-				$label->appendChild(Widget::Input('fields[confirm-change-password]', NULL, 'password', array('autocomplete' => 'off')));
+				$label->appendChild(Widget::Input('fields[confirm-change-password]', NULL, 'password', array(
+					'autocomplete' => 'off',
+					'placeholder' => __('Your Password')
+				)));
 				$group->appendChild(
-					isset($this->_errors['confirm-change-password']) 
-						? Widget::Error($label, $this->_errors['confirm-change-password']) 
+					isset($this->_errors['confirm-change-password'])
+						? Widget::Error($label, $this->_errors['confirm-change-password'])
 						: $label
 				);
 
