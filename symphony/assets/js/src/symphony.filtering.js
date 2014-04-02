@@ -19,6 +19,7 @@
 			search.addClass('init').selectize({
 				create: true,
 				maxItems: 1,
+				sortField: 'text',
 				render: {
 					item: itemPreview,
 					option_create: searchPreview
