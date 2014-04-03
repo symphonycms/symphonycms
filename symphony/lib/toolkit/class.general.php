@@ -160,6 +160,8 @@
 		 *  a blank string or a valid URL
 		 */
 		public static function validateURL($url = null){
+			$url = trim($url);
+
 			if(is_null($url) || $url == '') return $url;
 
 			if(!preg_match('#^http[s]?:\/\/#i', $url)){
