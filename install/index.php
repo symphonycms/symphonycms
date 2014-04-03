@@ -30,7 +30,7 @@
 	// Required boot components
 	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
 
-	define('VERSION', '2.4beta2');
+	define('VERSION', '2.4beta3');
 	define('INSTALL', DOCROOT . '/install');
 	define('INSTALL_LOGS', MANIFEST . '/logs');
 	define('INSTALL_URL', URL . '/install');
