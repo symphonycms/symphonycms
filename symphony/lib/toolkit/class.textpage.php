@@ -57,13 +57,14 @@
 			$this->view();
 		}
 
-		/**
-		 * The generate functions outputs the correct headers for
-		 * this `TextPage`, before calling the parent generate function and
-		 * returning the `$this->_Result` string
-		 *
-		 * @return string
-		 */
+        /**
+         * The generate functions outputs the correct headers for
+         * this `TextPage`, before calling the parent generate function and
+         * returning the `$this->_Result` string
+         *
+         * @param null $page
+         * @return string
+         */
 		public function generate($page = null) {
 			parent::generate($page);
 			return $this->_Result;

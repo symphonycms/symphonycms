@@ -416,16 +416,17 @@
 		 */
 		public function findDefaults(array &$settings){}
 
-		/**
-		 * Display the default settings panel, calls the `buildSummaryBlock`
-		 * function after basic field settings are added to the wrapper.
-		 *
-		 * @see buildSummaryBlock()
-		 * @param XMLElement $wrapper
-		 *	the input XMLElement to which the display of this will be appended.
-		 * @param mixed errors (optional)
-		 *	the input error collection. this defaults to null.
-		 */
+        /**
+         * Display the default settings panel, calls the `buildSummaryBlock`
+         * function after basic field settings are added to the wrapper.
+         *
+         * @see buildSummaryBlock()
+         * @param XMLElement $wrapper
+         *    the input XMLElement to which the display of this will be appended.
+         * @param mixed $errors
+         *  the input error collection. this defaults to null.
+         * @throws InvalidArgumentException
+         */
 		public function displaySettingsPanel(XMLElement &$wrapper, $errors = null){
 
 			// Create header
@@ -442,18 +443,19 @@
 			$wrapper->appendChild($this->buildSummaryBlock($errors));
 		}
 
-		/**
-		 * Construct the html block to display a summary of this field, which is the field
-		 * Label and it's location within the section. Any error messages generated are
-		 * appended to the optional input error array. This function calls
-		 * `buildLocationSelect` once it is completed
-		 *
-		 * @see buildLocationSelect()
-		 * @param array $errors (optional)
-		 *	an array to append html formatted error messages to. this defaults to null.
-		 * @return XMLElement
-		 *	the root XML element of the html display of this.
-		 */
+        /**
+         * Construct the html block to display a summary of this field, which is the field
+         * Label and it's location within the section. Any error messages generated are
+         * appended to the optional input error array. This function calls
+         * `buildLocationSelect` once it is completed
+         *
+         * @see buildLocationSelect()
+         * @param array $errors (optional)
+         *    an array to append html formatted error messages to. this defaults to null.
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         *    the root XML element of the html display of this.
+         */
 		public function buildSummaryBlock($errors = null){
 			$div = new XMLElement('div');
 
@@ -484,21 +486,22 @@
 			return $div;
 		}
 
-		/**
-		 * Build the location select widget. This widget allows users to select
-		 * whether this field will appear in the main content column or in the sidebar
-		 * when creating a new entry.
-		 *
-		 * @param string $selection (optional)
-		 *	the currently selected location, if there is one. this defaults to null.
-		 * @param string $name (optional)
-		 *	the name of this field. this is optional and defaults to `fields[location]`.
-		 * @param string $label_value (optional)
-		 *	any predefined label for this widget. this is an optional argument that defaults
-		 *	to null.
-		 * @return XMLElement
-		 *	An XMLElement representing a `<select>` field containing the options.
-		 */
+        /**
+         * Build the location select widget. This widget allows users to select
+         * whether this field will appear in the main content column or in the sidebar
+         * when creating a new entry.
+         *
+         * @param string|null $selected (optional)
+         *    the currently selected location, if there is one. this defaults to null.
+         * @param string $name (optional)
+         *    the name of this field. this is optional and defaults to `fields[location]`.
+         * @param string $label_value (optional)
+         *    any predefined label for this widget. this is an optional argument that defaults
+         *    to null.
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         *    An XMLElement representing a `<select>` field containing the options.
+         */
 		public function buildLocationSelect($selected = null, $name = 'fields[location]', $label_value = null) {
 			if (!$label_value) $label_value = __('Placement');
 
@@ -514,21 +517,22 @@
 			return $label;
 		}
 
-		/**
-		 * Construct the html widget for selecting a text formatter for this field.
-		 *
-		 * @param string $selected (optional)
-		 *	the currently selected text formatter name if there is one. this defaults
-		 *	to null.
-		 * @param string $name (optional)
-		 *	the name of this field in the form. this is optional and defaults to
-		 *	"fields[format]".
-		 * @param string $label_value
-		 *	the default label for the widget to construct. if null is passed in then
-		 *	this defaults to the localization of "Formatting".
-		 * @return XMLElement
-		 *	An XMLElement representing a `<select>` field containing the options.
-		 */
+        /**
+         * Construct the html widget for selecting a text formatter for this field.
+         *
+         * @param string $selected (optional)
+         *    the currently selected text formatter name if there is one. this defaults
+         *    to null.
+         * @param string $name (optional)
+         *    the name of this field in the form. this is optional and defaults to
+         *    "fields[format]".
+         * @param string $label_value
+         *    the default label for the widget to construct. if null is passed in then
+         *    this defaults to the localization of "Formatting".
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         *    An XMLElement representing a `<select>` field containing the options.
+         */
 		public function buildFormatterSelect($selected = null, $name='fields[format]', $label_value){
 
 			require_once(TOOLKIT . '/class.textformattermanager.php');
@@ -554,26 +558,27 @@
 			return $label;
 		}
 
-		/**
-		 * Append a validator selector to a given `XMLElement`. Note that this
-		 * function differs from the other two similarly named build functions in
-		 * that it takes an `XMLElement` to append the Validator to as a parameter,
-		 * and does not return anything.
-		 *
-		 * @param XMLElement $wrapper
-		 *	the parent element to append the XMLElement of the Validation select to,
-		 *  passed by reference.
-		 * @param string $selected (optional)
-		 *	the current validator selection if there is one. defaults to null if there
-		 *	isn't.
-		 * @param string $name (optional)
-		 *	the form element name of this field. this defaults to "fields[validator]".
-		 * @param string $type (optional)
-		 *	the type of input for the validation to apply to. this defaults to 'input'
-		 *	but also accepts 'upload'.
-		 * @param array $errors (optional)
-		 *	an associative array of errors
-		 */
+        /**
+         * Append a validator selector to a given `XMLElement`. Note that this
+         * function differs from the other two similarly named build functions in
+         * that it takes an `XMLElement` to append the Validator to as a parameter,
+         * and does not return anything.
+         *
+         * @param XMLElement $wrapper
+         *    the parent element to append the XMLElement of the Validation select to,
+         *  passed by reference.
+         * @param string $selected (optional)
+         *    the current validator selection if there is one. defaults to null if there
+         *    isn't.
+         * @param string $name (optional)
+         *    the form element name of this field. this defaults to "fields[validator]".
+         * @param string $type (optional)
+         *    the type of input for the validation to apply to. this defaults to 'input'
+         *    but also accepts 'upload'.
+         * @param array $errors (optional)
+         *    an associative array of errors
+         * @throws InvalidArgumentException
+         */
 		public function buildValidationSelect(XMLElement &$wrapper, $selected = null, $name='fields[validator]', $type='input', array $errors = null) {
 
 			include(TOOLKIT . '/util.validators.php');
@@ -603,14 +608,15 @@
 
 		}
 
-		/**
-		 * Append and set a labeled html checkbox to the input XML element if this
-		 * field is set as a required field.
-		 *
-		 * @param XMLElement $wrapper
-		 *	the parent XML element to append the constructed html checkbox to if
-		 *	necessary.
-		 */
+        /**
+         * Append and set a labeled html checkbox to the input XML element if this
+         * field is set as a required field.
+         *
+         * @param XMLElement $wrapper
+         *    the parent XML element to append the constructed html checkbox to if
+         *    necessary.
+         * @throws InvalidArgumentException
+         */
 		public function appendRequiredCheckbox(XMLElement &$wrapper) {
 			if (!$this->_required) return;
 
@@ -630,13 +636,14 @@
 			$wrapper->appendChild($label);
 		}
 
-		/**
-		 * Append the show column html widget to the input parent XML element. This
-		 * displays a column in the entries table or not.
-		 *
-		 * @param XMLElement $wrapper
-		 *	the parent XML element to append the checkbox to.
-		 */
+        /**
+         * Append the show column html widget to the input parent XML element. This
+         * displays a column in the entries table or not.
+         *
+         * @param XMLElement $wrapper
+         *    the parent XML element to append the checkbox to.
+         * @throws InvalidArgumentException
+         */
 		public function appendShowColumnCheckbox(XMLElement &$wrapper) {
 			if (!$this->_showcolumn) return;
 
@@ -656,13 +663,14 @@
 			$wrapper->appendChild($label);
 		}
 
-		/**
-		 * Append the default status footer to the field settings panel.
-		 * Displays the required and show column checkboxes.
-		 *
-		 * @param XMLElement $wrapper
-		 *	the parent XML element to append the checkbox to.
-		 */
+        /**
+         * Append the default status footer to the field settings panel.
+         * Displays the required and show column checkboxes.
+         *
+         * @param XMLElement $wrapper
+         *    the parent XML element to append the checkbox to.
+         * @throws InvalidArgumentException
+         */
 		public function appendStatusFooter(XMLElement &$wrapper) {
 			$fieldset = new XMLElement('fieldset');
 			$div = new XMLElement('div', NULL, array('class' => 'two columns'));
@@ -674,17 +682,18 @@
 			$wrapper->appendChild($fieldset);
 		}
 
-		/**
-		 * Append the show association html widget to the input parent XML element. This
-		 * widget allows fields that provide linking to hide or show the column in the linked
-		 * section, similar to how the Show Column functionality works, but for the linked
-		 * section.
-		 *
-		 * @param XMLElement $wrapper
-		 *	the parent XML element to append the checkbox to.
-		 * @param string $help (optional)
-		 *	a help message to show below the checkbox.
-		 */
+        /**
+         * Append the show association html widget to the input parent XML element. This
+         * widget allows fields that provide linking to hide or show the column in the linked
+         * section, similar to how the Show Column functionality works, but for the linked
+         * section.
+         *
+         * @param XMLElement $wrapper
+         *    the parent XML element to append the checkbox to.
+         * @param string $help (optional)
+         *    a help message to show below the checkbox.
+         * @throws InvalidArgumentException
+         */
 		public function appendShowAssociationCheckbox(XMLElement &$wrapper, $help = null) {
 			if(!$this->_showassociation) return;
 
@@ -814,7 +823,7 @@
 		 * @param array $parent_association
 		 *   An array containing information about the parent
 		 *
-		 * return XMLElement
+		 * @return XMLElement
 		 *   The XMLElement must be a li node, since it will be added an ul node.
 		 */
 		public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association) {
@@ -846,7 +855,7 @@
 		 * @param string $fieldnamePrefix (optional)
 		 *	the string to be prepended to the display of the name of this field.
 		 *	this defaults to null.
-		 * @param string $fieldnameSuffix (optional)
+		 * @param string $fieldnamePostfix (optional)
 		 *	the string to be appended to the display of the name of this field.
 		 *	this defaults to null.
 		 * @param integer $entry_id (optional)
@@ -913,20 +922,21 @@
 			);
 		}
 
-		/**
-		 * Display the default data-source filter panel.
-		 *
-		 * @param XMLElement $wrapper
-		 *	the input XMLElement to which the display of this will be appended.
-		 * @param mixed $data (optional)
-		 *	the input data. this defaults to null.
-		 * @param mixed errors (optional)
-		 *	the input error collection. this defaults to null.
-		 * @param string $fieldNamePrefix
-		 *  the prefix to apply to the display of this.
-		 * @param string $fieldNameSuffix
-		 *  the suffix to apply to the display of this.
-		 */
+        /**
+         * Display the default data-source filter panel.
+         *
+         * @param XMLElement $wrapper
+         *    the input XMLElement to which the display of this will be appended.
+         * @param mixed $data (optional)
+         *    the input data. this defaults to null.
+         * @param null $errors
+         *  the input error collection. this defaults to null.
+         * @param string $fieldnamePrefix
+         *  the prefix to apply to the display of this.
+         * @param string $fieldnamePostfix
+         *  the suffix to apply to the display of this.
+         * @throws InvalidArgumentException
+         */
 		public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null){
 			$wrapper->appendChild(new XMLElement('header', '<h4>' . $this->get('label') . '</h4> <span>' . $this->name() . '</span>', array(
 				'data-name' => $this->get('label') . ' (' . $this->name() . ')'
@@ -1171,15 +1181,16 @@
 			$wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($this->prepareTableValue($data, null, $entry_id)) : $this->prepareTableValue($data, null, $entry_id))));
 		}
 
-		/**
-		 * The default method for constructing the example form markup containing this
-		 * field when utilized as part of an event. This displays in the event documentation
-		 * and serves as a basic guide for how markup should be constructed on the
-		 * `Frontend` to save this field
-		 *
-		 * @return XMLElement
-		 *  a label widget containing the formatted field element name of this.
-		 */
+        /**
+         * The default method for constructing the example form markup containing this
+         * field when utilized as part of an event. This displays in the event documentation
+         * and serves as a basic guide for how markup should be constructed on the
+         * `Frontend` to save this field
+         *
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         *  a label widget containing the formatted field element name of this.
+         */
 		public function getExampleFormMarkup(){
 			$label = Widget::Label($this->get('label'));
 			$label->appendChild(Widget::Input('fields['.$this->get('element_name').']'));
@@ -1218,14 +1229,15 @@
 			return false;
 		}
 
-		/**
-		 * The default field table construction method. This constructs the bare
-		 * minimum set of columns for a valid field table. Subclasses are expected
-		 * to overload this method to create a table structure that contains
-		 * additional columns to store the specific data created by the field.
-		 *
-		 * @return boolean
-		 */
+        /**
+         * The default field table construction method. This constructs the bare
+         * minimum set of columns for a valid field table. Subclasses are expected
+         * to overload this method to create a table structure that contains
+         * additional columns to store the specific data created by the field.
+         *
+         * @throws DatabaseException
+         * @return boolean
+         */
 		public function createTable(){
 			return Symphony::Database()->query(
 				"CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
@@ -1239,17 +1251,18 @@
 			);
 		}
 
-		/**
-		 * Remove the entry data of this field from the database.
-		 *
-		 * @param integer|array $entry_id
-		 *	the ID of the entry, or an array of entry ID's to delete.
-		 * @param array $data (optional)
-		 *	The entry data provided for fields to do additional cleanup
-		 *  This is an optional argument and defaults to null.
-		 * @return boolean
-		 *	Returns true after the cleanup has been completed
-		 */
+        /**
+         * Remove the entry data of this field from the database.
+         *
+         * @param integer|array $entry_id
+         *    the ID of the entry, or an array of entry ID's to delete.
+         * @param array $data (optional)
+         *    The entry data provided for fields to do additional cleanup
+         *  This is an optional argument and defaults to null.
+         * @throws DatabaseException
+         * @return boolean
+         *    Returns true after the cleanup has been completed
+         */
 		public function entryDataCleanup($entry_id, $data=NULL){
 			$where = is_array($entry_id)
 				? " `entry_id` IN (" . implode(',', $entry_id) . ") "

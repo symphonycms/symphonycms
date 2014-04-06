@@ -71,19 +71,20 @@
 			return false;
 		}
 
-		/**
-		 * Given a name for the group, and an associative array that
-		 * contains three keys, `attr`, `records` and `groups`. Grouping
-		 * of Entries is done by the grouping Field at a PHP level, not
-		 * through the Database.
-		 *
-		 * @param string $element
-		 *  The name for the XML node for this group
-		 * @param array $group
-		 *  An associative array of the group data, includes `attr`, `records`
-		 *  and `groups` keys.
-		 * @return XMLElement
-		 */
+        /**
+         * Given a name for the group, and an associative array that
+         * contains three keys, `attr`, `records` and `groups`. Grouping
+         * of Entries is done by the grouping Field at a PHP level, not
+         * through the Database.
+         *
+         * @param string $element
+         *  The name for the XML node for this group
+         * @param array $group
+         *  An associative array of the group data, includes `attr`, `records`
+         *  and `groups` keys.
+         * @throws Exception
+         * @return XMLElement
+         */
 		public function processRecordGroup($element, array $group){
 			$xGroup = new XMLElement($element, NULL, $group['attr']);
 
@@ -116,15 +117,16 @@
 			if(!$this->_param_output_only) return $xGroup;
 		}
 
-		/**
-		 * Given an Entry object, this function will generate an XML representation
-		 * of the Entry to be returned. It will also add any parameters selected
-		 * by this datasource to the parameter pool.
-		 *
-		 * @param Entry $entry
-		 * @return XMLElement|boolean
-		 *  Returns boolean when only parameters are to be returned.
-		 */
+        /**
+         * Given an Entry object, this function will generate an XML representation
+         * of the Entry to be returned. It will also add any parameters selected
+         * by this datasource to the parameter pool.
+         *
+         * @param Entry $entry
+         * @throws Exception
+         * @return XMLElement|boolean
+         *  Returns boolean when only parameters are to be returned.
+         */
 		public function processEntry(Entry $entry) {
 			$data = $entry->getData();
 
@@ -176,18 +178,19 @@
 			return $xEntry;
 		}
 
-		/**
-		 * An entry may be associated to other entries from various fields through
-		 * the section associations. This function will set the number of related
-		 * entries as attributes to the main `<entry>` element grouped by the
-		 * related entry's section.
-		 *
-		 * @param XMLElement $xEntry
-		 *  The <entry> XMLElement that the associated section counts will
-		 *  be set on
-		 * @param Entry $entry
-		 *  The current entry object
-		 */
+        /**
+         * An entry may be associated to other entries from various fields through
+         * the section associations. This function will set the number of related
+         * entries as attributes to the main `<entry>` element grouped by the
+         * related entry's section.
+         *
+         * @param XMLElement $xEntry
+         *  The <entry> XMLElement that the associated section counts will
+         *  be set on
+         * @param Entry $entry
+         *  The current entry object
+         * @throws Exception
+         */
 		public function setAssociatedEntryCounts(XMLElement &$xEntry, Entry $entry) {
 			$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts($this->_associated_sections);
 			if(!empty($associated_entry_counts)){
@@ -285,16 +288,17 @@
 			}
 		}
 
-		/**
-		 * This function iterates over `dsParamFILTERS` and builds the relevant
-		 * `$where` and `$joins` parameters with SQL. This SQL is generated from
-		 * `Field->buildDSRetrievalSQL`. A third parameter, `$group` is populated
-		 * with boolean from `Field->requiresSQLGrouping()`
-		 *
-		 * @param string $where
-		 * @param string $joins
-		 * @param boolean $group
-		 */
+        /**
+         * This function iterates over `dsParamFILTERS` and builds the relevant
+         * `$where` and `$joins` parameters with SQL. This SQL is generated from
+         * `Field->buildDSRetrievalSQL`. A third parameter, `$group` is populated
+         * with boolean from `Field->requiresSQLGrouping()`
+         *
+         * @param string $where
+         * @param string $joins
+         * @param boolean $group
+         * @throws Exception
+         */
 		public function processFilters(&$where, &$joins, &$group) {
 			if(!is_array($this->dsParamFILTERS) || empty($this->dsParamFILTERS)) return;
 

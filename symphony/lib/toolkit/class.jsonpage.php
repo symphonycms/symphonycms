@@ -44,14 +44,15 @@
 			$this->_Result = array('status' => __('You are not authorised to access this page.'));
 		}
 
-		/**
-		 * The generate functions outputs the correct headers for
-		 * this `JSONPage`, adds `$this->getHttpStatusCode()` code to the root attribute
-		 * before calling the parent generate function and generating
-		 * the `$this->_Result` json string
-		 *
-		 * @return string
-		 */
+        /**
+         * The generate functions outputs the correct headers for
+         * this `JSONPage`, adds `$this->getHttpStatusCode()` code to the root attribute
+         * before calling the parent generate function and generating
+         * the `$this->_Result` json string
+         *
+         * @param null $page
+         * @return string
+         */
 		public function generate($page = null) {
 			// Set the actual status code in the xml response
 			$this->_Result['status'] = $this->getHttpStatusCode();

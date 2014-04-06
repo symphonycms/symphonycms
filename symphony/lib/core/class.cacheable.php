@@ -26,7 +26,7 @@
 		 * The constructor for the Cacheable takes an instance of the
 		 * MySQL class and assigns it to `$this->Database`
 		 *
-		 * @param iCache $Database
+		 * @param iCache $cacheProvider
 		 *  An instance of the MySQL class to store the cached
 		 *  data in.
 		 */

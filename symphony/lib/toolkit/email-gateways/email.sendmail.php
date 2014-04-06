@@ -24,30 +24,32 @@
 			);
 		}
 
-		/**
-		 * Constructor. Sets basic default values based on preferences.
-		 *
-		 * @return void
-		 */
+        /**
+         * Constructor. Sets basic default values based on preferences.
+         *
+         * @throws EmailValidationException
+         */
 		public function __construct(){
 			parent::__construct();
 			$this->setConfiguration(Symphony::Configuration()->get('email_sendmail'));
 		}
 
-		/**
-		 * Send an email using the PHP mail() function
-		 *
-		 * Please note that 'encoded-words' should be used according to
-		 * RFC2047. Basically this means that the subject should be
-		 * encoded if necessary, as well as (real) names in 'From', 'To'
-		 * or 'Reply-To' header field bodies. For details see RFC2047.
-		 *
-		 * The parts of a message body should be encoded (quoted-printable
-		 * or base64) to make non-US-ASCII text work with the widest range
-		 * of email transports and clients.
-		 *
-		 * @return bool
-		 */
+        /**
+         * Send an email using the PHP mail() function
+         *
+         * Please note that 'encoded-words' should be used according to
+         * RFC2047. Basically this means that the subject should be
+         * encoded if necessary, as well as (real) names in 'From', 'To'
+         * or 'Reply-To' header field bodies. For details see RFC2047.
+         *
+         * The parts of a message body should be encoded (quoted-printable
+         * or base64) to make non-US-ASCII text work with the widest range
+         * of email transports and clients.
+         *
+         * @throws EmailGatewayException
+         * @throws EmailValidationException
+         * @return bool
+         */
 		public function send() {
 
 			$this->validate();
@@ -126,7 +128,7 @@
 		 * Sets all configuration entries from an array.
 		 *
 		 * @throws EmailValidationException
-		 * @param array $configuration
+		 * @param array $config
 		 * @since 2.3.1
 		 *  All configuration entries stored in a single array. The array should have the format of the $_POST array created by the preferences HTML.
 		 * @return void
@@ -135,11 +137,12 @@
 			$this->setFrom($config['from_address'],$config['from_name']);
 		}
 
-		/**
-		 * Builds the preferences pane, shown in the symphony backend.
-		 *
-		 * @return XMLElement
-		 */
+        /**
+         * Builds the preferences pane, shown in the symphony backend.
+         *
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public function getPreferencesPane() {
 			parent::getPreferencesPane();
 			$group = new XMLElement('fieldset');

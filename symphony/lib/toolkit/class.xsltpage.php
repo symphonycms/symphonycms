@@ -143,15 +143,16 @@
 			else $this->_registered_php_functions[] = $function;
 		}
 
-		/**
-		 * The generate function calls on the `XsltProcess` to transform the
-		 * XML with the given XSLT passing any parameters or functions
-		 * If no errors occur, the parent generate function is called to add
-		 * the page headers and a string containing the transformed result
-		 * is result.
-		 *
-		 * @return string
-		 */
+        /**
+         * The generate function calls on the `XsltProcess` to transform the
+         * XML with the given XSLT passing any parameters or functions
+         * If no errors occur, the parent generate function is called to add
+         * the page headers and a string containing the transformed result
+         * is result.
+         *
+         * @param null $page
+         * @return string
+         */
 		public function generate($page = null){
 			$result = $this->Proc->process($this->_xml, $this->_xsl, $this->_param, $this->_registered_php_functions);
 

@@ -86,17 +86,19 @@
 			return parent::isLoggedIn();
 		}
 
-		/**
-		 * Given the URL path of a Symphony backend page, this function will
-		 * attempt to resolve the URL to a Symphony content page in the backend
-		 * or a page provided by an extension. This function checks to ensure a user
-		 * is logged in, otherwise it will direct them to the login page
-		 *
-		 * @param string $page
-		 *  The URL path after the root of the Symphony installation, including a starting
-		 *  slash, such as '/login/'
-		 * @return HTMLPage
-		 */
+        /**
+         * Given the URL path of a Symphony backend page, this function will
+         * attempt to resolve the URL to a Symphony content page in the backend
+         * or a page provided by an extension. This function checks to ensure a user
+         * is logged in, otherwise it will direct them to the login page
+         *
+         * @param string $page
+         *  The URL path after the root of the Symphony installation, including a starting
+         *  slash, such as '/login/'
+         * @throws SymphonyErrorPage
+         * @throws Exception
+         * @return HTMLPage
+         */
 		private function __buildPage($page){
 			$is_logged_in = $this->isLoggedIn();
 
@@ -432,22 +434,24 @@
 			}
 		}
 
-		/**
-		 * Called by index.php, this function is responsible for rendering the current
-		 * page on the Frontend. Two delegates are fired, AdminPagePreGenerate and
-		 * AdminPagePostGenerate. This function runs the Profiler for the page build
-		 * process.
-		 *
-		 * @uses AdminPagePreGenerate
-		 * @uses AdminPagePostGenerate
-		 * @see core.Symphony#__buildPage()
-		 * @see boot.getCurrentPage()
-		 * @param string $page
-		 *  The result of getCurrentPage, which returns the $_GET['symphony-page']
-		 *  variable.
-		 * @return string
-		 *  The HTML of the page to return
-		 */
+        /**
+         * Called by index.php, this function is responsible for rendering the current
+         * page on the Frontend. Two delegates are fired, AdminPagePreGenerate and
+         * AdminPagePostGenerate. This function runs the Profiler for the page build
+         * process.
+         *
+         * @uses AdminPagePreGenerate
+         * @uses AdminPagePostGenerate
+         * @see core.Symphony#__buildPage()
+         * @see boot.getCurrentPage()
+         * @param string $page
+         *  The result of getCurrentPage, which returns the $_GET['symphony-page']
+         *  variable.
+         * @throws Exception
+         * @throws SymphonyErrorPage
+         * @return string
+         *  The HTML of the page to return
+         */
 		public function display($page){
 			Symphony::Profiler()->sample('Page build process started');
 			$this->__buildPage($page);

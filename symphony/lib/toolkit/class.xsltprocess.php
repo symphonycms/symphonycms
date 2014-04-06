@@ -39,8 +39,6 @@
 		 *  The XML for the transformation to be applied to
 		 * @param string $xsl
 		 *  The XSL for the transformation
-		 * @return boolean
-		 *  True if there is an existing `XsltProcessor` class, false otherwise
 		 */
 		public function __construct($xml=null, $xsl=null){
 

@@ -89,14 +89,15 @@
 			);
 		}
 
-		/**
-		 * The generate function calls the `__build()` function before appending
-		 * all the current page's headers and then finally calling the `$Html's`
-		 * generate function which generates a HTML DOM from all the
-		 * XMLElement children.
-		 *
-		 * @return string
-		 */
+        /**
+         * The generate function calls the `__build()` function before appending
+         * all the current page's headers and then finally calling the `$Html's`
+         * generate function which generates a HTML DOM from all the
+         * XMLElement children.
+         *
+         * @param null $page
+         * @return string
+         */
 		public function generate($page = null){
 			$this->__build();
 			parent::generate($page);
@@ -195,10 +196,9 @@
 		}
 
 		/**
-		 * Determines if two elements are duplicates based on an attribute
-		 * and value
+		 * Determines if two elements are duplicates based on an attribute and value
 		 *
-		 * @param string $value
+		 * @param string $path
 		 *  The value of the attribute
 		 * @param string $attribute
 		 *  The attribute to check

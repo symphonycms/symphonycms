@@ -175,17 +175,18 @@
 			return array_merge($about, array('handle' => $handle));
 		}
 
-		/**
-		 * Creates an instance of a given class and returns it.
-		 *
-		 * @param string $handle
-		 *  The handle of the Datasource to create
-		 * @param array $env
-		 *  The environment variables from the Frontend class which includes
-		 *  any params set by Symphony or Events or by other Datasources
-		 * @param boolean $process_params
-		 * @return Datasource
-		 */
+        /**
+         * Creates an instance of a given class and returns it.
+         *
+         * @param string $handle
+         *  The handle of the Datasource to create
+         * @param array $env
+         *  The environment variables from the Frontend class which includes
+         *  any params set by Symphony or Events or by other Datasources
+         * @param boolean $process_params
+         * @throws Exception
+         * @return Datasource
+         */
 		public static function create($handle, array $env = null, $process_params=true){
 			$classname = self::__getClassName($handle);
 			$path = self::__getDriverPath($handle);

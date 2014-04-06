@@ -42,22 +42,23 @@
 		protected $_rcpt = false;
 		protected $_auth = false;
 
-		/**
-		 * Constructor.
-		 *
-		 * @param string $host
-		 *  Host to connect to. Defaults to localhost (127.0.0.1)
-		 * @param integer $port
-		 *  When ssl is used, defaults to 465
-		 *  When no ssl is used, and ini_get returns no value, defaults to 25.
-		 * @param array $options
-		 *  Currently supports 3 values:
-		 *  	$options['secure'] can be ssl, tls or null.
-		 *  	$options['username'] the username used to login to the server. Leave empty for no authentication.
-		 *  	$options['password'] the password used to login to the server. Leave empty for no authentication.
-		 *  	$options['local_ip'] the ip address used in the ehlo/helo commands. Only ip's are accepted.
-		 * @return void
-		 */
+        /**
+         * Constructor.
+         *
+         * @param string $host
+         *  Host to connect to. Defaults to localhost (127.0.0.1)
+         * @param integer $port
+         *  When ssl is used, defaults to 465
+         *  When no ssl is used, and ini_get returns no value, defaults to 25.
+         * @param array $options
+         *  Currently supports 3 values:
+         *    $options['secure'] can be ssl, tls or null.
+         *    $options['username'] the username used to login to the server. Leave empty for no authentication.
+         *    $options['password'] the password used to login to the server. Leave empty for no authentication.
+         *    $options['local_ip'] the ip address used in the ehlo/helo commands. Only ip's are accepted.
+         * @throws SMTPException
+         * @return \SMTP
+         */
 		public function __construct($host = '127.0.0.1', $port = null, $options = array()){
 			if ($options['secure'] !== null) {
 				switch (strtolower($options['secure'])) {
@@ -116,20 +117,22 @@
 			return true;
 		}
 
-		/**
-		 * The actual email sending.
-		 * The connection to the server (connecting, EHLO, AUTH, etc) is done here,
-		 * right before the actual email is sent. This is to make sure the connection does not time out.
-		 *
-		 * @param string $from
-		 *  The from string. Should have the following format: email@domain.tld
-		 * @param string $to
-		 *  The email address to send the email to.
-		 * @param string $subject
-		 *  The subject to send the email to.
-		 * @param string $message
-		 * @return boolean
-		 */
+        /**
+         * The actual email sending.
+         * The connection to the server (connecting, EHLO, AUTH, etc) is done here,
+         * right before the actual email is sent. This is to make sure the connection does not time out.
+         *
+         * @param string $from
+         *  The from string. Should have the following format: email@domain.tld
+         * @param string $to
+         *  The email address to send the email to.
+         * @param string $subject
+         *  The subject to send the email to.
+         * @param string $message
+         * @throws SMTPException
+         * @throws Exception
+         * @return boolean
+         */
 		public function sendMail($from, $to, $subject, $message){
 			$this->_connect($this->_host, $this->_port);
 			$this->mail($from);
@@ -159,12 +162,13 @@
 		}
 
 
-		/**
-		 * Initiates the ehlo/helo requests.
-		 *
-		 * @throws SMTPException
-		 * @return void
-		 */
+        /**
+         * Initiates the ehlo/helo requests.
+         *
+         * @throws SMTPException
+         * @throws Exception
+         * @return void
+         */
 		public function helo(){
 			if($this->_mail !== false){
 				throw new SMTPException(__('Can not call HELO on existing session'));
@@ -277,11 +281,12 @@
 			$this->_data = true;
 		}
 
-		/**
-		 * Resets the current session. This 'undoes' all rcpt, mail, etc calls.
-		 *
-		 * @return void
-		 */
+        /**
+         * Resets the current session. This 'undoes' all rcpt, mail, etc calls.
+         *
+         * @throws SMTPException
+         * @return void
+         */
 		public function rset(){
 			$this->_send('RSET');
 			// MS ESMTP doesn't follow RFC, see [ZF-1377]
@@ -292,11 +297,12 @@
 			$this->_data = false;
 		}
 
-		/**
-		 * Disconnects to the server.
-		 *
-		 * @return void
-		 */
+        /**
+         * Disconnects to the server.
+         *
+         * @throws SMTPException
+         * @return void
+         */
 		public function quit(){
 			$this->_send('QUIT');
 			$this->_expect(221, 300);
@@ -328,33 +334,36 @@
 			$this->_auth = true;
 		}
 
-		/**
-		 * Calls the EHLO function.
-		 * This is the HELO function for more modern servers.
-		 *
-		 * @return void
-		 */
+        /**
+         * Calls the EHLO function.
+         * This is the HELO function for more modern servers.
+         *
+         * @throws SMTPException
+         * @return void
+         */
 		protected function _ehlo(){
 			$this->_send('EHLO [' . $this->_ip . ']');
 			$this->_expect(array(250, 220), 300);
 		}
 
-		/**
-		 * Initiates the connection by calling the HELO function.
-		 * This function should only be used if the server does not support the HELO function.
-		 *
-		 * @return void
-		 */
+        /**
+         * Initiates the connection by calling the HELO function.
+         * This function should only be used if the server does not support the HELO function.
+         *
+         * @throws SMTPException
+         * @return void
+         */
 		protected function _helo(){
 			$this->_send('HELO [' . $this->_ip . ']');
 			$this->_expect(array(250, 220), 300);
 		}
 
-		/**
-		 * Encrypts the current session with TLS.
-		 *
-		 * @return void
-		 */
+        /**
+         * Encrypts the current session with TLS.
+         *
+         * @throws SMTPException
+         * @return void
+         */
 		protected function _tls(){
 			if ($this->_secure == 'tls') {
 				$this->_send('STARTTLS');
@@ -366,12 +375,13 @@
 			}
 		}
 
-		/**
-		 * Send a request to the host, appends the request with a line break.
-		 *
-		 * @param string $request
-		 * @return boolean|integer number of characters written.
-		 */
+        /**
+         * Send a request to the host, appends the request with a line break.
+         *
+         * @param string $request
+         * @throws SMTPException
+         * @return boolean|integer number of characters written.
+         */
 		protected function _send($request){
 			$this->checkConnection();
 
@@ -382,14 +392,15 @@
 			return $result;
 		}
 
-		/**
-		 * Get a line from the stream.
-		 *
-		 * @param integer $timeout 
-		 *  Per-request timeout value if applicable. Defaults to null which 
-		 *  will not set a timeout.
-		 * @return string
-		 */
+        /**
+         * Get a line from the stream.
+         *
+         * @param integer $timeout
+         *  Per-request timeout value if applicable. Defaults to null which
+         *  will not set a timeout.
+         * @throws SMTPException
+         * @return string
+         */
 		protected function _receive($timeout = null) {
 			$this->checkConnection();
 
@@ -456,14 +467,16 @@
 			return $msg;
 		}
 
-		/**
-		 * Connect to the host, and perform basic functions like helo and auth.
-		 *
-		 * @throws SMTPException
-		 * @param string $host
-		 * @param integer $port
-		 * @return void
-		 */
+        /**
+         * Connect to the host, and perform basic functions like helo and auth.
+         *
+         *
+         * @param string $host
+         * @param integer $port
+         * @throws SMTPException
+         * @throws Exception
+         * @return void
+         */
 		protected function _connect($host, $port){
 			$errorNum = 0;
 			$errorStr = '';

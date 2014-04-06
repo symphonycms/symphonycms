@@ -33,32 +33,34 @@
 			$this->_data[$setting] = $value;
 		}
 
-		/**
-		 * An accessor function for this Section's settings. If the
-		 * $setting param is omitted, an array of all setting will
-		 * be returned, otherwise it will return the data for
-		 * the setting given
-		 *
-		 * @return array|string
-		 *	If setting is provided, returns a string, if setting is omitted
-		 *	returns an associative array of this Section's settings
-		 */
+        /**
+         * An accessor function for this Section's settings. If the
+         * $setting param is omitted, an array of all settings will
+         * be returned. Otherwise it will return the data for
+         * the setting given.
+         *
+         * @param null|string $setting
+         * @return array|string
+         *    If setting is provided, returns a string, if setting is omitted
+         *    returns an associative array of this Section's settings
+         */
 		public function get($setting = null){
 			if(is_null($setting)) return $this->_data;
 			return $this->_data[$setting];
 		}
 
-		/**
-		 * Returns the default field this Section will be sorted by.
-		 * This is determined by the first visible field that is allowed to
-		 * to be sorted (defined by the field's `isSortable()` function).
-		 * If no fields exist or none of them are visible in the entries table,
-		 * 'id' is returned instead.
-		 *
-		 * @since Symphony 2.3
-		 * @return string
-		 *	Either the field ID or the string 'id'.
-		 */
+        /**
+         * Returns the default field this Section will be sorted by.
+         * This is determined by the first visible field that is allowed to
+         * to be sorted (defined by the field's `isSortable()` function).
+         * If no fields exist or none of them are visible in the entries table,
+         * 'id' is returned instead.
+         *
+         * @since Symphony 2.3
+         * @throws Exception
+         * @return string
+         *    Either the field ID or the string 'id'.
+         */
 		public function getDefaultSortingField(){
 			$fields = $this->fetchVisibleColumns();
 
@@ -71,15 +73,16 @@
 			return 'id';
 		}
 
-		/**
-		 * Returns the field this Section will be sorted by, or calls
-		 * `getDefaultSortingField()` if the configuration file doesn't
-		 * contain any settings for that Section.
-		 *
-		 * @since Symphony 2.3
-		 * @return string
-		 *	Either the field ID or the string 'id'.
-		 */
+        /**
+         * Returns the field this Section will be sorted by, or calls
+         * `getDefaultSortingField()` if the configuration file doesn't
+         * contain any settings for that Section.
+         *
+         * @since Symphony 2.3
+         * @throws Exception
+         * @return string
+         *    Either the field ID or the string 'id'.
+         */
 		public function getSortingField(){
 			$result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_sortby', 'sorting');
 
@@ -189,54 +192,58 @@
 			return SectionManager::fetchParentAssociations($this->get('id'), $respect_visibility);
 		}
 
-		/**
-		 * Returns an array of all the fields in this section that are to be displayed
-		 * on the entries table page ordered by the order in which they appear
-		 * in the Section Editor interface
-		 *
-		 * @return array
-		 */
+        /**
+         * Returns an array of all the fields in this section that are to be displayed
+         * on the entries table page ordered by the order in which they appear
+         * in the Section Editor interface
+         *
+         * @throws Exception
+         * @return array
+         */
 		public function fetchVisibleColumns(){
 			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, null, " AND t1.show_column = 'yes' ");
 		}
 
-		/**
-		 * Returns an array of all the fields in this section optionally filtered by
-		 * the field type or it's location within the section.
-		 *
-		 * @param string $type
-		 *	The field type (it's handle as returned by `$field->handle()`)
-		 * @param string $location
-		 *	The location of the fields in the entry creator, whether they are
-		 *	'main' or 'sidebar'
-		 * @return array
-		 */
+        /**
+         * Returns an array of all the fields in this section optionally filtered by
+         * the field type or it's location within the section.
+         *
+         * @param string $type
+         *    The field type (it's handle as returned by `$field->handle()`)
+         * @param string $location
+         *    The location of the fields in the entry creator, whether they are
+         *    'main' or 'sidebar'
+         * @throws Exception
+         * @return array
+         */
 		public function fetchFields($type = null, $location = null){
 			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', $type, $location);
 		}
 
-		/**
-		 * Returns an array of all the fields that can be filtered.
-		 *
-		 * @param string $location
-		 *	The location of the fields in the entry creator, whether they are
-		 *	'main' or 'sidebar'
-		 * @return array
-		 */
+        /**
+         * Returns an array of all the fields that can be filtered.
+         *
+         * @param string $location
+         *    The location of the fields in the entry creator, whether they are
+         *    'main' or 'sidebar'
+         * @throws Exception
+         * @return array
+         */
 		public function fetchFilterableFields($location = null){
 			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location, null, Field::__FILTERABLE_ONLY__);
 		}
 
-		/**
-		 * Returns an array of all the fields that can be toggled. This function
-		 * is used to help build the With Selected drop downs on the Publish
-		 * Index pages
-		 *
-		 * @param string $location
-		 *	The location of the fields in the entry creator, whether they are
-		 *	'main' or 'sidebar'
-		 * @return array
-		 */
+        /**
+         * Returns an array of all the fields that can be toggled. This function
+         * is used to help build the With Selected drop downs on the Publish
+         * Index pages
+         *
+         * @param string $location
+         *    The location of the fields in the entry creator, whether they are
+         *    'main' or 'sidebar'
+         * @throws Exception
+         * @return array
+         */
 		public function fetchToggleableFields($location = null){
 			return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location,null, Field::__TOGGLEABLE_ONLY__);
 		}

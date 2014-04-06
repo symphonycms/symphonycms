@@ -76,18 +76,19 @@
 		 */
 		protected $_negate_result = false;
 
-		/**
-		 * Constructor for the datasource sets the parent, if `$process_params` is set,
-		 * the `$env` variable will be run through `Datasource::processParameters`.
-		 *
-		 * @see toolkit.Datasource#processParameters()
-		 * @param array $env
-		 *  The environment variables from the Frontend class which includes
-		 *  any params set by Symphony or Events or by other Datasources
-		 * @param boolean $process_params
-		 *  If set to true, `Datasource::processParameters` will be called. By default
-		 *  this is true
-		 */
+        /**
+         * Constructor for the datasource sets the parent, if `$process_params` is set,
+         * the `$env` variable will be run through `Datasource::processParameters`.
+         *
+         * @see toolkit.Datasource#processParameters()
+         * @param array $env
+         *  The environment variables from the Frontend class which includes
+         *  any params set by Symphony or Events or by other Datasources
+         * @param boolean $process_params
+         *  If set to true, `Datasource::processParameters` will be called. By default
+         *  this is true
+         * @throws FrontendPageNotFoundException
+         */
 		public function __construct(array $env = null, $process_params=true){
 			// Support old the __construct (for the moment anyway).
 			// The old signature was array/array/boolean
@@ -258,15 +259,16 @@
 			return new XMLElement('error', __('Results Negated.'));
 		}
 
-		/**
-		 * This function will iterates over the filters and replace any parameters with their
-		 * actual values. All other Datasource variables such as sorting, ordering and
-		 * pagination variables are also set by this function
-		 *
-		 * @param array $env
-		 *  The environment variables from the Frontend class which includes
-		 *  any params set by Symphony or Events or by other Datasources
-		 */
+        /**
+         * This function will iterates over the filters and replace any parameters with their
+         * actual values. All other Datasource variables such as sorting, ordering and
+         * pagination variables are also set by this function
+         *
+         * @param array $env
+         *  The environment variables from the Frontend class which includes
+         *  any params set by Symphony or Events or by other Datasources
+         * @throws FrontendPageNotFoundException
+         */
 		public function processParameters(array $env = null){
 			
 			if($env) $this->_env = $env;

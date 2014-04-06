@@ -90,11 +90,11 @@
 		 * Given the settings and any existing datasource parameters, return
 		 * the contents of this datasource so that can be saved to the file system.
 		 *
-		 * @param array $settings
+		 * @param array $fields
 		 *  An associative array of settings for this datasource, where the key
 		 *  is the name of the setting. These are user defined through the Datasource
 		 *  Editor.
-		 * @param array $params
+		 * @param array $parameters
 		 *  An associative array of parameters for this datasource, where the key
 		 *  is the name of the parameter.
 		 * @param string $template

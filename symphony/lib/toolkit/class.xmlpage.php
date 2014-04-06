@@ -45,14 +45,15 @@
 			$this->_Result->setValue(__('You are not authorised to access this page.'));
 		}
 
-		/**
-		 * The generate functions outputs the correct headers for
-		 * this `XMLPage`, adds `$this->getHttpStatusCode()` code to the root attribute
-		 * before calling the parent generate function and generating
-		 * the `$this->_Result` XMLElement
-		 *
-		 * @return string
-		 */
+        /**
+         * The generate functions outputs the correct headers for
+         * this `XMLPage`, adds `$this->getHttpStatusCode()` code to the root attribute
+         * before calling the parent generate function and generating
+         * the `$this->_Result` XMLElement
+         *
+         * @param null $page
+         * @return string
+         */
 		public function generate($page = null) {
 			// Set the actual status code in the xml response
 			$this->_Result->setAttribute('status', $this->getHttpStatusCode());

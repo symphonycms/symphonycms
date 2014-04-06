@@ -75,17 +75,19 @@
 			return parent::isLoggedIn();
 		}
 
-		/**
-		 * Called by index.php, this function is responsible for rendering the current
-		 * page on the Frontend. One delegate is fired, `FrontendInitialised`
-		 *
-		 * @uses FrontendInitialised
-		 * @see boot.getCurrentPage()
-		 * @param string $page
-		 *  The result of getCurrentPage, which returns the `$_GET['symphony-page']`
-		 * @return string
-		 *  The HTML of the page to return
-		 */
+        /**
+         * Called by index.php, this function is responsible for rendering the current
+         * page on the Frontend. One delegate is fired, `FrontendInitialised`
+         *
+         * @uses FrontendInitialised
+         * @see boot.getCurrentPage()
+         * @param string $page
+         *  The result of getCurrentPage, which returns the `$_GET['symphony-page']`
+         * @throws FrontendPageNotFoundException
+         * @throws SymphonyErrorPage
+         * @return string
+         *  The HTML of the page to return
+         */
 		public function display($page) {
 			self::$_page = new FrontendPage;
 
@@ -140,17 +142,19 @@
 	 */
 	Class FrontendPageNotFoundExceptionHandler extends SymphonyErrorPageHandler{
 
-		/**
-		 * The render function will take a `FrontendPageNotFoundException` Exception and
-		 * output a HTML page. This function first checks to see if their is a page in Symphony
-		 * that has been given the '404' page type, otherwise it will just use the default
-		 * Symphony error page template to output the exception
-		 *
-		 * @param Exception $e
-		 *  The Exception object
-		 * @return string
-		 *  An HTML string
-		 */
+        /**
+         * The render function will take a `FrontendPageNotFoundException` Exception and
+         * output a HTML page. This function first checks to see if their is a page in Symphony
+         * that has been given the '404' page type, otherwise it will just use the default
+         * Symphony error page template to output the exception
+         *
+         * @param Exception $e
+         *  The Exception object
+         * @throws FrontendPageNotFoundException
+         * @throws SymphonyErrorPage
+         * @return string
+         *  An HTML string
+         */
 		public static function render(Exception $e){
 			$page = PageManager::fetchPageByType('404');
 			$previous_exception = Frontend::instance()->getException();

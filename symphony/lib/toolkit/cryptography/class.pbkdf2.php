@@ -77,17 +77,18 @@
 			return self::PREFIX . "|" . $iterations . "|" . $salt . "|" . base64_encode(substr($key, 0, $keylength));
 		}
 
-		/**
-		 * Compares a given hash with a cleantext password. Also extracts the salt
-		 * from the hash.
-		 *
-		 * @param string $input
-		 * the cleartext password
-		 * @param string $hash
-		 * the hash the password should be checked against
-		 * @return boolean
-		 * the result of the comparison
-		 */
+        /**
+         * Compares a given hash with a cleantext password. Also extracts the salt
+         * from the hash.
+         *
+         * @param string $input
+         *  the cleartext password
+         * @param string $hash
+         *  the hash the password should be checked against
+         * @param bool $isHash
+         * @return boolean
+         *  the result of the comparison
+         */
 		public static function compare($input, $hash, $isHash=false){
 			$salt = self::extractSalt($hash);
 			$iterations = self::extractIterations($hash);

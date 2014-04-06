@@ -212,14 +212,15 @@
 			return new XMLElementChildrenFilter(new ArrayIterator($this->_children));
 		}
 
-		/**
-		 * Retrieves child-element by name and position. If no child is found,
-		 * `NULL` will be returned.
-		 *
-		 * @since Symphony 2.3
-		 * @param string $name
-		 * @return XMLElement
-		 */
+        /**
+         * Retrieves child-element by name and position. If no child is found,
+         * `NULL` will be returned.
+         *
+         * @since Symphony 2.3
+         * @param string $name
+         * @param int $position
+         * @return XMLElement
+         */
 		public function getChildByName($name, $position) {
 			$result = array_values($this->getChildrenByName($name));
 
@@ -301,35 +302,35 @@
 			$this->_elementStyle = $style;
 		}
 
-		/**
-		 * Sets whether this `XMLElement` needs to output an
-		 * XML declaration or not. This normally is only set to
-		 * true for the parent `XMLElement`, eg. 'html'.
-		 *
-		 * @param string $value (optional)
-		 *  Defaults to false
-		 */
+        /**
+         * Sets whether this `XMLElement` needs to output an
+         * XML declaration or not. This normally is only set to
+         * true for the parent `XMLElement`, eg. 'html'.
+         *
+         * @param bool|string $value (optional)
+         *  Defaults to false
+         */
 		public function setIncludeHeader($value = false){
 			$this->_includeHeader = $value;
 		}
 
-		/**
-		 * Sets whether this `XMLElement` is self closing or not.
-		 *
-		 * @param string $value (optional)
-		 *  Defaults to true
-		 */
+        /**
+         * Sets whether this `XMLElement` is self closing or not.
+         *
+         * @param bool|string $value (optional)
+         *  Defaults to true
+         */
 		public function setSelfClosingTag($value = true){
 			$this->_selfclosing = $value;
 		}
 
-		/**
-		 * Specifies whether attributes need to have a value
-		 * or if they can be shorthand on this `XMLElement`.
-		 *
-		 * @param string $value (optional)
-		 *  Defaults to true
-		 */
+        /**
+         * Specifies whether attributes need to have a value
+         * or if they can be shorthand on this `XMLElement`.
+         *
+         * @param bool|string $value (optional)
+         *  Defaults to true
+         */
 		public function setAllowEmptyAttributes($value = true){
 			$this->_allowEmptyAttributes = $value;
 		}
@@ -737,15 +738,16 @@
 			return $result;
 		}
 
-		/**
-		 * Given a string of XML, this function will convert it to an `XMLElement`
-		 * object and return the result.
-		 *
-		 * @since Symphony 2.4
-		 * @param string $xml
-		 *  A string of XML
-		 * @return XMLElement
-		 */
+        /**
+         * Given a string of XML, this function will convert it to an `XMLElement`
+         * object and return the result.
+         *
+         * @since Symphony 2.4
+         * @param string $root_element
+         * @param string $xml
+         *  A string of XML
+         * @return XMLElement
+         */
 		public static function convertFromXMLString($root_element, $xml) {
 			$doc = new DOMDocument('1.0', 'utf-8');
 			$doc->loadXML($xml);
@@ -753,14 +755,15 @@
 			return self::convertFromDOMDocument($root_element, $doc);
 		}
 
-		/**
-		 * Given a `DOMDocument`, this function will convert it to an `XMLElement`
-		 * object and return the result.
-		 *
-		 * @since Symphony 2.4
-		 * @param DOMDOcument $doc
-		 * @return XMLElement
-		 */
+        /**
+         * Given a `DOMDocument`, this function will convert it to an `XMLElement`
+         * object and return the result.
+         *
+         * @since Symphony 2.4
+         * @param string $root_element
+         * @param DOMDOcument $doc
+         * @return XMLElement
+         */
 		public static function convertFromDOMDocument($root_element, DOMDocument $doc) {
 			$xpath = new DOMXPath($doc);
 			$root = new XMLElement($root_element);

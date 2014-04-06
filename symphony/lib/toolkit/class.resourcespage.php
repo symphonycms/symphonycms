@@ -17,27 +17,29 @@
 
 	Abstract Class ResourcesPage extends AdministrationPage{
 
-		/**
-		 * This method is invoked from the `Sortable` class and it contains the
-		 * logic for sorting (or unsorting) the resource index. It provides a basic
-		 * wrapper to the `ResourceManager`'s `fetch()` method.
-		 *
-		 * @see toolkit.ResourceManager#getSortingField
-		 * @see toolkit.ResourceManager#getSortingOrder
-		 * @see toolkit.ResourceManager#fetch
-		 * @param string $sort
-		 *  The field to sort on which should match one of the table's column names.
-		 *  If this is not provided the default will be determined by
-		 *  `ResourceManager::getSortingField`
-		 * @param string $order
-		 *  The direction to sort in, either 'asc' or 'desc'. If this is not provided
-		 *  the value will be determined by `ResourceManager::getSortingOrder`.
-		 * @param array $params
-		 *  An associative array of params (usually populated from the URL) that this
-		 *  function uses. The current implementation will use `type` and `unsort` keys
-		 * @return array
-		 *  An associative of the resource as determined by `ResourceManager::fetch`
-		 */
+        /**
+         * This method is invoked from the `Sortable` class and it contains the
+         * logic for sorting (or unsorting) the resource index. It provides a basic
+         * wrapper to the `ResourceManager`'s `fetch()` method.
+         *
+         * @see toolkit.ResourceManager#getSortingField
+         * @see toolkit.ResourceManager#getSortingOrder
+         * @see toolkit.ResourceManager#fetch
+         * @param string $sort
+         *  The field to sort on which should match one of the table's column names.
+         *  If this is not provided the default will be determined by
+         *  `ResourceManager::getSortingField`
+         * @param string $order
+         *  The direction to sort in, either 'asc' or 'desc'. If this is not provided
+         *  the value will be determined by `ResourceManager::getSortingOrder`.
+         * @param array $params
+         *  An associative array of params (usually populated from the URL) that this
+         *  function uses. The current implementation will use `type` and `unsort` keys
+         * @throws Exception
+         * @throws SymphonyErrorPage
+         * @return array
+         *  An associative of the resource as determined by `ResourceManager::fetch`
+         */
 		public function sort(&$sort, &$order, array $params){
 			$type = $params['type'];
 
@@ -84,18 +86,19 @@
 			return $pages;
 		}
 
-		/**
-		 * This function contains the minimal amount of logic for generating the
-		 * index table of a given `$resource_type`. The table has name, source, pages
-		 * release date and author columns. The values for these columns are determined
-		 * by the resource's `about()` method.
-		 *
-		 * As Datasources types can be installed using Providers, the Source column
-		 * can be overridden with a Datasource's `getSourceColumn` method (if it exists).
-		 *
-		 * @param integer $resource_type
-		 *  Either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DATASOURCE`
-		 */
+        /**
+         * This function contains the minimal amount of logic for generating the
+         * index table of a given `$resource_type`. The table has name, source, pages
+         * release date and author columns. The values for these columns are determined
+         * by the resource's `about()` method.
+         *
+         * As Datasources types can be installed using Providers, the Source column
+         * can be overridden with a Datasource's `getSourceColumn` method (if it exists).
+         *
+         * @param integer $resource_type
+         *  Either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DATASOURCE`
+         * @throws InvalidArgumentException
+         */
 		public function __viewIndex($resource_type){
 			$manager = ResourceManager::getManagerFromType($resource_type);
 			$friendly_resource = ($resource_type === RESOURCE_TYPE_EVENT) ? __('Event') : __('DataSource');
@@ -302,18 +305,19 @@
 			}
 		}
 
-		/**
-		 * This function is called from the resources index when a user uses the
-		 * With Selected, or Apply, menu. The type of resource is given by
-		 * `$resource_type`. At this time the only two valid values,
-		 * `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DATASOURCE`.
-		 *
-		 * The function handles 'delete', 'attach', 'detach', 'attach all',
-		 * 'detach all' actions.
-		 *
-		 * @param integer $resource_type
-		 *  Either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DATASOURCE`
-		 */
+        /**
+         * This function is called from the resources index when a user uses the
+         * With Selected, or Apply, menu. The type of resource is given by
+         * `$resource_type`. At this time the only two valid values,
+         * `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DATASOURCE`.
+         *
+         * The function handles 'delete', 'attach', 'detach', 'attach all',
+         * 'detach all' actions.
+         *
+         * @param integer $resource_type
+         *  Either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DATASOURCE`
+         * @throws Exception
+         */
 		public function __actionIndex($resource_type){
 			$manager = ResourceManager::getManagerFromType($resource_type);
 			$checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : NULL;

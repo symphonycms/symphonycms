@@ -422,19 +422,20 @@
 			return $str;
 		}
 
-		/**
-		 * Create all the directories as specified by the input path. If the current
-		 * directory already exists, this function will return true.
-		 *
-		 * @param string $path
-		 *  the path containing the directories to create.
-		 * @param integer $mode (optional)
-		 *  the permissions (in octal) of the directories to create. Defaults to 0755
-		 * @param boolean $silent (optional)
-		 *  true if an exception should be raised if an error occurs, false
-		 *  otherwise. this defaults to true.
-		 * @return boolean
-		 */
+        /**
+         * Create all the directories as specified by the input path. If the current
+         * directory already exists, this function will return true.
+         *
+         * @param string $path
+         *  the path containing the directories to create.
+         * @param integer $mode (optional)
+         *  the permissions (in octal) of the directories to create. Defaults to 0755
+         * @param boolean $silent (optional)
+         *  true if an exception should be raised if an error occurs, false
+         *  otherwise. this defaults to true.
+         * @throws Exception
+         * @return boolean
+         */
 		public static function realiseDirectory($path, $mode = 0755, $silent = true){
 			if(is_dir($path)) return true;
 
@@ -454,20 +455,21 @@
 			}
 		}
 
-		/**
-		 * Recursively deletes all files and directories given a directory. This
-		 * function has two path. This function optionally takes a `$silent` parameter,
-		 * which when `false` will throw an `Exception` if there is an error deleting a file
-		 * or folder.
-		 *
-		 * @since Symphony 2.3
-		 * @param string $dir
-		 *  the path of the directory to delete
-		 * @param boolean $silent (optional)
-		 *  true if an exception should be raised if an error occurs, false
-		 *  otherwise. this defaults to true.
-		 * @return boolean
-		 */
+        /**
+         * Recursively deletes all files and directories given a directory. This
+         * function has two path. This function optionally takes a `$silent` parameter,
+         * which when `false` will throw an `Exception` if there is an error deleting a file
+         * or folder.
+         *
+         * @since Symphony 2.3
+         * @param string $dir
+         *  the path of the directory to delete
+         * @param boolean $silent (optional)
+         *  true if an exception should be raised if an error occurs, false
+         *  otherwise. this defaults to true.
+         * @throws Exception
+         * @return boolean
+         */
 		public static function deleteDirectory($dir, $silent = true) {
 			try {
 				if (!file_exists($dir)) return true;
@@ -655,18 +657,18 @@
 			return $index;
 		}
 
-		/**
-		 * Filter the duplicate values from an array into a new array, optionally
-		 * ignoring the case of the values (assuming they are strings?). A new array
-		 * is returned, the input array is left unchanged.
-		 *
-		 * @param array $array
-		 *  the array to filter.
-		 * @param boolean $ignore_case
-		 *  true if the case of the values in the array should be ignored, false otherwise.
-		 * @return
-		 *  a new array containing only the unique elements of the input array.
-		 */
+        /**
+         * Filter the duplicate values from an array into a new array, optionally
+         * ignoring the case of the values (assuming they are strings?). A new array
+         * is returned, the input array is left unchanged.
+         *
+         * @param array $array
+         *  the array to filter.
+         * @param boolean $ignore_case
+         *  true if the case of the values in the array should be ignored, false otherwise.
+         * @return array
+         *  a new array containing only the unique elements of the input array.
+         */
 		public static function array_remove_duplicates(array $array, $ignore_case=false){
 			return ($ignore_case == true ? self::array_iunique($array) : array_unique($array));
 		}
@@ -837,20 +839,21 @@
 			return true;
 		}
 
-		/**
-		 * Delete a file at a given path, silently ignoring errors depending
-		 * on the value of the input variable $silent.
-		 *
-		 * @param string $file
-		 *  the path of the file to delete
-		 * @param boolean $silent (optional)
-		 *  true if an exception should be raised if an error occurs, false
-		 *  otherwise. this defaults to true.
-		 * @return boolean
-		 *  true if the file is successfully unlinked, if the unlink fails and
-		 *  silent is set to true then an exception is thrown. if the unlink
-		 *  fails and silent is set to false then this returns false.
-		 */
+        /**
+         * Delete a file at a given path, silently ignoring errors depending
+         * on the value of the input variable $silent.
+         *
+         * @param string $file
+         *  the path of the file to delete
+         * @param boolean $silent (optional)
+         *  true if an exception should be raised if an error occurs, false
+         *  otherwise. this defaults to true.
+         * @throws Exception
+         * @return boolean
+         *  true if the file is successfully unlinked, if the unlink fails and
+         *  silent is set to true then an exception is thrown. if the unlink
+         *  fails and silent is set to false then this returns false.
+         */
 		public static function deleteFile($file, $silent=true){
 			try {
 				return unlink($file);
