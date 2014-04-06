@@ -149,12 +149,13 @@
 		}
 
 		/**
-		* Accessor for the Symphony instance, whether it be Frontend
-		* or Administration
-		*
-		* @since Symphony 2.2
-		* @return Symphony
-		*/
+		 * Accessor for the Symphony instance, whether it be Frontend
+		 * or Administration
+		 *
+		 * @since Symphony 2.2
+		 * @throws Exception
+		 * @return Symphony
+		 */
 		public static function Engine() {
 			if(class_exists('Administration')) {
 				return Administration::instance();
@@ -212,6 +213,8 @@
 		 *
 		 * @param string $filename (optional)
 		 *  The file to write the log to, if omitted this will default to `ACTIVITY_LOG`
+		 * @throws Exception
+		 * @return bool|void
 		 */
 		public function initialiseLog($filename = null) {
 			if(self::$Log instanceof Log && self::$Log->getLogPath() == $filename) return true;
@@ -322,6 +325,7 @@
 		 * using the connection details provided in the Symphony configuration. If any
 		 * errors occur whilst doing so, a Symphony Error Page is displayed.
 		 *
+		 * @throws SymphonyErrorPage
 		 * @return boolean
 		 *  This function will return true if the `$Database` was
 		 *  initialised successfully.
@@ -388,6 +392,7 @@
 		 * @param boolean $isHash
 		 *  If the password provided is already hashed, setting this parameter to
 		 *  true will stop it becoming rehashed. By default it is false.
+		 * @throws DatabaseException
 		 * @return boolean
 		 *  True if the Author was logged in, false otherwise
 		 */
@@ -437,6 +442,7 @@
 		 * @param string $token
 		 *  The Author token, which is a portion of the hashed string concatenation
 		 *  of the Author's username and password
+		 * @throws DatabaseException
 		 * @return boolean
 		 *  True if the Author is logged in, false otherwise
 		 */
@@ -611,6 +617,7 @@
 		 * @param array $additional
 		 *  Allows custom information to be passed to the Symphony Error Page
 		 *  that the template may want to expose, such as custom Headers etc.
+		 * @throws SymphonyErrorPage
 		 */
 		public function customError($heading, $message, $template='generic', array $additional=array()){
 			$this->throwCustomError($message, $heading, Page::HTTP_STATUS_ERROR, $template, $additional);
@@ -627,7 +634,7 @@
 		 *  or as an XMLElement.
 		 * @param string $heading
 		 *  A heading for the error page
-		 * @param integer $status
+		 * @param int $status
 		 *  Properly sets the HTTP status code for the response. Defaults to
 		 *  `Page::HTTP_STATUS_ERROR`. Use `Page::HTTP_STATUS_XXX` to set this value.
 		 * @param string $template
@@ -637,6 +644,7 @@
 		 * @param array $additional
 		 *  Allows custom information to be passed to the Symphony Error Page
 		 *  that the template may want to expose, such as custom Headers etc.
+		 * @throws SymphonyErrorPage
 		 */
 		public function throwCustomError($message, $heading='Symphony Fatal Error', $status=Page::HTTP_STATUS_ERROR, $template='generic', array $additional=array()){
 			GenericExceptionHandler::$enabled = true;

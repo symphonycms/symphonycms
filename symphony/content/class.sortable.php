@@ -61,24 +61,25 @@
 		 * current sort order, `$order`. If `$extra_url_params` are provided, they are
 		 * appended to the redirect string upon clicking on a table header.
 		 *
-		 *		'label' => 'Column label',
-		 *		'sortable' => (true|false),
-		 *		'handle' => 'handle for the column (i.e. the field ID), used as value for $sort',
-		 *		'attrs' => array(
-		 *			'HTML <a> attribute' => 'value',
-		 *			[...]
-		 *		)
+		 *        'label' => 'Column label',
+		 *        'sortable' => (true|false),
+		 *        'handle' => 'handle for the column (i.e. the field ID), used as value for $sort',
+		 *        'attrs' => array(
+		 *            'HTML <a> attribute' => 'value',
+		 *            [...]
+		 *        )
 		 *
 		 * @param array $columns
-		 *	An array of columns that will be converted into table headers.
+		 *    An array of columns that will be converted into table headers.
 		 * @param string $sort
-		 *	The current field (or axis) the objects are sorted by.
+		 *    The current field (or axis) the objects are sorted by.
 		 * @param string $order
-		 *	The current sort order (i.e. 'asc' or 'desc').
+		 *    The current sort order (i.e. 'asc' or 'desc').
 		 * @param string $extra_url_params (optional)
-		 *	A string of URL parameters that will be appended to the redirect string.
+		 *    A string of URL parameters that will be appended to the redirect string.
+		 * @throws InvalidArgumentException
 		 * @return array
-		 *	An array of table headers that can be directly passed to `Widget::TableHead`.
+		 *    An array of table headers that can be directly passed to `Widget::TableHead`.
 		 */
 		public static function buildTableHeaders($columns, $sort, $order, $extra_url_params = null) {
 			$aTableHead = array();

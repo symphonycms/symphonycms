@@ -95,6 +95,8 @@
 		 * @param string $page
 		 *  The URL path after the root of the Symphony installation, including a starting
 		 *  slash, such as '/login/'
+		 * @throws SymphonyErrorPage
+		 * @throws Exception
 		 * @return HTMLPage
 		 */
 		private function __buildPage($page){
@@ -445,6 +447,8 @@
 		 * @param string $page
 		 *  The result of getCurrentPage, which returns the $_GET['symphony-page']
 		 *  variable.
+		 * @throws Exception
+		 * @throws SymphonyErrorPage
 		 * @return string
 		 *  The HTML of the page to return
 		 */

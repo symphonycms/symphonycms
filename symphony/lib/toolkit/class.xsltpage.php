@@ -150,6 +150,7 @@
 		 * the page headers and a string containing the transformed result
 		 * is result.
 		 *
+		 * @param null $page
 		 * @return string
 		 */
 		public function generate($page = null){

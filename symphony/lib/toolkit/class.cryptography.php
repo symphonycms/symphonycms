@@ -45,11 +45,12 @@
 		 * @see cryptography.PBKDF2#compare()
 		 *
 		 * @param string $input
-		 * the cleartext password
+		 *  the cleartext password
 		 * @param string $hash
-		 * the hash the password should be checked against
+		 *  the hash the password should be checked against
+		 * @param bool $isHash
 		 * @return boolean
-		 * the result of the comparison
+		 *  the result of the comparison
 		 */
 		public static function compare($input, $hash, $isHash=false){
 			$version = substr($hash, 0, 8);

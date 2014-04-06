@@ -90,11 +90,11 @@
 		 * Given the settings and any existing event parameters, return the contents
 		 * of this event that can be saved to the filesystem.
 		 *
-		 * @param array $settings
+		 * @param array $fields
 		 *  An associative array of settings for this event, where the key
 		 *  is the name of the setting. These are user defined through the event
 		 *  Editor.
-		 * @param array $params
+		 * @param array $parameters
 		 *  An associative array of parameters for this event, where the key
 		 *  is the name of the parameter.
 		 * @param string $template
@@ -129,9 +129,6 @@
 		 * event as an `XMLElement` so that the `FrontendPage` class can add to
 		 * a page's XML.
 		 *
-		 * @param array $param_pool
-		 *  An associative array of parameters that have been evaluated prior to
-		 *  this event's execution.
 		 * @return XMLElement
 		 *  This event should return an `XMLElement` object.
 		 */

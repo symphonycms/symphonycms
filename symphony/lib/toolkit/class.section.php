@@ -35,13 +35,14 @@
 
 		/**
 		 * An accessor function for this Section's settings. If the
-		 * $setting param is omitted, an array of all setting will
-		 * be returned, otherwise it will return the data for
-		 * the setting given
+		 * $setting param is omitted, an array of all settings will
+		 * be returned. Otherwise it will return the data for
+		 * the setting given.
 		 *
+		 * @param null|string $setting
 		 * @return array|string
-		 *	If setting is provided, returns a string, if setting is omitted
-		 *	returns an associative array of this Section's settings
+		 *    If setting is provided, returns a string, if setting is omitted
+		 *    returns an associative array of this Section's settings
 		 */
 		public function get($setting = null){
 			if(is_null($setting)) return $this->_data;
@@ -56,8 +57,9 @@
 		 * 'id' is returned instead.
 		 *
 		 * @since Symphony 2.3
+		 * @throws Exception
 		 * @return string
-		 *	Either the field ID or the string 'id'.
+		 *    Either the field ID or the string 'id'.
 		 */
 		public function getDefaultSortingField(){
 			$fields = $this->fetchVisibleColumns();
@@ -77,8 +79,9 @@
 		 * contain any settings for that Section.
 		 *
 		 * @since Symphony 2.3
+		 * @throws Exception
 		 * @return string
-		 *	Either the field ID or the string 'id'.
+		 *    Either the field ID or the string 'id'.
 		 */
 		public function getSortingField(){
 			$result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_sortby', 'sorting');
@@ -194,6 +197,7 @@
 		 * on the entries table page ordered by the order in which they appear
 		 * in the Section Editor interface
 		 *
+		 * @throws Exception
 		 * @return array
 		 */
 		public function fetchVisibleColumns(){
@@ -205,10 +209,11 @@
 		 * the field type or it's location within the section.
 		 *
 		 * @param string $type
-		 *	The field type (it's handle as returned by `$field->handle()`)
+		 *    The field type (it's handle as returned by `$field->handle()`)
 		 * @param string $location
-		 *	The location of the fields in the entry creator, whether they are
-		 *	'main' or 'sidebar'
+		 *    The location of the fields in the entry creator, whether they are
+		 *    'main' or 'sidebar'
+		 * @throws Exception
 		 * @return array
 		 */
 		public function fetchFields($type = null, $location = null){
@@ -219,8 +224,9 @@
 		 * Returns an array of all the fields that can be filtered.
 		 *
 		 * @param string $location
-		 *	The location of the fields in the entry creator, whether they are
-		 *	'main' or 'sidebar'
+		 *    The location of the fields in the entry creator, whether they are
+		 *    'main' or 'sidebar'
+		 * @throws Exception
 		 * @return array
 		 */
 		public function fetchFilterableFields($location = null){
@@ -233,8 +239,9 @@
 		 * Index pages
 		 *
 		 * @param string $location
-		 *	The location of the fields in the entry creator, whether they are
-		 *	'main' or 'sidebar'
+		 *    The location of the fields in the entry creator, whether they are
+		 *    'main' or 'sidebar'
+		 * @throws Exception
 		 * @return array
 		 */
 		public function fetchToggleableFields($location = null){

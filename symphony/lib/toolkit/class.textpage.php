@@ -62,6 +62,7 @@
 		 * this `TextPage`, before calling the parent generate function and
 		 * returning the `$this->_Result` string
 		 *
+		 * @param null $page
 		 * @return string
 		 */
 		public function generate($page = null) {

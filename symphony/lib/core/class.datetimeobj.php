@@ -149,7 +149,7 @@
 		 * @link http://www.php.net/manual/en/book.datetime.php
 		 * @param string $format
 		 *  A valid PHP date format
-		 * @param integer $timestamp (optional)
+		 * @param null|string $timestamp (optional)
 		 *  A unix timestamp to format. 'now' or omitting this parameter will
 		 *  result in the current time being used
 		 * @param string $timezone (optional)
@@ -272,7 +272,7 @@
 		 *
 		 * @param string $format
 		 *  A valid PHP date format
-		 * @param integer $timestamp (optional)
+		 * @param null|string $timestamp (optional)
 		 *  A unix timestamp to format. Omitting this parameter will
 		 *  result in the current time being used
 		 * @return string

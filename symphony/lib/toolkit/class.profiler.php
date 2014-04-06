@@ -196,7 +196,7 @@
 
 	}
 
-    /**
+	/**
 	 * Defines a constant for when the Profiler should be a complete snapshot of
 	 * the page load, from the very start, to the very end.
 	 * @var integer

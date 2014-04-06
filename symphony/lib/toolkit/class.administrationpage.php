@@ -169,6 +169,7 @@
 		 *  `Alert::SUCCESS`. The differing types will show the error
 		 *  in a different style in the backend. If omitted, this defaults
 		 *  to `Alert::NOTICE`.
+		 * @throws Exception
 		 */
 		public function pageAlert($message = null, $type = Alert::NOTICE){
 			if(is_null($message) && $type == Alert::ERROR){
@@ -297,6 +298,7 @@
 		 *  to the interface. Accepts 'prepend' or 'append' values, which will
 		 *  add the button before or after existing buttons. Defaults to `prepend`.
 		 *  If any other value is passed, no button will be added.
+		 * @throws InvalidArgumentException
 		 */
 		public function insertDrawer(XMLElement $drawer, $position = 'horizontal', $button = 'append') {
 			$drawer->addClass($position);
@@ -327,6 +329,8 @@
 		 *  can include the section handle, the current entry_id, the page
 		 *  name and any flags such as 'saved' or 'created'. This list is not exhaustive
 		 *  and extensions can add their own keys to the array.
+		 * @throws InvalidArgumentException
+		 * @throws SymphonyErrorPage
 		 */
 		public function build(array $context = array()){
 			$this->_context = $context;
@@ -477,7 +481,7 @@
 			if(
 				$page_limit == 'author'
 				or ($page_limit == 'developer' && Administration::instance()->Author->isDeveloper())
-                or ($page_limit == 'manager' && (Administration::instance()->Author->isManager() || Administration::instance()->Author->isDeveloper()))
+				or ($page_limit == 'manager' && (Administration::instance()->Author->isManager() || Administration::instance()->Author->isDeveloper()))
 				or ($page_limit == 'primary' && Administration::instance()->Author->isPrimaryAccount())
 			) {
 				return true;
@@ -496,6 +500,7 @@
 		 * into strings ready for output.
 		 *
 		 * @see core.HTMLPage#generate()
+		 * @param null $page
 		 * @return string
 		 */
 		public function generate($page = null) {
@@ -616,6 +621,7 @@
 		 *
 		 * @param string $type
 		 *  Either 'view' or 'action', by default this will be 'view'
+		 * @throws SymphonyErrorPage
 		 */
 		public function __switchboard($type='view'){
 
@@ -899,6 +905,8 @@
 		 *
 		 * @param array $nav
 		 *  The navigation array that will receive nav nodes
+		 * @throws Exception
+		 * @throws SymphonyErrorPage
 		 */
 		private function buildExtensionsNavigation(&$nav) {
 			// Loop over all the installed extensions to add in other navigation items

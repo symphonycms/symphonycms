@@ -35,6 +35,8 @@
 		 * @param array $params
 		 *  An associative array of params (usually populated from the URL) that this
 		 *  function uses. The current implementation will use `type` and `unsort` keys
+		 * @throws Exception
+		 * @throws SymphonyErrorPage
 		 * @return array
 		 *  An associative of the resource as determined by `ResourceManager::fetch`
 		 */
@@ -95,6 +97,7 @@
 		 *
 		 * @param integer $resource_type
 		 *  Either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DATASOURCE`
+		 * @throws InvalidArgumentException
 		 */
 		public function __viewIndex($resource_type){
 			$manager = ResourceManager::getManagerFromType($resource_type);
@@ -313,6 +316,7 @@
 		 *
 		 * @param integer $resource_type
 		 *  Either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DATASOURCE`
+		 * @throws Exception
 		 */
 		public function __actionIndex($resource_type){
 			$manager = ResourceManager::getManagerFromType($resource_type);

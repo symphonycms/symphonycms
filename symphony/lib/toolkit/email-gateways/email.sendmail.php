@@ -27,7 +27,7 @@
 		/**
 		 * Constructor. Sets basic default values based on preferences.
 		 *
-		 * @return void
+		 * @throws EmailValidationException
 		 */
 		public function __construct(){
 			parent::__construct();
@@ -46,6 +46,8 @@
 		 * or base64) to make non-US-ASCII text work with the widest range
 		 * of email transports and clients.
 		 *
+		 * @throws EmailGatewayException
+		 * @throws EmailValidationException
 		 * @return bool
 		 */
 		public function send() {
@@ -126,7 +128,7 @@
 		 * Sets all configuration entries from an array.
 		 *
 		 * @throws EmailValidationException
-		 * @param array $configuration
+		 * @param array $config
 		 * @since 2.3.1
 		 *  All configuration entries stored in a single array. The array should have the format of the $_POST array created by the preferences HTML.
 		 * @return void
@@ -138,6 +140,7 @@
 		/**
 		 * Builds the preferences pane, shown in the symphony backend.
 		 *
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public function getPreferencesPane() {

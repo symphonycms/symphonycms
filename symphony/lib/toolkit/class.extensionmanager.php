@@ -116,6 +116,8 @@
 		 *
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
+		 * @throws SymphonyErrorPage
+		 * @throws Exception
 		 * @return Extension
 		 */
 		public static function getInstance($name){
@@ -132,6 +134,7 @@
 		 * @param boolean $update
 		 *  Updates the `ExtensionManager::$_extensions` array even if it was
 		 *  populated, defaults to false.
+		 * @throws DatabaseException
 		 */
 		private static function __buildExtensionList($update=false) {
 			if (empty(self::$_extensions) || $update) {
@@ -209,6 +212,8 @@
 		 * @param string $type
 		 *  This will only return Providers of this type. If null, which is
 		 *  default, all providers will be returned.
+		 * @throws Exception
+		 * @throws SymphonyErrorPage
 		 * @return array
 		 *  An array of objects
 		 */
@@ -310,6 +315,8 @@
 		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
+		 * @throws SymphonyErrorPage
+		 * @throws Exception
 		 * @return boolean
 		 */
 		public static function enable($name){
@@ -366,6 +373,9 @@
 		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
+		 * @throws DatabaseException
+		 * @throws SymphonyErrorPage
+		 * @throws Exception
 		 * @return boolean
 		 */
 		public static function disable($name){
@@ -405,6 +415,10 @@
 		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
+		 * @throws Exception
+		 * @throws SymphonyErrorPage
+		 * @throws DatabaseException
+		 * @throws Exception
 		 * @return boolean
 		 */
 		public static function uninstall($name) {
@@ -436,6 +450,8 @@
 		 *
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
+		 * @throws Exception
+		 * @throws SymphonyErrorPage
 		 * @return integer
 		 *  The Extension ID
 		 */
@@ -512,6 +528,8 @@
 		 *
 		 * @param Extension $obj
 		 *  An extension object
+		 * @throws SymphonyErrorPage
+		 * @throws Exception
 		 * @return boolean
 		 */
 		private static function __canUninstallOrDisable(Extension $obj){
@@ -587,10 +605,13 @@
 		 *  called. eg.
 		 *
 		 * array(
-		 *		'parent' =>& $this->Parent,
-		 *		'page' => $page,
-		 *		'delegate' => $delegate
-		 *	);
+		 *        'parent' =>& $this->Parent,
+		 *        'page' => $page,
+		 *        'delegate' => $delegate
+		 *    );
+		 * @throws Exception
+		 * @throws SymphonyErrorPage
+		 * @return null|void
 		 */
 		public static function notifyMembers($delegate, $page, array $context=array()){
 			// Make sure $page is an array
@@ -653,6 +674,8 @@
 		 * @param string $filter
 		 *  Allows a regular expression to be passed to return only extensions whose
 		 *  folders match the filter.
+		 * @throws SymphonyErrorPage
+		 * @throws Exception
 		 * @return array
 		 *  An associative array with the key being the extension folder and the value
 		 *  being the extension's about information
@@ -677,6 +700,7 @@
 		 *
 		 * @param array $a
 		 * @param array $b
+		 * @param int $i
 		 * @return integer
 		 */
 		private static function sortByAuthor($a, $b, $i = 0) {
@@ -708,6 +732,8 @@
 		 * @param string $order_by (optional)
 		 *  Allows a developer to return the extensions in a particular order. The syntax is the
 		 *  same as other `fetch` methods. If omitted this will return resources ordered by `name`.
+		 * @throws Exception
+		 * @throws SymphonyErrorPage
 		 * @return array
 		 *  An associative array of Extension information, formatted in the same way as the
 		 *  listAll() method.
@@ -784,6 +810,8 @@
 		 *  DOMDocument of representation of the given extension's `extension.meta.xml`
 		 *  file. If the file is not available, the extension will return the normal
 		 *  `about()` results. By default this is false.
+		 * @throws Exception
+		 * @throws SymphonyErrorPage
 		 * @return array
 		 *  An associative array describing this extension
 		 */
@@ -912,6 +940,8 @@
 		 *
 		 * @param string $name
 		 *  The name of the Extension Class minus the extension prefix.
+		 * @throws Exception
+		 * @throws SymphonyErrorPage
 		 * @return Extension
 		 */
 		public static function create($name){

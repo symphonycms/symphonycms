@@ -55,7 +55,7 @@
 		 * any fields folders in the installed extensions. The function returns
 		 * the path to the folder where the field class resides.
 		 *
-		 * @param string $name
+		 * @param string $type
 		 *  The field handle, that is, `field.{$handle}.php`
 		 * @return string
 		 */
@@ -103,6 +103,7 @@
 		 *
 		 * @param array $fields
 		 *  Associative array of field names => values for the Field object
+		 * @throws DatabaseException
 		 * @return integer|boolean
 		 *  Returns a Field ID of the created Field on success, false otherwise.
 		 */
@@ -128,6 +129,7 @@
 		 * @param array $settings
 		 *  An associative array of settings, where the key is the column name
 		 *  and the value is the value.
+		 * @throws DatabaseException
 		 * @return boolean
 		 *  True on success, false on failure
 		 */
@@ -156,6 +158,7 @@
 		 *  Associative array of field names => values for the Field object
 		 *  This array does need to contain every value for the field object, it
 		 *  can just be the changed values.
+		 * @throws DatabaseException
 		 * @return boolean
 		 */
 		public static function edit($id, array $fields){
@@ -172,6 +175,8 @@
 		 *
 		 * @param integer $id
 		 *  The ID of the Field that should be deleted
+		 * @throws DatabaseException
+		 * @throws Exception
 		 * @return boolean
 		 */
 		public static function delete($id) {
@@ -213,10 +218,12 @@
 		 * @param string $where
 		 *  Allows a custom where query to be included. Must be valid SQL. The tbl_fields alias
 		 *  is t1
-		 * @param string $restrict
+		 * @param int|string $restrict
 		 *  Only return fields if they match one of the Field Constants. Available values are
 		 *  `__TOGGLEABLE_ONLY__`, `__UNTOGGLEABLE_ONLY__`, `__FILTERABLE_ONLY__`,
 		 *  `__UNFILTERABLE_ONLY__` or `__FIELD_ALL__`. Defaults to `__FIELD_ALL__`
+		 * @throws DatabaseException
+		 * @throws Exception
 		 * @return array
 		 *  An array of Field objects. If no Field are found, null is returned.
 		 */
@@ -370,6 +377,7 @@
 		 *  a mode as well, eg. `title: formatted`.
 		 * @param integer $section_id
 		 *  The section that this field belongs too
+		 * @throws DatabaseException
 		 * @return mixed
 		 *  The field ID, or an array of field ID's
 		 */
@@ -459,6 +467,7 @@
 		 *
 		 * @since Symphony 2.3
 		 * @param integer $section_id
+		 * @throws DatabaseException
 		 * @return array
 		 *  An associative array that contains four keys, `id`, `element_name`,
 		 * `type` and `location`
@@ -513,6 +522,7 @@
 		 *
 		 * @param string $type
 		 *  The handle of the Field to create (which is it's handle)
+		 * @throws Exception
 		 * @return Field
 		 */
 		public static function create($type){

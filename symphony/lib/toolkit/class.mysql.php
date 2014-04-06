@@ -264,6 +264,8 @@
 		 *  Defaults to null
 		 * @param string $port
 		 *  Defaults to 3306.
+		 * @param null $database
+		 * @throws DatabaseException
 		 * @return boolean
 		 */
 		public function connect($host = null, $user = null, $password = null, $port ='3306', $database = null) {
@@ -324,6 +326,7 @@
 		 * @link http://dev.mysql.com/doc/refman/5.0/en/charset-connection.html
 		 * @param string $set
 		 *  The character encoding to use, by default this 'utf8'
+		 * @throws DatabaseException
 		 */
 		public function setCharacterSet($set='utf8'){
 			$this->query("SET character_set_connection = '$set', character_set_database = '$set', character_set_server = '$set'");
@@ -339,6 +342,7 @@
 		 * @param string $timezone
 		 *  Timezone will be a offset, `+10:00`, as not all MySQL installations will
 		 *  have the humanreadable timezone database available
+		 * @throws DatabaseException
 		 */
 		public function setTimeZone($timezone = null) {
 			if(is_null($timezone)) return;
@@ -399,6 +403,7 @@
 		 * REPLACE, ALTER, DELETE, UPDATE, OPTIMIZE, TRUNCATE or DROP. Anything else is
 		 * considered to be a read operation which are subject to query caching.
 		 *
+		 * @param string $query
 		 * @return integer
 		 *  `MySQL::__WRITE_OPERATION__` or `MySQL::__READ_OPERATION__`
 		 */
@@ -421,6 +426,7 @@
 		 *  Whether to return the result as objects or associative array. Defaults
 		 *  to OBJECT which will return objects. The other option is ASSOC. If $type
 		 *  is not either of these, it will return objects.
+		 * @throws DatabaseException
 		 * @return boolean
 		 *  True if the query executed without errors, false otherwise
 		 */
@@ -556,6 +562,7 @@
 		 *  If set to true, data will updated if any key constraints are found that cause
 		 *  conflicts. By default this is set to false, which will not update the data and
 		 *  would return an SQL error
+		 * @throws DatabaseException
 		 * @return boolean
 		 */
 		public function insert(array $fields, $table, $updateOnDuplicate=false){
@@ -606,6 +613,7 @@
 		 * @param string $where
 		 *  A WHERE statement for this UPDATE statement, defaults to null
 		 *  which will update all rows in the $table
+		 * @throws DatabaseException
 		 * @return boolean
 		 */
 		public function update($fields, $table, $where = null) {
@@ -630,6 +638,7 @@
 		 * @param string $where
 		 *  A WHERE statement for this DELETE statement, defaults to null,
 		 *  which will delete all rows in the $table
+		 * @throws DatabaseException
 		 * @return boolean
 		 */
 		public function delete($table, $where = null){
@@ -655,6 +664,7 @@
 		 *  the result by. If this is omitted (and it is by default), an
 		 *  array of associative arrays is returned, with the key being the
 		 *  column names
+		 * @throws DatabaseException
 		 * @return array
 		 *  An associative array with the column names as the keys
 		 */
@@ -695,6 +705,7 @@
 		 * @param string $query
 		 *  The full SQL query to execute. Defaults to null, which will
 		 *  use the `$this->_lastResult`
+		 * @throws DatabaseException
 		 * @return array
 		 *  If there is no row at the specified `$offset`, an empty array will be returned
 		 *  otherwise an associative array of that row will be returned.
@@ -713,6 +724,7 @@
 		 * @param string $query
 		 *  The full SQL query to execute. Defaults to null, which will
 		 *  use the `$this->_lastResult`
+		 * @throws DatabaseException
 		 * @return array
 		 *  If there is no results for the `$query`, an empty array will be returned
 		 *  otherwise an array of values for that given `$column` will be returned
@@ -743,6 +755,7 @@
 		 * @param string $query
 		 *  The full SQL query to execute. Defaults to null, which will
 		 *  use the `$this->_lastResult`
+		 * @throws DatabaseException
 		 * @return string|null
 		 *  Returns the value of the given column, if it doesn't exist, null will be
 		 *  returned
@@ -761,6 +774,7 @@
 		 *  The table name
 		 * @param string $field
 		 *  The field name
+		 * @throws DatabaseException
 		 * @return boolean
 		 *  True if `$table` contains `$field`, false otherwise
 		 */
@@ -777,6 +791,7 @@
 		 * @since Symphony 2.3.4
 		 * @param string $table
 		 *  The table name
+		 * @throws DatabaseException
 		 * @return boolean
 		 *  True if `$table` exists, false otherwise
 		 */
@@ -849,6 +864,7 @@
 		 * error and debug. If no type is given, the entire log is returned,
 		 * otherwise only log messages for that type are returned
 		 *
+		 * @param null|string $type
 		 * @return array
 		 *  An array of associative array's. Log entries of the error type
 		 *  return the query the error occurred on and the error number and
@@ -899,6 +915,8 @@
 		 *  If set to true, this will set MySQL's default storage engine to MyISAM.
 		 *  Defaults to false, which will use MySQL's default storage engine when
 		 *  tables don't explicitly define which engine they should be created with
+		 * @throws DatabaseException
+		 * @throws Exception
 		 * @return boolean
 		 *  If one of the queries fails, false will be returned and no further queries
 		 *  will be executed, otherwise true will be returned.

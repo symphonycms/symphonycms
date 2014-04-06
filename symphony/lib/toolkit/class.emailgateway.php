@@ -17,7 +17,6 @@
 		 * @param Exception $previous
 		 *  The previous exception, if nested. See
 		 *  http://www.php.net/manual/en/language.exceptions.extending.php
-		 * @return void
 		 */
 		public function __construct($message, $code = 0, $previous = null){
 			$trace = parent::getTrace();
@@ -132,6 +131,7 @@
 		 *  The email-address emails will be sent from.
 		 * @param string $name
 		 *  The name the emails will be sent from.
+		 * @throws EmailValidationException
 		 * @return void
 		 */
 		public function setFrom($email, $name){
@@ -190,6 +190,7 @@
 		 *
 		 * @param string|array $email
 		 *  The email-address(es) to send the email to.
+		 * @throws EmailValidationException
 		 * @return void
 		 */
 		public function setRecipients($email){
@@ -393,7 +394,7 @@
 		 * Every gateway should extend this method to add their own settings.
 		 *
 		 * @throws EmailValidationException
-		 * @param array $configuration
+		 * @param array $config
 		 * @since Symphony 2.3.1
 		 *  All configuration entries stored in a single array. The array should have the format of the $_POST array created by the preferences HTML.
 		 * @return boolean
@@ -426,6 +427,7 @@
 		 *
 		 * @param array $header_array
 		 *  The header fields. Examples are From, X-Sender and Reply-to.
+		 * @throws EmailGatewayException
 		 * @return void
 		 */
 		public function appendHeaderFields(array $header_array = array()){
@@ -472,6 +474,7 @@
 		 * gateway itself.
 		 *
 		 * @throws EmailGatewayException
+		 * @throws Exception
 		 * @return boolean
 		 */
 		protected function prepareMessageBody(){
@@ -546,6 +549,8 @@
 		 * Will return a string containing the section. Can be used to send to
 		 * an email server directly.
 		 *
+		 * @throws EmailGatewayException
+		 * @throws Exception
 		 * @return string
 		 */
 		protected function getSectionAttachments() {
@@ -647,10 +652,10 @@
 		 *
 		 * Can be used to send to an email server directly.
 		 *
-		 * @param $type optional mime-type
-		 * @param $file optional the path of the attachment
-		 * @param $filename optional the name of the attached file
-		 * @param $charset optional the charset of the attached file
+		 * @param string $type optional mime-type
+		 * @param string $file optional the path of the attachment
+		 * @param string $filename optional the name of the attached file
+		 * @param string $charset optional the charset of the attached file
 		 *
 		 * @return array
 		 */
@@ -701,9 +706,9 @@
 		/**
 		 * Creates the properly formatted InfoString based on the InfoArray.
 		 *
-		 * @see `EmailGateway::contentInfoArray()`
+		 * @see EmailGateway::contentInfoArray()
 		 *
-		 * @return string
+		 * @return string|null
 		 */
 		protected function contentInfoString($type = NULL, $file = NULL, $filename = NULL, $charset = NULL) {
 			$data = $this->contentInfoArray($type, $file, $filename, $charset);
@@ -717,6 +722,7 @@
 		 * Returns the bondary based on the $type parameter
 		 *
 		 * @param string $type the multipart type
+		 * @return string|void
 		 */
 		protected function getBoundary($type) {
 			switch ($type) {
@@ -759,6 +765,7 @@
 		 *  The property name.
 		 * @param string $value
 		 *  The property value;
+		 * @throws EmailGatewayException
 		 * @return void|boolean
 		 */
 		public function __set($name, $value){

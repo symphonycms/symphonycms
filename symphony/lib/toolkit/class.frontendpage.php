@@ -147,6 +147,9 @@
 		 * @see __buildPage()
 		 * @param string $page
 		 * The URL of the current page that is being Rendered as returned by getCurrentPage
+		 * @throws Exception
+		 * @throws FrontendPageNotFoundException
+		 * @throws SymphonyErrorPage
 		 * @return string
 		 * The page source after the XSLT has transformed this page's XML. This would be
 		 * exactly the same as the 'view-source' from your browser
@@ -538,6 +541,7 @@
 		 * The URL of the current page that is being Rendered as returned by `getCurrentPage()`.
 		 * If no URL is provided, Symphony assumes the Page with the type 'index' is being
 		 * requested.
+		 * @throws SymphonyErrorPage
 		 * @return array
 		 *  An associative array of page details
 		 */
@@ -676,6 +680,7 @@
 		 *  The XMLElement to append the Events results to. Event results are
 		 *  contained in a root XMLElement that is the handlised version of
 		 *  their name.
+		 * @throws Exception
 		 */
 		private function processEvents($events, XMLElement &$wrapper){
 			/**
@@ -786,6 +791,7 @@
 		 *  Any params to automatically add to the `$env` pool, by default this
 		 *  is an empty array. It looks like Symphony does not utilise this parameter
 		 *  at all
+		 * @throws Exception
 		 */
 		public function processDatasources($datasources, XMLElement &$wrapper, array $params = array()) {
 			if (trim($datasources) == '') return;
