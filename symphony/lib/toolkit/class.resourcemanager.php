@@ -115,27 +115,29 @@
 			if($write) Symphony::Configuration()->write();
 		}
 
-		/**
-		 * This function will return an associative array of resource information. The
-		 * information returned is defined by the `$select` parameter, which will allow
-		 * a developer to restrict what information is returned about the resource.
-		 * Optionally, `$where` (not implemented) and `$order_by` parameters allow a developer to
-		 * further refine their query.
-		 *
-		 * @param integer $type
-		 *  The type of the resource (needed to retrieve the correct Manager)
-		 * @param array $select (optional)
-		 *  Accepts an array of keys to return from the manager's `listAll()` method. If omitted,
-		 *  all keys will be returned.
-		 * @param array $where (optional)
-		 *  Not implemented.
-		 * @param string $order_by (optional)
-		 *  Allows a developer to return the resources in a particular order. The syntax is the
-		 *  same as other `fetch` methods. If omitted this will return resources ordered by `name`.
-		 * @return array
-		 *  An associative array of resource information, formatted in the same way as the resource's
-		 *  manager `listAll()` method.
-		 */
+        /**
+         * This function will return an associative array of resource information. The
+         * information returned is defined by the `$select` parameter, which will allow
+         * a developer to restrict what information is returned about the resource.
+         * Optionally, `$where` (not implemented) and `$order_by` parameters allow a developer to
+         * further refine their query.
+         *
+         * @param integer $type
+         *  The type of the resource (needed to retrieve the correct Manager)
+         * @param array $select (optional)
+         *  Accepts an array of keys to return from the manager's `listAll()` method. If omitted,
+         *  all keys will be returned.
+         * @param array $where (optional)
+         *  Not implemented.
+         * @param string $order_by (optional)
+         *  Allows a developer to return the resources in a particular order. The syntax is the
+         *  same as other `fetch` methods. If omitted this will return resources ordered by `name`.
+         * @throws SymphonyErrorPage
+         * @throws Exception
+         * @return array
+         *  An associative array of resource information, formatted in the same way as the resource's
+         *  manager `listAll()` method.
+         */
 		public static function fetch($type, array $select = array(), array $where = array(), $order_by = null) {
 			$manager = self::getManagerFromType($type);
 			if(!isset($manager)) throw new Exception(__('Unable to find a Manager class for this resource.'));
@@ -235,16 +237,17 @@
 			return $data;
 		}
 
-		/**
-		 * Given the type and handle of a resource, return the extension it belongs to.
-		 *
-		 * @param integer $type
-		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
-		 * @param string $r_handle
-		 *  The handle of the resource.
-		 * @return string
-		 *  The extension handle.
-		 */
+        /**
+         * Given the type and handle of a resource, return the extension it belongs to.
+         *
+         * @param integer $type
+         *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+         * @param string $r_handle
+         *  The handle of the resource.
+         * @throws Exception
+         * @return string
+         *  The extension handle.
+         */
 		public static function __getExtensionFromHandle($type, $r_handle) {
 			$manager = self::getManagerFromType($type);
 			if(!isset($manager)) throw new Exception(__('Unable to find a Manager class for this resource.'));
@@ -356,21 +359,21 @@
 			return false;
 		}
 
-		/**
-		 * Given a resource type, a handle and an array of pages, this function will
-		 * ensure that the resource is attached to the given pages. Note that this
-		 * function will also remove the resource from all pages that are not provided
-		 * in the `$pages` parameter.
-		 *
-		 * @since Symphony 2.4
-		 * @param integer $type
-		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
-		 * @param string $r_handle
-		 *  The handle of the resource.
-		 * @param array $page_id
-		 *  An array of Page ID's to attach this resource to.
-		 * @return boolean
-		 */
+        /**
+         * Given a resource type, a handle and an array of pages, this function will
+         * ensure that the resource is attached to the given pages. Note that this
+         * function will also remove the resource from all pages that are not provided
+         * in the `$pages` parameter.
+         *
+         * @since Symphony 2.4
+         * @param integer $type
+         *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
+         * @param string $r_handle
+         *  The handle of the resource.
+         * @param array $pages
+         *  An array of Page ID's to attach this resource to.
+         * @return boolean
+         */
 		public static function setPages($type, $r_handle, $pages = array()) {
 			if(!is_array($pages)) {
 				$pages = array();

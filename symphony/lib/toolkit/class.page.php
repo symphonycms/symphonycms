@@ -150,17 +150,17 @@
 			return self::$HTTP_STATUSES[$status_code];
 		}
 
-		/**
-		 * This method format the provided `$status_code` to used
-		 * php's `header()` function.
-		 *
-		 * @since Symphony 2.3.2
-		 *
-		 * @param integer $res_code
-		 *  The HTTP Status code to get the value for
-		 * @return string
-		 *  The formatted HTTP Status string
-		 */
+        /**
+         * This method format the provided `$status_code` to used
+         * php's `header()` function.
+         *
+         * @since Symphony 2.3.2
+         *
+         * @param int $status_code
+         *  The HTTP Status code to get the value for
+         * @return string
+         *  The formatted HTTP Status string
+         */
 		public static final function getHeaderStatusString($status_code) {
 			return sprintf("Status: %d %s", $status_code, self::getHttpStatusValue($status_code));
 		}

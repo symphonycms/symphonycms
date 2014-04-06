@@ -174,15 +174,16 @@
 			}
 		}
 
-		/**
-		 * Creates a new object from a gateway name.
-		 *
-		 * @param string $name
-		 *  The gateway to look for
-		 * @return EmailGateway
-		 *  If the gateway is found, an instantiated object is returned.
-		 *  If the gateway is not found, an error is triggered.
-		 */
+        /**
+         * Creates a new object from a gateway name.
+         *
+         * @param string $name
+         *  The gateway to look for
+         * @throws Exception
+         * @return EmailGateway
+         *  If the gateway is found, an instantiated object is returned.
+         *  If the gateway is not found, an error is triggered.
+         */
 		public static function create($name){
 			$name = strtolower($name);
 			$classname = self::__getClassName($name);

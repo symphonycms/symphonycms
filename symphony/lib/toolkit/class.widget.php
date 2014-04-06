@@ -9,25 +9,26 @@
 	 */
 	Class Widget{
 
-		/**
-		 * Generates a XMLElement representation of `<label>`
-		 *
-		 * @param string $name (optional)
-		 *  The text for the resulting `<label>`
-		 * @param XMLElement $child (optional)
-		 *  An XMLElement that this <label> will become the parent of.
-		 *  Commonly used with `<input>`.
-		 * @param string $class (optional)
-		 *  The class attribute of the resulting `<label>`
-		 * @param string $id (optional)
-		 *  The id attribute of the resulting `<label>`
-		 * @param array $attributes (optional)
-		 *  Any additional attributes can be included in an associative array with
-		 *  the key being the name and the value being the value of the attribute.
-		 *  Attributes set from this array will override existing attributes
-		 *  set by previous params.
-		 * @return XMLElement
-		 */
+        /**
+         * Generates a XMLElement representation of `<label>`
+         *
+         * @param string $name (optional)
+         *  The text for the resulting `<label>`
+         * @param XMLElement $child (optional)
+         *  An XMLElement that this <label> will become the parent of.
+         *  Commonly used with `<input>`.
+         * @param string $class (optional)
+         *  The class attribute of the resulting `<label>`
+         * @param string $id (optional)
+         *  The id attribute of the resulting `<label>`
+         * @param array $attributes (optional)
+         *  Any additional attributes can be included in an associative array with
+         *  the key being the name and the value being the value of the attribute.
+         *  Attributes set from this array will override existing attributes
+         *  set by previous params.
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public static function Label($name = null, XMLElement $child = null, $class = null, $id = null, array $attributes = null){
 			General::ensureType(array(
 				'name' => array('var' => $name, 'type' => 'string', 'optional' => true),
@@ -49,22 +50,23 @@
 			return $obj;
 		}
 
-		/**
-		 * Generates a XMLElement representation of `<input>`
-		 *
-		 * @param string $name
-		 *  The name attribute of the resulting `<input>`
-		 * @param string $value (optional)
-		 *  The value attribute of the resulting `<input>`
-		 * @param string $type
-		 *  The type attribute for this `<input>`, defaults to "text".
-		 * @param array $attributes (optional)
-		 *  Any additional attributes can be included in an associative array with
-		 *  the key being the name and the value being the value of the attribute.
-		 *  Attributes set from this array will override existing attributes
-		 *  set by previous params.
-		 * @return XMLElement
-		 */
+        /**
+         * Generates a XMLElement representation of `<input>`
+         *
+         * @param string $name
+         *  The name attribute of the resulting `<input>`
+         * @param string $value (optional)
+         *  The value attribute of the resulting `<input>`
+         * @param string $type
+         *  The type attribute for this `<input>`, defaults to "text".
+         * @param array $attributes (optional)
+         *  Any additional attributes can be included in an associative array with
+         *  the key being the name and the value being the value of the attribute.
+         *  Attributes set from this array will override existing attributes
+         *  set by previous params.
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public static function Input($name, $value = null, $type = 'text', array $attributes = null){
 			General::ensureType(array(
 				'name' => array('var' => $name, 'type' => 'string'),
@@ -86,24 +88,25 @@
 			return $obj;
 		}
 
-		/**
-		 * Generates a XMLElement representation of `<textarea>`
-		 *
-		 * @param string $name
-		 *  The name of the resulting `<textarea>`
-		 * @param integer $rows (optional)
-		 *  The height of the `<textarea>`, using the rows attribute. Defaults to 15
-		 * @param integer $cols (optional)
-		 *  The width of the `<textarea>`, using the cols attribute. Defaults to 50.
-		 * @param string $value (optional)
-		 *  The content to be displayed inside the `<textarea>`
-		 * @param array $attributes (optional)
-		 *  Any additional attributes can be included in an associative array with
-		 *  the key being the name and the value being the value of the attribute.
-		 *  Attributes set from this array will override existing attributes
-		 *  set by previous params.
-		 * @return XMLElement
-		 */
+        /**
+         * Generates a XMLElement representation of `<textarea>`
+         *
+         * @param string $name
+         *  The name of the resulting `<textarea>`
+         * @param integer $rows (optional)
+         *  The height of the `<textarea>`, using the rows attribute. Defaults to 15
+         * @param integer $cols (optional)
+         *  The width of the `<textarea>`, using the cols attribute. Defaults to 50.
+         * @param string $value (optional)
+         *  The content to be displayed inside the `<textarea>`
+         * @param array $attributes (optional)
+         *  Any additional attributes can be included in an associative array with
+         *  the key being the name and the value being the value of the attribute.
+         *  Attributes set from this array will override existing attributes
+         *  set by previous params.
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public static function Textarea($name, $rows = 15, $cols = 50, $value = null, array $attributes = null){
 			General::ensureType(array(
 				'name' => array('var' => $name, 'type' => 'string'),
@@ -127,26 +130,27 @@
 			return $obj;
 		}
 
-		/**
-		 * Generates a XMLElement representation of `<a>`
-		 *
-		 * @param string $value
-		 *  The text of the resulting `<a>`
-		 * @param string $href
-		 *  The href attribute of the resulting `<a>`
-		 * @param string $title (optional)
-		 *  The title attribute of the resulting `<a>`
-		 * @param string $class (optional)
-		 *  The class attribute of the resulting `<a>`
-		 * @param string $id (optional)
-		 *  The id attribute of the resulting `<a>`
-		 * @param array $attributes (optional)
-		 *  Any additional attributes can be included in an associative array with
-		 *  the key being the name and the value being the value of the attribute.
-		 *  Attributes set from this array will override existing attributes
-		 *  set by previous params.
-		 * @return XMLElement
-		 */
+        /**
+         * Generates a XMLElement representation of `<a>`
+         *
+         * @param string $value
+         *  The text of the resulting `<a>`
+         * @param string $href
+         *  The href attribute of the resulting `<a>`
+         * @param string $title (optional)
+         *  The title attribute of the resulting `<a>`
+         * @param string $class (optional)
+         *  The class attribute of the resulting `<a>`
+         * @param string $id (optional)
+         *  The id attribute of the resulting `<a>`
+         * @param array $attributes (optional)
+         *  Any additional attributes can be included in an associative array with
+         *  the key being the name and the value being the value of the attribute.
+         *  Attributes set from this array will override existing attributes
+         *  set by previous params.
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public static function Anchor($value, $href, $title = null, $class = null, $id = null, array $attributes = null){
 			General::ensureType(array(
 				'value' => array('var' => $value, 'type' => 'string'),
@@ -170,24 +174,25 @@
 			return $obj;
 		}
 
-		/**
-		 * Generates a XMLElement representation of `<form>`
-		 *
-		 * @param string $action
-		 *  The text of the resulting `<form>`
-		 * @param string $method
-		 *  The method attribute of the resulting `<form>`. Defaults to "post".
-		 * @param string $class (optional)
-		 *  The class attribute of the resulting `<form>`
-		 * @param string $id (optional)
-		 *  The id attribute of the resulting `<form>`
-		 * @param array $attributes (optional)
-		 *  Any additional attributes can be included in an associative array with
-		 *  the key being the name and the value being the value of the attribute.
-		 *  Attributes set from this array will override existing attributes
-		 *  set by previous params.
-		 * @return XMLElement
-		 */
+        /**
+         * Generates a XMLElement representation of `<form>`
+         *
+         * @param string $action
+         *  The text of the resulting `<form>`
+         * @param string $method
+         *  The method attribute of the resulting `<form>`. Defaults to "post".
+         * @param string $class (optional)
+         *  The class attribute of the resulting `<form>`
+         * @param string $id (optional)
+         *  The id attribute of the resulting `<form>`
+         * @param array $attributes (optional)
+         *  Any additional attributes can be included in an associative array with
+         *  the key being the name and the value being the value of the attribute.
+         *  Attributes set from this array will override existing attributes
+         *  set by previous params.
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public static function Form($action = null, $method = 'post', $class = null, $id = null, array $attributes = null){
 			General::ensureType(array(
 				'action' => array('var' => $action, 'type' => 'string', 'optional' => true),
@@ -210,27 +215,28 @@
 			return $obj;
 		}
 
-		/**
-		 * Generates a XMLElement representation of `<table>`
-		 * This is a simple way to create generic Symphony table wrapper
-		 *
-		 * @param XMLElement $header
-		 *  An XMLElement containing the `<thead>`. See Widget::TableHead
-		 * @param XMLElement $footer
-		 *  An XMLElement containing the `<tfoot>`
-		 * @param XMLElement $body
-		 *  An XMLElement containing the `<tbody>`. See Widget::TableBody
-		 * @param string $class (optional)
-		 *  The class attribute of the resulting `<table>`
-		 * @param string $id (optional)
-		 *  The id attribute of the resulting `<table>`
-		 * @param array $attributes (optional)
-		 *  Any additional attributes can be included in an associative array with
-		 *  the key being the name and the value being the value of the attribute.
-		 *  Attributes set from this array will override existing attributes
-		 *  set by previous params.
-		 * @return XMLElement
-		 */
+        /**
+         * Generates a XMLElement representation of `<table>`
+         * This is a simple way to create generic Symphony table wrapper
+         *
+         * @param XMLElement $header
+         *  An XMLElement containing the `<thead>`. See Widget::TableHead
+         * @param XMLElement $footer
+         *  An XMLElement containing the `<tfoot>`
+         * @param XMLElement $body
+         *  An XMLElement containing the `<tbody>`. See Widget::TableBody
+         * @param string $class (optional)
+         *  The class attribute of the resulting `<table>`
+         * @param string $id (optional)
+         *  The id attribute of the resulting `<table>`
+         * @param array $attributes (optional)
+         *  Any additional attributes can be included in an associative array with
+         *  the key being the name and the value being the value of the attribute.
+         *  Attributes set from this array will override existing attributes
+         *  set by previous params.
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public static function Table(XMLElement $header = null, XMLElement $footer = null, XMLElement $body = null, $class = null, $id = null, Array $attributes = null){
 			General::ensureType(array(
 				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
@@ -305,24 +311,25 @@
 			return $thead;
 		}
 
-		/**
-		 * Generates a XMLElement representation of `<tbody>` from an array
-		 * containing `<tr>` XMLElements
-		 *
-		 * @see toolkit.Widget#TableRow()
-		 * @param array $rows
-		 *  An array of XMLElements of `<tr>`'s.
-		 * @param string $class (optional)
-		 *  The class attribute of the resulting `<tbody>`
-		 * @param string $id (optional)
-		 *  The id attribute of the resulting `<tbody>`
-		 * @param array $attributes (optional)
-		 *  Any additional attributes can be included in an associative array with
-		 *  the key being the name and the value being the value of the attribute.
-		 *  Attributes set from this array will override existing attributes
-		 *  set by previous params.
-		 * @return XMLElement
-		 */
+        /**
+         * Generates a XMLElement representation of `<tbody>` from an array
+         * containing `<tr>` XMLElements
+         *
+         * @see toolkit.Widget#TableRow()
+         * @param array $rows
+         *  An array of XMLElements of `<tr>`'s.
+         * @param string $class (optional)
+         *  The class attribute of the resulting `<tbody>`
+         * @param string $id (optional)
+         *  The id attribute of the resulting `<tbody>`
+         * @param array $attributes (optional)
+         *  Any additional attributes can be included in an associative array with
+         *  the key being the name and the value being the value of the attribute.
+         *  Attributes set from this array will override existing attributes
+         *  set by previous params.
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public static function TableBody(array $rows, $class = null, $id = null, array $attributes = null){
 			General::ensureType(array(
 				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
@@ -343,25 +350,26 @@
 			return $tbody;
 		}
 
-		/**
-		 * Generates a XMLElement representation of `<tr>` from an array
-		 * containing column names and any other attributes.
-		 *
-		 * @param array $cells
-		 *  An array of XMLElements of `<td>`'s. See Widget::TableData
-		 * @param string $class (optional)
-		 *  The class attribute of the resulting `<tr>`
-		 * @param string $id (optional)
-		 *  The id attribute of the resulting `<tr>`
-		 * @param int $rowspan (optional)
-		 *  The rowspan attribute of the resulting `<tr>`
-		 * @param array $attributes (optional)
-		 *  Any additional attributes can be included in an associative array with
-		 *  the key being the name and the value being the value of the attribute.
-		 *  Attributes set from this array will override existing attributes
-		 *  set by previous params.
-		 * @return XMLElement
-		 */
+        /**
+         * Generates a XMLElement representation of `<tr>` from an array
+         * containing column names and any other attributes.
+         *
+         * @param array $cells
+         *  An array of XMLElements of `<td>`'s. See Widget::TableData
+         * @param string $class (optional)
+         *  The class attribute of the resulting `<tr>`
+         * @param string $id (optional)
+         *  The id attribute of the resulting `<tr>`
+         * @param int $rowspan (optional)
+         *  The rowspan attribute of the resulting `<tr>`
+         * @param array $attributes (optional)
+         *  Any additional attributes can be included in an associative array with
+         *  the key being the name and the value being the value of the attribute.
+         *  Attributes set from this array will override existing attributes
+         *  set by previous params.
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public static function TableRow(array $cells, $class = null, $id = null, $rowspan = null, Array $attributes = null){
 			General::ensureType(array(
 				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
@@ -384,25 +392,26 @@
 			return $tr;
 		}
 
-		/**
-		 * Generates a XMLElement representation of a `<td>`.
-		 *
-		 * @param XMLElement|string $value
-		 *  Either an XMLElement object, or a string for the value of the
-		 *  resulting `<td>`
-		 * @param string $class (optional)
-		 *  The class attribute of the resulting `<td>`
-		 * @param string $id (optional)
-		 *  The id attribute of the resulting `<td>`
-		 * @param int $colspan (optional)
-		 *  The colspan attribute of the resulting `<td>`
-		 * @param array $attributes (optional)
-		 *  Any additional attributes can be included in an associative array with
-		 *  the key being the name and the value being the value of the attribute.
-		 *  Attributes set from this array will override existing attributes
-		 *  set by previous params.
-		 * @return XMLElement
-		 */
+        /**
+         * Generates a XMLElement representation of a `<td>`.
+         *
+         * @param XMLElement|string $value
+         *  Either an XMLElement object, or a string for the value of the
+         *  resulting `<td>`
+         * @param string $class (optional)
+         *  The class attribute of the resulting `<td>`
+         * @param string $id (optional)
+         *  The id attribute of the resulting `<td>`
+         * @param int $colspan (optional)
+         *  The colspan attribute of the resulting `<td>`
+         * @param array $attributes (optional)
+         *  Any additional attributes can be included in an associative array with
+         *  the key being the name and the value being the value of the attribute.
+         *  Attributes set from this array will override existing attributes
+         *  set by previous params.
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public static function TableData($value, $class = null, $id = null, $colspan = null, Array $attributes = null){
 			General::ensureType(array(
 				'class' => array('var' => $class, 'type' => 'string', 'optional' => true),
@@ -459,37 +468,38 @@
 			return $obj;
 		}
 
-		/**
-		 * Generates a XMLElement representation of a `<select>`. This uses
-		 * the private function `__SelectBuildOption()` to build XMLElements of
-		 * options given the `$options` array.
-		 *
-		 * @see toolkit.Widget::__SelectBuildOption()
-		 * @param string $name
-		 *  The name attribute of the resulting `<select>`
-		 * @param array $options (optional)
-		 *  An array containing the data for each `<option>` for this
-		 *  `<select>`. If the array is associative, it is assumed that
-		 *  `<optgroup>` are to be created, otherwise it's an array of the
-		 *  containing the option data. If no options are provided an empty
-		 *  `<select>` XMLElement is returned.
-		 *  `
-		 *   array(
-		 *  	array($value, $selected, $desc, $class, $id, $attr)
-		 *   )
-		 *   array(
-		 *  	array('label' => 'Optgroup', 'data-label' => 'optgroup', 'options' = array(
-		 *  		array($value, $selected, $desc, $class, $id, $attr)
-		 *  	)
-		 *   )
-		 *  `
-		 * @param array $attributes (optional)
-		 *  Any additional attributes can be included in an associative array with
-		 *  the key being the name and the value being the value of the attribute.
-		 *  Attributes set from this array will override existing attributes
-		 *  set by previous params.
-		 * @return XMLElement
-		 */
+        /**
+         * Generates a XMLElement representation of a `<select>`. This uses
+         * the private function `__SelectBuildOption()` to build XMLElements of
+         * options given the `$options` array.
+         *
+         * @see toolkit.Widget::__SelectBuildOption()
+         * @param string $name
+         *  The name attribute of the resulting `<select>`
+         * @param array $options (optional)
+         *  An array containing the data for each `<option>` for this
+         *  `<select>`. If the array is associative, it is assumed that
+         *  `<optgroup>` are to be created, otherwise it's an array of the
+         *  containing the option data. If no options are provided an empty
+         *  `<select>` XMLElement is returned.
+         *  `
+         *   array(
+         *    array($value, $selected, $desc, $class, $id, $attr)
+         *   )
+         *   array(
+         *    array('label' => 'Optgroup', 'data-label' => 'optgroup', 'options' = array(
+         *        array($value, $selected, $desc, $class, $id, $attr)
+         *    )
+         *   )
+         *  `
+         * @param array $attributes (optional)
+         *  Any additional attributes can be included in an associative array with
+         *  the key being the name and the value being the value of the attribute.
+         *  Attributes set from this array will override existing attributes
+         *  set by previous params.
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public static function Select($name, array $options = null, array $attributes = null){
 			General::ensureType(array(
 				'name' => array('var' => $name, 'type' => 'string')
@@ -589,31 +599,32 @@
 
 		}
 
-		/**
-		 * Generates a XMLElement representation of a `<fieldset>` containing
-		 * the "With selected…" menu. This uses the private function `__SelectBuildOption()`
-		 * to build `XMLElement`'s of options given the `$options` array.
-		 *
-		 * @since Symphony 2.3
-		 * @see toolkit.Widget::__SelectBuildOption()
-		 * @param array $options (optional)
-		 *  An array containing the data for each `<option>` for this
-		 *  `<select>`. If the array is associative, it is assumed that
-		 *  `<optgroup>` are to be created, otherwise it's an array of the
-		 *  containing the option data. If no options are provided an empty
-		 *  `<select>` XMLElement is returned.
-		 *  `
-		 *   array(
-		 *  	array($value, $selected, $desc, $class, $id, $attr)
-		 *   )
-		 *   array(
-		 *  	array('label' => 'Optgroup', 'options' = array(
-		 *  		array($value, $selected, $desc, $class, $id, $attr)
-		 *  	)
-		 *   )
-		 *  `
-		 * @return XMLElement
-		 */
+        /**
+         * Generates a XMLElement representation of a `<fieldset>` containing
+         * the "With selected…" menu. This uses the private function `__SelectBuildOption()`
+         * to build `XMLElement`'s of options given the `$options` array.
+         *
+         * @since Symphony 2.3
+         * @see toolkit.Widget::__SelectBuildOption()
+         * @param array $options (optional)
+         *  An array containing the data for each `<option>` for this
+         *  `<select>`. If the array is associative, it is assumed that
+         *  `<optgroup>` are to be created, otherwise it's an array of the
+         *  containing the option data. If no options are provided an empty
+         *  `<select>` XMLElement is returned.
+         *  `
+         *   array(
+         *    array($value, $selected, $desc, $class, $id, $attr)
+         *   )
+         *   array(
+         *    array('label' => 'Optgroup', 'options' = array(
+         *        array($value, $selected, $desc, $class, $id, $attr)
+         *    )
+         *   )
+         *  `
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public static function Apply(array $options = null){
 			$fieldset = new XMLElement('fieldset', NULL, array('class' => 'apply'));
 			$div = new XMLElement('div');
@@ -629,18 +640,19 @@
 			return $fieldset;
 		}
 
-		/**
-		 * Will wrap a `<div>` around a desired element to trigger the default
-		 * Symphony error styling.
-		 *
-		 * @since Symphony 2.3
-		 * @param XMLElement $element
-		 *  The element that should be wrapped with an error
-		 * @param string $message
-		 *  The text for this error. This will be appended after the $element,
-		 *  but inside the wrapping `<div>`
-		 * @return XMLElement
-		 */
+        /**
+         * Will wrap a `<div>` around a desired element to trigger the default
+         * Symphony error styling.
+         *
+         * @since Symphony 2.3
+         * @param XMLElement $element
+         *  The element that should be wrapped with an error
+         * @param string $message
+         *  The text for this error. This will be appended after the $element,
+         *  but inside the wrapping `<div>`
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public static function Error(XMLElement $element, $message) {
 			General::ensureType(array(
 				'message' => array('var' => $message, 'type' => 'string')
@@ -655,29 +667,30 @@
 			return $div;
 		}
 
-		/**
-		 * Generates a XMLElement representation of a Symphony drawer widget.
-		 * A widget is identified by it's `$label`, and it's contents is defined
-		 * by the `XMLElement`, `$content`.
-		 *
-		 * @since Symphony 2.3
-		 * @param string $id
-		 *  The id attribute for this drawer
-		 * @param string $label
-		 *  A name for this drawer
-		 * @param XMLElement $content
-		 *  An XMLElement containing the HTML that should be contained inside
-		 *  the drawer.
-		 * @param string $default_state
-		 *  This parameter defines whether the drawer will be open or closed by
-		 *  default. It defaults to closed.
-		 * @param array $attributes (optional)
-		 *  Any additional attributes can be included in an associative array with
-		 *  the key being the name and the value being the value of the attribute.
-		 *  Attributes set from this array will override existing attributes
-		 *  set by previous params, except the `id` attribute.
-		 * @return XMLElement
-		 */
+        /**
+         * Generates a XMLElement representation of a Symphony drawer widget.
+         * A widget is identified by it's `$label`, and it's contents is defined
+         * by the `XMLElement`, `$content`.
+         *
+         * @since Symphony 2.3
+         * @param string $id
+         *  The id attribute for this drawer
+         * @param string $label
+         *  A name for this drawer
+         * @param XMLElement $content
+         *  An XMLElement containing the HTML that should be contained inside
+         *  the drawer.
+         * @param string $default_state
+         *  This parameter defines whether the drawer will be open or closed by
+         *  default. It defaults to closed.
+         * @param string $context
+         * @param array $attributes (optional)
+         *  Any additional attributes can be included in an associative array with
+         *  the key being the name and the value being the value of the attribute.
+         *  Attributes set from this array will override existing attributes
+         *  set by previous params, except the `id` attribute.
+         * @return XMLElement
+         */
 		public static function Drawer($id = '', $label = '', XMLElement $content = null, $default_state = 'closed', $context = '', array $attributes = array()){
 			$id = Lang::createHandle($id);
 

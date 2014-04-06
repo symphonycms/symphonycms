@@ -55,7 +55,7 @@
 		 * any fields folders in the installed extensions. The function returns
 		 * the path to the folder where the field class resides.
 		 *
-		 * @param string $name
+		 * @param string $type
 		 *  The field handle, that is, `field.{$handle}.php`
 		 * @return string
 		 */
@@ -94,18 +94,19 @@
 			return false;
 		}
 
-		/**
-		 * Given an associative array of fields, insert them into the database
-		 * returning the resulting Field ID if successful, or false if there
-		 * was an error. As fields are saved in order on a section, a query is
-		 * made to determine the sort order of this field to be current sort order
-		 * +1.
-		 *
-		 * @param array $fields
-		 *  Associative array of field names => values for the Field object
-		 * @return integer|boolean
-		 *  Returns a Field ID of the created Field on success, false otherwise.
-		 */
+        /**
+         * Given an associative array of fields, insert them into the database
+         * returning the resulting Field ID if successful, or false if there
+         * was an error. As fields are saved in order on a section, a query is
+         * made to determine the sort order of this field to be current sort order
+         * +1.
+         *
+         * @param array $fields
+         *  Associative array of field names => values for the Field object
+         * @throws DatabaseException
+         * @return integer|boolean
+         *  Returns a Field ID of the created Field on success, false otherwise.
+         */
 		public static function add(array $fields){
 
 			if(!isset($fields['sortorder'])){
@@ -118,19 +119,20 @@
 			return $field_id;
 		}
 
-		/**
-		 * Save the settings for a Field given it's `$field_id` and an associative
-		 * array of settings.
-		 *
-		 * @since Symphony 2.3
-		 * @param integer $field_id
-		 *  The ID of the field
-		 * @param array $settings
-		 *  An associative array of settings, where the key is the column name
-		 *  and the value is the value.
-		 * @return boolean
-		 *  True on success, false on failure
-		 */
+        /**
+         * Save the settings for a Field given it's `$field_id` and an associative
+         * array of settings.
+         *
+         * @since Symphony 2.3
+         * @param integer $field_id
+         *  The ID of the field
+         * @param array $settings
+         *  An associative array of settings, where the key is the column name
+         *  and the value is the value.
+         * @throws DatabaseException
+         * @return boolean
+         *  True on success, false on failure
+         */
 		public static function saveSettings($field_id, $settings) {
 			// Get the type of this field:
 			$type = self::fetchFieldTypeFromID($field_id);
@@ -146,34 +148,37 @@
 			return Symphony::Database()->insert($settings, 'tbl_fields_'.$type);
 		}
 
-		/**
-		 * Given a Field ID and associative array of fields, update an existing Field
-		 * row in the `tbl_fields`table. Returns boolean for success/failure
-		 *
-		 * @param integer $id
-		 *  The ID of the Field that should be updated
-		 * @param array $fields
-		 *  Associative array of field names => values for the Field object
-		 *  This array does need to contain every value for the field object, it
-		 *  can just be the changed values.
-		 * @return boolean
-		 */
+        /**
+         * Given a Field ID and associative array of fields, update an existing Field
+         * row in the `tbl_fields`table. Returns boolean for success/failure
+         *
+         * @param integer $id
+         *  The ID of the Field that should be updated
+         * @param array $fields
+         *  Associative array of field names => values for the Field object
+         *  This array does need to contain every value for the field object, it
+         *  can just be the changed values.
+         * @throws DatabaseException
+         * @return boolean
+         */
 		public static function edit($id, array $fields){
 			if(!Symphony::Database()->update($fields, "tbl_fields", " `id` = '$id'")) return false;
 
 			return true;
 		}
 
-		/**
-		 * Given a Field ID, delete a Field from Symphony. This will remove the field from
-		 * the fields table, all of the data stored in this field's `tbl_entries_data_$id` any
-		 * existing section associations. This function additionally call the Field's `tearDown`
-		 * method so that it can cleanup any additional settings or entry tables it may of created.
-		 *
-		 * @param integer $id
-		 *  The ID of the Field that should be deleted
-		 * @return boolean
-		 */
+        /**
+         * Given a Field ID, delete a Field from Symphony. This will remove the field from
+         * the fields table, all of the data stored in this field's `tbl_entries_data_$id` any
+         * existing section associations. This function additionally call the Field's `tearDown`
+         * method so that it can cleanup any additional settings or entry tables it may of created.
+         *
+         * @param integer $id
+         *  The ID of the Field that should be deleted
+         * @throws DatabaseException
+         * @throws Exception
+         * @return boolean
+         */
 		public static function delete($id) {
 			$existing = self::fetch($id);
 			$existing->tearDown();
@@ -187,39 +192,41 @@
 			return true;
 		}
 
-		/**
-		 * The fetch method returns a instance of a Field from tbl_fields. The most common
-		 * use of this function is to retrieve a Field by ID, but it can be used to retrieve
-		 * Fields from a Section also. There are several parameters that can be used to fetch
-		 * fields by their Type, Location, by a Field Constant or with a custom WHERE query.
-		 *
-		 * @param integer|array $id
-		 *  The ID of the field to retrieve. Defaults to null which will return multiple field
-		 *  objects. Since Symphony 2.3, `$id` will accept an array of Field ID's
-		 * @param integer $section_id
-		 *  The ID of the section to look for the fields in. Defaults to null which will allow
-		 *  all fields in the Symphony installation to be searched on.
-		 * @param string $order
-		 *  Available values of ASC (Ascending) or DESC (Descending), which refer to the
-		 *  sort order for the query. Defaults to ASC (Ascending)
-		 * @param string $sortfield
-		 *  The field to sort the query by. Can be any from the tbl_fields schema. Defaults to
-		 *  'sortorder'
-		 * @param string $type
-		 *  Filter fields by their type, ie. input, select. Defaults to null
-		 * @param string $location
-		 *  Filter fields by their location in the entry form. There are two possible values,
-		 *  'main' or 'sidebar'. Defaults to null
-		 * @param string $where
-		 *  Allows a custom where query to be included. Must be valid SQL. The tbl_fields alias
-		 *  is t1
-		 * @param string $restrict
-		 *  Only return fields if they match one of the Field Constants. Available values are
-		 *  `__TOGGLEABLE_ONLY__`, `__UNTOGGLEABLE_ONLY__`, `__FILTERABLE_ONLY__`,
-		 *  `__UNFILTERABLE_ONLY__` or `__FIELD_ALL__`. Defaults to `__FIELD_ALL__`
-		 * @return array
-		 *  An array of Field objects. If no Field are found, null is returned.
-		 */
+        /**
+         * The fetch method returns a instance of a Field from tbl_fields. The most common
+         * use of this function is to retrieve a Field by ID, but it can be used to retrieve
+         * Fields from a Section also. There are several parameters that can be used to fetch
+         * fields by their Type, Location, by a Field Constant or with a custom WHERE query.
+         *
+         * @param integer|array $id
+         *  The ID of the field to retrieve. Defaults to null which will return multiple field
+         *  objects. Since Symphony 2.3, `$id` will accept an array of Field ID's
+         * @param integer $section_id
+         *  The ID of the section to look for the fields in. Defaults to null which will allow
+         *  all fields in the Symphony installation to be searched on.
+         * @param string $order
+         *  Available values of ASC (Ascending) or DESC (Descending), which refer to the
+         *  sort order for the query. Defaults to ASC (Ascending)
+         * @param string $sortfield
+         *  The field to sort the query by. Can be any from the tbl_fields schema. Defaults to
+         *  'sortorder'
+         * @param string $type
+         *  Filter fields by their type, ie. input, select. Defaults to null
+         * @param string $location
+         *  Filter fields by their location in the entry form. There are two possible values,
+         *  'main' or 'sidebar'. Defaults to null
+         * @param string $where
+         *  Allows a custom where query to be included. Must be valid SQL. The tbl_fields alias
+         *  is t1
+         * @param int|string $restrict
+         *  Only return fields if they match one of the Field Constants. Available values are
+         *  `__TOGGLEABLE_ONLY__`, `__UNTOGGLEABLE_ONLY__`, `__FILTERABLE_ONLY__`,
+         *  `__UNFILTERABLE_ONLY__` or `__FIELD_ALL__`. Defaults to `__FIELD_ALL__`
+         * @throws DatabaseException
+         * @throws Exception
+         * @return array
+         *  An array of Field objects. If no Field are found, null is returned.
+         */
 		public static function fetch($id = null, $section_id = null, $order = 'ASC', $sortfield = 'sortorder', $type = null, $location = null, $where = null, $restrict=Field::__FIELD_ALL__){
 			$fields = array();
 			$returnSingle = false;
@@ -353,26 +360,27 @@
 			return Symphony::Database()->fetchVar('element_name', 0, "SELECT `element_name` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
 		}
 
-		/**
-		 * Given an `$element_name` and a `$section_id`, return the Field ID. Symphony enforces
-		 * a uniqueness constraint on a section where every field must have a unique
-		 * label (and therefore handle) so whilst it is impossible to have two fields
-		 * from the same section, it would be possible to have two fields with the same
-		 * name from different sections. Passing the `$section_id` lets you to specify
-		 * which section should be searched. If `$element_name` is null, this function will
-		 * return all the Field ID's from the given `$section_id`.
-		 *
-		 * @since Symphony 2.3 This function can now accept $element_name as an array
-		 *  of handles. These handles can now also include the handle's mode, eg. `title: formatted`
-		 *
-		 * @param string|array $element_name
-		 *  The handle of the Field label, or an array of handles. These handles may contain
-		 *  a mode as well, eg. `title: formatted`.
-		 * @param integer $section_id
-		 *  The section that this field belongs too
-		 * @return mixed
-		 *  The field ID, or an array of field ID's
-		 */
+        /**
+         * Given an `$element_name` and a `$section_id`, return the Field ID. Symphony enforces
+         * a uniqueness constraint on a section where every field must have a unique
+         * label (and therefore handle) so whilst it is impossible to have two fields
+         * from the same section, it would be possible to have two fields with the same
+         * name from different sections. Passing the `$section_id` lets you to specify
+         * which section should be searched. If `$element_name` is null, this function will
+         * return all the Field ID's from the given `$section_id`.
+         *
+         * @since Symphony 2.3 This function can now accept $element_name as an array
+         *  of handles. These handles can now also include the handle's mode, eg. `title: formatted`
+         *
+         * @param string|array $element_name
+         *  The handle of the Field label, or an array of handles. These handles may contain
+         *  a mode as well, eg. `title: formatted`.
+         * @param integer $section_id
+         *  The section that this field belongs too
+         * @throws DatabaseException
+         * @return mixed
+         *  The field ID, or an array of field ID's
+         */
 		public static function fetchFieldIDFromElementName($element_name, $section_id = null){
 			if(is_null($element_name)) {
 				$schema_sql = sprintf("
@@ -452,17 +460,18 @@
 			return ($next ? (int)$next : 1);
 		}
 
-		/**
-		 * Given a `$section_id`, this function returns an array of the installed
-		 * fields schema. This includes the `id`, `element_name`, `type`
-		 * and `location`.
-		 *
-		 * @since Symphony 2.3
-		 * @param integer $section_id
-		 * @return array
-		 *  An associative array that contains four keys, `id`, `element_name`,
-		 * `type` and `location`
-		 */
+        /**
+         * Given a `$section_id`, this function returns an array of the installed
+         * fields schema. This includes the `id`, `element_name`, `type`
+         * and `location`.
+         *
+         * @since Symphony 2.3
+         * @param integer $section_id
+         * @throws DatabaseException
+         * @return array
+         *  An associative array that contains four keys, `id`, `element_name`,
+         * `type` and `location`
+         */
 		public static function fetchFieldsSchema($section_id) {
 			return Symphony::Database()->fetch(sprintf("
 					SELECT `id`, `element_name`, `type`, `location`
@@ -507,14 +516,15 @@
 			return $types;
 		}
 
-		/**
-		 * Creates an instance of a given class and returns it. Adds the instance
-		 * to the `$_pool` array with the key being the handle.
-		 *
-		 * @param string $type
-		 *  The handle of the Field to create (which is it's handle)
-		 * @return Field
-		 */
+        /**
+         * Creates an instance of a given class and returns it. Adds the instance
+         * to the `$_pool` array with the key being the handle.
+         *
+         * @param string $type
+         *  The handle of the Field to create (which is it's handle)
+         * @throws Exception
+         * @return Field
+         */
 		public static function create($type){
 			if(!isset(self::$_pool[$type])){
 				$classname = self::__getClassName($type);

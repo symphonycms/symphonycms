@@ -86,25 +86,26 @@
 			return false;
 		}
 
-		/**
-		 * This function will compress data for storage in `tbl_cache`.
-		 * It is left to the user to define a unique hash for this data so that it can be
-		 * retrieved in the future. Optionally, a `$ttl` parameter can
-		 * be passed for this data. If this is omitted, it data is considered to be valid
-		 * forever. This function utilizes the Mutex class to act as a crude locking
-		 * mechanism.
-		 *
-		 * @see toolkit.Mutex
-		 * @param string $hash
-		 *  The hash of the Cached object, as defined by the user
-		 * @param string $data
-		 *  The data to be cached, this will be compressed prior to saving.
-		 * @param integer $ttl
-		 *  A integer representing how long the data should be valid for in minutes.
-		 *  By default this is null, meaning the data is valid forever
-		 * @return boolean
-		 *  If an error occurs, this function will return false otherwise true
-		 */
+        /**
+         * This function will compress data for storage in `tbl_cache`.
+         * It is left to the user to define a unique hash for this data so that it can be
+         * retrieved in the future. Optionally, a `$ttl` parameter can
+         * be passed for this data. If this is omitted, it data is considered to be valid
+         * forever. This function utilizes the Mutex class to act as a crude locking
+         * mechanism.
+         *
+         * @see toolkit.Mutex
+         * @param string $hash
+         *  The hash of the Cached object, as defined by the user
+         * @param string $data
+         *  The data to be cached, this will be compressed prior to saving.
+         * @param integer $ttl
+         *  A integer representing how long the data should be valid for in minutes.
+         *  By default this is null, meaning the data is valid forever
+         * @throws DatabaseException
+         * @return boolean
+         *  If an error occurs, this function will return false otherwise true
+         */
 		public function write($hash, $data, $ttl = null) {
 
 			if(!Mutex::acquire($hash, 2, TMP)) return false;
@@ -125,16 +126,17 @@
 			return true;
 		}
 
-		/**
-		 * Given the hash of a cacheable object, remove it from `tbl_cache`
-		 * regardless of if it has expired or not. If no $hash is given,
-		 * this removes all cache objects from `tbl_cache` that have expired.
-		 * After removing, the function uses the `__optimise` function
-		 *
-		 * @see core.Cacheable#optimise()
-		 * @param string $hash
-		 *  The hash of the Cached object, as defined by the user
-		 */
+        /**
+         * Given the hash of a cacheable object, remove it from `tbl_cache`
+         * regardless of if it has expired or not. If no $hash is given,
+         * this removes all cache objects from `tbl_cache` that have expired.
+         * After removing, the function uses the `__optimise` function
+         *
+         * @see core.Cacheable#optimise()
+         * @param string $hash
+         *  The hash of the Cached object, as defined by the user
+         * @throws DatabaseException
+         */
 		public function delete($hash = null) {
 			if(!is_null($hash)) {
 				$this->Database->delete("`tbl_cache`", "`hash` = '$hash'");

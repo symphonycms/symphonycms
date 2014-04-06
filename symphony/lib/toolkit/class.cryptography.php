@@ -36,21 +36,22 @@
 			return PBKDF2::hash($input);
 		}
 
-		/**
-		 * Compares a given hash with a clean text password by figuring out the
-		 * algorithm that has been used and then calling the appropriate sub-class
-		 *
-		 * @see cryptography.MD5#compare()
-		 * @see cryptography.SHA1#compare()
-		 * @see cryptography.PBKDF2#compare()
-		 *
-		 * @param string $input
-		 * the cleartext password
-		 * @param string $hash
-		 * the hash the password should be checked against
-		 * @return boolean
-		 * the result of the comparison
-		 */
+        /**
+         * Compares a given hash with a clean text password by figuring out the
+         * algorithm that has been used and then calling the appropriate sub-class
+         *
+         * @see cryptography.MD5#compare()
+         * @see cryptography.SHA1#compare()
+         * @see cryptography.PBKDF2#compare()
+         *
+         * @param string $input
+         *  the cleartext password
+         * @param string $hash
+         *  the hash the password should be checked against
+         * @param bool $isHash
+         * @return boolean
+         *  the result of the comparison
+         */
 		public static function compare($input, $hash, $isHash=false){
 			$version = substr($hash, 0, 8);
 

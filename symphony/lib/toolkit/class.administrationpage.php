@@ -155,21 +155,22 @@
 			return $this->_context;
 		}
 
-		/**
-		 * Given a `$message` and an optional `$type`, this function will
-		 * add an Alert instance into this page's `$this->Alert` property.
-		 * Since Symphony 2.3, there may be more than one `Alert` per page.
-		 * Unless the Alert is an Error, it is required the `$message` be
-		 * passed to this function.
-		 *
-		 * @param string $message
-		 *  The message to display to users
-		 * @param string $type
-		 *  An Alert constant, being `Alert::NOTICE`, `Alert::ERROR` or
-		 *  `Alert::SUCCESS`. The differing types will show the error
-		 *  in a different style in the backend. If omitted, this defaults
-		 *  to `Alert::NOTICE`.
-		 */
+        /**
+         * Given a `$message` and an optional `$type`, this function will
+         * add an Alert instance into this page's `$this->Alert` property.
+         * Since Symphony 2.3, there may be more than one `Alert` per page.
+         * Unless the Alert is an Error, it is required the `$message` be
+         * passed to this function.
+         *
+         * @param string $message
+         *  The message to display to users
+         * @param string $type
+         *  An Alert constant, being `Alert::NOTICE`, `Alert::ERROR` or
+         *  `Alert::SUCCESS`. The differing types will show the error
+         *  in a different style in the backend. If omitted, this defaults
+         *  to `Alert::NOTICE`.
+         * @throws Exception
+         */
 		public function pageAlert($message = null, $type = Alert::NOTICE){
 			if(is_null($message) && $type == Alert::ERROR){
 				$message = 'There was a problem rendering this page. Please check the activity log for more details.';
@@ -279,25 +280,26 @@
 			}
 		}
 
-		/**
-		 * Allows a Drawer element to added to the backend page in one of three
-		 * positions, `horizontal`, `vertical-left` or `vertical-right`. The button
-		 * to trigger the visibility of the drawer will be added after existing
-		 * actions by default.
-		 *
-		 * @since Symphony 2.3
-		 * @see core.Widget#Drawer
-		 * @param XMLElement $drawer
-		 *  An XMLElement representing the drawer, use `Widget::Drawer` to construct
-		 * @param string $position
-		 *  Where `$position` can be `horizontal`, `vertical-left` or
-		 *  `vertical-right`. Defaults to `horizontal`.
-		 * @param string $button
-		 *  If not passed, a button to open/close the drawer will not be added
-		 *  to the interface. Accepts 'prepend' or 'append' values, which will
-		 *  add the button before or after existing buttons. Defaults to `prepend`.
-		 *  If any other value is passed, no button will be added.
-		 */
+        /**
+         * Allows a Drawer element to added to the backend page in one of three
+         * positions, `horizontal`, `vertical-left` or `vertical-right`. The button
+         * to trigger the visibility of the drawer will be added after existing
+         * actions by default.
+         *
+         * @since Symphony 2.3
+         * @see core.Widget#Drawer
+         * @param XMLElement $drawer
+         *  An XMLElement representing the drawer, use `Widget::Drawer` to construct
+         * @param string $position
+         *  Where `$position` can be `horizontal`, `vertical-left` or
+         *  `vertical-right`. Defaults to `horizontal`.
+         * @param string $button
+         *  If not passed, a button to open/close the drawer will not be added
+         *  to the interface. Accepts 'prepend' or 'append' values, which will
+         *  add the button before or after existing buttons. Defaults to `prepend`.
+         *  If any other value is passed, no button will be added.
+         * @throws InvalidArgumentException
+         */
 		public function insertDrawer(XMLElement $drawer, $position = 'horizontal', $button = 'append') {
 			$drawer->addClass($position);
 			$drawer->setAttribute('data-position', $position);
@@ -313,21 +315,23 @@
 			}
 		}
 
-		/**
-		 * This function initialises a lot of the basic elements that make up a Symphony
-		 * backend page such as the default stylesheets and scripts, the navigation and
-		 * the footer. Any alerts are also appended by this function. `view()` is called to
-		 * build the actual content of the page. The `InitialiseAdminPageHead` delegate
-		 * allows extensions to add elements to the `<head>`.
-		 *
-		 * @see view()
-		 * @uses InitialiseAdminPageHead
-		 * @param array $context
-		 *  An associative array describing this pages context. This
-		 *  can include the section handle, the current entry_id, the page
-		 *  name and any flags such as 'saved' or 'created'. This list is not exhaustive
-		 *  and extensions can add their own keys to the array.
-		 */
+        /**
+         * This function initialises a lot of the basic elements that make up a Symphony
+         * backend page such as the default stylesheets and scripts, the navigation and
+         * the footer. Any alerts are also appended by this function. `view()` is called to
+         * build the actual content of the page. The `InitialiseAdminPageHead` delegate
+         * allows extensions to add elements to the `<head>`.
+         *
+         * @see view()
+         * @uses InitialiseAdminPageHead
+         * @param array $context
+         *  An associative array describing this pages context. This
+         *  can include the section handle, the current entry_id, the page
+         *  name and any flags such as 'saved' or 'created'. This list is not exhaustive
+         *  and extensions can add their own keys to the array.
+         * @throws InvalidArgumentException
+         * @throws SymphonyErrorPage
+         */
 		public function build(array $context = array()){
 			$this->_context = $context;
 
@@ -487,17 +491,18 @@
 			}
 		}
 
-		/**
-		 * Appends the `$this->Header`, `$this->Context` and `$this->Contents`
-		 * to `$this->Wrapper` before adding the ID and class attributes for
-		 * the `<body>` element. This function will also place any Drawer elements
-		 * in their relevant positions in the page. After this has completed the
-		 * parent `generate()` is called which will convert the `XMLElement`'s
-		 * into strings ready for output.
-		 *
-		 * @see core.HTMLPage#generate()
-		 * @return string
-		 */
+        /**
+         * Appends the `$this->Header`, `$this->Context` and `$this->Contents`
+         * to `$this->Wrapper` before adding the ID and class attributes for
+         * the `<body>` element. This function will also place any Drawer elements
+         * in their relevant positions in the page. After this has completed the
+         * parent `generate()` is called which will convert the `XMLElement`'s
+         * into strings ready for output.
+         *
+         * @see core.HTMLPage#generate()
+         * @param null $page
+         * @return string
+         */
 		public function generate($page = null) {
 			$this->Wrapper->appendChild($this->Header);
 
@@ -603,20 +608,21 @@
 			$this->__switchboard('action');
 		}
 
-		/**
-		 * The `__switchboard` function acts as a controller to display content
-		 * based off the $type. By default, the `$type` is 'view' but it can be set
-		 * also set to 'action'. The `$type` is prepended by __ and the context is
-		 * append to the $type to create the name of the function that will provide
-		 * that logic. For example, if the $type was action and the context of the
-		 * current page was new, the resulting function to be called would be named
-		 * `__actionNew()`. If an action function is not provided by the Page, this function
-		 * returns nothing, however if a view function is not provided, a 404 page
-		 * will be returned.
-		 *
-		 * @param string $type
-		 *  Either 'view' or 'action', by default this will be 'view'
-		 */
+        /**
+         * The `__switchboard` function acts as a controller to display content
+         * based off the $type. By default, the `$type` is 'view' but it can be set
+         * also set to 'action'. The `$type` is prepended by __ and the context is
+         * append to the $type to create the name of the function that will provide
+         * that logic. For example, if the $type was action and the context of the
+         * current page was new, the resulting function to be called would be named
+         * `__actionNew()`. If an action function is not provided by the Page, this function
+         * returns nothing, however if a view function is not provided, a 404 page
+         * will be returned.
+         *
+         * @param string $type
+         *  Either 'view' or 'action', by default this will be 'view'
+         * @throws SymphonyErrorPage
+         */
 		public function __switchboard($type='view'){
 
 			if(!isset($this->_context[0]) || trim($this->_context[0]) == '') $context = 'index';
@@ -891,15 +897,17 @@
 			}
 		}
 
-		/**
-		 * This method fills the `$nav` array with value
-		 * from each Extension's `fetchNavigation` method
-		 *
-		 * @since Symphony 2.3.2
-		 *
-		 * @param array $nav
-		 *  The navigation array that will receive nav nodes
-		 */
+        /**
+         * This method fills the `$nav` array with value
+         * from each Extension's `fetchNavigation` method
+         *
+         * @since Symphony 2.3.2
+         *
+         * @param array $nav
+         *  The navigation array that will receive nav nodes
+         * @throws Exception
+         * @throws SymphonyErrorPage
+         */
 		private function buildExtensionsNavigation(&$nav) {
 			// Loop over all the installed extensions to add in other navigation items
 			$extensions = Symphony::ExtensionManager()->listInstalledHandles();

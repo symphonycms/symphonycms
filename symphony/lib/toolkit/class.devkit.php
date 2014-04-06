@@ -76,13 +76,14 @@
 			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/devkit.min.css', 'screen', null, false);
 		}
 
-		/**
-		 * This function will build the `<title>` element and create a default
-		 * `<h1>` with an anchor to this query string
-		 *
-		 * @param XMLElement $wrapper
-		 *	The parent `XMLElement` to add the header to
-		 */
+        /**
+         * This function will build the `<title>` element and create a default
+         * `<h1>` with an anchor to this query string
+         *
+         * @param XMLElement $wrapper
+         *    The parent `XMLElement` to add the header to
+         * @throws InvalidArgumentException
+         */
 		protected function buildHeader(XMLElement $wrapper) {
 			$this->setTitle(__(
 				'%1$s &ndash; %2$s &ndash; %3$s',
@@ -101,17 +102,18 @@
 			$wrapper->appendChild($h1);
 		}
 
-		/**
-		 * Using DOMDocument, construct the Navigation list using the `devkit_navigation.xml`
-		 * file in the `ASSETS` folder. The default navigation file is an empty `<navigation>`
-		 * element. The `ManipulateDevKitNavigation` delegate allows extensions
-		 * to inject items into the navigation. The navigation is build by iterating over `<item>`
-		 * elements added. The idea is that all Devkit's can be accessed using the Navigation.
-		 *
-		 * @uses ManipulateDevKitNavigation
-		 * @param XMLElement $wrapper
-		 *	The parent XMLElement to add the navigation to
-		 */
+        /**
+         * Using DOMDocument, construct the Navigation list using the `devkit_navigation.xml`
+         * file in the `ASSETS` folder. The default navigation file is an empty `<navigation>`
+         * element. The `ManipulateDevKitNavigation` delegate allows extensions
+         * to inject items into the navigation. The navigation is build by iterating over `<item>`
+         * elements added. The idea is that all Devkit's can be accessed using the Navigation.
+         *
+         * @uses ManipulateDevKitNavigation
+         * @param XMLElement $wrapper
+         *    The parent XMLElement to add the navigation to
+         * @throws InvalidArgumentException
+         */
 		protected function buildNavigation(XMLElement $wrapper) {
 			$xml = new DOMDocument();
 			$xml->preserveWhiteSpace = false;
@@ -184,17 +186,18 @@
 		 */
 		protected function buildJump(XMLElement $wrapper) { }
 
-		/**
-		 *
-		 * @param string $name
-		 *	The name of the jump
-		 * @param string $link
-		 *	The link for this jump item
-		 * @param boolean $active
-		 *	Whether this is the active link, if true, this will add an
-		 *	active class to the link built. By default this is false
-		 * @return XMLElement
-		 */
+        /**
+         *
+         * @param string $name
+         *    The name of the jump
+         * @param string $link
+         *    The link for this jump item
+         * @param boolean $active
+         *    Whether this is the active link, if true, this will add an
+         *    active class to the link built. By default this is false
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		protected function buildJumpItem($name, $link, $active = false) {
 			$item = new XMLElement('li');
 			$anchor = Widget::Anchor($name,	 $link);
@@ -250,15 +253,16 @@
 			}
 		}
 
-		/**
-		 * Called when page is generated, this function calls each of the other
-		 * other functions in this page to build the Header, the Navigation,
-		 * the Jump menu and finally the content. This function calls it's parent
-		 * generate function
-		 *
-		 * @see toolkit.HTMLPage#generate()
-		 * @return string
-		 */
+        /**
+         * Called when page is generated, this function calls each of the other
+         * other functions in this page to build the Header, the Navigation,
+         * the Jump menu and finally the content. This function calls it's parent
+         * generate function
+         *
+         * @see toolkit.HTMLPage#generate()
+         * @throws InvalidArgumentException
+         * @return string
+         */
 		public function build() {
 			$this->buildIncludes();
 			$this->_view = General::sanitize($this->_view);

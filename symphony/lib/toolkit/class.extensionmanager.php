@@ -111,28 +111,31 @@
 			return self::__getClassPath($name) . '/extension.driver.php';
 		}
 
-		/**
-		 * This function returns an instance of an extension from it's name
-		 *
-		 * @param string $name
-		 *  The name of the Extension Class minus the extension prefix.
-		 * @return Extension
-		 */
+        /**
+         * This function returns an instance of an extension from it's name
+         *
+         * @param string $name
+         *  The name of the Extension Class minus the extension prefix.
+         * @throws SymphonyErrorPage
+         * @throws Exception
+         * @return Extension
+         */
 		public static function getInstance($name){
 			return isset(self::$_pool[$name])
 				? self::$_pool[$name]
 				: self::create($name);
 		}
 
-		/**
-		 * Populates the `ExtensionManager::$_extensions` array with all the
-		 * extensions stored in `tbl_extensions`. If `ExtensionManager::$_extensions`
-		 * isn't empty, passing true as a parameter will force the array to update
-		 *
-		 * @param boolean $update
-		 *  Updates the `ExtensionManager::$_extensions` array even if it was
-		 *  populated, defaults to false.
-		 */
+        /**
+         * Populates the `ExtensionManager::$_extensions` array with all the
+         * extensions stored in `tbl_extensions`. If `ExtensionManager::$_extensions`
+         * isn't empty, passing true as a parameter will force the array to update
+         *
+         * @param boolean $update
+         *  Updates the `ExtensionManager::$_extensions` array even if it was
+         *  populated, defaults to false.
+         * @throws DatabaseException
+         */
 		private static function __buildExtensionList($update=false) {
 			if (empty(self::$_extensions) || $update) {
 				self::$_extensions = Symphony::Database()->fetch("SELECT * FROM `tbl_extensions`", 'name');
@@ -200,18 +203,20 @@
 			return self::$_extensions[$name]['id'];
 		}
 
-		/**
-		 * Return an array all the Provider objects supplied by extensions,
-		 * optionally filtered by a given `$type`.
-		 *
-		 * @since Symphony 2.3
-		 * @todo Add information about the possible types
-		 * @param string $type
-		 *  This will only return Providers of this type. If null, which is
-		 *  default, all providers will be returned.
-		 * @return array
-		 *  An array of objects
-		 */
+        /**
+         * Return an array all the Provider objects supplied by extensions,
+         * optionally filtered by a given `$type`.
+         *
+         * @since Symphony 2.3
+         * @todo Add information about the possible types
+         * @param string $type
+         *  This will only return Providers of this type. If null, which is
+         *  default, all providers will be returned.
+         * @throws Exception
+         * @throws SymphonyErrorPage
+         * @return array
+         *  An array of objects
+         */
 		public static function getProvidersOf($type = null) {
 			// Loop over all extensions and build an array of providable objects
 			if(empty(self::$_providers)) {
@@ -300,18 +305,20 @@
 			return (version_compare($installed_version, $file_version, '<') ? $installed_version : false);
 		}
 
-		/**
-		 * Enabling an extension will re-register all it's delegates with Symphony.
-		 * It will also install or update the extension if needs be by calling the
-		 * extensions respective install and update methods. The enable method is
-		 * of the extension object is finally called.
-		 *
-		 * @see toolkit.ExtensionManager#registerDelegates()
-		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
-		 * @param string $name
-		 *  The name of the Extension Class minus the extension prefix.
-		 * @return boolean
-		 */
+        /**
+         * Enabling an extension will re-register all it's delegates with Symphony.
+         * It will also install or update the extension if needs be by calling the
+         * extensions respective install and update methods. The enable method is
+         * of the extension object is finally called.
+         *
+         * @see toolkit.ExtensionManager#registerDelegates()
+         * @see toolkit.ExtensionManager#__canUninstallOrDisable()
+         * @param string $name
+         *  The name of the Extension Class minus the extension prefix.
+         * @throws SymphonyErrorPage
+         * @throws Exception
+         * @return boolean
+         */
 		public static function enable($name){
 			$obj = self::getInstance($name);
 
@@ -355,19 +362,22 @@
 			return true;
 		}
 
-		/**
-		 * Disabling an extension will prevent it from executing but retain all it's
-		 * settings in the relevant tables. Symphony checks that an extension can
-		 * be disabled using the `canUninstallorDisable()` before removing
-		 * all delegate subscriptions from the database and calling the extension's
-		 * `disable()` function.
-		 *
-		 * @see toolkit.ExtensionManager#removeDelegates()
-		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
-		 * @param string $name
-		 *  The name of the Extension Class minus the extension prefix.
-		 * @return boolean
-		 */
+        /**
+         * Disabling an extension will prevent it from executing but retain all it's
+         * settings in the relevant tables. Symphony checks that an extension can
+         * be disabled using the `canUninstallorDisable()` before removing
+         * all delegate subscriptions from the database and calling the extension's
+         * `disable()` function.
+         *
+         * @see toolkit.ExtensionManager#removeDelegates()
+         * @see toolkit.ExtensionManager#__canUninstallOrDisable()
+         * @param string $name
+         *  The name of the Extension Class minus the extension prefix.
+         * @throws DatabaseException
+         * @throws SymphonyErrorPage
+         * @throws Exception
+         * @return boolean
+         */
 		public static function disable($name){
 			$obj = self::getInstance($name);
 
@@ -392,21 +402,25 @@
 			return true;
 		}
 
-		/**
-		 * Uninstalling an extension will unregister all delegate subscriptions and
-		 * remove all extension settings. Symphony checks that an extension can
-		 * be uninstalled using the `canUninstallorDisable()` before calling
-		 * the extension's `uninstall()` function. Alternatively, if this function
-		 * is called because the extension described by `$name` cannot be found
-		 * it's delegates and extension meta information will just be removed from the
-		 * database.
-		 *
-		 * @see toolkit.ExtensionManager#removeDelegates()
-		 * @see toolkit.ExtensionManager#__canUninstallOrDisable()
-		 * @param string $name
-		 *  The name of the Extension Class minus the extension prefix.
-		 * @return boolean
-		 */
+        /**
+         * Uninstalling an extension will unregister all delegate subscriptions and
+         * remove all extension settings. Symphony checks that an extension can
+         * be uninstalled using the `canUninstallorDisable()` before calling
+         * the extension's `uninstall()` function. Alternatively, if this function
+         * is called because the extension described by `$name` cannot be found
+         * it's delegates and extension meta information will just be removed from the
+         * database.
+         *
+         * @see toolkit.ExtensionManager#removeDelegates()
+         * @see toolkit.ExtensionManager#__canUninstallOrDisable()
+         * @param string $name
+         *  The name of the Extension Class minus the extension prefix.
+         * @throws Exception
+         * @throws SymphonyErrorPage
+         * @throws DatabaseException
+         * @throws Exception
+         * @return boolean
+         */
 		public static function uninstall($name) {
 			// If this function is called because the extension doesn't exist,
 			// then catch the error and just remove from the database. This
@@ -431,14 +445,16 @@
 			return true;
 		}
 
-		/**
-		 * This functions registers an extensions delegates in `tbl_extensions_delegates`.
-		 *
-		 * @param string $name
-		 *  The name of the Extension Class minus the extension prefix.
-		 * @return integer
-		 *  The Extension ID
-		 */
+        /**
+         * This functions registers an extensions delegates in `tbl_extensions_delegates`.
+         *
+         * @param string $name
+         *  The name of the Extension Class minus the extension prefix.
+         * @throws Exception
+         * @throws SymphonyErrorPage
+         * @return integer
+         *  The Extension ID
+         */
 		public static function registerDelegates($name){
 			$obj = self::getInstance($name);
 			$id = self::fetchExtensionID($name);
@@ -503,17 +519,19 @@
 			return true;
 		}
 
-		/**
-		 * This function checks that if the given extension has provided Fields,
-		 * Data Sources or Events, that they aren't in use before the extension
-		 * is uninstalled or disabled. This prevents exceptions from occurring when
-		 * accessing an object that was using something provided by this Extension
-		 * can't anymore because it has been removed.
-		 *
-		 * @param Extension $obj
-		 *  An extension object
-		 * @return boolean
-		 */
+        /**
+         * This function checks that if the given extension has provided Fields,
+         * Data Sources or Events, that they aren't in use before the extension
+         * is uninstalled or disabled. This prevents exceptions from occurring when
+         * accessing an object that was using something provided by this Extension
+         * can't anymore because it has been removed.
+         *
+         * @param Extension $obj
+         *  An extension object
+         * @throws SymphonyErrorPage
+         * @throws Exception
+         * @return boolean
+         */
 		private static function __canUninstallOrDisable(Extension $obj){
 			$extension_handle = strtolower(preg_replace('/^extension_/i', NULL, get_class($obj)));
 			$about = self::about($extension_handle);
@@ -571,27 +589,30 @@
 			}
 		}
 
-		/**
-		 * Given a delegate name, notify all extensions that have registered to that
-		 * delegate to executing their callbacks with a `$context` array parameter
-		 * that contains information about the current Symphony state.
-		 *
-		 * @param string $delegate
-		 *  The delegate name
-		 * @param string $page
-		 *  The current page namespace that this delegate operates in
-		 * @param array $context
-		 *  The `$context` param is an associative array that at minimum will contain
-		 *  the current Administration class, the current page object and the delegate
-		 *  name. Other context information may be passed to this function when it is
-		 *  called. eg.
-		 *
-		 * array(
-		 *		'parent' =>& $this->Parent,
-		 *		'page' => $page,
-		 *		'delegate' => $delegate
-		 *	);
-		 */
+        /**
+         * Given a delegate name, notify all extensions that have registered to that
+         * delegate to executing their callbacks with a `$context` array parameter
+         * that contains information about the current Symphony state.
+         *
+         * @param string $delegate
+         *  The delegate name
+         * @param string $page
+         *  The current page namespace that this delegate operates in
+         * @param array $context
+         *  The `$context` param is an associative array that at minimum will contain
+         *  the current Administration class, the current page object and the delegate
+         *  name. Other context information may be passed to this function when it is
+         *  called. eg.
+         *
+         * array(
+         *        'parent' =>& $this->Parent,
+         *        'page' => $page,
+         *        'delegate' => $delegate
+         *    );
+         * @throws Exception
+         * @throws SymphonyErrorPage
+         * @return null|void
+         */
 		public static function notifyMembers($delegate, $page, array $context=array()){
 			// Make sure $page is an array
 			if(!is_array($page)){
@@ -647,16 +668,18 @@
 			return self::$_enabled_extensions;
 		}
 
-		/**
-		 * Will return an associative array of all extensions and their about information
-		 *
-		 * @param string $filter
-		 *  Allows a regular expression to be passed to return only extensions whose
-		 *  folders match the filter.
-		 * @return array
-		 *  An associative array with the key being the extension folder and the value
-		 *  being the extension's about information
-		 */
+        /**
+         * Will return an associative array of all extensions and their about information
+         *
+         * @param string $filter
+         *  Allows a regular expression to be passed to return only extensions whose
+         *  folders match the filter.
+         * @throws SymphonyErrorPage
+         * @throws Exception
+         * @return array
+         *  An associative array with the key being the extension folder and the value
+         *  being the extension's about information
+         */
 		public static function listAll($filter='/^((?![-^?%:*|"<>]).)*$/') {
 			$result = array();
 			$extensions = General::listDirStructure(EXTENSIONS, $filter, false, EXTENSIONS);
@@ -671,14 +694,15 @@
 			return $result;
 		}
 
-		/**
-		 * Custom user sorting function used inside `fetch` to recursively sort authors
-		 * by their names.
-		 *
-		 * @param array $a
-		 * @param array $b
-		 * @return integer
-		 */
+        /**
+         * Custom user sorting function used inside `fetch` to recursively sort authors
+         * by their names.
+         *
+         * @param array $a
+         * @param array $b
+         * @param int $i
+         * @return integer
+         */
 		private static function sortByAuthor($a, $b, $i = 0) {
 			$first = $a; $second = $b;
 
@@ -693,25 +717,27 @@
 				return ($first['name'] < $second['name']) ? -1 : 1;
 		}
 
-		/**
-		 * This function will return an associative array of Extension information. The
-		 * information returned is defined by the `$select` parameter, which will allow
-		 * a developer to restrict what information is returned about the Extension.
-		 * Optionally, `$where` (not implemented) and `$order_by` parameters allow a developer to
-		 * further refine their query.
-		 *
-		 * @param array $select (optional)
-		 *  Accepts an array of keys to return from the listAll() method. If omitted, all keys
-		 *  will be returned.
-		 * @param array $where (optional)
-		 *  Not implemented.
-		 * @param string $order_by (optional)
-		 *  Allows a developer to return the extensions in a particular order. The syntax is the
-		 *  same as other `fetch` methods. If omitted this will return resources ordered by `name`.
-		 * @return array
-		 *  An associative array of Extension information, formatted in the same way as the
-		 *  listAll() method.
-		 */
+        /**
+         * This function will return an associative array of Extension information. The
+         * information returned is defined by the `$select` parameter, which will allow
+         * a developer to restrict what information is returned about the Extension.
+         * Optionally, `$where` (not implemented) and `$order_by` parameters allow a developer to
+         * further refine their query.
+         *
+         * @param array $select (optional)
+         *  Accepts an array of keys to return from the listAll() method. If omitted, all keys
+         *  will be returned.
+         * @param array $where (optional)
+         *  Not implemented.
+         * @param string $order_by (optional)
+         *  Allows a developer to return the extensions in a particular order. The syntax is the
+         *  same as other `fetch` methods. If omitted this will return resources ordered by `name`.
+         * @throws Exception
+         * @throws SymphonyErrorPage
+         * @return array
+         *  An associative array of Extension information, formatted in the same way as the
+         *  listAll() method.
+         */
 		public static function fetch(array $select = array(), array $where = array(), $order_by = null){
 			$extensions = self::listAll();
 
@@ -768,25 +794,27 @@
 
 		}
 
-		/**
-		 * This function will load an extension's meta information given the extension
-		 * `$name`. Since Symphony 2.3, this function will look for an `extension.meta.xml`
-		 * file inside the extension's folder. If this is not found, it will initialise
-		 * the extension and invoke the `about()` function. By default this extension will
-		 * return an associative array display the basic meta data about the given extension.
-		 * If the `$rawXML` parameter is passed true, and the extension has a `extension.meta.xml`
-		 * file, this function will return `DOMDocument` of the file.
-		 *
-		 * @param string $name
-		 *  The name of the Extension Class minus the extension prefix.
-		 * @param boolean $rawXML
-		 *  If passed as true, and is available, this function will return the
-		 *  DOMDocument of representation of the given extension's `extension.meta.xml`
-		 *  file. If the file is not available, the extension will return the normal
-		 *  `about()` results. By default this is false.
-		 * @return array
-		 *  An associative array describing this extension
-		 */
+        /**
+         * This function will load an extension's meta information given the extension
+         * `$name`. Since Symphony 2.3, this function will look for an `extension.meta.xml`
+         * file inside the extension's folder. If this is not found, it will initialise
+         * the extension and invoke the `about()` function. By default this extension will
+         * return an associative array display the basic meta data about the given extension.
+         * If the `$rawXML` parameter is passed true, and the extension has a `extension.meta.xml`
+         * file, this function will return `DOMDocument` of the file.
+         *
+         * @param string $name
+         *  The name of the Extension Class minus the extension prefix.
+         * @param boolean $rawXML
+         *  If passed as true, and is available, this function will return the
+         *  DOMDocument of representation of the given extension's `extension.meta.xml`
+         *  file. If the file is not available, the extension will return the normal
+         *  `about()` results. By default this is false.
+         * @throws Exception
+         * @throws SymphonyErrorPage
+         * @return array
+         *  An associative array describing this extension
+         */
 		public static function about($name, $rawXML = false) {
 			// See if the extension has the new meta format
 			if(file_exists(self::__getClassPath($name) . '/extension.meta.xml')) {
@@ -907,13 +935,15 @@
 			}
 		}
 
-		/**
-		 * Creates an instance of a given class and returns it
-		 *
-		 * @param string $name
-		 *  The name of the Extension Class minus the extension prefix.
-		 * @return Extension
-		 */
+        /**
+         * Creates an instance of a given class and returns it
+         *
+         * @param string $name
+         *  The name of the Extension Class minus the extension prefix.
+         * @throws Exception
+         * @throws SymphonyErrorPage
+         * @return Extension
+         */
 		public static function create($name){
 			if(!isset(self::$_pool[$name])){
 				$classname = self::__getClassName($name);

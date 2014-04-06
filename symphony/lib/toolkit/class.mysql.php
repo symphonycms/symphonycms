@@ -252,20 +252,22 @@
 			if($this->isConnected()) return mysqli_close(MySQL::$_connection['id']);
 		}
 
-		/**
-		 * Creates a connect to the database server given the credentials. If an
-		 * error occurs, a `DatabaseException` is thrown, otherwise true is returned
-		 *
-		 * @param string $host
-		 *  Defaults to null, which MySQL assumes as localhost.
-		 * @param string $user
-		 *  Defaults to null
-		 * @param string $password
-		 *  Defaults to null
-		 * @param string $port
-		 *  Defaults to 3306.
-		 * @return boolean
-		 */
+        /**
+         * Creates a connect to the database server given the credentials. If an
+         * error occurs, a `DatabaseException` is thrown, otherwise true is returned
+         *
+         * @param string $host
+         *  Defaults to null, which MySQL assumes as localhost.
+         * @param string $user
+         *  Defaults to null
+         * @param string $password
+         *  Defaults to null
+         * @param string $port
+         *  Defaults to 3306.
+         * @param null $database
+         * @throws DatabaseException
+         * @return boolean
+         */
 		public function connect($host = null, $user = null, $password = null, $port ='3306', $database = null) {
 			MySQL::$_connection = array(
 				'host' => $host,
@@ -317,29 +319,31 @@
 			mysqli_set_charset(MySQL::$_connection['id'], $set);
 		}
 
-		/**
-		 * This function will set the character encoding of the database so that any
-		 * new tables that are created by Symphony use this character encoding
-		 *
-		 * @link http://dev.mysql.com/doc/refman/5.0/en/charset-connection.html
-		 * @param string $set
-		 *  The character encoding to use, by default this 'utf8'
-		 */
+        /**
+         * This function will set the character encoding of the database so that any
+         * new tables that are created by Symphony use this character encoding
+         *
+         * @link http://dev.mysql.com/doc/refman/5.0/en/charset-connection.html
+         * @param string $set
+         *  The character encoding to use, by default this 'utf8'
+         * @throws DatabaseException
+         */
 		public function setCharacterSet($set='utf8'){
 			$this->query("SET character_set_connection = '$set', character_set_database = '$set', character_set_server = '$set'");
 			$this->query("SET CHARACTER SET '$set'");
 		}
 
-		/**
-		 * Sets the MySQL connection to use this timezone instead of the default
-		 * MySQL server timezone.
-		 *
-		 * @link https://dev.mysql.com/doc/refman/5.6/en/time-zone-support.html
-		 * @since Symphony 2.3.3
-		 * @param string $timezone
-		 *  Timezone will be a offset, `+10:00`, as not all MySQL installations will
-		 *  have the humanreadable timezone database available
-		 */
+        /**
+         * Sets the MySQL connection to use this timezone instead of the default
+         * MySQL server timezone.
+         *
+         * @link https://dev.mysql.com/doc/refman/5.6/en/time-zone-support.html
+         * @since Symphony 2.3.3
+         * @param string $timezone
+         *  Timezone will be a offset, `+10:00`, as not all MySQL installations will
+         *  have the humanreadable timezone database available
+         * @throws DatabaseException
+         */
 		public function setTimeZone($timezone = null) {
 			if(is_null($timezone)) return;
 
@@ -393,37 +397,39 @@
 			}
 		}
 
-		/**
-		 * Determines whether this query is a read operation, or if it is a write operation.
-		 * A write operation is determined as any query that starts with CREATE, INSERT,
-		 * REPLACE, ALTER, DELETE, UPDATE, OPTIMIZE, TRUNCATE or DROP. Anything else is
-		 * considered to be a read operation which are subject to query caching.
-		 *
-		 * @return integer
-		 *  `MySQL::__WRITE_OPERATION__` or `MySQL::__READ_OPERATION__`
-		 */
+        /**
+         * Determines whether this query is a read operation, or if it is a write operation.
+         * A write operation is determined as any query that starts with CREATE, INSERT,
+         * REPLACE, ALTER, DELETE, UPDATE, OPTIMIZE, TRUNCATE or DROP. Anything else is
+         * considered to be a read operation which are subject to query caching.
+         *
+         * @param string $query
+         * @return integer
+         *  `MySQL::__WRITE_OPERATION__` or `MySQL::__READ_OPERATION__`
+         */
 		public function determineQueryType($query){
 			return (preg_match('/^(create|insert|replace|alter|delete|update|optimize|truncate|drop)/i', $query) ? MySQL::__WRITE_OPERATION__ : MySQL::__READ_OPERATION__);
 		}
 
-		/**
-		 * Takes an SQL string and executes it. This function will apply query
-		 * caching if it is a read operation and if query caching is set. Symphony
-		 * will convert the `tbl_` prefix of tables to be the one set during installation.
-		 * A type parameter is provided to specify whether `$this->_lastResult` will be an array
-		 * of objects or an array of associative arrays. The default is objects. This
-		 * function will return boolean, but set `$this->_lastResult` to the result.
-		 *
-		 * @uses PostQueryExecution
-		 * @param string $query
-		 *  The full SQL query to execute.
-		 * @param string $type
-		 *  Whether to return the result as objects or associative array. Defaults
-		 *  to OBJECT which will return objects. The other option is ASSOC. If $type
-		 *  is not either of these, it will return objects.
-		 * @return boolean
-		 *  True if the query executed without errors, false otherwise
-		 */
+        /**
+         * Takes an SQL string and executes it. This function will apply query
+         * caching if it is a read operation and if query caching is set. Symphony
+         * will convert the `tbl_` prefix of tables to be the one set during installation.
+         * A type parameter is provided to specify whether `$this->_lastResult` will be an array
+         * of objects or an array of associative arrays. The default is objects. This
+         * function will return boolean, but set `$this->_lastResult` to the result.
+         *
+         * @uses PostQueryExecution
+         * @param string $query
+         *  The full SQL query to execute.
+         * @param string $type
+         *  Whether to return the result as objects or associative array. Defaults
+         *  to OBJECT which will return objects. The other option is ASSOC. If $type
+         *  is not either of these, it will return objects.
+         * @throws DatabaseException
+         * @return boolean
+         *  True if the query executed without errors, false otherwise
+         */
 		public function query($query, $type = "OBJECT"){
 
 			if(empty($query) || self::isConnected() === false) return false;
@@ -538,26 +544,27 @@
 			return $this->_lastInsertID;
 		}
 
-		/**
-		 * A convenience method to insert data into the Database. This function
-		 * takes an associative array of data to input, with the keys being the column
-		 * names and the table. An optional parameter exposes MySQL's ON DUPLICATE
-		 * KEY UPDATE functionality, which will update the values if a duplicate key
-		 * is found.
-		 *
-		 * @param array $fields
-		 *  An associative array of data to input, with the key's mapping to the
-		 *  column names. Alternatively, an array of associative array's can be
-		 *  provided, which will perform multiple inserts
-		 * @param string $table
-		 *  The table name, including the tbl prefix which will be changed
-		 *  to this Symphony's table prefix in the query function
-		 * @param boolean $updateOnDuplicate
-		 *  If set to true, data will updated if any key constraints are found that cause
-		 *  conflicts. By default this is set to false, which will not update the data and
-		 *  would return an SQL error
-		 * @return boolean
-		 */
+        /**
+         * A convenience method to insert data into the Database. This function
+         * takes an associative array of data to input, with the keys being the column
+         * names and the table. An optional parameter exposes MySQL's ON DUPLICATE
+         * KEY UPDATE functionality, which will update the values if a duplicate key
+         * is found.
+         *
+         * @param array $fields
+         *  An associative array of data to input, with the key's mapping to the
+         *  column names. Alternatively, an array of associative array's can be
+         *  provided, which will perform multiple inserts
+         * @param string $table
+         *  The table name, including the tbl prefix which will be changed
+         *  to this Symphony's table prefix in the query function
+         * @param boolean $updateOnDuplicate
+         *  If set to true, data will updated if any key constraints are found that cause
+         *  conflicts. By default this is set to false, which will not update the data and
+         *  would return an SQL error
+         * @throws DatabaseException
+         * @return boolean
+         */
 		public function insert(array $fields, $table, $updateOnDuplicate=false){
 
 			// Multiple Insert
@@ -591,23 +598,24 @@
 			return $this->query($sql);
 		}
 
-		/**
-		 * A convenience method to update data that exists in the Database. This function
-		 * takes an associative array of data to input, with the keys being the column
-		 * names and the table. A WHERE statement can be provided to select the rows
-		 * to update
-		 *
-		 * @param array $fields
-		 *  An associative array of data to input, with the key's mapping to the
-		 *  column names.
-		 * @param string $table
-		 *  The table name, including the tbl prefix which will be changed
-		 *  to this Symphony's table prefix in the query function
-		 * @param string $where
-		 *  A WHERE statement for this UPDATE statement, defaults to null
-		 *  which will update all rows in the $table
-		 * @return boolean
-		 */
+        /**
+         * A convenience method to update data that exists in the Database. This function
+         * takes an associative array of data to input, with the keys being the column
+         * names and the table. A WHERE statement can be provided to select the rows
+         * to update
+         *
+         * @param array $fields
+         *  An associative array of data to input, with the key's mapping to the
+         *  column names.
+         * @param string $table
+         *  The table name, including the tbl prefix which will be changed
+         *  to this Symphony's table prefix in the query function
+         * @param string $where
+         *  A WHERE statement for this UPDATE statement, defaults to null
+         *  which will update all rows in the $table
+         * @throws DatabaseException
+         * @return boolean
+         */
 		public function update($fields, $table, $where = null) {
 			self::cleanFields($fields);
 			$sql = "UPDATE $table SET ";
@@ -620,18 +628,19 @@
 			return $this->query($sql);
 		}
 
-		/**
-		 * Given a table name and a WHERE statement, delete rows from the
-		 * Database.
-		 *
-		 * @param string $table
-		 *  The table name, including the tbl prefix which will be changed
-		 *  to this Symphony's table prefix in the query function
-		 * @param string $where
-		 *  A WHERE statement for this DELETE statement, defaults to null,
-		 *  which will delete all rows in the $table
-		 * @return boolean
-		 */
+        /**
+         * Given a table name and a WHERE statement, delete rows from the
+         * Database.
+         *
+         * @param string $table
+         *  The table name, including the tbl prefix which will be changed
+         *  to this Symphony's table prefix in the query function
+         * @param string $where
+         *  A WHERE statement for this DELETE statement, defaults to null,
+         *  which will delete all rows in the $table
+         * @throws DatabaseException
+         * @return boolean
+         */
 		public function delete($table, $where = null){
 			$sql = "DELETE FROM $table";
 			
@@ -642,22 +651,23 @@
 			return $this->query($sql);
 		}
 
-		/**
-		 * Returns an associative array that contains the results of the
-		 * given `$query`. Optionally, the resulting array can be indexed
-		 * by a particular column.
-		 *
-		 * @param string $query
-		 *  The full SQL query to execute. Defaults to null, which will
-		 *  use the _lastResult
-		 * @param string $index_by_column
-		 *  The name of a column in the table to use it's value to index
-		 *  the result by. If this is omitted (and it is by default), an
-		 *  array of associative arrays is returned, with the key being the
-		 *  column names
-		 * @return array
-		 *  An associative array with the column names as the keys
-		 */
+        /**
+         * Returns an associative array that contains the results of the
+         * given `$query`. Optionally, the resulting array can be indexed
+         * by a particular column.
+         *
+         * @param string $query
+         *  The full SQL query to execute. Defaults to null, which will
+         *  use the _lastResult
+         * @param string $index_by_column
+         *  The name of a column in the table to use it's value to index
+         *  the result by. If this is omitted (and it is by default), an
+         *  array of associative arrays is returned, with the key being the
+         *  column names
+         * @throws DatabaseException
+         * @return array
+         *  An associative array with the column names as the keys
+         */
 		public function fetch($query = null, $index_by_column = null){
 			if(!is_null($query)) {
 				$this->query($query, "ASSOC");
@@ -681,42 +691,44 @@
 			return $result;
 		}
 
-		/**
-		 * Returns the row at the specified index from the given query. If no
-		 * query is given, it will use the `$this->_lastResult`. If no offset is provided,
-		 * the function will return the first row. This function does not imply any
-		 * LIMIT to the given `$query`, so for the more efficient use, it is recommended
-		 * that the `$query` have a LIMIT set.
-		 *
-		 * @param integer $offset
-		 *  The row to return from the SQL query. For instance, if the second
-		 *  row from the result was required, the offset would be 1, because it
-		 *  is zero based.
-		 * @param string $query
-		 *  The full SQL query to execute. Defaults to null, which will
-		 *  use the `$this->_lastResult`
-		 * @return array
-		 *  If there is no row at the specified `$offset`, an empty array will be returned
-		 *  otherwise an associative array of that row will be returned.
-		 */
+        /**
+         * Returns the row at the specified index from the given query. If no
+         * query is given, it will use the `$this->_lastResult`. If no offset is provided,
+         * the function will return the first row. This function does not imply any
+         * LIMIT to the given `$query`, so for the more efficient use, it is recommended
+         * that the `$query` have a LIMIT set.
+         *
+         * @param integer $offset
+         *  The row to return from the SQL query. For instance, if the second
+         *  row from the result was required, the offset would be 1, because it
+         *  is zero based.
+         * @param string $query
+         *  The full SQL query to execute. Defaults to null, which will
+         *  use the `$this->_lastResult`
+         * @throws DatabaseException
+         * @return array
+         *  If there is no row at the specified `$offset`, an empty array will be returned
+         *  otherwise an associative array of that row will be returned.
+         */
 		public function fetchRow($offset = 0, $query = null){
 			$result = $this->fetch($query);
 			return (empty($result) ? array() : $result[$offset]);
 		}
 
-		/**
-		 * Returns an array of values for a specified column in a given query.
-		 * If no query is given, it will use the `$this->_lastResult`.
-		 *
-		 * @param string $column
-		 *  The column name in the query to return the values for
-		 * @param string $query
-		 *  The full SQL query to execute. Defaults to null, which will
-		 *  use the `$this->_lastResult`
-		 * @return array
-		 *  If there is no results for the `$query`, an empty array will be returned
-		 *  otherwise an array of values for that given `$column` will be returned
-		 */
+        /**
+         * Returns an array of values for a specified column in a given query.
+         * If no query is given, it will use the `$this->_lastResult`.
+         *
+         * @param string $column
+         *  The column name in the query to return the values for
+         * @param string $query
+         *  The full SQL query to execute. Defaults to null, which will
+         *  use the `$this->_lastResult`
+         * @throws DatabaseException
+         * @return array
+         *  If there is no results for the `$query`, an empty array will be returned
+         *  otherwise an array of values for that given `$column` will be returned
+         */
 		public function fetchCol($column, $query = null){
 			$result = $this->fetch($query);
 
@@ -729,57 +741,60 @@
 			return $return;
 		}
 
-		/**
-		 * Returns the value for a specified column at a specified offset. If no
-		 * offset is provided, it will return the value for column of the first row.
-		 * If no query is given, it will use the `$this->_lastResult`.
-		 *
-		 * @param string $column
-		 *  The column name in the query to return the values for
-		 * @param integer $offset
-		 *  The row to use to return the value for the given `$column` from the SQL
-		 *  query. For instance, if `$column` form the second row was required, the
-		 *  offset would be 1, because it is zero based.
-		 * @param string $query
-		 *  The full SQL query to execute. Defaults to null, which will
-		 *  use the `$this->_lastResult`
-		 * @return string|null
-		 *  Returns the value of the given column, if it doesn't exist, null will be
-		 *  returned
-		 */
+        /**
+         * Returns the value for a specified column at a specified offset. If no
+         * offset is provided, it will return the value for column of the first row.
+         * If no query is given, it will use the `$this->_lastResult`.
+         *
+         * @param string $column
+         *  The column name in the query to return the values for
+         * @param integer $offset
+         *  The row to use to return the value for the given `$column` from the SQL
+         *  query. For instance, if `$column` form the second row was required, the
+         *  offset would be 1, because it is zero based.
+         * @param string $query
+         *  The full SQL query to execute. Defaults to null, which will
+         *  use the `$this->_lastResult`
+         * @throws DatabaseException
+         * @return string|null
+         *  Returns the value of the given column, if it doesn't exist, null will be
+         *  returned
+         */
 		public function fetchVar($column, $offset = 0, $query = null){
 			$result = $this->fetch($query);
 			return (empty($result) ? null : $result[$offset][$column]);
 		}
 
-		/**
-		 * This function takes `$table` and `$field` names and returns boolean
-		 * if the `$table` contains the `$field`.
-		 *
-		 * @since Symphony 2.3
-		 * @param string $table
-		 *  The table name
-		 * @param string $field
-		 *  The field name
-		 * @return boolean
-		 *  True if `$table` contains `$field`, false otherwise
-		 */
+        /**
+         * This function takes `$table` and `$field` names and returns boolean
+         * if the `$table` contains the `$field`.
+         *
+         * @since Symphony 2.3
+         * @param string $table
+         *  The table name
+         * @param string $field
+         *  The field name
+         * @throws DatabaseException
+         * @return boolean
+         *  True if `$table` contains `$field`, false otherwise
+         */
 		public function tableContainsField($table, $field){
 			$results = $this->fetch("DESC `{$table}` `{$field}`");
 
 			return (is_array($results) && !empty($results));
 		}
 
-		/**
-		 * This function takes `$table` and returns boolean
-		 * if it exists or not.
-		 *
-		 * @since Symphony 2.3.4
-		 * @param string $table
-		 *  The table name
-		 * @return boolean
-		 *  True if `$table` exists, false otherwise
-		 */
+        /**
+         * This function takes `$table` and returns boolean
+         * if it exists or not.
+         *
+         * @since Symphony 2.3.4
+         * @param string $table
+         *  The table name
+         * @throws DatabaseException
+         * @return boolean
+         *  True if `$table` exists, false otherwise
+         */
 		public function tableExists($table) {
 			$results = $this->fetch(sprintf("SHOW TABLES LIKE '%s'", $table));
 
@@ -844,18 +859,19 @@
 			));
 		}
 
-		/**
-		 * Returns all the log entries by type. There are two valid types,
-		 * error and debug. If no type is given, the entire log is returned,
-		 * otherwise only log messages for that type are returned
-		 *
-		 * @return array
-		 *  An array of associative array's. Log entries of the error type
-		 *  return the query the error occurred on and the error number and
-		 *  message from MySQL. Log entries of the debug type return the
-		 *  the query and the start/stop time to indicate how long it took
-		 *  to run
-		 */
+        /**
+         * Returns all the log entries by type. There are two valid types,
+         * error and debug. If no type is given, the entire log is returned,
+         * otherwise only log messages for that type are returned
+         *
+         * @param null|string $type
+         * @return array
+         *  An array of associative array's. Log entries of the error type
+         *  return the query the error occurred on and the error number and
+         *  message from MySQL. Log entries of the debug type return the
+         *  the query and the start/stop time to indicate how long it took
+         *  to run
+         */
 		public function debug($type = null){
 			if(!$type) return self::$_log;
 
@@ -889,20 +905,22 @@
 			);
 		}
 
-		/**
-		 * Convenience function to allow you to execute multiple SQL queries at once
-		 * by providing a string with the queries delimited with a `;`
-		 *
-		 * @param string $sql
-		 *  A string containing SQL queries delimited by `;`
-		 * @param boolean $force_engine
-		 *  If set to true, this will set MySQL's default storage engine to MyISAM.
-		 *  Defaults to false, which will use MySQL's default storage engine when
-		 *  tables don't explicitly define which engine they should be created with
-		 * @return boolean
-		 *  If one of the queries fails, false will be returned and no further queries
-		 *  will be executed, otherwise true will be returned.
-		 */
+        /**
+         * Convenience function to allow you to execute multiple SQL queries at once
+         * by providing a string with the queries delimited with a `;`
+         *
+         * @param string $sql
+         *  A string containing SQL queries delimited by `;`
+         * @param boolean $force_engine
+         *  If set to true, this will set MySQL's default storage engine to MyISAM.
+         *  Defaults to false, which will use MySQL's default storage engine when
+         *  tables don't explicitly define which engine they should be created with
+         * @throws DatabaseException
+         * @throws Exception
+         * @return boolean
+         *  If one of the queries fails, false will be returned and no further queries
+         *  will be executed, otherwise true will be returned.
+         */
 		public function import($sql, $force_engine = false){
 			if($force_engine){
 				// Silently attempt to change the storage engine. This prevents INNOdb errors.

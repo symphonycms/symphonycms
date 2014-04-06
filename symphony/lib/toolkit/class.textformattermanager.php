@@ -147,14 +147,15 @@
 			}
 		}
 
-		/**
-		 * Creates an instance of a given class and returns it. Adds the instance
-		 * to the `$_pool` array with the key being the handle.
-		 *
-		 * @param string $handle
-		 *	The handle of the Text Formatter to create
-		 * @return TextFormatter
-		 */
+        /**
+         * Creates an instance of a given class and returns it. Adds the instance
+         * to the `$_pool` array with the key being the handle.
+         *
+         * @param string $handle
+         *    The handle of the Text Formatter to create
+         * @throws Exception
+         * @return TextFormatter
+         */
 		public static function create($handle){
 			if(!isset(self::$_pool[$handle])){
 				$classname = self::__getClassName($handle);

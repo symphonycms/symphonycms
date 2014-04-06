@@ -133,24 +133,27 @@
 			return $this->_param;
 		}
 
-		/**
-		 * This function is called immediately from the Frontend class passing the current
-		 * URL for generation. Generate will resolve the URL to the specific page in the Symphony
-		 * and then execute all events and datasources registered to this page so that it can
-		 * be rendered. A number of delegates are fired during stages of execution for extensions
-		 * to hook into.
-		 *
-		 * @uses FrontendDevKitResolve
-		 * @uses FrontendOutputPreGenerate
-		 * @uses FrontendPreRenderHeaders
-		 * @uses FrontendOutputPostGenerate
-		 * @see __buildPage()
-		 * @param string $page
-		 * The URL of the current page that is being Rendered as returned by getCurrentPage
-		 * @return string
-		 * The page source after the XSLT has transformed this page's XML. This would be
-		 * exactly the same as the 'view-source' from your browser
-		 */
+        /**
+         * This function is called immediately from the Frontend class passing the current
+         * URL for generation. Generate will resolve the URL to the specific page in the Symphony
+         * and then execute all events and datasources registered to this page so that it can
+         * be rendered. A number of delegates are fired during stages of execution for extensions
+         * to hook into.
+         *
+         * @uses FrontendDevKitResolve
+         * @uses FrontendOutputPreGenerate
+         * @uses FrontendPreRenderHeaders
+         * @uses FrontendOutputPostGenerate
+         * @see __buildPage()
+         * @param string $page
+         * The URL of the current page that is being Rendered as returned by getCurrentPage
+         * @throws Exception
+         * @throws FrontendPageNotFoundException
+         * @throws SymphonyErrorPage
+         * @return string
+         * The page source after the XSLT has transformed this page's XML. This would be
+         * exactly the same as the 'view-source' from your browser
+         */
 		public function generate($page = null) {
 			$full_generate = true;
 			$devkit = null;
@@ -522,25 +525,26 @@
 			Symphony::Profiler()->sample('Page Built', PROFILE_LAP);
 		}
 
-		/**
-		 * This function attempts to resolve the given page in to it's Symphony page. If no
-		 * page is given, it is assumed the 'index' is being requested. Before a page row is
-		 * returned, it is checked to see that if it has the 'admin' type, that the requesting
-		 * user is authenticated as a Symphony author. If they are not, the Symphony 403
-		 * page is returned (whether that be set as a user defined page using the page type
-		 * of 403, or just returning the Default Symphony 403 error page). Any URL parameters
-		 * set on the page are added to the `$env` variable before the function returns an
-		 * associative array of page details such as Title, Content Type etc.
-		 *
-		 * @uses FrontendPrePageResolve
-		 * @see __isSchemaValid()
-		 * @param string $page
-		 * The URL of the current page that is being Rendered as returned by `getCurrentPage()`.
-		 * If no URL is provided, Symphony assumes the Page with the type 'index' is being
-		 * requested.
-		 * @return array
-		 *  An associative array of page details
-		 */
+        /**
+         * This function attempts to resolve the given page in to it's Symphony page. If no
+         * page is given, it is assumed the 'index' is being requested. Before a page row is
+         * returned, it is checked to see that if it has the 'admin' type, that the requesting
+         * user is authenticated as a Symphony author. If they are not, the Symphony 403
+         * page is returned (whether that be set as a user defined page using the page type
+         * of 403, or just returning the Default Symphony 403 error page). Any URL parameters
+         * set on the page are added to the `$env` variable before the function returns an
+         * associative array of page details such as Title, Content Type etc.
+         *
+         * @uses FrontendPrePageResolve
+         * @see __isSchemaValid()
+         * @param string $page
+         * The URL of the current page that is being Rendered as returned by `getCurrentPage()`.
+         * If no URL is provided, Symphony assumes the Page with the type 'index' is being
+         * requested.
+         * @throws SymphonyErrorPage
+         * @return array
+         *  An associative array of page details
+         */
 		public function resolvePage($page = null){
 			if($page) $this->_page = $page;
 
@@ -662,21 +666,22 @@
 			return (count($schema_arr) >= count($bits));
 		}
 
-		/**
-		 * The processEvents function executes all Events attached to the resolved
-		 * page in the correct order determined by `__findEventOrder()`. The results
-		 * from the Events are appended to the page's XML. Events execute first,
-		 * before Datasources.
-		 *
-		 * @uses FrontendProcessEvents
-		 * @uses FrontendEventPostProcess
-		 * @param string $events
-		 *  A string of all the Events attached to this page, comma separated.
-		 * @param XMLElement $wrapper
-		 *  The XMLElement to append the Events results to. Event results are
-		 *  contained in a root XMLElement that is the handlised version of
-		 *  their name.
-		 */
+        /**
+         * The processEvents function executes all Events attached to the resolved
+         * page in the correct order determined by `__findEventOrder()`. The results
+         * from the Events are appended to the page's XML. Events execute first,
+         * before Datasources.
+         *
+         * @uses FrontendProcessEvents
+         * @uses FrontendEventPostProcess
+         * @param string $events
+         *  A string of all the Events attached to this page, comma separated.
+         * @param XMLElement $wrapper
+         *  The XMLElement to append the Events results to. Event results are
+         *  contained in a root XMLElement that is the handlised version of
+         *  their name.
+         * @throws Exception
+         */
 		private function processEvents($events, XMLElement &$wrapper){
 			/**
 			 * Manipulate the events array and event element wrapper
@@ -769,24 +774,25 @@
 			return(($a->priority() > $b->priority()) ? -1 : 1);
 		}
 
-		/**
-		 * Given an array of all the Datasources for this page, sort them into the
-		 * correct execution order and append the Datasource results to the
-		 * page XML. If the Datasource provides any parameters, they will be
-		 * added to the `$env` pool for use by other Datasources and eventual
-		 * inclusion into the page parameters.
-		 *
-		 * @param string $datasources
-		 *  A string of Datasource's attached to this page, comma separated.
-		 * @param XMLElement $wrapper
-		 *  The XMLElement to append the Datasource results to. Datasource
-		 *  results are contained in a root XMLElement that is the handlised
-		 *  version of their name.
-		 * @param array $params
-		 *  Any params to automatically add to the `$env` pool, by default this
-		 *  is an empty array. It looks like Symphony does not utilise this parameter
-		 *  at all
-		 */
+        /**
+         * Given an array of all the Datasources for this page, sort them into the
+         * correct execution order and append the Datasource results to the
+         * page XML. If the Datasource provides any parameters, they will be
+         * added to the `$env` pool for use by other Datasources and eventual
+         * inclusion into the page parameters.
+         *
+         * @param string $datasources
+         *  A string of Datasource's attached to this page, comma separated.
+         * @param XMLElement $wrapper
+         *  The XMLElement to append the Datasource results to. Datasource
+         *  results are contained in a root XMLElement that is the handlised
+         *  version of their name.
+         * @param array $params
+         *  Any params to automatically add to the `$env` pool, by default this
+         *  is an empty array. It looks like Symphony does not utilise this parameter
+         *  at all
+         * @throws Exception
+         */
 		public function processDatasources($datasources, XMLElement &$wrapper, array $params = array()) {
 			if (trim($datasources) == '') return;
 

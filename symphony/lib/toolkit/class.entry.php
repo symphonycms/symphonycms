@@ -68,13 +68,14 @@
 			return $this->_fields[$setting];
 		}
 
-		/**
-		 * Creates the initial entry row in tbl_entries and returns the resulting
-		 * Entry ID using `getInsertID()`.
-		 *
-		 * @see toolkit.MySQL#getInsertID()
-		 * @return integer
-		 */
+        /**
+         * Creates the initial entry row in tbl_entries and returns the resulting
+         * Entry ID using `getInsertID()`.
+         *
+         * @see toolkit.MySQL#getInsertID()
+         * @throws DatabaseException
+         * @return integer
+         */
 		public function assignEntryId() {
 			$fields = $this->get();
 			$fields['creation_date'] = $fields['modification_date'] = DateTimeObj::get('Y-m-d H:i:s');
@@ -102,31 +103,33 @@
 			$this->_data[$field_id] = $data;
 		}
 
-		/**
-		 * When an entry is saved from a form (either Frontend/Backend) this
-		 * function will find all the fields in this set and loop over them, setting
-		 * the data to each of the fields for processing. If any errors occur during
-		 * this, `_ENTRY_FIELD_ERROR_` is returned, and an array is available with
-		 * the errors.
-		 *
-		 * @param array $data
-		 *  An associative array of the data for this entry where they key is the
-		 *  Field's handle for this Section and the value is the data from the form
-		 * @param array $errors
-		 *  An associative array of errors, by reference. The key is the `field_id`, the value
-		 *  is the message text. Defaults to an empty array
-		 * @param boolean $simulate
-		 *  If $simulate is given as true, a dry run of this function will occur, where
-		 *  regardless of errors, an Entry will not be saved in the database. Defaults to
-		 *  false
-		 * @param boolean $ignore_missing_fields
-		 *  This parameter allows Entries to be updated, rather than replaced. This is
-		 *  useful if the input form only contains a couple of the fields for this Entry.
-		 *  Defaults to false, which will set Fields to their default values if they are not
-		 *  provided in the $data
-		 * @return integer
-		 *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
-		 */
+        /**
+         * When an entry is saved from a form (either Frontend/Backend) this
+         * function will find all the fields in this set and loop over them, setting
+         * the data to each of the fields for processing. If any errors occur during
+         * this, `_ENTRY_FIELD_ERROR_` is returned, and an array is available with
+         * the errors.
+         *
+         * @param array $data
+         *  An associative array of the data for this entry where they key is the
+         *  Field's handle for this Section and the value is the data from the form
+         * @param array $errors
+         *  An associative array of errors, by reference. The key is the `field_id`, the value
+         *  is the message text. Defaults to an empty array
+         * @param boolean $simulate
+         *  If $simulate is given as true, a dry run of this function will occur, where
+         *  regardless of errors, an Entry will not be saved in the database. Defaults to
+         *  false
+         * @param boolean $ignore_missing_fields
+         *  This parameter allows Entries to be updated, rather than replaced. This is
+         *  useful if the input form only contains a couple of the fields for this Entry.
+         *  Defaults to false, which will set Fields to their default values if they are not
+         *  provided in the $data
+         * @throws DatabaseException
+         * @throws Exception
+         * @return integer
+         *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
+         */
 		public function setDataFromPost($data, &$errors = null, $simulate = false, $ignore_missing_fields = false){
 			$status = __ENTRY_OK__;
 
@@ -193,23 +196,25 @@
 			return ($asObject == true ? (object)$fieldData : $fieldData);
 		}
 
-		/**
-		 * Given a array of data from a form, this function will iterate over all the fields
-		 * in this Entry's Section and call their `checkPostFieldData()` function.
-		 *
-		 * @param array $data
-		 *  An associative array of the data for this entry where they key is the
-		 *  Field's handle for this Section and the value is the data from the form
-		 * @param array $error
-		 *  An array of errors, by reference. Defaults to empty
-		 * @param boolean $ignore_missing_fields
-		 *  This parameter allows Entries to be updated, rather than replaced. This is
-		 *  useful if the input form only contains a couple of the fields for this Entry.
-		 *  Defaults to false, which will check all Fields even if they are not
-		 *  provided in the $data
-		 * @return integer
-		 *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
-		 */
+        /**
+         * Given a array of data from a form, this function will iterate over all the fields
+         * in this Entry's Section and call their `checkPostFieldData()` function.
+         *
+         * @param array $data
+         *  An associative array of the data for this entry where they key is the
+         *  Field's handle for this Section and the value is the data from the form
+         * @param null|array $errors
+         *  An array of errors, by reference. Defaults to empty*  An array of errors, by reference.
+         *  Defaults to empty
+         * @param boolean $ignore_missing_fields
+         *  This parameter allows Entries to be updated, rather than replaced. This is
+         *  useful if the input form only contains a couple of the fields for this Entry.
+         *  Defaults to false, which will check all Fields even if they are not
+         *  provided in the $data
+         * @throws Exception
+         * @return integer
+         *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
+         */
 		public function checkPostData($data, &$errors = null, $ignore_missing_fields=false){
 			$status = __ENTRY_OK__;
 			$section = SectionManager::fetch($this->get('section_id'));
@@ -255,34 +260,36 @@
 			if(!$this->get('creation_date_gmt')) $this->set('creation_date_gmt', $this->get('modification_date_gmt'));
 		}
 
-		/**
-		 * Commits this Entry's data to the database, by first finding the default
-		 * data for this `Entry` and then utilising the `EntryManager`'s
-		 * add or edit function. The `EntryManager::edit` function is used if
-		 * the current `Entry` object has an ID, otherwise `EntryManager::add`
-		 * is used.
-		 *
-		 * @see toolkit.Entry#findDefaultData()
-		 * @return boolean
-		 *  true if the commit was successful, false otherwise.
-		 */
+        /**
+         * Commits this Entry's data to the database, by first finding the default
+         * data for this `Entry` and then utilising the `EntryManager`'s
+         * add or edit function. The `EntryManager::edit` function is used if
+         * the current `Entry` object has an ID, otherwise `EntryManager::add`
+         * is used.
+         *
+         * @see toolkit.Entry#findDefaultData()
+         * @throws Exception
+         * @return boolean
+         *  true if the commit was successful, false otherwise.
+         */
 		public function commit(){
 			$this->findDefaultData();
 			return ($this->get('id') ? EntryManager::edit($this) : EntryManager::add($this));
 		}
 
-		/**
-		 * Entries may link to other Entries through fields. This function will return the
-		 * number of entries that are associated with the current entry as an associative
-		 * array. If there are no associated entries, null will be returned.
-		 *
-		 * @param array $associated_sections
-		 *  An associative array of sections to return the Entry counts from. Defaults to
-		 *  null, which will fetch all the associations of this Entry.
-		 * @return array
-		 *  An associative array with the key being the associated Section's ID and the
-		 *  value being the number of entries associated with this Entry.
-		 */
+        /**
+         * Entries may link to other Entries through fields. This function will return the
+         * number of entries that are associated with the current entry as an associative
+         * array. If there are no associated entries, null will be returned.
+         *
+         * @param array $associated_sections
+         *  An associative array of sections to return the Entry counts from. Defaults to
+         *  null, which will fetch all the associations of this Entry.
+         * @throws Exception
+         * @return array
+         *  An associative array with the key being the associated Section's ID and the
+         *  value being the number of entries associated with this Entry.
+         */
 		public function fetchAllAssociatedEntryCounts($associated_sections = null) {
 			if(is_null($this->get('section_id'))) return null;
 

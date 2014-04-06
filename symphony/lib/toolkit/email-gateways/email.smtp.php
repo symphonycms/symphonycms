@@ -37,21 +37,24 @@
 			);
 		}
 
-		/**
-		 * Constructor. Sets basic default values based on preferences.
-		 *
-		 * @return void
-		 */
+        /**
+         * Constructor. Sets basic default values based on preferences.
+         *
+         * @throws EmailValidationException
+         */
 		public function __construct(){
 			parent::__construct();
 			$this->setConfiguration(Symphony::Configuration()->get('email_smtp'));
 		}
 
-		/**
-		 * Send an email using an SMTP server
-		 *
-		 * @return boolean
-		 */
+        /**
+         * Send an email using an SMTP server
+         *
+         * @throws EmailGatewayException
+         * @throws EmailValidationException
+         * @throws Exception
+         * @return boolean
+         */
 		public function send(){
 
 			$this->validate();
@@ -165,11 +168,12 @@
 			return false;
 		}
 
-		/**
-		 * Sets the host to connect to.
-		 *
-		 * @return void
-		 */
+        /**
+         * Sets the host to connect to.
+         *
+         * @param null|string $host (optional)
+         * @return void
+         */
 		public function setHost($host = null){
 			if($host === null){
 				$host = '127.0.0.1';
@@ -182,11 +186,12 @@
 			$this->_host = $host;
 		}
 
-		/**
-		 * Sets the port, used in the connection.
-		 *
-		 * @return void
-		 */
+        /**
+         * Sets the port, used in the connection.
+         *
+         * @param null|int $port
+         * @return void
+         */
 		public function setPort($port = null){
 			if(is_null($port)) {
 				$port = ($this->_protocol == 'ssl') ? 465 : 25;
@@ -247,12 +252,14 @@
 			}
 		}
 
-		/**
-		 * Sets the envelope_from address. This is only available via the API, as it is an expert-only feature.
-		 *
-		 * @since 2.3.1
-		 * @return void
-		 */
+        /**
+         * Sets the envelope_from address. This is only available via the API, as it is an expert-only feature.
+         *
+         * @since 2.3.1
+         * @param null $envelope_from
+         * @throws EmailValidationException
+         * @return void
+         */
 		public function setEnvelopeFrom($envelope_from = null){
 			if(preg_match('%[\r\n]%', $envelope_from)){
 				throw new EmailValidationException(__('The Envelope From Address can not contain carriage return or newlines.'));
@@ -260,15 +267,16 @@
 			$this->_envelope_from = $envelope_from;
 		}
 
-		/**
-		 * Sets all configuration entries from an array.
-		 *
-		 * @throws EmailValidationException
-		 * @param array $configuration
-		 * @since 2.3.1
-		 *  All configuration entries stored in a single array. The array should have the format of the $_POST array created by the preferences HTML.
-		 * @return void
-		 */
+        /**
+         * Sets all configuration entries from an array.
+         *
+         * @param array $config
+         *  All configuration entries stored in a single array.
+         *  The array should have the format of the $_POST array created by the preferences HTML.
+         * @throws EmailValidationException
+         * @since 2.3.1
+         * @return void
+         */
 		public function setConfiguration($config){
 			$this->setFrom($config['from_address'],$config['from_name']);
 			$this->setHost($config['host']);
@@ -286,11 +294,12 @@
 			}
 		}
 
-		/**
-		 * Builds the preferences pane, shown in the Symphony backend.
-		 *
-		 * @return XMLElement
-		 */
+        /**
+         * Builds the preferences pane, shown in the Symphony backend.
+         *
+         * @throws InvalidArgumentException
+         * @return XMLElement
+         */
 		public function getPreferencesPane(){
 			parent::getPreferencesPane();
 			$group = new XMLElement('fieldset');

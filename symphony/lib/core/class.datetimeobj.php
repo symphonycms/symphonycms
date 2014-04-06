@@ -135,28 +135,28 @@
 			}
 		}
 
-		/**
-		 * Given a `$format`, and a `$timestamp`,
-		 * return the date in the format provided. This function is a basic
-		 * wrapper for PHP's DateTime object. If the `$timestamp` is omitted,
-		 * the current timestamp will be used. Optionally, you pass a
-		 * timezone identifier with this function to localise the output
-		 *
-		 * If you like to display a date in the backend, please make use
-		 * of `DateTimeObj::format()` which allows date and time localization
-		 *
-		 * @see class.datetimeobj.php#format()
-		 * @link http://www.php.net/manual/en/book.datetime.php
-		 * @param string $format
-		 *  A valid PHP date format
-		 * @param integer $timestamp (optional)
-		 *  A unix timestamp to format. 'now' or omitting this parameter will
-		 *  result in the current time being used
-		 * @param string $timezone (optional)
-		 *  The timezone associated with the timestamp
-		 * @return string|boolean
-		 *  The formatted date, of if the date could not be parsed, false.
-		 */
+        /**
+         * Given a `$format`, and a `$timestamp`,
+         * return the date in the format provided. This function is a basic
+         * wrapper for PHP's DateTime object. If the `$timestamp` is omitted,
+         * the current timestamp will be used. Optionally, you pass a
+         * timezone identifier with this function to localise the output
+         *
+         * If you like to display a date in the backend, please make use
+         * of `DateTimeObj::format()` which allows date and time localization
+         *
+         * @see class.datetimeobj.php#format()
+         * @link http://www.php.net/manual/en/book.datetime.php
+         * @param string $format
+         *  A valid PHP date format
+         * @param null|string $timestamp (optional)
+         *  A unix timestamp to format. 'now' or omitting this parameter will
+         *  result in the current time being used
+         * @param string $timezone (optional)
+         *  The timezone associated with the timestamp
+         * @return string|boolean
+         *  The formatted date, of if the date could not be parsed, false.
+         */
 		public static function get($format, $timestamp = 'now', $timezone = null) {
 			return self::format($timestamp, $format, false, $timezone);
 		}
@@ -267,17 +267,17 @@
 			return $date;
 		}
 
-		/**
-		 * A wrapper for get, this function will force the GMT timezone.
-		 *
-		 * @param string $format
-		 *  A valid PHP date format
-		 * @param integer $timestamp (optional)
-		 *  A unix timestamp to format. Omitting this parameter will
-		 *  result in the current time being used
-		 * @return string
-		 *  The formatted date in GMT
-		 */
+        /**
+         * A wrapper for get, this function will force the GMT timezone.
+         *
+         * @param string $format
+         *  A valid PHP date format
+         * @param null|string $timestamp (optional)
+         *  A unix timestamp to format. Omitting this parameter will
+         *  result in the current time being used
+         * @return string
+         *  The formatted date in GMT
+         */
 		public static function getGMT($format, $timestamp = 'now'){
 			return self::format($timestamp, $format, false, 'GMT');
 		}

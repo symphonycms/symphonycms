@@ -14,16 +14,17 @@
 	 */
 	Class PageManager {
 
-		/**
-		 * Given an associative array of data, where the key is the column name
-		 * in `tbl_pages` and the value is the data, this function will create a new
-		 * Page and return a Page ID on success.
-		 *
-		 * @param array $fields
-		 *  Associative array of field names => values for the Page
-		 * @return integer|boolean
-		 *  Returns the Page ID of the created Page on success, false otherwise.
-		 */
+        /**
+         * Given an associative array of data, where the key is the column name
+         * in `tbl_pages` and the value is the data, this function will create a new
+         * Page and return a Page ID on success.
+         *
+         * @param array $fields
+         *  Associative array of field names => values for the Page
+         * @throws DatabaseException
+         * @return integer|boolean
+         *  Returns the Page ID of the created Page on success, false otherwise.
+         */
 		public static function add(array $fields){
 			if(!isset($fields['sortorder'])){
 				$fields['sortorder'] = self::fetchNextSortOrder();
@@ -72,16 +73,17 @@
 			));
 		}
 
-		/**
-		 * Given a Page ID and an array of types, this function will add Page types
-		 * to that Page. If a Page types are stored in `tbl_pages_types`.
-		 *
-		 * @param integer $page_id
-		 *  The Page ID to add the Types to
-		 * @param array $types
-		 *  An array of page types
-		 * @return boolean
-		 */
+        /**
+         * Given a Page ID and an array of types, this function will add Page types
+         * to that Page. If a Page types are stored in `tbl_pages_types`.
+         *
+         * @param integer $page_id
+         *  The Page ID to add the Types to
+         * @param array $types
+         *  An array of page types
+         * @throws DatabaseException
+         * @return boolean
+         */
 		public static function addPageTypesToPage($page_id = null, array $types) {
 			if(is_null($page_id)) return false;
 
@@ -123,31 +125,32 @@
 				return false;
 		}
 
-		/**
-		 * This function creates the initial `.xsl` template for the page, whether
-		 * that be from the `TEMPLATES/blueprints.page.xsl` file, or from an existing
-		 * template with the same name. This function will handle the renaming of a page
-		 * by creating the new files using the old files as the templates then removing
-		 * the old template. If a template already exists for a Page, it will not
-		 * be overridden and the function will return true.
-		 *
-		 * @see toolkit.PageManager#resolvePageFileLocation()
-		 * @see toolkit.PageManager#createHandle()
-		 * @param string $new_path
-		 *  The path of the Page, which is the handles of the Page parents. If the
-		 *  page has multiple parents, they will be separated by a forward slash.
-		 *  eg. article/read. If a page has no parents, this parameter should be null.
-		 * @param string $new_handle
-		 *  The new Page handle, generated using `PageManager::createHandle`.
-		 * @param string $old_path (optional)
-		 *  This parameter is only required when renaming a Page. It should be the 'old
-		 *  path' before the Page was renamed.
-		 * @param string $old_handle (optional)
-		 *  This parameter is only required when renaming a Page. It should be the 'old
-		 *  handle' before the Page was renamed.
-		 * @return boolean
-		 *  True when the page files have been created successfully, false otherwise.
-		 */
+        /**
+         * This function creates the initial `.xsl` template for the page, whether
+         * that be from the `TEMPLATES/blueprints.page.xsl` file, or from an existing
+         * template with the same name. This function will handle the renaming of a page
+         * by creating the new files using the old files as the templates then removing
+         * the old template. If a template already exists for a Page, it will not
+         * be overridden and the function will return true.
+         *
+         * @see toolkit.PageManager#resolvePageFileLocation()
+         * @see toolkit.PageManager#createHandle()
+         * @param string $new_path
+         *  The path of the Page, which is the handles of the Page parents. If the
+         *  page has multiple parents, they will be separated by a forward slash.
+         *  eg. article/read. If a page has no parents, this parameter should be null.
+         * @param string $new_handle
+         *  The new Page handle, generated using `PageManager::createHandle`.
+         * @param string $old_path (optional)
+         *  This parameter is only required when renaming a Page. It should be the 'old
+         *  path' before the Page was renamed.
+         * @param string $old_handle (optional)
+         *  This parameter is only required when renaming a Page. It should be the 'old
+         *  handle' before the Page was renamed.
+         * @throws Exception
+         * @return boolean
+         *  True when the page files have been created successfully, false otherwise.
+         */
 		public static function createPageFiles($new_path, $new_handle, $old_path = null, $old_handle = null) {
 			$new = PageManager::resolvePageFileLocation($new_path, $new_handle);
 			$old = PageManager::resolvePageFileLocation($old_path, $old_handle);
@@ -252,20 +255,21 @@
 			}
 		}
 
-		/**
-		 * This function will update all children of a particular page (if any)
-		 * by renaming/moving all related files to their new path and updating
-		 * their database information. This is a recursive function and will work
-		 * to any depth.
-		 *
-		 * @param integer $page_id
-		 *  The ID of the Page whose children need to be updated
-		 * @param string $page_path
-		 *  The path of the Page, which is the handles of the Page parents. If the
-		 *  page has multiple parents, they will be separated by a forward slash.
-		 *  eg. article/read. If a page has no parents, this parameter should be null.
-		 * @return boolean
-		 */
+        /**
+         * This function will update all children of a particular page (if any)
+         * by renaming/moving all related files to their new path and updating
+         * their database information. This is a recursive function and will work
+         * to any depth.
+         *
+         * @param integer $page_id
+         *  The ID of the Page whose children need to be updated
+         * @param string $page_path
+         *  The path of the Page, which is the handles of the Page parents. If the
+         *  page has multiple parents, they will be separated by a forward slash.
+         *  eg. article/read. If a page has no parents, this parameter should be null.
+         * @throws Exception
+         * @return boolean
+         */
 		public static function editPageChildren($page_id = null, $page_path = null) {
 			if(!is_int($page_id)) return false;
 
@@ -292,20 +296,22 @@
 			return $success;
 		}
 
-		/**
-		 * This function takes a Page ID and removes the Page from the database
-		 * in `tbl_pages` and it's associated Page Types in `tbl_pages_types`.
-		 * This function does not delete any of the Page's children.
-		 *
-		 * @see toolkit.PageManager#deletePageTypes
-		 * @see toolkit.PageManager#deletePageFiles
-		 * @param integer $page_id
-		 *  The ID of the Page that should be deleted.
-		 * @param boolean $delete_files
-		 *  If true, this parameter will remove the Page's templates from the
-		 *  the filesystem. By default this is true.
-		 * @return boolean
-		 */
+        /**
+         * This function takes a Page ID and removes the Page from the database
+         * in `tbl_pages` and it's associated Page Types in `tbl_pages_types`.
+         * This function does not delete any of the Page's children.
+         *
+         * @see toolkit.PageManager#deletePageTypes
+         * @see toolkit.PageManager#deletePageFiles
+         * @param integer $page_id
+         *  The ID of the Page that should be deleted.
+         * @param boolean $delete_files
+         *  If true, this parameter will remove the Page's templates from the
+         *  the filesystem. By default this is true.
+         * @throws DatabaseException
+         * @throws Exception
+         * @return boolean
+         */
 		public static function delete($page_id = null, $delete_files = true) {
 			if(!is_int($page_id)) return false;
 			$can_proceed = true;
@@ -338,33 +344,35 @@
 			return $can_proceed;
 		}
 
-		/**
-		 * Given a `$page_id`, this function will remove all associated
-		 * Page Types from `tbl_pages_types`.
-		 *
-		 * @param integer $page_id
-		 *  The ID of the Page that should be deleted.
-		 * @return boolean
-		 */
+        /**
+         * Given a `$page_id`, this function will remove all associated
+         * Page Types from `tbl_pages_types`.
+         *
+         * @param integer $page_id
+         *  The ID of the Page that should be deleted.
+         * @throws DatabaseException
+         * @return boolean
+         */
 		public static function deletePageTypes($page_id = null) {
 			if(is_null($page_id)) return false;
 
 			return Symphony::Database()->delete('tbl_pages_types', sprintf(" `page_id` = %d ", $page_id));
 		}
 
-		/**
-		 * Given a Page's `$path` and `$handle`, this function will remove
-		 * it's templates from the `PAGES` directory returning boolean on
-		 * completion
-		 *
-		 * @param string $page_path
-		 *  The path of the Page, which is the handles of the Page parents. If the
-		 *  page has multiple parents, they will be separated by a forward slash.
-		 *  eg. article/read. If a page has no parents, this parameter should be null.
-		 * @param string $handle
-		 *  A Page handle, generated using `PageManager::createHandle`.
-		 * @return boolean
-		 */
+        /**
+         * Given a Page's `$path` and `$handle`, this function will remove
+         * it's templates from the `PAGES` directory returning boolean on
+         * completion
+         *
+         * @param string $page_path
+         *  The path of the Page, which is the handles of the Page parents. If the
+         *  page has multiple parents, they will be separated by a forward slash.
+         *  eg. article/read. If a page has no parents, this parameter should be null.
+         * @param string $handle
+         *  A Page handle, generated using `PageManager::createHandle`.
+         * @throws Exception
+         * @return boolean
+         */
 		public static function deletePageFiles($page_path, $handle) {
 			$file = PageManager::resolvePageFileLocation($page_path, $handle);
 
@@ -611,12 +619,13 @@
 			return ($next ? (int)$next : 1);
 		}
 
-		/**
-		 * Fetch an associated array with Page ID's and the types they're using.
-		 *
-		 * @return array
-		 *  A 2-dimensional associated array where the key is the page ID.
-		 */
+        /**
+         * Fetch an associated array with Page ID's and the types they're using.
+         *
+         * @throws DatabaseException
+         * @return array
+         *  A 2-dimensional associated array where the key is the page ID.
+         */
 		public static function fetchAllPagesPageTypes() {
 			$types = Symphony::Database()->fetch("SELECT `page_id`,`type` FROM `tbl_pages_types`");
 			$page_types = array();
@@ -649,7 +658,7 @@
 		 * This function takes a `$path` and `$handle` and generates a flattened
 		 * string for use as a filename for a Page's template.
 		 *
-		 * @param string $page_path
+		 * @param string $path
 		 *  The path of the Page, which is the handles of the Page parents. If the
 		 *  page has multiple parents, they will be separated by a forward slash.
 		 *  eg. article/read. If a page has no parents, this parameter should be null.
@@ -757,18 +766,19 @@
 			return PAGES . '/' . PageManager::createFilePath($path, $handle) . '.xsl';
 		}
 
-		/**
-		 * Given the `$page_id` and a `$column`, this function will return an
-		 * array of the given `$column` for the Page, including all parents.
-		 *
-		 * @param mixed $page_id
-		 *  The ID of the Page that currently being viewed, or the handle of the
-		 *  current Page
-		 * @return array
-		 *  An array of the current Page, containing the `$column`
-		 *  requested. The current page will be the last item the array, as all
-		 *  parent pages are prepended to the start of the array
-		 */
+        /**
+         * Given the `$page_id` and a `$column`, this function will return an
+         * array of the given `$column` for the Page, including all parents.
+         *
+         * @param mixed $page_id
+         *  The ID of the Page that currently being viewed, or the handle of the
+         *  current Page
+         * @param string $column
+         * @return array
+         *  An array of the current Page, containing the `$column`
+         *  requested. The current page will be the last item the array, as all
+         *  parent pages are prepended to the start of the array
+         */
 		public static function resolvePage($page_id, $column) {
 			$path = array();
 			$page = Symphony::Database()->fetchRow(0, sprintf("

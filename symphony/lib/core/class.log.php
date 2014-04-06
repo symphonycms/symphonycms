@@ -258,26 +258,27 @@
 			return $this->pushToLog($message, $exception->getCode(), $writeToLog, $addbreak, $append);
 		}
 
-		/**
-		 * The function handles the rotation of the log files. By default it will open
-		 * the current log file, 'main', which is written to `$_log_path` and
-		 * check it's file size doesn't exceed `$_max_size`. If it does, the log
-		 * is appended with a date stamp and if `$_archive` has been set, it will
-		 * be archived and stored. If a log file has exceeded it's size, or `Log::OVERWRITE`
-		 * flag is set, the existing log file is removed and a new one created. Essentially,
-		 * if a log file has not reached it's `$_max_size` and the the flag is not
-		 * set to `Log::OVERWRITE`, this function does nothing.
-		 *
-		 * @link http://au.php.net/manual/en/function.intval.php
-		 * @param integer $flag
-		 *  One of the Log constants, either `Log::APPEND` or `Log::OVERWRITE`
-		 *  By default this is `Log::APPEND`
-		 * @param integer $mode
-		 *  The file mode used to apply to the archived log, by default this is 0777. Note that this
-		 *  parameter is modified using PHP's intval function with base 8.
-		 * @return integer
-		 *  Returns 1 if the log was overwritten, or 2 otherwise.
-		 */
+        /**
+         * The function handles the rotation of the log files. By default it will open
+         * the current log file, 'main', which is written to `$_log_path` and
+         * check it's file size doesn't exceed `$_max_size`. If it does, the log
+         * is appended with a date stamp and if `$_archive` has been set, it will
+         * be archived and stored. If a log file has exceeded it's size, or `Log::OVERWRITE`
+         * flag is set, the existing log file is removed and a new one created. Essentially,
+         * if a log file has not reached it's `$_max_size` and the the flag is not
+         * set to `Log::OVERWRITE`, this function does nothing.
+         *
+         * @link http://au.php.net/manual/en/function.intval.php
+         * @param integer $flag
+         *  One of the Log constants, either `Log::APPEND` or `Log::OVERWRITE`
+         *  By default this is `Log::APPEND`
+         * @param integer $mode
+         *  The file mode used to apply to the archived log, by default this is 0777. Note that this
+         *  parameter is modified using PHP's intval function with base 8.
+         * @throws Exception
+         * @return integer
+         *  Returns 1 if the log was overwritten, or 2 otherwise.
+         */
 		public function open($flag=self::APPEND, $mode=0777){
 
 			if(!file_exists($this->_log_path)) $flag = self::OVERWRITE;

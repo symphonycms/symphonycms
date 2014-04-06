@@ -148,13 +148,14 @@
 			Lang::set(self::$Configuration->get('lang', 'symphony'));
 		}
 
-		/**
-		* Accessor for the Symphony instance, whether it be Frontend
-		* or Administration
-		*
-		* @since Symphony 2.2
-		* @return Symphony
-		*/
+        /**
+         * Accessor for the Symphony instance, whether it be Frontend
+         * or Administration
+         *
+         * @since Symphony 2.2
+         * @throws Exception
+         * @return Symphony
+         */
 		public static function Engine() {
 			if(class_exists('Administration')) {
 				return Administration::instance();
@@ -205,14 +206,16 @@
 			return self::$Profiler;
 		}
 
-		/**
-		 * Setter for `$Log`. This function uses the configuration
-		 * settings in the 'log' group in the Configuration to create an instance. Date
-		 * formatting options are also retrieved from the configuration.
-		 *
-		 * @param string $filename (optional)
-		 *  The file to write the log to, if omitted this will default to `ACTIVITY_LOG`
-		 */
+        /**
+         * Setter for `$Log`. This function uses the configuration
+         * settings in the 'log' group in the Configuration to create an instance. Date
+         * formatting options are also retrieved from the configuration.
+         *
+         * @param string $filename (optional)
+         *  The file to write the log to, if omitted this will default to `ACTIVITY_LOG`
+         * @throws Exception
+         * @return bool|void
+         */
 		public function initialiseLog($filename = null) {
 			if(self::$Log instanceof Log && self::$Log->getLogPath() == $filename) return true;
 
@@ -317,15 +320,16 @@
 			return self::$Database;
 		}
 
-		/**
-		 * This will initialise the Database class and attempt to create a connection
-		 * using the connection details provided in the Symphony configuration. If any
-		 * errors occur whilst doing so, a Symphony Error Page is displayed.
-		 *
-		 * @return boolean
-		 *  This function will return true if the `$Database` was
-		 *  initialised successfully.
-		 */
+        /**
+         * This will initialise the Database class and attempt to create a connection
+         * using the connection details provided in the Symphony configuration. If any
+         * errors occur whilst doing so, a Symphony Error Page is displayed.
+         *
+         * @throws SymphonyErrorPage
+         * @return boolean
+         *  This function will return true if the `$Database` was
+         *  initialised successfully.
+         */
 		public function initialiseDatabase(){
 			$this->setDatabase();
 
@@ -372,25 +376,26 @@
 			return true;
 		}
 
-		/**
-		 * Attempts to log an Author in given a username and password.
-		 * If the password is not hashed, it will be hashed using the sha1
-		 * algorithm. The username and password will be sanitized before
-		 * being used to query the Database. If an Author is found, they
-		 * will be logged in and the sanitized username and password (also hashed)
-		 * will be saved as values in the `$Cookie`.
-		 *
-		 * @see toolkit.General#hash()
-		 * @param string $username
-		 *  The Author's username. This will be sanitized before use.
-		 * @param string $password
-		 *  The Author's password. This will be sanitized and then hashed before use
-		 * @param boolean $isHash
-		 *  If the password provided is already hashed, setting this parameter to
-		 *  true will stop it becoming rehashed. By default it is false.
-		 * @return boolean
-		 *  True if the Author was logged in, false otherwise
-		 */
+        /**
+         * Attempts to log an Author in given a username and password.
+         * If the password is not hashed, it will be hashed using the sha1
+         * algorithm. The username and password will be sanitized before
+         * being used to query the Database. If an Author is found, they
+         * will be logged in and the sanitized username and password (also hashed)
+         * will be saved as values in the `$Cookie`.
+         *
+         * @see toolkit.General#hash()
+         * @param string $username
+         *  The Author's username. This will be sanitized before use.
+         * @param string $password
+         *  The Author's password. This will be sanitized and then hashed before use
+         * @param boolean $isHash
+         *  If the password provided is already hashed, setting this parameter to
+         *  true will stop it becoming rehashed. By default it is false.
+         * @throws DatabaseException
+         * @return boolean
+         *  True if the Author was logged in, false otherwise
+         */
 		public function login($username, $password, $isHash=false){
 			$username = self::Database()->cleanValue($username);
 			$password = self::Database()->cleanValue($password);
@@ -426,20 +431,21 @@
 			return false;
 		}
 
-		/**
-		 * Symphony allows Authors to login via the use of tokens instead of
-		 * a username and password. A token is derived from concatenating the
-		 * Author's username and password and applying the sha1 hash to
-		 * it, from this, a portion of the hash is used as the token. This is a useful
-		 * feature often used when setting up other Authors accounts or if an
-		 * Author forgets their password.
-		 *
-		 * @param string $token
-		 *  The Author token, which is a portion of the hashed string concatenation
-		 *  of the Author's username and password
-		 * @return boolean
-		 *  True if the Author is logged in, false otherwise
-		 */
+        /**
+         * Symphony allows Authors to login via the use of tokens instead of
+         * a username and password. A token is derived from concatenating the
+         * Author's username and password and applying the sha1 hash to
+         * it, from this, a portion of the hash is used as the token. This is a useful
+         * feature often used when setting up other Authors accounts or if an
+         * Author forgets their password.
+         *
+         * @param string $token
+         *  The Author token, which is a portion of the hashed string concatenation
+         *  of the Author's username and password
+         * @throws DatabaseException
+         * @return boolean
+         *  True if the Author is logged in, false otherwise
+         */
 		public function loginFromToken($token){
 			$token = self::Database()->cleanValue($token);
 
@@ -593,51 +599,53 @@
 			return file_exists(DOCROOT . '/install/index.php');
 		}
 
-		/**
-		 * A wrapper for throwing a new Symphony Error page.
-		 *
-		 * @deprecated @since Symphony 2.3.2. This function will be removed in Symphony 2.5
-		 *
-		 * @see `throwCustomError`
-		 * @param string $heading
-		 *  A heading for the error page
-		 * @param string|XMLElement $message
-		 *  A description for this error, which can be provided as a string
-		 *  or as an XMLElement.
-		 * @param string $template
-		 *  A string for the error page template to use, defaults to 'generic'. This
-		 *  can be the name of any template file in the `TEMPLATES` directory.
-		 *  A template using the naming convention of `tpl.*.php`.
-		 * @param array $additional
-		 *  Allows custom information to be passed to the Symphony Error Page
-		 *  that the template may want to expose, such as custom Headers etc.
-		 */
+        /**
+         * A wrapper for throwing a new Symphony Error page.
+         *
+         * @deprecated @since Symphony 2.3.2. This function will be removed in Symphony 2.5
+         *
+         * @see `throwCustomError`
+         * @param string $heading
+         *  A heading for the error page
+         * @param string|XMLElement $message
+         *  A description for this error, which can be provided as a string
+         *  or as an XMLElement.
+         * @param string $template
+         *  A string for the error page template to use, defaults to 'generic'. This
+         *  can be the name of any template file in the `TEMPLATES` directory.
+         *  A template using the naming convention of `tpl.*.php`.
+         * @param array $additional
+         *  Allows custom information to be passed to the Symphony Error Page
+         *  that the template may want to expose, such as custom Headers etc.
+         * @throws SymphonyErrorPage
+         */
 		public function customError($heading, $message, $template='generic', array $additional=array()){
 			$this->throwCustomError($message, $heading, Page::HTTP_STATUS_ERROR, $template, $additional);
 		}
 
-		/**
-		 * A wrapper for throwing a new Symphony Error page.
-		 *
-		 * This methods sets the `GenericExceptionHandler::$enabled` value to `true`.
-		 *
-		 * @see core.SymphonyErrorPage
-		 * @param string|XMLElement $message
-		 *  A description for this error, which can be provided as a string
-		 *  or as an XMLElement.
-		 * @param string $heading
-		 *  A heading for the error page
-		 * @param integer $status
-		 *  Properly sets the HTTP status code for the response. Defaults to
-		 *  `Page::HTTP_STATUS_ERROR`. Use `Page::HTTP_STATUS_XXX` to set this value.
-		 * @param string $template
-		 *  A string for the error page template to use, defaults to 'generic'. This
-		 *  can be the name of any template file in the `TEMPLATES` directory.
-		 *  A template using the naming convention of `tpl.*.php`.
-		 * @param array $additional
-		 *  Allows custom information to be passed to the Symphony Error Page
-		 *  that the template may want to expose, such as custom Headers etc.
-		 */
+        /**
+         * A wrapper for throwing a new Symphony Error page.
+         *
+         * This methods sets the `GenericExceptionHandler::$enabled` value to `true`.
+         *
+         * @see core.SymphonyErrorPage
+         * @param string|XMLElement $message
+         *  A description for this error, which can be provided as a string
+         *  or as an XMLElement.
+         * @param string $heading
+         *  A heading for the error page
+         * @param int $status
+         *  Properly sets the HTTP status code for the response. Defaults to
+         *  `Page::HTTP_STATUS_ERROR`. Use `Page::HTTP_STATUS_XXX` to set this value.
+         * @param string $template
+         *  A string for the error page template to use, defaults to 'generic'. This
+         *  can be the name of any template file in the `TEMPLATES` directory.
+         *  A template using the naming convention of `tpl.*.php`.
+         * @param array $additional
+         *  Allows custom information to be passed to the Symphony Error Page
+         *  that the template may want to expose, such as custom Headers etc.
+         * @throws SymphonyErrorPage
+         */
 		public function throwCustomError($message, $heading='Symphony Fatal Error', $status=Page::HTTP_STATUS_ERROR, $template='generic', array $additional=array()){
 			GenericExceptionHandler::$enabled = true;
 			throw new SymphonyErrorPage($message, $heading, $template, $additional, $status);

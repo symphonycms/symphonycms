@@ -79,26 +79,27 @@
 		 */
 		private $_secure = false;
 
-		/**
-		 * Constructor for the Cookie class intialises all class variables with the
-		 * given parameters. Most of the parameters map to PHP's setcookie
-		 * function. It creates a new Session object via the `$this->__init()`
-		 *
-		 * @see __init()
-		 * @link http://php.net/manual/en/function.setcookie.php
-		 * @param string $index
-		 *  The prefix to used to namespace all Symphony cookies
-		 * @param integer $timeout
-		 *  The Time to Live for a cookie, by default this is zero, meaning the
-		 *  cookie never expires
-		 * @param string $path
-		 *  The path the cookie is valid for on the domain
-		 * @param string $domain
-		 *  The domain this cookie is valid for
-		 * @param boolean $httpOnly
-		 *  Whether this cookie can be read by Javascript. By default the cookie
-		 *  cannot be read by Javascript
-		 */
+        /**
+         * Constructor for the Cookie class intialises all class variables with the
+         * given parameters. Most of the parameters map to PHP's setcookie
+         * function. It creates a new Session object via the `$this->__init()`
+         *
+         * @see __init()
+         * @link http://php.net/manual/en/function.setcookie.php
+         * @param string $index
+         *  The prefix to used to namespace all Symphony cookies
+         * @param integer $timeout
+         *  The Time to Live for a cookie, by default this is zero, meaning the
+         *  cookie never expires
+         * @param string $path
+         *  The path the cookie is valid for on the domain
+         * @param string $domain
+         *  The domain this cookie is valid for
+         * @param boolean $httpOnly
+         *  Whether this cookie can be read by Javascript. By default the cookie
+         *  cannot be read by Javascript
+         * @throws Exception
+         */
 		public function __construct($index, $timeout = 0, $path = '/', $domain = NULL, $httpOnly = true) {
 			$this->_index = $index;
 			$this->_timeout = $timeout;
@@ -110,11 +111,12 @@
 			$this->_session = $this->__init();
 		}
 
-		/**
-		 * Initialises a new Session instance using this cookie's params
-		 *
-		 * @return Session
-		 */
+        /**
+         * Initialises a new Session instance using this cookie's params
+         *
+         * @throws Exception
+         * @return Session
+         */
 		private function __init() {
 			$this->_session = Session::start($this->_timeout, $this->_path, $this->_domain, $this->_httpOnly, $this->_secure);
 			if (!$this->_session) return false;

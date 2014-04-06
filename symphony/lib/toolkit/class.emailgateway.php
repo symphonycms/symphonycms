@@ -17,7 +17,6 @@
 		 * @param Exception $previous
 		 *  The previous exception, if nested. See
 		 *  http://www.php.net/manual/en/language.exceptions.extending.php
-		 * @return void
 		 */
 		public function __construct($message, $code = 0, $previous = null){
 			$trace = parent::getTrace();
@@ -125,15 +124,16 @@
 			return true;
 		}
 
-		/**
-		 * Sets the sender-email and sender-name.
-		 *
-		 * @param string $email
-		 *  The email-address emails will be sent from.
-		 * @param string $name
-		 *  The name the emails will be sent from.
-		 * @return void
-		 */
+        /**
+         * Sets the sender-email and sender-name.
+         *
+         * @param string $email
+         *  The email-address emails will be sent from.
+         * @param string $name
+         *  The name the emails will be sent from.
+         * @throws EmailValidationException
+         * @return void
+         */
 		public function setFrom($email, $name){
 			$this->setSenderEmailAddress($email);
 			$this->setSenderName($name);
@@ -185,13 +185,14 @@
 			$this->_sender_name = $name;
 		}
 
-		/**
-		 * Sets the recipients.
-		 *
-		 * @param string|array $email
-		 *  The email-address(es) to send the email to.
-		 * @return void
-		 */
+        /**
+         * Sets the recipients.
+         *
+         * @param string|array $email
+         *  The email-address(es) to send the email to.
+         * @throws EmailValidationException
+         * @return void
+         */
 		public function setRecipients($email){
 			if(!is_array($email)){
 				$email = explode(',',$email);
@@ -393,7 +394,7 @@
 		 * Every gateway should extend this method to add their own settings.
 		 *
 		 * @throws EmailValidationException
-		 * @param array $configuration
+		 * @param array $config
 		 * @since Symphony 2.3.1
 		 *  All configuration entries stored in a single array. The array should have the format of the $_POST array created by the preferences HTML.
 		 * @return boolean
@@ -420,14 +421,15 @@
 			$this->_header_fields[$name] = $body;
 		}
 
-		/**
-		 * Appends one or more header fields to the header fields array.
-		 * Header fields should be presented as an array with name/body pairs.
-		 *
-		 * @param array $header_array
-		 *  The header fields. Examples are From, X-Sender and Reply-to.
-		 * @return void
-		 */
+        /**
+         * Appends one or more header fields to the header fields array.
+         * Header fields should be presented as an array with name/body pairs.
+         *
+         * @param array $header_array
+         *  The header fields. Examples are From, X-Sender and Reply-to.
+         * @throws EmailGatewayException
+         * @return void
+         */
 		public function appendHeaderFields(array $header_array = array()){
 			foreach($header_array as $name => $body){
 				$this->appendHeaderField($name, $body);
@@ -465,15 +467,16 @@
 			return true;
 		}
 
-		/**
-		 * Build the message body and the content-describing header fields
-		 *
-		 * The result of this building is an updated body variable in the
-		 * gateway itself.
-		 *
-		 * @throws EmailGatewayException
-		 * @return boolean
-		 */
+        /**
+         * Build the message body and the content-describing header fields
+         *
+         * The result of this building is an updated body variable in the
+         * gateway itself.
+         *
+         * @throws EmailGatewayException
+         * @throws Exception
+         * @return boolean
+         */
 		protected function prepareMessageBody(){
 			if (!empty($this->_attachments)) {
 				$this->appendHeaderFields($this->contentInfoArray('multipart/mixed'));
@@ -540,14 +543,16 @@
 			return $output;
 		}
 
-		/**
-		 * Builds the attachment section of a multipart email.
-		 *
-		 * Will return a string containing the section. Can be used to send to
-		 * an email server directly.
-		 *
-		 * @return string
-		 */
+        /**
+         * Builds the attachment section of a multipart email.
+         *
+         * Will return a string containing the section. Can be used to send to
+         * an email server directly.
+         *
+         * @throws EmailGatewayException
+         * @throws Exception
+         * @return string
+         */
 		protected function getSectionAttachments() {
 			$output = '';
 			foreach ($this->_attachments as $key => $file) {
@@ -647,10 +652,10 @@
 		 *
 		 * Can be used to send to an email server directly.
 		 *
-		 * @param $type optional mime-type
-		 * @param $file optional the path of the attachment
-		 * @param $filename optional the name of the attached file
-		 * @param $charset optional the charset of the attached file
+		 * @param string $type optional mime-type
+		 * @param string $file optional the path of the attachment
+		 * @param string $filename optional the name of the attached file
+		 * @param string $charset optional the charset of the attached file
 		 *
 		 * @return array
 		 */
@@ -698,13 +703,13 @@
 			);
 		}
 
-		/**
-		 * Creates the properly formatted InfoString based on the InfoArray.
-		 *
-		 * @see `EmailGateway::contentInfoArray()`
-		 *
-		 * @return string
-		 */
+        /**
+         * Creates the properly formatted InfoString based on the InfoArray.
+         *
+         * @see EmailGateway::contentInfoArray()
+         *
+         * @return string|null
+         */
 		protected function contentInfoString($type = NULL, $file = NULL, $filename = NULL, $charset = NULL) {
 			$data = $this->contentInfoArray($type, $file, $filename, $charset);
 			foreach ($data as $key => $value) {
@@ -713,11 +718,12 @@
 			return !empty($field) ? implode("\r\n", $field)."\r\n\r\n" : NULL;
 		}
 
-		/**
-		 * Returns the bondary based on the $type parameter
-		 *
-		 * @param string $type the multipart type
-		 */
+        /**
+         * Returns the bondary based on the $type parameter
+         *
+         * @param string $type the multipart type
+         * @return string|void
+         */
 		protected function getBoundary($type) {
 			switch ($type) {
 				case 'multipart/mixed':
@@ -747,20 +753,21 @@
 			return $this->getBoundary($type) ? "\r\n--".$this->getBoundary($type)."--\r\n" : NULL;
 		}
 
-		/**
-		 * Sets a property.
-		 *
-		 * Magic function, supplied by php.
-		 * This function will try and find a method of this class, by
-		 * camelcasing the name, and appending it with set.
-		 * If the function can not be found, an exception will be thrown.
-		 *
-		 * @param string $name
-		 *  The property name.
-		 * @param string $value
-		 *  The property value;
-		 * @return void|boolean
-		 */
+        /**
+         * Sets a property.
+         *
+         * Magic function, supplied by php.
+         * This function will try and find a method of this class, by
+         * camelcasing the name, and appending it with set.
+         * If the function can not be found, an exception will be thrown.
+         *
+         * @param string $name
+         *  The property name.
+         * @param string $value
+         *  The property value;
+         * @throws EmailGatewayException
+         * @return void|boolean
+         */
 		public function __set($name, $value){
 			if(method_exists(get_class($this), 'set'.$this->__toCamel($name, true))){
 				return $this->{'set'.$this->__toCamel($name, true)}($value);

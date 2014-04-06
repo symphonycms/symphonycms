@@ -21,16 +21,17 @@
 		 */
 		protected static $_pool = array();
 
-		/**
-		 * Given an associative array of fields, insert them into the database
-		 * returning the resulting Author ID if successful, or false if there
-		 * was an error
-		 *
-		 * @param array $fields
-		 *  Associative array of field names => values for the Author object
-		 * @return integer|boolean
-		 *  Returns an Author ID of the created Author on success, false otherwise.
-		 */
+        /**
+         * Given an associative array of fields, insert them into the database
+         * returning the resulting Author ID if successful, or false if there
+         * was an error
+         *
+         * @param array $fields
+         *  Associative array of field names => values for the Author object
+         * @throws DatabaseException
+         * @return integer|boolean
+         *  Returns an Author ID of the created Author on success, false otherwise.
+         */
 		public static function add(array $fields) {
 			if(!Symphony::Database()->insert($fields, 'tbl_authors')) return false;
 			$author_id = Symphony::Database()->getInsertID();
@@ -38,57 +39,60 @@
 			return $author_id;
 		}
 
-		/**
-		 * Given an Author ID and associative array of fields, update an existing Author
-		 * row in the `tbl_authors` database table. Returns boolean for success/failure
-		 *
-		 * @param integer $id
-		 *  The ID of the Author that should be updated
-		 * @param array $fields
-		 *  Associative array of field names => values for the Author object
-		 *  This array does need to contain every value for the author object, it
-		 *  can just be the changed values.
-		 * @return boolean
-		 */
+        /**
+         * Given an Author ID and associative array of fields, update an existing Author
+         * row in the `tbl_authors` database table. Returns boolean for success/failure
+         *
+         * @param integer $id
+         *  The ID of the Author that should be updated
+         * @param array $fields
+         *  Associative array of field names => values for the Author object
+         *  This array does need to contain every value for the author object, it
+         *  can just be the changed values.
+         * @throws DatabaseException
+         * @return boolean
+         */
 		public static function edit($id, array $fields) {
 			return Symphony::Database()->update($fields, 'tbl_authors', sprintf(
 				" `id` = %d", $id
 			));
 		}
 
-		/**
-		 * Given an Author ID, delete an Author from Symphony.
-		 *
-		 * @param integer $id
-		 *  The ID of the Author that should be deleted
-		 * @return boolean
-		 */
+        /**
+         * Given an Author ID, delete an Author from Symphony.
+         *
+         * @param integer $id
+         *  The ID of the Author that should be deleted
+         * @throws DatabaseException
+         * @return boolean
+         */
 		public static function delete($id) {
 			return Symphony::Database()->delete('tbl_authors', sprintf(
 				" `id` = %d", $id
 			));
 		}
 
-		/**
-		 * The fetch method returns all Authors from Symphony with the option to sort
-		 * or limit the output. This method returns an array of Author objects.
-		 *
-		 * @param string $sortby
-		 *  The field to sort the authors by, defaults to 'id'
-		 * @param string $sortdirection
-		 *  Available values of ASC (Ascending) or DESC (Descending), which refer to the
-		 *  sort order for the query. Defaults to ASC (Ascending)
-		 * @param integer $limit
-		 *  The number of rows to return
-		 * @param integer $start
-		 *  The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
-		 * @param string $where
-		 *  Any custom WHERE clauses. The `tbl_authors` alias is `a`
-		 * @param string $joins
-		 *  Any custom JOIN's
-		 * @return array
-		 *  An array of Author objects. If no Authors are found, an empty array is returned.
-		 */
+        /**
+         * The fetch method returns all Authors from Symphony with the option to sort
+         * or limit the output. This method returns an array of Author objects.
+         *
+         * @param string $sortby
+         *  The field to sort the authors by, defaults to 'id'
+         * @param string $sortdirection
+         *  Available values of ASC (Ascending) or DESC (Descending), which refer to the
+         *  sort order for the query. Defaults to ASC (Ascending)
+         * @param integer $limit
+         *  The number of rows to return
+         * @param integer $start
+         *  The offset start point for limiting, maps to the LIMIT {x}, {y} MySQL functionality
+         * @param string $where
+         *  Any custom WHERE clauses. The `tbl_authors` alias is `a`
+         * @param string $joins
+         *  Any custom JOIN's
+         * @throws DatabaseException
+         * @return array
+         *  An array of Author objects. If no Authors are found, an empty array is returned.
+         */
 		public static function fetch($sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null, $where = null, $joins = null) {
 			$sortby = is_null($sortby) ? 'id' : Symphony::Database()->cleanValue($sortby);
 			$sortdirection = $sortdirection === 'ASC' ? 'ASC' : 'DESC';
@@ -126,18 +130,19 @@
 			return $authors;
 		}
 
-		/**
-		 * Returns Author's that match the provided ID's with the option to
-		 * sort or limit the output. This function will search the
-		 * `AuthorManager::$_pool` for Authors first before querying `tbl_authors`
-		 *
-		 * @param integer|array $id
-		 *  A single ID or an array of ID's
-		 * @return mixed
-		 *  If `$id` is an integer, the result will be an Author object,
-		 *  otherwise an array of Author objects will be returned. If no
-		 *  Authors are found, or no `$id` is given, `null` is returned.
-		 */
+        /**
+         * Returns Author's that match the provided ID's with the option to
+         * sort or limit the output. This function will search the
+         * `AuthorManager::$_pool` for Authors first before querying `tbl_authors`
+         *
+         * @param integer|array $id
+         *  A single ID or an array of ID's
+         * @throws DatabaseException
+         * @return mixed
+         *  If `$id` is an integer, the result will be an Author object,
+         *  otherwise an array of Author objects will be returned. If no
+         *  Authors are found, or no `$id` is given, `null` is returned.
+         */
 		public static function fetchByID($id) {
 			$return_single = false;
 
@@ -221,14 +226,15 @@
 			return self::$_pool[$username];
 		}
 
-		/**
-		 * This function will allow an Author to sign into Symphony by using their
-		 * authentication token as well as username/password.
-		 *
-		 * @param integer $author_id
-		 *  The Author ID to allow to use their authentication token.
-		 * @return boolean
-		 */
+        /**
+         * This function will allow an Author to sign into Symphony by using their
+         * authentication token as well as username/password.
+         *
+         * @param integer $author_id
+         *  The Author ID to allow to use their authentication token.
+         * @throws DatabaseException
+         * @return boolean
+         */
 		public static function activateAuthToken($author_id) {
 			if(!is_int($author_id)) return false;
 			return Symphony::Database()->query(sprintf("
@@ -238,14 +244,15 @@
 			", $author_id));
 		}
 
-		/**
-		 * This function will remove the ability for an Author to sign into Symphony
-		 * by using their authentication token
-		 *
-		 * @param integer $author_id
-		 *  The Author ID to allow to use their authentication token.
-		 * @return boolean
-		 */
+        /**
+         * This function will remove the ability for an Author to sign into Symphony
+         * by using their authentication token
+         *
+         * @param integer $author_id
+         *  The Author ID to allow to use their authentication token.
+         * @throws DatabaseException
+         * @return boolean
+         */
 		public static function deactivateAuthToken($author_id) {
 			if(!is_int($author_id)) return false;
 			return Symphony::Database()->query(sprintf("

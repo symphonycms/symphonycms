@@ -62,15 +62,16 @@
 			return $filter;
 		}
 
-		/**
-		 * Appends errors generated from fields during the execution of an Event
-		 *
-		 * @param XMLElement $result
-		 * @param array $fields
-		 * @param array $errors
-		 * @param object $post_values
-		 * @return XMLElement
-		 */
+        /**
+         * Appends errors generated from fields during the execution of an Event
+         *
+         * @param XMLElement $result
+         * @param array $fields
+         * @param array $errors
+         * @param object $post_values
+         * @throws Exception
+         * @return XMLElement
+         */
 		public static function appendErrors(XMLElement $result, array $fields, $errors, $post_values) {
 			$result->setAttribute('result', 'error');
 			$result->appendChild(new XMLElement('message', __('Entry encountered errors when saving.'), array(
@@ -169,19 +170,20 @@
 			return (strlen(trim($b)) === 0) ? 'missing' : 'invalid';
 		}
 
-		/**
-		 * This function will process the core Filters, Admin Only and Expect
-		 * Multiple, before invoking the `__doit` function, which actually
-		 * processes the Event. Once the Event has executed, this function will
-		 * determine if the user should be redirected to a URL, or to just return
-		 * the XML.
-		 *
-		 * @return XMLElement|void
-		 *  If `$_REQUEST{'redirect']` is set, and the Event executed successfully,
-		 *  the user will be redirected to the given location. If `$_REQUEST['redirect']`
-		 *  is not set, or the Event encountered errors, an XMLElement of the Event
-		 *  result will be returned.
-		 */
+        /**
+         * This function will process the core Filters, Admin Only and Expect
+         * Multiple, before invoking the `__doit` function, which actually
+         * processes the Event. Once the Event has executed, this function will
+         * determine if the user should be redirected to a URL, or to just return
+         * the XML.
+         *
+         * @throws Exception
+         * @return XMLElement|void
+         *  If `$_REQUEST{'redirect']` is set, and the Event executed successfully,
+         *  the user will be redirected to the given location. If `$_REQUEST['redirect']`
+         *  is not set, or the Event encountered errors, an XMLElement of the Event
+         *  result will be returned.
+         */
 		public function execute() {
 			if(!isset($this->eParamFILTERS) || !is_array($this->eParamFILTERS)){
 				$this->eParamFILTERS = array();
@@ -246,25 +248,26 @@
 			return $result;
 		}
 
-		/**
-		 * This function does the bulk of processing the Event, from running the delegates
-		 * to validating the data and eventually saving the data into Symphony. The result
-		 * of the Event is returned via the `$result` parameter.
-		 *
-		 * @param array $fields
-		 *  An array of $_POST data, to process and add/edit an entry.
-		 * @param XMLElement $result
-		 *  The XMLElement contains the result of the Event, it is passed by
-		 *  reference.
-		 * @param integer $position
-		 *  When the Expect Multiple filter is added, this event should expect
-		 *  to deal with adding (or editing) multiple entries at once.
-		 * @param integer $entry_id
-		 *  If this Event is editing an existing entry, that Entry ID will
-		 *  be passed to this function.
-		 * @return XMLElement
-		 *  The result of the Event
-		 */
+        /**
+         * This function does the bulk of processing the Event, from running the delegates
+         * to validating the data and eventually saving the data into Symphony. The result
+         * of the Event is returned via the `$result` parameter.
+         *
+         * @param array $fields
+         *  An array of $_POST data, to process and add/edit an entry.
+         * @param XMLElement $result
+         *  The XMLElement contains the result of the Event, it is passed by
+         *  reference.
+         * @param integer $position
+         *  When the Expect Multiple filter is added, this event should expect
+         *  to deal with adding (or editing) multiple entries at once.
+         * @param integer $entry_id
+         *  If this Event is editing an existing entry, that Entry ID will
+         *  be passed to this function.
+         * @throws Exception
+         * @return XMLElement
+         *  The result of the Event
+         */
 		public function __doit($fields, XMLElement &$result, $position = null, $entry_id = null){
 			$post_values = new XMLElement('post-values');
 			if(!is_array($this->eParamFILTERS)) {
@@ -378,17 +381,17 @@
 			return true;
 		}
 
-		/**
-		 * Processes all extensions attached to the `EventPreSaveFilter` delegate
-		 *
-		 * @uses EventPreSaveFilter
-		 *
-		 * @param XMLElement $result
-		 * @param array $fields
-		 * @param array $post_values
-		 * @param integer $entry_id
-		 * @return boolean
-		 */
+        /**
+         * Processes all extensions attached to the `EventPreSaveFilter` delegate
+         *
+         * @uses EventPreSaveFilter
+         *
+         * @param XMLElement $result
+         * @param array $fields
+         * @param XMLElement $post_values
+         * @param integer $entry_id
+         * @return boolean
+         */
 		protected function processPreSaveFilters(XMLElement $result, array &$fields, XMLElement &$post_values, $entry_id = null) {
 			$can_proceed = true;
 
@@ -562,25 +565,25 @@
 			return $result;
 		}
 
-		/**
-		 * This function handles the Send Mail filter which will send an email
-		 * to each specified recipient informing them that an Entry has been
-		 * created.
-		 *
-		 * @param XMLElement $result
-		 *  The XMLElement of the XML that is going to be returned as part
-		 *  of this event to the page.
-		 * @param array $send_mail
-		 *  Associative array of `send-mail` parameters.
-		 * @param array $fields
-		 *  Array of post data to extract the values from
-		 * @param Section $section
-		 *  This Section for this event
-		 * @param Section $section
-		 *  This current Entry that has just been updated or created
-		 * @return XMLElement
-		 *  The modified `$result` with the results of the filter.
-		 */
+        /**
+         * This function handles the Send Mail filter which will send an email
+         * to each specified recipient informing them that an Entry has been
+         * created.
+         *
+         * @param XMLElement $result
+         *  The XMLElement of the XML that is going to be returned as part
+         *  of this event to the page.
+         * @param array $send_email
+         *  Associative array of `send-mail` parameters.*  Associative array of `send-mail` parameters.
+         * @param array $fields
+         *  Array of post data to extract the values from
+         * @param Section $section
+         *  This current Entry that has just been updated or created
+         * @param Entry $entry
+         * @throws Exception
+         * @return XMLElement
+         *  The modified `$result` with the results of the filter.
+         */
 		public function processSendMailFilter(XMLElement $result, array $send_email, array &$fields, Section $section, Entry $entry) {
 			$fields['recipient']		= self::replaceFieldToken($send_email['recipient'], $fields);
 			$fields['recipient']		= preg_split('/\,/i', $fields['recipient'], -1, PREG_SPLIT_NO_EMPTY);
