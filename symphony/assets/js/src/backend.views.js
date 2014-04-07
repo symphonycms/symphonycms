@@ -310,11 +310,11 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 	// Create toggle controls
 	expand = $('<a />', {
 		'class': 'expand',
-		'text': Symphony.Language.get('Expand all fields')
+		'text': Symphony.Language.get('Expand all')
 	});
 	collapse = $('<a />', {
 		'class': 'collapse',
-		'text': Symphony.Language.get('Collapse all fields')
+		'text': Symphony.Language.get('Collapse all')
 	});
 	toggle = $('<p />', {
 		'class': 'help toggle'
