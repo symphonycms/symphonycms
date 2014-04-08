@@ -275,6 +275,7 @@
 		 * @param integer $mode
 		 *  The file mode used to apply to the archived log, by default this is 0777. Note that this
 		 *  parameter is modified using PHP's intval function with base 8.
+		 * @throws Exception
 		 * @return integer
 		 *  Returns 1 if the log was overwritten, or 2 otherwise.
 		 */

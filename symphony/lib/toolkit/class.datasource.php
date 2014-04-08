@@ -87,6 +87,7 @@
 		 * @param boolean $process_params
 		 *  If set to true, `Datasource::processParameters` will be called. By default
 		 *  this is true
+		 * @throws FrontendPageNotFoundException
 		 */
 		public function __construct(array $env = null, $process_params=true){
 			// Support old the __construct (for the moment anyway).
@@ -266,6 +267,7 @@
 		 * @param array $env
 		 *  The environment variables from the Frontend class which includes
 		 *  any params set by Symphony or Events or by other Datasources
+		 * @throws FrontendPageNotFoundException
 		 */
 		public function processParameters(array $env = null){
 			

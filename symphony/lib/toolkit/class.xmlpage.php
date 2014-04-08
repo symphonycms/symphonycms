@@ -51,6 +51,7 @@
 		 * before calling the parent generate function and generating
 		 * the `$this->_Result` XMLElement
 		 *
+		 * @param null $page
 		 * @return string
 		 */
 		public function generate($page = null) {

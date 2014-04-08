@@ -132,6 +132,8 @@
 		 * @param string $order_by (optional)
 		 *  Allows a developer to return the resources in a particular order. The syntax is the
 		 *  same as other `fetch` methods. If omitted this will return resources ordered by `name`.
+		 * @throws SymphonyErrorPage
+		 * @throws Exception
 		 * @return array
 		 *  An associative array of resource information, formatted in the same way as the resource's
 		 *  manager `listAll()` method.
@@ -242,6 +244,7 @@
 		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @param string $r_handle
 		 *  The handle of the resource.
+		 * @throws Exception
 		 * @return string
 		 *  The extension handle.
 		 */
@@ -367,7 +370,7 @@
 		 *  The resource type, either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DS`
 		 * @param string $r_handle
 		 *  The handle of the resource.
-		 * @param array $page_id
+		 * @param array $pages
 		 *  An array of Page ID's to attach this resource to.
 		 * @return boolean
 		 */

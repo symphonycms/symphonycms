@@ -98,6 +98,7 @@
 		 * @param boolean $httpOnly
 		 *  Whether this cookie can be read by Javascript. By default the cookie
 		 *  cannot be read by Javascript
+		 * @throws Exception
 		 */
 		public function __construct($index, $timeout = 0, $path = '/', $domain = NULL, $httpOnly = true) {
 			$this->_index = $index;
@@ -113,6 +114,7 @@
 		/**
 		 * Initialises a new Session instance using this cookie's params
 		 *
+		 * @throws Exception
 		 * @return Session
 		 */
 		private function __init() {

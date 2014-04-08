@@ -433,6 +433,7 @@
 		 * @param boolean $silent (optional)
 		 *  true if an exception should be raised if an error occurs, false
 		 *  otherwise. this defaults to true.
+		 * @throws Exception
 		 * @return boolean
 		 */
 		public static function realiseDirectory($path, $mode = 0755, $silent = true){
@@ -466,6 +467,7 @@
 		 * @param boolean $silent (optional)
 		 *  true if an exception should be raised if an error occurs, false
 		 *  otherwise. this defaults to true.
+		 * @throws Exception
 		 * @return boolean
 		 */
 		public static function deleteDirectory($dir, $silent = true) {
@@ -664,7 +666,7 @@
 		 *  the array to filter.
 		 * @param boolean $ignore_case
 		 *  true if the case of the values in the array should be ignored, false otherwise.
-		 * @return
+		 * @return array
 		 *  a new array containing only the unique elements of the input array.
 		 */
 		public static function array_remove_duplicates(array $array, $ignore_case=false){
@@ -846,6 +848,7 @@
 		 * @param boolean $silent (optional)
 		 *  true if an exception should be raised if an error occurs, false
 		 *  otherwise. this defaults to true.
+		 * @throws Exception
 		 * @return boolean
 		 *  true if the file is successfully unlinked, if the unlink fails and
 		 *  silent is set to true then an exception is thrown. if the unlink

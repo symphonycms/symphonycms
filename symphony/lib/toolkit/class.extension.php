@@ -51,7 +51,7 @@
 		 * tables.
 		 *
 		 * @see toolkit.ExtensionManager#update()
-		 * @param string $previousVersion
+		 * @param bool|string $previousVersion
 		 *  The currently installed version of this extension from the
 		 *  `tbl_extensions` table. The current version of this extension is
 		 *  provided by the about() method.

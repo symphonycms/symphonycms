@@ -28,6 +28,7 @@
 		 *
 		 * @param array $fields
 		 *  Associative array of field names => values for the Author object
+		 * @throws DatabaseException
 		 * @return integer|boolean
 		 *  Returns an Author ID of the created Author on success, false otherwise.
 		 */
@@ -48,6 +49,7 @@
 		 *  Associative array of field names => values for the Author object
 		 *  This array does need to contain every value for the author object, it
 		 *  can just be the changed values.
+		 * @throws DatabaseException
 		 * @return boolean
 		 */
 		public static function edit($id, array $fields) {
@@ -61,6 +63,7 @@
 		 *
 		 * @param integer $id
 		 *  The ID of the Author that should be deleted
+		 * @throws DatabaseException
 		 * @return boolean
 		 */
 		public static function delete($id) {
@@ -86,6 +89,7 @@
 		 *  Any custom WHERE clauses. The `tbl_authors` alias is `a`
 		 * @param string $joins
 		 *  Any custom JOIN's
+		 * @throws DatabaseException
 		 * @return array
 		 *  An array of Author objects. If no Authors are found, an empty array is returned.
 		 */
@@ -133,6 +137,7 @@
 		 *
 		 * @param integer|array $id
 		 *  A single ID or an array of ID's
+		 * @throws DatabaseException
 		 * @return mixed
 		 *  If `$id` is an integer, the result will be an Author object,
 		 *  otherwise an array of Author objects will be returned. If no
@@ -227,6 +232,7 @@
 		 *
 		 * @param integer $author_id
 		 *  The Author ID to allow to use their authentication token.
+		 * @throws DatabaseException
 		 * @return boolean
 		 */
 		public static function activateAuthToken($author_id) {
@@ -244,6 +250,7 @@
 		 *
 		 * @param integer $author_id
 		 *  The Author ID to allow to use their authentication token.
+		 * @throws DatabaseException
 		 * @return boolean
 		 */
 		public static function deactivateAuthToken($author_id) {

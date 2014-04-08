@@ -69,6 +69,7 @@
 		 * @param array $fields
 		 * @param array $errors
 		 * @param object $post_values
+		 * @throws Exception
 		 * @return XMLElement
 		 */
 		public static function appendErrors(XMLElement $result, array $fields, $errors, $post_values) {
@@ -176,6 +177,7 @@
 		 * determine if the user should be redirected to a URL, or to just return
 		 * the XML.
 		 *
+		 * @throws Exception
 		 * @return XMLElement|void
 		 *  If `$_REQUEST{'redirect']` is set, and the Event executed successfully,
 		 *  the user will be redirected to the given location. If `$_REQUEST['redirect']`
@@ -262,6 +264,7 @@
 		 * @param integer $entry_id
 		 *  If this Event is editing an existing entry, that Entry ID will
 		 *  be passed to this function.
+		 * @throws Exception
 		 * @return XMLElement
 		 *  The result of the Event
 		 */
@@ -385,7 +388,7 @@
 		 *
 		 * @param XMLElement $result
 		 * @param array $fields
-		 * @param array $post_values
+		 * @param XMLElement $post_values
 		 * @param integer $entry_id
 		 * @return boolean
 		 */
@@ -570,14 +573,14 @@
 		 * @param XMLElement $result
 		 *  The XMLElement of the XML that is going to be returned as part
 		 *  of this event to the page.
-		 * @param array $send_mail
-		 *  Associative array of `send-mail` parameters.
+		 * @param array $send_email
+		 *  Associative array of `send-mail` parameters.*  Associative array of `send-mail` parameters.
 		 * @param array $fields
 		 *  Array of post data to extract the values from
 		 * @param Section $section
-		 *  This Section for this event
-		 * @param Section $section
 		 *  This current Entry that has just been updated or created
+		 * @param Entry $entry
+		 * @throws Exception
 		 * @return XMLElement
 		 *  The modified `$result` with the results of the filter.
 		 */

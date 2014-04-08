@@ -1364,6 +1364,8 @@
 		 * Prepare a Drawer to visualize section associations
 		 *
 		 * @param  Section $section The current Section object
+		 * @throws InvalidArgumentException
+		 * @throws Exception
 		 */
 		private function prepareAssociationsDrawer($section){
 			$entry_id = (!is_null($this->_context['entry_id'])) ? $this->_context['entry_id'] : null;

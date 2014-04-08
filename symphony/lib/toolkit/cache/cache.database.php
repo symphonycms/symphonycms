@@ -102,6 +102,7 @@
 		 * @param integer $ttl
 		 *  A integer representing how long the data should be valid for in minutes.
 		 *  By default this is null, meaning the data is valid forever
+		 * @throws DatabaseException
 		 * @return boolean
 		 *  If an error occurs, this function will return false otherwise true
 		 */
@@ -134,6 +135,7 @@
 		 * @see core.Cacheable#optimise()
 		 * @param string $hash
 		 *  The hash of the Cached object, as defined by the user
+		 * @throws DatabaseException
 		 */
 		public function delete($hash = null) {
 			if(!is_null($hash)) {

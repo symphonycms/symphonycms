@@ -27,10 +27,11 @@
 		 * as the Section ID.
 		 *
 		 * @param array $settings
-		 *	An associative of settings for a section with the key being
-		 *	a column name from `tbl_sections`
+		 *    An associative of settings for a section with the key being
+		 *    a column name from `tbl_sections`
+		 * @throws DatabaseException
 		 * @return integer
-		 *	The newly created Section's ID
+		 *    The newly created Section's ID
 		 */
 		public static function add(array $settings){
 			if(!Symphony::Database()->insert($settings, 'tbl_sections')) return false;
@@ -45,10 +46,11 @@
 		 * prior to updating the Section
 		 *
 		 * @param integer $section_id
-		 *	The ID of the Section to edit
+		 *    The ID of the Section to edit
 		 * @param array $settings
-		 *	An associative of settings for a section with the key being
-		 *	a column name from `tbl_sections`
+		 *    An associative of settings for a section with the key being
+		 *    a column name from `tbl_sections`
+		 * @throws DatabaseException
 		 * @return boolean
 		 */
 		public static function edit($section_id, array $settings){
@@ -62,9 +64,11 @@
 		 * Section and any Section Associations in that order
 		 *
 		 * @param integer $section_id
-		 *	The ID of the Section to delete
+		 *    The ID of the Section to delete
+		 * @throws DatabaseException
+		 * @throws Exception
 		 * @return boolean
-		 *	Returns true when completed
+		 *    Returns true when completed
 		 */
 		public static function delete($section_id){
 			$details = Symphony::Database()->fetchRow(0, "SELECT `sortorder` FROM tbl_sections WHERE `id` = '$section_id'");
@@ -101,15 +105,16 @@
 		 * their name
 		 *
 		 * @param integer|array $section_id
-		 *	The ID of the section to return, or an array of ID's. Defaults to null
+		 *    The ID of the section to return, or an array of ID's. Defaults to null
 		 * @param string $order
-		 *	If `$section_id` is omitted, this is the sortorder of the returned
-		 *	objects. Defaults to ASC, other options id DESC
+		 *    If `$section_id` is omitted, this is the sortorder of the returned
+		 *    objects. Defaults to ASC, other options id DESC
 		 * @param string $sortfield
-		 *	The name of the column in the `tbl_sections` table to sort
-		 *	on. Defaults to name
+		 *    The name of the column in the `tbl_sections` table to sort
+		 *    on. Defaults to name
+		 * @throws DatabaseException
 		 * @return Section|array
-		 *	A Section object or an array of Section objects
+		 *    A Section object or an array of Section objects
 		 */
 		public static function fetch($section_id = null, $order = 'ASC', $sortfield = 'name'){
 			$returnSingle = false;
@@ -203,16 +208,18 @@
 		 *
 		 * @since Symphony 2.3
 		 * @param integer $parent_section_id
-		 *	The linked section id.
+		 *    The linked section id.
 		 * @param integer $child_field_id
-		 *	The field ID of the field that is creating the association
+		 *    The field ID of the field that is creating the association
 		 * @param integer $parent_field_id (optional)
-		 *	The field ID of the linked field in the linked section
+		 *    The field ID of the linked field in the linked section
 		 * @param boolean $show_association (optional)
-		 *	Whether of not the link should be shown on the entries table of the
-		 *	linked section. This defaults to true.
+		 *    Whether of not the link should be shown on the entries table of the
+		 *    linked section. This defaults to true.
+		 * @throws DatabaseException
+		 * @throws Exception
 		 * @return boolean
-		 *	true if the association was successfully made, false otherwise.
+		 *    true if the association was successfully made, false otherwise.
 		 */
 		public static function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true){
 
@@ -242,7 +249,8 @@
 		 *
 		 * @since Symphony 2.3
 		 * @param integer $field_id
-		 *	the field ID of the linked section's linked field.
+		 *    the field ID of the linked section's linked field.
+		 * @throws DatabaseException
 		 * @return boolean
 		 */
 		public static function removeSectionAssociation($field_id) {
@@ -284,11 +292,12 @@
 		 *
 		 * @since Symphony 2.3.3
 		 * @param integer $section_id
-		 *	The ID of the section
+		 *    The ID of the section
 		 * @param boolean $respect_visibility
-		 *	Whether to return all the section associations regardless of if they
-		 *	are deemed visible or not. Defaults to false, which will return all
-		 *	associations.
+		 *    Whether to return all the section associations regardless of if they
+		 *    are deemed visible or not. Defaults to false, which will return all
+		 *    associations.
+		 * @throws DatabaseException
 		 * @return array
 		 */
 		public static function fetchChildAssociations($section_id, $respect_visibility = false) {
@@ -316,11 +325,12 @@
 		 *
 		 * @since Symphony 2.3.3
 		 * @param integer $section_id
-		 *	The ID of the section
+		 *    The ID of the section
 		 * @param boolean $respect_visibility
-		 *	Whether to return all the section associations regardless of if they
-		 *	are deemed visible or not. Defaults to false, which will return all
-		 *	associations.
+		 *    Whether to return all the section associations regardless of if they
+		 *    are deemed visible or not. Defaults to false, which will return all
+		 *    associations.
+		 * @throws DatabaseException
 		 * @return array
 		 */
 		public static function fetchParentAssociations($section_id, $respect_visibility = false) {

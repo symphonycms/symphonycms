@@ -26,6 +26,7 @@
 		 *  the key being the name and the value being the value of the attribute.
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public static function Label($name = null, XMLElement $child = null, $class = null, $id = null, array $attributes = null){
@@ -63,6 +64,7 @@
 		 *  the key being the name and the value being the value of the attribute.
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public static function Input($name, $value = null, $type = 'text', array $attributes = null){
@@ -102,6 +104,7 @@
 		 *  the key being the name and the value being the value of the attribute.
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public static function Textarea($name, $rows = 15, $cols = 50, $value = null, array $attributes = null){
@@ -145,6 +148,7 @@
 		 *  the key being the name and the value being the value of the attribute.
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public static function Anchor($value, $href, $title = null, $class = null, $id = null, array $attributes = null){
@@ -186,6 +190,7 @@
 		 *  the key being the name and the value being the value of the attribute.
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public static function Form($action = null, $method = 'post', $class = null, $id = null, array $attributes = null){
@@ -229,6 +234,7 @@
 		 *  the key being the name and the value being the value of the attribute.
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public static function Table(XMLElement $header = null, XMLElement $footer = null, XMLElement $body = null, $class = null, $id = null, Array $attributes = null){
@@ -321,6 +327,7 @@
 		 *  the key being the name and the value being the value of the attribute.
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public static function TableBody(array $rows, $class = null, $id = null, array $attributes = null){
@@ -360,6 +367,7 @@
 		 *  the key being the name and the value being the value of the attribute.
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public static function TableRow(array $cells, $class = null, $id = null, $rowspan = null, Array $attributes = null){
@@ -401,6 +409,7 @@
 		 *  the key being the name and the value being the value of the attribute.
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public static function TableData($value, $class = null, $id = null, $colspan = null, Array $attributes = null){
@@ -475,12 +484,12 @@
 		 *  `<select>` XMLElement is returned.
 		 *  `
 		 *   array(
-		 *  	array($value, $selected, $desc, $class, $id, $attr)
+		 *    array($value, $selected, $desc, $class, $id, $attr)
 		 *   )
 		 *   array(
-		 *  	array('label' => 'Optgroup', 'data-label' => 'optgroup', 'options' = array(
-		 *  		array($value, $selected, $desc, $class, $id, $attr)
-		 *  	)
+		 *    array('label' => 'Optgroup', 'data-label' => 'optgroup', 'options' = array(
+		 *        array($value, $selected, $desc, $class, $id, $attr)
+		 *    )
 		 *   )
 		 *  `
 		 * @param array $attributes (optional)
@@ -488,6 +497,7 @@
 		 *  the key being the name and the value being the value of the attribute.
 		 *  Attributes set from this array will override existing attributes
 		 *  set by previous params.
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public static function Select($name, array $options = null, array $attributes = null){
@@ -604,14 +614,15 @@
 		 *  `<select>` XMLElement is returned.
 		 *  `
 		 *   array(
-		 *  	array($value, $selected, $desc, $class, $id, $attr)
+		 *    array($value, $selected, $desc, $class, $id, $attr)
 		 *   )
 		 *   array(
-		 *  	array('label' => 'Optgroup', 'options' = array(
-		 *  		array($value, $selected, $desc, $class, $id, $attr)
-		 *  	)
+		 *    array('label' => 'Optgroup', 'options' = array(
+		 *        array($value, $selected, $desc, $class, $id, $attr)
+		 *    )
 		 *   )
 		 *  `
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public static function Apply(array $options = null){
@@ -639,6 +650,7 @@
 		 * @param string $message
 		 *  The text for this error. This will be appended after the $element,
 		 *  but inside the wrapping `<div>`
+		 * @throws InvalidArgumentException
 		 * @return XMLElement
 		 */
 		public static function Error(XMLElement $element, $message) {
@@ -671,6 +683,7 @@
 		 * @param string $default_state
 		 *  This parameter defines whether the drawer will be open or closed by
 		 *  default. It defaults to closed.
+		 * @param string $context
 		 * @param array $attributes (optional)
 		 *  Any additional attributes can be included in an associative array with
 		 *  the key being the name and the value being the value of the attribute.

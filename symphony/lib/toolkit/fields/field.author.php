@@ -122,7 +122,7 @@
 			$types = $this->get('author_types');
 			$options = array(
 				array('author', empty($types) ? true : in_array('author', $types), __('Author')),
-                array('manager', empty($types) ? true : in_array('manager', $types), __('Manager')),
+				array('manager', empty($types) ? true : in_array('manager', $types), __('Manager')),
 				array('developer', empty($types) ? true : in_array('developer', $types), __('Developer'))
 			);
 			$label->appendChild(

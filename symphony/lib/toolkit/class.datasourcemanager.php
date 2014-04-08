@@ -184,6 +184,7 @@
 		 *  The environment variables from the Frontend class which includes
 		 *  any params set by Symphony or Events or by other Datasources
 		 * @param boolean $process_params
+		 * @throws Exception
 		 * @return Datasource
 		 */
 		public static function create($handle, array $env = null, $process_params=true){

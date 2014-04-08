@@ -218,6 +218,7 @@
 		 *
 		 * @since Symphony 2.3
 		 * @param string $name
+		 * @param int $position
 		 * @return XMLElement
 		 */
 		public function getChildByName($name, $position) {
@@ -306,7 +307,7 @@
 		 * XML declaration or not. This normally is only set to
 		 * true for the parent `XMLElement`, eg. 'html'.
 		 *
-		 * @param string $value (optional)
+		 * @param bool|string $value (optional)
 		 *  Defaults to false
 		 */
 		public function setIncludeHeader($value = false){
@@ -316,7 +317,7 @@
 		/**
 		 * Sets whether this `XMLElement` is self closing or not.
 		 *
-		 * @param string $value (optional)
+		 * @param bool|string $value (optional)
 		 *  Defaults to true
 		 */
 		public function setSelfClosingTag($value = true){
@@ -327,7 +328,7 @@
 		 * Specifies whether attributes need to have a value
 		 * or if they can be shorthand on this `XMLElement`.
 		 *
-		 * @param string $value (optional)
+		 * @param bool|string $value (optional)
 		 *  Defaults to true
 		 */
 		public function setAllowEmptyAttributes($value = true){
@@ -742,6 +743,7 @@
 		 * object and return the result.
 		 *
 		 * @since Symphony 2.4
+		 * @param string $root_element
 		 * @param string $xml
 		 *  A string of XML
 		 * @return XMLElement
@@ -758,6 +760,7 @@
 		 * object and return the result.
 		 *
 		 * @since Symphony 2.4
+		 * @param string $root_element
 		 * @param DOMDOcument $doc
 		 * @return XMLElement
 		 */

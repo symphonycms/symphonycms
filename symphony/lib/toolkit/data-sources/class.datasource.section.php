@@ -82,6 +82,7 @@
 		 * @param array $group
 		 *  An associative array of the group data, includes `attr`, `records`
 		 *  and `groups` keys.
+		 * @throws Exception
 		 * @return XMLElement
 		 */
 		public function processRecordGroup($element, array $group){
@@ -122,6 +123,7 @@
 		 * by this datasource to the parameter pool.
 		 *
 		 * @param Entry $entry
+		 * @throws Exception
 		 * @return XMLElement|boolean
 		 *  Returns boolean when only parameters are to be returned.
 		 */
@@ -187,6 +189,7 @@
 		 *  be set on
 		 * @param Entry $entry
 		 *  The current entry object
+		 * @throws Exception
 		 */
 		public function setAssociatedEntryCounts(XMLElement &$xEntry, Entry $entry) {
 			$associated_entry_counts = $entry->fetchAllAssociatedEntryCounts($this->_associated_sections);
@@ -294,6 +297,7 @@
 		 * @param string $where
 		 * @param string $joins
 		 * @param boolean $group
+		 * @throws Exception
 		 */
 		public function processFilters(&$where, &$joins, &$group) {
 			if(!is_array($this->dsParamFILTERS) || empty($this->dsParamFILTERS)) return;

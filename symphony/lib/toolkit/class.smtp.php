@@ -52,11 +52,12 @@
 		 *  When no ssl is used, and ini_get returns no value, defaults to 25.
 		 * @param array $options
 		 *  Currently supports 3 values:
-		 *  	$options['secure'] can be ssl, tls or null.
-		 *  	$options['username'] the username used to login to the server. Leave empty for no authentication.
-		 *  	$options['password'] the password used to login to the server. Leave empty for no authentication.
-		 *  	$options['local_ip'] the ip address used in the ehlo/helo commands. Only ip's are accepted.
-		 * @return void
+		 *    $options['secure'] can be ssl, tls or null.
+		 *    $options['username'] the username used to login to the server. Leave empty for no authentication.
+		 *    $options['password'] the password used to login to the server. Leave empty for no authentication.
+		 *    $options['local_ip'] the ip address used in the ehlo/helo commands. Only ip's are accepted.
+		 * @throws SMTPException
+		 * @return \SMTP
 		 */
 		public function __construct($host = '127.0.0.1', $port = null, $options = array()){
 			if ($options['secure'] !== null) {
@@ -128,6 +129,8 @@
 		 * @param string $subject
 		 *  The subject to send the email to.
 		 * @param string $message
+		 * @throws SMTPException
+		 * @throws Exception
 		 * @return boolean
 		 */
 		public function sendMail($from, $to, $subject, $message){
@@ -163,6 +166,7 @@
 		 * Initiates the ehlo/helo requests.
 		 *
 		 * @throws SMTPException
+		 * @throws Exception
 		 * @return void
 		 */
 		public function helo(){
@@ -280,6 +284,7 @@
 		/**
 		 * Resets the current session. This 'undoes' all rcpt, mail, etc calls.
 		 *
+		 * @throws SMTPException
 		 * @return void
 		 */
 		public function rset(){
@@ -295,6 +300,7 @@
 		/**
 		 * Disconnects to the server.
 		 *
+		 * @throws SMTPException
 		 * @return void
 		 */
 		public function quit(){
@@ -332,6 +338,7 @@
 		 * Calls the EHLO function.
 		 * This is the HELO function for more modern servers.
 		 *
+		 * @throws SMTPException
 		 * @return void
 		 */
 		protected function _ehlo(){
@@ -343,6 +350,7 @@
 		 * Initiates the connection by calling the HELO function.
 		 * This function should only be used if the server does not support the HELO function.
 		 *
+		 * @throws SMTPException
 		 * @return void
 		 */
 		protected function _helo(){
@@ -353,6 +361,7 @@
 		/**
 		 * Encrypts the current session with TLS.
 		 *
+		 * @throws SMTPException
 		 * @return void
 		 */
 		protected function _tls(){
@@ -370,6 +379,7 @@
 		 * Send a request to the host, appends the request with a line break.
 		 *
 		 * @param string $request
+		 * @throws SMTPException
 		 * @return boolean|integer number of characters written.
 		 */
 		protected function _send($request){
@@ -385,9 +395,10 @@
 		/**
 		 * Get a line from the stream.
 		 *
-		 * @param integer $timeout 
-		 *  Per-request timeout value if applicable. Defaults to null which 
+		 * @param integer $timeout
+		 *  Per-request timeout value if applicable. Defaults to null which
 		 *  will not set a timeout.
+		 * @throws SMTPException
 		 * @return string
 		 */
 		protected function _receive($timeout = null) {
@@ -459,9 +470,11 @@
 		/**
 		 * Connect to the host, and perform basic functions like helo and auth.
 		 *
-		 * @throws SMTPException
+		 *
 		 * @param string $host
 		 * @param integer $port
+		 * @throws SMTPException
+		 * @throws Exception
 		 * @return void
 		 */
 		protected function _connect($host, $port){

@@ -50,6 +50,7 @@
 		 * before calling the parent generate function and generating
 		 * the `$this->_Result` json string
 		 *
+		 * @param null $page
 		 * @return string
 		 */
 		public function generate($page = null) {

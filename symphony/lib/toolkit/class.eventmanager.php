@@ -178,6 +178,7 @@
 		 * @param array $env
 		 *  The environment variables from the Frontend class which includes
 		 *  any params set by Symphony or Datasources or by other Events
+		 * @throws Exception
 		 * @return Event
 		 */
 		public static function create($handle, array $env = null){
