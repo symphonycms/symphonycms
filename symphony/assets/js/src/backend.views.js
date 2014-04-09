@@ -399,6 +399,11 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 	});
 	duplicator.find('.instance').trigger('constructshow.duplicator');
 
+	// Focus first input
+	duplicator.on('constructshow.duplicator expand.collapsible', '.instance', function() {
+		$(this).find('input:visible:first').trigger('focus.admin');
+	});
+
 	// Update name
 	duplicator.on('blur.admin input.admin', '.instance input[name*="[label]"]', function() {
 		var label = $(this),
