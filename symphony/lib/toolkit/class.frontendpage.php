@@ -234,6 +234,14 @@
 				 */
 				Symphony::ExtensionManager()->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
 
+				// If not set by another extension, lock down the frontend
+				if(!array_key_exists('x-frame-options', $this->headers())) {
+					$this->addHeaderToPage('X-Frame-Options', 'SAMEORIGIN');
+				}
+				if(!array_key_exists('access-control-allow-origin', $this->headers())) {
+					$this->addHeaderToPage('Access-Control-Allow-Origin', URL);
+				}
+
 				$backup_param = $this->_param;
 				$this->_param['current-query-string'] = General::wrapInCDATA($this->_param['current-query-string']);
 

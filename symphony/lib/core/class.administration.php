@@ -43,6 +43,16 @@
 		public $Page;
 
 		/**
+		 * Overrides the default Symphony constructor to add XSRF checking
+		 */
+		protected function __construct() {
+			parent::__construct();
+
+			// Ensure the request is legitimate. RE: #1874
+			XSRF::validateRequest();
+		}
+
+		/**
 		 * This function returns an instance of the Administration
 		 * class. It is the only way to create a new Administration, as
 		 * it implements the Singleton interface
@@ -455,6 +465,8 @@
 		public function display($page){
 			Symphony::Profiler()->sample('Page build process started');
 			$this->__buildPage($page);
+
+			$this->Page->Form->prependChild(XSRF::formToken());
 
 			/**
 			 * Immediately before generating the admin page. Provided with the page object

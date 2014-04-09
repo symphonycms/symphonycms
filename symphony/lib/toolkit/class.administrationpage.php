@@ -411,7 +411,14 @@
 			$this->addHeaderToPage('Expires', 'Mon, 12 Dec 1982 06:14:00 GMT');
 			$this->addHeaderToPage('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
 			$this->addHeaderToPage('Pragma', 'no-cache');
-			$this->addHeaderToPage('X-Frame-Options', 'SAMEORIGIN');
+
+			// If not set by another extension, lock down the backend
+			if(!array_key_exists('x-frame-options', $this->headers())) {
+				$this->addHeaderToPage('X-Frame-Options', 'SAMEORIGIN');
+			}
+			if(!array_key_exists('access-control-allow-origin', $this->headers())) {
+				$this->addHeaderToPage('Access-Control-Allow-Origin', URL);
+			}
 
 			if(isset($_REQUEST['action'])){
 				$this->action();

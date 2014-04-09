@@ -21,6 +21,7 @@
 	require_once(TOOLKIT . '/class.widget.php');
 	require_once(TOOLKIT . '/class.general.php');
 	require_once(TOOLKIT . '/class.cryptography.php');
+	require_once(TOOLKIT . '/class.xsrf.php');
 	require_once(TOOLKIT . '/class.profiler.php');
 	require_once(TOOLKIT . '/class.author.php');
 	require_once(TOOLKIT . '/class.email.php');
