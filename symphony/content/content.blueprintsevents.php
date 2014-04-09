@@ -35,7 +35,7 @@
 
 		public function __form($readonly=false) {
 			$formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
-			
+
 			if($formHasErrors) {
 				$this->pageAlert(
 					__('An error occurred while processing this form. See below for details.')
@@ -590,6 +590,9 @@
 				}
 				// Write successful
 				else {
+
+					if(function_exists('opcache_invalidate')) opcache_invalidate($file, true);
+
 					// Attach this event to pages
 					$connections = $fields['connections'];
 					ResourceManager::setPages(RESOURCE_TYPE_EVENT, is_null($existing_handle) ? $classname : $existing_handle, $connections);
