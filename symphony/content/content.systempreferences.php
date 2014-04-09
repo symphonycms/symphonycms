@@ -108,7 +108,7 @@
 
 				/**
 				 * Add custom Caching groups. For example a Datasource extension might want to add in the ability
-				 * for set a cache driver for it's functionality. This should usually be a dropdown, which allows 
+				 * for set a cache driver for it's functionality. This should usually be a dropdown, which allows
 				 * a developer to select what driver they want to use for caching. This choice is stored in the
 				 * Configuration in a Caching node.
 				 * eg.
@@ -158,7 +158,7 @@
 
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'actions');
-			
+
 			$version = new XMLElement('p', 'Symphony ' . Symphony::Configuration()->get('version', 'symphony'), array(
 				'id' => 'version'
 			));
@@ -210,6 +210,7 @@
 					}
 
 					Symphony::Configuration()->write();
+					if(function_exists('opcache_invalidate')) opcache_invalidate(CONFIG);
 
 					redirect(SYMPHONY_URL . '/system/preferences/success/');
 				}
