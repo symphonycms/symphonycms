@@ -42,7 +42,7 @@
 
 		objects.each(function collapsible(index) {
 			var object = $(this),
-				storage = settings.storage + index + '.collapsed';
+				storage = settings.storage + '.' + index + '.collapsed';
 
 		/*---------------------------------------------------------------------
 			Events

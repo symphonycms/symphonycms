@@ -302,7 +302,7 @@ Symphony.View.add('/blueprints/pages/:action:/:id:/:status:', function() {
 	Blueprints - Sections
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
+Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action, id, status) {
 	var duplicator = $('#fields-duplicator'),
 		legend = $('#fields-legend'),
 		expand, collapse, toggle;
@@ -340,7 +340,7 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 	// Initialise field editor
 	duplicator.symphonyDuplicator({
 		orderable: true,
-		collapsible: (Symphony.Context.get('env')[0] !== 'new'),
+		collapsible: true,
 		preselect: 'input'
 	});
 
@@ -509,6 +509,27 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function() {
 	duplicator.on('orderstop.orderable', function() {
 		$(this).find('li.highlight').removeClass('highlight');
 	});
+
+	// Restore collapsible states for new sections
+	if(status === 'created') {
+		var fields = duplicator.find('.instance'),
+			storageId = Symphony.Context.get('context-id');
+
+		storageId = storageId.split('.');
+		storageId.pop();
+		storageId = 'symphony.collapsible.' + storageId.join('.') + '.0.collapsed';
+
+		if(Symphony.Support.localStorage === true && window.localStorage[storageId]) {
+			$.each(window.localStorage[storageId].split(','), function(index, value) {
+				var collapsed = duplicator.find('.instance').eq(value);
+				if(collapsed.has('.invalid').length == 0) {
+					collapsed.trigger('collapse.collapsible', [0]);
+				}
+			});
+
+			window.localStorage.removeItem(storageId);
+		}
+	}
 });
 
 /*--------------------------------------------------------------------------
