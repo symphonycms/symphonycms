@@ -1349,6 +1349,8 @@
 				// Write successful
 				else {
 
+					if(function_exists('opcache_invalidate')) opcache_invalidate($file, true);
+
 					// Attach this datasources to pages
 					$connections = $fields['connections'];
 					ResourceManager::setPages(RESOURCE_TYPE_DS, is_null($existing_handle) ? $classname : $existing_handle, $connections);
