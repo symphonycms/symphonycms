@@ -867,7 +867,7 @@
 		 *
 		 * @param $handle
 		 *  The handle of the page
-		 * @param bool $path
+		 * @param boolean $path
 		 *  The path to the page
 		 * @return mixed
 		 *  Array if found, false if not

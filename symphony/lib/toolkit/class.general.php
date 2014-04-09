@@ -271,7 +271,7 @@
 		 * @since Symphony 2.2.1
 		 * @param string $string
 		 *  String to be cleaned up
-		 * @param int $max_length
+		 * @param integer $max_length
 		 *  The maximum number of characters in the handle
 		 * @param string $delim
 		 *  All non-valid characters will be replaced with this

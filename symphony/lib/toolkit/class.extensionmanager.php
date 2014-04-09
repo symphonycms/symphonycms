@@ -700,7 +700,7 @@
 		 *
 		 * @param array $a
 		 * @param array $b
-		 * @param int $i
+		 * @param integer $i
 		 * @return integer
 		 */
 		private static function sortByAuthor($a, $b, $i = 0) {

@@ -360,7 +360,7 @@
 		 *  The class attribute of the resulting `<tr>`
 		 * @param string $id (optional)
 		 *  The id attribute of the resulting `<tr>`
-		 * @param int $rowspan (optional)
+		 * @param integer $rowspan (optional)
 		 *  The rowspan attribute of the resulting `<tr>`
 		 * @param array $attributes (optional)
 		 *  Any additional attributes can be included in an associative array with
@@ -402,7 +402,7 @@
 		 *  The class attribute of the resulting `<td>`
 		 * @param string $id (optional)
 		 *  The id attribute of the resulting `<td>`
-		 * @param int $colspan (optional)
+		 * @param integer $colspan (optional)
 		 *  The colspan attribute of the resulting `<td>`
 		 * @param array $attributes (optional)
 		 *  Any additional attributes can be included in an associative array with

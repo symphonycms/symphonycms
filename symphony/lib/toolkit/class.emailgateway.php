@@ -13,7 +13,7 @@
 		 * Creates a new exception, and logs the error.
 		 *
 		 * @param string $message
-		 * @param int $code
+		 * @param integer $code
 		 * @param Exception $previous
 		 *  The previous exception, if nested. See
 		 *  http://www.php.net/manual/en/language.exceptions.extending.php

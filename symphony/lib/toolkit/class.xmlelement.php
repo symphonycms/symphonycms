@@ -185,7 +185,7 @@
 		 * Retrieves a child-element by position
 		 *
 		 * @since Symphony 2.3
-		 * @param int $position
+		 * @param integer $position
 		 * @return XMLElement
 		 */
 		public function getChild($position){
@@ -218,7 +218,7 @@
 		 *
 		 * @since Symphony 2.3
 		 * @param string $name
-		 * @param int $position
+		 * @param integer $position
 		 * @return XMLElement
 		 */
 		public function getChildByName($name, $position) {

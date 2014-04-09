@@ -218,7 +218,7 @@
 		 * @param string $where
 		 *  Allows a custom where query to be included. Must be valid SQL. The tbl_fields alias
 		 *  is t1
-		 * @param int|string $restrict
+		 * @param integer|string $restrict
 		 *  Only return fields if they match one of the Field Constants. Available values are
 		 *  `__TOGGLEABLE_ONLY__`, `__UNTOGGLEABLE_ONLY__`, `__FILTERABLE_ONLY__`,
 		 *  `__UNFILTERABLE_ONLY__` or `__FIELD_ALL__`. Defaults to `__FIELD_ALL__`

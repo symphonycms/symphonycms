@@ -635,7 +635,7 @@
 		 *  or as an XMLElement.
 		 * @param string $heading
 		 *  A heading for the error page
-		 * @param int $status
+		 * @param integer $status
 		 *  Properly sets the HTTP status code for the response. Defaults to
 		 *  `Page::HTTP_STATUS_ERROR`. Use `Page::HTTP_STATUS_XXX` to set this value.
 		 * @param string $template
