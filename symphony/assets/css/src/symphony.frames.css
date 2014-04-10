@@ -242,7 +242,8 @@ fieldset.frame,
 	Orderables and Selectables
 -----------------------------------------------------------------------------*/
 
-.orderable .frame-header {
+.orderable .frame-header,
+.collapsible.orderable .ordering * {
 	cursor: move;
 }
 
@@ -332,7 +333,7 @@ fieldset.frame,
 	Collapsibles
 
 	The duration of all transitions has to be set to the same time to prevent
-	a "jump" in the animation because the class `.js-animate` is removed on 
+	a "jump" in the animation because the class `.js-animate` is removed on
 	the first `transitionend` event.
 -----------------------------------------------------------------------------*/
 
@@ -346,7 +347,7 @@ fieldset.frame,
 
 .collapsible .instance,
 .collapsible input,
-.collapsible textarea, 
+.collapsible textarea,
 .collapsible select,
 .collapsible option {
 	-webkit-font-smoothing: subpixel-antialiased !important;
