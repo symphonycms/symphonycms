@@ -129,13 +129,10 @@
                 }
             }
 
-            // Clear the token that was used
-            unset($_SESSION["xsrf_tokens"][$_POST["xsrf"]]);
-
             // We're all good, so clear any tokens that can be cleared
-            if (Symphony::Configuration()->get("invalidate_tokens_on_request", "symphony"))
+            if (Symphony::Configuration()->get("invalidate_tokens_on_request", "symphony") === true)
             {
-                unset($_SESSION["xsrf_tokens"]);
+                unset($_SESSION["xsrf_tokens"][$_POST["xsrf"]]);
             }
             // Otherwise, just clear the ones that have expired.
             else

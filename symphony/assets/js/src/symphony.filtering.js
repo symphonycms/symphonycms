@@ -145,6 +145,7 @@
 		var fetchEntries = function(url) {
 			$.ajax({
 				url: url,
+				type: 'GET',
 				dataType: 'html',
 				success: appendEntries
 			});

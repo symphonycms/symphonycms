@@ -28,7 +28,7 @@
 
 		// Add suggestion
 		$.ajax({
-			type: 'POST',
+			type: 'GET',
 			url: Symphony.Context.get('root') + settings.source,
 			success: function(result) {
 				$.each(result, function addSuggestions(index, name) {

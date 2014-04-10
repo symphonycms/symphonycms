@@ -89,6 +89,9 @@ Symphony.View.add('/:context*:', function() {
 				// Update items
 				orderable.trigger('orderupdate.admin');
 
+				// Add XSRF token
+				newSorting = newSorting + '&' + Symphony.Utilities.getXSRF(true);
+
 				// Send request
 				$.ajax({
 					type: 'POST',
@@ -174,7 +177,8 @@ Symphony.View.add('/:context*:', function() {
 			data: {
 				'error': event.originalEvent.message,
 				'url': event.originalEvent.filename,
-				'line': event.originalEvent.lineno
+				'line': event.originalEvent.lineno,
+				'xsrf': Symphony.Utilities.getXSRF()
 			}
 		});
 
@@ -668,7 +672,7 @@ Symphony.View.add('/blueprints/events/:action:/:name:/:status:', function() {
 		}
 		else {
 			$.ajax({
-				type: 'POST',
+				type: 'GET',
 				data: {
 					'section': context.val(),
 					'filters': filters.serializeArray(),

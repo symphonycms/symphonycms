@@ -466,7 +466,10 @@
 			Symphony::Profiler()->sample('Page build process started');
 			$this->__buildPage($page);
 
-			$this->Page->Form->prependChild(XSRF::formToken());
+			// Add XSRF token to form's in the backend
+			if(isset($this->Page->Form)) {
+				$this->Page->Form->prependChild(XSRF::formToken());
+			}
 
 			/**
 			 * Immediately before generating the admin page. Provided with the page object

@@ -341,6 +341,26 @@ var Symphony = (function($, crossroads) {
 				});
 
 				return visibles;
+			},
+
+			/**
+			 * Returns the XSRF token for the backend
+			 *
+			 * @since Symphony 2.4
+			 * @param boolean $serialised
+			 *  If passed as true, this function will return the string as a serialised
+			 *  form elements, ie. field=value. If omitted, or false, this function
+			 *  will just return the XSRF token.
+			 */
+			getXSRF: function(serialised) {
+				var xsrf = Symphony.Elements.contents.find('input[name=xsrf]').val();
+
+				if(serialised === true) {
+					return 'xsrf=' + encodeURIComponent(xsrf);
+				}
+				else {
+					return xsrf;
+				}
 			}
 		}
 	};
