@@ -615,7 +615,7 @@
 			$label = Widget::Label(__('Sort Order'));
 			$label->setAttribute('class', 'ds-order');
 
-			$input = Widget::Input('field[order]', $fields['order']);
+			$input = Widget::Input('fields[order]', $fields['order']);
 			$label->appendChild($input);
 			$div->appendChild($label);
 
