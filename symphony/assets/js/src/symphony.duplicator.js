@@ -59,12 +59,11 @@
 	/*-----------------------------------------------------------------------*/
 
 		objects.each(function duplicators() {
-			var object = $(this),
+			var duplicator = $(this),
+				list = duplicator.find('> ol'),
 				apply = $('<fieldset class="apply" />'),
 				selector = $('<select />'),
 				constructor = $('<button type="button" class="constructor" />'),
-				duplicator = object,
-				list = duplicator.find('> ol'),
 				instances, templates, items, headers;
 
 			// Initialise duplicator components

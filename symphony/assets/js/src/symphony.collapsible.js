@@ -195,10 +195,15 @@
 				}
 			});
 
-			// Refresh state storage
-			object.on('orderstop.orderable', function refreshState(event) {
+			// Refresh state storage after ordering
+			object.on('orderstop.orderable', function refreshOrderedState(event) {
 				object.find(settings.items).trigger('store.collapsible');
 			});
+
+			// Refresh state storage after deleting and instance
+			object.on('destructstop.duplicator', settings.items, function refreshState() {
+				$(this).trigger('store.collapsible');
+			})
 
 		/*---------------------------------------------------------------------
 			Initialisation
