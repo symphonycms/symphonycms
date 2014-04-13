@@ -239,7 +239,7 @@
 
 				foreach($providers as $providerClass => $provider) {
 					$p['options'][] = array(
-						$providerClass, ($fields['source'] == $providerClass), $provider, null, null, array('data-context' => General::createHandle($provider))
+						$providerClass, ($fields['source'] == $providerClass), $provider, null, null, array('data-context' => Lang::createHandle($provider))
 					);
 				}
 
@@ -893,7 +893,7 @@
 			$label = Widget::Label(__('Pages'));
 
 			$pages = PageManager::fetch();
-			$ds_handle = str_replace('-', '_', General::createHandle($fields['name']));
+			$ds_handle = str_replace('-', '_', Lang::createHandle($fields['name']));
 			$connections = ResourceManager::getAttachedPages(RESOURCE_TYPE_DS, $ds_handle);
 			$selected = array();
 			foreach($connections as $connection) {

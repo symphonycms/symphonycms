@@ -249,7 +249,7 @@
 				$label = Widget::Label(__('Pages'));
 
 				$pages = PageManager::fetch();
-				$event_handle = str_replace('-', '_', General::createHandle($fields['name']));
+				$event_handle = str_replace('-', '_', Lang::createHandle($fields['name']));
 				$connections = ResourceManager::getAttachedPages(RESOURCE_TYPE_EVENT, $event_handle);
 				$selected = array();
 				foreach($connections as $connection) {
