@@ -256,7 +256,10 @@
 		 * @return XMLElement
 		 */
 		public function __negateResult(){
-			return new XMLElement('error', __('Results Negated.'));
+			$error = new XMLElement('error', __("Data source not executed, forbidden parameter was found."), array(
+				'forbidden-param' => $this->dsParamNEGATEPARAM
+			));
+			return $error;
 		}
 
 		/**

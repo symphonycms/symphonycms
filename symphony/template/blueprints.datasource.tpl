@@ -53,6 +53,8 @@
 
 			if($this->_force_empty_result) $result = $this->emptyXMLSet();
 
+			if($this->_negate_result) $result = $this->negateXMLSet();
+
 			return $result;
 		}
 

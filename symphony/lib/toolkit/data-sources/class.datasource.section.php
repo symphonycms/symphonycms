@@ -367,8 +367,6 @@
 					$where .= $date_where;
 				}
 				else {
-					// For deprecated reasons, call the old, typo'd function name until the switch to the
-					// properly named buildDSRetrievalSQL function.
 					if(!self::$_fieldPool[$field_id]->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == DataSource::FILTER_AND ? true : false))){ $this->_force_empty_result = true; return; }
 					if(!$group) $group = self::$_fieldPool[$field_id]->requiresSQLGrouping();
 				}
@@ -394,8 +392,12 @@
 
 			if($this->_force_empty_result == true){
 				$this->_force_empty_result = false; //this is so the section info element doesn't disappear.
-				$result = $this->emptyXMLSet();
+				$error = new XMLElement('error', __("Data source not executed, required parameter is missing."), array(
+					'required-param' => $this->dsParamREQUIREDPARAM
+				));
+				$result->appendChild($error);
 				$result->prependChild($sectioninfo);
+
 				return $result;
 			}
 
@@ -403,6 +405,7 @@
 				$this->_negate_result = false; //this is so the section info element doesn't disappear.
 				$result = $this->negateXMLSet();
 				$result->prependChild($sectioninfo);
+
 				return $result;
 			}
 
