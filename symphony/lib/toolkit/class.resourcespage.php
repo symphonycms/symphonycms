@@ -348,7 +348,11 @@
 						foreach($checked as $handle) {
 							$path = call_user_func(array($manager, '__getDriverPath'), $handle);
 
-							if (!General::deleteFile($path)) {
+							// Don't allow Extension resources to be deleted. RE: #2027
+							if(strpos(EXTENSIONS, $path) !== -1) {
+								continue;
+							}
+							else if (!General::deleteFile($path)) {
 								$folder = str_replace(DOCROOT, '', $path);
 								$folder = str_replace('/' . basename($path), '', $folder);
 
