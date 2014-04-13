@@ -349,7 +349,7 @@
 							$path = call_user_func(array($manager, '__getDriverPath'), $handle);
 
 							// Don't allow Extension resources to be deleted. RE: #2027
-							if(strpos(EXTENSIONS, $path) !== -1) {
+							if(stripos($path, EXTENSIONS) === 0) {
 								continue;
 							}
 							else if (!General::deleteFile($path)) {
