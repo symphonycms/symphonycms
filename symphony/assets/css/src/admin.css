@@ -608,7 +608,10 @@ div.field-checkbox {
 
 div.field-checkbox:first-child {
 	margin-top: 2rem;
-	margin-bottom: 2.6rem;
+}
+
+div.field-checkbox + .field:not(.field-checkbox) {
+	margin-top: 2.6rem;
 }
 
 /* File uploads */
