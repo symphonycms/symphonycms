@@ -2,8 +2,8 @@
 
 - Version: 2.4 Beta 3
 - Date: 3rd April 2014
-- Release Notes: <http://getsymphony.com/download/releases/version/2.4/>
-- Github Repository: <http://github.com/symphonycms/symphony-2/tree/2.4beta3>
+- [Release notes](http://getsymphony.com/download/releases/version/2.4/)
+- [Github repository](http://github.com/symphonycms/symphony-2/tree/2.4beta3)
 
 
 ## Contents
@@ -24,7 +24,12 @@
 
 Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.4 Beta 3` and is considered unstable.
 
-Visit [the Symphony website](http://getsymphony.com/), [the forum](http://getsymphony.com/discuss/) or learn how you can [contribute to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony).
+Useful places:
+
+- [The Symphony website](http://getsymphony.com/)
+- [The Symphony forum](http://getsymphony.com/discuss/)
+- [Symphony Extensions](http://symphonyextensions.com/)
+- [Contributing to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony)
 
 ## Server requirements
 
@@ -43,53 +48,52 @@ Before installation, see the [notes on file permissions](#file-permissions).
 
 ### Via Git
 
-1. Clone the git repository to the location you desire using:
+1. Clone the Symphony Git repository to the desired location:
 
-		git clone git://github.com/symphonycms/symphony-2.git
+		git clone git://github.com/symphonycms/symphony-2.git target-directory
+		cd target-directory
 
-	The following repositories are included as submodules:
+	(Replace `target-directory` with your chosen new directory name.)
 
-	[Markdown](http://github.com/symphonycms/markdown)  
-	[Maintenance Mode](http://github.com/symphonycms/maintenance_mode)  
-	[Select Box Link Field](http://github.com/symphonycms/selectbox_link_field) 
-	[JIT Image Manipulation](http://github.com/symphonycms/jit_image_manipulation)  
-	[Export Ensemble](http://github.com/symphonycms/export_ensemble)  
-	[Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)  
-	[Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)  
-	[XSS Filter](http://github.com/symphonycms/xssfilter/tree/master)
+1.	_(Optional)_ If you would like to add the bundled optional extensions, run the following commands to checkout the `bundle` branch which contains the Git submodules references and update the submodules:
 
-1. Run the following command to ensure the submodules are cloned:
-
+		git checkout --track origin/bundle
 		git submodule update --init --recursive
 
-1. _(Optional)_ If you would like the [default ensemble](http://github.com/symphonycms/workspace/tree) installed as well,
-you will need to use the following command from within the Symphony 2 folder you just created:
+	The extensions included in the optional bundle:
+
+	- [Markdown](https://github.com/symphonycms/markdown)
+	- [Maintenance Mode](https://github.com/symphonycms/maintenance_mode)
+	- [Select Box Link Field](https://github.com/symphonycms/selectbox_link_field)
+	- [JIT Image Manipulation](https://github.com/symphonycms/jit_image_manipulation)
+	- [Export Ensemble](https://github.com/symphonycms/export_ensemble)
+	- [Debug DevKit](https://github.com/symphonycms/debugdevkit)
+	- [Profile DevKit](https://github.com/symphonycms/profiledevkit)
+	- [XSS Filter](https://github.com/symphonycms/xssfilter)
+
+1. _(Optional)_ If you would like to install the [example workspace](https://github.com/symphonycms/workspace), which aims to teach newcomers by showcasing basic features and functionalities using a typical blog set-up, run:
 
 		git clone git://github.com/symphonycms/workspace.git
 
-1. Point your web browser at <http://example.com/install/> and provide
-details for establishing a database connection and about your server environment.
+1. Point your web browser at the `install` subdirectory (e.g., `http://example.com/install/`) and provide details on establishing a database connection and your server environment.
 
 1. Chuckle villainously and tap your fingertips together (or pet a cat) as your installation completes.
 
 1. Remove installer files:
 
-	`rm -rf install/ workspace/install.sql`
+		rm -rf install/ workspace/install.sql
 
 ### Via the old-fashioned way
 
-**Note:** You can leave `/workspace` out if you do not want the default theme.
-
 1. This step assumes you downloaded a zip archive from the [Symphony website](http://getsymphony.com). Upload the following files and directories to the root directory of your website:
 
-	`index.php`  
-	`/install`  
-	`/symphony`  
-	`/workspace`  
-	`/extensions`
+	- `index.php`
+	- `/install`
+	- `/symphony`
+	- `/workspace` (leave out if you don’t require the example workspace)
+	- `/extensions`
 
-1. Point your web browser at <http://example.com/install/> and provide
-details on establishing a database connection and your server environment.
+1. Point your web browser at the `install` subdirectory (e.g., `http://example.com/install/`) and provide details on establishing a database connection and your server environment.
 
 1. Pose like you’re being filmed for a dramatic close-up while your installation completes.
 
@@ -99,12 +103,11 @@ details on establishing a database connection and your server environment.
 
 ### File permissions
 
-1. Symphony’s installer will inform you if it needs write access to files that it doesn’t already have, but you can ensure it has the access it needs by temporarily setting files to world-writeable.
+1. Symphony’s installer will inform you if it needs write access to directories that it doesn’t already have, but you can ensure it has the access it needs by temporarily setting the root to world-writeable.
 
-	`cd /your/site/root`  
-	`chmod -R 777 .`
+	`chmod /your/site/root 777 .`
 
-1. Once Symphony is successfully installed, you should change file permissions to something tighter for security reasons. Symphony recommends `755` for directories and `644` for files as a good default, but this may need to be changed depending on your server’s users and groups configuration. For example, you may need to change directories and files that Symphony needs to subsequently write to to `775` and `664` respectively.
+1. Once Symphony is successfully installed, you should change file/directory permissions to something tighter for security reasons. Symphony recommends `755` for directories and `644` for files as a good default, but this may need to be changed depending on your server’s users and groups configuration. For example, you may need to change directories and files that Symphony needs to subsequently write to to `777` and `666` respectively.
 
 #### Useful commands
 
@@ -138,7 +141,7 @@ As of version `2.1`, Symphony stores passwords using the more secure [SHA1](http
 
 Please also note that all other users’ passwords will no longer be valid and will require a manual reset through Symphony’s forgotten password feature. Alternatively, as an administrator, you can also change your users’ passwords on their behalf.
 
-We are now using [GitHub’s organisations feature](http://github.com/blog/674-introducing-organizations). As a result, all submodules—as well as the main Symphony 2 repo—are forks owned by the [Symphony CMS organisation](http://github.com/symphonycms/).
+We are now using [GitHub’s organisations feature](https://github.com/blog/674-introducing-organizations). As a result, all submodules—as well as the main Symphony 2 repo—are forks owned by the [Symphony CMS organisation](https://github.com/symphonycms/).
 
 To fully update your Git-based installation, please edit your `.git/config` and the `.git/config` of each core extension (`debugdevkit`, `profiledevkit`, `markdown`, `maintenance_mode`, `selectbox_link_field`, `jit_image_manipulation` and `export_ensemble`) and change the URL of the remote repo from `symphony` or `pointybeard` to be `symphonycms`.
 
@@ -162,9 +165,9 @@ Version `2.0.5` introduced multiple includable elements in the Data Source Edito
 
 		git submodule update --init --recursive
 
-1. If updating from a version older than `2.0.5`, enable the [Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master) and [Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master) extensions.
+1. If updating from a version older than `2.0.5`, enable the [Debug DevKit](https://github.com/symphonycms/debugdevkit) and [Profile DevKit](https://github.com/symphonycms/profiledevkit) extensions.
 
-1. Go to `http://example.com/install/` to complete the update process.
+1. Point your web browser at the `install` subdirectory (e.g., `http://example.com/install/`) to complete the update process.
 
 1. You and your website are now in the future. Buy yourself a silver jumpsuit.
 
@@ -176,31 +179,28 @@ Follow the instructions below if you are updating from Symphony 2.0 (not from Gi
 
 1. Upload `/symphony`, `/install` & `index.php`, replacing what is already on your server.
 
-1. If you are updating from a version older than 2.0.5, download and install the Debug DevKit and Profile DevKit:
+1. If updating from a version older than `2.0.5`, enable the [Debug DevKit](https://github.com/symphonycms/debugdevkit) and [Profile DevKit](https://github.com/symphonycms/profiledevkit) extensions.
 
-	[Debug DevKit](http://github.com/symphonycms/debugdevkit/tree/master)  
-	[Profile DevKit](http://github.com/symphonycms/profiledevkit/tree/master)
-
-1. Go to `http://example.com/install/` to complete the update process.
+1. Point your web browser at the `install` subdirectory (e.g., `http://example.com/install/`) to complete the update process.
 
 1. Call a friend and brag that your copy of Symphony is newer than theirs.
 
 ## Contributing
 
-Symphony uses [Grunt](http://gruntjs.com/) to build bundled and minified assets:
+Symphony uses [Grunt](http://gruntjs.com/) to build concatenated and minified assets:
 
-1. Install `grunt-cli` globally, [see the Grunt documentation](http://gruntjs.com/getting-started):
+1. Install `grunt-cli` globally ([see the Grunt documentation](http://gruntjs.com/getting-started)):
 
 		npm install -g grunt-cli
 
-2. Install all dependencies from the repository's root:
+2. Install all dependencies from the repository’s root:
 
 		npm install
 
-3. Use the following command to start the automatic `watch` task:
+3. Run the `watch` task:
 
 		grunt watch
 
-Symphony's minified script and style files will be updated automatically when saving source files.
+Symphony’s minified script and style files will be updated automatically when saving source files.
 
-More information about [Contributing to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony) can be found in the Github wiki.
+More information: [Contributing to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony).
