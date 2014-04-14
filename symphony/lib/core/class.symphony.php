@@ -13,7 +13,7 @@
 	require_once(CORE . '/class.configuration.php');
 	require_once(CORE . '/class.log.php');
 	require_once(CORE . '/class.cookie.php');
-	require_once(CORE . '/interface.singleton.php');
+	require_once(FACE . '/interface.singleton.php');
 
 	require_once(TOOLKIT . '/class.page.php');
 	require_once(TOOLKIT . '/class.ajaxpage.php');

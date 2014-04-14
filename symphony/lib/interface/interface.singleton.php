@@ -1,7 +1,7 @@
 <?php
 
 	/**
-	 * @package core
+	 * @package interface
 	 */
 
 	/**
