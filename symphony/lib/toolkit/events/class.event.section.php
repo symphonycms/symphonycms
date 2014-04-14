@@ -192,7 +192,7 @@
 			$result = new XMLElement($this->ROOTELEMENT);
 
 			// Add XSRF checking to Events. RE: #1874
-			if(XSRF::validateRequest(true) === false) {
+			if(is_session_empty() === false && XSRF::validateRequest(true) === false) {
 				$result->setAttribute('result', 'error');
 				$result->appendChild(new XMLElement('message', __('Request was rejected for having an invalid cross-site request forgery token.'), array(
 					'message-id' => EventMessages::SECURITY_XSRF

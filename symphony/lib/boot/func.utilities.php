@@ -144,12 +144,7 @@
 			header($custom_cookie);
 		}
 
-		$session_is_empty = true;
-		foreach ($_SESSION as $contents) {
-			if (!empty($contents)) {
-				$session_is_empty = false;
-			}
-		}
+		$session_is_empty = is_session_empty();
 		if ($session_is_empty && !empty($_COOKIE[session_name()])) {
 			setcookie(
 				session_name(),
@@ -172,4 +167,20 @@
 				$cookie_params['httponly']
 			);
 		}
+	}
+
+	/**
+	 * Function will loop over the $_SESSION and find out if it is empty or not
+	 *
+	 * @since Symphony 2.4
+	 * @return boolean
+	 */
+	function is_session_empty() {
+		foreach ($_SESSION as $contents) {
+			if (!empty($contents)) {
+				$session_is_empty = false;
+			}
+		}
+
+		return $session_is_empty;
 	}

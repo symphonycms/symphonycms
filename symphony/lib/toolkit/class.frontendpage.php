@@ -407,7 +407,9 @@
 			}
 
 			if(is_array($_COOKIE[__SYM_COOKIE_PREFIX__]) && !empty($_COOKIE[__SYM_COOKIE_PREFIX__])){
-				foreach($_COOKIE[__SYM_COOKIE_PREFIX__] as $key => $val){
+				foreach($_COOKIE[__SYM_COOKIE_PREFIX__] as $key => $val) {
+					if(in_array($key, array('xsrf-tokens'))) continue;
+
 					$this->_param['cookie-' . $key] = $val;
 				}
 			}

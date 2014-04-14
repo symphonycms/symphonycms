@@ -8,15 +8,46 @@
 
     /**
      * The `XSRF` class provides protection for mitigating XRSF/CSRF attacks.
-     * 
+     *
      * @since Symphony 2.4
      * @author Rich Adams, http://richadams.me
      */
     class XSRF
     {
+
+        /**
+         * Return's the location of the XSRF tokens in the Session
+         *
+         * @return array
+         */
+        public static function getSession() {
+            $tokens = $_SESSION['sym-']['xsrf-tokens'];
+
+            return is_null($tokens) ? array() : $tokens;
+        }
+
+        /**
+         * Adds a token to the Session
+         *
+         * @param array $token
+         */
+        public static function setSessionToken($token = array()) {
+            $_SESSION['sym-']['xsrf-tokens'] = $token;
+        }
+
+        /**
+         * Removes the token from the Session
+         *
+         * @param string $token
+         */
+        public static function removeSessionToken($token = null) {
+            if(is_null($token)) return;
+            unset($_SESSION['sym-']['xsrf-tokens'][$token]);
+        }
+
         /**
          * Generates nonce to a desired `$length` using `openssl` where available,
-         * falling back to using `/dev/urandom` and a microtime implementation 
+         * falling back to using `/dev/urandom` and a microtime implementation
          * otherwise
          *
          * @param integer $length
@@ -69,10 +100,16 @@
          */
         public static function getToken()
         {
-            $nonce                   = self::generateNonce(20);
-            $tokens                  = $_SESSION["xsrf_tokens"];
-            $tokens[$nonce]          = strtotime("+" . Symphony::Configuration()->get("token_lifetime", "symphony"));
-            $_SESSION["xsrf_tokens"] = $tokens;
+            $tokens = self::getSession();
+            if(empty($tokens)) {
+                $nonce = self::generateNonce(20);
+                $tokens[$nonce] = strtotime("+" . Symphony::Configuration()->get("token_lifetime", "symphony"));
+                self::setSessionToken($tokens);
+            }
+            else {
+                $nonce = key($tokens);
+            }
+
             return $nonce;
         }
 
@@ -85,10 +122,10 @@
          */
         public static function validateToken($xsrf)
         {
-            $tokens = $_SESSION["xsrf_tokens"];
+            $tokens = self::getSession();
 
             // Sanity check
-            if ($tokens == null) { return false; }
+            if (empty($tokens)) { return false; }
 
             // Check that the token exists, and time has not expired.
             foreach ($tokens as $key => $expires)
@@ -130,16 +167,18 @@
             }
 
             // We're all good, so clear any tokens that can be cleared
-            if (Symphony::Configuration()->get("invalidate_tokens_on_request", "symphony") === true)
+            if (Symphony::Configuration()->get("invalidate_tokens_on_request", "symphony") == true)
             {
-                unset($_SESSION["xsrf_tokens"][$_POST["xsrf"]]);
+                self::removeSessionToken($_POST["xsrf"]);
             }
-            // Otherwise, just clear the ones that have expired.
+            // Otherwise, renew the existing token
             else
             {
-                if (is_array($_SESSION["xsrf_tokens"]))
+                $tokens = self::getSession();
+                if (!empty($tokens))
                 {
-                    $_SESSION["xsrf_tokens"] = array_filter($_SESSION["xsrf_tokens"], function($value) { return (time() <= $value);});
+                    $tokens[key($tokens)] = strtotime("+" . Symphony::Configuration()->get("token_lifetime", "symphony"));
+                    self::setSessionToken($tokens);
                 }
             }
         }

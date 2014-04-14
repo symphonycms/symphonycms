@@ -545,7 +545,6 @@
 					}
 				}
 
-				$this->Cookie->expire();
 				return false;
 			}
 		}
