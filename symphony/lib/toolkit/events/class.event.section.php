@@ -730,6 +730,8 @@
 		const FIELD_MISSING = 301;
 		const FIELD_INVALID = 302;
 
-		const SECURITY_XSRF = 400;
+		const FILTER_FAILED = 400;
+
+		const SECURITY_XSRF = 500;
 
 	}
