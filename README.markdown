@@ -105,7 +105,7 @@ Before installation, see the [notes on file permissions](#file-permissions).
 
 1. Symphony’s installer will inform you if it needs write access to directories that it doesn’t already have, but you can ensure it has the access it needs by temporarily setting the root to world-writeable.
 
-	`chmod /your/site/root 777 .`
+	`chmod 777 /your/site/root/`
 
 1. Once Symphony is successfully installed, you should change file/directory permissions to something tighter for security reasons. Symphony recommends `755` for directories and `644` for files as a good default, but this may need to be changed depending on your server’s users and groups configuration. For example, you may need to change directories and files that Symphony needs to subsequently write to to `777` and `666` respectively.
 
