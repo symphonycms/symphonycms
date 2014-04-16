@@ -181,8 +181,6 @@ Symphony.View.add('/:context*:', function() {
 				'xsrf': Symphony.Utilities.getXSRF()
 			}
 		});
-
-		return false;
 	});
 });
 
