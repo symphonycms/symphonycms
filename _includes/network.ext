@@ -15,7 +15,7 @@
       </nav>
       <div id="user" class="network-user">
         <a href="http://getsymphony.com/get-involved/member/Allen/">
-          <img src="/img/user.png" width="35" height="35" alt="Allen Chang" />
+          <img src="img/user.png" width="35" height="35" alt="Allen Chang" />
         </a>
         <p>
           <a href="http://getsymphony.com/get-involved/currently-online/" class="network-visitors">15</a>
@@ -32,7 +32,7 @@
 
       <!-- Gravatar -->
       <div class="network-gravatar column one">
-        <img src="/img/user.png" width="174" height="174" alt="Allen Chang" />
+        <img src="img/user.png" width="174" height="174" alt="Allen Chang" />
         <p>Change your avatar at <a href="http://gravatar.com">Gravatar</a>.</p>
       </div>
 
