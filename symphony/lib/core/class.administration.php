@@ -199,7 +199,7 @@
 				if(is_array($extensions) && !empty($extensions) && $this->__canAccessAlerts()) {
 					foreach($extensions as $name) {
 						try {
-							$about = Symphony::ExtensionManager()->about($name);
+							$about = (array)Symphony::ExtensionManager()->about($name);
 						}
 						catch (Exception $ex) {
 							// The extension cannot be found, show an error message and let the user remove
@@ -332,7 +332,7 @@
 				else {
 					$context = array();
 				}
-				
+
 				$callback = array(
 					'driver' => 'login',
 					'driver_location' => CONTENT . '/content.login.php',
