@@ -682,7 +682,7 @@ Symphony.View.add('/blueprints/events/:action:/:name:/:status:', function() {
 	context.on('change.admin', function changeEventContext() {
 		source.val(context.val());
 		Symphony.Elements.contents.trigger('update.admin');
-	});
+	}).trigger('change.admin');
 
 	// Change filters
 	filters.on('change.admin', function changeEventFilters() {
