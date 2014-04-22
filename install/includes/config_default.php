@@ -20,6 +20,7 @@
 			'cookie_prefix' => 'sym-',
 			'session_gc_divisor' => '10',
 			'cell_truncation_length' => '75',
+			'enable_xsrf' => 'yes',
 			'token_lifetime' => '15 minutes',
 			'invalidate_tokens_on_request' => null,
 		),

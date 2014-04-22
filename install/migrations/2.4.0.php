@@ -73,6 +73,12 @@
 				Symphony::Configuration()->set('invalidate_tokens_on_request', false, 'symphony');
 			}
 
+			// [#1874] XSRF/CRSF options
+			if(version_compare(self::$existing_version, '2.4RC1', '<=')) {
+				// On update, disable XSRF for compatibility purposes
+				Symphony::Configuration()->set('enable_xsrf', 'no', 'symphony');
+			}
+
 			// Update the version information
 			Symphony::Configuration()->set('version', self::getVersion(), 'symphony');
 			Symphony::Configuration()->set('useragent', 'Symphony/' . self::getVersion(), 'general');
@@ -89,7 +95,7 @@
 			return array(
 				__("Symphony 2.4 is a major release that contains breaking changes from previous versions. It is highly recommended to review the releases notes and make a complete backup of your installation before updating as these changes may affect the functionality of your site."),
 				__("This release will automatically convert all existing Symphony database tables to %s.", array("<code>utf8_unicode_ci</code>")),
-				__("CRSF has been implemented in this release and is turned on by default for the frontend and the backend.")
+				__("CRSF has been implemented in this release and is turned off by default. To enable for the frontend and the backend, change %s from %s to %s in your configuration.", array('<code>enable_xsrf</code>', '<code>no</code>', '<code>yes</code>'))
 			);
 		}
 

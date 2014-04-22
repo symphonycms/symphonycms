@@ -198,6 +198,16 @@
 		}
 
 		/**
+		 * Is XSRF enabled for this Symphony install?
+		 *
+		 * @since Symphony 2.4
+		 * @return boolean
+		 */
+		public static function isXSRFEnabled() {
+			return self::Configuration()->get('enable_xsrf', 'symphony') === 'yes';
+		}
+
+		/**
 		 * Accessor for the current `Profiler` instance.
 		 *
 		 * @since Symphony 2.3

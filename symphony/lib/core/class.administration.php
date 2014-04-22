@@ -49,7 +49,7 @@
 			parent::__construct();
 
 			// Ensure the request is legitimate. RE: #1874
-			XSRF::validateRequest();
+			if(self::isXSRFEnabled()) XSRF::validateRequest();
 		}
 
 		/**
@@ -467,7 +467,7 @@
 			$this->__buildPage($page);
 
 			// Add XSRF token to form's in the backend
-			if(isset($this->Page->Form)) {
+			if(self::isXSRFEnabled() && isset($this->Page->Form)) {
 				$this->Page->Form->prependChild(XSRF::formToken());
 			}
 

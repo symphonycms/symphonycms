@@ -105,7 +105,7 @@
 			$output = self::$_page->generate($page);
 
 			// Add XSRF token to all forms. RE: #1874
-			if(is_session_empty() === false) {
+			if(self::isXSRFEnabled() && is_session_empty() === false) {
 				preg_match_all('/<form.*post[\'\"].*>/i', $output, $forms);
 				$forms[0] = array_unique($forms[0]);
 				foreach($forms[0] as $form) {
