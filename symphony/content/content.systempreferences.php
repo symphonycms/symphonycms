@@ -82,7 +82,7 @@
 				foreach($email_gateways as $handle => $details) {
 					$options[] = array($handle, (($handle == $default_gateway) || (($selected_is_installed == false) && $handle == 'sendmail')), $details['name']);
 				}
-				$select = Widget::Select('settings[Email][default_gateway]', $options, array('class' => 'picker'));
+				$select = Widget::Select('settings[Email][default_gateway]', $options, array('class' => 'picker', 'data-interactive' => 'data-interactive'));
 				$label->appendChild($select);
 				$group->appendChild($label);
 				// Append email gateway selection

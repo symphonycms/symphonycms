@@ -499,6 +499,7 @@
 			if(is_array($existing_options) && !empty($existing_options)){
 				$optionlist = new XMLElement('ul');
 				$optionlist->setAttribute('class', 'tags');
+				$optionlist->setAttribute('data-interactive', 'data-interactive');
 
 				foreach($existing_options as $option) {
 					$optionlist->appendChild(

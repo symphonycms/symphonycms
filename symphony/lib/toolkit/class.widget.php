@@ -703,6 +703,7 @@
 			$drawer->setAttribute('data-default-state', $default_state);
 			$drawer->setAttribute('data-context', $context);
 			$drawer->setAttribute('data-label', $label);
+			$drawer->setAttribute('data-interactive', 'data-interactive');
 			$drawer->addClass('drawer');
 			$drawer->setAttribute('id', 'drawer-' . $id);
 

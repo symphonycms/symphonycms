@@ -329,9 +329,11 @@
 				$div = new XMLElement('div');
 				$div->setAttribute('class', 'contextual frame filters-duplicator');
 				$div->setAttribute('data-context', 'section-' . $section_id);
+				$div->setAttribute('data-interactive', 'data-interactive');
 
 				$ol = new XMLElement('ol');
 				$ol->setAttribute('class', 'suggestable');
+				$ol->setAttribute('data-interactive', 'data-interactive');
 				$ol->setAttribute('data-add', __('Add filter'));
 				$ol->setAttribute('data-remove', __('Remove filter'));
 
@@ -447,9 +449,11 @@
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'contextual frame filters-duplicator');
 			$div->setAttribute('data-context', 'authors');
+			$div->setAttribute('data-interactive', 'data-interactive');
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'suggestable');
+			$ol->setAttribute('data-interactive', 'data-interactive');
 			$ol->setAttribute('data-add', __('Add filter'));
 			$ol->setAttribute('data-remove', __('Remove filter'));
 
@@ -478,17 +482,19 @@
 			$div = new XMLElement('div');
 			$div->setAttribute('class', 'contextual frame filters-duplicator');
 			$div->setAttribute('data-context', 'navigation');
+			$div->setAttribute('data-interactive', 'data-interactive');
 
 			$ol = new XMLElement('ol');
 			$ol->setAttribute('class', 'suggestable');
+			$ol->setAttribute('data-interactive', 'data-interactive');
 			$ol->setAttribute('data-add', __('Add filter'));
 			$ol->setAttribute('data-remove', __('Remove filter'));
 
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
+			$ul->setAttribute('data-interactive', 'data-interactive');
 
 			$pages = PageManager::fetch(false, array('*'), array(), 'title ASC');
-
 			foreach($pages as $page){
 				$ul->appendChild(new XMLElement('li', preg_replace('/\/{2,}/i', '/', '/' . $page['path'] . '/' . $page['handle'])));
 			}
@@ -517,6 +523,7 @@
 
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tags');
+			$ul->setAttribute('data-interactive', 'data-interactive');
 			if($types = PageManager::fetchAvailablePageTypes()) {
 				foreach($types as $type) {
 					$ul->appendChild(new XMLElement('li', $type));
@@ -621,6 +628,7 @@
 
 			$orders = new XMLElement('ul');
 			$orders->setAttribute('class', 'tags singular');
+			$orders->setAttribute('data-interactive', 'data-interactive');
 			$orders->appendChild(new XMLElement('li', 'asc'));
 			$orders->appendChild(new XMLElement('li', 'desc'));
 			$orders->appendChild(new XMLElement('li', 'random'));

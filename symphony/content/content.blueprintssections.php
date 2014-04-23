@@ -65,7 +65,7 @@
 				Widget::TableBody($aTableBody),
 				'orderable selectable',
 				null,
-				array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
+				array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading', 'data-interactive' => 'data-interactive')
 			);
 
 			$this->Form->appendChild($table);
@@ -193,7 +193,7 @@
 			else $navgroupdiv->appendChild($label);
 
 			if(is_array($sections) && !empty($sections)){
-				$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
+				$ul = new XMLElement('ul', NULL, array('class' => 'tags singular', 'data-interactive' => 'data-interactive'));
 				$groups = array();
 				foreach($sections as $s){
 					if(in_array($s->get('navigation_group'), $groups)) continue;
@@ -442,7 +442,7 @@
 			else $navgroupdiv->appendChild($label);
 
 			if(is_array($sections) && !empty($sections)){
-				$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
+				$ul = new XMLElement('ul', NULL, array('class' => 'tags singular', 'data-interactive' => 'data-interactive'));
 				$groups = array();
 				foreach($sections as $s){
 					if(in_array($s->get('navigation_group'), $groups)) continue;

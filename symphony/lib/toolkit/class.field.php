@@ -589,7 +589,7 @@
 			$label->appendChild(new XMLElement('i', __('Optional')));
 			$label->appendChild(Widget::Input($name, $selected));
 
-			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular'));
+			$ul = new XMLElement('ul', NULL, array('class' => 'tags singular', 'data-interactive' => 'data-interactive'));
 			foreach($rules as $name => $rule) {
 				$ul->appendChild(new XMLElement('li', $name, array('class' => $rule)));
 			}

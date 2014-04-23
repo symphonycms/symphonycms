@@ -179,7 +179,7 @@
 				Widget::TableBody($aTableBody),
 				'selectable',
 				null,
-				array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
+				array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading', 'data-interactive' => 'data-interactive')
 			);
 
 			$this->Form->appendChild($table);

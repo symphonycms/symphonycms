@@ -189,7 +189,7 @@
 			$table = Widget::Table(
 				Widget::TableHead($aTableHead), null,
 				Widget::TableBody($aTableBody), 'orderable selectable',
-				null, array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
+				null, array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading', 'data-interactive' => 'data-interactive')
 			);
 
 			$this->Form->appendChild($table);
@@ -454,6 +454,7 @@
 
 			$tags = new XMLElement('ul');
 			$tags->setAttribute('class', 'tags');
+			$tags->setAttribute('data-interactive', 'data-interactive');
 
 			$types = PageManager::fetchAvailablePageTypes();
 			foreach($types as $type) {

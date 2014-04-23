@@ -197,6 +197,7 @@
 				if(is_array($existing_tags) && !empty($existing_tags)){
 					$taglist = new XMLElement('ul');
 					$taglist->setAttribute('class', 'tags');
+					$taglist->setAttribute('data-interactive', 'data-interactive');
 
 					foreach($existing_tags as $tag) {
 						$taglist->appendChild(
@@ -418,6 +419,7 @@
 				if(is_array($existing_tags) && !empty($existing_tags)){
 					$taglist = new XMLElement('ul');
 					$taglist->setAttribute('class', 'tags');
+					$taglist->setAttribute('data-interactive', 'data-interactive');
 
 					foreach($existing_tags as $tag) {
 						$taglist->appendChild(
