@@ -258,7 +258,7 @@
 
 				$options = array();
 				foreach($pages as $page) {
-					$options[] = array($page['id'], in_array($page['id'], $selected), $page['title']);
+					$options[] = array($page['id'], in_array($page['id'], $selected), PageManager::resolvePageTitle($page['id']));
 				}
 
 				$label->appendChild(Widget::Select('fields[connections][]', $options, array('multiple' => 'multiple')));
