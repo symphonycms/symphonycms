@@ -276,11 +276,18 @@
 		public static function getAttachedPages($type, $r_handle){
 			$col = self::getColumnFromType($type);
 
-			$pages = PageManager::fetch(false, array('id', 'title'), array(sprintf(
+			$pages = PageManager::fetch(false, array('id'), array(sprintf(
 				'`%s` = "%s" OR `%s` REGEXP "%s"',
 				$col, $r_handle,
 				$col, '^' . $r_handle . ',|,' . $r_handle . ',|,' . $r_handle . '$'
 			)));
+
+			foreach($pages as $key => &$page) {
+				$pages[$key] = array(
+					'id' => $page['id'],
+					'title' => PageManager::resolvePageTitle($page['id'])
+				);
+			}
 
 			return (is_null($pages) ? array() : $pages);
 		}
