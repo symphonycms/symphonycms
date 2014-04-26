@@ -13,17 +13,17 @@
 Symphony.View.add('/:context*:', function() {
 
 	// Initialise core plugins
-	Symphony.Elements.contents.find('.filters-duplicator').symphonyDuplicator();
-	Symphony.Elements.contents.find('.tags').symphonyTags();
-	Symphony.Elements.contents.find('select.picker').symphonyPickable();
-	Symphony.Elements.contents.find('ul.orderable').symphonyOrderable();
-	Symphony.Elements.contents.find('table.selectable').symphonySelectable();
+	Symphony.Elements.contents.find('.filters-duplicator[data-interactive]').symphonyDuplicator();
+	Symphony.Elements.contents.find('.tags[data-interactive]').symphonyTags();
+	Symphony.Elements.contents.find('select.picker[data-interactive]').symphonyPickable();
+	Symphony.Elements.contents.find('ul.orderable[data-interactive]').symphonyOrderable();
+	Symphony.Elements.contents.find('table.selectable[data-interactive]').symphonySelectable();
 	Symphony.Elements.wrapper.find('div.drawer').symphonyDrawer();
 	Symphony.Elements.header.symphonyNotify();
 
 	// Initialise tag lists inside duplicators
 	Symphony.Elements.contents.find('.duplicator').on('constructshow.duplicator', '.instance', function() {
-		$(this).find('.tags').symphonyTags();
+		$(this).find('.tags[data-interactive]').symphonyTags();
 	});
 
 	// Navigation sizing
@@ -68,7 +68,7 @@ Symphony.View.add('/:context*:', function() {
 
 	// Orderable tables
 	var oldSorting = null,
-		orderable = Symphony.Elements.contents.find('table.orderable');
+		orderable = Symphony.Elements.contents.find('table.orderable[data-interactive]');
 
 	orderable.symphonyOrderable({
 			items: 'tr',
