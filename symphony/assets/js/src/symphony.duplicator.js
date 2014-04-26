@@ -164,8 +164,12 @@
 					instance.trigger('destructstop.duplicator');
 				}
 				else {
-					// instance.find('input[type!="hidden"]:first').focus();
 					instance.trigger('constructstop.duplicator');
+				}
+
+				// Update collapsible states
+				if(settings.collapsible) {
+					instance.trigger('store.collapsible');
 				}
 			});
 
