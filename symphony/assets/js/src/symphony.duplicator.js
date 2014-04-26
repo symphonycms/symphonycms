@@ -312,7 +312,10 @@
 
 				// Single unique template
 				if(templates.is('.unique')) {
-					constructor.trigger('click.duplicator', [0]);
+					if(instances.length == 0) {
+						constructor.trigger('click.duplicator', [0]);
+					}
+					
 					apply.hide();
 				}
 			}
