@@ -2,6 +2,38 @@
 
 	include_once(TOOLKIT . '/class.htmlpage.php');
 
+	// The extension cannot be found, show an error message and 
+	// let the user remove or rename the extension folder.
+	if (isset($_POST['extension-missing'])) {
+		$name = $_POST['existing-folder'];
+
+		if(isset($_POST['action']['delete'])) {
+			Symphony::ExtensionManager()->cleanupDatabase();
+		}
+		else if (isset($_POST['action']['rename'])) {
+			$path = ExtensionManager::__getDriverPath($name);
+
+			if(!@rename(EXTENSIONS . '/' . $_POST['existing-folder'], EXTENSIONS . '/' . $_POST['new-folder'])) {
+				Symphony::Engine()->throwCustomError(
+					__('Could not find extension %s at location %s.', array(
+						'<code>' . $name . '</code>',
+						'<code>' . $path . '</code>'
+					)),
+					__('Symphony Extension Missing Error'),
+					Page::HTTP_STATUS_ERROR,
+					'missing_extension',
+					array(
+						'name' => $name,
+						'path' => $path,
+						'rename_failed' => true
+					)
+				);
+			}
+		}
+
+		redirect(SYMPHONY_URL . '/system/extensions/');
+	}
+
 	$Page = new HTMLPage();
 
 	$Page->Html->setElementStyle('html');
@@ -101,6 +133,11 @@
 		$div->appendChild(
 			new XMLElement('p', __('You can try uninstalling the extension to continue, or you might want to ask on the forums'))
 		);
+	}
+
+	// Add XSRF token to form's in the backend
+	if(Symphony::Engine()->isXSRFEnabled()) {
+		$form->prependChild(XSRF::formToken());
 	}
 
 	$div->appendChild($form);

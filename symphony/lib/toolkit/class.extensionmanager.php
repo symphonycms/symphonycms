@@ -931,7 +931,7 @@
 			else {
 				Symphony::Log()->pushToLog(sprintf('%s does not have an extension.meta.xml file', $name), E_DEPRECATED, true);
 
-				return;
+				return array();
 			}
 		}
 
