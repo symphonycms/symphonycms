@@ -30,7 +30,7 @@
 			$this->_required = true;
 			$this->key = 1;
 
-			$this->set('pre_populate','today');
+			$this->set('pre_populate','now');
 			$this->set('required', 'no');
 			$this->set('location', 'sidebar');
 
