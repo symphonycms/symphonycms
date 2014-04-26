@@ -21,7 +21,7 @@
 		 * @return array
 		 */
 		public static function getSession() {
-			$tokens = $_SESSION['sym-']['xsrf-tokens'];
+			$tokens = $_SESSION['sym-']['xsrf-token'];
 
 			return is_null($tokens) ? array() : $tokens;
 		}
@@ -32,7 +32,7 @@
 		 * @param array $token
 		 */
 		public static function setSessionToken($token = array()) {
-			$_SESSION['sym-']['xsrf-tokens'] = $token;
+			$_SESSION['sym-']['xsrf-token'] = $token;
 		}
 
 		/**
@@ -42,7 +42,7 @@
 		 */
 		public static function removeSessionToken($token = null) {
 			if(is_null($token)) return;
-			unset($_SESSION['sym-']['xsrf-tokens'][$token]);
+			unset($_SESSION['sym-']['xsrf-token'][$token]);
 		}
 
 		/**

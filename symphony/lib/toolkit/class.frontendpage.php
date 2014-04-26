@@ -408,7 +408,9 @@
 
 			if(is_array($_COOKIE[__SYM_COOKIE_PREFIX__]) && !empty($_COOKIE[__SYM_COOKIE_PREFIX__])){
 				foreach($_COOKIE[__SYM_COOKIE_PREFIX__] as $key => $val) {
-					if(in_array($key, array('xsrf-tokens'))) continue;
+					if($key === 'xsrf-token') {
+						$val = key($val);
+					}
 
 					$this->_param['cookie-' . $key] = $val;
 				}
@@ -508,7 +510,7 @@
 				else if(is_array($value)) {
 					$param->setValue(General::sanitize($value[0]));
 				}
-				else if($key == 'current-query-string') {
+				else if(in_array($key, array('xsrf-token','current-query-string'))) {
 					$param->setValue(General::wrapInCDATA($value));
 				}
 				else {
