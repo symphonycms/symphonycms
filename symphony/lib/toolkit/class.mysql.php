@@ -225,7 +225,7 @@
 
 		/**
 		 * Returns the prefix used by Symphony for this Database instance.
-		 * 
+		 *
 		 * @since Symphony 2.4
 		 * @return string
 		 */
@@ -239,7 +239,18 @@
 		 * @return boolean
 		 */
 		public function isConnected(){
-			return (isset(MySQL::$_connection['id']) && !is_null(MySQL::$_connection['id']));
+			try {
+				$connected = (
+					isset(MySQL::$_connection['id'])
+					&& !is_null(MySQL::$_connection['id'])
+					&& mysqli_ping(MySQL::$_connection['id'])
+				);
+			}
+			catch(Exception $ex) {
+				return false;
+			}
+
+			return $connected;
 		}
 
 		/**
@@ -362,9 +373,10 @@
 		 *  The escaped SQL string
 		 */
 		public static function cleanValue($value) {
-			if (function_exists('mysqli_real_escape_string')) {
+			if (function_exists('mysqli_real_escape_string') && self::isConnected()) {
 				return mysqli_real_escape_string(MySQL::$_connection['id'], $value);
-			} else {
+			}
+			else {
 				return addslashes($value);
 			}
 		}
@@ -643,11 +655,11 @@
 		 */
 		public function delete($table, $where = null){
 			$sql = "DELETE FROM $table";
-			
+
 			if (!is_null($where)) {
 				$sql .= " WHERE $where";
 			}
-			
+
 			return $this->query($sql);
 		}
 
