@@ -29,7 +29,7 @@
 		var objects = this,
 			settings = {
 				items: '.instance',
-				handles: '.header:first',
+				handles: '.frame-header',
 				content: '.content',
 				ignore: '.ignore',
 				save_state: true,
@@ -62,11 +62,15 @@
 				item.trigger('collapsestart.collapsible')
 					.addClass('collapsed')
 					.css('max-height', heightMin);
+
+				setTimeout(function() {
+					item.trigger('animationend.duplicator');
+				}, 350);
 			});
 
 			// Collapse all items
 			object.on('collapseall.collapsible', function collapseAll(event) {
-				var items = object.find(settings.items),
+				var items = object.find(settings.items + ':not(.collapsed)'),
 					visibles = Symphony.Utilities.inSight(items),
 					invisibles = visibles.nextAll();
 
@@ -81,7 +85,7 @@
 			// Expand item
 			object.on('expand.collapsible', settings.items, function expand(event, duration) {
 				var item = $(this),
-					heightMax = item.data('heightMax') || item[0].scrollHeight;
+					heightMax = item.data('heightMax') || this.scrollHeight;
 
 				// Check duration
 				if(duration !== 0) {
@@ -92,11 +96,15 @@
 				item.trigger('expandstart.collapsible')
 					.removeClass('collapsed')
 					.css('max-height', heightMax);
+
+				setTimeout(function() {
+					item.trigger('animationend.collapsible');
+				}, 350);
 			});
 
 			// Expand all items
 			object.on('expandall.collapsible', function expandAll(event) {
-				var items = object.find(settings.items),
+				var items = object.find(settings.items + '.collapsed'),
 					firsts = items.filter('.collapsed:lt(2)');
 
 				firsts.trigger('expand.collapsible');
@@ -109,7 +117,7 @@
 			});
 
 			// Finish animations
-			object.on('webkitTransitionEnd transitionend oTransitionEnd otransitionend MSTransitionEnd', settings.items, function finish(event) {
+			object.on('animationend.collapsible', settings.items, function finish(event) {
 				var item = $(this);
 
 				setTimeout(function() {
@@ -147,19 +155,18 @@
 			// Toggle all
 			object.on('dblclick.collapsible', settings.handles, function toogleAll(event) {
 				var handle = $(this),
-					item = handle.parents(settings.items),
-					items = object.find(settings.items);
+					item = handle.parents(settings.items);
 
 				if(!handle.is(settings.ignore) && !$(event.target).is(settings.ignore)) {
 
 					// Expand all
 					if(item.is('.collapsed')) {
-						items.trigger('expand.collapsible');
+						object.trigger('expandall.collapsible');
 					}
 
 					// Collaps all
 					else {
-						items.trigger('collapse.collapsible');
+						object.trigger('collapseall.collapsible');
 					}
 				}
 			});
@@ -210,20 +217,18 @@
 		---------------------------------------------------------------------*/
 
 			// Prepare interface
-			object.addClass('collapsible');
-
-			// Restore states
-			object.trigger('restore.collapsible');
-			object.find(settings.items).each(function() {
+			object.addClass('collapsible').find(settings.items).each(function() {
 				var item = $(this),
 					min = item.find(settings.handles).outerHeight() - 1,
-					max = item[0].scrollHeight;
+					max = this.scrollHeight;
 
 				item.css('max-height', max);
 				item.data('heightMin', min);
 				item.data('heightMax', max);
 				item.addClass('instance');
 			});
+
+			// Restore states
 			object.trigger('restore.collapsible');
 		});
 
