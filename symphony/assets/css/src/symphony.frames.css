@@ -188,7 +188,6 @@ fieldset.frame,
 --------------------------------------------------------------------------*/
 
 .frame .destructor,
-.frame .button,
 .frame .debug {
 	position: absolute;
 	top: 0.8rem;
@@ -232,6 +231,11 @@ fieldset.frame,
 .frame .actions {
 	margin: 0 0 0.7rem;
 	height: 2rem;
+	padding: 1rem;
+}
+
+.frame .actions input {
+	margin-top: 0;
 }
 
 .frame .actions button {
