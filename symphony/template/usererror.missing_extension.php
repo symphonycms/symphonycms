@@ -2,7 +2,7 @@
 
 	include_once(TOOLKIT . '/class.htmlpage.php');
 
-	// The extension cannot be found, show an error message and 
+	// The extension cannot be found, show an error message and
 	// let the user remove or rename the extension folder.
 	if (isset($_POST['extension-missing'])) {
 		$name = $_POST['existing-folder'];
@@ -115,7 +115,7 @@
 		$button = new XMLElement('button', __('Rename folder'));
 		$button->setAttributeArray(array(
 			'name' => 'action[rename]',
-			'class' => 'button create',
+			'class' => 'button',
 			'type' => 'submit',
 			'accesskey' => 's'
 		));
