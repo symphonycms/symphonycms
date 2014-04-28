@@ -73,6 +73,9 @@
 
 				// Encode recipient names (but not any numeric array indexes)
 				foreach($this->_recipients as $name => $email){
+					// Support Bcc header
+					if(isset($this->_header_fields['Bcc']) && $this->_header_fields['Bcc'] == $email) continue;
+
 					$name = empty($name) ? $name : EmailHelper::qEncode($name);
 					$recipients[$name] = $email;
 				}

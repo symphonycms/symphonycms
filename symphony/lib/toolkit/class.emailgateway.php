@@ -409,7 +409,7 @@
 		 *
 		 * @throws EmailGatewayException
 		 * @param string $name
-		 *  The header field name. Examples are From, X-Sender and Reply-to.
+		 *  The header field name. Examples are From, Bcc, X-Sender and Reply-to.
 		 * @param string $body
 		 *  The header field body.
 		 * @return void
