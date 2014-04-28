@@ -199,7 +199,6 @@ fieldset.frame,
 }
 
 .frame .destructor:hover,
-.frame .button:hover,
 .frame .debug:hover,
 .frame .constructor:hover {
 	color: #494949;
