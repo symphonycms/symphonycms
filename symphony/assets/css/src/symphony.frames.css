@@ -188,7 +188,6 @@ fieldset.frame,
 --------------------------------------------------------------------------*/
 
 .frame .destructor,
-.frame .button,
 .frame .debug {
 	position: absolute;
 	top: 0.8rem;
@@ -200,7 +199,6 @@ fieldset.frame,
 }
 
 .frame .destructor:hover,
-.frame .button:hover,
 .frame .debug:hover,
 .frame .constructor:hover {
 	color: #494949;
@@ -232,6 +230,10 @@ fieldset.frame,
 .frame .actions {
 	margin: 0 0 0.7rem;
 	height: 2rem;
+}
+
+.frame .actions input {
+	margin-top: 0;
 }
 
 .frame .actions button {
@@ -563,4 +565,8 @@ fieldset.frame,
 
 #error .frame .content:last-of-type ul {
 	border-radius: 0 0 0.4rem 0.4rem;
+}
+
+#error .frame .actions {
+	padding: 1rem;
 }
