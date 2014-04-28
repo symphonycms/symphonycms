@@ -38,6 +38,7 @@
 			/**
 			 * Allows adding documentation for new filters. A reference to the $documentation
 			 * array is provided, along with selected filters
+			 *
 			 * @delegate AppendEventFilterDocumentation
 			 * @param string $context
 			 * '/blueprints/events/(edit|new|info)/'
@@ -45,12 +46,15 @@
 			 *  An array of all the selected filters for this Event
 			 * @param array $documentation
 			 *  An array of all the documentation XMLElements, passed by reference
+			 * @param string $rootelment
+			 *  The name of this event, as a handle.
 			 */
-			Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $rootelement . '/', array(
+			Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/', array(
 				'selected' => $filters,
-				'documentation' => &$doc_parts
+				'documentation' => &$doc_parts,
+				'rootelement' => $rootelement
 			));
-			
+
 			$documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $doc_parts));
 			$documentation = str_replace('\'', '\\\'', $documentation);
 
