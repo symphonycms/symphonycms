@@ -350,7 +350,7 @@
 			$this->addElementToHead(new XMLElement('meta', NULL, array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1')), 2);
 
 			// Add styles
-			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.min.css', 'screen', null, false);
+			$this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.min.css', 'screen', 2, false);
 
 			// Add scripts
 			$environment = array(
@@ -378,9 +378,9 @@
 				new XMLElement('script', json_encode($environment), array(
 					'type' => 'application/json',
 					'id' => 'environment'
-				)), 1
+				)), 4
 			);
-			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.min.js', null, false);
+			$this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.min.js', 6, false);
 
 			// Initialise page containers
 			$this->Wrapper = new XMLElement('div', NULL, array('id' => 'wrapper'));
