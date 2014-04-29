@@ -33,6 +33,7 @@
 	// #1808
 	if(isset($_SERVER['HTTP_MOD_REWRITE'])) {
 		$output = file_get_contents(GenericExceptionHandler::getTemplate('fatalerror.rewrite'));
+		$output = str_replace('{APPLICATION_URL}', APPLICATION_URL, $output);
 		$output = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $output);
 		$output = str_replace('{URL}', URL, $output);
 		echo $output;
