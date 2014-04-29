@@ -266,7 +266,7 @@
 		public static function renderHtml($template, $heading, $message, $file = null, $line = null, $lines = null, $trace = null, $queries = null) {
 			$html = sprintf(file_get_contents(self::getTemplate($template)),
 				$heading,
-				$message,
+				General::unwrapCDATA($message),
 				$file,
 				$line,
 				$lines,
