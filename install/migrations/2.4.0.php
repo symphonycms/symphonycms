@@ -5,7 +5,7 @@
 		static $publish_filtering_disabled = false;
 
 		static function getVersion(){
-			return '2.4RC1';
+			return '2.4RC2';
 		}
 
 		static function getReleaseNotes(){
@@ -95,7 +95,7 @@
 			return array(
 				__("Symphony 2.4 is a major release that contains breaking changes from previous versions. It is highly recommended to review the releases notes and make a complete backup of your installation before updating as these changes may affect the functionality of your site."),
 				__("This release will automatically convert all existing Symphony database tables to %s.", array("<code>utf8_unicode_ci</code>")),
-				__("CRSF has been implemented in this release and is turned off by default. To enable for the frontend and the backend, change %s from %s to %s in your configuration.", array('<code>enable_xsrf</code>', '<code>no</code>', '<code>yes</code>'))
+				__("CRSF has been implemented in this release and is turned off by default. To enable for the backend, change %s from %s to %s in your configuration. To enable for the frontend, update the XSS Filter extension and follow the README.", array('<code>enable_xsrf</code>', '<code>no</code>', '<code>yes</code>'))
 			);
 		}
 
