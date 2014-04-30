@@ -888,7 +888,7 @@
 
 					// Remove pre-release notes fro the current Symphony version so that
 					// we don't get false erros in the backend
-					$current_symphony_version = preg_replace(array('/dev/', '/beta\d/', '/rc\d/'), '', $current_symphony_version);
+					$current_symphony_version = preg_replace(array('/dev/i', '/beta\d/i', '/rc\d/i'), '', $current_symphony_version);
 
 					// Munge the version number so that it makes sense in the backend.
 					// Consider, 2.3.x. As the min version, this means 2.3 onwards,
