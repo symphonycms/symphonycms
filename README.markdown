@@ -161,9 +161,10 @@ Version `2.0.5` introduced multiple includable elements in the Data Source Edito
 
 1. Pull from the master branch at `git://github.com/symphonycms/symphony-2.git`
 
-1. Use the following command to bring extensions up to date:
+1. Use the following two commands to bring extensions up to date:
 
 		git submodule update --init --recursive
+		git submodule update --recursive
 
 1. If updating from a version older than `2.0.5`, enable the [Debug DevKit](https://github.com/symphonycms/debugdevkit) and [Profile DevKit](https://github.com/symphonycms/profiledevkit) extensions.
 
