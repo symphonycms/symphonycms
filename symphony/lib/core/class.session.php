@@ -84,7 +84,7 @@
 				self::$_initialized = true;
 			}
 
-			return session_id();
+			return self::createId(session_id());
 		}
 
 		/**
@@ -148,6 +148,8 @@
 		 *  True if the Session information was saved successfully, false otherwise
 		 */
 		public static function write($id, $data) {
+			$id = self::createId($id);
+
 			// Only prevent this record from saving if there isn't already a record
 			// in the database. This prevents empty Sessions from being created, but
 			// allows them to be nulled.
@@ -208,6 +210,8 @@
 		 *  The serialised session data
 		 */
 		public static function read($id) {
+			$id = self::createId($id);
+
 			return Symphony::Database()->fetchVar(
 				'session_data', 0,
 				sprintf(
@@ -227,6 +231,8 @@
 		 *  True if the Session was deleted successfully, false otherwise
 		 */
 		public static function destroy($id) {
+			$id = self::createId($id);
+
 			return Symphony::Database()->query(
 				sprintf(
 					"DELETE FROM `tbl_sessions` WHERE `session` = '%s'",
@@ -253,5 +259,10 @@
 					Symphony::Database()->cleanValue(time() - $max)
 				)
 			);
+		}
+
+		public static function createId($id)
+		{
+			return (class_exists('Administration') ? 'administration-' : 'frontend-') . $id;
 		}
 	}

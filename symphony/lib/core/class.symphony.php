@@ -271,7 +271,7 @@
 			$cookie_path = '/' . trim($cookie_path, '/');
 
 			$prefix = self::Configuration()->get('cookie_prefix', 'symphony');
-			$timeout = $this->getConfigCookieTimeout('administration');
+			$timeout = $this->getConfigCookieTimeout();
 
 			if (class_exists('Administration')) {
 				$prefix .= 'administration';
@@ -295,7 +295,7 @@
 				$time = (self::Configuration()->get('frontend_cookie_timeout', 'symphony') ? self::Configuration()->get('frontend_cookie_timeout', 'symphony') : '2 weeks');
 			}
 
-			if (is_string($time) && !is_numeric($time) {
+			if (is_string($time) && !is_numeric($time)) {
 				$time = $this->convertStringTime($time);
 			}
 
