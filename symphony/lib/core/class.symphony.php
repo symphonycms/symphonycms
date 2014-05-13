@@ -270,11 +270,41 @@
 			$cookie_path = @parse_url(URL, PHP_URL_PATH);
 			$cookie_path = '/' . trim($cookie_path, '/');
 
-			define_safe('__SYM_COOKIE_PATH__', $cookie_path);
-			define_safe('__SYM_COOKIE_PREFIX_', self::Configuration()->get('cookie_prefix', 'symphony'));
-			define_safe('__SYM_COOKIE_PREFIX__', self::Configuration()->get('cookie_prefix', 'symphony'));
+			$prefix = self::Configuration()->get('cookie_prefix', 'symphony');
+			$timeout = $this->getConfigCookieTimeout('administration');
 
-			$this->Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);
+			if (class_exists('Administration')) {
+				$prefix .= 'administration';
+			} else {
+				$prefix .= 'frontend';
+			}
+
+			define_safe('__SYM_COOKIE_PATH__', $cookie_path);
+			define_safe('__SYM_COOKIE_PREFIX_', $prefix);
+			define_safe('__SYM_COOKIE_PREFIX__', $prefix);
+			define_safe('__SYM_COOKIE_TIMEOUT__', $timeout);
+
+			$this->Cookie = new Cookie($prefix, $timeout, __SYM_COOKIE_PATH__);
+		}
+
+		private function getConfigCookieTimeout()
+		{
+			if (class_exists('Administration')) {
+				$time = (self::Configuration()->get('admin_cookie_timeout', 'symphony') ? self::Configuration()->get('admin_cookie_timeout', 'symphony') : '2 weeks');
+			} else {
+				$time = (self::Configuration()->get('frontend_cookie_timeout', 'symphony') ? self::Configuration()->get('frontend_cookie_timeout', 'symphony') : '2 weeks');
+			}
+
+			if (is_string($time) && !is_numeric($time) {
+				$time = $this->convertStringTime($time);
+			}
+
+			return $time;
+		}
+
+		private function convertStringTime($time)
+		{
+			return strtotime($time) - time();
 		}
 
 		/**
