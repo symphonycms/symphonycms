@@ -5,7 +5,7 @@
 		static $publish_filtering_disabled = false;
 
 		static function getVersion(){
-			return '2.4RC2';
+			return '2.4';
 		}
 
 		static function getReleaseNotes(){
