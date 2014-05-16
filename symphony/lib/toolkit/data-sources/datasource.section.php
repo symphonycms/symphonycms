@@ -1,13 +1,14 @@
 <?php
 
-	$sectionDS = new SectionDatasource(array(), false);
-	$sectionDS->setSource($this->getSource());
+$sectionDS = new SectionDatasource(array(), false);
+$sectionDS->setSource($this->getSource());
 
-	$classParams = get_object_vars($this);
-	foreach($classParams as $key => $value) {
-		$sectionDS->$key = $value;
-	}
+$classParams = get_object_vars($this);
 
-	$result = $sectionDS->execute($param_pool);
+foreach ($classParams as $key => $value) {
+    $sectionDS->$key = $value;
+}
 
-	return $result;
+$result = $sectionDS->execute($param_pool);
+
+return $result;
