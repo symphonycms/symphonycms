@@ -1,12 +1,13 @@
 <?php
 
-	$navigationDS = new NavigationDatasource(array(), false);
+$navigationDS = new NavigationDatasource(array(), false);
 
-	$classParams = get_object_vars($this);
-	foreach($classParams as $key => $value) {
-		$navigationDS->$key = $value;
-	}
+$classParams = get_object_vars($this);
 
-	$result = $navigationDS->execute($param_pool);
+foreach ($classParams as $key => $value) {
+    $navigationDS->$key = $value;
+}
 
-	return $result;
+$result = $navigationDS->execute($param_pool);
+
+return $result;

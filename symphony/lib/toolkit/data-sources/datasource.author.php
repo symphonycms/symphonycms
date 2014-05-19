@@ -1,12 +1,13 @@
 <?php
 
-	$authorDS = new AuthorDatasource(array(), false);
+$authorDS = new AuthorDatasource(array(), false);
 
-	$classParams = get_object_vars($this);
-	foreach($classParams as $key => $value) {
-		$authorDS->$key = $value;
-	}
+$classParams = get_object_vars($this);
 
-	$result = $authorDS->execute($param_pool);
+foreach ($classParams as $key => $value) {
+    $authorDS->$key = $value;
+}
 
-	return $result;
+$result = $authorDS->execute($param_pool);
+
+return $result;
