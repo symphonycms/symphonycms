@@ -9,7 +9,7 @@
  *
  * @since Symphony 2.3
  */
-class AuthorDatasource extends Datasourc
+class AuthorDatasource extends Datasource
 {
     public function __processAuthorFilter($field, $filter)
     { //, $filtertype=DS_FILTER_OR){
