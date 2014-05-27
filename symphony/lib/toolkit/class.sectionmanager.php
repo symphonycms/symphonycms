@@ -274,7 +274,7 @@ class SectionManager
     public static function removeSectionAssociation($field_id)
     {
         return Symphony::Database()->delete('tbl_sections_association', sprintf(
-            "`child_section_field_id` = %1$d OR `parent_section_field_id` = %1$d",
+            '`child_section_field_id` = %1$d OR `parent_section_field_id` = %1$d',
             $field_id
         ));
     }
