@@ -782,6 +782,8 @@ Class AdministrationPage extends HTMLPage
                 $can_access = true;
             } elseif ($n['limit'] == 'developer' && Administration::instance()->Author->isDeveloper()) {
                 $can_access = true;
+            } elseif ($n['limit'] == 'manager' && (Administration::instance()->Author->isManager() || Administration::instance()->Author->isDeveloper())) {
+                $can_access = true;
             } elseif ($n['limit'] == 'primary' && Administration::instance()->Author->isPrimaryAccount()) {
                 $can_access = true;
             }
@@ -808,6 +810,8 @@ Class AdministrationPage extends HTMLPage
                         if (!isset($c['limit']) || $c['limit'] == 'author') {
                             $can_access_child = true;
                         } elseif ($c['limit'] == 'developer' && Administration::instance()->Author->isDeveloper()) {
+                            $can_access_child = true;
+                        } elseif ($c['limit'] == 'manager' && (Administration::instance()->Author->isManager() || Administration::instance()->Author->isDeveloper())) {
                             $can_access_child = true;
                         } elseif ($c['limit'] == 'primary' && Administration::instance()->Author->isPrimaryAccount()) {
                             $can_access_child = true;
@@ -1022,6 +1026,7 @@ Class AdministrationPage extends HTMLPage
                             }
 
                             break;
+
                         case Extension::NAV_CHILD:
                             if (!isset($item['relative']) || $item['relative'] == true) {
                                 $link = '/extension/' . $e . '/' . ltrim($item['link'], '/');
@@ -1076,7 +1081,7 @@ Class AdministrationPage extends HTMLPage
      * navigation. Additionally, this function will set the active group of the navigation
      * by checking the current page against the array of links.
      *
-     * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
+     * @link https://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
      * @link https://github.com/symphonycms/symphony-2/blob/master/symphony/lib/toolkit/class.extension.php
      */
     public function __buildNavigation()

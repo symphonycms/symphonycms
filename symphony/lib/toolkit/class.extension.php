@@ -197,9 +197,9 @@ abstract class Extension
      *  )
      * );`
      *
-     * Links can also be hidden dynamicaly usign two other keys:
+     * Links can also be hidden dynamically usign two other keys:
      * 'visible' and 'limit'. When 'visible' is set to 'no', the link
-     * will not be rendered. Leave unset or set it dynamycally in order
+     * will not be rendered. Leave unset or set it dynamically in order
      * to fit your needs
      *
      * `return array(
@@ -213,7 +213,8 @@ abstract class Extension
      *
      * The 'limit' key is specificaly designed to restrict the rendering process
      * of a link if the current user does not have access to it based on its role.
-     * Symphony supports three basic roles witch are 'author', 'developer' and 'primary'.
+     * Symphony supports four roles which are 'author', 'manager', 'developer'
+     * and 'primary'.
      *
      * Note that setting 'visible' to 'no' will hide the link no matter what.
      *
