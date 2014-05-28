@@ -88,12 +88,8 @@ abstract class SectionEvent extends Event
                 $type = ($fields[$field->get('element_name')] == '') ? 'missing' : 'invalid';
             }
 
-            $result->appendChild(new XMLElement($field->get('element_name'), null, array(
-                'label' => General::sanitize($field->get('label')),
-                'type' => $type,
-                'message-id' => ($type === 'missing') ? EventMessages::FIELD_MISSING : EventMessages::FIELD_INVALID,
-                'message' => General::sanitize($message)
-            )));
+            $error = self::createError($field, $type, $message);
+            $result->appendChild($error);
         }
 
         if (isset($post_values) && is_object($post_values)) {
@@ -101,6 +97,30 @@ abstract class SectionEvent extends Event
         }
 
         return $result;
+    }
+
+    /**
+     * Given a Field instance, the type of error, and the message, this function
+     * creates an XMLElement node so that it can be added to the `?debug` for the
+     * Event
+     *
+     * @since Symphony 2.4.1
+     * @param Field $field
+     * @param string $type
+     *  At the moment 'missing' or 'invalid' accepted
+     * @param string $message
+     * @return XMLElement
+     */
+    public static function createError(Field $field, $type, $message = null)
+    {
+        $error = new XMLElement($field->get('element_name'), null, array(
+            'label' => General::sanitize($field->get('label')),
+            'type' => $type,
+            'message-id' => ($type === 'missing') ? EventMessages::FIELD_MISSING : EventMessages::FIELD_INVALID,
+            'message' => General::sanitize($message)
+        ));
+
+        return $error;
     }
 
     /**
