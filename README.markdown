@@ -1,10 +1,11 @@
 # Symphony 2
 
-- Version: 2.4
+[![Code Climate](https://codeclimate.com/github/symphonycms/symphony-2.png)](https://codeclimate.com/github/symphonycms/symphony-2)
+
+- Version: 2.4 
 - Date: 14th May 2014
 - [Release notes](http://getsymphony.com/download/releases/version/2.4/)
-- [Github repository](http://github.com/symphonycms/symphony-2/tree/2.4R)
-
+- [Github repository](http://github.com/symphonycms/symphony-2/tree/2.4)
 
 ## Contents
 
