@@ -1,4 +1,4 @@
-### Symphony 2.3.x ###
+### Symphony 2.4.x ###
 Options +FollowSymlinks -Indexes
 
 <IfModule !mod_rewrite.c>
@@ -9,11 +9,11 @@ Options +FollowSymlinks -Indexes
 
 <IfModule mod_rewrite.c>
 
-    <IfModule mod_negotiation.c>
+	<IfModule mod_negotiation.c>
 
-        Options -MultiViews
+		Options -MultiViews
 
-    </IfModule>
+	</IfModule>
 
 	RewriteEngine on
 	RewriteBase /<!-- REWRITE_BASE -->
