@@ -453,6 +453,21 @@ class XMLElement implements IteratorAggregate
     }
 
     /**
+     * A convenience method that encapsulate validation of a child node.
+     * This should prevent generate errors by catching them earlier.
+     *
+     * @param XMLElement $child
+     *  The child to validate
+     *
+     */
+    private function validateChild($child)
+    {
+        if ($this === $child) {
+            throw new Exception(__('Can not add the element itself as one of its child'));
+        }
+    }
+
+    /**
      * This function expects an array of `XMLElement` that will completely
      * replace the contents of `$this->_children`. Take care when using
      * this function.
@@ -465,6 +480,9 @@ class XMLElement implements IteratorAggregate
      */
     public function setChildren(array $children = null)
     {
+        foreach ($children as $child) {
+            $this->validateChild($child);
+        }
         $this->_children = $children;
 
         return true;
@@ -478,6 +496,7 @@ class XMLElement implements IteratorAggregate
      */
     public function appendChild($child)
     {
+        $this->validateChild($child);
         $this->_children[] = $child;
 
         return true;
@@ -607,6 +626,8 @@ class XMLElement implements IteratorAggregate
         if (!is_numeric($index)) {
             return false;
         }
+        
+        $this->validateChild($child);
 
         if ($index >= $this->getNumberOfChildren()) {
             return $this->appendChild($child);
@@ -640,6 +661,8 @@ class XMLElement implements IteratorAggregate
         if (!is_numeric($index)) {
             return false;
         }
+
+        $this->validateChild($child);
 
         $index = $this->getRealIndex($index);
 
