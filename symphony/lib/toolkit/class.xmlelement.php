@@ -456,6 +456,7 @@ class XMLElement implements IteratorAggregate
      * A convenience method that encapsulate validation of a child node.
      * This should prevent generate errors by catching them earlier.
      *
+     * @since Symphony 2.4.1
      * @param XMLElement $child
      *  The child to validate
      *
