@@ -538,7 +538,7 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 	Blueprints - Datasource Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(action) {
+Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function(action) {
 	if(!action) return;
 
 	var context = $('#ds-context'),
@@ -659,7 +659,7 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(act
 	Blueprints - Event Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/blueprints/events/:action:/:name:/:status:', function() {
+Symphony.View.add('/blueprints/events/:action:/:name:/:status:/:*:', function() {
 	var context = $('#event-context'),
 		source = $('#event-source'),
 		filters = $('#event-filters'),
