@@ -13,6 +13,7 @@ interface iProvider
 {
     const DATASOURCE = 'data-sources';
     const EVENT = 'events';
+    const CACHE = 'cache';
 
     /**
      * This function should return an associative array of all the
