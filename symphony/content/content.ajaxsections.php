@@ -31,6 +31,7 @@ class contentAjaxSections extends JSONPage
                         $fields[] = array(
                             'id' => $f->get('id'),
                             'name' => $f->get('label'),
+                            'handle' => $f->get('element_name'),
                             'type' => $f->get('type')
                         );
                     }
@@ -39,6 +40,7 @@ class contentAjaxSections extends JSONPage
                 if (!empty($fields)) {
                     $options[] = array(
                         'name' => $section->get('name'),
+                        'handle' => $section->get('handle'),
                         'fields' => $fields
                     );
                 }
