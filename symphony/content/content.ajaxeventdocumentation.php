@@ -167,7 +167,7 @@ class contentAjaxEventDocumentation extends TextPage
     {
         $doc_parts[] = new XMLElement('h3', __('Example Front-end Form Markup'));
         $doc_parts[] = new XMLElement('p', __('This is an example of the form markup you can use on your frontend:'));
-        $container = new XMLElement('form', null, array('method' => 'post', 'action' => '{$current-url}', 'enctype' => 'multipart/form-data'));
+        $container = new XMLElement('form', null, array('method' => 'post', 'action' => '{$current-url}/', 'enctype' => 'multipart/form-data'));
         $container->appendChild(Widget::Input('MAX_FILE_SIZE', (string)min(ini_size_to_bytes(ini_get('upload_max_filesize')), Symphony::Configuration()->get('max_upload_size', 'admin')), 'hidden'));
 
         if (is_numeric($section)) {
