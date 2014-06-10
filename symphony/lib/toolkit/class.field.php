@@ -661,8 +661,8 @@ class Field
      * for this field.
      *
      * @param XMLElement $wrapper
-     *    the parent XML element to append the constructed html to if
-     *    necessary.  
+     *    the parent XML element to append the association interface selection to,
+     *    if either interfaces or editors are provided to the system.
      * @since Symphony 2.4.1
      */
     public function appendAssociationInterfaceSelect(XMLElement &$wrapper)
@@ -719,6 +719,11 @@ class Field
         }
     }
 
+    /**
+     * Get association data of the current field from the page context.
+     *
+     * @since 2.4.1
+     */
     function getAssociationContext() {
         $context = Symphony::Engine()->Page->getContext();
         $associations = $context['associations']['parent'];

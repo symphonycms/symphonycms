@@ -1366,8 +1366,10 @@ class contentPublish extends AdministrationPage
     }
 
     /**
-     * Set information about associative fields to the field wrapper
+     * Set information about associative fields to the field wrapper.
      * 
+     * @param XMLElement $wrapper
+     * @param Field $field
      * @since 2.4.1
      */
     public function setAssociationContext(XMLElement $wrapper, Field $field) {
