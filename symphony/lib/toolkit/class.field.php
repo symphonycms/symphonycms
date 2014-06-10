@@ -686,7 +686,7 @@ class Field
                 $label->appendChild(new XMLElement('i', __('Optional')));
 
                 $options = array(
-                    array(null, false, null)
+                    array(null, false, __('None'))
                 );
                 foreach ($interfaces as $id => $name) {
                     $options[] = array($id, ($association_context['interface'] === $id), $name);
@@ -704,7 +704,7 @@ class Field
                 $label->appendChild(new XMLElement('i', __('Optional')));
 
                 $options = array(
-                    array(null, false, null)
+                    array(null, false, __('None'))
                 );
                 foreach ($editors as $id => $name) {
                     $options[] = array($id, ($association_context['editor'] === $id), $name);
@@ -850,7 +850,8 @@ class Field
         $wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
 
         $label = Widget::Label();
-        $label->setAttribute('class', 'column show-associations');
+        $label->setAttribute('class', 'column');
+        $label->setAttribute('data-condition', 'associative');
 
         if ($help) {
             $label->addClass('inline-help');
