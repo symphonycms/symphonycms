@@ -5,7 +5,7 @@
 		static $publish_filtering_disabled = false;
 
 		static function getVersion(){
-			return '2.4.1';
+			return '2.4.1beta1';
 		}
 
 		static function getReleaseNotes(){
