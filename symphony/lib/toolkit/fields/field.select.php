@@ -216,9 +216,6 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
-        // Association Interface
-        $this->appendAssociationInterfaceSelect($wrapper);
-
         // Predefined Values
         $label = Widget::Label(__('Static Values'));
         $label->setAttribute('class', 'column');
@@ -255,6 +252,10 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
         $wrapper->appendChild($div);
 
+        // Association Interface
+        $this->appendAssociationInterfaceSelect($wrapper);
+
+        // Other settings
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
         // Allow selection of multiple items
