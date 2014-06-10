@@ -17,6 +17,20 @@ class contentBlueprintsSections extends AdministrationPage
 {
     public $_errors = array();
 
+    public function build(array $context = array())
+    {
+        $section_id = $context[1];
+
+        if(isset($section_id)) {
+            $context['assocations'] = array(
+                'parent' => SectionManager::fetchParentAssociations($section_id),
+                'child' => SectionManager::fetchChildAssociations($section_id)
+            );
+        }
+
+        return parent::build($context);
+    }
+
     public function __viewIndex()
     {
         $this->setPageType('table');

@@ -11,11 +11,19 @@
  */
 interface iProvider
 {
-    const ASSOCIATIONEDITOR = 'association-editor';
-    const ASSOCIATIONUI = 'association-ui';
-    const CACHE = 'cache';
     const DATASOURCE = 'data-sources';
     const EVENT = 'events';
+
+    /**
+     * @since Symphony 2.4
+     */
+    const CACHE = 'cache';
+
+    /**
+     * @since Symphony 2.4.1
+     */
+    const ASSOCIATION_UI = 'association-ui';
+    const ASSOCIATION_EDITOR = 'association-editor';
 
     /**
      * This function should return an associative array of all the

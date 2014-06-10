@@ -353,7 +353,7 @@ class Entry
                 $search_value = $this->get('id');
             }
 
-            $counts[$as['child_section_id']] = $field->fetchAssociatedEntryCount($search_value);
+            $counts[$as['child_section_id']][$as['child_section_field_id']] = $field->fetchAssociatedEntryCount($search_value);
         }
 
         return $counts;

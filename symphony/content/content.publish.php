@@ -196,6 +196,20 @@ class contentPublish extends AdministrationPage
         }
     }
 
+    public function build(array $context = array())
+    {
+        $section_id = SectionManager::fetchIDFromHandle($context['section_handle']);
+
+        if($section_id) {
+            $context['assocations'] = array(
+                'parent' => SectionManager::fetchParentAssociations($section_id),
+                'child' => SectionManager::fetchChildAssociations($section_id)
+            );
+        }
+
+        return parent::build($context);
+    }
+
     public function action()
     {
         $this->__switchboard('action');
