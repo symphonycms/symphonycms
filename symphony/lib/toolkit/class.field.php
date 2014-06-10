@@ -654,7 +654,47 @@ class Field
             $wrapper->appendChild($label);
             $wrapper->appendChild($ul);
         }
+    }
 
+    /**
+     *
+     */
+    public function appendAssociationInterfaceSelect(XMLElement &$wrapper)
+    {
+        $interfaces = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATIONUI);
+        $editors = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATIONEDITOR);
+
+        if (!empty($interfaces) || !empty($editors)) {
+            $group = new XMLElement('div');
+            $group->setAttribute('data-condition', 'associative');
+            if (!empty($interfaces) && !empty($editors)) {
+                $group->setAttribute('class', 'two columns');
+            }
+
+            // Create interface select
+            if (!empty($interfaces)) {
+                $label = Widget::Label(__('Association Interface'), null, 'column');
+                $label->setAttribute('class', 'column');
+                $label->appendChild(new XMLElement('i', __('Optional')));
+
+                $select = Widget::Select('field[association-ui]');
+                $label->appendChild($select);
+                $group->appendChild($label);
+            }
+
+            // Create editor select
+            if (!empty($editors)) {
+                $label = Widget::Label(__('Association Editor'), null, 'column');
+                $label->setAttribute('class', 'column');
+                $label->appendChild(new XMLElement('i', __('Optional')));
+
+                $select = Widget::Select('field[association-ui]');
+                $label->appendChild($select);
+                $group->appendChild($label);
+            }
+
+            $wrapper->appendChild($group);
+        }
     }
 
     /**

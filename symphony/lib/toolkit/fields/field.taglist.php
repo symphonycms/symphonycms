@@ -175,6 +175,9 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         $label->appendChild(Widget::Select('fields['.$this->get('sortorder').'][pre_populate_source][]', $options, array('multiple' => 'multiple')));
         $wrapper->appendChild($label);
 
+        // Association Interface
+        $this->appendAssociationInterfaceSelect($wrapper);
+
         // Validation rule
         $this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'input', $errors);
 

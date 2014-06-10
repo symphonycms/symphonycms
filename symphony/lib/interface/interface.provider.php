@@ -11,9 +11,11 @@
  */
 interface iProvider
 {
+    const ASSOCIATIONEDITOR = 'association-editor';
+    const ASSOCIATIONUI = 'association-ui';
+    const CACHE = 'cache';
     const DATASOURCE = 'data-sources';
     const EVENT = 'events';
-    const CACHE = 'cache';
 
     /**
      * This function should return an associative array of all the
