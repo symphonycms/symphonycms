@@ -252,6 +252,10 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
         $wrapper->appendChild($div);
 
+        // Association Interface
+        $this->appendAssociationInterfaceSelect($wrapper);
+
+        // Other settings
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
         // Allow selection of multiple items
@@ -335,7 +339,7 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         $field_id = $this->get('dynamic_options');
 
         if (!is_null($field_id) && is_numeric($field_id)) {
-            SectionManager::createSectionAssociation(null, $id, (int)$field_id, $this->get('show_association') == 'yes' ? true : false);
+            SectionManager::createSectionAssociation(null, $id, (int)$field_id, $this->get('show_association') == 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
         }
 
         return true;

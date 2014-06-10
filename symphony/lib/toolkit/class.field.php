@@ -654,7 +654,112 @@ class Field
             $wrapper->appendChild($label);
             $wrapper->appendChild($ul);
         }
+    }
 
+    /**
+     * Append the html widget for selecting an association interface and editor 
+     * for this field.
+     *
+     * @param XMLElement $wrapper
+     *    the parent XML element to append the association interface selection to,
+     *    if either interfaces or editors are provided to the system.
+     * @since Symphony 2.4.1
+     */
+    public function appendAssociationInterfaceSelect(XMLElement &$wrapper)
+    {
+        $interfaces = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATION_UI);
+        $editors = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATION_EDITOR);
+
+        if (!empty($interfaces) || !empty($editors)) {
+            $association_context = $this->getAssociationContext();
+
+            $group = new XMLElement('div');
+            $group->setAttribute('data-condition', 'associative');
+            if (!empty($interfaces) && !empty($editors)) {
+                $group->setAttribute('class', 'two columns');
+            }
+
+            // Create interface select
+            if (!empty($interfaces)) {
+                $label = Widget::Label(__('Association Interface'), null, 'column');
+                $label->setAttribute('class', 'column');
+                $label->appendChild(new XMLElement('i', __('Optional')));
+
+                $options = array(
+                    array(null, false, __('None'))
+                );
+                foreach ($interfaces as $id => $name) {
+                    $options[] = array($id, ($association_context['interface'] === $id), $name);
+                }
+
+                $select = Widget::Select('fields[' . $this->get('sortorder') . '][association_ui]', $options);
+                $label->appendChild($select);
+                $group->appendChild($label);
+            }
+
+            // Create editor select
+            if (!empty($editors)) {
+                $label = Widget::Label(__('Association Editor'), null, 'column');
+                $label->setAttribute('class', 'column');
+                $label->appendChild(new XMLElement('i', __('Optional')));
+
+                $options = array(
+                    array(null, false, __('None'))
+                );
+                foreach ($editors as $id => $name) {
+                    $options[] = array($id, ($association_context['editor'] === $id), $name);
+                }
+
+                $select = Widget::Select('fields[' . $this->get('sortorder') . '][association_editor]', $options);
+                $label->appendChild($select);
+                $group->appendChild($label);
+            }
+
+            $wrapper->appendChild($group);
+        }
+    }
+
+    /**
+     * Get association data of the current field from the page context.
+     *
+     * @since 2.4.1
+     */
+    function getAssociationContext() {
+        $context = Symphony::Engine()->Page->getContext();
+        $associations = $context['associations']['parent'];
+        $field_association = array();
+
+        if (!empty($associations)) {
+            for ($i = 0; $i < count($associations); $i++) { 
+                if ($associations[$i]['child_section_field_id'] == $this->get('id')) {
+                    $field_association = $associations[$i];
+                    break;
+                }
+            }
+        }
+
+        return $field_association;
+    }
+
+    /**
+     * Set association data for the current field.
+     * 
+     * @param XMLElement $wrapper
+     * @since 2.4.1
+     */
+    public function setAssociationContext(XMLElement &$wrapper) {
+        $association_context = $this->getAssociationContext();
+
+        if (!empty($association_context)) {
+            $wrapper->setAttributeArray(array(
+                'data-parent-section-id' => $association_context['parent_section_id'],
+                'data-parent-section-field-id' => $association_context['parent_section_field_id'],
+                'data-child-section-id' => $association_context['child_section_id'],
+                'data-child-section-field-id' => $association_context['child_section_field_id'],
+                'data-interface' => $association_context['interface'],
+                'data-editor' => $association_context['editor']        
+            ));
+        }
     }
 
     /**
@@ -766,7 +871,8 @@ class Field
         $wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
 
         $label = Widget::Label();
-        $label->setAttribute('class', 'column show-associations');
+        $label->setAttribute('class', 'column');
+        $label->setAttribute('data-condition', 'associative');
 
         if ($help) {
             $label->addClass('inline-help');

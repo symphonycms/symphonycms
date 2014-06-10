@@ -395,6 +395,7 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 							}
 						});
 					});
+					sections.trigger('change.admin');
 				}
 			});
 		}
@@ -449,12 +450,8 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 
 	// Update select field
 	duplicator.on('change.admin', '.instance select[name*="[dynamic_options]"]', function() {
-		var select = $(this),
-			isDynamic = (select.val() !== '');
-
-		select.parents('.instance').find('.show-associations').toggle(isDynamic);
+		$(this).parents('.instance').find('[data-condition=associative]').toggle($.isNumeric(this.value));
 	});
-	duplicator.find('.instance select[name*="[dynamic_options]"]').trigger('change.admin');
 
 	// Remove field
 	duplicator.on('destructstart.duplicator', function(event) {
