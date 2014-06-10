@@ -219,6 +219,23 @@ class contentPublish extends AdministrationPage
 
     public function view()
     {
+        $context = $this->getContext();
+        $section_id = SectionManager::fetchIDFromHandle($context['section_handle']);
+
+        if($section_id) {
+            $associations = array(
+                'parent' => SectionManager::fetchParentAssociations($section_id),
+                'child' => SectionManager::fetchChildAssociations($section_id)
+            );
+            $this->addElementToHead(
+                new XMLElement('script', json_encode($associations), array(
+                    'type' => 'application/json',
+                    'id' => 'associations'
+                )),
+                5
+            );
+        }
+
         $this->__switchboard();
     }
 
