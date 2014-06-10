@@ -22,7 +22,7 @@ class contentBlueprintsSections extends AdministrationPage
         $section_id = $context[1];
 
         if(isset($section_id)) {
-            $context['assocations'] = array(
+            $context['associations'] = array(
                 'parent' => SectionManager::fetchParentAssociations($section_id),
                 'child' => SectionManager::fetchChildAssociations($section_id)
             );

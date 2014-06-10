@@ -201,7 +201,7 @@ class contentPublish extends AdministrationPage
         $section_id = SectionManager::fetchIDFromHandle($context['section_handle']);
 
         if($section_id) {
-            $context['assocations'] = array(
+            $context['associations'] = array(
                 'parent' => SectionManager::fetchParentAssociations($section_id),
                 'child' => SectionManager::fetchChildAssociations($section_id)
             );
@@ -1353,12 +1353,36 @@ class contentPublish extends AdministrationPage
     {
         $is_hidden = $this->isFieldHidden($field);
         $div = new XMLElement('div', null, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '').($is_hidden == true ? ' irrelevant' : '')));
+
+        $this->setAssociationContext($div, $field);
+
         $field->displayPublishPanel(
             $div, $entry->getData($field->get('id')),
             (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : null),
             null, null, (is_numeric($entry->get('id')) ? $entry->get('id') : null)
         );
+
         return $div;
+    }
+
+    /**
+     * Set information about associative fields to the field wrapper
+     * 
+     * @since 2.4.1
+     */
+    public function setAssociationContext(XMLElement $wrapper, Field $field) {
+        $association_context = $field->getAssociationContext();
+
+        if (!empty($association_context)) {
+            $wrapper->setAttributeArray(array(
+                'data-parent-section-id' => $association_context['parent_section_id'],
+                'data-parent-section-field-id' => $association_context['parent_section_field_id'],
+                'data-child-section-id' => $association_context['child_section_id'],
+                'data-child-section-field-id' => $association_context['child_section_field_id'],
+                'data-interface' => $association_context['interface'],
+                'data-editor' => $association_context['editor']        
+            ));
+        }
     }
 
     /**

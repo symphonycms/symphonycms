@@ -657,14 +657,22 @@ class Field
     }
 
     /**
+     * Append the html widget for selecting an association interface and editor 
+     * for this field.
      *
+     * @param XMLElement $wrapper
+     *    the parent XML element to append the constructed html to if
+     *    necessary.  
+     * @since Symphony 2.4.1
      */
     public function appendAssociationInterfaceSelect(XMLElement &$wrapper)
     {
-        $interfaces = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATIONUI);
-        $editors = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATIONEDITOR);
+        $interfaces = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATION_UI);
+        $editors = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATION_EDITOR);
 
         if (!empty($interfaces) || !empty($editors)) {
+            $association_context = $this->getAssociationContext();
+
             $group = new XMLElement('div');
             $group->setAttribute('data-condition', 'associative');
             if (!empty($interfaces) && !empty($editors)) {
@@ -677,7 +685,14 @@ class Field
                 $label->setAttribute('class', 'column');
                 $label->appendChild(new XMLElement('i', __('Optional')));
 
-                $select = Widget::Select('field[association-ui]');
+                $options = array(
+                    array(null, false, null)
+                );
+                foreach ($interfaces as $id => $name) {
+                    $options[] = array($id, ($association_context['interface'] === $id), $name);
+                }
+
+                $select = Widget::Select('fields[' . $this->get('sortorder') . '][association_ui]', $options);
                 $label->appendChild($select);
                 $group->appendChild($label);
             }
@@ -688,13 +703,37 @@ class Field
                 $label->setAttribute('class', 'column');
                 $label->appendChild(new XMLElement('i', __('Optional')));
 
-                $select = Widget::Select('field[association-ui]');
+                $options = array(
+                    array(null, false, null)
+                );
+                foreach ($editors as $id => $name) {
+                    $options[] = array($id, ($association_context['editor'] === $id), $name);
+                }
+
+                $select = Widget::Select('fields[' . $this->get('sortorder') . '][association_editor]', $options);
                 $label->appendChild($select);
                 $group->appendChild($label);
             }
 
             $wrapper->appendChild($group);
         }
+    }
+
+    function getAssociationContext() {
+        $context = Symphony::Engine()->Page->getContext();
+        $associations = $context['associations']['parent'];
+        $field_association = array();
+
+        if (!empty($associations)) {
+            for ($i = 0; $i < count($associations); $i++) { 
+                if ($associations[$i]['child_section_field_id'] == $this->get('id')) {
+                    $field_association = $associations[$i];
+                    break;
+                }
+            }
+        }
+
+        return $field_association;
     }
 
     /**
