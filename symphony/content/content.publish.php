@@ -1354,7 +1354,7 @@ class contentPublish extends AdministrationPage
         $is_hidden = $this->isFieldHidden($field);
         $div = new XMLElement('div', null, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '').($is_hidden == true ? ' irrelevant' : '')));
 
-        $this->setAssociationContext($div, $field);
+        $field->setAssociationContext($div);
 
         $field->displayPublishPanel(
             $div, $entry->getData($field->get('id')),
@@ -1363,28 +1363,6 @@ class contentPublish extends AdministrationPage
         );
 
         return $div;
-    }
-
-    /**
-     * Set information about associative fields to the field wrapper.
-     * 
-     * @param XMLElement $wrapper
-     * @param Field $field
-     * @since 2.4.1
-     */
-    public function setAssociationContext(XMLElement $wrapper, Field $field) {
-        $association_context = $field->getAssociationContext();
-
-        if (!empty($association_context)) {
-            $wrapper->setAttributeArray(array(
-                'data-parent-section-id' => $association_context['parent_section_id'],
-                'data-parent-section-field-id' => $association_context['parent_section_field_id'],
-                'data-child-section-id' => $association_context['child_section_id'],
-                'data-child-section-field-id' => $association_context['child_section_field_id'],
-                'data-interface' => $association_context['interface'],
-                'data-editor' => $association_context['editor']        
-            ));
-        }
     }
 
     /**
