@@ -25,6 +25,16 @@ abstract class Extension
     const NAV_CHILD = 0;
 
     /**
+     * Holds an associative array of all the objects this extension provides
+     * to Symphony where the key is one of the Provider constants, and the
+     * value is the name of the classname
+     *
+     * @since Symphony 2.4.1
+     * @var array
+     */
+    private static $provides = array();
+
+    /**
      * Default constructor for an Extension, at this time it does nothing
      */
     public function __construct()
@@ -241,5 +251,43 @@ abstract class Extension
     public function fetchNavigation()
     {
         return null;
+    }
+
+    /**
+     * This function should be implemented by the extension if there are objects
+     * to announce to Symphony.
+     *
+     * @since Symphony 2.4.1
+     * @return boolean
+     */
+    public static function registerProviders()
+    {
+        self::$provides = array();
+
+        return true;
+    }
+
+    /**
+     * Used by Symphony to ask this extension if it's able to provide any new
+     * objects as defined by `$type`
+     *
+     * @since Symphony 2.4.1
+     * @param string $type
+     *  One of the `iProvider` constants
+     * @return boolean
+     */
+    public static function providerOf($type = null)
+    {
+        static::registerProviders();
+
+        if (is_null($type)) {
+            return self::$provides;
+        }
+
+        if (!isset(self::$provides[$type])) {
+            return array();
+        }
+
+        return self::$provides[$type];
     }
 }
