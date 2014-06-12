@@ -9,7 +9,7 @@
 	// Set environment
 	var environment = (function () {
 		var env = document.getElementById('environment');
-		return env ? JSON.parse(env.textContent) || {};
+		return env ? JSON.parse(env.textContent) : {};
 	})();
 	Symphony.Context.add(null, environment);
 
