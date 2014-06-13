@@ -903,7 +903,7 @@ class Field
 
     /**
      * Format this field value for display in the Associations Drawer publish index.
-     * By default, Symphony will use the return value of the `prepareTableValue` function.
+     * By default, Symphony will use the return value of the `preparePlainTextValue` function.
      *
      * @param Entry $e
      *   The associated entry
@@ -915,10 +915,10 @@ class Field
      */
     public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association)
     {
-        $value = $this->prepareTableValue($e->getData($this->get('id')), null, $e->get('id'));
+        $value = $this->preparePlainTextValue($e->getData($this->get('id')), $e->get('id'));
         $li = new XMLElement('li');
         $li->setAttribute('class', 'field-' . $this->get('type'));
-        $a = new XMLElement('a', strip_tags($value));
+        $a = new XMLElement('a', $value);
         $a->setAttribute('href', SYMPHONY_URL . '/publish/' . $parent_association['handle'] . '/edit/' . $e->get('id') . '/');
         $li->appendChild($a);
 
@@ -1244,7 +1244,9 @@ class Field
 
     /**
      * Function to format this field if it chosen in a data-source to be
-     * output as a parameter in the XML
+     * output as a parameter in the XML.
+     *
+     * Since Symphony 2.4.1, it will defaults to `preparePlainTextValue` return value.
      *
      * @param array $data
      *  The data for this field from it's `tbl_entry_data_{id}` table
@@ -1257,11 +1259,13 @@ class Field
      */
     public function getParameterPoolValue(array $data, $entry_id = null)
     {
-        return $this->prepareTableValue($data, null, $entry_id);
+        return $this->preparePlainTextValue($data, $entry_id);
     }
 
     /**
      * Append the formatted XML output of this field as utilized as a data source.
+     *
+     * Since Symphony 2.4.1, it will defaults to `preparePlainTextValue` return value.
      *
      * @param XMLElement $wrapper
      *  the XML element to append the XML representation of this to.
@@ -1281,7 +1285,9 @@ class Field
      */
     public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null)
     {
-        $wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($this->prepareTableValue($data, null, $entry_id)) : $this->prepareTableValue($data, null, $entry_id))));
+        $wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? 
+                              General::sanitize($this->preparePlainTextValue($data, $entry_id)) : 
+                              $this->preparePlainTextValue($data, $entry_id))));
     }
 
     /**
