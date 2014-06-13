@@ -842,7 +842,8 @@ class Field
     /**
      * Format this field value for display in the publish index tables. By default,
      * Symphony will truncate the value to the configuration setting `cell_truncation_length`.
-     * This function will attempt to use PHP's `mbstring` functions if they are available.
+     * This function will call `Field::preparePlainTextValue` in order to get the field's
+     * plain text value.
      *
      * @param array $data
      *  an associative array of data for this string. At minimum this requires a
@@ -857,12 +858,7 @@ class Field
      */
     public function prepareTableValue($data, XMLElement $link = null, $entry_id = null)
     {
-        $max_length = Symphony::Configuration()->get('cell_truncation_length', 'symphony');
-        $max_length = ($max_length ? $max_length : 75);
-
-        $value = strip_tags($data['value']);
-
-        $value = (General::strlen($value) <= $max_length ? $value : General::substr($value, 0, $max_length) . '…');
+        $value = $this->preparePlainTextValue($data, $entry_id, true);
 
         if (strlen($value) == 0) {
             $value = __('None');
@@ -872,6 +868,34 @@ class Field
             $link->setValue($value);
 
             return $link->generate();
+        }
+
+        return $value;
+    }
+
+    /**
+     * Format this field value for display as plain text. By default, it checks for the 'value'
+     * key in the $data array. If $truncate is set to true,
+     * Symphony will truncate the value to the configuration setting `cell_truncation_length`.
+     *
+     * @since Symphony 2.4.1
+     * @param array $data
+     *  an associative array of data for this string. At minimum this requires a
+     *  key of 'value'.
+     * @param integer $entry_id (optional)
+     *  An option entry ID for more intelligent processing. defaults to null
+     * @return string
+     *  the plain text summary of the values of this field instance.
+     */
+    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
+    {
+        $value = strip_tags($data['value']);
+
+        if ($truncate) {
+            $max_length = Symphony::Configuration()->get('cell_truncation_length', 'symphony');
+            $max_length = ($max_length ? $max_length : 75);
+
+            $value = (General::strlen($value) <= $max_length ? $value : General::substr($value, 0, $max_length) . '…');
         }
 
         return $value;
