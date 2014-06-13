@@ -737,8 +737,8 @@ class Field
                         $field_association = $associations[$i];
                         $count++;
                     } else {
-                        $field_association['data-parent-section-id'] .= ',' . $associations[$i]['data-parent-section-id'];
-                        $field_association['data-parent-section-field-id'] .= ',' . $associations[$i]['data-parent-section-field-id'];
+                        $field_association['parent_section_id'] .= '|' . $associations[$i]['parent_section_id'];
+                        $field_association['parent_section_field_id'] .= '|' . $associations[$i]['parent_section_field_id'];
                     }
                 }
             }
