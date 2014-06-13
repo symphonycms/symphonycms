@@ -728,12 +728,18 @@ class Field
         $context = Symphony::Engine()->Page->getContext();
         $associations = $context['associations']['parent'];
         $field_association = array();
+        $count = 0;
 
         if (!empty($associations)) {
             for ($i = 0; $i < count($associations); $i++) { 
                 if ($associations[$i]['child_section_field_id'] == $this->get('id')) {
-                    $field_association = $associations[$i];
-                    break;
+                    if ($count === 0) {
+                        $field_association = $associations[$i];
+                        $count++;
+                    } else {
+                        $field_association['data-parent-section-id'] .= ',' . $associations[$i]['data-parent-section-id'];
+                        $field_association['data-parent-section-field-id'] .= ',' . $associations[$i]['data-parent-section-field-id'];
+                    }
                 }
             }
         }
