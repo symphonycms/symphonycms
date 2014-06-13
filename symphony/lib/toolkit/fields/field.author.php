@@ -346,15 +346,10 @@ class FieldAuthor extends Field implements ExportableField
         $wrapper->appendChild($list);
     }
 
-    public function prepareTableValue($data, XMLElement $link = null, $entry_id = null)
+    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
     {
-        $value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::VALUE, $entry_id);
-
-        if (is_null($value)) {
-            return null;
-        }
-
-        return parent::prepareTableValue(array('value' => General::sanitize(implode(', ', $value))), $link, $entry_id);
+        $value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::AUTHOR, $entry_id);
+        return General::sanitize(implode(', ', $value));
     }
 
     public function getParameterPoolValue(array $data, $entry_id = null)
