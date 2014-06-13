@@ -2,14 +2,14 @@
 /**
  * @package toolkit
  */
-
-define_safe('CDATA_BEGIN', '<![CDATA[');
-define_safe('CDATA_END', ']]>');
-
 /**
  * General is a utility class that offers a number miscellaneous of
  * functions that are used throughout Symphony.
  */
+
+define_safe('CDATA_BEGIN', '<![CDATA[');
+define_safe('CDATA_END', ']]>');
+
 class General
 {
     /**
