@@ -399,6 +399,48 @@ class General
     }
 
     /**
+     * Computes the length of the string.
+     * This function will attempt to use PHP's `mbstring` functions if they are available.
+     * This function also forces utf-8 encoding.
+     * 
+     * @since Symphony 2.4.1
+     * @param string $str
+     *  the string to operate on
+     * @return int
+     *  the string's length
+     */
+    public static function strlen($str)
+    {
+        if (function_exists('mb_strlen')) {
+            return mb_strlen($str, 'utf-8');
+        }
+        return strlen($str);
+    }
+
+    /**
+     * Creates a sub string.
+     * This function will attempt to use PHP's `mbstring` functions if they are available.
+     * This function also forces utf-8 encoding.
+     * 
+     * @since Symphony 2.4.1
+     * @param string $str
+     *  the string to operate on
+     * @param int $start
+     *  the starting offset
+     * @param int $start
+     *  the length of the substring
+     * @return string
+     *  the resulting substring
+     */
+    public static function substr($str, $start, $length)
+    {
+        if (function_exists('mb_substr')) {
+            return mb_substr($str, $start, $length, 'utf-8');
+        }
+        return substr($str, $start, $length);
+    }
+
+    /**
      * Extract the first `$val` characters of the input string. If `$val`
      * is larger than the length of the input string then the original
      * input string is returned.
@@ -412,7 +454,7 @@ class General
      */
     public static function substrmin($str, $val)
     {
-        return(substr($str, 0, min(strlen($str), $val)));
+        return(self::substr($str, 0, min(self::strlen($str), $val)));
     }
 
     /**
@@ -429,7 +471,7 @@ class General
      */
     public static function substrmax($str, $val)
     {
-        return(substr($str, 0, max(strlen($str), $val)));
+        return(self::substr($str, 0, max(self::strlen($str), $val)));
     }
 
     /**
@@ -445,7 +487,7 @@ class General
      */
     public static function right($str, $num)
     {
-        $str = substr($str, strlen($str)-$num, $num);
+        $str = self::substr($str, self::strlen($str)-$num, $num);
         return $str;
     }
 
@@ -462,7 +504,7 @@ class General
      */
     public static function left($str, $num)
     {
-        $str = substr($str, 0, $num);
+        $str = self::substr($str, 0, $num);
         return $str;
     }
 
