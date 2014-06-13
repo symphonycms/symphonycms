@@ -862,11 +862,7 @@ class Field
 
         $value = strip_tags($data['value']);
 
-        if (function_exists('mb_substr') && function_exists('mb_strlen')) {
-            $value = (mb_strlen($value, 'utf-8') <= $max_length ? $value : mb_substr($value, 0, $max_length, 'utf-8') . '…');
-        } else {
-            $value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '…');
-        }
+        $value = (General::strlen($value) <= $max_length ? $value : General::substr($value, 0, $max_length) . '…');
 
         if (strlen($value) == 0) {
             $value = __('None');
