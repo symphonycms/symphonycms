@@ -875,7 +875,7 @@ class Field
 
     /**
      * Format this field value for display as plain text. By default, it checks for the 'value'
-     * key in the $data array. If $truncate is set to true,
+     * key in the $data array and strip tags from it. If $truncate is set to true,
      * Symphony will truncate the value to the configuration setting `cell_truncation_length`.
      *
      * @since Symphony 2.4.1
