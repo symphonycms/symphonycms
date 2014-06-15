@@ -558,11 +558,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
     public function prepareTableValue($data, XMLElement $link = null, $entry_id = null)
     {
         if (isset($data['file']) === false || !$file = $data['file']) {
-            if ($link) {
-                return parent::prepareTableValue(null, $link, $entry_id);
-            } else {
-                return parent::prepareTableValue(null, $link, $entry_id);
-            }
+            return parent::prepareTableValue(null, $link, $entry_id);
         }
 
         if ($link) {
@@ -576,6 +572,14 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
             return $link->generate();
         }
+    }
+    
+    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
+    {
+        if (isset($data['file'])) {
+            return $data['file'];
+        }
+        return parent::preparePlainTextValue($data, $entry_id = null, $truncate = false);
     }
 
     public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association)

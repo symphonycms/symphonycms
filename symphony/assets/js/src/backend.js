@@ -7,7 +7,10 @@
 (function($, Symphony) {
 
 	// Set environment
-	var environment = JSON.parse(document.getElementById('environment').textContent);
+	var environment = (function () {
+		var env = document.getElementById('environment');
+		return env ? JSON.parse(env.textContent) : {};
+	})();
 	Symphony.Context.add(null, environment);
 
 	// Get translations

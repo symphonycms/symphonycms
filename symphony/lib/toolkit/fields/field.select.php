@@ -447,11 +447,11 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         $wrapper->appendChild($list);
     }
 
-    public function prepareTableValue($data, XMLElement $link = null, $entry_id = null)
+    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
     {
         $value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::VALUE, $entry_id);
 
-        return parent::prepareTableValue(array('value' => implode(', ', $value)), $link, $entry_id = null);
+        return implode(', ', $value);
     }
 
     public function getParameterPoolValue(array $data, $entry_id = null)

@@ -716,6 +716,11 @@ class contentBlueprintsSections extends AdministrationPage
                 $existing_section = SectionManager::fetch($section_id);
             }
 
+            // Check handle to ensure it is unique
+            $meta['handle'] = $_POST['meta']['handle'] = Lang::createHandle((isset($meta['handle']) && !empty($meta['handle']))
+                ? $meta['handle']
+                : $meta['name']);
+
             // Check to ensure all the required section fields are filled
             if (!isset($meta['name']) || strlen(trim($meta['name'])) == 0) {
                 $this->_errors['name'] = __('This is a required field.');
@@ -796,8 +801,6 @@ class contentBlueprintsSections extends AdministrationPage
             }
 
             if ($canProceed) {
-                $meta['handle'] = Lang::createHandle((isset($meta['handle']) && !empty($meta['handle'])) ? $meta['handle'] : $meta['name']);
-
                 // If we are creating a new Section
                 if (!$edit) {
                     $meta['sortorder'] = SectionManager::fetchNextSortOrder();

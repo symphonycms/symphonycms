@@ -487,15 +487,15 @@ class FieldDate extends Field implements ExportableField, ImportableField
         }
     }
 
-    public function prepareTableValue($data, XMLElement $link = null, $entry_id = null)
+    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
     {
-        $value = null;
+        $value = '';
 
         if (isset($data['value'])) {
             $value = DateTimeObj::format($data['value'], DateTimeObj::getSetting('datetime_format'), true);
         }
 
-        return parent::prepareTableValue(array('value' => $value), $link, $entry_id = null);
+        return $value;
     }
 
     public function getParameterPoolValue(array $data, $entry_id = null)
