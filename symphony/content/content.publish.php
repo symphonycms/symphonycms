@@ -1131,7 +1131,7 @@ class contentPublish extends AdministrationPage
         }
 
         if ($field) {
-            $title = trim(strip_tags($field->prepareTableValue($existingEntry->getData($field->get('id')), null, $entry_id)));
+            $title = $field->preparePlainTextValue($existingEntry->getData($field->get('id')), $entry_id);
         } else {
             $title = '';
         }
@@ -1548,10 +1548,10 @@ class contentPublish extends AdministrationPage
 
                         foreach ($entries['records'] as $key => $e) {
                             $value = $visible_field ?
-                                     $visible_field->prepareTableValue($e->getData($visible_field->get('id')), null, $e->get('id')) :
+                                     $visible_field->preparePlainTextValue($e->getData($visible_field->get('id')), $e->get('id')) :
                                      $e->get('id');
                             $li = new XMLElement('li');
-                            $a = new XMLElement('a', strip_tags($value));
+                            $a = new XMLElement('a', $value);
                             $a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/' . $prepopulate);
                             $li->appendChild($a);
                             $ul->appendChild($li);

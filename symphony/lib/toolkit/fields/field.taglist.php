@@ -333,19 +333,19 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         $wrapper->appendChild($list);
     }
 
-    public function prepareTableValue($data, XMLElement $link = null, $entry_id = null)
+    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
     {
         if (!is_array($data) || empty($data)) {
-            return;
+            return '';
         }
 
-        $value = null;
+        $value = '';
 
         if (isset($data['value'])) {
             $value = (is_array($data['value']) ? self::__tagArrayToString($data['value']) : $data['value']);
         }
 
-        return parent::prepareTableValue(array('value' => General::sanitize($value)), $link, $entry_id = null);
+        return General::sanitize($value);
     }
 
     public function getParameterPoolValue(array $data, $entry_id = null)

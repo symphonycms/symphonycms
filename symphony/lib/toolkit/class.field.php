@@ -842,7 +842,8 @@ class Field
     /**
      * Format this field value for display in the publish index tables. By default,
      * Symphony will truncate the value to the configuration setting `cell_truncation_length`.
-     * This function will attempt to use PHP's `mbstring` functions if they are available.
+     * This function will call `Field::preparePlainTextValue` in order to get the field's
+     * plain text value.
      *
      * @param array $data
      *  an associative array of data for this string. At minimum this requires a
@@ -857,16 +858,7 @@ class Field
      */
     public function prepareTableValue($data, XMLElement $link = null, $entry_id = null)
     {
-        $max_length = Symphony::Configuration()->get('cell_truncation_length', 'symphony');
-        $max_length = ($max_length ? $max_length : 75);
-
-        $value = strip_tags($data['value']);
-
-        if (function_exists('mb_substr') && function_exists('mb_strlen')) {
-            $value = (mb_strlen($value, 'utf-8') <= $max_length ? $value : mb_substr($value, 0, $max_length, 'utf-8') . '…');
-        } else {
-            $value = (strlen($value) <= $max_length ? $value : substr($value, 0, $max_length) . '…');
-        }
+        $value = $this->preparePlainTextValue($data, $entry_id, true);
 
         if (strlen($value) == 0) {
             $value = __('None');
@@ -882,8 +874,36 @@ class Field
     }
 
     /**
+     * Format this field value for display as plain text. By default, it checks for the 'value'
+     * key in the $data array and strip tags from it. If $truncate is set to true,
+     * Symphony will truncate the value to the configuration setting `cell_truncation_length`.
+     *
+     * @since Symphony 2.4.1
+     * @param array $data
+     *  an associative array of data for this string. At minimum this requires a
+     *  key of 'value'.
+     * @param integer $entry_id (optional)
+     *  An option entry ID for more intelligent processing. defaults to null
+     * @return string
+     *  the plain text summary of the values of this field instance.
+     */
+    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
+    {
+        $value = strip_tags($data['value']);
+
+        if ($truncate) {
+            $max_length = Symphony::Configuration()->get('cell_truncation_length', 'symphony');
+            $max_length = ($max_length ? $max_length : 75);
+
+            $value = (General::strlen($value) <= $max_length ? $value : General::substr($value, 0, $max_length) . '…');
+        }
+
+        return $value;
+    }
+
+    /**
      * Format this field value for display in the Associations Drawer publish index.
-     * By default, Symphony will use the return value of the `prepareTableValue` function.
+     * By default, Symphony will use the return value of the `preparePlainTextValue` function.
      *
      * @param Entry $e
      *   The associated entry
@@ -895,10 +915,10 @@ class Field
      */
     public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association)
     {
-        $value = $this->prepareTableValue($e->getData($this->get('id')), null, $e->get('id'));
+        $value = $this->preparePlainTextValue($e->getData($this->get('id')), $e->get('id'));
         $li = new XMLElement('li');
         $li->setAttribute('class', 'field-' . $this->get('type'));
-        $a = new XMLElement('a', strip_tags($value));
+        $a = new XMLElement('a', $value);
         $a->setAttribute('href', SYMPHONY_URL . '/publish/' . $parent_association['handle'] . '/edit/' . $e->get('id') . '/');
         $li->appendChild($a);
 
@@ -1224,7 +1244,9 @@ class Field
 
     /**
      * Function to format this field if it chosen in a data-source to be
-     * output as a parameter in the XML
+     * output as a parameter in the XML.
+     *
+     * Since Symphony 2.4.1, it will defaults to `preparePlainTextValue` return value.
      *
      * @param array $data
      *  The data for this field from it's `tbl_entry_data_{id}` table
@@ -1237,11 +1259,13 @@ class Field
      */
     public function getParameterPoolValue(array $data, $entry_id = null)
     {
-        return $this->prepareTableValue($data, null, $entry_id);
+        return $this->preparePlainTextValue($data, $entry_id);
     }
 
     /**
      * Append the formatted XML output of this field as utilized as a data source.
+     *
+     * Since Symphony 2.4.1, it will defaults to `preparePlainTextValue` return value.
      *
      * @param XMLElement $wrapper
      *  the XML element to append the XML representation of this to.
@@ -1261,7 +1285,9 @@ class Field
      */
     public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null)
     {
-        $wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($this->prepareTableValue($data, null, $entry_id)) : $this->prepareTableValue($data, null, $entry_id))));
+        $wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? 
+                              General::sanitize($this->preparePlainTextValue($data, $entry_id)) : 
+                              $this->preparePlainTextValue($data, $entry_id))));
     }
 
     /**
