@@ -237,7 +237,7 @@ class SectionManager
      * @return boolean
      *    true if the association was successfully made, false otherwise.
      */
-    public static function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true)
+    public static function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true, $interface = null, $editor = null)
     {
         if (is_null($parent_section_id) && (is_null($parent_field_id) || !$parent_field_id)) {
             return false;
@@ -256,7 +256,9 @@ class SectionManager
             'parent_section_field_id' => $parent_field_id,
             'child_section_id' => $child_section_id,
             'child_section_field_id' => $child_field_id,
-            'hide_association' => ($show_association ? 'no' : 'yes')
+            'hide_association' => ($show_association ? 'no' : 'yes'),
+            'interface' => $interface,
+            'editor' => $editor
         );
 
         return Symphony::Database()->insert($fields, 'tbl_sections_association');

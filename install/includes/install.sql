@@ -240,6 +240,8 @@ CREATE TABLE `tbl_sections_association` (
   `child_section_id` int(11) unsigned NOT NULL,
   `child_section_field_id` int(11) unsigned NOT NULL,
   `hide_association` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
+  `interface` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `editor` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `parent_section_id` (`parent_section_id`,`child_section_id`,`child_section_field_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

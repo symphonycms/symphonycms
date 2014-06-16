@@ -11,6 +11,7 @@ require_once TOOLKIT . '/class.administrationpage.php';
 require_once TOOLKIT . '/class.sectionmanager.php';
 require_once TOOLKIT . '/class.fieldmanager.php';
 require_once TOOLKIT . '/class.entrymanager.php';
+require_once FACE . '/interface.provider.php';
 
 class contentBlueprintsSections extends AdministrationPage
 {
@@ -21,7 +22,7 @@ class contentBlueprintsSections extends AdministrationPage
         $section_id = $context[1];
 
         if(isset($section_id)) {
-            $context['assocations'] = array(
+            $context['associations'] = array(
                 'parent' => SectionManager::fetchParentAssociations($section_id),
                 'child' => SectionManager::fetchChildAssociations($section_id)
             );

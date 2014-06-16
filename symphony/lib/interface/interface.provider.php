@@ -23,6 +23,7 @@ interface iProvider
      * @since Symphony 2.4.1
      */
     const ASSOCIATION_UI = 'association-ui';
+    const ASSOCIATION_EDITOR = 'association-editor';
 
     /**
      * This function should return an associative array of all the

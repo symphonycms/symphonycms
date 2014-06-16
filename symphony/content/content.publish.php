@@ -201,7 +201,7 @@ class contentPublish extends AdministrationPage
         $section_id = SectionManager::fetchIDFromHandle($context['section_handle']);
 
         if($section_id) {
-            $context['assocations'] = array(
+            $context['associations'] = array(
                 'parent' => SectionManager::fetchParentAssociations($section_id),
                 'child' => SectionManager::fetchChildAssociations($section_id)
             );
@@ -1353,11 +1353,15 @@ class contentPublish extends AdministrationPage
     {
         $is_hidden = $this->isFieldHidden($field);
         $div = new XMLElement('div', null, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '').($is_hidden == true ? ' irrelevant' : '')));
+
+        $field->setAssociationContext($div);
+
         $field->displayPublishPanel(
             $div, $entry->getData($field->get('id')),
             (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : null),
             null, null, (is_numeric($entry->get('id')) ? $entry->get('id') : null)
         );
+
         return $div;
     }
 
