@@ -175,10 +175,10 @@ class contentSystemExtensions extends AdministrationPage
                 }
 
                 $td5 = Widget::TableData($tdAuthors);
-                
+
                 // Create the table row
                 $tr = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5), implode(' ', $trClasses));
-                
+
                 // Add some attributes about the extension
                 $tr->setAttribute('data-handle', $name);
                 $tr->setAttribute('data-installed-version', $installed_version);
