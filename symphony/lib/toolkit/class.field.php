@@ -1032,6 +1032,12 @@ class Field
     public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association, $prepopulate = '')
     {
         $value = $this->preparePlainTextValue($e->getData($this->get('id')), $e->get('id'));
+        // fallback for compatibility since the default
+        // `preparePlainTextValue` is not compatible with all fields
+        // this should be removed in Symphony 2.5
+        if (empty($value)) {
+            $value = strip_tags($this->prepareTableValue($e->getData($this->get('id')), null, $e->get('id')));
+        }
         $li = new XMLElement('li');
         $li->setAttribute('class', 'field-' . $this->get('type'));
         $a = new XMLElement('a', $value);
