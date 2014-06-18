@@ -970,11 +970,7 @@ class Field
      */
     public function prepareTableValue($data, XMLElement $link = null, $entry_id = null)
     {
-        $value = $this->preparePlainTextValue($data, $entry_id, true);
-
-        if (strlen($value) == 0) {
-            $value = __('None');
-        }
+        $value = $this->preparePlainTextValue($data, $entry_id, true, __('None'));
 
         if ($link) {
             $link->setValue($value);
@@ -995,11 +991,14 @@ class Field
      *  an associative array of data for this string. At minimum this requires a
      *  key of 'value'.
      * @param integer $entry_id (optional)
-     *  An option entry ID for more intelligent processing. defaults to null
+     *  An option entry ID for more intelligent processing. Defaults to null.
+     * @param string $defaultValue (optional)
+     *  The value to use when no plain text representation of the field's data
+     *  can be made. Defaults to null.
      * @return string
      *  the plain text summary of the values of this field instance.
      */
-    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
+    public function preparePlainTextValue($data, $entry_id = null, $truncate = false, $defaultValue = null)
     {
         $value = strip_tags($data['value']);
 
@@ -1008,6 +1007,10 @@ class Field
             $max_length = ($max_length ? $max_length : 75);
 
             $value = (General::strlen($value) <= $max_length ? $value : General::substr($value, 0, $max_length) . '…');
+        }
+
+        if (empty($value) && !empty($defaultValue)) {
+            $value = $defaultValue;
         }
 
         return $value;
