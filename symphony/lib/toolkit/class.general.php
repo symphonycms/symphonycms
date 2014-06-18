@@ -1419,6 +1419,7 @@ class General
             DateTimeObj::get($date_format, $timestamp),
             array(
                 'iso' => DateTimeObj::get('c', $timestamp),
+                'timestamp' => DateTimeObj::get('U', $timestamp),
                 'time' => DateTimeObj::get($time_format, $timestamp),
                 'weekday' => DateTimeObj::get('N', $timestamp),
                 'offset' => DateTimeObj::get('O', $timestamp)
