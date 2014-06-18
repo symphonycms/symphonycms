@@ -1543,6 +1543,9 @@ class Field
      * @return void|array
      *  this default implementation returns void. overriding implementations should
      *  return an array of the associated entry ids.
+     * @deprecated @since Symphony 2.4.1
+     *  this method is not called anymore in the core. Please use
+     *  `Field::findRelatedEntries` and `Field::findParentRelatedEntries` instead.
      */
     public function fetchAssociatedEntryIDs($value)
     {
