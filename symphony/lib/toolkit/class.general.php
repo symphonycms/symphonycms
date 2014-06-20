@@ -874,7 +874,7 @@ class General
     public static function array_to_xml(XMLElement $parent, array $data, $validate = false)
     {
         foreach ($data as $element_name => $value) {
-            if (empty($value)) {
+            if (!is_numeric($value) && empty($value)) {
                 continue;
             }
 
