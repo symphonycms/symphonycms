@@ -325,10 +325,10 @@ class General
         $string = preg_replace('/[\s]+/', $delim, $string);
 
         // Find all legal characters
-        preg_match_all('/[^<>?@:!-\/\[-`;‘’…]+/u', $string, $matches);
+        preg_match_all('/[\w-]+/u', $string, $matches);
 
         // Join only legal character with the $delim
-        $string = implode($delim, $matches[0]);
+        $string = implode(null, $matches[0]);
 
         // Allow for custom rules
         if (is_array($additional_rule_set) && !empty($additional_rule_set)) {
