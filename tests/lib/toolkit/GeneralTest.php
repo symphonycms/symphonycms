@@ -90,4 +90,63 @@ final class GeneralTest extends TestCase
         $this->assertEquals('This-is-a-very-very', $limited);
         $this->assertLessThanOrEqual($limit, strlen($limited));
     }
+
+    /*
+     * \General::createHandle() tests
+     */
+    public function testCreateHandleDefaultValues()
+    {
+        $this->assertEquals('test', \General::createHandle('test'));
+        $this->assertEquals('this-is-a-test', \General::createHandle('This is a test'));
+        $this->assertEquals('this-is-a-test', \General::createHandle('This    is---a    test'));
+        //$this->assertEquals('this-is-a-pooh-emoji', \General::createHandle("This is a 	\xd8\x3d\xdc\xa9 pooh emoji"));
+        $this->assertEquals('this-is-a-test-test', \General::createHandle('- This ,   is-,-a. ! test   test '));
+    }
+
+    public function testCreateLoooooooongHandleDefaultValues()
+    {
+        $longHandle = \General::createHandle('TThis is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test');
+        $this->assertEquals(
+            'tthis-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test',
+            $longHandle
+        );
+        $this->assertEquals(255, strlen($longHandle));
+
+        $longHandleWithDelimAtThenEnd = \General::createHandle('This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test-This is a test');
+        $this->assertEquals(
+            'this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test-this-is-a-test',
+            $longHandleWithDelimAtThenEnd
+        );
+        $this->assertEquals(254, strlen($longHandleWithDelimAtThenEnd));
+    }
+
+    public function testCreateShortHandleShortLimit()
+    {
+        $this->assertEquals('r', \General::createHandle('r', 20));
+        $this->assertEquals('this', \General::createHandle('This is a test', 5));
+        $this->assertEquals('this-is', \General::createHandle('This    is---a    test', 7));
+    }
+
+    public function testCreateHandleCustomDelimiter()
+    {
+        $this->assertEquals('this_is_a', \General::createHandle('This is a test', 10, '_'));
+        $this->assertEquals('this@is', \General::createHandle('This    is---a    test', 7, '@'));
+        $this->assertEquals('this&is', \General::createHandle('This    is---a    test', 7, '&'));
+    }
+
+
+    public function testCreateHandleUriEncode()
+    {
+        $this->assertEquals('this_is_a', \General::createHandle('This is a test', 10, '_', true));
+        $this->assertEquals('this+is+a', \General::createHandle('This is a test', 10, ' ', true));
+        $this->assertEquals('this%2bis%2ba', \General::createHandle('This is a test', 10, '+', true));
+    }
+
+    public function testCreateHandleCustomRules()
+    {
+        $this->assertEquals('that+is+a+', \General::createHandle('This is a test', 10, '_', false, [
+            '/_/' => '+',
+            '/this/i' => 'That',
+        ]));
+    }
 }
