@@ -326,11 +326,8 @@ class General
         // Replace spaces (tab, newline etc) with the delimiter
         $string = preg_replace('/[\s]+/', $delim, $string);
 
-        // Find all legal characters
-        preg_match_all('/[\w-]+/u', $string, $matches);
-
-        // Join only legal character with the $delim
-        $string = implode(null, $matches[0]);
+        // Remove weird characters
+        $string = preg_replace('/[^\w-]+/u', null, $string);
 
         // Allow for custom rules
         if (is_array($additional_rule_set) && !empty($additional_rule_set)) {
