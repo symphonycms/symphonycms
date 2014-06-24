@@ -15,7 +15,7 @@
 
 			// Setup interface
 			fields.selectize().on('change', switchField);
-			comparison.selectize().on('change', searchEntries);
+			comparison.selectize().on('change', switchComparison);
 			search.addClass('init').selectize({
 				create: true,
 				maxItems: 1,
@@ -23,8 +23,9 @@
 				render: {
 					item: itemPreview,
 					option_create: searchPreview
-				}
-			}).on('change', searchEntries);
+				},
+				onItemAdd: searchEntries
+			});
 
 			// Store Selectize instances
 			fieldsSelectize = fields[0].selectize;
@@ -43,7 +44,7 @@
 			highlightFiltering();
 
 			// Clear search
-			filter.on('mousedown.filtering', '.destructor', clear);
+			filter.find('.destructor').on('click', clear).on('mouseover mouseout', prepareClear);
 
 			// Finish initialisation
 			search.removeClass('init');
@@ -85,7 +86,7 @@
 					});
 
 					// Set comparison mode
-					if(contains || !result.filters.length) {
+					if(contains || !result.filters.length) {
 						comparisonSelectize.setValue('contains');
 					}
 					else {
@@ -98,6 +99,12 @@
 			});
 		};
 
+		var switchComparison = function() {
+			if(searchSelectize.getValue() !== '') {
+				searchEntries();
+			}
+		};
+
 		var searchPreview = function(item) {
 			return '<div class="create"><em>' + Symphony.Language.get('Search for {$item}', {item: item.input}) + ' …</em></div>';
 		};
@@ -106,63 +113,41 @@
 			return '<div class="item">' + escape(item.text) + '<a href="' + location.href.replace(location.search, '') + '" class="destructor">' + Symphony.Language.get('Clear') + '</a></div>';
 		};
 
-		var searchEntries = function() {
+		var searchEntries = function(value, item, exclude) {
 			if(!search.is('.init')) {
-				var filters = buildFilters(),
+				var filters = buildFilters(exclude),
 					base, url;
 
 				// Fetch entries
-				if(filters !== '') {
-					base = location.href.replace(location.search, '');
-					url = base + '?' + filters;
+				base = location.href.replace(location.search, '');
+				url = base + (filters !== '' ? '?' : '') + filters;
 
-					fetchEntries(url);
-					setURL(url);
-				}
+				// Redirect
+				window.location.href = url;
 			}
 		};
 
-		var buildFilters = function() {
+		var buildFilters = function(exclude) {
 			var filters = [];
 
-			$('.filtering-row').each(function() {
-				var row = $(this),
-					fieldVal = row.find('.filtering-fields').val(),
-					comparisonVal = row.find('.filtering-comparison').val(),
-					searchVal = row.find('.filtering-search').val(),
-					filterVal, method;
+			$('.filtering-row:not(.template)').each(function() {
+				var row = $(this);
 
-				if(fieldVal && searchVal) {
-					method = (comparisonVal === 'contains') ? 'regexp:' : '';
-					filterVal = 'filter[' + encodeURI(fieldVal) + ']=' + method + encodeURI(searchVal);
-					filters.push(filterVal);
+				if(row[0] != exclude) {
+					var fieldVal = row.find('.filtering-fields')[0].selectize.getValue(),
+						comparisonVal = row.find('.filtering-comparison')[0].selectize.getValue(),
+						searchVal = row.find('.filtering-search')[0].selectize.getValue(),
+						filterVal, method;
+
+					if(fieldVal && searchVal) {
+						method = (comparisonVal === 'contains') ? 'regexp:' : '';
+						filterVal = 'filter[' + encodeURI(fieldVal) + ']=' + method + encodeURI(searchVal);
+						filters.push(filterVal);
+					}
 				}
 			});
 
 			return filters.join('&');
-		};
-
-		var fetchEntries = function(url) {
-			$.ajax({
-				url: url,
-				type: 'GET',
-				dataType: 'html',
-				success: appendEntries
-			});
-		};
-
-		var appendEntries = function(result) {
-			var page = $(result),
-				entries = page.find('tbody'),
-				pagination = page.find('ul.page');
-
-			// Update content
-			Symphony.Elements.contents.find('tbody').replaceWith(entries);
-			Symphony.Elements.contents.find('ul.page').replaceWith(pagination);
-
-			// Render view
-			Symphony.View.render(null, true);
-			highlightFiltering();
 		};
 
 		var highlightFiltering = function() {
@@ -171,17 +156,20 @@
 			}
 		};
 
-		var setURL = function(url) {
-			if(!!(window.history && history.pushState)) {
-				history.pushState(null, null, url);
+		var prepareClear = function(event) {
+			if(searchSelectize.$dropdown.is(':hidden')) {
+				searchSelectize.$dropdown.css('opacity', (event.type === 'mouseover' ? 0 : 1));
 			}
 		};
 
 		var clear = function(event) {
 			event.preventDefault();
-			if(searchSelectize.isLocked) return;
+			event.stopPropagation();
 
-			searchSelectize.clear();
+			var destructor = $(this),
+				exclude = destructor.parents('.filtering-row')[0];
+
+			searchEntries(null, null, exclude);
 		};
 
 		// API
