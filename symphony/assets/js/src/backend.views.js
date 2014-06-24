@@ -451,7 +451,7 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 	// Update select field
 	duplicator.on('change.admin', '.instance select[name*="[dynamic_options]"]', function() {
 		$(this).parents('.instance').find('[data-condition=associative]').toggle($.isNumeric(this.value));
-	});
+	}).trigger('change.admin');
 
 	// Update tag field
 	duplicator.on('change.admin', '.instance select[name*="[pre_populate_source]"]', function() {
@@ -467,7 +467,7 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 		}
 
 		$(this).parents('.instance').find('[data-condition=associative]').toggle(show);
-	});
+	}).trigger('change.admin');
 
 	// Remove field
 	duplicator.on('destructstart.duplicator', function(event) {
