@@ -19,6 +19,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         parent::__construct();
         $this->_name = __('Tag List');
         $this->_required = true;
+        $this->_showassociation = true;
 
         $this->set('required', 'no');
     }
@@ -70,6 +71,25 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     /*-------------------------------------------------------------------------
         Utilities:
     -------------------------------------------------------------------------*/
+
+    public function fetchAssociatedEntryCount($value)
+    {
+        return Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
+    }
+
+    public function fetchAssociatedEntryIDs($value)
+    {
+        return Symphony::Database()->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
+    }
+
+    public function fetchAssociatedEntrySearchValue($data, $field_id = null, $parent_entry_id = null)
+    {
+        if (!is_array($data)) {
+            return $data;
+        }
+
+        return $data['value'];
+    }
 
     public function set($field, $value)
     {
@@ -178,6 +198,15 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         // Validation rule
         $this->buildValidationSelect($wrapper, $this->get('validator'), 'fields['.$this->get('sortorder').'][validator]', 'input', $errors);
 
+        // Associations
+        $fieldset = new XMLElement('fieldset');
+        $this->appendAssociationInterfaceSelect($fieldset);
+        
+        // @todo: make sure that Symphony uses tbl_sections_association to determine wheather to display links or not, see #2082
+        // $this->appendShowAssociationCheckbox($fieldset);
+        
+        $wrapper->appendChild($fieldset);
+
         // Requirements and table display
         $this->appendStatusFooter($wrapper);
     }
@@ -199,7 +228,19 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         $fields['pre_populate_source'] = (is_null($this->get('pre_populate_source')) ? null : implode(',', $this->get('pre_populate_source')));
         $fields['validator'] = ($fields['validator'] == 'custom' ? null : $this->get('validator'));
 
-        return FieldManager::saveSettings($id, $fields);
+        if (!FieldManager::saveSettings($id, $fields)) {
+            return false;
+        }
+
+        SectionManager::removeSectionAssociation($id);
+
+        foreach ($this->get('pre_populate_source') as $field_id) {
+            if (!is_null($field_id) && is_numeric($field_id)) {
+                SectionManager::createSectionAssociation(null, $id, (int) $field_id, $this->get('show_association') == 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
+            }
+        }
+
+        return true;
     }
 
     /*-------------------------------------------------------------------------

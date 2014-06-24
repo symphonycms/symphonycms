@@ -667,6 +667,8 @@ class Field
      */
     public function appendAssociationInterfaceSelect(XMLElement &$wrapper)
     {
+        $wrapper->setAttribute('data-condition', 'associative');
+ 
         $interfaces = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATION_UI);
         $editors = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATION_EDITOR);
 
@@ -674,7 +676,6 @@ class Field
             $association_context = $this->getAssociationContext();
 
             $group = new XMLElement('div');
-            $group->setAttribute('data-condition', 'associative');
             if (!empty($interfaces) && !empty($editors)) {
                 $group->setAttribute('class', 'two columns');
             }
@@ -890,7 +891,7 @@ class Field
             $input->setAttribute('checked', 'checked');
         }
 
-        $label->setValue(__('%s Display relationship in entries table %s', array(
+        $label->setValue(__('%s Display associations in entries table %s', array(
             $input->generate(),
             ($help) ? ' <i>(' . $help . ')</i>' : ''
         )));

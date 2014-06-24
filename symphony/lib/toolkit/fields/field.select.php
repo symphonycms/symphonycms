@@ -252,9 +252,6 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
         $wrapper->appendChild($div);
 
-        // Association Interface
-        $this->appendAssociationInterfaceSelect($wrapper);
-
         // Other settings
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
@@ -283,8 +280,11 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         $div->appendChild($label);
         $wrapper->appendChild($div);
 
-        // Show relationships
-        $this->appendShowAssociationCheckbox($div);
+        // Associations
+        $fieldset = new XMLElement('fieldset');
+        $this->appendAssociationInterfaceSelect($fieldset);
+        $this->appendShowAssociationCheckbox($fieldset);
+        $wrapper->appendChild($fieldset);
 
         // Requirements and table display
         $this->appendStatusFooter($wrapper);

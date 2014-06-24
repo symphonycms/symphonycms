@@ -453,6 +453,22 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 		$(this).parents('.instance').find('[data-condition=associative]').toggle($.isNumeric(this.value));
 	});
 
+	// Update tag field
+	duplicator.on('change.admin', '.instance select[name*="[pre_populate_source]"]', function() {
+		var selected = $(this).val(),
+			show = false;
+		
+		if(selected) {
+			selected = jQuery.grep(selected, function(value) {
+				return value != 'existing';
+			});
+
+			show = (selected.length > 0);
+		}
+
+		$(this).parents('.instance').find('[data-condition=associative]').toggle(show);
+	});
+
 	// Remove field
 	duplicator.on('destructstart.duplicator', function(event) {
 		var target = $(event.target),
