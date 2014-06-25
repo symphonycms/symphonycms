@@ -885,8 +885,8 @@ class General
                 $child = new XMLElement($element_name, null, array(), true);
             }
 
-            if (is_array($value)) {
-                self::array_to_xml($child, $value);
+            if (is_array($value) || is_object($value)) {
+                self::array_to_xml($child, (array)$value);
 
                 if ($child->getNumberOfChildren() == 0) {
                     continue;
