@@ -371,11 +371,13 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 						sections.prop('disabled', false);
 					}
 
-					// Allow delection
-					$('<option />', {
-						text: Symphony.Language.get('None'),
-						value: ''
-					}).appendTo(sections);
+					if (!sections.attr('data-required')) {
+						// Allow de-selection, if permitted
+						$('<option />', {
+							text: Symphony.Language.get('None'),
+							value: ''
+						}).appendTo(sections);
+					}
 
 					// Append sections
 					$.each(result.sections, function(index, section) {
