@@ -64,6 +64,7 @@
 					.css('max-height', heightMin);
 
 				setTimeout(function() {
+					item.trigger('animationend.collapsible');
 					item.trigger('animationend.duplicator');
 				}, 350);
 			});
