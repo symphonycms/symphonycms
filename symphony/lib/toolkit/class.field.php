@@ -1544,9 +1544,63 @@ class Field
      * @return void|array
      *  this default implementation returns void. overriding implementations should
      *  return an array of the associated entry ids.
+     * @deprecated @since Symphony 2.4.1
+     *  this method is not called anymore in the core. Please use
+     *  `Field::findRelatedEntries` and `Field::findParentRelatedEntries` instead.
      */
     public function fetchAssociatedEntryIDs($value)
     {
 
+    }
+
+    /**
+     * Find related entries from a linking field's data table. Default implementation uses
+     * column names `entry_id` and `relation_id` as with the Select Box Link
+     * 
+     * @since Symphony 2.4.1
+     * 
+     * @param  integer $entry_id
+     * @return array
+     */
+    public function findRelatedEntries($entry_id) {
+        try {
+            $ids = Symphony::Database()->fetchCol('entry_id', sprintf("
+                SELECT `entry_id`
+                FROM `tbl_entries_data_%d`
+                WHERE `relation_id` = %d
+                AND `entry_id` IS NOT NULL
+            ", $this->get('id'), $entry_id));
+        }
+        catch(Exception $e){
+            return array();
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Find related entries for the current field. Default implementation uses
+     * column names `entry_id` and `relation_id` as with the Select Box Link
+     * 
+     * @since Symphony 2.4.1
+     * 
+     * @param  integer $field_id
+     * @param  integer $entry_id
+     * @return array
+     */
+    public function findParentRelatedEntries($field_id, $entry_id) {
+        try {
+            $ids = Symphony::Database()->fetchCol('relation_id', sprintf("
+                SELECT `relation_id`
+                FROM `tbl_entries_data_%d`
+                WHERE `entry_id` = %d
+                AND `relation_id` IS NOT NULL
+            ", $field_id, $entry_id));
+        }
+        catch(Exception $e){
+            return array();
+        }
+
+        return $ids;
     }
 }
