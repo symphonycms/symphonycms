@@ -937,7 +937,7 @@ class General
         }
 
         if ($trim === true) {
-            $data = preg_replace("/(" . PHP_EOL . "(\t+)?){2,}" . PHP_EOL . "/", PHP_EOL . PHP_EOL, trim($data));
+            $data = preg_replace("/(" . PHP_EOL . "([ |\t]+)?){2,}" . PHP_EOL . "/", PHP_EOL . PHP_EOL, trim($data));
         }
 
         if (fwrite($handle, $data, strlen($data)) === false) {

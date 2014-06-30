@@ -1475,10 +1475,10 @@ class contentBlueprintsDatasources extends ResourcesPage
                 continue;
             }
 
-            $string .= "\t\t\t\t'$key' => '" . addslashes($val) . "'," . PHP_EOL;
+            $string .= "        '$key' => '" . addslashes($val) . "'," . PHP_EOL;
         }
 
-        $string .= "\t\t);" . PHP_EOL . "\t\t" . $placeholder;
+        $string .= "    );" . PHP_EOL . "        " . $placeholder;
 
         $shell = str_replace($placeholder, trim($string), $shell);
     }
@@ -1501,7 +1501,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         }
 
         $placeholder = '<!-- INCLUDED ELEMENTS -->';
-        $shell = str_replace($placeholder, "public \$dsParamINCLUDEDELEMENTS = array(" . PHP_EOL . "\t\t\t\t'" . implode("'," . PHP_EOL . "\t\t\t\t'", $elements) . "'" . PHP_EOL . '        );' . PHP_EOL . "\t\t" . $placeholder, $shell);
+        $shell = str_replace($placeholder, "public \$dsParamINCLUDEDELEMENTS = array(" . PHP_EOL . "        '" . implode("'," . PHP_EOL . "        '", $elements) . "'" . PHP_EOL . '    );' . PHP_EOL . "    " . $placeholder, $shell);
     }
 
     public function __injectVarList(&$shell, $vars)
@@ -1514,15 +1514,15 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         foreach ($vars as $key => $val) {
             if (is_array($val)) {
-                $val = "array(" . PHP_EOL . "\t\t\t\t'" . implode("'," . PHP_EOL . "\t\t\t\t'", $val) . "'" . PHP_EOL . '        );';
-                $var_list .= '        public $dsParam' . strtoupper($key) . ' = ' . $val . PHP_EOL;
+                $val = "array(" . PHP_EOL . "        '" . implode("'," . PHP_EOL . "        '", $val) . "'" . PHP_EOL . '        );';
+                $var_list .= '    public $dsParam' . strtoupper($key) . ' = ' . $val . PHP_EOL;
             } elseif (trim($val) !== '') {
-                $var_list .= '        public $dsParam' . strtoupper($key) . " = '" . addslashes($val) . "';" . PHP_EOL;
+                $var_list .= '    public $dsParam' . strtoupper($key) . " = '" . addslashes($val) . "';" . PHP_EOL;
             }
         }
 
         $placeholder = '<!-- VAR LIST -->';
-        $shell = str_replace($placeholder, trim($var_list) . PHP_EOL . "\t\t" . $placeholder, $shell);
+        $shell = str_replace($placeholder, trim($var_list) . PHP_EOL . "    " . $placeholder, $shell);
     }
 
     public function __appendAuthorFilter(&$wrapper, $h4_label, $name, $value = null, $templateOnly = true)
