@@ -607,7 +607,7 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 	}).trigger('update.admin');
 
 	// Data source manager options
-	Symphony.Elements.contents.find('select optgroup').each(function() {
+	Symphony.Elements.contents.find('.contextual select optgroup').each(function() {
 		var optgroup = $(this),
 			select = optgroup.parents('select'),
 			label = optgroup.attr('data-label'),
