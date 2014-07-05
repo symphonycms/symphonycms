@@ -117,6 +117,8 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         $values = array();
 
         foreach ($this->get('pre_populate_source') as $item) {
+            if($item === 'none') break;
+
             $result = Symphony::Database()->fetchCol('value', sprintf(
                 "SELECT DISTINCT `value` FROM tbl_entries_data_%d ORDER BY `value` ASC",
                 ($item == 'existing' ? $this->get('id') : $item)
@@ -171,6 +173,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         }
 
         $options = array(
+            array('none', (in_array('none', $this->get('pre_populate_source'))), __('No Suggestions')),
             array('existing', (in_array('existing', $this->get('pre_populate_source'))), __('Existing Values')),
         );
 
@@ -235,6 +238,8 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         SectionManager::removeSectionAssociation($id);
 
         foreach ($this->get('pre_populate_source') as $field_id) {
+            if($field_id === 'none') continue;
+
             if (!is_null($field_id) && is_numeric($field_id)) {
                 SectionManager::createSectionAssociation(null, $id, (int) $field_id, $this->get('show_association') == 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
             }
