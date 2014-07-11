@@ -14,7 +14,7 @@
 	 * @param {String} [options.items='li'] Selector to find items to be orderable
 	 * @param {String} [options.handles='*'] Selector to find children that can be grabbed to re-order
 	 * @param {String} [options.ignore='input, textarea, select'] Selector to find elements that should not propagate to the handle
-	 * @param {String} [options.delay=250] Time used to delay actions
+	 * @param {Integer} [options.delay=250] Time used to delay actions
 	 *
 	 * @example
 

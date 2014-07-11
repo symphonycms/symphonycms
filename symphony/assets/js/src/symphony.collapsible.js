@@ -27,8 +27,9 @@
 	 * @param {String} [options.items='.instance'] Selector to find collapsible items within the container
 	 * @param {String} [options.handles='.header:first'] Selector to find clickable handles to trigger interaction
 	 * @param {String} [options.content='.content'] Selector to find hideable content area
-	 * @param {String} [options.save_state=true] Stores states of instances using local storage
+	 * @param {Boolean} [options.save_state=true] Stores states of instances using local storage
 	 * @param {String} [options.storage='symphony.collapsible.area.page.id'] Namespace used for local storage
+	 * @param {Integer} [options.delay=250'] Time delay for animations
 	 *
 	 * @example
 
@@ -46,7 +47,8 @@
 				content: '.content',
 				ignore: '.ignore',
 				save_state: true,
-				storage: 'symphony.collapsible.' + Symphony.Context.get('context-id')
+				storage: 'symphony.collapsible.' + Symphony.Context.get('context-id'),
+				delay: 250
 			};
 
 		$.extend(settings, options);
@@ -79,7 +81,7 @@
 				setTimeout(function() {
 					item.trigger('animationend.collapsible');
 					item.trigger('animationend.duplicator');
-				}, 350);
+				}, duration === 0 ? 0 : settings.delay);
 			});
 
 			// Collapse all items
@@ -113,7 +115,7 @@
 
 				setTimeout(function() {
 					item.trigger('animationend.collapsible');
-				}, 350);
+				}, duration === 0 ? 0 : settings.delay);
 			});
 
 			// Expand all items

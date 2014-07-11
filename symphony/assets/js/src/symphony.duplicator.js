@@ -21,7 +21,8 @@
 	 * @param {Boolean} [options.constructable=true] Allow construction of new instances
 	 * @param {Boolean} [options.destructable=true] Allow destruction of instances
 	 * @param {Integer} [optionss.minimum=0] Do not allow instances to be removed below this limit
-	 * @param {Integer} [options.maximum=1000] Do not allow instances to be added above this limit
+	 * @param {Integer} [options.maximum=1000] Do not allow instances to be added above this limit,
+	 * @param {Integer} [options.delay=250'] Time delay for animations
 	 *
 	 * @example
 
@@ -43,7 +44,8 @@
 				destructable: true,
 				save_state: true,
 				minimum: 0,
-				maximum: 1000
+				maximum: 1000,
+				delay: 250
 			};
 
 		$.extend(settings, options);
@@ -107,7 +109,7 @@
 
 				setTimeout(function() {
 					instance.trigger('animationend.duplicator');
-				}, 250);
+				}, settings.delay);
 			});
 
 			// Destruct instances
@@ -145,7 +147,7 @@
 
 				setTimeout(function() {
 					instance.trigger('animationend.duplicator');
-				}, 350);
+				}, settings.delay);
 			});
 
 			// Finish animations
@@ -335,7 +337,8 @@
 				duplicator.symphonyCollapsible({
 					items: '.instance',
 					handles: '.frame-header',
-					save_state: settings.save_state
+					save_state: settings.save_state,
+					delay: settings.delay
 				});
 			}
 
