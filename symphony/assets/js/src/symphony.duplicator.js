@@ -90,22 +90,21 @@
 				// Prepare instance
 				instance
 					.trigger('constructstart.duplicator')
-					.css('max-height', 0).appendTo(list);
+					.appendTo(list);
 
 				// Duplicator is not empty
 				duplicator.removeClass('empty');
 
-				// Calculate instance heights
-				heightMin = instance.find(settings.headers).outerHeight() - 1;
-				heightMax = instance[0].scrollHeight;
-
 				// Show instance
 				instance
-					.trigger('constructshow.duplicator')
-					.data('heightMin', heightMin)
-					.data('heightMax', heightMax)
-					.addClass('js-animate')
-					.css('max-height', heightMax);
+					.trigger('constructshow.duplicator');
+					
+				// Update collapsible
+				instance.trigger('updatesize.collapsible');
+				instance.css({
+					'max-height': instance.data('heightMax'),
+					'min-height': instance.data('heightMin')
+				});
 
 				setTimeout(function() {
 					instance.trigger('animationend.duplicator');
@@ -114,36 +113,13 @@
 
 			// Destruct instances
 			duplicator.on('click.duplicator', '.destructor:not(.disabled)', function destruct(event) {
-				var instance = $(this).parents('.instance:first'),
-					heightMax = instance[0].style.maxHeight,
-					heightMin = 0;
-
-				event.preventDefault();
-				event.stopPropagation();
-
-				// Check if maximum height is set
-				if(!heightMax) {
-					heightMax = instance[0].scrollHeight;
-				}
-
-				// Check if duplicator becomes empty
-				if(!instance.siblings(':not(.destructed)').length) {
-					heightMin = 30;
-				}
+				var instance = $(this).closest('.instance');
 
 				// Remove instance
 				instance
+					.trigger('collapse.collapsible')
 					.trigger('destructstart.duplicator')
-					.css('max-height', heightMax)
-					.data('heightMin', heightMin)
-					.data('heightMax', heightMax);
-
-				setTimeout(function() {
-					instance
-						.addClass('js-animate')
-						.addClass('destructed')
-						.css('max-height', heightMin);
-				}, 100);
+					.addClass('destructed');
 
 				setTimeout(function() {
 					instance.trigger('animationend.duplicator');
