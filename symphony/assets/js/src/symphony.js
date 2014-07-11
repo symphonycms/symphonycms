@@ -66,6 +66,11 @@ var Symphony = (function($, crossroads) {
 		});
 	}
 
+	// request animation frame
+	var raf = window.requestAnimationFrame || window.mozRequestAnimationFrame ||  
+		window.webkitRequestAnimationFrame || window.msRequestAnimationFrame ||
+		window.oRequestAnimationFrame || function (f) { return window.setTimeout(f, 16/1000) };
+
 /*-----------------------------------------------------------------------*/
 
 	// Set browser support information
@@ -361,6 +366,17 @@ var Symphony = (function($, crossroads) {
 				else {
 					return xsrf;
 				}
+			},
+
+			/**
+			 * Cross browser wrapper around requestFrameAnimation
+			 *
+			 * @since Symphony 2.5
+			 * @param function $func
+			 *  The callback to schedule for frame animation
+			 */
+			raf: function (func) {
+				raf.call(window, func);
 			}
 		}
 	};
