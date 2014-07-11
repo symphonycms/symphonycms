@@ -66,7 +66,12 @@
 			// Collapse item
 			object.on('collapse.collapsible', settings.items, function collapse(event, duration) {
 				var item = $(this),
-					heightMin = item.data('heightMin') || item.find(settings.handles).outerHeight() - 1;
+					heightMin = 0;
+				
+				// customization point
+				item.trigger('collapsebefore.collapsible', settings);
+				
+				heightMin = item.data('heightMin');
 
 				// Check duration
 				if(duration !== 0) {
@@ -75,8 +80,9 @@
 
 				// Collapse item
 				item.trigger('collapsestart.collapsible')
-					.addClass('collapsed')
-					.css('max-height', heightMin);
+					.addClass('collapsed');
+
+				item.css('max-height', heightMin);
 
 				setTimeout(function() {
 					item.trigger('animationend.collapsible');
@@ -90,10 +96,7 @@
 					visibles = Symphony.Utilities.inSight(items),
 					invisibles = visibles.nextAll();
 
-				invisibles.each(function() {
-					var item = $(this);
-					item.css('max-height', item.data('heightMin'));
-				});
+				invisibles.trigger('collapse.collapsible', [0]);
 				visibles.trigger('collapse.collapsible');
 				invisibles.trigger('collapsestop.collapsible');
 			});
@@ -101,7 +104,12 @@
 			// Expand item
 			object.on('expand.collapsible', settings.items, function expand(event, duration) {
 				var item = $(this),
-					heightMax = item.data('heightMax') || this.scrollHeight;
+					heightMax = 0;
+				
+				// customization point
+				item.trigger('expandbefore.collapsible', settings);
+				
+				heightMax = item.data('heightMax');
 
 				// Check duration
 				if(duration !== 0) {
@@ -109,9 +117,9 @@
 				}
 
 				// Collapse item
-				item.trigger('expandstart.collapsible')
-					.removeClass('collapsed')
-					.css('max-height', heightMax);
+				item.trigger('expandstart.collapsible');
+				item.removeClass('collapsed');
+				item.css('max-height', heightMax);
 
 				setTimeout(function() {
 					item.trigger('animationend.collapsible');
@@ -124,21 +132,14 @@
 					firsts = items.filter('.collapsed:lt(2)');
 
 				firsts.trigger('expand.collapsible');
-				setTimeout(function() {
-					items.not(firsts).each(function() {
-						var item = $(this);
-						item.css('max-height', item.data('heightMax'));
-					}).removeClass('collapsed').trigger('expandstop.collapsible');
-				}, 250);
+				items.not(firsts).trigger('expand.collapsible', [0]);
 			});
 
 			// Finish animations
 			object.on('animationend.collapsible', settings.items, function finish(event) {
 				var item = $(this);
 
-				setTimeout(function() {
 					item.removeClass('js-animate');
-				}, 200);
 
 				// Trigger events
 				if(item.is('.collapsed')) {
@@ -221,7 +222,17 @@
 			// Refresh state storage after deleting and instance
 			object.on('destructstop.duplicator', settings.items, function refreshState() {
 				$(this).trigger('store.collapsible');
-			})
+			});
+			
+			// Update sizes
+			object.on('updatesize.collapsible', settings.items, function updateSizes() {
+				var item = $(this),
+					min = item.find(settings.handles).outerHeight(true),
+					max = min + item.find(settings.content).outerHeight(true);
+					
+				item.data('heightMin', min);
+				item.data('heightMax', max);
+			});
 
 		/*---------------------------------------------------------------------
 			Initialisation
@@ -229,14 +240,16 @@
 
 			// Prepare interface
 			object.addClass('collapsible').find(settings.items).each(function() {
-				var item = $(this),
-					min = item.find(settings.handles).outerHeight() - 1,
-					max = this.scrollHeight;
-
-				item.css('max-height', max);
-				item.data('heightMin', min);
-				item.data('heightMax', max);
+				var item = $(this);
+				var heightMin = 0, heightMax = 0;
 				item.addClass('instance');
+				item.trigger('updatesize.collapsible');
+				heightMin = item.data('heightMin');
+				heightMax = item.data('heightMax');
+				item.css({
+					'min-height': heightMin,
+					'max-height': heightMax
+				});
 			});
 
 			// Restore states
