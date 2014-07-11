@@ -405,7 +405,7 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 	duplicator.find('.instance').trigger('constructshow.duplicator');
 
 	// Focus first input
-	duplicator.on('constructshow.duplicator expand.collapsible', '.instance', function() {
+	duplicator.on('constructshow.duplicator expandstop.collapsible', '.instance', function() {
 		$(this).find('input:visible:first').trigger('focus.admin');
 	});
 
