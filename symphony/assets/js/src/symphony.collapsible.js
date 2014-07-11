@@ -4,6 +4,19 @@
 
 (function($, Symphony) {
 
+	// always put try/catches into their
+	// own function to prevent callers from
+	// going into un-optimized hell
+	var save = function (storage, collapsed) {
+		// Put in a try/catch incase something goes wrong (no space, privileges etc)
+		try {
+			window.localStorage[storage] = collapsed.get().join(',');
+		}
+		catch(e) {
+			window.onerror(e.message);
+		}
+	};
+
 	/**
 	 * Create collapsible elements.
 	 *
@@ -181,13 +194,8 @@
 						};
 					});
 
-					// Put in a try/catch incase something goes wrong (no space, privileges etc)
-					try {
-						window.localStorage[storage] = collapsed.get().join(',');
-					}
-					catch(e) {
-						window.onerror(e.message);
-					}
+					// save it to local storage
+					save(storage, collapsed);
 				}
 			});
 
