@@ -73,9 +73,10 @@
 		// Stop ordering
 		objects.on('mouseup.orderable mouseleave.orderable', function stopOrdering(event) {
 			var object = $(this),
-				item = object.find('.ordering');
+				item;
 
 			if(object.data('ordering') == 1) {
+				item = object.find('.ordering');
 				item.removeClass('ordering');
 				object.data('ordering', 0);
 				object.trigger('orderstop.orderable', [item]);
@@ -92,8 +93,12 @@
 
 		// Order items
 		$(document).on('mousemove.orderable', '.orderable:has(.ordering)', function order(event) {
-			var object = $(this),
-				item = object.find('.ordering'),
+			var object = $(this);
+			if (object.data('ordering') != 1) {
+				return;
+			}
+			Symphony.Utilities.raf(function () {
+				var item = object.find('.ordering'),
 				top = item.offset().top,
 				bottom = top + item.outerHeight(),
 				position = event.pageY,
@@ -121,6 +126,7 @@
 					object.trigger('orderchange', [item]);
 				}
 			}
+			});
 		});
 
 	/*-------------------------------------------------------------------------
