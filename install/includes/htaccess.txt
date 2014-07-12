@@ -1,5 +1,5 @@
 ### Symphony 2.4.x ###
-Options +FollowSymlinks -Indexes
+Options +SymLinksIfOwnerMatch -Indexes
 
 <IfModule !mod_rewrite.c>
 
