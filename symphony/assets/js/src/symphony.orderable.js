@@ -99,33 +99,33 @@
 			}
 			Symphony.Utilities.raf(function () {
 				var item = object.find('.ordering'),
-				top = item.offset().top,
-				bottom = top + item.outerHeight(),
-				position = event.pageY,
-				prev, next;
+					top = item.offset().top,
+					bottom = top + item.outerHeight(),
+					position = event.pageY,
+					prev, next;
 
-			// Remove text ranges
-			if(window.getSelection) {
-				window.getSelection().removeAllRanges();
-			}
-
-			// Move item up
-			if(position < top) {
-				prev = item.prev(settings.items);
-				if(prev.length > 0) {
-					item.insertBefore(prev);
-					object.trigger('orderchange', [item]);
+				// Remove text ranges
+				if(window.getSelection) {
+					window.getSelection().removeAllRanges();
 				}
-			}
 
-			// Move item down
-			else if(position > bottom) {
-				next = item.next(settings.items);
-				if(next.length > 0) {
-					item.insertAfter(next);
-					object.trigger('orderchange', [item]);
+				// Move item up
+				if(position < top) {
+					prev = item.prev(settings.items);
+					if(prev.length > 0) {
+						item.insertBefore(prev);
+						object.trigger('orderchange', [item]);
+					}
 				}
-			}
+
+				// Move item down
+				else if(position > bottom) {
+					next = item.next(settings.items);
+					if(next.length > 0) {
+						item.insertAfter(next);
+						object.trigger('orderchange', [item]);
+					}
+				}
 			});
 		});
 
