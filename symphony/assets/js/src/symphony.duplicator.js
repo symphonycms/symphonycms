@@ -99,12 +99,9 @@
 				instance
 					.trigger('constructshow.duplicator');
 					
-				// Update collapsible
+				// Update collapsible sizes
 				instance.trigger('updatesize.collapsible');
-				instance.css({
-					'max-height': instance.data('heightMax'),
-					'min-height': instance.data('heightMin')
-				});
+				instance.trigger('setsize.collapsible');
 
 				setTimeout(function() {
 					instance.trigger('animationend.duplicator');
