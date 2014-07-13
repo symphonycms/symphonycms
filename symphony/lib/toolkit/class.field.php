@@ -1018,12 +1018,13 @@ class Field
      * By default, Symphony will use the return value of the `preparePlainTextValue` function.
      * 
      * @since Symphony 2.4
+     * @since Symphony 2.4.1 The prepopulate parameter was added.
      *
      * @param Entry $e
      *   The associated entry
      * @param array $parent_association
      *   An array containing information about the parent
-     * @param string @since Symphony 2.4.1
+     * @param string $prepopulate
      *   A string containing prepopulate parameter to append to the association url
      *
      * @return XMLElement
