@@ -245,6 +245,9 @@ class contentPublish extends AdministrationPage
                 Page::HTTP_STATUS_NOT_FOUND
             );
         }
+        else if (!is_writable(CONFIG)) {
+            $this->pageAlert(__('The Symphony configuration file, %s, is not writable. The sort order cannot be modified.', array('<code>/manifest/config.php</code>')), Alert::NOTICE);
+        }
 
         $section = SectionManager::fetch($section_id);
 
