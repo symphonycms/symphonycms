@@ -208,7 +208,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         $wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($value) : $value)));
     }
 
-    public function prepareTextValue($data, $entry_id = null, $truncate = false)
+    public function prepareTextValue($data, $entry_id = null)
     {
         return $this->prepareExportValue($data, ExportableField::VALUE, $entry_id);
     }

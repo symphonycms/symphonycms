@@ -333,7 +333,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         $wrapper->appendChild($list);
     }
 
-    public function prepareTextValue($data, $entry_id = null, $truncate = false)
+    public function prepareTextValue($data, $entry_id = null)
     {
         if (!is_array($data) || empty($data)) {
             return '';

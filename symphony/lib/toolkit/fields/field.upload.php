@@ -574,7 +574,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         }
     }
     
-    public function prepareTextValue($data, $entry_id = null, $truncate = false)
+    public function prepareTextValue($data, $entry_id = null)
     {
         if (isset($data['file'])) {
             return $data['file'];
