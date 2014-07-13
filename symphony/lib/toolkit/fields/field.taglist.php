@@ -204,10 +204,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         // Associations
         $fieldset = new XMLElement('fieldset');
         $this->appendAssociationInterfaceSelect($fieldset);
-        
-        // @todo: make sure that Symphony uses tbl_sections_association to determine wheather to display links or not, see #2082
-        // $this->appendShowAssociationCheckbox($fieldset);
-        
+        $this->appendShowAssociationCheckbox($fieldset);
         $wrapper->appendChild($fieldset);
 
         // Requirements and table display

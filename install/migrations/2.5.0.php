@@ -23,16 +23,16 @@
 			}
 			catch (Exception $ex) {}
 
+			// Remove show_association #2082
+			try {
+				Symphony::Database()->query('
+					ALTER TABLE `tbl_fields_select` DROP COLUMN show_association;
+				');
+			}
+			catch (Exception $ex) {}
+
 			// Update the version information
 			return parent::upgrade();
-		}
-
-		static function preUpdateNotes(){
-			return array();
-		}
-
-		static function postUpdateNotes(){
-			return array();
 		}
 
 	}

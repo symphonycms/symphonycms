@@ -327,7 +327,6 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
         $fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
         $fields['sort_options'] = $this->get('sort_options') == 'yes' ? 'yes' : 'no';
-        $fields['show_association'] = $this->get('show_association') == 'yes' ? 'yes' : 'no';
 
         if (!FieldManager::saveSettings($id, $fields)) {
             return false;
