@@ -667,6 +667,8 @@ class Field
      */
     public function appendAssociationInterfaceSelect(XMLElement &$wrapper)
     {
+        $wrapper->setAttribute('data-condition', 'associative');
+ 
         $interfaces = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATION_UI);
         $editors = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATION_EDITOR);
 
@@ -674,7 +676,6 @@ class Field
             $association_context = $this->getAssociationContext();
 
             $group = new XMLElement('div');
-            $group->setAttribute('data-condition', 'associative');
             if (!empty($interfaces) && !empty($editors)) {
                 $group->setAttribute('class', 'two columns');
             }
@@ -890,7 +891,7 @@ class Field
             $input->setAttribute('checked', 'checked');
         }
 
-        $label->setValue(__('%s Display relationship in entries table %s', array(
+        $label->setValue(__('%s Display associations in entries table %s', array(
             $input->generate(),
             ($help) ? ' <i>(' . $help . ')</i>' : ''
         )));
@@ -1039,22 +1040,34 @@ class Field
     /**
      * Format this field value for display in the Associations Drawer publish index.
      * By default, Symphony will use the return value of the `prepareReadableValue` function.
+     * 
+     * @since Symphony 2.4
+     * @since Symphony 2.4.1 The prepopulate parameter was added.
      *
      * @param Entry $e
      *   The associated entry
      * @param array $parent_association
      *   An array containing information about the parent
+     * @param string $prepopulate
+     *   A string containing prepopulate parameter to append to the association url
      *
      * @return XMLElement
      *   The XMLElement must be a li node, since it will be added an ul node.
      */
-    public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association)
+    public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association, $prepopulate = '')
     {
         $value = $this->prepareReadableValue($e->getData($this->get('id')), $e->get('id'));
+        // fallback for compatibility since the default
+        // `preparePlainTextValue` is not compatible with all fields
+        // this should be removed in Symphony 2.5
+        if (empty($value)) {
+            $value = strip_tags($this->prepareTableValue($e->getData($this->get('id')), null, $e->get('id')));
+        }
+
         $li = new XMLElement('li');
         $li->setAttribute('class', 'field-' . $this->get('type'));
         $a = new XMLElement('a', $value);
-        $a->setAttribute('href', SYMPHONY_URL . '/publish/' . $parent_association['handle'] . '/edit/' . $e->get('id') . '/');
+        $a->setAttribute('href', SYMPHONY_URL . '/publish/' . $parent_association['handle'] . '/edit/' . $e->get('id') . '/' . $prepopulate);
         $li->appendChild($a);
 
         return $li;
@@ -1566,9 +1579,63 @@ class Field
      * @return void|array
      *  this default implementation returns void. overriding implementations should
      *  return an array of the associated entry ids.
+     * @deprecated @since Symphony 2.4.1
+     *  this method is not called anymore in the core. Please use
+     *  `Field::findRelatedEntries` and `Field::findParentRelatedEntries` instead.
      */
     public function fetchAssociatedEntryIDs($value)
     {
 
+    }
+
+    /**
+     * Find related entries from a linking field's data table. Default implementation uses
+     * column names `entry_id` and `relation_id` as with the Select Box Link
+     * 
+     * @since Symphony 2.4.1
+     * 
+     * @param  integer $entry_id
+     * @return array
+     */
+    public function findRelatedEntries($entry_id) {
+        try {
+            $ids = Symphony::Database()->fetchCol('entry_id', sprintf("
+                SELECT `entry_id`
+                FROM `tbl_entries_data_%d`
+                WHERE `relation_id` = %d
+                AND `entry_id` IS NOT NULL
+            ", $this->get('id'), $entry_id));
+        }
+        catch(Exception $e){
+            return array();
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Find related entries for the current field. Default implementation uses
+     * column names `entry_id` and `relation_id` as with the Select Box Link
+     * 
+     * @since Symphony 2.4.1
+     * 
+     * @param  integer $field_id
+     * @param  integer $entry_id
+     * @return array
+     */
+    public function findParentRelatedEntries($field_id, $entry_id) {
+        try {
+            $ids = Symphony::Database()->fetchCol('relation_id', sprintf("
+                SELECT `relation_id`
+                FROM `tbl_entries_data_%d`
+                WHERE `entry_id` = %d
+                AND `relation_id` IS NOT NULL
+            ", $field_id, $entry_id));
+        }
+        catch(Exception $e){
+            return array();
+        }
+
+        return $ids;
     }
 }

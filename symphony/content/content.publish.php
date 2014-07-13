@@ -245,6 +245,9 @@ class contentPublish extends AdministrationPage
                 Page::HTTP_STATUS_NOT_FOUND
             );
         }
+        else if (!is_writable(CONFIG)) {
+            $this->pageAlert(__('The Symphony configuration file, %s, is not writable. The sort order cannot be modified.', array('<code>/manifest/config.php</code>')), Alert::NOTICE);
+        }
 
         $section = SectionManager::fetch($section_id);
 
@@ -1455,7 +1458,7 @@ class contentPublish extends AdministrationPage
 
                         // get associated entries if entry exists,
                         if ($entry_id) {
-                            $entry_ids = $this->findParentRelatedEntries($as['child_section_field_id'], $entry_id);
+                            $entry_ids = $field->findParentRelatedEntries($as['child_section_field_id'], $entry_id);
 
                             // get prepopulated entry otherwise
                         } elseif (isset($_GET['prepopulate'])) {
@@ -1514,7 +1517,7 @@ class contentPublish extends AdministrationPage
                     $relation_field  = FieldManager::fetch($as['child_section_field_id']);
 
                     // Get entries, using $schema for performance reasons.
-                    $entry_ids = $this->findRelatedEntries($as['child_section_field_id'], $entry_id);
+                    $entry_ids = $relation_field->findRelatedEntries($entry_id);
                     $schema = $visible_field ? array($visible_field->get('element_name')) : array();
                     $where = sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids));
 
@@ -1551,13 +1554,9 @@ class contentPublish extends AdministrationPage
                         ));
 
                         foreach ($entries['records'] as $key => $e) {
-                            $value = $visible_field ?
-                                     $visible_field->prepareReadableValue($e->getData($visible_field->get('id')), $e->get('id')) :
-                                     $e->get('id');
-                            $li = new XMLElement('li');
-                            $a = new XMLElement('a', $value);
-                            $a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/' . $prepopulate);
-                            $li->appendChild($a);
+                            // let the field create the mark up
+                            $li = $relation_field->prepareAssociationsDrawerXMLElement($e, $as, $prepopulate);
+                            // add it to the unordered list
                             $ul->appendChild($li);
                         }
 
@@ -1596,57 +1595,5 @@ class contentPublish extends AdministrationPage
 
         $drawer = Widget::Drawer('section-associations', __('Show Associations'), $content);
         $this->insertDrawer($drawer, $drawer_position, 'prepend');
-    }
-
-    /**
-     * Find related entries from a linking field's data table. Requires the
-     * column names to be `entry_id` and `relation_id` as with the Select Box Link
-     * @param  integer $field_id
-     * @param  integer $entry_id
-     * @return array
-     */
-    public function findRelatedEntries($field_id = null, $entry_id)
-    {
-        try {
-            $ids = Symphony::Database()->fetchCol('entry_id', sprintf("
-                    SELECT `entry_id`
-                    FROM `tbl_entries_data_%d`
-                    WHERE `relation_id` = %d
-                    AND `entry_id` IS NOT null
-                ",
-                $field_id,
-                $entry_id
-            ));
-        } catch (Exception $e) {
-            return array();
-        }
-
-        return $ids;
-    }
-
-    /**
-     * Find related entries for the current field. Requires the column names
-     * to be `entry_id` and `relation_id` as with the Select Box Link
-     * @param  integer $field_id
-     * @param  integer $entry_id
-     * @return array
-     */
-    public function findParentRelatedEntries($field_id = null, $entry_id)
-    {
-        try {
-            $ids = Symphony::Database()->fetchCol('relation_id', sprintf("
-                    SELECT `relation_id`
-                    FROM `tbl_entries_data_%d`
-                    WHERE `entry_id` = %d
-                    AND `relation_id` IS NOT null
-                ",
-                $field_id,
-                $entry_id
-            ));
-        } catch (Exception $e) {
-            return array();
-        }
-
-        return $ids;
     }
 }

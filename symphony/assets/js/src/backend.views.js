@@ -371,11 +371,13 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 						sections.prop('disabled', false);
 					}
 
-					// Allow delection
-					$('<option />', {
-						text: Symphony.Language.get('None'),
-						value: ''
-					}).appendTo(sections);
+					if (!sections.attr('data-required')) {
+						// Allow de-selection, if permitted
+						$('<option />', {
+							text: Symphony.Language.get('None'),
+							value: ''
+						}).appendTo(sections);
+					}
 
 					// Append sections
 					$.each(result.sections, function(index, section) {
@@ -451,7 +453,23 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 	// Update select field
 	duplicator.on('change.admin', '.instance select[name*="[dynamic_options]"]', function() {
 		$(this).parents('.instance').find('[data-condition=associative]').toggle($.isNumeric(this.value));
-	});
+	}).trigger('change.admin');
+
+	// Update tag field
+	duplicator.on('change.admin', '.instance select[name*="[pre_populate_source]"]', function() {
+		var selected = $(this).val(),
+			show = false;
+		
+		if(selected) {
+			selected = jQuery.grep(selected, function(value) {
+				return value != 'existing';
+			});
+
+			show = (selected.length > 0);
+		}
+
+		$(this).parents('.instance').find('[data-condition=associative]').toggle(show);
+	}).trigger('change.admin');
 
 	// Remove field
 	duplicator.on('destructstart.duplicator', function(event) {
@@ -589,7 +607,7 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 	}).trigger('update.admin');
 
 	// Data source manager options
-	Symphony.Elements.contents.find('select optgroup').each(function() {
+	Symphony.Elements.contents.find('.contextual select optgroup').each(function() {
 		var optgroup = $(this),
 			select = optgroup.parents('select'),
 			label = optgroup.attr('data-label'),

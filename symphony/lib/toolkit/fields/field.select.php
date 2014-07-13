@@ -252,9 +252,6 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
         $wrapper->appendChild($div);
 
-        // Association Interface
-        $this->appendAssociationInterfaceSelect($wrapper);
-
         // Other settings
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
@@ -283,8 +280,11 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         $div->appendChild($label);
         $wrapper->appendChild($div);
 
-        // Show relationships
-        $this->appendShowAssociationCheckbox($div);
+        // Associations
+        $fieldset = new XMLElement('fieldset');
+        $this->appendAssociationInterfaceSelect($fieldset);
+        $this->appendShowAssociationCheckbox($fieldset);
+        $wrapper->appendChild($fieldset);
 
         // Requirements and table display
         $this->appendStatusFooter($wrapper);
@@ -327,7 +327,6 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
         $fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
         $fields['sort_options'] = $this->get('sort_options') == 'yes' ? 'yes' : 'no';
-        $fields['show_association'] = $this->get('show_association') == 'yes' ? 'yes' : 'no';
 
         if (!FieldManager::saveSettings($id, $fields)) {
             return false;

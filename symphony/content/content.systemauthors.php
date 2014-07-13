@@ -148,7 +148,7 @@ class contentSystemAuthors extends AdministrationPage
             Widget::TableBody($aTableBody),
             'selectable',
             null,
-            array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading', 'data-interactive' => 'data-interactive')
+            array('role' => 'directory', 'aria-labelledby' => 'symphony-subheading')
         );
 
         $this->Form->appendChild($table);
@@ -158,41 +158,6 @@ class contentSystemAuthors extends AdministrationPage
         ));
 
         $this->Form->appendChild($version);
-
-        if (Administration::instance()->Author->isDeveloper() || Administration::instance()->Author->isManager()) {
-            $tableActions = new XMLElement('div');
-            $tableActions->setAttribute('class', 'actions');
-
-            $options = array(
-                array(null, false, __('With Selected...')),
-                array('delete', false, __('Delete'), 'confirm', null, array(
-                    'data-message' => __('Are you sure you want to delete the selected authors?')
-                ))
-            );
-
-            /**
-             * Allows an extension to modify the existing options for this page's
-             * With Selected menu. If the `$options` parameter is an empty array,
-             * the 'With Selected' menu will not be rendered.
-             *
-             * @delegate AddCustomActions
-             * @since Symphony 2.3.2
-             * @param string $context
-             * '/system/authors/'
-             * @param array $options
-             *  An array of arrays, where each child array represents an option
-             *  in the With Selected menu. Options should follow the same format
-             *  expected by `Widget::__SelectBuildOption`. Passed by reference.
-             */
-            Symphony::ExtensionManager()->notifyMembers('AddCustomActions', '/system/authors/', array(
-                'options' => &$options
-            ));
-
-            if (!empty($options)) {
-                $tableActions->appendChild(Widget::Apply($options));
-                $this->Form->appendChild($tableActions);
-            }
-        }
 
     }
 

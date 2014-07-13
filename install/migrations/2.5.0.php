@@ -1,15 +1,15 @@
 <?php
 
-	Class migration_241 extends Migration {
+	Class migration_250 extends Migration {
 
 		static $publish_filtering_disabled = false;
 
 		static function getVersion(){
-			return '2.4.1beta1';
+			return '2.5.0beta1';
 		}
 
 		static function getReleaseNotes(){
-			return 'http://getsymphony.com/download/releases/version/2.4.1/';
+			return 'http://getsymphony.com/download/releases/version/2.5.0/';
 		}
 
 		static function upgrade() {
@@ -23,16 +23,16 @@
 			}
 			catch (Exception $ex) {}
 
+			// Remove show_association #2082
+			try {
+				Symphony::Database()->query('
+					ALTER TABLE `tbl_fields_select` DROP COLUMN show_association;
+				');
+			}
+			catch (Exception $ex) {}
+
 			// Update the version information
 			return parent::upgrade();
-		}
-
-		static function preUpdateNotes(){
-			return array();
-		}
-
-		static function postUpdateNotes(){
-			return array();
 		}
 
 	}

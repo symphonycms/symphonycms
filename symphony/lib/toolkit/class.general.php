@@ -874,7 +874,7 @@ class General
     public static function array_to_xml(XMLElement $parent, array $data, $validate = false)
     {
         foreach ($data as $element_name => $value) {
-            if (empty($value)) {
+            if (!is_numeric($value) && empty($value)) {
                 continue;
             }
 
@@ -885,8 +885,8 @@ class General
                 $child = new XMLElement($element_name, null, array(), true);
             }
 
-            if (is_array($value)) {
-                self::array_to_xml($child, $value);
+            if (is_array($value) || is_object($value)) {
+                self::array_to_xml($child, (array)$value);
 
                 if ($child->getNumberOfChildren() == 0) {
                     continue;
@@ -937,7 +937,7 @@ class General
         }
 
         if ($trim === true) {
-            $data = preg_replace("/(" . PHP_EOL . "(\t+)?){2,}" . PHP_EOL . "/", PHP_EOL . PHP_EOL, trim($data));
+            $data = preg_replace("/(" . PHP_EOL . "([ |\t]+)?){2,}" . PHP_EOL . "/", PHP_EOL . PHP_EOL, trim($data));
         }
 
         if (fwrite($handle, $data, strlen($data)) === false) {
