@@ -1017,22 +1017,33 @@ class Field
     /**
      * Format this field value for display in the Associations Drawer publish index.
      * By default, Symphony will use the return value of the `preparePlainTextValue` function.
+     * 
+     * @since Symphony 2.4
+     * @since Symphony 2.4.1 The prepopulate parameter was added.
      *
      * @param Entry $e
      *   The associated entry
      * @param array $parent_association
      *   An array containing information about the parent
+     * @param string $prepopulate
+     *   A string containing prepopulate parameter to append to the association url
      *
      * @return XMLElement
      *   The XMLElement must be a li node, since it will be added an ul node.
      */
-    public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association)
+    public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association, $prepopulate = '')
     {
         $value = $this->preparePlainTextValue($e->getData($this->get('id')), $e->get('id'));
+        // fallback for compatibility since the default
+        // `preparePlainTextValue` is not compatible with all fields
+        // this should be removed in Symphony 2.5
+        if (empty($value)) {
+            $value = strip_tags($this->prepareTableValue($e->getData($this->get('id')), null, $e->get('id')));
+        }
         $li = new XMLElement('li');
         $li->setAttribute('class', 'field-' . $this->get('type'));
         $a = new XMLElement('a', $value);
-        $a->setAttribute('href', SYMPHONY_URL . '/publish/' . $parent_association['handle'] . '/edit/' . $e->get('id') . '/');
+        $a->setAttribute('href', SYMPHONY_URL . '/publish/' . $parent_association['handle'] . '/edit/' . $e->get('id') . '/' . $prepopulate);
         $li->appendChild($a);
 
         return $li;

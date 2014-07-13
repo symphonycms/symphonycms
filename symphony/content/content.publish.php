@@ -1554,13 +1554,9 @@ class contentPublish extends AdministrationPage
                         ));
 
                         foreach ($entries['records'] as $key => $e) {
-                            $value = $visible_field ?
-                                     $visible_field->preparePlainTextValue($e->getData($visible_field->get('id')), $e->get('id')) :
-                                     $e->get('id');
-                            $li = new XMLElement('li');
-                            $a = new XMLElement('a', $value);
-                            $a->setAttribute('href', SYMPHONY_URL . '/publish/' . $as['handle'] . '/edit/' . $e->get('id') . '/' . $prepopulate);
-                            $li->appendChild($a);
+                            // let the field create the mark up
+                            $li = $relation_field->prepareAssociationsDrawerXMLElement($e, $as, $prepopulate);
+                            // add it to the unordered list
                             $ul->appendChild($li);
                         }
 
