@@ -233,6 +233,17 @@
 				item.data('heightMin', min);
 				item.data('heightMax', max);
 			});
+			
+			// Set sizes
+			object.on('setsize.collapsible', settings.items, function setSizes() {
+				var item = $(this);
+				var heightMin = item.data('heightMin');
+				var heightMax = item.data('heightMax');
+				item.css({
+					'min-height': heightMin,
+					'max-height': heightMax
+				});
+			});
 
 		/*---------------------------------------------------------------------
 			Initialisation
@@ -241,15 +252,9 @@
 			// Prepare interface
 			object.addClass('collapsible').find(settings.items).each(function() {
 				var item = $(this);
-				var heightMin = 0, heightMax = 0;
 				item.addClass('instance');
 				item.trigger('updatesize.collapsible');
-				heightMin = item.data('heightMin');
-				heightMax = item.data('heightMax');
-				item.css({
-					'min-height': heightMin,
-					'max-height': heightMax
-				});
+				item.trigger('setsize.collapsible');
 			});
 
 			// Restore states
