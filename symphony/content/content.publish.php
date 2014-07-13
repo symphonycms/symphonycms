@@ -1131,7 +1131,7 @@ class contentPublish extends AdministrationPage
         }
 
         if ($field) {
-            $title = $field->preparePlainTextValue($existingEntry->getData($field->get('id')), $entry_id);
+            $title = $field->prepareReadableValue($existingEntry->getData($field->get('id')), $entry_id);
         } else {
             $title = '';
         }
@@ -1552,7 +1552,7 @@ class contentPublish extends AdministrationPage
 
                         foreach ($entries['records'] as $key => $e) {
                             $value = $visible_field ?
-                                     $visible_field->preparePlainTextValue($e->getData($visible_field->get('id')), $e->get('id')) :
+                                     $visible_field->prepareReadableValue($e->getData($visible_field->get('id')), $e->get('id')) :
                                      $e->get('id');
                             $li = new XMLElement('li');
                             $a = new XMLElement('a', $value);

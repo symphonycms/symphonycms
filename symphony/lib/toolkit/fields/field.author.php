@@ -346,7 +346,7 @@ class FieldAuthor extends Field implements ExportableField
         $wrapper->appendChild($list);
     }
 
-    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
+    public function prepareTextValue($data, $entry_id = null)
     {
         $value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::AUTHOR, $entry_id);
         return General::sanitize(implode(', ', $value));

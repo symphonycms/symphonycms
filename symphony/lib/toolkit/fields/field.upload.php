@@ -574,12 +574,12 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         }
     }
     
-    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
+    public function prepareTextValue($data, $entry_id = null, $truncate = false)
     {
         if (isset($data['file'])) {
             return $data['file'];
         }
-        return parent::preparePlainTextValue($data, $entry_id = null, $truncate = false);
+        return null;
     }
 
     public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association)

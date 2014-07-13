@@ -1018,10 +1018,10 @@ class Field
         return $value;
     }
 
-	/*
-	 * Format this field value for complete display as text (string). By default, 
-	 * it looks for the 'value' key in the $data array and strip tags from it.
-	 *
+    /*
+     * Format this field value for complete display as text (string). By default, 
+     * it looks for the 'value' key in the $data array and strip tags from it.
+     *
      * @since Symphony 2.4.1
      * @param array $data
      *  an associative array of data for this string. At minimum this requires a
@@ -1031,14 +1031,14 @@ class Field
      * @return string
      *  the complete text representation of the values of this field instance.
      */
-	public function prepareTextValue($data, $entry_id = null)
-	{
-		return strip_tags($data['value']);
-	}
+    public function prepareTextValue($data, $entry_id = null)
+    {
+        return strip_tags($data['value']);
+    }
 
     /**
      * Format this field value for display in the Associations Drawer publish index.
-     * By default, Symphony will use the return value of the `preparePlainTextValue` function.
+     * By default, Symphony will use the return value of the `prepareReadableValue` function.
      *
      * @param Entry $e
      *   The associated entry
@@ -1050,7 +1050,7 @@ class Field
      */
     public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association)
     {
-        $value = $this->preparePlainTextValue($e->getData($this->get('id')), $e->get('id'));
+        $value = $this->prepareReadableValue($e->getData($this->get('id')), $e->get('id'));
         $li = new XMLElement('li');
         $li->setAttribute('class', 'field-' . $this->get('type'));
         $a = new XMLElement('a', $value);
@@ -1381,7 +1381,7 @@ class Field
      * Function to format this field if it chosen in a data-source to be
      * output as a parameter in the XML.
      *
-     * Since Symphony 2.4.1, it will defaults to `preparePlainTextValue` return value.
+     * Since Symphony 2.4.1, it will defaults to `prepareReadableValue` return value.
      *
      * @param array $data
      *  The data for this field from it's `tbl_entry_data_{id}` table
@@ -1394,13 +1394,13 @@ class Field
      */
     public function getParameterPoolValue(array $data, $entry_id = null)
     {
-        return $this->preparePlainTextValue($data, $entry_id);
+        return $this->prepareReadableValue($data, $entry_id);
     }
 
     /**
      * Append the formatted XML output of this field as utilized as a data source.
      *
-     * Since Symphony 2.4.1, it will defaults to `preparePlainTextValue` return value.
+     * Since Symphony 2.4.1, it will defaults to `prepareReadableValue` return value.
      *
      * @param XMLElement $wrapper
      *  the XML element to append the XML representation of this to.
@@ -1421,8 +1421,8 @@ class Field
     public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null)
     {
         $wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? 
-                              General::sanitize($this->preparePlainTextValue($data, $entry_id)) : 
-                              $this->preparePlainTextValue($data, $entry_id))));
+                              General::sanitize($this->prepareReadableValue($data, $entry_id)) : 
+                              $this->prepareReadableValue($data, $entry_id))));
     }
 
     /**
