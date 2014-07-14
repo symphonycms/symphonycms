@@ -103,11 +103,31 @@
 			object.on('collapseall.collapsible', function collapseAll(event) {
 				var items = object.find(settings.items + ':not(.collapsed)'),
 					visibles = Symphony.Utilities.inSight(items),
-					invisibles = visibles.eq(-1).nextAll().not('.collapsed');
-
-				invisibles.each(function () { collapseItem($(this), 0); });
+					invisibles = $(), //items.not(visibles),
+					scrollTop = $(window).scrollTop(),
+					visibleIndex = visibles.eq(0).index(),
+					visibleCollapsedHeight = 0;
+				
+				// find items that will be visible after collapse
+				while (visibleIndex < items.length && visibleCollapsedHeight < window.innerHeight) {
+					var currentItem = items.eq(visibleIndex);
+					visibles = visibles.add(currentItem);
+					visibleCollapsedHeight += currentItem.data('heightMin');
+					visibleIndex++;
+				}
 				visibles.each(function () { collapseItem($(this), settings.delay); });
-				setTimeout(function collapseAllInvisible() {
+
+				setTimeout(function collapseAllInvisibleEnd() {
+					var first = visibles.eq(0);
+					var firstOffset = first.offset().top;
+					// update invisible accordingly
+					invisibles = items.not(visibles);
+					invisibles.each(function () { collapseItem($(this), 0); });
+					if (firstOffset > 0 && scrollTop > object.offset().top) {
+						// scroll back to where we were,
+						// which is last scroll position + delta of first visible item
+						$(window).scrollTop(scrollTop + (first.offset().top - firstOffset));
+					}
 					invisibles.trigger('animationend.collapsible');
 				}, settings.delay + 100);
 			});
@@ -147,14 +167,23 @@
 			object.on('expandall.collapsible', function expandAll(event) {
 				var items = object.find(settings.items + '.collapsed'),
 					visibles = Symphony.Utilities.inSight(items).filter('*:lt(4)'),
-					invisibles = visibles.eq(-1).nextAll('.collapsed');
+					invisibles = items.not(visibles),
+					scrollTop = $(window).scrollTop();
 				
 				visibles.addClass('js-animate-all'); // prevent focus
 				visibles.each(function () { expandItem($(this), settings.delay); });
 				setTimeout(function expandAllInvisible() {
+					var first = visibles.eq(0);
+					var firstOffset = first.offset().top;
 					invisibles.addClass('js-animate-all'); // prevent focus
 					invisibles.each(function () { expandItem($(this), 0); });
 					invisibles.trigger('animationend.collapsible');
+					// if we are past the first item
+					if (firstOffset > 0 && scrollTop > object.offset().top) {
+						// scroll back to where we were,
+						// which is last scroll position + delta of first visible item
+						$(window).scrollTop(scrollTop + (first.offset().top - firstOffset));
+					}
 				}, settings.delay + 100);
 			});
 
