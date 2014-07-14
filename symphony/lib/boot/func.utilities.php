@@ -188,6 +188,7 @@ function cleanup_session_cookies()
  */
 function is_session_empty()
 {
+    $session_is_empty = true;
     foreach ($_SESSION as $contents) {
         if (!empty($contents)) {
             $session_is_empty = false;
