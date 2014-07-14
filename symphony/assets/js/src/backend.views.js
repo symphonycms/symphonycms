@@ -406,7 +406,10 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 
 	// Focus first input
 	duplicator.on('constructshow.duplicator expandstop.collapsible', '.instance', function() {
-		$(this).find('input:visible:first').trigger('focus.admin');
+		var item = $(this);
+		if (!item.hasClass('js-animate-all')) {
+			$(this).find('input:visible:first').trigger('focus.admin');
+		}
 	});
 
 	// Update name
