@@ -364,7 +364,6 @@ fieldset.frame,
 }
 
 .collapsible .content {
-	transition: padding 0.25s ease-in;
 	background: #e8e8e8;
 }
 
@@ -381,6 +380,10 @@ fieldset.frame,
 .collapsed.js-animate,
 .destructed.js-animate {
 	transition: max-height 0.25s ease-out;
+}
+
+.collapsible .js-animate .content {
+	transition: padding 0.25s ease-in;
 }
 
 .collapsed.js-animate .frame-header {
