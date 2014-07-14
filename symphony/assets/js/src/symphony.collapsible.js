@@ -193,25 +193,6 @@
 				}
 			});
 
-			// Toggle all
-			object.on('dblclick.collapsible', settings.handles, function toogleAll(event) {
-				var handle = $(this),
-					item = handle.closest(settings.items);
-
-				if(!handle.is(settings.ignore) && !$(event.target).is(settings.ignore)) {
-
-					// Expand all
-					if(item.is('.collapsed')) {
-						object.trigger('expandall.collapsible');
-					}
-
-					// Collapse all
-					else {
-						object.trigger('collapseall.collapsible');
-					}
-				}
-			});
-
 			// Save states
 			var saveTimer = 0;
 			object.on('collapsestop.collapsible expandstop.collapsible store.collapsible', settings.items, function saveState(event) {
