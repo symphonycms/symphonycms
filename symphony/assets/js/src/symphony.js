@@ -344,7 +344,7 @@ var Symphony = (function($, crossroads) {
 					) {
 						visibles = visibles.add(this);
 					}
-					else {
+					else if (visibles.length > 0) {
 						return false;
 					}
 				});
