@@ -70,6 +70,10 @@ var Symphony = (function($, crossroads) {
 	var raf = window.requestAnimationFrame || window.mozRequestAnimationFrame ||  
 		window.webkitRequestAnimationFrame || window.msRequestAnimationFrame ||
 		window.oRequestAnimationFrame || function (f) { return window.setTimeout(f, 16/1000) };
+	var craf = window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame ||
+		window.mozCancelRequestAnimationFrame || window.oCancelRequestAnimationFrame ||
+		window.msCancelRequestAnimationFrame  || function (t) { window.clearTimeout(t); };
+	
 
 /*-----------------------------------------------------------------------*/
 
@@ -376,7 +380,18 @@ var Symphony = (function($, crossroads) {
 			 *  The callback to schedule for frame animation
 			 */
 			raf: function (func) {
-				raf.call(window, func);
+				return raf.call(window, func);
+			},
+
+			/**
+			 * Cross browser wrapper around cancelAnimationFrame
+			 *
+			 * @since Symphony 2.5
+			 * @param Integer $t
+			 *  The request id
+			 */
+			craf: function (t) {
+				return craf.call(window, t);
 			}
 		}
 	};
