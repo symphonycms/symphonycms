@@ -310,6 +310,7 @@
 				duplicator.symphonyCollapsible({
 					items: '.instance',
 					handles: '.frame-header',
+					ignore: '.destructor',
 					save_state: settings.save_state,
 					delay: settings.delay
 				});
