@@ -7,10 +7,10 @@
 	// always put try/catches into their
 	// own function to prevent callers from
 	// going into un-optimized hell
-	var save = function (storage, collapsed) {
-		// Put in a try/catch incase something goes wrong (no space, privileges etc)
+	var save = function (storage, value) {
+		// Put in a try/catch in case something goes wrong (no space, privileges etc)
 		try {
-			window.localStorage[storage] = collapsed.get().join(',');
+			window.localStorage[storage] = value;
 		}
 		catch(e) {
 			window.onerror(e.message);
@@ -59,52 +59,62 @@
 			var object = $(this),
 				storage = settings.storage + '.' + index + '.collapsed';
 
+			var getDuration = function (duration) {
+				return $.isNumeric(duration) ? duration : settings.delay;
+			};
+
 		/*---------------------------------------------------------------------
 			Events
 		---------------------------------------------------------------------*/
 
-			// Collapse item
-			object.on('collapse.collapsible', settings.items, function collapse(event, duration) {
-				var item = $(this),
-					heightMin = 0;
+			var collapseItem = function collapse(item, duration) {
+				var heightMin = 0;
 				
 				// customization point
 				item.trigger('collapsebefore.collapsible', settings);
-				
+
 				heightMin = item.data('heightMin');
 
 				// Check duration
 				if(duration !== 0) {
 					item.addClass('js-animate');
+					item.trigger('collapsestart.collapsible');
 				}
 
 				// Collapse item
-				item.trigger('collapsestart.collapsible')
-					.addClass('collapsed');
-
+				item.addClass('collapsed');
 				item.css('max-height', heightMin);
 
-				setTimeout(function() {
-					item.trigger('animationend.collapsible');
-					item.trigger('animationend.duplicator');
-				}, duration === 0 ? 0 : settings.delay);
+				if(duration !== 0) {
+					setTimeout(function() {
+						item.trigger('animationend.collapsible');
+						item.trigger('animationend.duplicator');
+					}, duration);
+				}
+			};
+
+			// Collapse item
+			object.on('collapse.collapsible', settings.items, function collapse(event, duration) {
+				var item = $(this);
+				collapseItem(item, getDuration(duration));
 			});
 
 			// Collapse all items
 			object.on('collapseall.collapsible', function collapseAll(event) {
 				var items = object.find(settings.items + ':not(.collapsed)'),
 					visibles = Symphony.Utilities.inSight(items),
-					invisibles = visibles.nextAll();
+					invisibles = visibles.eq(-1).nextAll().not('.collapsed');
 
-				invisibles.trigger('collapse.collapsible', [0]);
-				visibles.trigger('collapse.collapsible');
-				invisibles.trigger('collapsestop.collapsible');
+				invisibles.each(function () { collapseItem($(this), 0); });
+				visibles.each(function () { collapseItem($(this), settings.delay); });
+				setTimeout(function collapseAllInvisible() {
+					invisibles.trigger('animationend.collapsible');
+				}, settings.delay + 100);
 			});
 
 			// Expand item
-			object.on('expand.collapsible', settings.items, function expand(event, duration) {
-				var item = $(this),
-					heightMax = 0;
+			var expandItem = function (item, duration) {
+				var heightMax = 0;
 				
 				// customization point
 				item.trigger('expandbefore.collapsible', settings);
@@ -114,32 +124,43 @@
 				// Check duration
 				if(duration !== 0) {
 					item.addClass('js-animate');
+					item.trigger('expandstart.collapsible');
 				}
 
 				// Collapse item
-				item.trigger('expandstart.collapsible');
 				item.removeClass('collapsed');
 				item.css('max-height', heightMax);
 
-				setTimeout(function() {
-					item.trigger('animationend.collapsible');
-				}, duration === 0 ? 0 : settings.delay);
+				if(duration !== 0) {
+					setTimeout(function() {
+						item.trigger('animationend.collapsible');
+					}, duration);
+				}
+			};
+			
+			object.on('expand.collapsible', settings.items, function expand(event, duration) {
+				var item = $(this);
+				expandItem(item, getDuration(duration));
 			});
 
 			// Expand all items
 			object.on('expandall.collapsible', function expandAll(event) {
 				var items = object.find(settings.items + '.collapsed'),
-					firsts = items.filter('.collapsed:lt(2)');
-
-				firsts.trigger('expand.collapsible');
-				items.not(firsts).trigger('expand.collapsible', [0]);
+					visibles = Symphony.Utilities.inSight(items).filter('*:lt(4)'),
+					invisibles = visibles.eq(-1).nextAll('.collapsed');
+				
+				visibles.addClass('js-animate-all'); // prevent focus
+				visibles.each(function () { expandItem($(this), settings.delay); });
+				setTimeout(function expandAllInvisible() {
+					invisibles.addClass('js-animate-all'); // prevent focus
+					invisibles.each(function () { expandItem($(this), 0); });
+					invisibles.trigger('animationend.collapsible');
+				}, settings.delay + 100);
 			});
 
 			// Finish animations
 			object.on('animationend.collapsible', settings.items, function finish(event) {
 				var item = $(this);
-
-					item.removeClass('js-animate');
 
 				// Trigger events
 				if(item.is('.collapsed')) {
@@ -148,23 +169,26 @@
 				else {
 					item.trigger('expandstop.collapsible');
 				}
+
+				// clean up
+				item.removeClass('js-animate js-animate-all');
 			});
 
 			// Toggle single item
 			object.on('click.collapsible', settings.handles, function toggle(event) {
 				var handle = $(this),
-					item = handle.parents(settings.items);
+					item = handle.closest(settings.items);
 
 				if(!handle.is(settings.ignore) && !$(event.target).is(settings.ignore) && !item.is('.locked')) {
 
 					// Expand
 					if(item.is('.collapsed')) {
-						item.trigger('expand.collapsible');
+						expandItem(item, settings.delay);
 					}
 
 					// Collapse
 					else {
-						item.trigger('collapse.collapsible');
+						collapseItem(item, settings.delay);
 					}
 				}
 			});
@@ -172,7 +196,7 @@
 			// Toggle all
 			object.on('dblclick.collapsible', settings.handles, function toogleAll(event) {
 				var handle = $(this),
-					item = handle.parents(settings.items);
+					item = handle.closest(settings.items);
 
 				if(!handle.is(settings.ignore) && !$(event.target).is(settings.ignore)) {
 
@@ -181,7 +205,7 @@
 						object.trigger('expandall.collapsible');
 					}
 
-					// Collaps all
+					// Collapse all
 					else {
 						object.trigger('collapseall.collapsible');
 					}
@@ -189,16 +213,20 @@
 			});
 
 			// Save states
+			var saveTimer = 0;
 			object.on('collapsestop.collapsible expandstop.collapsible store.collapsible', settings.items, function saveState(event) {
 				if(settings.save_state === true && Symphony.Support.localStorage === true) {
-					var collapsed = object.find(settings.items).map(function(index) {
-						if($(this).is('.collapsed')) {
-							return index;
-						};
-					});
+					// save it to local storage, delayed, once
+					clearTimeout(saveTimer);
+					saveTimer = setTimeout(function () {
+						var collapsed = object.find(settings.items).map(function(index) {
+							if($(this).is('.collapsed')) {
+								return index;
+							};
+						}).get().join(',');
 
-					// save it to local storage
-					save(storage, collapsed);
+						save(storage, collapsed);
+					}, settings.delay);
 				}
 			});
 
@@ -208,7 +236,7 @@
 					$.each(window.localStorage[storage].split(','), function(index, value) {
 						var collapsed = object.find(settings.items).eq(value);
 						if(collapsed.has('.invalid').length == 0) {
-							collapsed.trigger('collapse.collapsible', [0]);
+							collapseItem(collapsed, 0);
 						}
 					});
 				}
