@@ -9,6 +9,7 @@ module.exports = function (grunt) {
                 files: {
                     'symphony/assets/css/symphony.min.css': [
                         'symphony/assets/css/src/symphony.css',
+                        'symphony/assets/css/src/symphony.affix.css',
                         'symphony/assets/css/src/symphony.grids.css',
                         'symphony/assets/css/src/symphony.forms.css',
                         'symphony/assets/css/src/symphony.tables.css',
@@ -94,6 +95,7 @@ module.exports = function (grunt) {
                         'symphony/assets/js/lib/crossroads.js',
                         'symphony/assets/js/lib/selectize.js',
                         'symphony/assets/js/src/symphony.js',
+                        'symphony/assets/js/src/symphony.affix.js',
                         'symphony/assets/js/src/symphony.collapsible.js',
                         'symphony/assets/js/src/symphony.orderable.js',
                         'symphony/assets/js/src/symphony.selectable.js',
