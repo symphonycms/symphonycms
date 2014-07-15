@@ -33,7 +33,14 @@
 	$.fn.symphonyAffix = function(options) {
 		var objects = $(this),
 			settings = {
-				container: null
+				// public
+				container: null,
+				// private
+				top: 0,
+				freespace: 0,
+				bottom: 0,
+				height: 0,
+				maxtop: 0
 			};
 
 		$.extend(settings, options);
@@ -44,20 +51,33 @@
 		---------------------------------------------------------------------*/
 
 		objects.each(function createOneAffix() {
+			var itemSettings = $.extend({}, settings);
 			var item = $(this);
+			var updateItemSettings = function () {
+				itemSettings.top = itemSettings.container.offset().top;
+				itemSettings.freespace = itemSettings.container.height();
+				itemSettings.bottom = itemSettings.top + itemSettings.freespace;
+				itemSettings.height = item.height();
+				itemSettings.maxtop = (itemSettings.freespace - itemSettings.height) + 'px';
+			};
+
 			// use parent as default container
-			if (!settings.container) {
-				settings.container = item.parent();
+			if (!itemSettings.container) {
+				itemSettings.container = item.parent();
 			}
 			// resolve jQuery object
 			else {
-				settings.container = $(settings.container);
+				itemSettings.container = $(itemSettings.container);
 			}
+
+			// cache cssom values
+			updateItemSettings();
+			item.on('updatesettings.affix', updateItemSettings);
 
 			item.addClass('js-affix');
 
-			// save settings
-			item.data('affix-settings', settings);
+			// save instance settings
+			item.data('affix-settings', itemSettings);
 
 			// register instance
 			instances = instances.add(item);
@@ -79,20 +99,21 @@
 			instances.each(function affixScrollOne() {
 				var item = $(this);
 				var settings = item.data('affix-settings');
-				var ctnOffset = settings.container.offset().top;
-				var ctnHeight = settings.container.height();
 				var cssClass = 'js-affix-scroll';
 				var top = '';
-				if (scrollTop < ctnOffset) {
+				if (scrollTop < settings.top) {
 					cssClass = 'js-affix-top';
-				} else if (scrollTop > ctnOffset + ctnHeight) {
+				} else if (scrollTop > settings.bottom) {
 					cssClass = 'js-affix-bottom';
-					top = (scrollTop - ctnOffset) + 'px';
+					top = settings.maxtop;
 				}
-				item
-					.removeClass('js-affix-scroll js-affix-top js-affix-bottom')
-					.addClass(cssClass)
-					item.css({top: top});
+				// Do changes only if state changes
+				if (!item.hasClass(cssClass)) {
+					item
+						.removeClass('js-affix-scroll js-affix-top js-affix-bottom')
+						.addClass(cssClass)
+						.css({top: top});
+				}
 			});
 		});
 	});
