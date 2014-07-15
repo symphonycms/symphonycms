@@ -23,9 +23,9 @@
 }
 
 #header h1 {
-	background: #282828;
+	background: #342e2e;
 	padding: 1.8rem;
-	text-shadow: -0.1rem 0.2rem 0.3rem #111;
+	text-shadow: 0 0.1rem 0.2rem #151313;
 	font-weight: normal;
 	font-size: 1.5rem;
 	line-height: 1;
@@ -33,14 +33,28 @@
 	position: relative;
 }
 
-#header h1 a, #session a {
+#header h1:before {
+	position: relative;
+	top: 1px;
+	margin-right: 7px;
+	color: #b40b51;
+	content: "•";
+	font-size: 120%;
+	line-height: 70%;
+	text-shadow: none;
+}
+
+#header h1 a,
+#session a {
 	border: none;
 	color: #e6e6e6;
 	color: rgba(255, 255, 255, 0.85);
 }
 
-#header h1 a:hover, #header h1 a:focus,
-#session a:hover, #session a:focus {
+#header h1 a:hover,
+#header h1 a:focus,
+#session a:hover,
+#session a:focus {
 	color: rgba(255, 255, 255, 0.99);
 }
 
@@ -72,7 +86,7 @@
 	padding: 0 0.8rem 0;
 	min-height: 3.1rem;
 	list-style: none;
-	background-image: linear-gradient(to bottom, #EFEFED 0px, #EFEFED 0.6rem, #D7D7D2 2.5rem, #D7D7D2 3rem, #BBBBB7 3rem);
+	background-color: #f1f1f1;
 	background-size: 100% 3.1rem;
 	float: left;
 	font-size: 12px;
@@ -110,14 +124,14 @@
 
 #nav > ul > li.active {
 	color: #fff;
-	background-color: #4d78b4;
-	background-image: linear-gradient(to bottom, #6f92c2 0%, #6f92c2 35%, #4d78b4 65%, #4d78b4 100%);
+	background-color: #888;
 	height: 3.1rem;
 	text-shadow: 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.2);
 	z-index: 2;
 }
 
-#nav > ul > li:hover, #nav > ul > li.active:hover {
+#nav > ul > li:hover,
+#nav > ul > li.active:hover {
 	color: #555;
 	background: #fff;
 	height: 3.1rem;
@@ -196,7 +210,7 @@
 	padding: 2.5rem 1.8rem 0;
 	position: relative;
 	color: #000;
-	background-color: #f4f4f4;
+	background-color: #fafafa;
 	min-height: 3.8rem;
 }
 
