@@ -7,8 +7,6 @@
 
 	// holds up all instances
 	var instances = $();
-	// raf ID
-	var scrollRequestId = 0;
 	// last scroll position
 	var scrollTop = 0;
 
@@ -65,6 +63,7 @@
 			if (!itemSettings.container) {
 				itemSettings.container = item.parent();
 			}
+
 			// resolve jQuery object
 			else {
 				itemSettings.container = $(itemSettings.container);
@@ -94,8 +93,7 @@
 	// One listener for all instances
 	$(window).scroll(function affixScroll(e) {
 		scrollTop = $(this).scrollTop();
-		//Symphony.Utilities.craf(scrollRequestId);
-		scrollRequestId = Symphony.Utilities.raf(function affixScrollRaf() {
+		Symphony.Utilities.requestAnimationFrame(function affixScrollRaf() {
 			instances.each(function affixScrollOne() {
 				var item = $(this);
 				var settings = item.data('affix-settings');

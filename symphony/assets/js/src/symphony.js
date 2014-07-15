@@ -379,7 +379,7 @@ var Symphony = (function($, crossroads) {
 			 * @param function $func
 			 *  The callback to schedule for frame animation
 			 */
-			raf: function (func) {
+			requestAnimationFrame: function (func) {
 				return raf.call(window, func);
 			},
 
@@ -390,7 +390,7 @@ var Symphony = (function($, crossroads) {
 			 * @param Integer $t
 			 *  The request id
 			 */
-			craf: function (t) {
+			cancelAnimationFrame: function (t) {
 				return craf.call(window, t);
 			}
 		}

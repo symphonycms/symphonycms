@@ -340,7 +340,7 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 	});
 
 	// Affix for toggle
-	$('fieldset.settings>legend+.help').symphonyAffix();
+	$('fieldset.settings > legend + .help').symphonyAffix();
 
 	// Initialise field editor
 	duplicator.symphonyDuplicator({

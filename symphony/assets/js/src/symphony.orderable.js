@@ -97,7 +97,7 @@
 			if (object.data('ordering') != 1) {
 				return;
 			}
-			Symphony.Utilities.raf(function () {
+			Symphony.Utilities.requestAnimationFrame(function () {
 				var item = object.find('.ordering'),
 					top = item.offset().top,
 					bottom = top + item.outerHeight(),

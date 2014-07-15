@@ -4,11 +4,11 @@
 
 (function($, Symphony) {
 
-	// always put try/catches into their
-	// own function to prevent callers from
-	// going into un-optimized hell
+	// Saves the value into the local storage at the specified storage key.
 	var save = function (storage, value) {
 		// Put in a try/catch in case something goes wrong (no space, privileges etc)
+		// Always put try/catches into their own function to prevent callers from
+		// going into un-optimized hell
 		try {
 			window.localStorage[storage] = value;
 		}
@@ -70,7 +70,7 @@
 			var collapseItem = function collapse(item, duration) {
 				var heightMin = 0;
 				
-				// customization point
+				// Customization point
 				item.trigger('collapsebefore.collapsible', settings);
 
 				heightMin = item.data('heightMin');
@@ -103,12 +103,12 @@
 			object.on('collapseall.collapsible', function collapseAll(event) {
 				var items = object.find(settings.items + ':not(.collapsed)'),
 					visibles = Symphony.Utilities.inSight(items),
-					invisibles = $(), //items.not(visibles),
+					invisibles = $(),
 					scrollTop = $(window).scrollTop(),
 					visibleIndex = visibles.eq(0).index(),
 					visibleCollapsedHeight = 0;
 				
-				// find items that will be visible after collapse
+				// Find items that will be visible after collapse
 				while (visibleIndex < items.length && visibleCollapsedHeight < window.innerHeight) {
 					var currentItem = items.eq(visibleIndex);
 					visibles = visibles.add(currentItem);
@@ -136,7 +136,7 @@
 			var expandItem = function (item, duration) {
 				var heightMax = 0;
 				
-				// customization point
+				// Customization point
 				item.trigger('expandbefore.collapsible', settings);
 				
 				heightMax = item.data('heightMax');
