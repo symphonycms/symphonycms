@@ -339,6 +339,9 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 		}
 	});
 
+	// Affix for toggle
+	$('fieldset.settings > legend + .help').symphonyAffix();
+
 	// Initialise field editor
 	duplicator.symphonyDuplicator({
 		orderable: true,
@@ -405,8 +408,11 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 	duplicator.find('.instance').trigger('constructshow.duplicator');
 
 	// Focus first input
-	duplicator.on('constructshow.duplicator expand.collapsible', '.instance', function() {
-		$(this).find('input:visible:first').trigger('focus.admin');
+	duplicator.on('constructshow.duplicator expandstop.collapsible', '.instance', function() {
+		var item = $(this);
+		if (!item.hasClass('js-animate-all')) {
+			$(this).find('input:visible:first').trigger('focus.admin');
+		}
 	});
 
 	// Update name

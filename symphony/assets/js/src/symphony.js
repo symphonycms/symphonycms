@@ -66,6 +66,15 @@ var Symphony = (function($, crossroads) {
 		});
 	}
 
+	// request animation frame
+	var raf = window.requestAnimationFrame || window.mozRequestAnimationFrame ||  
+		window.webkitRequestAnimationFrame || window.msRequestAnimationFrame ||
+		window.oRequestAnimationFrame || function (f) { return window.setTimeout(f, 16/1000) };
+	var craf = window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame ||
+		window.mozCancelRequestAnimationFrame || window.oCancelRequestAnimationFrame ||
+		window.msCancelRequestAnimationFrame  || function (t) { window.clearTimeout(t); };
+	
+
 /*-----------------------------------------------------------------------*/
 
 	// Set browser support information
@@ -335,7 +344,7 @@ var Symphony = (function($, crossroads) {
 					) {
 						visibles = visibles.add(this);
 					}
-					else {
+					else if (visibles.length > 0) {
 						return false;
 					}
 				});
@@ -361,6 +370,28 @@ var Symphony = (function($, crossroads) {
 				else {
 					return xsrf;
 				}
+			},
+
+			/**
+			 * Cross browser wrapper around requestFrameAnimation
+			 *
+			 * @since Symphony 2.5
+			 * @param function $func
+			 *  The callback to schedule for frame animation
+			 */
+			requestAnimationFrame: function (func) {
+				return raf.call(window, func);
+			},
+
+			/**
+			 * Cross browser wrapper around cancelAnimationFrame
+			 *
+			 * @since Symphony 2.5
+			 * @param Integer $t
+			 *  The request id
+			 */
+			cancelAnimationFrame: function (t) {
+				return craf.call(window, t);
 			}
 		}
 	};
