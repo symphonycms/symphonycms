@@ -63,6 +63,10 @@
 	box-shadow: 0 0.1rem 0.4rem #e5e5e5;
 }
 
+.frame .collapsed .frame-header {
+	border-bottom: 0.1rem solid #f5f5f5;
+}
+
 .frame-header h4 {
 	display: inline;
 	font-weight: bold;
