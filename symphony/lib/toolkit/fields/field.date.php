@@ -487,7 +487,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
         }
     }
 
-    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
+    public function prepareTextValue($data, $entry_id = null)
     {
         $value = '';
 

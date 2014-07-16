@@ -446,7 +446,7 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         $wrapper->appendChild($list);
     }
 
-    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
+    public function prepareTextValue($data, $entry_id = null)
     {
         $value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::VALUE, $entry_id);
 
