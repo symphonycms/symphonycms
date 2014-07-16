@@ -219,10 +219,9 @@ fieldset.frame,
 .frame .apply {
 	clear: left;
 	cursor: default;
-	margin: 1rem 0 0;
+	margin: 1rem 0 -3.5rem;
 	text-align: right;
 	position: absolute;
-	bottom: -3.5rem;
 	right: 0;
 	border-color: rgba(0, 0, 0, 0.25);
 }
