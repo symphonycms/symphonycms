@@ -402,7 +402,7 @@ class General
      * Computes the length of the string.
      * This function will attempt to use PHP's `mbstring` functions if they are available.
      * This function also forces utf-8 encoding.
-     * 
+     *
      * @since Symphony 2.4.1
      * @param string $str
      *  the string to operate on
@@ -421,7 +421,7 @@ class General
      * Creates a sub string.
      * This function will attempt to use PHP's `mbstring` functions if they are available.
      * This function also forces utf-8 encoding.
-     * 
+     *
      * @since Symphony 2.4.1
      * @param string $str
      *  the string to operate on
@@ -1592,5 +1592,17 @@ class General
     public static function unwrapCDATA($value)
     {
         return str_replace(array(CDATA_BEGIN, CDATA_END), '', $value);
+    }
+
+    /**
+     * Convert a PHP time string like '2 weeks' to seconds
+     * @param  string $string
+     *  The valid PHP time string
+     * @return int
+     *  The seconds
+     */
+    public static function stringToSeconds($string)
+    {
+        return strtotime($string) - time();
     }
 }

@@ -12,7 +12,10 @@
 require_once CORE . '/class.errorhandler.php';
 require_once CORE . '/class.configuration.php';
 require_once CORE . '/class.log.php';
-require_once CORE . '/class.cookie.php';
+require_once CORE . '/class.cookies.php';
+require_once CORE . '/class.session.php';
+require_once CORE . '/class.databasesessionhandler.php';
+require_once CORE . '/class.sessionflash.php';
 require_once FACE . '/interface.singleton.php';
 require_once TOOLKIT . '/class.page.php';
 require_once TOOLKIT . '/class.ajaxpage.php';
@@ -89,10 +92,16 @@ abstract class Symphony implements Singleton
     private $exception = null;
 
     /**
-     * An instance of the Cookie class
-     * @var Cookie
+     * An instance of the Cookies class
+     * @var Cookies
      */
-    public $Cookie = null;
+    public $Cookies = null;
+
+    /**
+     * An instance of the Session class
+     * @var Session
+     */
+    public $Session = null;
 
     /**
      * An instance of the currently logged in Author
@@ -138,7 +147,7 @@ abstract class Symphony implements Singleton
 
         $this->initialiseDatabase();
         $this->initialiseExtensionManager();
-        $this->initialiseCookie();
+        $this->initialiseSessionAndCookies();
 
         // If the user is not a logged in Author, turn off the verbose error messages.
         if (!self::isLoggedIn() && is_null($this->Author)) {
@@ -265,10 +274,10 @@ abstract class Symphony implements Singleton
     }
 
     /**
-     * Setter for `$Cookie`. This will use PHP's parse_url
-     * function on the current URL to set a cookie using the cookie_prefix
-     * defined in the Symphony configuration. The cookie will last two
-     * weeks.
+     * Setter for `$Session`. This will use PHP's parse_url
+     * function on the current URL to set a session using the *_session_name
+     * defined in the Symphony configuration. The * is either admin or public.
+     * The session will last for the time defined in configuration.
      *
      * This function also defines two constants, `__SYM_COOKIE_PATH__`
      * and `__SYM_COOKIE_PREFIX__`.
@@ -278,16 +287,78 @@ abstract class Symphony implements Singleton
      *  support both constants, `__SYM_COOKIE_PREFIX_` and `__SYM_COOKIE_PREFIX__`
      *  until Symphony 2.5
      */
-    public function initialiseCookie()
-    {
+    public function initialiseSessionAndCookies(){
         $cookie_path = @parse_url(URL, PHP_URL_PATH);
         $cookie_path = '/' . trim($cookie_path, '/');
 
-        define_safe('__SYM_COOKIE_PATH__', $cookie_path);
-        define_safe('__SYM_COOKIE_PREFIX_', self::Configuration()->get('cookie_prefix', 'symphony'));
-        define_safe('__SYM_COOKIE_PREFIX__', self::Configuration()->get('cookie_prefix', 'symphony'));
+        $name = '';
+        $timeout = $this->getSessionTimeout();
 
-        $this->Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);
+        if (class_exists('Administration')) {
+            $name = self::Configuration()->get('admin_session_name', 'session');
+        } else {
+            $name = self::Configuration()->get('public_session_name', 'session');
+        }
+
+        // Left these in for deprecation sake
+        define_safe('__SYM_COOKIE_PATH__', $cookie_path);
+        define_safe('__SYM_COOKIE_PREFIX_', $name);
+        define_safe('__SYM_COOKIE_PREFIX__', $name);
+        define_safe('__SYM_COOKIE_TIMEOUT__', $timeout);
+
+        $handler = new DatabaseSessionHandler(self::Database(), array(
+            'session_name' => $name,
+            'session_lifetime' => $timeout
+        ));
+
+        $this->Session = new Session($handler, array(
+            'session_name' => $name,
+            'session_gc_probability' => self::Configuration()->get('session_gc_probability', 'session'),
+            'session_gc_divisor' => self::Configuration()->get('session_gc_divisor', 'session'),
+            'session_gc_maxlifetime' => $timeout,
+            'session_cookie_lifetime' => $timeout,
+            'session_cookie_path' => __SYM_COOKIE_PATH__,
+            'session_cookie_domain' => null,
+            'session_cookie_secure' => (defined(__SECURE__) ? true : false),
+            'session_cookie_httponly' => true
+
+        ), $name);
+
+        // Start the session
+        $this->Session->start();
+
+        $this->Flash = new SessionFlash($this->Session);
+
+        $this->Cookies = new Cookies(array(
+            'domain' => $this->Session->getDomain(),
+            'path' => __SYM_COOKIE_PATH__,
+            'expires' => $timeout,
+            'secure' => (defined(__SECURE__) ? true : false),
+            'httponly' => true
+        ));
+
+        // Fetch the current cookies from the header
+        $this->Cookies->fetch();
+    }
+
+    /**
+     * Gets the configuerd session timeout as seconds, based on the environment instance
+     * @return int
+     *  The seconds
+     */
+    private function getSessionTimeout()
+    {
+        if (class_exists('Administration')) {
+            $time = (self::Configuration()->get('admin_session_expires', 'symphony') ? self::Configuration()->get('admin_session_expires', 'symphony') : '2 weeks');
+        } else {
+            $time = (self::Configuration()->get('public_session_expires', 'symphony') ? self::Configuration()->get('public_session_expires', 'symphony') : '2 weeks');
+        }
+
+        if (is_string($time) && !is_numeric($time)) {
+            $time = General::stringToSeconds($time);
+        }
+
+        return $time;
     }
 
     /**
@@ -422,7 +493,7 @@ abstract class Symphony implements Singleton
      * algorithm. The username and password will be sanitized before
      * being used to query the Database. If an Author is found, they
      * will be logged in and the sanitized username and password (also hashed)
-     * will be saved as values in the `$Cookie`.
+     * will be saved as values in the `$Session`.
      *
      * @see toolkit.General#hash()
      * @param string $username
@@ -457,8 +528,8 @@ abstract class Symphony implements Singleton
                     self::Database()->update(array('password' => $this->Author->get('password')), 'tbl_authors', " `id` = '" . $this->Author->get('id') . "'");
                 }
 
-                $this->Cookie->set('username', $username);
-                $this->Cookie->set('pass', $this->Author->get('password'));
+                $this->Session->set('username', $username);
+                $this->Session->set('pass', $this->Author->get('password'));
 
                 self::Database()->update(array(
                     'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
@@ -523,8 +594,8 @@ abstract class Symphony implements Singleton
 
         if ($row) {
             $this->Author = AuthorManager::fetchByID($row['id']);
-            $this->Cookie->set('username', $row['username']);
-            $this->Cookie->set('pass', $row['password']);
+            $this->Session->set('username', $row['username']);
+            $this->Session->set('pass', $row['password']);
             self::Database()->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '{$row['id']}'");
 
             return true;
@@ -537,18 +608,18 @@ abstract class Symphony implements Singleton
      * This function will destroy the currently logged in `$Author`
      * session, essentially logging them out.
      *
-     * @see core.Cookie#expire()
+     * @see core.Session#expire()
      */
     public function logout()
     {
-        $this->Cookie->expire();
+        $this->Session->expire();
     }
 
     /**
      * This function determines whether an there is a currently logged in
-     * Author for Symphony by using the `$Cookie`'s username
+     * Author for Symphony by using the `$Session`'s username
      * and password. If an Author is found, they will be logged in, otherwise
-     * the `$Cookie` will be destroyed.
+     * the `$Session` will be destroyed.
      *
      * @see core.Cookie#expire()
      */
@@ -563,8 +634,8 @@ abstract class Symphony implements Singleton
         if ($this->Author) {
             return true;
         } else {
-            $username = self::Database()->cleanValue($this->Cookie->get('username'));
-            $password = self::Database()->cleanValue($this->Cookie->get('pass'));
+            $username = self::Database()->cleanValue($this->Session->get('username'));
+            $password = self::Database()->cleanValue($this->Session->get('pass'));
 
             if (strlen(trim($username)) > 0 && strlen(trim($password)) > 0) {
 

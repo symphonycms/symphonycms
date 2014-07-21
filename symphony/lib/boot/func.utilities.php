@@ -171,7 +171,7 @@ function cleanup_session_cookies()
         setcookie(
             session_name(),
             session_id(),
-            time() + TWO_WEEKS,
+            time() + __SYM_COOKIE_TIMEOUT__,
             $cookie_params['path'],
             $cookie_params['domain'],
             $cookie_params['secure'],
