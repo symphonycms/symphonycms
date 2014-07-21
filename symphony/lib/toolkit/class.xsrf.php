@@ -109,7 +109,7 @@ class XSRF
         $tokens = self::getSession();
         if (empty($tokens)) {
             $nonce = self::generateNonce(20);
-            $tokens[$nonce] = strtotime("+" . Symphony::Configuration()->get("token_lifetime", "symphony"));
+            $tokens[$nonce] = $nonce;
             self::setSessionToken($tokens);
         } else {
             $nonce = key($tokens);
@@ -136,7 +136,7 @@ class XSRF
 
         // Check that the token exists, and time has not expired.
         foreach ($tokens as $key => $expires) {
-            if ($key == $xsrf && time() <= $expires) {
+            if ($key == $xsrf) {
                 return true;
             } else {
                 self::removeSessionToken($key);
@@ -167,20 +167,6 @@ class XSRF
                 } else {
                     return false;
                 }
-            }
-        }
-
-        // We're all good, so clear any tokens that can be cleared
-        if (Symphony::Configuration()->get("invalidate_tokens_on_request", "symphony") == true) {
-            self::removeSessionToken($_POST["xsrf"]);
-
-            // Otherwise, renew the existing token
-        } else {
-            $tokens = self::getSession();
-
-            if (!empty($tokens)) {
-                $tokens[key($tokens)] = strtotime("+" . Symphony::Configuration()->get("token_lifetime", "symphony"));
-                self::setSessionToken($tokens);
             }
         }
     }

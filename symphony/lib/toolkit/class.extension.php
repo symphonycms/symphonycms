@@ -29,7 +29,7 @@ abstract class Extension
      * to Symphony where the key is one of the Provider constants, and the
      * value is the name of the classname
      *
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      * @var array
      */
     private static $provides = array();
@@ -257,7 +257,7 @@ abstract class Extension
      * This function should be implemented by the extension if there are objects
      * to announce to Symphony.
      *
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      * @return boolean
      */
     public static function registerProviders()
@@ -271,7 +271,7 @@ abstract class Extension
      * Used by Symphony to ask this extension if it's able to provide any new
      * objects as defined by `$type`
      *
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      * @param string $type
      *  One of the `iProvider` constants
      * @return boolean

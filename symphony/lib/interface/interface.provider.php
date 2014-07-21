@@ -20,7 +20,7 @@ interface iProvider
     const CACHE = 'cache';
 
     /**
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      */
     const ASSOCIATION_UI = 'association-ui';
     const ASSOCIATION_EDITOR = 'association-editor';

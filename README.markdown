@@ -2,9 +2,9 @@
 
 [![Code Climate](https://codeclimate.com/github/symphonycms/symphony-2.png)](https://codeclimate.com/github/symphonycms/symphony-2)
 
-- Version: 2.4.1dev
+- Version: 2.5.0beta2
 - Date: in development
-- [Release notes](http://getsymphony.com/download/releases/version/2.4.1/)
+- [Release notes](http://getsymphony.com/download/releases/version/2.5/)
 - [Github repository](http://github.com/symphonycms/symphony-2/tree/integration)
 
 
@@ -24,7 +24,7 @@
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.4.1beta` and is considered unstable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.5.0beta2` and is considered unstable.
 
 Useful places:
 

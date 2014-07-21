@@ -241,18 +241,16 @@ define_safe('__SECURE__',
 );
 
 /**
+ * The current domain name.
+ * @var string
+ */
+define_safe('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '\\/') . dirname($_SERVER['PHP_SELF']), '\\/'));
+
+/**
  * The base URL of this Symphony install, minus the symphony path.
  * @var string
  */
 define_safe('URL', 'http' . (defined('__SECURE__') && __SECURE__ ? 's' : '') . '://' . DOMAIN);
-
-/**
- * Returns the URL + /symphony. This should be used whenever the a developer
- * wants to link to the Symphony root
- * @since Symphony 2.2
- * @var string
- */
-define_safe('SYMPHONY_URL', URL . '/' . $Configuration->get('admin-path', 'symphony'));
 
 /**
  * Returns the folder name for Symphony as an application

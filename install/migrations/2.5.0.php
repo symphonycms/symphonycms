@@ -2,14 +2,12 @@
 
 	Class migration_250 extends Migration {
 
-		static $publish_filtering_disabled = false;
-
 		static function getVersion(){
-			return '2.5.0beta1';
+			return '2.5.0beta2';
 		}
 
 		static function getReleaseNotes(){
-			return 'http://getsymphony.com/download/releases/version/2.5.0/';
+			return 'http://getsymphony.com/download/releases/version/2.5/';
 		}
 
 		static function upgrade() {
@@ -30,6 +28,10 @@
 				');
 			}
 			catch (Exception $ex) {}
+
+			// Remove XSRF configuration options #2118
+			Symphony::Configuration()->remove('token_lifetime', 'symphony');
+			Symphony::Configuration()->remove('invalidate_tokens_on_request', 'symphony');
 
 			// Update the version information
 			return parent::upgrade();

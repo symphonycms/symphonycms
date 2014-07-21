@@ -235,7 +235,7 @@ class FieldAuthor extends Field implements ExportableField
         $value = isset($data['author_id']) ? $data['author_id'] : null;
 
         if ($this->get('default_to_current_user') == 'yes' && empty($data) && empty($_POST)) {
-            $value = array(Administration::instance()->Author->get('id'));
+            $value = array(Symphony::Author()->get('id'));
         }
 
         if (!is_array($value)) {
@@ -346,7 +346,7 @@ class FieldAuthor extends Field implements ExportableField
         $wrapper->appendChild($list);
     }
 
-    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
+    public function prepareTextValue($data, $entry_id = null)
     {
         $value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::AUTHOR, $entry_id);
         return General::sanitize(implode(', ', $value));

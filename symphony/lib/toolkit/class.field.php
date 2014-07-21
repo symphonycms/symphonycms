@@ -663,7 +663,7 @@ class Field
      * @param XMLElement $wrapper
      *    the parent XML element to append the association interface selection to,
      *    if either interfaces or editors are provided to the system.
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      */
     public function appendAssociationInterfaceSelect(XMLElement &$wrapper)
     {
@@ -723,9 +723,10 @@ class Field
     /**
      * Get association data of the current field from the page context.
      *
-     * @since 2.4.1
+     * @since Symphony 2.5.0
+     * @return array
      */
-    function getAssociationContext() {
+    public function getAssociationContext() {
         $context = Symphony::Engine()->Page->getContext();
         $associations = $context['associations']['parent'];
         $field_association = array();
@@ -751,8 +752,8 @@ class Field
     /**
      * Set association data for the current field.
      * 
+     * @since Symphony 2.5.0
      * @param XMLElement $wrapper
-     * @since 2.4.1
      */
     public function setAssociationContext(XMLElement &$wrapper) {
         $association_context = $this->getAssociationContext();
@@ -953,10 +954,10 @@ class Field
     }
 
     /**
-     * Format this field value for display in the publish index tables. By default,
-     * Symphony will truncate the value to the configuration setting `cell_truncation_length`.
-     * This function will call `Field::preparePlainTextValue` in order to get the field's
-     * plain text value.
+     * Format this field value for display in the publish index tables.
+     * 
+     * Since Symphony 2.5.0, this function will call `Field::prepareReadableValue`
+     * in order to get the field's human readable value.
      *
      * @param array $data
      *  an associative array of data for this string. At minimum this requires a
@@ -971,11 +972,7 @@ class Field
      */
     public function prepareTableValue($data, XMLElement $link = null, $entry_id = null)
     {
-        $value = $this->preparePlainTextValue($data, $entry_id, true);
-
-        if (strlen($value) == 0) {
-            $value = __('None');
-        }
+        $value = $this->prepareReadableValue($data, $entry_id, true, __('None'));
 
         if ($link) {
             $link->setValue($value);
@@ -987,22 +984,27 @@ class Field
     }
 
     /**
-     * Format this field value for display as plain text. By default, it checks for the 'value'
-     * key in the $data array and strip tags from it. If $truncate is set to true,
-     * Symphony will truncate the value to the configuration setting `cell_truncation_length`.
+     * Format this field value for display as readable  text value. By default, it 
+     * will call `Field::prepareTextValue` to get the raw text value of this field.
      *
-     * @since Symphony 2.4.1
+     * If $truncate is set to true, Symphony will truncate the value to the 
+     * configuration setting `cell_truncation_length`.
+     *
+     * @since Symphony 2.5.0
      * @param array $data
      *  an associative array of data for this string. At minimum this requires a
      *  key of 'value'.
      * @param integer $entry_id (optional)
-     *  An option entry ID for more intelligent processing. defaults to null
+     *  An option entry ID for more intelligent processing. Defaults to null.
+     * @param string $defaultValue (optional)
+     *  The value to use when no plain text representation of the field's data
+     *  can be made. Defaults to null.
      * @return string
-     *  the plain text summary of the values of this field instance.
+     *  the readable text summary of the values of this field instance.
      */
-    public function preparePlainTextValue($data, $entry_id = null, $truncate = false)
+    public function prepareReadableValue($data, $entry_id = null, $truncate = false, $defaultValue = null)
     {
-        $value = strip_tags($data['value']);
+        $value = $this->prepareTextValue($data, $entry_id);
 
         if ($truncate) {
             $max_length = Symphony::Configuration()->get('cell_truncation_length', 'symphony');
@@ -1011,20 +1013,42 @@ class Field
             $value = (General::strlen($value) <= $max_length ? $value : General::substr($value, 0, $max_length) . '…');
         }
 
+        if (empty($value) && $defaultValue != null) {
+            $value = $defaultValue;
+        }
+
         return $value;
+    }
+
+    /*
+     * Format this field value for complete display as text (string). By default, 
+     * it looks for the 'value' key in the $data array and strip tags from it.
+     *
+     * @since Symphony 2.5.0
+     * @param array $data
+     *  an associative array of data for this string. At minimum this requires a
+     *  key of 'value'.
+     * @param integer $entry_id (optional)
+     *  An option entry ID for more intelligent processing. defaults to null
+     * @return string
+     *  the complete text representation of the values of this field instance.
+     */
+    public function prepareTextValue($data, $entry_id = null)
+    {
+        return strip_tags($data['value']);
     }
 
     /**
      * Format this field value for display in the Associations Drawer publish index.
-     * By default, Symphony will use the return value of the `preparePlainTextValue` function.
+     * By default, Symphony will use the return value of the `prepareReadableValue` function.
      * 
      * @since Symphony 2.4
-     * @since Symphony 2.4.1 The prepopulate parameter was added.
+     * @since Symphony 2.5.0 The prepopulate parameter was added.
      *
      * @param Entry $e
      *   The associated entry
      * @param array $parent_association
-     *   An array containing information about the parent
+     *   An array containing information about the association
      * @param string $prepopulate
      *   A string containing prepopulate parameter to append to the association url
      *
@@ -1033,13 +1057,14 @@ class Field
      */
     public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association, $prepopulate = '')
     {
-        $value = $this->preparePlainTextValue($e->getData($this->get('id')), $e->get('id'));
+        $value = $this->prepareReadableValue($e->getData($this->get('id')), $e->get('id'));
         // fallback for compatibility since the default
         // `preparePlainTextValue` is not compatible with all fields
         // this should be removed in Symphony 2.5
         if (empty($value)) {
             $value = strip_tags($this->prepareTableValue($e->getData($this->get('id')), null, $e->get('id')));
         }
+
         $li = new XMLElement('li');
         $li->setAttribute('class', 'field-' . $this->get('type'));
         $a = new XMLElement('a', $value);
@@ -1370,7 +1395,7 @@ class Field
      * Function to format this field if it chosen in a data-source to be
      * output as a parameter in the XML.
      *
-     * Since Symphony 2.4.1, it will defaults to `preparePlainTextValue` return value.
+     * Since Symphony 2.5.0, it will defaults to `prepareReadableValue` return value.
      *
      * @param array $data
      *  The data for this field from it's `tbl_entry_data_{id}` table
@@ -1383,13 +1408,13 @@ class Field
      */
     public function getParameterPoolValue(array $data, $entry_id = null)
     {
-        return $this->preparePlainTextValue($data, $entry_id);
+        return $this->prepareReadableValue($data, $entry_id);
     }
 
     /**
      * Append the formatted XML output of this field as utilized as a data source.
      *
-     * Since Symphony 2.4.1, it will defaults to `preparePlainTextValue` return value.
+     * Since Symphony 2.5.0, it will defaults to `prepareReadableValue` return value.
      *
      * @param XMLElement $wrapper
      *  the XML element to append the XML representation of this to.
@@ -1410,8 +1435,8 @@ class Field
     public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null)
     {
         $wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? 
-                              General::sanitize($this->preparePlainTextValue($data, $entry_id)) : 
-                              $this->preparePlainTextValue($data, $entry_id))));
+                              General::sanitize($this->prepareReadableValue($data, $entry_id)) : 
+                              $this->prepareReadableValue($data, $entry_id))));
     }
 
     /**
@@ -1555,7 +1580,7 @@ class Field
      * @return void|array
      *  this default implementation returns void. overriding implementations should
      *  return an array of the associated entry ids.
-     * @deprecated @since Symphony 2.4.1
+     * @deprecated @since Symphony 2.5.0
      *  this method is not called anymore in the core. Please use
      *  `Field::findRelatedEntries` and `Field::findParentRelatedEntries` instead.
      */
@@ -1568,7 +1593,7 @@ class Field
      * Find related entries from a linking field's data table. Default implementation uses
      * column names `entry_id` and `relation_id` as with the Select Box Link
      * 
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      * 
      * @param  integer $entry_id
      * @return array
@@ -1593,7 +1618,7 @@ class Field
      * Find related entries for the current field. Default implementation uses
      * column names `entry_id` and `relation_id` as with the Select Box Link
      * 
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      * 
      * @param  integer $field_id
      * @param  integer $entry_id
