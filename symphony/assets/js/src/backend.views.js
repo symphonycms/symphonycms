@@ -21,6 +21,9 @@ Symphony.View.add('/:context*:', function() {
 	Symphony.Elements.wrapper.find('div.drawer').symphonyDrawer();
 	Symphony.Elements.header.symphonyNotify();
 
+	// Fix for Webkit browsers to initially show the options. #2127
+	$('select[multiple=multiple]').scrollTop(0);
+
 	// Initialise tag lists inside duplicators
 	Symphony.Elements.contents.find('.duplicator').on('constructshow.duplicator', '.instance', function() {
 		$(this).find('.tags[data-interactive]').symphonyTags();

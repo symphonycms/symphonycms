@@ -251,7 +251,7 @@ class MySQL
      *
      * @return boolean
      */
-    public function isConnected()
+    public static function isConnected()
     {
         try {
             $connected = (

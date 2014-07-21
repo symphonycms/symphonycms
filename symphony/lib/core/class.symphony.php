@@ -85,29 +85,29 @@ abstract class Symphony implements Singleton
     private static $namespace = false;
 
     /**
-     * A previous exception that has been fired. Defaults to null.
-     * @since Symphony 2.3.2
-     * @var Exception
-     */
-    private $exception = null;
-
-    /**
      * An instance of the Cookies class
      * @var Cookies
      */
-    public $Cookies = null;
+    public static $Cookies = null;
 
     /**
      * An instance of the Session class
      * @var Session
      */
-    public $Session = null;
+    public static $Session = null;
 
     /**
      * An instance of the currently logged in Author
      * @var Author
      */
-    public $Author = null;
+    public static $Author = null;
+
+    /**
+     * A previous exception that has been fired. Defaults to null.
+     * @since Symphony 2.3.2
+     * @var Exception
+     */
+    private static $exception = null;
 
     /**
      * The Symphony constructor initialises the class variables of Symphony.
@@ -129,7 +129,7 @@ abstract class Symphony implements Singleton
             General::cleanArray($_POST);
         }
 
-        $this->initialiseConfiguration();
+        self::initialiseConfiguration();
 
         define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
         define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
@@ -140,17 +140,15 @@ abstract class Symphony implements Singleton
         // Initialize language management
         Lang::initialize();
 
-        $this->initialiseLog();
+        self::initialiseLog();
 
         GenericExceptionHandler::initialise(self::Log());
         GenericErrorHandler::initialise(self::Log());
 
-        $this->initialiseDatabase();
-        $this->initialiseExtensionManager();
-        $this->initialiseSessionAndCookies();
+        self::initialiseSessionAndCookies();
 
         // If the user is not a logged in Author, turn off the verbose error messages.
-        if (!self::isLoggedIn() && is_null($this->Author)) {
+        if (!self::isLoggedIn() && is_null(self::$Author)) {
             GenericExceptionHandler::$enabled = false;
         }
 
@@ -185,7 +183,7 @@ abstract class Symphony implements Singleton
      * @param array $data
      *  An array of settings to be stored into the Configuration object
      */
-    public function initialiseConfiguration(array $data = array())
+    public static function initialiseConfiguration(array $data = array())
     {
         if (empty($data)) {
             // Includes the existing CONFIG file and initialises the Configuration
@@ -242,7 +240,7 @@ abstract class Symphony implements Singleton
      * @throws Exception
      * @return bool|void
      */
-    public function initialiseLog($filename = null)
+    public static function initialiseLog($filename = null)
     {
         if (self::$Log instanceof Log && self::$Log->getLogPath() == $filename) {
             return true;
@@ -287,12 +285,13 @@ abstract class Symphony implements Singleton
      *  support both constants, `__SYM_COOKIE_PREFIX_` and `__SYM_COOKIE_PREFIX__`
      *  until Symphony 2.5
      */
-    public function initialiseSessionAndCookies(){
+    public static function initialiseSessionAndCookies()
+    {
         $cookie_path = @parse_url(URL, PHP_URL_PATH);
         $cookie_path = '/' . trim($cookie_path, '/');
 
         $name = '';
-        $timeout = $this->getSessionTimeout();
+        $timeout = self::getSessionTimeout();
 
         if (class_exists('Administration')) {
             $name = self::Configuration()->get('admin_session_name', 'session');
@@ -311,7 +310,7 @@ abstract class Symphony implements Singleton
             'session_lifetime' => $timeout
         ));
 
-        $this->Session = new Session($handler, array(
+        self::$Session = new Session($handler, array(
             'session_name' => $name,
             'session_gc_probability' => self::Configuration()->get('session_gc_probability', 'session'),
             'session_gc_divisor' => self::Configuration()->get('session_gc_divisor', 'session'),
@@ -325,12 +324,12 @@ abstract class Symphony implements Singleton
         ), $name);
 
         // Start the session
-        $this->Session->start();
+        self::$Session->start();
 
-        $this->Flash = new SessionFlash($this->Session);
+        self::$Flash = new SessionFlash(self::$Session);
 
-        $this->Cookies = new Cookies(array(
-            'domain' => $this->Session->getDomain(),
+        self::$Cookies = new Cookies(array(
+            'domain' => self::$Session->getDomain(),
             'path' => __SYM_COOKIE_PATH__,
             'expires' => $timeout,
             'secure' => (defined(__SECURE__) ? true : false),
@@ -338,7 +337,7 @@ abstract class Symphony implements Singleton
         ));
 
         // Fetch the current cookies from the header
-        $this->Cookies->fetch();
+        self::$Cookies->fetch();
     }
 
     /**
@@ -346,7 +345,7 @@ abstract class Symphony implements Singleton
      * @return int
      *  The seconds
      */
-    private function getSessionTimeout()
+    private static function getSessionTimeout()
     {
         if (class_exists('Administration')) {
             $time = (self::Configuration()->get('admin_session_expires', 'symphony') ? self::Configuration()->get('admin_session_expires', 'symphony') : '2 weeks');
@@ -366,7 +365,7 @@ abstract class Symphony implements Singleton
      * Symphony instance as the parent. If for some reason this fails,
      * a Symphony Error page will be thrown
      */
-    public function initialiseExtensionManager()
+    public static function initialiseExtensionManager()
     {
         if (self::$ExtensionManager instanceof ExtensionManager) {
             return true;
@@ -375,7 +374,7 @@ abstract class Symphony implements Singleton
         self::$ExtensionManager = new ExtensionManager;
 
         if (!(self::$ExtensionManager instanceof ExtensionManager)) {
-            $this->throwCustomError(__('Error creating Symphony extension manager.'));
+            self::throwCustomError(__('Error creating Symphony extension manager.'));
         }
     }
 
@@ -402,7 +401,7 @@ abstract class Symphony implements Singleton
      * @return boolean
      *  This function will always return true
      */
-    public function setDatabase(StdClass $database = null)
+    public static function setDatabase(StdClass $database = null)
     {
         if (self::Database()) {
             return true;
@@ -433,9 +432,9 @@ abstract class Symphony implements Singleton
      *  This function will return true if the `$Database` was
      *  initialised successfully.
      */
-    public function initialiseDatabase()
+    public static function initialiseDatabase()
     {
-        $this->setDatabase();
+        self::setDatabase();
 
         $details = self::Configuration()->get('database');
 
@@ -472,7 +471,7 @@ abstract class Symphony implements Singleton
                 self::Database()->enableCaching();
             }
         } catch (DatabaseException $e) {
-            $this->throwCustomError(
+            self::throwCustomError(
                 $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
                 __('Symphony Database Error'),
                 Page::HTTP_STATUS_ERROR,
@@ -486,6 +485,16 @@ abstract class Symphony implements Singleton
 
         return true;
     }
+
+    /**
+	 * Accessor for the current `$Author` instance.
+	 *
+     * @since Symphony 2.5.0
+	 * @return Author
+	 */
+	public static function Author() {
+		return self::$Author;
+	}
 
     /**
      * Attempts to log an Author in given a username and password.
@@ -507,7 +516,7 @@ abstract class Symphony implements Singleton
      * @return boolean
      *  True if the Author was logged in, false otherwise
      */
-    public function login($username, $password, $isHash = false)
+    public static function login($username, $password, $isHash = false)
     {
         $username = self::Database()->cleanValue($username);
         $password = self::Database()->cleanValue($password);
@@ -519,22 +528,22 @@ abstract class Symphony implements Singleton
             ));
 
             if (!empty($author) && Cryptography::compare($password, current($author)->get('password'), $isHash)) {
-                $this->Author = current($author);
+                self::$Author = current($author);
 
                 // Only migrate hashes if there is no update available as the update might change the tbl_authors table.
-                if ($this->isUpgradeAvailable() === false && Cryptography::requiresMigration($this->Author->get('password'))) {
-                    $this->Author->set('password', Cryptography::hash($password));
+                if (self::isUpgradeAvailable() === false && Cryptography::requiresMigration(self::$Author->get('password'))) {
+                    self::$Author->set('password', Cryptography::hash($password));
 
-                    self::Database()->update(array('password' => $this->Author->get('password')), 'tbl_authors', " `id` = '" . $this->Author->get('id') . "'");
+                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors', " `id` = '" . self::$Author->get('id') . "'");
                 }
 
-                $this->Session->set('username', $username);
-                $this->Session->set('pass', $this->Author->get('password'));
+                self::$Session->set('username', $username);
+                self::$Session->set('pass', self::$Author->get('password'));
 
                 self::Database()->update(array(
                     'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
                     'tbl_authors',
-                    sprintf(" `id` = %d", $this->Author->get('id'))
+                    sprintf(" `id` = %d", self::$Author->get('id'))
                 );
 
                 return true;
@@ -559,7 +568,7 @@ abstract class Symphony implements Singleton
      * @return boolean
      *  True if the Author is logged in, false otherwise
      */
-    public function loginFromToken($token)
+    public static function loginFromToken($token)
     {
         $token = self::Database()->cleanValue($token);
 
@@ -593,9 +602,9 @@ abstract class Symphony implements Singleton
         }
 
         if ($row) {
-            $this->Author = AuthorManager::fetchByID($row['id']);
-            $this->Session->set('username', $row['username']);
-            $this->Session->set('pass', $row['password']);
+            self::$Author = AuthorManager::fetchByID($row['id']);
+            self::$Session->set('username', $row['username']);
+            self::$Session->set('pass', $row['password']);
             self::Database()->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '{$row['id']}'");
 
             return true;
@@ -610,9 +619,9 @@ abstract class Symphony implements Singleton
      *
      * @see core.Session#expire()
      */
-    public function logout()
+    public static function logout()
     {
-        $this->Session->expire();
+        self::$Session->expire();
     }
 
     /**
@@ -623,7 +632,7 @@ abstract class Symphony implements Singleton
      *
      * @see core.Cookie#expire()
      */
-    public function isLoggedIn()
+    public static function isLoggedIn()
     {
         // Ensures that we're in the real world.. Also reduces three queries from database
         // We must return true otherwise exceptions are not shown
@@ -631,11 +640,11 @@ abstract class Symphony implements Singleton
             return true;
         }
 
-        if ($this->Author) {
+        if (self::$Author) {
             return true;
         } else {
-            $username = self::Database()->cleanValue($this->Session->get('username'));
-            $password = self::Database()->cleanValue($this->Session->get('pass'));
+            $username = self::Database()->cleanValue(self::$Session->get('username'));
+            $password = self::Database()->cleanValue(self::$Session->get('pass'));
 
             if (strlen(trim($username)) > 0 && strlen(trim($password)) > 0) {
 
@@ -645,17 +654,17 @@ abstract class Symphony implements Singleton
                 ));
 
                 if (!empty($author) && Cryptography::compare($password, current($author)->get('password'), true)) {
-                    $this->Author = current($author);
+                    self::$Author = current($author);
 
                     self::Database()->update(array(
                         'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
                         'tbl_authors',
-                        sprintf(" `id` = %d", $this->Author->get('id'))
+                        sprintf(" `id` = %d", self::$Author->get('id'))
                     );
 
                     // Only set custom author language in the backend
                     if (class_exists('Administration')) {
-                        Lang::set($this->Author->get('language'));
+                        Lang::set(self::$Author->get('language'));
                     }
 
                     return true;
@@ -674,9 +683,9 @@ abstract class Symphony implements Singleton
      * @since Symphony 2.3.1
      * @return mixed
      */
-    public function getMigrationVersion()
+    public static function getMigrationVersion()
     {
-        if ($this->isInstallerAvailable()) {
+        if (self::isInstallerAvailable()) {
             $migrations = scandir(DOCROOT . '/install/migrations');
             $migration_file = end($migrations);
 
@@ -696,10 +705,10 @@ abstract class Symphony implements Singleton
      * @since Symphony 2.3.1
      * @return boolean
      */
-    public function isUpgradeAvailable()
+    public static function isUpgradeAvailable()
     {
-        if ($this->isInstallerAvailable()) {
-            $migration_version = $this->getMigrationVersion();
+        if (self::isInstallerAvailable()) {
+            $migration_version = self::getMigrationVersion();
             $current_version = Symphony::Configuration()->get('version', 'symphony');
 
             return version_compare($current_version, $migration_version, '<');
@@ -714,34 +723,9 @@ abstract class Symphony implements Singleton
      * @since Symphony 2.3.1
      * @return boolean
      */
-    public function isInstallerAvailable()
+    public static function isInstallerAvailable()
     {
         return file_exists(DOCROOT . '/install/index.php');
-    }
-
-    /**
-     * A wrapper for throwing a new Symphony Error page.
-     *
-     * @deprecated @since Symphony 2.3.2. This function will be removed in Symphony 2.5
-     *
-     * @see `throwCustomError`
-     * @param string $heading
-     *  A heading for the error page
-     * @param string|XMLElement $message
-     *  A description for this error, which can be provided as a string
-     *  or as an XMLElement.
-     * @param string $template
-     *  A string for the error page template to use, defaults to 'generic'. This
-     *  can be the name of any template file in the `TEMPLATES` directory.
-     *  A template using the naming convention of `tpl.*.php`.
-     * @param array $additional
-     *  Allows custom information to be passed to the Symphony Error Page
-     *  that the template may want to expose, such as custom Headers etc.
-     * @throws SymphonyErrorPage
-     */
-    public function customError($heading, $message, $template = 'generic', array $additional = array())
-    {
-        $this->throwCustomError($message, $heading, Page::HTTP_STATUS_ERROR, $template, $additional);
     }
 
     /**
@@ -767,7 +751,7 @@ abstract class Symphony implements Singleton
      *  that the template may want to expose, such as custom Headers etc.
      * @throws SymphonyErrorPage
      */
-    public function throwCustomError($message, $heading = 'Symphony Fatal Error', $status = Page::HTTP_STATUS_ERROR, $template = 'generic', array $additional = array())
+    public static function throwCustomError($message, $heading = 'Symphony Fatal Error', $status = Page::HTTP_STATUS_ERROR, $template = 'generic', array $additional = array())
     {
         GenericExceptionHandler::$enabled = true;
         throw new SymphonyErrorPage($message, $heading, $template, $additional, $status);
@@ -780,20 +764,20 @@ abstract class Symphony implements Singleton
      * @since Symphony 2.3.2
      * @param Exception $ex
      */
-    public function setException(Exception $ex)
+    public static function setException(Exception $ex)
     {
-        $this->exception = $ex;
+        self::$exception = $ex;
     }
 
     /**
-     * Accessor for `$this->exception`.
+     * Accessor for `self::$exception`.
      *
      * @since Symphony 2.3.2
      * @return Exception|null
      */
-    public function getException()
+    public static function getException()
     {
-        return $this->exception;
+        return self::$exception;
     }
 
     /**

@@ -104,7 +104,7 @@ abstract class SectionEvent extends Event
      * creates an XMLElement node so that it can be added to the `?debug` for the
      * Event
      *
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      * @param Field $field
      * @param string $type
      *  At the moment 'missing' or 'invalid' accepted

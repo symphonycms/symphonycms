@@ -403,7 +403,7 @@ class General
      * This function will attempt to use PHP's `mbstring` functions if they are available.
      * This function also forces utf-8 encoding.
      *
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      * @param string $str
      *  the string to operate on
      * @return int
@@ -422,7 +422,7 @@ class General
      * This function will attempt to use PHP's `mbstring` functions if they are available.
      * This function also forces utf-8 encoding.
      *
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      * @param string $str
      *  the string to operate on
      * @param int $start
@@ -1596,6 +1596,7 @@ class General
 
     /**
      * Convert a PHP time string like '2 weeks' to seconds
+     * @since Symphony 2.5.0
      * @param  string $string
      *  The valid PHP time string
      * @return int
