@@ -663,7 +663,7 @@ class Field
      * @param XMLElement $wrapper
      *    the parent XML element to append the association interface selection to,
      *    if either interfaces or editors are provided to the system.
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      */
     public function appendAssociationInterfaceSelect(XMLElement &$wrapper)
     {
@@ -723,9 +723,10 @@ class Field
     /**
      * Get association data of the current field from the page context.
      *
-     * @since 2.4.1
+     * @since Symphony 2.5.0
+     * @return array
      */
-    function getAssociationContext() {
+    public function getAssociationContext() {
         $context = Symphony::Engine()->Page->getContext();
         $associations = $context['associations']['parent'];
         $field_association = array();
@@ -751,8 +752,8 @@ class Field
     /**
      * Set association data for the current field.
      * 
+     * @since Symphony 2.5.0
      * @param XMLElement $wrapper
-     * @since 2.4.1
      */
     public function setAssociationContext(XMLElement &$wrapper) {
         $association_context = $this->getAssociationContext();
@@ -955,7 +956,7 @@ class Field
     /**
      * Format this field value for display in the publish index tables.
      * 
-     * Since Symphony 2.4.1, this function will call `Field::prepareReadableValue`
+     * Since Symphony 2.5.0, this function will call `Field::prepareReadableValue`
      * in order to get the field's human readable value.
      *
      * @param array $data
@@ -989,7 +990,7 @@ class Field
      * If $truncate is set to true, Symphony will truncate the value to the 
      * configuration setting `cell_truncation_length`.
      *
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      * @param array $data
      *  an associative array of data for this string. At minimum this requires a
      *  key of 'value'.
@@ -1023,7 +1024,7 @@ class Field
      * Format this field value for complete display as text (string). By default, 
      * it looks for the 'value' key in the $data array and strip tags from it.
      *
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      * @param array $data
      *  an associative array of data for this string. At minimum this requires a
      *  key of 'value'.
@@ -1042,12 +1043,12 @@ class Field
      * By default, Symphony will use the return value of the `prepareReadableValue` function.
      * 
      * @since Symphony 2.4
-     * @since Symphony 2.4.1 The prepopulate parameter was added.
+     * @since Symphony 2.5.0 The prepopulate parameter was added.
      *
      * @param Entry $e
      *   The associated entry
      * @param array $parent_association
-     *   An array containing information about the parent
+     *   An array containing information about the association
      * @param string $prepopulate
      *   A string containing prepopulate parameter to append to the association url
      *
@@ -1394,7 +1395,7 @@ class Field
      * Function to format this field if it chosen in a data-source to be
      * output as a parameter in the XML.
      *
-     * Since Symphony 2.4.1, it will defaults to `prepareReadableValue` return value.
+     * Since Symphony 2.5.0, it will defaults to `prepareReadableValue` return value.
      *
      * @param array $data
      *  The data for this field from it's `tbl_entry_data_{id}` table
@@ -1413,7 +1414,7 @@ class Field
     /**
      * Append the formatted XML output of this field as utilized as a data source.
      *
-     * Since Symphony 2.4.1, it will defaults to `prepareReadableValue` return value.
+     * Since Symphony 2.5.0, it will defaults to `prepareReadableValue` return value.
      *
      * @param XMLElement $wrapper
      *  the XML element to append the XML representation of this to.
@@ -1579,7 +1580,7 @@ class Field
      * @return void|array
      *  this default implementation returns void. overriding implementations should
      *  return an array of the associated entry ids.
-     * @deprecated @since Symphony 2.4.1
+     * @deprecated @since Symphony 2.5.0
      *  this method is not called anymore in the core. Please use
      *  `Field::findRelatedEntries` and `Field::findParentRelatedEntries` instead.
      */
@@ -1592,7 +1593,7 @@ class Field
      * Find related entries from a linking field's data table. Default implementation uses
      * column names `entry_id` and `relation_id` as with the Select Box Link
      * 
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      * 
      * @param  integer $entry_id
      * @return array
@@ -1617,7 +1618,7 @@ class Field
      * Find related entries for the current field. Default implementation uses
      * column names `entry_id` and `relation_id` as with the Select Box Link
      * 
-     * @since Symphony 2.4.1
+     * @since Symphony 2.5.0
      * 
      * @param  integer $field_id
      * @param  integer $entry_id
