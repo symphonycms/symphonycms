@@ -378,10 +378,10 @@ Class AdministrationPage extends HTMLPage
             'lang'     => Lang::get(),
             'user'     => array(
 
-                'fullname' => Administration::instance()->Author->getFullName(),
-                'name'     => Administration::instance()->Author->get('first_name'),
-                'type'     => Administration::instance()->Author->get('user_type'),
-                'id'       => Administration::instance()->Author->get('id')
+                'fullname' => Symphony::Author()->getFullName(),
+                'name'     => Symphony::Author()->get('first_name'),
+                'type'     => Symphony::Author()->get('user_type'),
+                'id'       => Symphony::Author()->get('id')
             ),
 
             'env' => array_merge(
@@ -508,9 +508,9 @@ Class AdministrationPage extends HTMLPage
 
         if (
             $page_limit == 'author'
-            or ($page_limit == 'developer' && Administration::instance()->Author->isDeveloper())
-            or ($page_limit == 'manager' && (Administration::instance()->Author->isManager() || Administration::instance()->Author->isDeveloper()))
-            or ($page_limit == 'primary' && Administration::instance()->Author->isPrimaryAccount())
+            or ($page_limit == 'developer' && Symphony::Author()->isDeveloper())
+            or ($page_limit == 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper()))
+            or ($page_limit == 'primary' && Symphony::Author()->isPrimaryAccount())
         ) {
             return true;
         } else {
@@ -780,11 +780,11 @@ Class AdministrationPage extends HTMLPage
 
             if (!isset($n['limit']) || $n['limit'] == 'author') {
                 $can_access = true;
-            } elseif ($n['limit'] == 'developer' && Administration::instance()->Author->isDeveloper()) {
+            } elseif ($n['limit'] == 'developer' && Symphony::Author()->isDeveloper()) {
                 $can_access = true;
-            } elseif ($n['limit'] == 'manager' && (Administration::instance()->Author->isManager() || Administration::instance()->Author->isDeveloper())) {
+            } elseif ($n['limit'] == 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper())) {
                 $can_access = true;
-            } elseif ($n['limit'] == 'primary' && Administration::instance()->Author->isPrimaryAccount()) {
+            } elseif ($n['limit'] == 'primary' && Symphony::Author()->isPrimaryAccount()) {
                 $can_access = true;
             }
 
@@ -809,11 +809,11 @@ Class AdministrationPage extends HTMLPage
 
                         if (!isset($c['limit']) || $c['limit'] == 'author') {
                             $can_access_child = true;
-                        } elseif ($c['limit'] == 'developer' && Administration::instance()->Author->isDeveloper()) {
+                        } elseif ($c['limit'] == 'developer' && Symphony::Author()->isDeveloper()) {
                             $can_access_child = true;
-                        } elseif ($c['limit'] == 'manager' && (Administration::instance()->Author->isManager() || Administration::instance()->Author->isDeveloper())) {
+                        } elseif ($c['limit'] == 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper())) {
                             $can_access_child = true;
-                        } elseif ($c['limit'] == 'primary' && Administration::instance()->Author->isPrimaryAccount()) {
+                        } elseif ($c['limit'] == 'primary' && Symphony::Author()->isPrimaryAccount()) {
                             $can_access_child = true;
                         }
 
@@ -1194,8 +1194,8 @@ Class AdministrationPage extends HTMLPage
         $li = new XMLElement('li');
         $li->appendChild(
             Widget::Anchor(
-                Administration::instance()->Author->getFullName(),
-                SYMPHONY_URL . '/system/authors/edit/' . Administration::instance()->Author->get('id') . '/'
+                Symphony::Author()->getFullName(),
+                SYMPHONY_URL . '/system/authors/edit/' . Symphony::Author()->get('id') . '/'
             )
         );
         $ul->appendChild($li);

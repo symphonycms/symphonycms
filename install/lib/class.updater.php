@@ -27,7 +27,7 @@
 		 * Initialises the language by looking at the existing
 		 * configuration
 		 */
-		public function initialiseLang(){
+		public static function initialiseLang(){
 			Lang::set(Symphony::Configuration()->get('lang', 'symphony'), false);
 		}
 
@@ -35,7 +35,7 @@
 		 * Initialises the configuration object by loading the existing
 		 * website config file
 		 */
-		public function initialiseConfiguration(array $data = array()){
+		public static function initialiseConfiguration(array $data = array()){
 			parent::initialiseConfiguration();
 		}
 
@@ -43,7 +43,7 @@
 		 * Overrides the `initialiseLog()` method and writes
 		 * logs to manifest/logs/update
 		 */
-		public function initialiseLog($filename = null){
+		public static function initialiseLog($filename = null){
 			if(is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS, self::Configuration()->get('write_mode', 'directory'))) {
 				parent::initialiseLog(INSTALL_LOGS . '/update');
 			}
@@ -53,7 +53,7 @@
 		 * Overrides the default `initialiseDatabase()` method
 		 * This allows us to still use the normal accessor
 		 */
-		public function initialiseDatabase(){
+		public static function initialiseDatabase(){
 			parent::setDatabase();
 
 			$details = Symphony::Configuration()->get('database');

@@ -307,7 +307,7 @@ class contentPublish extends AdministrationPage
         );
 
         // Only show the Edit Section button if the Author is a developer. #938 ^BA
-        if (Administration::instance()->Author->isDeveloper()) {
+        if (Symphony::Author()->isDeveloper()) {
             array_unshift($subheading_buttons, Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id . '/', __('Edit Section Configuration'), 'button'));
         }
 
@@ -805,7 +805,7 @@ class contentPublish extends AdministrationPage
         }
 
         // Only show the Edit Section button if the Author is a developer. #938 ^BA
-        if (Administration::instance()->Author->isDeveloper()) {
+        if (Symphony::Author()->isDeveloper()) {
             $this->appendSubheading(__('Untitled'),
                 Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id . '/', __('Edit Section Configuration'), 'button')
             );
@@ -869,7 +869,7 @@ class contentPublish extends AdministrationPage
         if ((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))) {
             $message = __('Fields must be added to this section before an entry can be created.');
 
-            if (Administration::instance()->Author->isDeveloper()) {
+            if (Symphony::Author()->isDeveloper()) {
                 $message .= ' <a href="' . SYMPHONY_URL . '/blueprints/sections/edit/' . $section->get('id') . '/" accesskey="c">'
                 . __('Add fields')
                 . '</a>';
@@ -921,7 +921,7 @@ class contentPublish extends AdministrationPage
             }
 
             $entry = EntryManager::create();
-            $entry->set('author_id', Administration::instance()->Author->get('id'));
+            $entry->set('author_id', Symphony::Author()->get('id'));
             $entry->set('section_id', $section_id);
             $entry->set('creation_date', DateTimeObj::get('c'));
             $entry->set('modification_date', DateTimeObj::get('c'));
@@ -1168,7 +1168,7 @@ class contentPublish extends AdministrationPage
         }
 
         // Only show the Edit Section button if the Author is a developer. #938 ^BA
-        if (Administration::instance()->Author->isDeveloper()) {
+        if (Symphony::Author()->isDeveloper()) {
             $this->appendSubheading($title, Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id . '/', __('Edit Section Configuration'), 'button'));
         } else {
             $this->appendSubheading($title);
@@ -1186,7 +1186,7 @@ class contentPublish extends AdministrationPage
         if ((!is_array($main_fields) || empty($main_fields)) && (!is_array($sidebar_fields) || empty($sidebar_fields))) {
             $message = __('Fields must be added to this section before an entry can be created.');
 
-            if (Administration::instance()->Author->isDeveloper()) {
+            if (Symphony::Author()->isDeveloper()) {
                 $message .= ' <a href="' . SYMPHONY_URL . '/blueprints/sections/edit/' . $section->get('id') . '/" accesskey="c">'
                 . __('Add fields')
                 . '</a>';

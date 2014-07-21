@@ -197,3 +197,58 @@ function is_session_empty()
 
     return $session_is_empty;
 }
+
+/**
+ * Responsible for picking the launcher function and starting it.
+ */
+function symphony($mode) 
+{
+    $launcher = SYMPHONY_LAUNCHER;
+    $launcher($mode);
+}
+
+/**
+ * Responsible for launching a standard symphony instance and
+ * sending output to the browser.
+ *
+ *  @param string $val (optional)
+ *  @return integer
+ */
+function symphony_launcher($mode)
+{
+    header('Expires: Mon, 12 Dec 1982 06:14:00 GMT');
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+    header('Cache-Control: no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+
+    if (strtolower($mode) == 'administration') {
+        require_once CORE . "/class.administration.php";
+
+        $renderer = Administration::instance();
+    }
+
+    else {
+        require_once CORE . "/class.frontend.php";
+
+        $renderer = Frontend::instance();
+    }
+
+    $output = $renderer->display(getCurrentPage());
+
+    // #1808
+    if (isset($_SERVER['HTTP_MOD_REWRITE'])) 
+    {
+        $output = file_get_contents(GenericExceptionHandler::getTemplate('fatalerror.rewrite'));
+        $output = str_replace('{APPLICATION_URL}', APPLICATION_URL, $output);
+        $output = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $output);
+        $output = str_replace('{URL}', URL, $output);
+        echo $output;
+        exit;
+    }
+
+    cleanup_session_cookies();
+
+    echo $output;
+
+    return $renderer;
+}

@@ -70,13 +70,13 @@ class Frontend extends Symphony
      * @see core.Symphony#isLoggedIn()
      * @return boolean
      */
-    public function isLoggedIn()
+    public static function isLoggedIn()
     {
         if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && strlen($_REQUEST['auth-token']) == 8) {
-            return $this->loginFromToken($_REQUEST['auth-token']);
+            return self::loginFromToken($_REQUEST['auth-token']);
         }
 
-        return parent::isLoggedIn();
+        return Symphony::isLoggedIn();
     }
 
     /**

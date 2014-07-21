@@ -93,7 +93,7 @@ class Administration extends Symphony
      * @see core.Symphony#loginFromToken()
      * @return boolean
      */
-    public function isLoggedIn()
+    public static function isLoggedIn()
     {
         if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && in_array(strlen($_REQUEST['auth-token']), array(6, 8, 16))) {
             return $this->loginFromToken($_REQUEST['auth-token']);
@@ -117,7 +117,7 @@ class Administration extends Symphony
      */
     private function __buildPage($page)
     {
-        $is_logged_in = $this->isLoggedIn();
+        $is_logged_in = self::isLoggedIn();
 
         if (empty($page) || is_null($page)) {
             if (!$is_logged_in) {
@@ -128,8 +128,8 @@ class Administration extends Symphony
                 // to the page after `SYMPHONY_URL`
                 $default_area = null;
 
-                if (is_numeric($this->Author->get('default_area'))) {
-                    $default_section = SectionManager::fetch($this->Author->get('default_area'));
+                if (is_numeric(Symphony::Author()->get('default_area'))) {
+                    $default_section = SectionManager::fetch(Symphony::Author()->get('default_area'));
 
                     if ($default_section instanceof Section) {
                         $section_handle = $default_section->get('handle');
@@ -148,12 +148,12 @@ class Administration extends Symphony
                     if (!is_null($section_handle)) {
                         $default_area = "/publish/{$section_handle}/";
                     }
-                } elseif (!is_null($this->Author->get('default_area'))) {
-                    $default_area = preg_replace('/^' . preg_quote(SYMPHONY_URL, '/') . '/i', '', $this->Author->get('default_area'));
+                } elseif (!is_null(Symphony::Author()->get('default_area'))) {
+                    $default_area = preg_replace('/^' . preg_quote(SYMPHONY_URL, '/') . '/i', '', Symphony::Author()->get('default_area'));
                 }
 
                 if (is_null($default_area)) {
-                    if ($this->Author->isDeveloper()) {
+                    if (Symphony::Author()->isDeveloper()) {
                         $all_sections = SectionManager::fetch();
                         $section_handle = !empty($all_sections) ? $all_sections[0]->get('handle') : null;
 
@@ -165,7 +165,7 @@ class Administration extends Symphony
                             redirect(SYMPHONY_URL . '/blueprints/sections/');
                         }
                     } else {
-                        redirect(SYMPHONY_URL . "/system/authors/edit/".$this->Author->get('id')."/");
+                        redirect(SYMPHONY_URL . "/system/authors/edit/".Symphony::Author()->get('id')."/");
                     }
                 } else {
                     redirect(SYMPHONY_URL . $default_area);
@@ -252,7 +252,7 @@ class Administration extends Symphony
      */
     private function __canAccessAlerts()
     {
-        if ($this->Page instanceof AdministrationPage && $this->isLoggedIn() && Administration::instance()->Author->isDeveloper()) {
+        if ($this->Page instanceof AdministrationPage && $this->isLoggedIn() && Symphony::Author()->isDeveloper()) {
             return true;
         }
 
