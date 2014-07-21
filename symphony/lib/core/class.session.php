@@ -1,78 +1,107 @@
 <?php
-
 /**
  * @package core
  */
 
- /**
-  * The Session class is a handler for all Session related logic in PHP. The functions
-  * map directly to all handler functions as defined by session_set_save_handler in
-  * PHP. In Symphony, this function is used in conjunction with the `Cookie` class.
-  * Based on: http://php.net/manual/en/function.session-set-save-handler.php#81761
-  * by klose at openriverbed dot de which was based on
-  * http://php.net/manual/en/function.session-set-save-handler.php#79706 by
-  * maria at junkies dot jp
-  *
-  * @link http://php.net/manual/en/function.session-set-save-handler.php
-  */
+require_once CORE . '/class.container.php';
 
-class Session
+/**
+ * Session
+ */
+class Session extends Container
 {
     /**
-     * If a Session has been created, this will be true, otherwise false
-     *
-     * @var boolean
+     * Session handler
+     * @var DatabaseSessionHandler
      */
-    private static $_initialized = false;
+    protected $handler;
 
     /**
-     * Starts a Session object, only if one doesn't already exist. This function maps
-     * the Session Handler functions to this classes methods by reading the default
-     * information from the PHP ini file.
-     *
-     * @link http://php.net/manual/en/function.session-set-save-handler.php
-     * @link http://php.net/manual/en/function.session-set-cookie-params.php
-     * @param integer $lifetime
-     *  How long a Session is valid for, by default this is 0, which means it
-     *  never expires
-     * @param string $path
-     *  The path the cookie is valid for on the domain
-     * @param string $domain
-     *  The domain this cookie is valid for
-     * @param boolean $httpOnly
-     *  Whether this cookie can be read by Javascript. By default the cookie
-     *  cannot be read by Javascript
-     * @param boolean $secure
-     *  Whether this cookie should only be sent on secure servers. By default this is
-     *  false, which means the cookie can be sent over HTTP and HTTPS
-     * @throws Exception
-     * @return string|boolean
-     *  Returns the Session ID on success, or false on error.
+     * Session array
+     * @var array
      */
-    public static function start($lifetime = 0, $path = '/', $domain = null, $httpOnly = true, $secure = false)
+    protected $session = array();
+
+    /**
+     * Array of settings
+     * @var array
+     */
+    protected $settings = array();
+
+    /**
+     * Session key
+     * @var string
+     */
+    protected $key;
+
+    /**
+     * @param DatabaseSessionHandler $handler
+     * @param array $settings
+     * @param string $key
+     */
+    public function __construct($handler = null, array $settings = array(), $key = 'symphony')
     {
-        if (!self::$_initialized) {
-            if (!is_object(Symphony::Database()) || !Symphony::Database()->isConnected()) {
-                return false;
-            }
+        $this->handler = $handler;
+
+        $this->settings = array_merge([
+            'session_name' => $key,
+            'session_gc_probability' => '1',
+            'session_gc_divisor' => '10',
+            'session_gc_maxlifetime' => '1440',
+            'session_cookie_lifetime' => '1440',
+            'session_cookie_path' => '/',
+            'session_cookie_domain' => '',
+            'session_cookie_secure' => false,
+            'session_cookie_httponly' => false
+        ], $settings);
+
+        if (empty($this->settings['session_cookie_domain'])) {
+            $this->settings['session_cookie_domain'] = $this->getDomain();
+        }
+
+        $this->key = $this->settings['session_name'];
+    }
+
+    /**
+     * Start the session if it is not already started.
+     */
+    public function start()
+    {
+        if (!$this->isStarted()) {
+            // Disable PHP cache headers
+            session_cache_limiter('');
 
             if (session_id() == '') {
-                ini_set('session.save_handler', 'user');
-                ini_set('session.gc_maxlifetime', $lifetime);
-                ini_set('session.gc_probability', '1');
-                ini_set('session.gc_divisor', Symphony::Configuration()->get('session_gc_divisor', 'symphony'));
+                ini_set('session.gc_probability', $this->settings['session_gc_probability']);
+                ini_set('session.gc_maxlifetime', $this->settings['session_gc_maxlifetime']);
+                ini_set('session.gc_divisor', $this->settings['session_gc_divisor']);
+                ini_set('session.use_cookies', '1');
+                ini_set('session.hash_bits_per_character', 5);
             }
 
-            session_set_save_handler(
-                array('Session', 'open'),
-                array('Session', 'close'),
-                array('Session', 'read'),
-                array('Session', 'write'),
-                array('Session', 'destroy'),
-                array('Session', 'gc')
+            if (!is_null($this->handler)) {
+                // In PHP 5.4 we can move this to
+                // session_set_save_handler($handler, true);
+                session_set_save_handler(
+                    array($this->handler, 'open'),
+                    array($this->handler, 'close'),
+                    array($this->handler, 'read'),
+                    array($this->handler, 'write'),
+                    array($this->handler, 'destroy'),
+                    array($this->handler, 'gc')
+                );
+            }
+
+            session_name($this->settings['session_name']);
+
+            session_set_cookie_params(
+                $this->settings['session_cookie_lifetime'],
+                $this->settings['session_cookie_path'],
+                $this->settings['session_cookie_domain'],
+                $this->settings['session_cookie_secure'],
+                $this->settings['session_cookie_httponly']
             );
 
-            session_set_cookie_params($lifetime, $path, ($domain ? $domain : self::getDomain()), $secure, $httpOnly);
             session_cache_limiter('');
 
             if (session_id() == '') {
@@ -83,9 +112,9 @@ class Session
                 register_shutdown_function('session_write_close');
                 session_start();
             }
-
-            self::$_initialized = true;
         }
+
+        $this->store =& $_SESSION;
 
         return session_id();
     }
@@ -100,7 +129,7 @@ class Session
      *  Null if on localhost, or HTTP_HOST is not set, a string of the domain name sans
      *  www otherwise
      */
-    public static function getDomain()
+    public function getDomain() 
     {
         if (isset($_SERVER['HTTP_HOST'])) {
             if (preg_match('/(localhost|127\.0\.0\.1)/', $_SERVER['HTTP_HOST']) || $_SERVER['SERVER_ADDR'] == '127.0.0.1') {
@@ -115,153 +144,78 @@ class Session
     }
 
     /**
-     * Allows the Session to open without any further logic.
-     *
-     * @return boolean
-     *  Always returns true
+     * Get the current session save key
+     * @return string
      */
-    public static function open()
+    public function key()
     {
-        return true;
+        return $this->key;
     }
 
     /**
-     * Allows the Session to close without any further logic. Acts as a
-     * destructor function for the Session.
-     *
+     * Is the session started
      * @return boolean
-     *  Always returns true
      */
-    public static function close()
+    protected function isStarted()
     {
-        return true;
-    }
-
-    /**
-     * Given an ID, and some data, save it into `tbl_sessions`. This uses
-     * the ID as a unique key, and will override any existing data. If the
-     * `$data` is deemed to be empty, no row will be saved in the database
-     * unless there is an existing row.
-     *
-     * @param string $id
-     *  The ID of the Session, usually a hash
-     * @param string $data
-     *  The Session information, usually a serialized object of
-     * `$_SESSION[Cookie->_index]`
-     * @throws DatabaseException
-     * @return boolean
-     *  True if the Session information was saved successfully, false otherwise
-     */
-    public static function write($id, $data)
-    {
-        // Only prevent this record from saving if there isn't already a record
-        // in the database. This prevents empty Sessions from being created, but
-        // allows them to be nulled.
-        $session_data = Session::read($id);
-        if (is_null($session_data)) {
-            $empty = true;
-            $unserialized_data = Session::unserialize($session_data);
-
-            foreach ($unserialized_data as $d) {
-                if (!empty($d)) {
-                    $empty = false;
-                }
-            }
-
-            if ($empty) {
-                return false;
+       if (php_sapi_name() !== 'cli') {
+            if (version_compare(phpversion(), '5.4.0', '>=')) {
+                return session_status() === PHP_SESSION_ACTIVE ? true : false;
+            } else {
+                return session_id() === '' ? false : true;
             }
         }
-
-        $fields = array(
-            'session' => $id,
-            'session_expires' => time(),
-            'session_data' => $data
-        );
-
-        return Symphony::Database()->insert($fields, 'tbl_sessions', true);
+        return false;
     }
 
     /**
-     * Given raw session data return the unserialized array.
-     * Used to check if the session is really empty before writing.
+     * Expires the current session by unsetting the Symphony
+     * namespace (`$this->key`). If `$this->store`
+     * is empty, the function will destroy the entire `$this->store`
      *
-     * @since Symphony 2.3.3
-     * @param string $data
-     *  The serialized session data
-     * @return string
-     *  The unserialised session data
+     * @link http://au2.php.net/manual/en/function.session-destroy.php
      */
-    private static function unserialize($data)
+    public function expire()
     {
-        $hasBuffer = isset($_SESSION);
-        $buffer = $_SESSION;
-        session_decode($data);
-        $session = $_SESSION;
-
-        if ($hasBuffer) {
-            $_SESSION = $buffer;
-        } else {
-            unset($_SESSION);
+        if (isset($this->store[$this->key]) && !empty($this->store[$this->key])) {
+            unset($this->store[$this->key]);
         }
 
-        return $session;
-    }
-
-    /**
-     * Given a session's ID, return it's row from `tbl_sessions`
-     *
-     * @param string $id
-     *  The identifier for the Session to fetch
-     * @return string
-     *  The serialised session data
-     */
-    public static function read($id)
-    {
-        if (is_null($id)) {
-            return null;
+        // Calling session_destroy triggers the Session::destroy function which removes the entire session
+        // from the database. To prevent logout issues between functionality that relies on $this->store, such
+        // as Symphony authentication or the Members extension, only delete the $this->store if it empty!
+        if (empty($this->store)) {
+            session_destroy();
         }
-
-        return Symphony::Database()->fetchVar('session_data', 0, "
-            SELECT `session_data`
-            FROM `tbl_sessions`
-            WHERE `session` = ?
-            LIMIT 1",
-            array($id)
-        );
     }
 
     /**
-     * Given a session's ID, remove it's row from `tbl_sessions`
-     *
-     * @param string $id
-     *  The identifier for the Session to destroy
-     * @throws DatabaseException
-     * @return boolean
-     *  True if the Session was deleted successfully, false otherwise
+     * Set a service or value in this container
+     * @param  string $key
+     * @param  mixed $value
      */
-    public static function destroy($id)
+    public function offsetSet($key, $value)
     {
-        if (is_null($id)) {
-            return true;
-        }
-
-        return Symphony::Database()->delete("tbl_sessions", "`session` = ?", array($id));
+        $this->store[$this->key][$key] = $value;
+        $this->keys[$key] = true;
     }
 
     /**
-     * The garbage collector, which removes all empty Sessions, or any
-     * Sessions that have expired. This has a 10% chance of firing based
-     * off the `gc_probability`/`gc_divisor`.
-     *
-     * @param integer $max
-     *  The max session lifetime.
-     * @throws DatabaseException
-     * @return boolean
-     *  True on Session deletion, false if an error occurs
+     * Get a service or value from this container
+     * @param  string $key
+     * @return mixed
      */
-    public static function gc($max)
+    public function offsetGet($key)
     {
-        return Symphony::Database()->delete("tbl_sessions", "`session_expires` <= ?", array(time() - $max));
+        return $this->store[$this->key][$key];
+    }
+
+    /**
+     * Unset a value from the container
+     * @param  string $key
+     */
+    public function offsetUnset($key)
+    {
+        unset($this->store[$this->key][$key], $this->keys[$key]);
     }
 }

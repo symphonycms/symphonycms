@@ -28,15 +28,14 @@
         // Load configuration file:
         include CONFIG;
         Symphony::initialiseConfiguration($settings);
-        Symphony::initialiseErrorHandler();
         Symphony::initialiseDatabase();
         Symphony::initialiseExtensionManager();
 
         // Handle custom admin paths, #702
         $adminPath = Symphony::Configuration()->get('admin-path', 'symphony');
         $adminPath = (is_null($adminPath)) ? 'symphony' :  $adminPath;
-        if (isset($_GET['symphony-page']) && strpos($_GET['symphony-page'], $adminPath, 0) === 0) {
-            $_GET['symphony-page'] = preg_replace('%^' . preg_quote($adminPath) . '\/%', '', $_GET['symphony-page'], 1);
+        if (strpos($_GET['symphony-page'], $adminPath, 0) === 0) {
+            $_GET['symphony-page'] = str_replace($adminPath . '/', '', $_GET['symphony-page']);
 
             if ($_GET['symphony-page'] == '') {
                 unset($_GET['symphony-page']);
