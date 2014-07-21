@@ -18,8 +18,6 @@
             'lang' => 'en',
             'pages_table_nest_children' => 'no',
             'version' => VERSION,
-            'cookie_prefix' => 'sym-',
-            'session_gc_divisor' => '10',
             'cell_truncation_length' => '75',
             'enable_xsrf' => 'yes',
         ),
@@ -44,6 +42,18 @@
             'tbl_prefix' => 'sym_',
             'query_caching' => 'on',
             'query_logging' => 'on'
+        ),
+        ########
+
+
+        ###### SESSION ######
+        'session' => array(
+            'admin_session_name' => 'symphony_admin',
+            'public_session_name' => 'symphony_public',
+            'admin_session_expires' => '2 weeks',
+            'public_session_expires' => '2 weeks',
+            'session_gc_probability' => '1',
+            'session_gc_divisor' => '10'
         ),
         ########
 

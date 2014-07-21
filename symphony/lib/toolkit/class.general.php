@@ -1587,4 +1587,18 @@ class General
 
         return -1;
     }
+
+    /**
+     * Convert a PHP time string like '2 weeks' to seconds
+     *
+     * @since Symphony 3.0
+     * @param  string $string
+     *  The valid PHP time string
+     * @return int
+     *  The seconds
+     */
+    public static function stringToSeconds($string)
+    {
+        return strtotime($string) - time();
+    }
 }
