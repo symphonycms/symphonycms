@@ -354,7 +354,7 @@ abstract class Symphony implements Singleton
         }
 
         if (is_string($time) && !is_numeric($time)) {
-            $time = General::stringToSeconds($time);
+            $time = DateTimeObj::stringToSeconds($time);
         }
 
         return $time;

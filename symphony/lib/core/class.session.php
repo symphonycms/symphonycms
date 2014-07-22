@@ -145,28 +145,35 @@ class Session extends Container
      */
     protected function isStarted()
     {
-        return (session_status() === PHP_SESSION_ACTIVE ? true : false);
+       if (php_sapi_name() !== 'cli') {
+            if (version_compare(phpversion(), '5.4.0', '>=')) {
+                return session_status() === PHP_SESSION_ACTIVE ? true : false;
+            } else {
+                return session_id() === '' ? false : true;
+            }
+        }
+        return false;
     }
 
     /**
-     * Expires the current `$_SESSION` by unsetting the Symphony
-     * namespace (`$this->_index`). If the `$_SESSION`
-     * is empty, the function will destroy the entire `$_SESSION`
+     * Expires the current session by unsetting the Symphony
+     * namespace (`$this->key`). If `$this->session`
+     * is empty, the function will destroy the entire `$this->session`
      *
      * @link http://au2.php.net/manual/en/function.session-destroy.php
      */
     public function expire()
     {
-        if (!isset($_SESSION[$this->key]) || !is_array($_SESSION[$this->key]) || empty($_SESSION[$this->key])) {
+        if (!isset($this->session[$this->key]) || !is_array($this->session[$this->key]) || empty($this->session[$this->key])) {
             return;
         }
 
-        unset($_SESSION[$this->key]);
+        unset($this->session[$this->key]);
 
         // Calling session_destroy triggers the Session::destroy function which removes the entire session
-        // from the database. To prevent logout issues between functionality that relies on $_SESSION, such
-        // as Symphony authentication or the Members extension, only delete the $_SESSION if it empty!
-        if (empty($_SESSION)) {
+        // from the database. To prevent logout issues between functionality that relies on $this->session, such
+        // as Symphony authentication or the Members extension, only delete the $this->session if it empty!
+        if (empty($this->session)) {
             session_destroy();
         }
     }
