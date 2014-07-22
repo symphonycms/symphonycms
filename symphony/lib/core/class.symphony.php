@@ -97,6 +97,12 @@ abstract class Symphony implements Singleton
     public static $Session = null;
 
     /**
+     * An instance of the SessionFlash class
+     * @var Session
+     */
+    public static $Flash = null;
+
+    /**
      * An instance of the currently logged in Author
      * @var Author
      */
