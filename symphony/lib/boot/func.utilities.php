@@ -171,7 +171,7 @@ function cleanup_session_cookies()
         setcookie(
             session_name(),
             session_id(),
-            time() + __SYM_COOKIE_TIMEOUT__,
+            time() + (defined('__SYM_COOKIE_TIMEOUT__') ? __SYM_COOKIE_TIMEOUT__ : TWO_WEEKS),
             $cookie_params['path'],
             $cookie_params['domain'],
             $cookie_params['secure'],
@@ -189,6 +189,7 @@ function cleanup_session_cookies()
 function is_session_empty()
 {
     $session_is_empty = true;
+
     foreach ($_SESSION as $contents) {
         if (!empty($contents)) {
             $session_is_empty = false;
@@ -201,7 +202,7 @@ function is_session_empty()
 /**
  * Responsible for picking the launcher function and starting it.
  */
-function symphony($mode) 
+function symphony($mode)
 {
     $launcher = SYMPHONY_LAUNCHER;
     $launcher($mode);
@@ -236,7 +237,7 @@ function symphony_launcher($mode)
     $output = $renderer->display(getCurrentPage());
 
     // #1808
-    if (isset($_SERVER['HTTP_MOD_REWRITE'])) 
+    if (isset($_SERVER['HTTP_MOD_REWRITE']))
     {
         $output = file_get_contents(GenericExceptionHandler::getTemplate('fatalerror.rewrite'));
         $output = str_replace('{APPLICATION_URL}', APPLICATION_URL, $output);

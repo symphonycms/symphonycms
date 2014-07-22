@@ -299,24 +299,23 @@ abstract class Symphony implements Singleton
             $name = self::Configuration()->get('public_session_name', 'session');
         }
 
-        // Left these in for deprecation sake
-        define_safe('__SYM_COOKIE_PATH__', $cookie_path);
-        define_safe('__SYM_COOKIE_PREFIX_', $name);
-        define_safe('__SYM_COOKIE_PREFIX__', $name);
+        // This is still required for the cleanup_session_cookies utility function
         define_safe('__SYM_COOKIE_TIMEOUT__', $timeout);
 
+        // The handler accepts a database in a move towards dependency injection
         $handler = new DatabaseSessionHandler(self::Database(), array(
             'session_name' => $name,
             'session_lifetime' => $timeout
         ));
 
+        // The session accepts a handler in a move towards dependency injection
         self::$Session = new Session($handler, array(
             'session_name' => $name,
             'session_gc_probability' => self::Configuration()->get('session_gc_probability', 'session'),
             'session_gc_divisor' => self::Configuration()->get('session_gc_divisor', 'session'),
             'session_gc_maxlifetime' => $timeout,
             'session_cookie_lifetime' => $timeout,
-            'session_cookie_path' => __SYM_COOKIE_PATH__,
+            'session_cookie_path' => $cookie_path,
             'session_cookie_domain' => null,
             'session_cookie_secure' => (defined(__SECURE__) ? true : false),
             'session_cookie_httponly' => true
@@ -326,11 +325,12 @@ abstract class Symphony implements Singleton
         // Start the session
         self::$Session->start();
 
+        // The flash accepts a session in a move towards dependency injection
         self::$Flash = new SessionFlash(self::$Session);
 
         self::$Cookies = new Cookies(array(
             'domain' => self::$Session->getDomain(),
-            'path' => __SYM_COOKIE_PATH__,
+            'path' => $cookie_path,
             'expires' => $timeout,
             'secure' => (defined(__SECURE__) ? true : false),
             'httponly' => true
