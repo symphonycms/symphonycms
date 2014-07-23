@@ -312,7 +312,7 @@ abstract class Symphony implements Singleton
         ));
 
         // The session accepts a handler in a move towards dependency injection
-        self::$Session = new Session(null, array(
+        self::$Session = new Session($handler, array(
             'session_name' => $name,
             'session_gc_probability' => self::Configuration()->get('session_gc_probability', 'session'),
             'session_gc_divisor' => self::Configuration()->get('session_gc_divisor', 'session'),
@@ -327,7 +327,6 @@ abstract class Symphony implements Singleton
 
         // Start the session
         self::Session()->start();
-
 
         // The flash accepts a session in a move towards dependency injection
         // self::$Flash = new SessionFlash(self::Session());
@@ -647,7 +646,7 @@ abstract class Symphony implements Singleton
      */
     public static function logout()
     {
-        // self::Session()->expire();
+        self::Session()->expire();
     }
 
     /**
