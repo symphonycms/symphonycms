@@ -305,9 +305,6 @@ abstract class Symphony implements Singleton
             $name = self::Configuration()->get('public_session_name', 'session');
         }
 
-        // This is still required for the cleanup_session_cookies utility function
-        define_safe('__SYM_COOKIE_TIMEOUT__', $timeout);
-
         // The handler accepts a database in a move towards dependency injection
         $handler = new DatabaseSessionHandler(self::Database(), array(
             'session_name' => $name,
@@ -315,7 +312,7 @@ abstract class Symphony implements Singleton
         ));
 
         // The session accepts a handler in a move towards dependency injection
-        self::$Session = new Session($handler, array(
+        self::$Session = new Session(null, array(
             'session_name' => $name,
             'session_gc_probability' => self::Configuration()->get('session_gc_probability', 'session'),
             'session_gc_divisor' => self::Configuration()->get('session_gc_divisor', 'session'),
@@ -326,24 +323,47 @@ abstract class Symphony implements Singleton
             'session_cookie_secure' => (defined(__SECURE__) ? true : false),
             'session_cookie_httponly' => true
 
-        ), $name);
-
-        // Start the session
-        self::$Session->start();
-
-        // The flash accepts a session in a move towards dependency injection
-        self::$Flash = new SessionFlash(self::$Session);
-
-        self::$Cookies = new Cookies(array(
-            'domain' => self::$Session->getDomain(),
-            'path' => $cookie_path,
-            'expires' => $timeout,
-            'secure' => (defined(__SECURE__) ? true : false),
-            'httponly' => true
         ));
 
+        // Start the session
+        self::Session()->start();
+
+
+        // The flash accepts a session in a move towards dependency injection
+        // self::$Flash = new SessionFlash(self::Session());
+
+        // self::$Cookies = new Cookies(array(
+        //     'domain' => self::$Session->getDomain(),
+        //     'path' => $cookie_path,
+        //     'expires' => time() + $timeout,
+        //     'secure' => (defined(__SECURE__) ? true : false),
+        //     'httponly' => true
+        // ));
+
         // Fetch the current cookies from the header
-        self::$Cookies->fetch();
+        // self::Cookies()->fetch();
+    }
+
+    /**
+     * Accessor for the current `$Session` instance.
+     *
+     * @since  2.5.0
+     * @return  Session
+     */
+    public static function Session()
+    {
+        return self::$Session;
+    }
+
+    /**
+     * Accessor for the current `$Cookies` instance.
+     *
+     * @since  2.5.0
+     * @return  Cookies
+     */
+    public static function Cookies()
+    {
+        return self::$Cookies;
     }
 
     /**
@@ -543,8 +563,8 @@ abstract class Symphony implements Singleton
                     self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors', " `id` = '" . self::$Author->get('id') . "'");
                 }
 
-                self::$Session->set('username', $username);
-                self::$Session->set('pass', self::$Author->get('password'));
+                self::Session()->set('username', $username);
+                self::Session()->set('pass', self::$Author->get('password'));
 
                 self::Database()->update(array(
                     'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
@@ -609,8 +629,8 @@ abstract class Symphony implements Singleton
 
         if ($row) {
             self::$Author = AuthorManager::fetchByID($row['id']);
-            self::$Session->set('username', $row['username']);
-            self::$Session->set('pass', $row['password']);
+            self::Session()->set('username', $row['username']);
+            self::Session()->set('pass', $row['password']);
             self::Database()->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '{$row['id']}'");
 
             return true;
@@ -627,7 +647,7 @@ abstract class Symphony implements Singleton
      */
     public static function logout()
     {
-        self::$Session->expire();
+        // self::Session()->expire();
     }
 
     /**
@@ -636,7 +656,7 @@ abstract class Symphony implements Singleton
      * and password. If an Author is found, they will be logged in, otherwise
      * the `$Session` will be destroyed.
      *
-     * @see core.Cookie#expire()
+     * @see core.Session#expire()
      */
     public static function isLoggedIn()
     {
@@ -649,8 +669,8 @@ abstract class Symphony implements Singleton
         if (self::$Author) {
             return true;
         } else {
-            $username = self::Database()->cleanValue(self::$Session->get('username'));
-            $password = self::Database()->cleanValue(self::$Session->get('pass'));
+            $username = self::Database()->cleanValue(self::Session()->get('username'));
+            $password = self::Database()->cleanValue(self::Session()->get('pass'));
 
             if (strlen(trim($username)) > 0 && strlen(trim($password)) > 0) {
 
