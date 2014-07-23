@@ -64,7 +64,7 @@ class Session extends Container
     {
         if (!$this->isStarted()) {
             // Disable PHP cache headers
-            // session_cache_limiter('');
+            session_cache_limiter('');
 
             if (session_id() == '') {
                 ini_set('session.gc_probability', $this->settings['session_gc_probability']);
@@ -161,7 +161,7 @@ class Session extends Container
             return;
         }
 
-        // unset($this->store[$this->key]);
+        unset($this->store[$this->key]);
 
         // Calling session_destroy triggers the Session::destroy function which removes the entire session
         // from the database. To prevent logout issues between functionality that relies on $this->store, such
