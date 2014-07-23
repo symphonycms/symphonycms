@@ -8,8 +8,7 @@ require_once DOCROOT . '/symphony/lib/boot/func.utilities.php';
 require_once DOCROOT . '/symphony/lib/boot/defines.php';
 require_once CORE . '/class.symphony.php';
 
-if(!defined('PHP_VERSION_ID'))
-{
+if (!defined('PHP_VERSION_ID')) {
     $version = PHP_VERSION;
 
     /**
@@ -34,20 +33,17 @@ error_reporting(
 ini_set('magic_quotes_runtime', false);
 
 // Redirect to installer if it exists
-if (!file_exists(CONFIG))
-{
+if (!file_exists(CONFIG)) {
     $bInsideInstaller = (bool)preg_match('%(/|\\\\)install(/|\\\\)index.php$%', $_SERVER['SCRIPT_FILENAME']);
 
     if (!$bInsideInstaller && Symphony::isInstallerAvailable()) {
         header(sprintf('Location: %s/install/', URL));
         exit;
-    }
 
-    else if(!$bInsideInstaller) {
+    } elseif (!$bInsideInstaller) {
         die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
     }
-}
-else {
+} else {
     // Load configuration file:
     include CONFIG;
     Symphony::initialiseConfiguration($settings);
