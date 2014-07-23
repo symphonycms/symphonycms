@@ -24,11 +24,10 @@ class Cookies extends Container
     ];
 
     /**
-     * Whether the cookies in this store can be saved over HTTP.
-     * Prevents existing cookie's expiries from being re-set
-     * @var boolean
+     * Any previously set cookies are stored here
+     * @var array
      */
-    protected $locked = array();
+    protected $existing = array();
 
     /**
      * Constructor, allows overriding of default values
@@ -45,21 +44,48 @@ class Cookies extends Container
      */
     public function fetch()
     {
-        if (empty($this->locked)) {
+        if (empty($this->existing)) {
             $header = (isset($_SERVER['HTTP_COOKIE']) ? rtrim($_SERVER['HTTP_COOKIE'], "\r\n") : '');
             $pieces = preg_split('@\s*[;,]\s*@', $header);
+            $this->processPieces($pieces, $this->existing);
+        }
 
-            foreach ($pieces as $cookie) {
-                $cookie = explode('=', $cookie, 2);
+        // if (empty($this->store)) {
+        //     $header = headers_list();
+        //     foreach ($header as $string) {
+        //         if (stripos($string, 'Set-Cookie') !== false) {
+        //             $header = str_replace('Set-Cookie:', '', $string);
+        //             break;
+        //         }
+        //     }
 
-                if (count($cookie) === 2) {
-                    $key = urldecode($cookie[0]);
-                    $value = urldecode($cookie[1]);
+        //     if (is_string($header)) {
+        //         $pieces = preg_split('@\s*[;,]\s*@', $header);
+        //         $this->processPieces($pieces, $this->store);
+        //     }
+        // }
+    }
 
-                    if (!isset($this->locked[$key])) {
-                        $this->locked[$key] = $value;
-                        $this->keys[$key] = true;
-                    }
+    /**
+     * Process the pieces of a parsed cookie header
+     * @param  array  $pieces
+     *  Array of parsed pieces
+     * @param  array  $target
+     *  The target array within this class
+     * @return void
+     */
+    protected function processPieces(array $pieces, array &$target)
+    {
+        foreach ($pieces as $cookie) {
+            $cookie = explode('=', $cookie, 2);
+
+            if (count($cookie) === 2) {
+                $key = urldecode($cookie[0]);
+                $value = urldecode($cookie[1]);
+
+                if (!isset($target[$key])) {
+                    $target[trim($key)] = trim($value);
+                    $this->keys[$key] = true;
                 }
             }
         }
@@ -95,7 +121,7 @@ class Cookies extends Container
         ));
 
         $this->offsetSet($key, $settings);
-        unset($this->keys[$key], $this->locked[$key]);
+        unset($this->keys[$key], $this->existing[$key]);
     }
 
     /**
@@ -105,19 +131,9 @@ class Cookies extends Container
      */
     public function offsetGet($key)
     {
-        $cookies = array_merge($this->locked, $this->store);
+        $cookies = array_merge($this->existing, $this->store);
 
         return (isset($cookies[$key]) ? $cookies[$key] : null);
-    }
-
-    /**
-     * Check a key exists in this container
-     * @param  string $key
-     * @return boolean
-     */
-    public function offsetExists($key)
-    {
-        return array_key_exists($key, $this->keys);
     }
 
     /**
