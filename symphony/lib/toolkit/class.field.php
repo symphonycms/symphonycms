@@ -1039,6 +1039,33 @@ class Field
     }
 
     /**
+     * This is general purpose factory method that makes it easier to create the 
+     * markup needed in order to create an Associations Drawer XMLElement.
+     *
+     * @since Symphony 2.5.0
+     *
+     * @param string $value
+     *   The value to display in the link
+     * @param Entry $e
+     *   The associated entry
+     * @param array $parent_association
+     *   An array containing information about the association
+     * @param string $prepopulate
+     *   A string containing prepopulate parameter to append to the association url
+     *
+     * @return XMLElement
+     *   The XMLElement must be a li node, since it will be added an ul node.
+     */
+    public static function createAssociationsDrawerXMLElement($value, Entry $e, array $parent_association, $prepopulate = '')
+    {
+        $li = new XMLElement('li');
+        $a = new XMLElement('a', $value);
+        $a->setAttribute('href', SYMPHONY_URL . '/publish/' . $parent_association['handle'] . '/edit/' . $e->get('id') . '/' . $prepopulate);
+        $li->appendChild($a);
+        return $li;
+    }
+
+    /**
      * Format this field value for display in the Associations Drawer publish index.
      * By default, Symphony will use the return value of the `prepareReadableValue` function.
      * 
@@ -1058,18 +1085,18 @@ class Field
     public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association, $prepopulate = '')
     {
         $value = $this->prepareReadableValue($e->getData($this->get('id')), $e->get('id'));
+        
         // fallback for compatibility since the default
         // `preparePlainTextValue` is not compatible with all fields
-        // this should be removed in Symphony 2.5
+        // this should be removed in Symphony 2.6.0
         if (empty($value)) {
             $value = strip_tags($this->prepareTableValue($e->getData($this->get('id')), null, $e->get('id')));
         }
 
-        $li = new XMLElement('li');
+        // use our factory method to create the html
+        $li = self::createAssociationsDrawerXMLElement($value, $e, $parent_association, $prepopulate);
+
         $li->setAttribute('class', 'field-' . $this->get('type'));
-        $a = new XMLElement('a', $value);
-        $a->setAttribute('href', SYMPHONY_URL . '/publish/' . $parent_association['handle'] . '/edit/' . $e->get('id') . '/' . $prepopulate);
-        $li->appendChild($a);
 
         return $li;
     }
