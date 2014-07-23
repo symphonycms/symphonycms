@@ -47,7 +47,7 @@ class XSRF
             return;
         }
 
-        unset(Symphony::Session()->get('xsrf-token')[$token]);
+        unset(Symphony::Session()['xsrf-token'][$token]);
     }
 
     /**
