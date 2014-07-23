@@ -21,7 +21,7 @@ class XSRF
      */
     public static function getSession()
     {
-        $tokens = $_SESSION['sym-']['xsrf-token'];
+        $tokens = Symphony::Session()->get('xsrf-token');
 
         return is_null($tokens) ? array() : $tokens;
     }
@@ -33,7 +33,7 @@ class XSRF
      */
     public static function setSessionToken($token = array())
     {
-        $_SESSION['sym-']['xsrf-token'] = $token;
+        Symphony::Session()->set('xsrf-token', $token);
     }
 
     /**
@@ -47,7 +47,7 @@ class XSRF
             return;
         }
 
-        unset($_SESSION['sym-']['xsrf-token'][$token]);
+        unset(Symphony::Session()->get('xsrf-token')[$token]);
     }
 
     /**
