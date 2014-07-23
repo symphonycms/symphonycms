@@ -1554,8 +1554,15 @@ class contentPublish extends AdministrationPage
                         ));
 
                         foreach ($entries['records'] as $key => $e) {
-                            // let the field create the mark up
-                            $li = $visible_field->prepareAssociationsDrawerXMLElement($e, $as, $prepopulate);
+                            // let the first visible field create the mark up
+                            if ($visible_field) {
+                                $li = $visible_field->prepareAssociationsDrawerXMLElement($e, $as, $prepopulate);
+                            }
+                            // or use the system:id if no visible field exists.
+                            else {
+                                $li = Field::createAssociationsDrawerXMLElement($e->get('id'), $e, $as, $prepopulate);
+                            }
+
                             // add it to the unordered list
                             $ul->appendChild($li);
                         }
