@@ -11,12 +11,6 @@ require_once CORE . '/class.container.php';
 class Session extends Container
 {
     /**
-     * Session array
-     * @var array
-     */
-    protected $session;
-
-    /**
      * Session handler
      * @var DatabaseSessionHandler
      */
@@ -40,12 +34,9 @@ class Session extends Container
      * @param array $settings
      * @param string $key
      */
-    public function __construct($handler = null, array $settings = array(), $key = 'symphony_session')
+    public function __construct($handler = null, array $settings = array(), $key = 'symphony')
     {
-        if (!is_null($handler)) {
-            session_set_save_handler($handler, true);
-            $this->handler = $handler;
-        }
+        $this->handler = $handler;
 
         $this->settings = array_merge([
             'session_name' => $key,
@@ -59,6 +50,10 @@ class Session extends Container
             'session_cookie_httponly' => false
         ], $settings);
 
+        if (empty($this->settings['domain'])) {
+            $this->settings['domain'] = $this->getDomain();
+        }
+
         $this->key = $key;
     }
 
@@ -69,7 +64,7 @@ class Session extends Container
     {
         if (!$this->isStarted()) {
             // Disable PHP cache headers
-            session_cache_limiter('');
+            // session_cache_limiter('');
 
             if (session_id() == '') {
                 ini_set('session.gc_probability', $this->settings['session_gc_probability']);
@@ -79,6 +74,19 @@ class Session extends Container
                 ini_set('session.hash_bits_per_character', 5);
             }
 
+            if (!is_null($this->handler)) {
+                session_set_save_handler(
+                    array($this->handler, 'open'),
+                    array($this->handler, 'close'),
+                    array($this->handler, 'read'),
+                    array($this->handler, 'write'),
+                    array($this->handler, 'destroy'),
+                    array($this->handler, 'gc')
+                );
+            }
+
+            session_name($this->settings['session_name']);
+
             session_set_cookie_params(
                 $this->settings['session_cookie_lifetime'],
                 $this->settings['session_cookie_path'],
@@ -87,26 +95,19 @@ class Session extends Container
                 $this->settings['session_cookie_httponly']
             );
 
-            session_name($this->settings['session_name']);
+            if (session_id() == '') {
+                if (headers_sent()) {
+                    throw new Exception('Headers already sent. Cannot start session.');
+                }
 
-            register_shutdown_function('session_write_close');
-
-            // Start session
-            if (session_start() === false) {
-                throw new \RuntimeException('Cannot start session. Unknown error while invoking `session_start()`.');
+                register_shutdown_function('session_write_close');
+                session_start();
             }
         }
 
-        if (!isset($this->session)) {
-            $this->session =& $_SESSION;
-        }
+        $this->store =& $_SESSION;
 
-        // Pull the session into a localised container
-        if (isset($this->session[$this->key])) {
-            foreach ($this->session[$this->key] as $key => $value) {
-                $this->offsetSet($key, $value);
-            }
-        }
+        return session_id();
     }
 
     public function getDomain() {
@@ -120,14 +121,6 @@ class Session extends Container
         }
 
         return null;
-    }
-
-    /**
-     * Save this localised data back to the session
-     */
-    public function save()
-    {
-        $this->session[$this->key] = $this->all();
     }
 
     /**
@@ -157,24 +150,58 @@ class Session extends Container
 
     /**
      * Expires the current session by unsetting the Symphony
-     * namespace (`$this->key`). If `$this->session`
-     * is empty, the function will destroy the entire `$this->session`
+     * namespace (`$this->key`). If `$this->store`
+     * is empty, the function will destroy the entire `$this->store`
      *
      * @link http://au2.php.net/manual/en/function.session-destroy.php
      */
     public function expire()
     {
-        if (!isset($this->session[$this->key]) || !is_array($this->session[$this->key]) || empty($this->session[$this->key])) {
+        if (!isset($this->store[$this->key]) || !is_array($this->store[$this->key]) || empty($this->store[$this->key])) {
             return;
         }
 
-        unset($this->session[$this->key]);
+        // unset($this->store[$this->key]);
 
         // Calling session_destroy triggers the Session::destroy function which removes the entire session
-        // from the database. To prevent logout issues between functionality that relies on $this->session, such
-        // as Symphony authentication or the Members extension, only delete the $this->session if it empty!
-        if (empty($this->session)) {
+        // from the database. To prevent logout issues between functionality that relies on $this->store, such
+        // as Symphony authentication or the Members extension, only delete the $this->store if it empty!
+        if (empty($this->store)) {
             session_destroy();
         }
+    }
+
+    /**
+     * Set a service or value in this container
+     * @param  string $key
+     * @param  mixed $value
+     */
+    public function offsetSet($key, $value)
+    {
+        $this->store[$this->key][$key] = $value;
+        $this->keys[$key] = true;
+    }
+
+    /**
+     * Get a service or value from this container
+     * @param  string $key
+     * @return mixed
+     */
+    public function offsetGet($key)
+    {
+        if (!isset($this->keys[$key])) {
+            return null;
+        }
+
+        return $this->store[$this->key][$key];
+    }
+
+    /**
+     * Unset a value from the container
+     * @param  string $key
+     */
+    public function offsetUnset($key)
+    {
+        unset($this->store[$this->key][$key], $this->keys[$key]);
     }
 }
