@@ -109,7 +109,7 @@ class DatabaseSessionHandler implements SessionHandlerInterface
             "DELETE
             FROM `tbl_sessions`
             WHERE `session_expires` <= '%s'",
-            $this->database->cleanValue(time() + $maxlifetime)
+            $this->database->cleanValue(time() - $maxlifetime)
         ));
     }
 
@@ -149,7 +149,7 @@ class DatabaseSessionHandler implements SessionHandlerInterface
         );
 
         if (is_null($session_data)) {
-            return '';
+            return null;
         }
 
         $this->statuses[$key] = md5($session_data);
@@ -176,11 +176,9 @@ class DatabaseSessionHandler implements SessionHandlerInterface
         $key = $this->key($session_id);
 
         if (!isset($this->statuses[$key]) || (isset($this->statuses[$key]) && $this->statuses[$key] != md5($session_data))) {
-            $expires = (time() + $this->settings['session_lifetime']); // Recored the actual second it expires from the epoch
-
             $data = array(
                 'session' => $key,
-                'session_expires' => $expires,
+                'session_expires' => time(),
                 'session_data' => $session_data
             );
 
