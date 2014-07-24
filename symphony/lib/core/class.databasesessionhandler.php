@@ -88,7 +88,7 @@ class DatabaseSessionHandler implements SessionHandlerInterface
             "DELETE
             FROM `tbl_sessions`
             WHERE `session` = '%s'",
-            $this->database->cleanValue($session_id)
+            $this->database->cleanValue($key)
         ));
     }
 
@@ -144,7 +144,7 @@ class DatabaseSessionHandler implements SessionHandlerInterface
                 FROM `tbl_sessions`
                 WHERE `session` = '%s'
                 LIMIT 1",
-                $this->database->cleanValue($session_id)
+                $this->database->cleanValue($key)
             )
         );
 
@@ -174,8 +174,9 @@ class DatabaseSessionHandler implements SessionHandlerInterface
     public function write($session_id, $session_data)
     {
         $key = $this->key($session_id);
+        $data = $this->read($session_id);
 
-        if (!isset($this->statuses[$key]) || (isset($this->statuses[$key]) && $this->statuses[$key] != md5($session_data))) {
+        if(!is_null($data) || $this->statuses[$key] !== md5($session_data)) {
             $data = array(
                 'session' => $key,
                 'session_expires' => time(),

@@ -50,11 +50,11 @@ class Session extends Container
             'session_cookie_httponly' => false
         ], $settings);
 
-        if (empty($this->settings['domain'])) {
-            $this->settings['domain'] = $this->getDomain();
+        if (empty($this->settings['session_cookie_domain'])) {
+            $this->settings['session_cookie_domain'] = $this->getDomain();
         }
 
-        $this->key = $key;
+        $this->key = $this->settings['session_name'];
     }
 
     /**
@@ -75,6 +75,8 @@ class Session extends Container
             }
 
             if (!is_null($this->handler)) {
+                // In PHP 5.4 we can move this to
+                // session_set_save_handler($handler, true);
                 session_set_save_handler(
                     array($this->handler, 'open'),
                     array($this->handler, 'close'),
@@ -189,10 +191,6 @@ class Session extends Container
      */
     public function offsetGet($key)
     {
-        if (!isset($this->keys[$key])) {
-            return null;
-        }
-
         return $this->store[$this->key][$key];
     }
 
