@@ -26,7 +26,7 @@
 
 			// Include the default Config for installation.
 			include(INSTALL . '/includes/config_default.php');
-			self::initialiseConfiguration($settings);
+			static::initialiseConfiguration($settings);
 
 			// Initialize date/time
 			define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
@@ -35,9 +35,9 @@
 			DateTimeObj::setSettings(self::Configuration()->get('region'));
 
 			// Initialize Language, Logs and Database
-			self::initialiseLang();
-			self::initialiseLog(INSTALL_LOGS . '/install');
-            self::initialiseDatabase();
+			static::initialiseLang();
+			static::initialiseLog(INSTALL_LOGS . '/install');
+			static::initialiseDatabase();
 
 			// Initialize error handlers
 			GenericExceptionHandler::initialise(Symphony::Log());
