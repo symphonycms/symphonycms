@@ -132,51 +132,14 @@ function ini_size_to_bytes($val)
  * @author creativedutchmen (Huib Keemink)
  * @return void
  */
-function cleanup_session_cookies()
+function cleanup_session_cookies($mode)
 {
-    /*
-    Unfortunately there is no way to delete a specific previously set cookie from PHP.
-    The only way seems to be the method employed here: store all the cookie we need to keep, then delete every cookie and add the stored cookies again.
-    Luckily we can just store the raw header and output them again, so we do not need to actively parse the header string.
-    */
-    $cookie_params = session_get_cookie_params();
-    $list = headers_list();
-    $custom_cookies = array();
+    if (strtolower($mode) != 'administration') {
+        $session_is_empty = is_session_empty();
 
-    foreach ($list as $hdr) {
-        if ((stripos($hdr, 'Set-Cookie') !== false) && (stripos($hdr, session_id()) === false)) {
-            $custom_cookies[] = $hdr;
+        if ($session_is_empty && Symphony::Cookies()->exists(session_name())) {
+            Symphony::Cookies()->remove(session_name());
         }
-    }
-
-    header_remove('Set-Cookie');
-
-    foreach ($custom_cookies as $custom_cookie) {
-        header($custom_cookie);
-    }
-
-    $session_is_empty = is_session_empty();
-
-    if ($session_is_empty && !empty($_COOKIE[session_name()])) {
-        setcookie(
-            session_name(),
-            session_id(),
-            time() - 3600,
-            $cookie_params['path'],
-            $cookie_params['domain'],
-            $cookie_params['secure'],
-            $cookie_params['httponly']
-        );
-    } elseif (!$session_is_empty) {
-        setcookie(
-            session_name(),
-            session_id(),
-            time() + (defined('__SYM_COOKIE_TIMEOUT__') ? __SYM_COOKIE_TIMEOUT__ : TWO_WEEKS),
-            $cookie_params['path'],
-            $cookie_params['domain'],
-            $cookie_params['secure'],
-            $cookie_params['httponly']
-        );
     }
 }
 
@@ -224,13 +187,9 @@ function symphony_launcher($mode)
 
     if (strtolower($mode) == 'administration') {
         require_once CORE . "/class.administration.php";
-
         $renderer = Administration::instance();
-    }
-
-    else {
+    } else {
         require_once CORE . "/class.frontend.php";
-
         $renderer = Frontend::instance();
     }
 
@@ -246,7 +205,9 @@ function symphony_launcher($mode)
         exit;
     }
 
-    cleanup_session_cookies();
+    cleanup_session_cookies($mode);
+
+    Symphony::Cookies()->save();
 
     echo $output;
 

@@ -4,7 +4,9 @@
  */
 
 /**
- * Container
+ * The Symphony Container allows for simple dependency injection. It uses many
+ * access methods to allow a developer freedom to choose.
+ * @since  2.5.0
  */
 class Container implements \ArrayAccess, \IteratorAggregate, \Countable
 {
@@ -15,13 +17,13 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     protected $store = array();
 
     /**
-     * Index of stored keys
+     * Index of stored keys that allows a performant lookup for the container.
      * @var array
      */
     protected $keys = array();
 
     /**
-     * Constructor, add a set of key => value pairs on instantiation
+     * Constructor, add an array of key => value pairs on instantiation
      * @param array $contents
      */
     public function __construct(array $contents = array())
@@ -32,20 +34,35 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Call a container value as a method
+     * Calling a container value as a method has two possible results; Like 'get'
+     * if the key points to a callable object, it will return the result of that
+     * callable, otherwise it will return the value of the key.
      * @param  string $name
+     *  The key within the container
      * @param  array  $arguments
+     *  Any arguments passed will be provided to a callable, after `$this`
      * @return mixed
+     *  Whatever the value is in the container
      */
     public function __call($name, $arguments)
     {
-        return $this->offsetGet($name);
+        if (!isset($this->keys[$key])) {
+            return null;
+        }
+
+        if (!is_object($this->store[$key]) || !method_exists($this->store[$key], '__invoke')) {
+            return $this->store[$key];
+        }
+
+        return $this->store[$key] = $this->store[$key]($this, $arguments);
     }
 
     /**
-     * Set a service or value in this container
+     * Set a service or value in this container based on a provided key
      * @param  string $key
+     *  String key to reference the value in the container
      * @param  mixed $value
+     *  Mixed value to store in the container
      */
     public function offsetSet($key, $value)
     {
@@ -54,9 +71,11 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Set a service or value in this container
+     * Set a service or value in this container based on a provided key
      * @param  string $key
+     *  String key to reference the value in the container
      * @param  mixed $value
+     *  Mixed value to store in the container
      */
     public function __set($key, $value)
     {
@@ -64,9 +83,11 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Set a service or value in this container
+     * Set a service or value in this container based on a provided key
      * @param  string $key
+     *  String key to reference the value in the container
      * @param  mixed $value
+     *  Mixed value to store in the container
      */
     public function set($key, $value)
     {
@@ -74,9 +95,12 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Get a service or value from this container
+     * Get a service or value from this container. If the key points to a callable
+     * object, it will return the result of that callable.
      * @param  string $key
+     *  String reference to get from the container
      * @return mixed
+     *  Mixed value from the container
      */
     public function offsetGet($key)
     {
@@ -92,9 +116,12 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Get a service or value from this container
+     * Get a service or value from this container. If the key points to a callable
+     * object, it will return the result of that callable.
      * @param  string $key
+     *  String reference to get from the container
      * @return mixed
+     *  Mixed value from the container
      */
     public function __get($key)
     {
@@ -102,9 +129,12 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Get a service or value from this container
+     * Get a service or value from this container. If the key points to a callable
+     * object, it will return the result of that callable.
      * @param  string $key
+     *  String reference to get from the container
      * @return mixed
+     *  Mixed value from the container
      */
     public function get($key)
     {
@@ -114,7 +144,9 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Check a key exists in this container
      * @param  string $key
+     *  String key to check
      * @return boolean
+     *  Whether the key is in the container
      */
     public function offsetExists($key)
     {
@@ -124,7 +156,9 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Check a key exists in this container
      * @param  string $key
+     *  String key to check
      * @return boolean
+     *  Whether the key is in the container
      */
     public function __isset($key)
     {
@@ -134,7 +168,9 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     /**
      * Check a key exists in this container
      * @param  string $key
+     *  String key to check
      * @return boolean
+     *  Whether the key is in the container
      */
     public function exists($key)
     {
@@ -142,8 +178,9 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Unset a value from the container
+     * Unset a value from the container using a provided key
      * @param  string $key
+     *  The key to identify the item to unset
      */
     public function offsetUnset($key)
     {
@@ -151,8 +188,9 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Unset a value from the container
+     * Unset a value from the container using a provided key
      * @param  string $key
+     *  The key to identify the item to unset
      */
     public function __unset($key)
     {
@@ -160,8 +198,9 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Unset a value from the container
+     * Unset a value from the container using a provided key
      * @param  string $key
+     *  The key to identify the item to unset
      */
     public function remove($key)
     {
@@ -169,9 +208,11 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Return an instance of self with a subset of this container
+     * Return an instance of the container class with a subset of this container
      * @param  array  $keys
-     * @return SymphonyCMS\Container
+     *  Keys to create a new container with
+     * @return Container
+     *  A new instance of the container with only the requested keys and values
      */
     public function subSet(array $keys)
     {
@@ -187,8 +228,9 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Get all the registered keys
+     * Get all the registered keys for contents of this container
      * @return array
+     *  Array of string keys
      */
     public function keys()
     {
@@ -196,8 +238,9 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Get all from the store
+     * Get all of the contents of this container in an array
      * @return array
+     *  The container as an array
      */
     public function all()
     {
@@ -206,7 +249,6 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
 
     /**
      * Get an ArrayIterator for this container
-     *
      * @return ArrayIterator
      */
     public function getIterator()
@@ -216,7 +258,6 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
 
     /**
      * Return a count of the container items using Countable
-     *
      * @return integer
      */
     public function count()

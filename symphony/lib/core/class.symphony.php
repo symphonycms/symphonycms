@@ -325,22 +325,23 @@ abstract class Symphony implements Singleton
 
         ));
 
+        // Initialise the cookie handler
+        self::$Cookies = new Cookies(array(
+            'domain' => self::Session()->getDomain(),
+            'path' => $cookie_path,
+            'expires' => time() + $timeout,
+            'secure' => (defined(__SECURE__) ? true : false),
+            'httponly' => true
+        ));
+
         // Start the session
         self::Session()->start();
 
         // The flash accepts a session in a move towards dependency injection
-        // self::$Flash = new SessionFlash(self::Session());
-
-        // self::$Cookies = new Cookies(array(
-        //     'domain' => self::$Session->getDomain(),
-        //     'path' => $cookie_path,
-        //     'expires' => time() + $timeout,
-        //     'secure' => (defined(__SECURE__) ? true : false),
-        //     'httponly' => true
-        // ));
+        self::$Flash = new SessionFlash(self::Session());
 
         // Fetch the current cookies from the header
-        // self::Cookies()->fetch();
+        self::Cookies()->fetch();
     }
 
     /**
@@ -363,6 +364,17 @@ abstract class Symphony implements Singleton
     public static function Cookies()
     {
         return self::$Cookies;
+    }
+
+    /**
+     * Accessor for the current `$Flash` instance.
+     *
+     * @since  2.5.0
+     * @return  Cookies
+     */
+    public static function Flash()
+    {
+        return self::$Flash;
     }
 
     /**

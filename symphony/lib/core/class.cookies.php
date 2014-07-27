@@ -6,10 +6,13 @@
 require_once CORE . '/class.container.php';
 
 /**
- * Cookies
+ * Cookies is a collection of currently set cookies, and user set cookies for
+ * this request.
  */
 class Cookies extends Container
 {
+    const COOKIE_PIECE_REGEX = '@\s*[;]\s*@';
+
     /**
      * Default cookie settings
      * @var array
@@ -24,7 +27,7 @@ class Cookies extends Container
     ];
 
     /**
-     * Any previously set cookies are stored here
+     * Any previously set cookies are stored in this array
      * @var array
      */
     protected $existing = array();
@@ -39,62 +42,68 @@ class Cookies extends Container
     }
 
     /**
-     * Fetch the current cookies from the $_COOKIE global
-     * Prevents this Cooikes instance from being saved over HTTP
+     * Fetch the currently set cookies for reference, and capture any previously
+     * set cookies from this request. This will unset those previously set cookies
+     * and take over handling completely. Any cookies set from instantiation onwards
+     * using `setcookie` will not be handled by this class.
+     * @return void
      */
     public function fetch()
     {
+        // Copy all the current cookies into this container for reference
         if (empty($this->existing)) {
-            $header = (isset($_SERVER['HTTP_COOKIE']) ? rtrim($_SERVER['HTTP_COOKIE'], "\r\n") : '');
-            $pieces = preg_split('@\s*[;,]\s*@', $header);
-            $this->processPieces($pieces, $this->existing);
-        }
+            $header = (isset($_SERVER['HTTP_COOKIE']) ? rtrim($_SERVER['HTTP_COOKIE'], "\r\n") : null);
 
-        // if (empty($this->store)) {
-        //     $header = headers_list();
-        //     foreach ($header as $string) {
-        //         if (stripos($string, 'Set-Cookie') !== false) {
-        //             $header = str_replace('Set-Cookie:', '', $string);
-        //             break;
-        //         }
-        //     }
+            if (!is_null($header)) {
+                $pieces = preg_split(self::COOKIE_PIECE_REGEX, $header);
 
-        //     if (is_string($header)) {
-        //         $pieces = preg_split('@\s*[;,]\s*@', $header);
-        //         $this->processPieces($pieces, $this->store);
-        //     }
-        // }
-    }
+                $parsed = $this->processPieces($pieces);
 
-    /**
-     * Process the pieces of a parsed cookie header
-     * @param  array  $pieces
-     *  Array of parsed pieces
-     * @param  array  $target
-     *  The target array within this class
-     * @return void
-     */
-    protected function processPieces(array $pieces, array &$target)
-    {
-        foreach ($pieces as $cookie) {
-            $cookie = explode('=', $cookie, 2);
-
-            if (count($cookie) === 2) {
-                $key = urldecode($cookie[0]);
-                $value = urldecode($cookie[1]);
-
-                if (!isset($target[$key])) {
-                    $target[trim($key)] = trim($value);
+                foreach ($parsed as $key => $value) {
+                    $this->existing[$key] = $value;
                     $this->keys[$key] = true;
                 }
             }
         }
+
+        // Catch all cookies that have already been set
+        if (empty($this->store)) {
+            $headers = headers_list();
+
+            foreach ($headers as $header) {
+                if (stripos($header, 'Set-Cookie:') !== false) {
+                    $header = str_replace('Set-Cookie: ', '', $header);
+                    $pieces = preg_split(self::COOKIE_PIECE_REGEX, $header);
+                    $parsed = $this->processPieces($pieces, $this->store);
+
+                    // Um, guessing here a little bit
+                    $keys = array_keys($parsed);
+                    $key = '';
+
+                    foreach ($keys as $k) {
+                        if (!in_array($k, array('domain', 'path', 'secure', 'expires', 'httpOnly', 'HttpOnly', 'httponly'))) {
+                            $key = $k;
+                        }
+                    }
+
+                    $parsed['value'] = $parsed[$key];
+                    unset($parsed[$key]);
+
+                    $this->store[$key] = $parsed;
+                    $this->keys[$key] = true;
+                }
+            }
+
+            header_remove('Set-Cookie');
+        }
     }
 
     /**
-     * Set a cookie
-     * @param string $key   The cookie name
-     * @param mixed $value  Array of cookie settings, or a value for a cookie
+     * Set a cookie into this container, for saving before output
+     * @param string $key
+     *  The cookie name
+     * @param mixed $value
+     *  Array of cookie settings, or a value for a cookie
      */
     public function offsetSet($key, $value)
     {
@@ -104,8 +113,7 @@ class Cookies extends Container
             $settings = array_replace($this->defaults, array('value' => $value));
         }
 
-        $this->store[$key] = $settings;
-        $this->keys[$key] = true;
+        parent::offsetSet($key, $settings);
     }
 
     /**
@@ -142,13 +150,10 @@ class Cookies extends Container
      */
     public function save()
     {
-        $cookies = array();
-
         foreach ($this->store as $key => $value) {
-            $cookies[] = $this->stringify($key, $value);
+            $cookie = $this->stringify($key, $value);
+            header('Set-Cookie: ' . $cookie, false);
         }
-
-        header('Set-Cookie: ' . implode("\n", $cookies));
     }
 
     /**
@@ -200,5 +205,33 @@ class Cookies extends Container
         );
 
         return $cookie;
+    }
+
+    /**
+     * Process the pieces of a parsed cookie header
+     * @param  array  $pieces
+     *  Array of parsed pieces
+     * @param  array  $target
+     *  The target array within this class
+     * @return void
+     */
+    protected function processPieces(array $pieces)
+    {
+        $parsed = array();
+
+        foreach ($pieces as $piece) {
+            $cookie = explode('=', $piece, 2);
+
+            if (count($cookie) === 2) {
+                $key = urldecode($cookie[0]);
+                $value = urldecode($cookie[1]);
+                $parsed[trim($key)] = trim($value);
+            } elseif (count($cookie) === 1) {
+                $key = urldecode($cookie[0]);
+                $parsed[trim($key)] = true;
+            }
+        }
+
+        return $parsed;
     }
 }
