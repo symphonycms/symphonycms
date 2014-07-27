@@ -159,11 +159,9 @@ class Session extends Container
      */
     public function expire()
     {
-        if (!isset($this->store[$this->key]) || !is_array($this->store[$this->key]) || empty($this->store[$this->key])) {
-            return;
+        if (isset($this->store[$this->key]) && !empty($this->store[$this->key])) {
+            unset($this->store[$this->key]);
         }
-
-        unset($this->store[$this->key]);
 
         // Calling session_destroy triggers the Session::destroy function which removes the entire session
         // from the database. To prevent logout issues between functionality that relies on $this->store, such
