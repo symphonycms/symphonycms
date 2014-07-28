@@ -11,7 +11,7 @@
 
 .notifier {
 	overflow: hidden;
-	background: #383838;
+	background: #3a3333;
 	border-bottom: 0.1rem solid #575757;
 }
 
@@ -40,7 +40,7 @@
 
 @keyframes success {
 	to {
-		background-color: #383838;
+		background-color: #3a3333;
 		border-color: #575757;
 		color: #9b9b9b;
 	}
@@ -61,15 +61,15 @@
 	position: relative;
 	margin: 0;
 	padding: 0.4rem 9rem 0.3rem 1.8rem;
-	border-bottom: 0.1rem solid #575757;
+	border-bottom: 0.1rem solid #514747;
 	color: #9b9b9b;
-	background: #383838;
+	background: #3d3535;
 	width: 100%;
 	box-sizing: border-box;
 }
 
 .notice a {
-	color: #bdc3c3;
+	color: #c4c0c0;
 	border-bottom: 0.1rem solid rgba(189, 195, 195, 0.2);
 	margin: 0 0.3rem;
 }

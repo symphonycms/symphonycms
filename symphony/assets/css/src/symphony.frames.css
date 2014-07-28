@@ -221,8 +221,8 @@ fieldset.frame,
 	cursor: default;
 	margin: 1rem 0 0;
 	text-align: right;
-	position: absolute;
-	bottom: -3.5rem;
+	position: relative;
+	top: 3.5rem;
 	right: 0;
 	border-color: rgba(0, 0, 0, 0.25);
 }
