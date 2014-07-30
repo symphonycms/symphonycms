@@ -265,7 +265,7 @@ class DateTimeObj
             }
 
             // If the date is still invalid, just return false.
-            if ($date === false) {
+            if ($date === false || $date->format('Y') < 0) {
                 return false;
             }
         }
