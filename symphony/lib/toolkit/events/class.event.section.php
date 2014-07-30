@@ -734,11 +734,13 @@ class EventMessages
     const ENTRY_EDITED_SUCCESS = 101;
     const ENTRY_ERRORS = 102;
     const ENTRY_MISSING = 103;
+    const ENTRY_NOT_UNIQUE = 104;
 
     const SECTION_MISSING = 200;
 
     const FIELD_MISSING = 301;
     const FIELD_INVALID = 302;
+    const FIELD_NOT_UNIQUE = 303;
 
     const FILTER_FAILED = 400;
 
