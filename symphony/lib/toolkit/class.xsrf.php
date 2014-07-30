@@ -109,7 +109,7 @@ class XSRF
         $tokens = self::getSession();
         if (empty($tokens)) {
             $nonce = self::generateNonce(20);
-            $tokens[$nonce] = $nonce;
+            $tokens[$nonce] = 1;
             self::setSessionToken($tokens);
         } else {
             $nonce = key($tokens);
@@ -134,7 +134,7 @@ class XSRF
             return false;
         }
 
-        // Check that the token exists, and time has not expired.
+        // Check that the token exists
         foreach ($tokens as $key => $expires) {
             if ($key == $xsrf) {
                 return true;
