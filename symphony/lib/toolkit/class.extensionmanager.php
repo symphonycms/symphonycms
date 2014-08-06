@@ -966,8 +966,8 @@ class ExtensionManager implements FileResource
                 // for the max it implies any 2.3 release. RE: #1019
                 // Also remove any .0 when doing the comparison to prevent extensions
                 // that don't use semver yet. RE: #2146
-                $required_min_version = str_replace(array('.x', '.0'), '', $required_min_version);
-                $required_max_version = str_replace(array('.x', '.0'), 'p', $required_max_version);
+                $required_min_version = preg_replace(array('/\.x/', '/\.0$/'), '', $required_min_version);
+                $required_max_version = preg_replace(array('/\.x/', '/\.0$/'), 'p', $required_max_version);
 
                 // Min version
                 if (!empty($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
