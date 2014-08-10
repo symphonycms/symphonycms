@@ -135,6 +135,8 @@ class contentBlueprintsDatasources extends ResourcesPage
             $fields['html_encode'] = isset($existing->dsParamHTMLENCODE) ? $existing->dsParamHTMLENCODE : 'no';
             $fields['associated_entry_counts'] = isset($existing->dsParamASSOCIATEDENTRYCOUNTS) ? $existing->dsParamASSOCIATEDENTRYCOUNTS : 'no';
             $fields['redirect_on_empty'] = isset($existing->dsParamREDIRECTONEMPTY) ? $existing->dsParamREDIRECTONEMPTY : 'no';
+            $fields['redirect_on_forbidden'] = isset($existing->dsParamREDIRECTONFORBIDDEN) ? $existing->dsParamREDIRECTONFORBIDDEN : 'no';
+            $fields['redirect_on_required'] = isset($existing->dsParamREDIRECTONREQUIRED) ? $existing->dsParamREDIRECTONREQUIRED : 'no';
 
             if (!isset($existing->dsParamFILTERS) || !is_array($existing->dsParamFILTERS)) {
                 $existing->dsParamFILTERS = array();
@@ -315,7 +317,25 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $fieldset->appendChild($group);
 
+        $group = new XMLElement('div');
+        $group->setAttribute('class', 'two columns ds-param');
+        
         $label = Widget::Label();
+        $label->setAttribute('class', 'column');
+        $input = Widget::Input('fields[redirect_on_required]', 'yes', 'checkbox', (isset($fields['redirect_on_required']) && $fields['redirect_on_required'] == 'yes') ? array('checked' => 'checked') : null);
+        $label->setValue(__('%s Redirect to 404 page when the required parameter is not present', array($input->generate(false))));
+        $group->appendChild($label);
+
+        $label = Widget::Label();
+        $label->setAttribute('class', 'column');
+        $input = Widget::Input('fields[redirect_on_forbidden]', 'yes', 'checkbox', (isset($fields['redirect_on_forbidden']) && $fields['redirect_on_forbidden'] == 'yes') ? array('checked' => 'checked') : null);
+        $label->setValue(__('%s Redirect to 404 page when the forbidden parameter is present', array($input->generate(false))));
+        $group->appendChild($label);
+
+        $fieldset->appendChild($group);
+
+        $label = Widget::Label();
+        $label->setAttribute('class', 'column');
         $input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) && $fields['redirect_on_empty'] == 'yes') ? array('checked' => 'checked') : null);
         $label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
         $fieldset->appendChild($label);
@@ -1239,6 +1259,8 @@ class contentBlueprintsDatasources extends ResourcesPage
 
                         $params['order'] = $fields['order'];
                         $params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
+                        $params['redirectonforbidden'] = (isset($fields['redirect_on_forbidden']) ? 'yes' : 'no');
+                        $params['redirectonrequired'] = (isset($fields['redirect_on_required']) ? 'yes' : 'no');
                         $params['requiredparam'] = trim($fields['required_url_param']);
                         $params['negateparam'] = trim($fields['negate_url_param']);
                         $params['paramoutput'] = $fields['param'];
@@ -1253,6 +1275,8 @@ class contentBlueprintsDatasources extends ResourcesPage
 
                         $params['order'] = $fields['order'];
                         $params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
+                        $params['redirectonforbidden'] = (isset($fields['redirect_on_forbidden']) ? 'yes' : 'no');
+                        $params['redirectonrequired'] = (isset($fields['redirect_on_required']) ? 'yes' : 'no');
                         $params['requiredparam'] = trim($fields['required_url_param']);
                         $params['negateparam'] = trim($fields['negate_url_param']);
 
@@ -1291,6 +1315,8 @@ class contentBlueprintsDatasources extends ResourcesPage
                         $params['limit'] = $fields['max_records'];
                         $params['startpage'] = $fields['page_number'];
                         $params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
+                        $params['redirectonforbidden'] = (isset($fields['redirect_on_forbidden']) ? 'yes' : 'no');
+                        $params['redirectonrequired'] = (isset($fields['redirect_on_required']) ? 'yes' : 'no');
                         $params['requiredparam'] = trim($fields['required_url_param']);
                         $params['negateparam'] = trim($fields['negate_url_param']);
                         $params['paramoutput'] = $fields['param'];
