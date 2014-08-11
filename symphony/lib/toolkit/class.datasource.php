@@ -308,7 +308,7 @@ class DataSource
 
                 // If a filter gets evaluated to nothing, eg. ` + ` or ``, then remove
                 // the filter. RE: #1759
-                if (strlen(trim($new_value)) == 0 || !preg_match('/\w+/', $new_value)) {
+                if (strlen(trim($new_value)) == 0 || !preg_match('/\w+/u', $new_value)) {
                     unset($this->dsParamFILTERS[$key]);
                 } else {
                     $this->dsParamFILTERS[$key] = $new_value;
