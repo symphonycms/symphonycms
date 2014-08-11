@@ -1365,6 +1365,22 @@ class contentPublish extends AdministrationPage
             null, null, (is_numeric($entry->get('id')) ? $entry->get('id') : null)
         );
 
+        /**
+         * Allows developers modify the field before it is rendered in the publish
+         * forms. Passes the Field object, and the XMMElement div. Only the div element
+         * will be altered before appending to the page.
+         *
+         * @delegate ModifyFieldPublishWidget
+         * @param string $context
+         * '/backend/'
+         * @param Field $field
+         * @param Widget $widget
+         */
+        Symphony::ExtensionManager()->notifyMembers('ModifyFieldPublishWidget', '/backend/', array(
+            'field' => $field,
+            'widget' => &$div
+        ));
+
         return $div;
     }
 
