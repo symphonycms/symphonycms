@@ -1374,10 +1374,12 @@ class contentPublish extends AdministrationPage
          * @param string $context
          * '/backend/'
          * @param Field $field
+         * @param Entry $entry
          * @param Widget $widget
          */
         Symphony::ExtensionManager()->notifyMembers('ModifyFieldPublishWidget', '/backend/', array(
             'field' => $field,
+            'entry' => $entry,
             'widget' => &$div
         ));
 
