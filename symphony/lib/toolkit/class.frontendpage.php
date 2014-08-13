@@ -921,8 +921,8 @@ class FrontendPage extends XSLTPage
                 if ($xml instanceof XMLElement) {
                     $wrapper->appendChild($xml);
                 } else {
-                    $wrapper->setValue(
-                        $wrapper->getValue() . PHP_EOL . '    ' . trim($xml)
+                    $wrapper->appendChild(
+                        '    ' . trim($xml) . PHP_EOL
                     );
                 }
             }
