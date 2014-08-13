@@ -165,6 +165,7 @@ class contentAjaxEventDocumentation extends TextPage
 
     public function addFrontendMarkupDoc(array &$doc_parts, $rootelement, $section, $filters)
     {
+        $multiple = $this->hasMultipleFilter($filters);
         $doc_parts[] = new XMLElement('h3', __('Example Front-end Form Markup'));
         $doc_parts[] = new XMLElement('p', __('This is an example of the form markup you can use on your frontend:'));
         $container = new XMLElement('form', null, array('method' => 'post', 'action' => '{$current-url}/', 'enctype' => 'multipart/form-data'));
