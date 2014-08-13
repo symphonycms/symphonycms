@@ -55,7 +55,9 @@
 		 *
 		 * @return string
 		 */
-		abstract static function getVersion();
+		static function getVersion() {
+			return null;
+		}
 
 		/**
 		 * Return's the string to this migration's release notes. Like `getVersion()`,
@@ -64,7 +66,9 @@
 		 *
 		 * @return string
 		 */
-		abstract static function getReleaseNotes();
+		static function getReleaseNotes(){
+			return array();
+		}
 
 		/**
 		 * This function will upgrade Symphony from the `self::$existing_version`
