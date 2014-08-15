@@ -273,9 +273,12 @@ class ExtensionManager implements FileResource
      * @since Symphony 2.4
      * @param string $key
      *  Should be a reference in the Configuration file to the Caching class
+     * @param boolean $reuse
+     *  By default true, which will reuse an existing Cacheable object of `$key`
+     *  if it exists. If false, a new instance will be generated.
      * @return Cacheable
      */
-    public static function getCacheProvider($key = null)
+    public static function getCacheProvider($key = null, $reuse = true)
     {
         $cacheDriver = Symphony::Configuration()->get($key, 'caching');
 
@@ -283,9 +286,16 @@ class ExtensionManager implements FileResource
             $cacheable = new $cacheDriver;
         } else {
             $cacheable = Symphony::Database();
+            $cacheDriver = 'CacheDatabase';
         }
 
-        return new Cacheable($cacheable);
+        if($reuse === false) {
+            return new Cacheable($cacheable);
+        } elseif(!isset(self::$_pool[$cacheDriver])) {
+            self::$_pool[$cacheDriver] = new Cacheable($cacheable);
+        }
+
+        return self::$_pool[$cacheDriver];
     }
 
     /**

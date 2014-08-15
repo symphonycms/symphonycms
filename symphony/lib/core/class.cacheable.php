@@ -24,7 +24,8 @@ class Cacheable
 
     /**
      * The constructor for the Cacheable takes an instance of the
-     * a class that extends the `iCache` interface.
+     * a class that extends the `iCache` interface. `Symphony::Database()`
+     * is accepted a valid `$cacheProvider` to maintain backwards compatibility.
      *
      * @throws InvalidArgumentException
      * @param iCache $cacheProvider
