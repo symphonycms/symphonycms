@@ -289,9 +289,9 @@ class ExtensionManager implements FileResource
             $cacheDriver = 'CacheDatabase';
         }
 
-        if($reuse === false) {
+        if ($reuse === false) {
             return new Cacheable($cacheable);
-        } elseif(!isset(self::$_pool[$cacheDriver])) {
+        } elseif (!isset(self::$_pool[$cacheDriver])) {
             self::$_pool[$cacheDriver] = new Cacheable($cacheable);
         }
 
