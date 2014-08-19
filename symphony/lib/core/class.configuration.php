@@ -62,8 +62,6 @@ class Configuration
             $group = strtolower($group);
         }
 
-        $value = stripslashes($value);
-
         if ($group) {
             $this->_properties[$group][$name] = $value;
         } else {
@@ -89,8 +87,6 @@ class Configuration
      */
     public function setArray(array $array, $overwrite = false)
     {
-        $array = General::array_map_recursive('stripslashes', $array);
-
         if ($overwrite) {
             $this->_properties = array_merge($this->_properties, $array);
         } else {
@@ -103,9 +99,7 @@ class Configuration
     }
 
     /**
-     * Accessor function for the `$this->_properties`. If the
-     * `$name` is provided, the resulting value will be run through
-     * PHP's `stripslashes` function.
+     * Accessor function for the `$this->_properties`.
      *
      * @param string $name
      *  The name of the property to retrieve
@@ -172,7 +166,7 @@ class Configuration
     /**
      * This magic `__toString` function converts the internal `$this->_properties`
      * array into a string representation. Symphony generates the `MANIFEST/config.php`
-     * file in this manner. All values are run through PHP's `addslashes` prior to saving.
+     * file in this manner.
      *
      * @return string
      *  A string that contains a array representation of `$this->_properties`.
@@ -187,7 +181,7 @@ class Configuration
             $string .= PHP_EOL . "\t\t'$group' => array(";
 
             foreach ($data as $key => $value) {
-                $string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? "'".addslashes($value)."'" : 'null').",";
+                $string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? var_export($value, true) : 'null').",";
             }
 
             $string .= PHP_EOL . "\t\t),";
