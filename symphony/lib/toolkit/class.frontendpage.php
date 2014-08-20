@@ -436,7 +436,7 @@ class FrontendPage extends XSLTPage
         $this->_param['page-types'] = $page['type'];
 
         // Add Page events the same way
-        $this->_param['page-events'] = explode(',', trim($page['events'], ','));
+        $this->_param['page-events'] = explode(',', trim(str_replace('_', '-', $page['events']), ','));
 
         /**
          * Just after having resolved the page params, but prior to any commencement of output creation
