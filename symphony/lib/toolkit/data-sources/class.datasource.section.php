@@ -454,6 +454,10 @@ class SectionDatasource extends Datasource
         ));
 
         if ($this->_force_empty_result == true) {
+            if ($this->dsParamREDIRECTONREQUIRED == 'yes') {
+                throw new FrontendPageNotFoundException;
+            }
+
             $this->_force_empty_result = false; //this is so the section info element doesn't disappear.
             $error = new XMLElement('error', __("Data source not executed, required parameter is missing."), array(
                 'required-param' => $this->dsParamREQUIREDPARAM
@@ -465,6 +469,10 @@ class SectionDatasource extends Datasource
         }
 
         if ($this->_negate_result == true) {
+            if ($this->dsParamREDIRECTONFORBIDDEN == 'yes') {
+                throw new FrontendPageNotFoundException;
+            }
+
             $this->_negate_result = false; //this is so the section info element doesn't disappear.
             $result = $this->negateXMLSet();
             $result->prependChild($sectioninfo);

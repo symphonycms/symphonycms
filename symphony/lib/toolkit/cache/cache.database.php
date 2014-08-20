@@ -5,10 +5,14 @@
  */
 
  /**
-  * The Cacheable class is used to store data in the dedicated Symphony
-  * cache table. It is used by Symphony for Session management and by
-  * the Dynamic XML datasource, but it can be used by extensions to store
-  * anything. The cache table is `tbl_cache`
+  * The CacheDatabase interface allows extensions to store data in Symphony's
+  * database table, `tbl_cache`. At the moment, it is mostly unused by the core,
+  * with the exception of the deprecated Dynamic XML datasource.
+  *
+  * This cache will be initialised by default if no other caches are specified
+  * in the install.
+  * 
+  * @see ExtensionManager#getCacheProvider()
   */
 require_once FACE . '/interface.cache.php';
 require_once TOOLKIT . '/class.mutex.php';

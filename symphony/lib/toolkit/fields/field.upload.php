@@ -582,7 +582,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         return null;
     }
 
-    public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association)
+    public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association, $prepopulate = '')
     {
         $li = parent::prepareAssociationsDrawerXMLElement($e, $parent_association);
         $a = $li->getChild(0);

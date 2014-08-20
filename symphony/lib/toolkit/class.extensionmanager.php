@@ -273,9 +273,12 @@ class ExtensionManager implements FileResource
      * @since Symphony 2.4
      * @param string $key
      *  Should be a reference in the Configuration file to the Caching class
+     * @param boolean $reuse
+     *  By default true, which will reuse an existing Cacheable object of `$key`
+     *  if it exists. If false, a new instance will be generated.
      * @return Cacheable
      */
-    public static function getCacheProvider($key = null)
+    public static function getCacheProvider($key = null, $reuse = true)
     {
         $cacheDriver = Symphony::Configuration()->get($key, 'caching');
 
@@ -283,9 +286,16 @@ class ExtensionManager implements FileResource
             $cacheable = new $cacheDriver;
         } else {
             $cacheable = Symphony::Database();
+            $cacheDriver = 'CacheDatabase';
         }
 
-        return new Cacheable($cacheable);
+        if ($reuse === false) {
+            return new Cacheable($cacheable);
+        } elseif (!isset(self::$_pool[$cacheDriver])) {
+            self::$_pool[$cacheDriver] = new Cacheable($cacheable);
+        }
+
+        return self::$_pool[$cacheDriver];
     }
 
     /**
@@ -959,13 +969,15 @@ class ExtensionManager implements FileResource
 
                 // Remove pre-release notes fro the current Symphony version so that
                 // we don't get false erros in the backend
-                $current_symphony_version = preg_replace(array('/dev/i', '/beta\d/i', '/rc\d/i'), '', $current_symphony_version);
+                $current_symphony_version = preg_replace(array('/dev/i', '/beta\d/i', '/rc\d/i', '/.0/i'), '', $current_symphony_version);
 
                 // Munge the version number so that it makes sense in the backend.
                 // Consider, 2.3.x. As the min version, this means 2.3 onwards,
                 // for the max it implies any 2.3 release. RE: #1019
-                $required_min_version = str_replace('.x', '', $required_min_version);
-                $required_max_version = str_replace('.x', 'p', $required_max_version);
+                // Also remove any .0 when doing the comparison to prevent extensions
+                // that don't use semver yet. RE: #2146
+                $required_min_version = preg_replace(array('/\.x/', '/\.0$/'), '', $required_min_version);
+                $required_max_version = preg_replace(array('/\.x/', '/\.0$/'), 'p', $required_max_version);
 
                 // Min version
                 if (!empty($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {

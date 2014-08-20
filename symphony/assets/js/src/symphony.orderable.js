@@ -97,11 +97,18 @@
 			if (object.data('ordering') != 1) {
 				return;
 			}
+			// Only keep what we need from event object
+			var pageY = event.pageY;
 			Symphony.Utilities.requestAnimationFrame(function () {
-				var item = object.find('.ordering'),
-					top = item.offset().top,
+				var item = object.find('.ordering');
+
+				// If there is still an ordering item in DOM
+				if (!item.length) {
+					return;
+				}
+
+				var top = item.offset().top,
 					bottom = top + item.outerHeight(),
-					position = event.pageY,
 					prev, next;
 
 				// Remove text ranges
@@ -110,7 +117,7 @@
 				}
 
 				// Move item up
-				if(position < top) {
+				if(pageY < top) {
 					prev = item.prev(settings.items);
 					if(prev.length > 0) {
 						item.insertBefore(prev);
@@ -119,7 +126,7 @@
 				}
 
 				// Move item down
-				else if(position > bottom) {
+				else if(pageY > bottom) {
 					next = item.next(settings.items);
 					if(next.length > 0) {
 						item.insertAfter(next);
