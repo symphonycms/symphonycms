@@ -348,7 +348,7 @@ class FieldAuthor extends Field implements ExportableField
 
     public function prepareTextValue($data, $entry_id = null)
     {
-        $value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::AUTHOR, $entry_id);
+        $value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::VALUE, $entry_id);
         return General::sanitize(implode(', ', $value));
     }
 
