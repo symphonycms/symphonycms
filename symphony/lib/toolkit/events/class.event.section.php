@@ -472,6 +472,8 @@ abstract class SectionEvent extends Event
             }
         }
 
+        // Reset the filter results to prevent duplicates. RE: #2179
+        $this->filter_results = array();
         return $can_proceed;
     }
 
@@ -524,6 +526,8 @@ abstract class SectionEvent extends Event
             }
         }
 
+        // Reset the filter results to prevent duplicates. RE: #2179
+        $this->filter_results = array();
         return $result;
     }
 
@@ -583,6 +587,8 @@ abstract class SectionEvent extends Event
             }
         }
 
+        // Reset the filter results to prevent duplicates. RE: #2179
+        $this->filter_results = array();
         return $result;
     }
 
