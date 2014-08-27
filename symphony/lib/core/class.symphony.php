@@ -287,6 +287,16 @@ abstract class Symphony implements Singleton
     }
 
     /**
+     * Accessor for the current `$Cookie` instance.
+     *
+     * @since Symphony 2.5.0
+     * @return Cookie
+     */
+    public static function Cookie() {
+        return self::$Cookie;
+    }
+
+    /**
      * Setter for `$ExtensionManager` using the current
      * Symphony instance as the parent. If for some reason this fails,
      * a Symphony Error page will be thrown
@@ -413,14 +423,14 @@ abstract class Symphony implements Singleton
     }
 
     /**
-	 * Accessor for the current `$Author` instance.
-	 *
+     * Accessor for the current `$Author` instance.
+     *
      * @since Symphony 2.5.0
-	 * @return Author
-	 */
-	public static function Author() {
-		return self::$Author;
-	}
+     * @return Author
+     */
+    public static function Author() {
+        return self::$Author;
+    }
 
     /**
      * Attempts to log an Author in given a username and password.
