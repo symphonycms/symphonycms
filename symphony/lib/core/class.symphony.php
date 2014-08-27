@@ -111,7 +111,6 @@ abstract class Symphony implements Singleton
     protected function __construct()
     {
         self::$Profiler = Profiler::instance();
-        self::$Profiler->sample('Engine Initialisation');
 
         if (get_magic_quotes_gpc()) {
             General::cleanArray($_SERVER);
@@ -120,21 +119,20 @@ abstract class Symphony implements Singleton
             General::cleanArray($_POST);
         }
 
-        self::initialiseConfiguration();
-
+        // Set date format throughout the system
         define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
         define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
         define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
-
         DateTimeObj::setSettings(self::Configuration()->get('region'));
+
+        // Initialise logging
+        self::initialiseLog();
+        GenericExceptionHandler::initialise(self::Log());
+        GenericErrorHandler::initialise(self::Log());
 
         // Initialize language management
         Lang::initialize();
-
-        self::initialiseLog();
-
-        GenericExceptionHandler::initialise(self::Log());
-        GenericErrorHandler::initialise(self::Log());
+        Lang::set(self::$Configuration->get('lang', 'symphony'));
 
         self::initialiseCookie();
 
@@ -143,8 +141,8 @@ abstract class Symphony implements Singleton
             GenericExceptionHandler::$enabled = false;
         }
 
-        // Set system language
-        Lang::set(self::$Configuration->get('lang', 'symphony'));
+        // Engine is ready.
+        self::$Profiler->sample('Engine Initialisation');
     }
 
     /**
