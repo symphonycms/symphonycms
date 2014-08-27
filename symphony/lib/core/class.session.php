@@ -74,6 +74,7 @@ class Session
             );
 
             session_set_cookie_params($lifetime, $path, ($domain ? $domain : self::getDomain()), $secure, $httpOnly);
+            session_cache_limiter('');
 
             if (session_id() == '') {
                 if (headers_sent()) {
