@@ -156,7 +156,7 @@ class DataSource
     /**
      * @deprecated This function has been renamed to `execute` as of
      *  Symphony 2.3.1, please use `execute()` instead. This function will
-     *  be removed in Symphony 2.5
+     *  be removed in Symphony 3.0.0
      * @see execute()
      */
     public function grab(array &$param_pool = null)

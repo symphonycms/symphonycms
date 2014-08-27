@@ -416,7 +416,7 @@ Class AdministrationPage extends HTMLPage
          * @since In Symphony 2.3.2 this delegate was renamed from
          *  `InitaliseAdminPageHead` to the correct spelling of
          *  `InitialiseAdminPageHead`. The old delegate is supported
-         *  until Symphony 2.5.
+         *  until Symphony 2.6.0.
          *
          * @delegate InitialiseAdminPageHead
          * @param string $context
