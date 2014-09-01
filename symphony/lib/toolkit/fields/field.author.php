@@ -284,6 +284,11 @@ class FieldAuthor extends Field implements ExportableField
         }
 
         $label = Widget::Label($this->get('label'));
+
+        if ($this->get('required') != 'yes') {
+            $label->appendChild(new XMLElement('i', __('Optional')));
+        }
+
         $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : null)));
 
         if ($flagWithError != null) {
@@ -297,7 +302,7 @@ class FieldAuthor extends Field implements ExportableField
     {
         $status = self::__OK__;
 
-        if (!is_array($data) && !is_null($data)) {
+        if (!is_array($data) && !empty($data)) {
             return array('author_id' => $data);
         }
 
