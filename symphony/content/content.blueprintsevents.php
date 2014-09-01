@@ -7,8 +7,6 @@
  * The Event Editor allows a developer to create events that typically
  * allow Frontend forms to populate Sections or edit Entries.
  */
-require_once TOOLKIT . '/class.resourcespage.php';
-require_once FACE . '/interface.provider.php';
 
 class contentBlueprintsEvents extends ResourcesPage
 {
@@ -488,7 +486,6 @@ class contentBlueprintsEvents extends ResourcesPage
                 $this->__injectFilters($eventShell, $filters);
 
                 // Add Documentation
-                require_once(CONTENT . '/content.ajaxeventdocumentation.php');
                 $ajaxEventDoc = new contentAjaxEventDocumentation();
                 $doc_parts = array();
 

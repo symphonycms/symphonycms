@@ -9,10 +9,6 @@
  * from Sections. This Page controls the entries table as well as
  * the Entry creation screens.
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.entrymanager.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once CONTENT . '/class.sortable.php';
 
 class contentPublish extends AdministrationPage
 {

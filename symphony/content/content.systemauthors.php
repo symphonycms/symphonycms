@@ -9,9 +9,6 @@
  * including making new Authors, editing Authors or deleting
  * Authors from Symphony
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once CONTENT . '/class.sortable.php';
 
 class contentSystemAuthors extends AdministrationPage
 {
@@ -222,9 +219,6 @@ class contentSystemAuthors extends AdministrationPage
 
     public function __form()
     {
-
-        require_once TOOLKIT . '/class.field.php';
-
         // Handle unknown context
         if (!in_array($this->_context[0], array('new', 'edit'))) {
             Administration::instance()->errorPageNotFound();

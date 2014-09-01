@@ -9,10 +9,6 @@
  * A `FrontendPage` is one that is setup in Symphony and it's output is generated
  * by using XML and XSLT
  */
-
-require_once CORE . '/class.symphony.php';
-require_once TOOLKIT . '/class.frontendpage.php';
-
 class Frontend extends Symphony
 {
     /**

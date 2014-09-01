@@ -11,9 +11,6 @@
  * @since Symphony 2.3
  * @see toolkit.AdministrationPage
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.resourcemanager.php';
-require_once CONTENT . '/class.sortable.php';
 
 abstract class ResourcesPage extends AdministrationPage
 {

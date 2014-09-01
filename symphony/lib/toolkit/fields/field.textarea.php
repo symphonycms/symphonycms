@@ -4,9 +4,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
-
 /**
  * A simple Textarea field that essentially maps to HTML's `<textarea/>`.
  */

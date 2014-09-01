@@ -8,9 +8,6 @@
  * A manager to standardize the finding and listing of installed gateways.
  */
 
-require_once TOOLKIT . '/class.emailgateway.php';
-require_once FACE . '/interface.fileresource.php';
-
 Class EmailGatewayManager implements FileResource
 {
     /**

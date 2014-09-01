@@ -9,10 +9,6 @@
  *
  * @since Symphony 2.3
  */
-require_once TOOLKIT . '/class.eventmanager.php';
-require_once TOOLKIT . '/class.datasourcemanager.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once TOOLKIT . '/class.pagemanager.php';
 
 class ResourceManager
 {

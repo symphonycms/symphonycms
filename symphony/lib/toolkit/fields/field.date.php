@@ -4,9 +4,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
-
 /**
  * A simple Date field that stores a full ISO date. Symphony will attempt
  * to localize the date on a per Author basis. The field essentially maps to

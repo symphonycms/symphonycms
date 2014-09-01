@@ -8,9 +8,6 @@
  * of a Page that will be generated using XSLT.
  */
 
-require_once TOOLKIT . '/class.page.php';
-require_once TOOLKIT . '/class.xsltprocess.php';
-
 class XSLTPage extends Page
 {
     /**

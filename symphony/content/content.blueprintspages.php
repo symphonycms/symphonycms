@@ -9,9 +9,6 @@
  * an index view of all the pages in this Symphony install as well as the
  * forms for the creation/editing of a Page
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.resourcemanager.php';
-require_once TOOLKIT . '/class.xsltprocess.php';
 
 class contentBlueprintsPages extends AdministrationPage
 {

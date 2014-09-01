@@ -15,7 +15,6 @@
   *
   * @link http://php.net/manual/en/function.session-set-save-handler.php
   */
-require_once CORE . '/class.cacheable.php';
 
 class Session
 {

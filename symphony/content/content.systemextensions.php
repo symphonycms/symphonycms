@@ -7,8 +7,6 @@
  * This page generates the Extensions index which shows all Extensions
  * that are available in this Symphony installation.
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once CONTENT . '/class.sortable.php';
 
 class contentSystemExtensions extends AdministrationPage
 {

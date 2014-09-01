@@ -4,9 +4,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
-
 /**
  * Checkbox field simulates a HTML checkbox field, in that it represents a
  * simple yes/no field.

@@ -3,10 +3,6 @@
  * @package email-gateways
  */
 
-require_once TOOLKIT . '/class.emailgateway.php';
-require_once TOOLKIT . '/class.emailhelper.php';
-require_once TOOLKIT . '/class.smtp.php';
-
 /**
  * One of the two core email gateways.
  * Provides simple SMTP functionalities.

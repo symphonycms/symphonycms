@@ -3,9 +3,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
-
 /**
  * The Tag List field is really a different interface for the Select Box
  * field, offering a tag interface that can have static suggestions,

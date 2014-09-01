@@ -1,7 +1,5 @@
 <?php
 
-require_once TOOLKIT . '/class.datasource.php';
-
 class datasource<!-- CLASS NAME --> extends <!-- CLASS EXTENDS -->
 {
     <!-- VAR LIST -->

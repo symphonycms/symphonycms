@@ -4,9 +4,7 @@
      * @package boot
      */
 
-    require_once DOCROOT . '/symphony/lib/boot/func.utilities.php';
-    require_once DOCROOT . '/symphony/lib/boot/defines.php';
-    require_once CORE . '/class.symphony.php';
+    require_once DOCROOT . '/symphony/lib/boot/autoload.php';
 
     // Set appropriate error reporting:
     error_reporting(

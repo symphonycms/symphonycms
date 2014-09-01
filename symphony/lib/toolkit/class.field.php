@@ -581,8 +581,6 @@ class Field
      */
     public function buildFormatterSelect($selected = null, $name = 'fields[format]', $label_value)
     {
-        require_once TOOLKIT . '/class.textformattermanager.php';
-
         $formatters = TextformatterManager::listAll();
 
         if (!$label_value) {

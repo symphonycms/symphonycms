@@ -9,8 +9,6 @@
  * is generated, it is output as an XML string.
  */
 
-require_once TOOLKIT . '/class.lang.php';
-
 class XMLElement implements IteratorAggregate
 {
     /**

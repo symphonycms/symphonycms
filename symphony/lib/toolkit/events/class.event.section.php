@@ -11,9 +11,6 @@
  * @link http://getsymphony.com/learn/concepts/view/events/
  */
 
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once TOOLKIT . '/class.entrymanager.php';
-
 abstract class SectionEvent extends Event
 {
     /**

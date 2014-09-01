@@ -11,9 +11,6 @@
  * Typically, a Datasource returns XML.
  */
 
-require_once TOOLKIT . '/class.datasource.php';
-require_once FACE . '/interface.fileresource.php';
-
 class DatasourceManager implements FileResource
 {
     /**

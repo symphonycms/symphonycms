@@ -8,8 +8,6 @@
  * be read at a later date. There is one Log file in Symphony, stored in the main
  * `LOGS` directory.
  */
-require_once CORE . '/class.datetimeobj.php';
-require_once TOOLKIT . '/class.general.php';
 
 class Log
 {

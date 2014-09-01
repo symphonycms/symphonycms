@@ -9,8 +9,6 @@
  * in a `fields` folder in an extension directory.
  */
 
-require_once TOOLKIT . '/class.field.php';
-
 class FieldManager implements FileResource
 {
     /**

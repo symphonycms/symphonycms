@@ -7,9 +7,6 @@
  * The Datasource Editor page allows a developer to create new datasources
  * from the four Symphony types, Section, Authors, Navigation and Static XML
  */
-require_once TOOLKIT . '/class.gateway.php';
-require_once TOOLKIT . '/class.resourcespage.php';
-require_once FACE . '/interface.provider.php';
 
 class contentBlueprintsDatasources extends ResourcesPage
 {

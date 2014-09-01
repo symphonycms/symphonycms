@@ -14,8 +14,6 @@
  * @link http://getsymphony.com/learn/concepts/view/data-sources/
  */
 
-require_once TOOLKIT . '/class.entrymanager.php';
-
 class SectionDatasource extends Datasource
 {
     /**
@@ -412,8 +410,6 @@ class SectionDatasource extends Datasource
                     $where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
                 }
             } elseif ($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
-                require_once TOOLKIT . '/fields/field.date.php';
-
                 $date_joins = '';
                 $date_where = '';
                 $date = new fieldDate();

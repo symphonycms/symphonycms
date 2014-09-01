@@ -15,8 +15,6 @@
  * instead.
  */
 
-require_once TOOLKIT . '/class.xsltpage.php';
-
 class FrontendPage extends XSLTPage
 {
     /**

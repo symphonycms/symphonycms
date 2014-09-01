@@ -10,9 +10,6 @@
  * they are not limited to that facet.
  */
 
-require_once TOOLKIT . '/class.event.php';
-require_once FACE . '/interface.fileresource.php';
-
 class EventManager implements FileResource
 {
     /**

@@ -3,8 +3,6 @@
  * @package core
  */
 
-require_once CORE . '/class.log.php';
-
 /**
  * GenericExceptionHandler will handle any uncaught exceptions thrown in
  * Symphony. Additionally, all errors in Symphony that are raised to Exceptions
@@ -80,7 +78,6 @@ class GenericExceptionHandler
         try {
             // Instead of just throwing an empty page, return a 404 page.
             if (self::$enabled !== true) {
-                require_once(CORE . '/class.frontend.php');
                 $e = new FrontendPageNotFoundException();
             };
 

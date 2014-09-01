@@ -10,7 +10,6 @@
   * this class was hardcoded to use MySQL, but since Symphony 2.4 this 
   * may not be the case anymore.
   */
-require_once TOOLKIT . '/cache/cache.database.php';
 
 class Cacheable
 {

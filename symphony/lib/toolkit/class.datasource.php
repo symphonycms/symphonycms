@@ -537,9 +537,3 @@ class DataSource
         return null;
     }
 }
-
-require_once TOOLKIT . '/data-sources/class.datasource.author.php';
-require_once TOOLKIT . '/data-sources/class.datasource.section.php';
-require_once TOOLKIT . '/data-sources/class.datasource.static.php';
-require_once TOOLKIT . '/data-sources/class.datasource.dynamic_xml.php';
-require_once TOOLKIT . '/data-sources/class.datasource.navigation.php';
