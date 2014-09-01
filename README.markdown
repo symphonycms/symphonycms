@@ -2,10 +2,10 @@
 
 [![Code Climate](https://codeclimate.com/github/symphonycms/symphony-2.png)](https://codeclimate.com/github/symphonycms/symphony-2)
 
-- Version: 2.5.0RC1
+- Version: 2.5.0-rc.2
 - Date: in development
 - [Release notes](http://getsymphony.com/download/releases/version/2.5/)
-- [Github repository](https://github.com/symphonycms/symphony-2/releases/tag/2.5.0RC1)
+- [Github repository](https://github.com/symphonycms/symphony-2/releases/tag/2.5.0-rc.2)
 
 
 ## Contents
