@@ -96,7 +96,7 @@ class Administration extends Symphony
     public static function isLoggedIn()
     {
         if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && in_array(strlen($_REQUEST['auth-token']), array(6, 8, 16))) {
-            return $this->loginFromToken($_REQUEST['auth-token']);
+            return parent::loginFromToken($_REQUEST['auth-token']);
         }
 
         return parent::isLoggedIn();
