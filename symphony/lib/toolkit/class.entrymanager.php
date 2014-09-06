@@ -177,8 +177,8 @@ class EntryManager
             }
 
             try {
-                Symphony::Database()->delete('tbl_entries_data_' . $field_id, sprintf(" `
-                    entry_id` = %d", $entry->get('id')
+                Symphony::Database()->delete('tbl_entries_data_' . $field_id, sprintf("
+                    `entry_id` = %d", $entry->get('id')
                 ));
             } catch (Exception $e) {
                 // Discard?
