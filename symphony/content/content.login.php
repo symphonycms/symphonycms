@@ -218,7 +218,9 @@ class contentLogin extends HTMLPage
                 ));
 
                 if (!empty($author)) {
-                    Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' ");
+                    Symphony::Database()->delete('tbl_forgotpass', sprintf("
+                        `expiry` < %d", DateTimeObj::getGMT('c')
+                    ));
 
                     if (!$token = Symphony::Database()->fetchVar('token', 0, "SELECT `token` FROM `tbl_forgotpass` WHERE `expiry` > '".DateTimeObj::getGMT('c')."' AND `author_id` = ".$author['id'])) {
                         // More secure password token generation

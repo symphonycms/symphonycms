@@ -270,7 +270,7 @@ class Session
             sprintf(
                 "DELETE
                 FROM `tbl_sessions`
-                WHERE `session_expires` <= '%s'",
+                WHERE `session_expires` <= %d",
                 Symphony::Database()->cleanValue(time() - $max)
             )
         );

@@ -470,7 +470,9 @@ abstract class Symphony implements Singleton
                 if (self::isUpgradeAvailable() === false && Cryptography::requiresMigration(self::$Author->get('password'))) {
                     self::$Author->set('password', Cryptography::hash($password));
 
-                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors', " `id` = '" . self::$Author->get('id') . "'");
+                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors', sprintf(
+                        " `id` = %d", self::$Author->get('id')
+                    ));
                 }
 
                 self::$Cookie->set('username', $username);
@@ -524,7 +526,7 @@ abstract class Symphony implements Singleton
                 $token
             ));
 
-            self::Database()->delete('tbl_forgotpass', " `token` = '{$token}' ");
+            self::Database()->delete('tbl_forgotpass', sprintf(" `token` = %s ", $token));
         } else {
             $row = self::Database()->fetchRow(0, sprintf(
                 "SELECT `id`, `username`, `password`
@@ -541,7 +543,9 @@ abstract class Symphony implements Singleton
             self::$Author = AuthorManager::fetchByID($row['id']);
             self::$Cookie->set('username', $row['username']);
             self::$Cookie->set('pass', $row['password']);
-            self::Database()->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', " `id` = '{$row['id']}'");
+            self::Database()->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', sprintf("
+                `id` = %d", $row['id']
+            ));
 
             return true;
         }

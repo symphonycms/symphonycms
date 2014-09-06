@@ -116,7 +116,9 @@ class EntryManager
                 continue;
             }
 
-            Symphony::Database()->delete('tbl_entries_data_' . $field_id, " `entry_id` = '$entry_id'");
+            Symphony::Database()->delete('tbl_entries_data_' . $field_id, sprintf("
+                `entry_id` = %d", $entry_id
+            ));
 
             $data = array(
                 'entry_id' => $entry_id
@@ -175,7 +177,9 @@ class EntryManager
             }
 
             try {
-                Symphony::Database()->delete('tbl_entries_data_' . $field_id, sprintf(' `entry_id` = %d', $entry->get('id')));
+                Symphony::Database()->delete('tbl_entries_data_' . $field_id, sprintf(" `
+                    entry_id` = %d", $entry->get('id')
+                ));
             } catch (Exception $e) {
                 // Discard?
             }
@@ -409,19 +413,27 @@ class EntryManager
             $entry_id = array($entry_id);
         }
 
-        $sql = "
-            SELECT  ".($group ? 'DISTINCT ' : '')."`e`.id,
-                    `e`.section_id, e.`author_id`,
-                    UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`,
-                    UNIX_TIMESTAMP(e.`modification_date`) AS `modification_date`
+        $sql = sprintf("
+            SELECT  %s`e`.id, `e`.section_id, e.`author_id`,
+                UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`,
+                UNIX_TIMESTAMP(e.`modification_date`) AS `modification_date`
             FROM `tbl_entries` AS `e`
-            $joins
+            %s
             WHERE 1
-            ".($entry_id ? "AND `e`.`id` IN ('".implode("', '", $entry_id)."') " : '')."
-            ".($section_id ? "AND `e`.`section_id` = '$section_id' " : '')."
-            $where
-            $sort
-            ".($limit ? 'LIMIT ' . intval($start) . ', ' . intval($limit) : '');
+            %s
+            %s
+            %s
+            %s
+            %s
+            ", 
+            $group ? 'DISTINCT ' : '',
+            $joins,
+            $entry_id ? "AND `e`.`id` IN ('".implode("', '", $entry_id)."') " : '',
+            $section_id ? sprintf("AND `e`.`section_id` = %d", $section_id) : '',
+            $where,
+            $sort,
+            $limit ? sprintf('LIMIT %d, %d', $start, $limit) : ''
+        );
 
         $rows = Symphony::Database()->fetch($sql);
 
@@ -568,7 +580,10 @@ class EntryManager
      */
     public static function fetchEntrySectionID($entry_id)
     {
-        return Symphony::Database()->fetchVar('section_id', 0, "SELECT `section_id` FROM `tbl_entries` WHERE `id` = '$entry_id' LIMIT 1");
+        return Symphony::Database()->fetchVar('section_id', 0, sprintf("
+            SELECT `section_id` FROM `tbl_entries` WHERE `id` = %d LIMIT 1",
+            $entry_id
+        ));
     }
 
     /**
@@ -596,15 +611,18 @@ class EntryManager
             return false;
         }
 
-        return Symphony::Database()->fetchVar(
-            'count',
-            0,
-            "SELECT count(".($group ? 'DISTINCT ' : '')."`e`.id) as `count`
-            FROM `tbl_entries` AS `e`
-            $joins
-            WHERE `e`.`section_id` = '$section_id'
-            $where"
-        );
+        return Symphony::Database()->fetchVar('count', 0, sprintf("
+                SELECT COUNT(%s`e`.id) as `count`
+                FROM `tbl_entries` AS `e`
+                %s
+                WHERE `e`.`section_id` = %d
+                %s
+            ",
+            $group ? 'DISTINCT ' : '',
+            $joins,
+            $section_id,
+            $where
+        ));
     }
 
     /**

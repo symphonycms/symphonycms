@@ -259,7 +259,7 @@ class PageManager
             unset($fields['id']);
         }
 
-        if (Symphony::Database()->update($fields, 'tbl_pages', "`id` = '$page_id'")) {
+        if (Symphony::Database()->update($fields, 'tbl_pages', sprintf("`id` = %d", $page_id))) {
             // If set, this will clear the page's types.
             if ($delete_types) {
                 PageManager::deletePageTypes($page_id);

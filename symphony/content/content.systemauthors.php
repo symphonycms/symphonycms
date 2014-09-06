@@ -704,7 +704,11 @@ class contentSystemAuthors extends AdministrationPage
 
                 // All good, let's save the Author
                 if (is_array($this->_errors) && empty($this->_errors) && $this->_Author->commit()) {
-                    Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' OR `author_id` = '".$author_id."' ");
+                    Symphony::Database()->delete('tbl_forgotpass', sprintf("
+                        `expiry` < %d OR `author_id` = %d", 
+                        DateTimeObj::getGMT('c'),
+                        $author_id
+                    ));
 
                     if ($isOwner) {
                         Administration::instance()->login($this->_Author->get('username'), $this->_Author->get('password'), true);
