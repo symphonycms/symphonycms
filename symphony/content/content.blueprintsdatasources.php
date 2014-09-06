@@ -428,7 +428,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                 $li = new XMLElement('li');
                 $li->setAttribute('class', 'unique');
                 $li->setAttribute('data-type', 'system:modification-date');
-                $li->appendChild(new XMLElement('header', '<h4>' . __('System Modified Date') . '</h4>'));
+                $li->appendChild(new XMLElement('header', '<h4>' . __('System Modification Date') . '</h4>'));
                 $label = Widget::Label(__('Value'));
                 $label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:modification-date]', General::sanitize($fields['filter'][$section_id]['system:modification-date'])));
                 $li->appendChild($label);
@@ -438,7 +438,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             $li = new XMLElement('li');
             $li->setAttribute('class', 'unique template');
             $li->setAttribute('data-type', 'system:modification-date');
-            $li->appendChild(new XMLElement('header', '<h4>' . __('System Modified Date') . '</h4>'));
+            $li->appendChild(new XMLElement('header', '<h4>' . __('System Modification Date') . '</h4>'));
             $label = Widget::Label(__('Value'));
             $label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:modification-date]'));
             $li->appendChild($label);
