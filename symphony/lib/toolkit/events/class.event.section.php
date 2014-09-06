@@ -226,30 +226,31 @@ abstract class SectionEvent extends Event
         $entry_id = $position = $fields = null;
         $post = General::getPostData();
         $success = true;
+        if (!is_array($post['fields'])) {
+            $post['fields'] = array();
+        }
 
         if (in_array('expect-multiple', $this->eParamFILTERS)) {
-            if (is_array($post['fields'])) {
-                foreach ($post['fields'] as $position => $fields) {
-                    if (isset($post['id'][$position]) && is_numeric($post['id'][$position])) {
-                        $entry_id = $post['id'][$position];
-                    } else {
-                        $entry_id = null;
-                    }
-
-                    $entry = new XMLElement('entry', null, array('position' => $position));
-
-                    // Reset errors for each entry execution
-                    $this->filter_results = $this->filter_errors = array();
-
-                    // Execute the event for this entry
-                    $ret = $this->__doit($fields, $entry, $position, $entry_id);
-
-                    if (!$ret) {
-                        $success = false;
-                    }
-
-                    $result->appendChild($entry);
+            foreach ($post['fields'] as $position => $fields) {
+                if (isset($post['id'][$position]) && is_numeric($post['id'][$position])) {
+                    $entry_id = $post['id'][$position];
+                } else {
+                    $entry_id = null;
                 }
+
+                $entry = new XMLElement('entry', null, array('position' => $position));
+
+                // Reset errors for each entry execution
+                $this->filter_results = $this->filter_errors = array();
+
+                // Execute the event for this entry
+                $ret = $this->__doit($fields, $entry, $position, $entry_id);
+
+                if (!$ret) {
+                    $success = false;
+                }
+
+                $result->appendChild($entry);
             }
         } else {
             $fields = $post['fields'];
@@ -288,7 +289,7 @@ abstract class SectionEvent extends Event
      * @return XMLElement
      *  The result of the Event
      */
-    public function __doit($fields, XMLElement &$result, $position = null, $entry_id = null)
+    public function __doit(array $fields = array(), XMLElement &$result, $position = null, $entry_id = null)
     {
         $post_values = new XMLElement('post-values');
 
@@ -306,7 +307,7 @@ abstract class SectionEvent extends Event
         }
 
         // Create the post data element
-        if (is_array($fields) && !empty($fields)) {
+        if (!empty($fields)) {
             General::array_to_xml($post_values, $fields, true);
         }
 
