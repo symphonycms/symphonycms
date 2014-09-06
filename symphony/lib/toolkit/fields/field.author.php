@@ -598,22 +598,27 @@ class FieldAuthor extends Field implements ExportableField
 
         foreach ($records as $r) {
             $data = $r->getData($this->get('id'));
+            $author_id = !isset($data['author_id']) ? 0 : $data['author_id'];
 
-            if (!isset($data['author_id'])) {
-                continue;
-            }
+            if (!isset($groups[$this->get('element_name')][$author_id])) {
+                $author = AuthorManager::fetchByID($author_id);
+                // If there is an author, use those values, otherwise just blank it.
+                if($author instanceof Author) {
+                    $username = $author->get('username');
+                    $full_name = $author->getFullName();
+                } else {
+                    $username = '';
+                    $full_name = '';
+                }
 
-            if (!isset($groups[$this->get('element_name')][$data['author_id']])) {
-                $author = AuthorManager::fetchByID($data['author_id']);
-
-                $groups[$this->get('element_name')][$data['author_id']] = array(
-                    'attr' => array('author-id' => $data['author_id'], 'username' => $author->get('username'), 'full-name' => $author->getFullName()),
+                $groups[$this->get('element_name')][$author_id] = array(
+                    'attr' => array('author-id' => $author_id, 'username' => $username, 'full-name' => $full_name),
                     'records' => array(),
                     'groups' => array()
                 );
             }
 
-            $groups[$this->get('element_name')][$data['author_id']]['records'][] = $r;
+            $groups[$this->get('element_name')][$author_id]['records'][] = $r;
         }
 
         return $groups;
