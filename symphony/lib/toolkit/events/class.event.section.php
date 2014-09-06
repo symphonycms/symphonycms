@@ -350,15 +350,16 @@ abstract class SectionEvent extends Event
         }
 
         // Validate the data. `$entry->checkPostData` loops over all fields calling
-        // checkPostFieldData function. If the return of the function is `__ENTRY_FIELD_ERROR__`
-        // then abort the event, adding the error messages to the `$result`.
-        if (__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))) {
+        // their `checkPostFieldData` function. If the return of the function is
+        // `Entry::__ENTRY_FIELD_ERROR__` then abort the event and add the error
+        // messages to the `$result`.
+        if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))) {
             $result = self::appendErrors($result, $fields, $errors, $post_values);
             return false;
 
             // If the data is good, process the data, almost ready to save it to the
             // Database. If processing fails, abort the event and display the errors
-        } elseif (__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors, false, ($entry->get('id') ? true : false))) {
+        } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors, false, ($entry->get('id') ? true : false))) {
             $result = self::appendErrors($result, $fields, $errors, $post_values);
             return false;
 

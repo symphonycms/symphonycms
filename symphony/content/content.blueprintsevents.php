@@ -14,7 +14,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
     public function __viewIndex($resource_type)
     {
-        parent::__viewIndex(RESOURCE_TYPE_EVENT);
+        parent::__viewIndex(ResourceManager::RESOURCE_TYPE_EVENT);
 
         $this->setTitle(__('%1$s &ndash; %2$s', array(__('Events'), __('Symphony'))));
         $this->appendSubheading(__('Events'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a new event'), 'create button', null, array('accesskey' => 'c')));
@@ -242,7 +242,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
             $pages = PageManager::fetch();
             $event_handle = str_replace('-', '_', Lang::createHandle($fields['name']));
-            $connections = ResourceManager::getAttachedPages(RESOURCE_TYPE_EVENT, $event_handle);
+            $connections = ResourceManager::getAttachedPages(ResourceManager::RESOURCE_TYPE_EVENT, $event_handle);
             $selected = array();
 
             foreach ($connections as $connection) {
@@ -376,10 +376,10 @@ class contentBlueprintsEvents extends ResourcesPage
                     Alert::ERROR
                 );
             } else {
-                $pages = ResourceManager::getAttachedPages(RESOURCE_TYPE_EVENT, $this->_context[1]);
+                $pages = ResourceManager::getAttachedPages(ResourceManager::RESOURCE_TYPE_EVENT, $this->_context[1]);
 
                 foreach ($pages as $page) {
-                    ResourceManager::detach(RESOURCE_TYPE_EVENT, $this->_context[1], $page['id']);
+                    ResourceManager::detach(ResourceManager::RESOURCE_TYPE_EVENT, $this->_context[1], $page['id']);
                 }
 
                 redirect(SYMPHONY_URL . '/blueprints/events/');
@@ -389,7 +389,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
     public function __actionIndex($resource_type)
     {
-        return parent::__actionIndex(RESOURCE_TYPE_EVENT);
+        return parent::__actionIndex(ResourceManager::RESOURCE_TYPE_EVENT);
     }
 
     public function __formAction()
@@ -590,7 +590,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
                 // Attach this event to pages
                 $connections = $fields['connections'];
-                ResourceManager::setPages(RESOURCE_TYPE_EVENT, is_null($existing_handle) ? $classname : $existing_handle, $connections);
+                ResourceManager::setPages(ResourceManager::RESOURCE_TYPE_EVENT, is_null($existing_handle) ? $classname : $existing_handle, $connections);
 
                 if ($queueForDeletion) {
                     General::deleteFile($queueForDeletion);

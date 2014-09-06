@@ -84,9 +84,9 @@ class contentSystemExtensions extends AdministrationPage
                 // Version
                 $installed_version = Symphony::ExtensionManager()->fetchInstalledVersion($name);
 
-                if (in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
+                if (in_array(Extension::EXTENSION_NOT_INSTALLED, $about['status'])) {
                     $td2 = Widget::TableData($about['version']);
-                } elseif (in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+                } elseif (in_array(Extension::EXTENSION_REQUIRES_UPDATE, $about['status'])) {
                     $td2 = Widget::TableData($installed_version . '<i> → ' . $about['version'] . '</i>');
                 } else {
                     $td2 = Widget::TableData($installed_version);
@@ -97,28 +97,28 @@ class contentSystemExtensions extends AdministrationPage
                 $trStatus = '';
                 $tdMessage = __('Status unavailable');
 
-                if (in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
+                if (in_array(Extension::EXTENSION_NOT_INSTALLED, $about['status'])) {
                     $tdMessage = __('Not installed');
                     $trClasses[] = 'inactive';
                     $trClasses[] = 'extension-can-install';
                 }
 
-                if (in_array(EXTENSION_DISABLED, $about['status'])) {
+                if (in_array(Extension::EXTENSION_DISABLED, $about['status'])) {
                     $tdMessage = __('Disabled');
                     $trStatus = 'status-notice';
                 }
 
-                if (in_array(EXTENSION_ENABLED, $about['status'])) {
+                if (in_array(Extension::EXTENSION_ENABLED, $about['status'])) {
                     $tdMessage = __('Enabled');
                 }
 
-                if (in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+                if (in_array(Extension::EXTENSION_REQUIRES_UPDATE, $about['status'])) {
                     $tdMessage = __('Update available');
                     $trClasses[] = 'extension-can-update';
                     $trStatus = 'status-ok';
                 }
 
-                if (in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
+                if (in_array(Extension::EXTENSION_NOT_COMPATIBLE, $about['status'])) {
                     $tdMessage .= ', ' . __('requires Symphony %s', array($about['required_version']));
                     $trStatus = 'status-error';
                 }

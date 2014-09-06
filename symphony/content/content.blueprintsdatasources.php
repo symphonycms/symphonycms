@@ -14,7 +14,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
     public function __viewIndex($resource_type)
     {
-        parent::__viewIndex(RESOURCE_TYPE_DS);
+        parent::__viewIndex(ResourceManager::RESOURCE_TYPE_DS);
 
         $this->setTitle(__('%1$s &ndash; %2$s', array(__('Data Sources'), __('Symphony'))));
         $this->appendSubheading(__('Data Sources'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a new data source'), 'create button', null, array('accesskey' => 'c')));
@@ -904,7 +904,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $pages = PageManager::fetch();
         $ds_handle = str_replace('-', '_', Lang::createHandle($fields['name']));
-        $connections = ResourceManager::getAttachedPages(RESOURCE_TYPE_DS, $ds_handle);
+        $connections = ResourceManager::getAttachedPages(ResourceManager::RESOURCE_TYPE_DS, $ds_handle);
         $selected = array();
 
         foreach ($connections as $connection) {
@@ -1041,7 +1041,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
     public function __actionIndex($resource_type)
     {
-        return parent::__actionIndex(RESOURCE_TYPE_DS);
+        return parent::__actionIndex(ResourceManager::RESOURCE_TYPE_DS);
     }
 
     public function __actionEdit()
@@ -1068,10 +1068,10 @@ class contentBlueprintsDatasources extends ResourcesPage
                     Alert::ERROR
                 );
             } else {
-                $pages = ResourceManager::getAttachedPages(RESOURCE_TYPE_DS, $this->_context[1]);
+                $pages = ResourceManager::getAttachedPages(ResourceManager::RESOURCE_TYPE_DS, $this->_context[1]);
 
                 foreach ($pages as $page) {
-                    ResourceManager::detach(RESOURCE_TYPE_DS, $this->_context[1], $page['id']);
+                    ResourceManager::detach(ResourceManager::RESOURCE_TYPE_DS, $this->_context[1], $page['id']);
                 }
 
                 redirect(SYMPHONY_URL . '/blueprints/datasources/');
@@ -1379,7 +1379,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
                 // Attach this datasources to pages
                 $connections = $fields['connections'];
-                ResourceManager::setPages(RESOURCE_TYPE_DS, is_null($existing_handle) ? $classname : $existing_handle, $connections);
+                ResourceManager::setPages(ResourceManager::RESOURCE_TYPE_DS, is_null($existing_handle) ? $classname : $existing_handle, $connections);
 
                 // If the datasource has been updated and the name changed, then adjust all the existing pages that have the old datasource name
                 if ($queueForDeletion) {
