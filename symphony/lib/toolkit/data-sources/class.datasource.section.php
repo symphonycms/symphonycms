@@ -394,8 +394,8 @@ class SectionDatasource extends Datasource
                     $c = 'NOT IN';
                 }
 
-                // Cast all ID's to integers.
-                $value = array_map(General::intval, $value);
+                // Cast all ID's to integers. (RE: #2191)
+                $value = array_map('General::intval', $value);
                 $count = array_sum($value);
                 $value = array_filter($value);
 
@@ -404,7 +404,7 @@ class SectionDatasource extends Datasource
                 // Datasource will return ALL results, which is not the
                 // desired behaviour. RE: #1619
                 if ($count === 0) {
-                    $value[] = '0';
+                    $value[] = 0;
                 }
 
                 // If there are no ID's, no need to filter. RE: #1567
