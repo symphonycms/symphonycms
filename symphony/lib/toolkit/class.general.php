@@ -1593,4 +1593,22 @@ class General
     {
         return str_replace(array(CDATA_BEGIN, CDATA_END), '', $value);
     }
+
+    /**
+     * Converts a value to a positive integer. This method makes sure that the
+     * value is a valid positive integer representation before doing the cast.
+     *
+     * @since Symphony 2.5
+     * @param mixed $value
+     *  The value to cast to an integer
+     * @return int
+     *  The casted integer value if the input is valid, -1 otherwise.
+     */
+    public static function intval($value)
+    {
+        if (is_numeric($value) && preg_match('/[0-9]+/i', $value) === 1) {
+            return intval($value);
+        }
+        return -1;
+    }
 }

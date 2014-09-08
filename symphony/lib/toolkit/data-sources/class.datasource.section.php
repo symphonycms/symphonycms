@@ -395,7 +395,7 @@ class SectionDatasource extends Datasource
                 }
 
                 // Cast all ID's to integers.
-                $value = array_map(create_function('$x', 'return (int)$x;'), $value);
+                $value = array_map(General::intval, $value);
                 $count = array_sum($value);
                 $value = array_filter($value);
 
