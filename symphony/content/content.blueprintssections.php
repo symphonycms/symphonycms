@@ -803,7 +803,11 @@ class contentBlueprintsSections extends AdministrationPage
             if ($canProceed) {
                 // If we are creating a new Section
                 if (!$edit) {
+
                     $meta['sortorder'] = SectionManager::fetchNextSortOrder();
+
+                    $meta['hidden']    = (isset($meta['hidden']) ? 'yes' : 'no');
+                    $meta['filter']    = (isset($meta['filter']) ? 'yes' : 'no');
 
                     /**
                      * Just prior to saving the Section settings. Use with caution as
@@ -829,6 +833,7 @@ class contentBlueprintsSections extends AdministrationPage
 
                     // We are editing a Section
                 } else {
+
                     $meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
                     $meta['filter'] = (isset($meta['filter']) ? 'yes' : 'no');
 
