@@ -178,7 +178,7 @@ class ExtensionManager implements FileResource
             $return[] = EXTENSION_NOT_INSTALLED;
         }
 
-        if (isset($about['handle']) && self::__requiresUpdate($about['handle'], $about['version'])) {
+        if (isset($about['handle'], $about['version']) && self::__requiresUpdate($about['handle'], $about['version'])) {
             $return[] = EXTENSION_REQUIRES_UPDATE;
         }
 
