@@ -93,6 +93,11 @@ optgroup {
 	font-family: 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 }
 
+optgroup {
+	font-weight: bold;
+	font-style: normal;
+}
+
 a,
 select,
 textarea,

@@ -26,7 +26,7 @@
 
 			// Include the default Config for installation.
 			include(INSTALL . '/includes/config_default.php');
-			$this->initialiseConfiguration($settings);
+			static::initialiseConfiguration($settings);
 
 			// Initialize date/time
 			define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
@@ -34,11 +34,10 @@
 			define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
 			DateTimeObj::setSettings(self::Configuration()->get('region'));
 
-			// Initialize Language, Logs, Database and Extension Manager
-			$this->initialiseLang();
-			$this->initialiseLog(INSTALL_LOGS . '/install');
-			$this->initialiseDatabase();
-			$this->initialiseExtensionManager();
+			// Initialize Language, Logs and Database
+			static::initialiseLang();
+			static::initialiseLog(INSTALL_LOGS . '/install');
+			static::initialiseDatabase();
 
 			// Initialize error handlers
 			GenericExceptionHandler::initialise(Symphony::Log());
@@ -64,7 +63,7 @@
 		 * Initialises the language by looking at the `lang` key,
 		 * passed via GET or POST
 		 */
-		public function initialiseLang(){
+		public static function initialiseLang(){
 			$lang = !empty($_REQUEST['lang']) ? preg_replace('/[^a-zA-Z\-]/', NULL, $_REQUEST['lang']) : 'en';
 			Lang::initialize();
 			Lang::set($lang, false);
@@ -74,7 +73,7 @@
 		 * Overrides the default `initialiseLog()` method and writes
 		 * logs to manifest/logs/install
 		 */
-		public function initialiseLog($filename = null){
+		public static function initialiseLog($filename = null){
 			if(is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS, self::Configuration()->get('write_mode', 'directory'))) {
 				parent::initialiseLog($filename);
 			}
@@ -84,8 +83,8 @@
 		 * Overrides the default `initialiseDatabase()` method
 		 * This allows us to still use the normal accessor
 		 */
-		public function initialiseDatabase(){
-			$this->setDatabase();
+		public static function initialiseDatabase(){
+			self::setDatabase();
 		}
 
 		public function run() {

@@ -52,17 +52,8 @@
 				Symphony::Configuration()->write();
 			}
 
-			// 2.2.2
-			if(version_compare(self::$existing_version, '2.2.2', '<=')) {
-				Symphony::Configuration()->set('version', '2.2.2', 'symphony');
-			}
-
-			if(Symphony::Configuration()->write() === false) {
-				throw new Exception('Failed to write configuration file, please check the file permissions.');
-			}
-			else {
-				return true;
-			}
+			// Update the version information
+			return parent::upgrade();
 		}
 
 	}

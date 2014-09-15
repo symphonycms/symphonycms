@@ -63,6 +63,10 @@
 	box-shadow: 0 0.1rem 0.4rem #e5e5e5;
 }
 
+.frame .collapsed .frame-header {
+	border-bottom: 0.1rem solid #f5f5f5;
+}
+
 .frame-header h4 {
 	display: inline;
 	font-weight: bold;
@@ -364,7 +368,6 @@ fieldset.frame,
 }
 
 .collapsible .content {
-	transition: padding 0.25s ease-in;
 	background: #e8e8e8;
 }
 
@@ -381,6 +384,10 @@ fieldset.frame,
 .collapsed.js-animate,
 .destructed.js-animate {
 	transition: max-height 0.25s ease-out;
+}
+
+.collapsible .js-animate .content {
+	transition: padding 0.25s ease-in;
 }
 
 .collapsed.js-animate .frame-header {

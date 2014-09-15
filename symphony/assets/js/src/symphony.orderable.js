@@ -14,7 +14,7 @@
 	 * @param {String} [options.items='li'] Selector to find items to be orderable
 	 * @param {String} [options.handles='*'] Selector to find children that can be grabbed to re-order
 	 * @param {String} [options.ignore='input, textarea, select'] Selector to find elements that should not propagate to the handle
-	 * @param {String} [options.delay=250] Time used to delay actions
+	 * @param {Integer} [options.delay=250] Time used to delay actions
 	 *
 	 * @example
 
@@ -73,9 +73,10 @@
 		// Stop ordering
 		objects.on('mouseup.orderable mouseleave.orderable', function stopOrdering(event) {
 			var object = $(this),
-				item = object.find('.ordering');
+				item;
 
 			if(object.data('ordering') == 1) {
+				item = object.find('.ordering');
 				item.removeClass('ordering');
 				object.data('ordering', 0);
 				object.trigger('orderstop.orderable', [item]);
@@ -92,35 +93,47 @@
 
 		// Order items
 		$(document).on('mousemove.orderable', '.orderable:has(.ordering)', function order(event) {
-			var object = $(this),
-				item = object.find('.ordering'),
-				top = item.offset().top,
-				bottom = top + item.outerHeight(),
-				position = event.pageY,
-				prev, next;
-
-			// Remove text ranges
-			if(window.getSelection) {
-				window.getSelection().removeAllRanges();
+			var object = $(this);
+			if (object.data('ordering') != 1) {
+				return;
 			}
+			// Only keep what we need from event object
+			var pageY = event.pageY;
+			Symphony.Utilities.requestAnimationFrame(function () {
+				var item = object.find('.ordering');
 
-			// Move item up
-			if(position < top) {
-				prev = item.prev(settings.items);
-				if(prev.length > 0) {
-					item.insertBefore(prev);
-					object.trigger('orderchange', [item]);
+				// If there is still an ordering item in DOM
+				if (!item.length) {
+					return;
 				}
-			}
 
-			// Move item down
-			else if(position > bottom) {
-				next = item.next(settings.items);
-				if(next.length > 0) {
-					item.insertAfter(next);
-					object.trigger('orderchange', [item]);
+				var top = item.offset().top,
+					bottom = top + item.outerHeight(),
+					prev, next;
+
+				// Remove text ranges
+				if(window.getSelection) {
+					window.getSelection().removeAllRanges();
 				}
-			}
+
+				// Move item up
+				if(pageY < top) {
+					prev = item.prev(settings.items);
+					if(prev.length > 0) {
+						item.insertBefore(prev);
+						object.trigger('orderchange', [item]);
+					}
+				}
+
+				// Move item down
+				else if(pageY > bottom) {
+					next = item.next(settings.items);
+					if(next.length > 0) {
+						item.insertAfter(next);
+						object.trigger('orderchange', [item]);
+					}
+				}
+			});
 		});
 
 	/*-------------------------------------------------------------------------

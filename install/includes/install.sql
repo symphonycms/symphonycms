@@ -140,7 +140,6 @@ CREATE TABLE `tbl_fields_select` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `field_id` int(11) unsigned NOT NULL,
   `allow_multiple_selection` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
-  `show_association` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
   `sort_options` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `static_options` text COLLATE utf8_unicode_ci,
   `dynamic_options` int(11) unsigned DEFAULT NULL,
@@ -240,6 +239,8 @@ CREATE TABLE `tbl_sections_association` (
   `child_section_id` int(11) unsigned NOT NULL,
   `child_section_field_id` int(11) unsigned NOT NULL,
   `hide_association` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
+  `interface` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `editor` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `parent_section_id` (`parent_section_id`,`child_section_id`,`child_section_field_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

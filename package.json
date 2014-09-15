@@ -1,6 +1,10 @@
 {
   "name": "symphonycms",
   "version": "2.4.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/symphonycms/symphony-2.git"
+  },
   "devDependencies": {
     "grunt": "~0.4.4",
     "grunt-autoprefixer": "~0.5.0",

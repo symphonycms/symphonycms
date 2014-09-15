@@ -1,0 +1,11 @@
+/**
+ * This file contains styles related to symphonyAffix jQuery plugin
+ *
+ * @since Symphony 2.5
+ */
+
+
+.js-affix-scroll {
+	position: fixed !important;
+	top: 1rem;
+}

@@ -1,187 +1,197 @@
 <?php
 
-	/**
-	 * @package data-sources
-	 */
-	/**
-	 * The `AuthorDatasource` extends the base `Datasource` class and allows
-	 * the retrieval of Author information from the current Symphony installation.
-	 *
-	 * @since Symphony 2.3
-	 */
-	Class AuthorDatasource extends Datasource{
+/**
+ * @package data-sources
+ */
+/**
+ * The `AuthorDatasource` extends the base `Datasource` class and allows
+ * the retrieval of Author information from the current Symphony installation.
+ *
+ * @since Symphony 2.3
+ */
+class AuthorDatasource extends Datasource
+{
+    public function __processAuthorFilter($field, $filter)
+    { //, $filtertype=DS_FILTER_OR){
 
-		public function __processAuthorFilter($field, $filter){ //, $filtertype=DS_FILTER_OR){
+        //$bits = preg_split('/'.($filtertype == DS_FILTER_AND ? '\+' : ',').'\s*/', $filter);
 
-			//$bits = preg_split('/'.($filtertype == DS_FILTER_AND ? '\+' : ',').'\s*/', $filter);
+        if (!is_array($filter)) {
+            $bits = preg_split('/,\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
+            $bits = array_map('trim', $bits);
+        } else {
+            $bits = $filter;
+        }
 
-			if(!is_array($filter)){
-				$bits = preg_split('/,\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
-				$bits = array_map('trim', $bits);
-			}
+        //switch($filtertype){
 
-			else $bits = $filter;
+            /*case DS_FILTER_AND:
 
-			//switch($filtertype){
+                $sql = "SELECT `a`.`id`
+                        FROM (
 
-				/*case DS_FILTER_AND:
+                            SELECT `tbl_authors`.id, COUNT(`tbl_authors`.id) AS `count`
+                            FROM  `tbl_authors`
+                            WHERE `tbl_authors`.`".$field."` IN ('".implode("', '", $bits)."')
+                            GROUP BY `tbl_authors`.`id`
 
-					$sql = "SELECT `a`.`id`
-							FROM (
+                        ) AS `a`
+                        WHERE `a`.`count` >= " . count($bits);
 
-								SELECT `tbl_authors`.id, COUNT(`tbl_authors`.id) AS `count`
-								FROM  `tbl_authors`
-								WHERE `tbl_authors`.`".$field."` IN ('".implode("', '", $bits)."')
-								GROUP BY `tbl_authors`.`id`
+                break;*/
 
-							) AS `a`
-							WHERE `a`.`count` >= " . count($bits);
+            //case DS_FILTER_OR:
+                $sql = "SELECT `id` FROM `tbl_authors` WHERE `".$field."` IN ('".implode("', '", $bits)."')";
+                //break;
 
-					break;*/
+        //}
 
-				//case DS_FILTER_OR:
-					$sql = "SELECT `id` FROM `tbl_authors` WHERE `".$field."` IN ('".implode("', '", $bits)."')";
-					//break;
+        $authors = Symphony::Database()->fetchCol('id', $sql);
 
-			//}
+        return (is_array($authors) && !empty($authors) ? $authors : null);
+    }
 
-			$authors = Symphony::Database()->fetchCol('id', $sql);
+    public function execute(array &$param_pool = null)
+    {
+        $author_ids = array();
 
-			return (is_array($authors) && !empty($authors) ? $authors : NULL);
+        if (is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)) {
+            foreach ($this->dsParamFILTERS as $field => $value) {
+                if (!is_array($value) && trim($value) == '') {
+                    continue;
+                }
 
-		}
+                $ret = $this->__processAuthorFilter($field, $value);
 
-		public function execute(array &$param_pool = null) {
-			$author_ids = array();
+                if (empty($ret)) {
+                    $author_ids = array();
+                    break;
+                }
 
-			if(is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)){
-				foreach($this->dsParamFILTERS as $field => $value){
+                if (empty($author_ids)) {
+                    $author_ids = $ret;
+                    continue;
+                }
 
-					if(!is_array($value) && trim($value) == '') continue;
+                $author_ids = array_intersect($author_ids, $ret);
+            }
 
-					$ret = $this->__processAuthorFilter($field, $value);
+            $authors = AuthorManager::fetchByID(array_values($author_ids));
+        } else {
+            $authors = AuthorManager::fetch($this->dsParamSORT, $this->dsParamORDER);
+        }
 
-					if(empty($ret)){
-						$author_ids = array();
-						break;
-					}
+        if ((!is_array($authors) || empty($authors)) && $this->dsParamREDIRECTONEMPTY == 'yes') {
+            throw new FrontendPageNotFoundException;
+        } elseif (!is_array($authors) || empty($authors)) {
+            $result = $this->emptyXMLSet();
+            return $result;
+        } else {
+            if ($this->_negate_result === true) {
+                return $this->negateXMLSet();
+            }
 
-					if(empty($author_ids)) {
-						$author_ids = $ret;
-						continue;
-					}
+            if (!$this->_param_output_only) {
+                $result = new XMLElement($this->dsParamROOTELEMENT);
+            }
 
-					$author_ids = array_intersect($author_ids, $ret);
+            $singleParam = false;
+            $key = 'ds-' . $this->dsParamROOTELEMENT;
 
-				}
+            if (isset($this->dsParamPARAMOUTPUT)) {
+                if (!is_array($this->dsParamPARAMOUTPUT)) {
+                    $this->dsParamPARAMOUTPUT = array($this->dsParamPARAMOUTPUT);
+                }
 
-				$authors = AuthorManager::fetchByID(array_values($author_ids));
-			}
-			else $authors = AuthorManager::fetch($this->dsParamSORT, $this->dsParamORDER);
+                $singleParam = count($this->dsParamPARAMOUTPUT) === 1;
+            }
 
-			if((!is_array($authors) || empty($authors)) && $this->dsParamREDIRECTONEMPTY == 'yes'){
-				throw new FrontendPageNotFoundException;
-			}
+            foreach ($authors as $author) {
+                if (isset($this->dsParamPARAMOUTPUT)) {
+                    foreach ($this->dsParamPARAMOUTPUT as $param) {
+                        // The new style of paramater is `ds-datasource-handle.field-handle`
+                        $param_key = $key . '.' . str_replace(':', '-', $param);
 
-			elseif(!is_array($authors) || empty($authors)){
-				$result = $this->emptyXMLSet();
-				return $result;
-			}
+                        if (!is_array($param_pool[$param_key])) {
+                            $param_pool[$param_key] = array();
+                        }
 
-			else{
+                        $param_pool[$param_key][] = ($param === 'name' ? $author->getFullName() : $author->get($param));
 
-				if($this->_negate_result === true) return $this->negateXMLSet();
+                        if ($singleParam) {
+                            if (!is_array($param_pool[$key])) {
+                                $param_pool[$key] = array();
+                            }
 
-				if(!$this->_param_output_only) $result = new XMLElement($this->dsParamROOTELEMENT);
+                            $param_pool[$key][] = ($param === 'name' ? $author->getFullName() : $author->get($param));
+                        }
+                    }
+                }
 
-				$singleParam = false;
-				$key = 'ds-' . $this->dsParamROOTELEMENT;
+                if ($this->_param_output_only) {
+                    continue;
+                }
 
-				if(isset($this->dsParamPARAMOUTPUT)) {
-					if(!is_array($this->dsParamPARAMOUTPUT)) {
-						$this->dsParamPARAMOUTPUT = array($this->dsParamPARAMOUTPUT);
-					}
+                $xAuthor = new XMLElement('author');
+                $xAuthor->setAttributeArray(array(
+                    'id' => $author->get('id'),
+                    'user-type' => $author->get('user_type'),
+                    'primary-account' => $author->get('primary')
+                ));
 
-					$singleParam = count($this->dsParamPARAMOUTPUT) === 1;
-				}
+                // No included elements, so just create the Author XML
+                if (!isset($this->dsParamINCLUDEDELEMENTS) || !is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) {
+                    $result->appendChild($xAuthor);
+                } else {
+                    // Name
+                    if (in_array('name', $this->dsParamINCLUDEDELEMENTS)) {
+                        $xAuthor->appendChild(
+                            new XMLElement('name', $author->getFullName())
+                        );
+                    }
 
-				foreach($authors as $author) {
-					if(isset($this->dsParamPARAMOUTPUT)) foreach($this->dsParamPARAMOUTPUT as $param) {
-						// The new style of paramater is `ds-datasource-handle.field-handle`
-						$param_key = $key . '.' . str_replace(':', '-', $param);
+                    // Username
+                    if (in_array('username', $this->dsParamINCLUDEDELEMENTS)) {
+                        $xAuthor->appendChild(
+                            new XMLElement('username', $author->get('username'))
+                        );
+                    }
 
-						if(!is_array($param_pool[$param_key])) $param_pool[$param_key] = array();
-						$param_pool[$param_key][] = ($param === 'name' ? $author->getFullName() : $author->get($param));
+                    // Email
+                    if (in_array('email', $this->dsParamINCLUDEDELEMENTS)) {
+                        $xAuthor->appendChild(
+                            new XMLElement('email', $author->get('email'))
+                        );
+                    }
 
-						if($singleParam) {
-							if(!is_array($param_pool[$key])) $param_pool[$key] = array();
-							$param_pool[$key][] = ($param === 'name' ? $author->getFullName() : $author->get($param));
-						}
-					}
+                    // Author Token
+                    if (in_array('author-token', $this->dsParamINCLUDEDELEMENTS) && $author->isTokenActive()) {
+                        $xAuthor->appendChild(
+                            new XMLElement('author-token', $author->createAuthToken())
+                        );
+                    }
 
-					if($this->_param_output_only) continue;
+                    // Default Area
+                    if (in_array('default-area', $this->dsParamINCLUDEDELEMENTS) && !is_null($author->get('default_area'))) {
+                        // Section
+                        if ($section = SectionManager::fetch($author->get('default_area'))) {
+                            $default_area = new XMLElement('default-area', $section->get('name'));
+                            $default_area->setAttributeArray(array('id' => $section->get('id'), 'handle' => $section->get('handle'), 'type' => 'section'));
+                            $xAuthor->appendChild($default_area);
 
-					$xAuthor = new XMLElement('author');
-					$xAuthor->setAttributeArray(array(
-						'id' => $author->get('id'),
-						'user-type' => $author->get('user_type'),
-						'primary-account' => $author->get('primary')
-					));
+                            // Pages
+                        } else {
+                            $default_area = new XMLElement('default-area', $author->get('default_area'));
+                            $default_area->setAttribute('type', 'page');
+                            $xAuthor->appendChild($default_area);
+                        }
+                    }
 
-					// No included elements, so just create the Author XML
-					if(!isset($this->dsParamINCLUDEDELEMENTS) || !is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) {
-						$result->appendChild($xAuthor);
-					}
-					else {
-						// Name
-						if(in_array('name', $this->dsParamINCLUDEDELEMENTS)) {
-							$xAuthor->appendChild(
-								new XMLElement('name', $author->getFullName())
-							);
-						}
+                    $result->appendChild($xAuthor);
+                }
+            }
+        }
 
-						// Username
-						if(in_array('username', $this->dsParamINCLUDEDELEMENTS)) {
-							$xAuthor->appendChild(
-								new XMLElement('username', $author->get('username'))
-							);
-						}
-
-						// Email
-						if(in_array('email', $this->dsParamINCLUDEDELEMENTS)) {
-							$xAuthor->appendChild(
-								new XMLElement('email', $author->get('email'))
-							);
-						}
-
-						// Author Token
-						if(in_array('author-token', $this->dsParamINCLUDEDELEMENTS) && $author->isTokenActive()) {
-							$xAuthor->appendChild(
-								new XMLElement('author-token', $author->createAuthToken())
-							);
-						}
-
-						// Default Area
-						if(in_array('default-area', $this->dsParamINCLUDEDELEMENTS) && !is_null($author->get('default_area'))) {
-							// Section
-							if($section = SectionManager::fetch($author->get('default_area'))){
-								$default_area = new XMLElement('default-area', $section->get('name'));
-								$default_area->setAttributeArray(array('id' => $section->get('id'), 'handle' => $section->get('handle'), 'type' => 'section'));
-								$xAuthor->appendChild($default_area);
-							}
-							// Pages
-							else {
-								$default_area = new XMLElement('default-area', $author->get('default_area'));
-								$default_area->setAttribute('type', 'page');
-								$xAuthor->appendChild($default_area);
-							}
-						}
-
-						$result->appendChild($xAuthor);
-					}
-				}
-			}
-
-			return $result;
-		}
-	}
+        return $result;
+    }
+}

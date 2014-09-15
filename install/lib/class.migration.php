@@ -55,7 +55,9 @@
 		 *
 		 * @return string
 		 */
-		abstract static function getVersion();
+		static function getVersion() {
+			return null;
+		}
 
 		/**
 		 * Return's the string to this migration's release notes. Like `getVersion()`,
@@ -64,7 +66,9 @@
 		 *
 		 * @return string
 		 */
-		abstract static function getReleaseNotes();
+		static function getReleaseNotes(){
+			return array();
+		}
 
 		/**
 		 * This function will upgrade Symphony from the `self::$existing_version`
@@ -73,7 +77,15 @@
 		 * @return boolean
 		 */
 		static function upgrade(){
-			return true;
+			Symphony::Configuration()->set('version', static::getVersion(), 'symphony');
+			Symphony::Configuration()->set('useragent', 'Symphony/' . static::getVersion(), 'general');
+
+			if(Symphony::Configuration()->write() === false) {
+				throw new Exception('Failed to write configuration file, please check the file permissions.');
+			}
+			else {
+				return true;
+			}
 		}
 
 		/**

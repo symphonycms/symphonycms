@@ -21,6 +21,9 @@ Symphony.View.add('/:context*:', function() {
 	Symphony.Elements.wrapper.find('div.drawer').symphonyDrawer();
 	Symphony.Elements.header.symphonyNotify();
 
+	// Fix for Webkit browsers to initially show the options. #2127
+	$('select[multiple=multiple]').scrollTop(0);
+
 	// Initialise tag lists inside duplicators
 	Symphony.Elements.contents.find('.duplicator').on('constructshow.duplicator', '.instance', function() {
 		$(this).find('.tags[data-interactive]').symphonyTags();
@@ -339,6 +342,9 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 		}
 	});
 
+	// Affix for toggle
+	$('fieldset.settings > legend + .help').symphonyAffix();
+
 	// Initialise field editor
 	duplicator.symphonyDuplicator({
 		orderable: true,
@@ -371,11 +377,13 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 						sections.prop('disabled', false);
 					}
 
-					// Allow delection
-					$('<option />', {
-						text: Symphony.Language.get('None'),
-						value: ''
-					}).appendTo(sections);
+					if (!sections.attr('data-required')) {
+						// Allow de-selection, if permitted
+						$('<option />', {
+							text: Symphony.Language.get('None'),
+							value: ''
+						}).appendTo(sections);
+					}
 
 					// Append sections
 					$.each(result.sections, function(index, section) {
@@ -395,6 +403,7 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 							}
 						});
 					});
+					sections.trigger('change.admin');
 				}
 			});
 		}
@@ -402,8 +411,11 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 	duplicator.find('.instance').trigger('constructshow.duplicator');
 
 	// Focus first input
-	duplicator.on('constructshow.duplicator expand.collapsible', '.instance', function() {
-		$(this).find('input:visible:first').trigger('focus.admin');
+	duplicator.on('constructshow.duplicator expandstop.collapsible', '.instance', function() {
+		var item = $(this);
+		if (!item.hasClass('js-animate-all')) {
+			$(this).find('input:visible:first').trigger('focus.admin');
+		}
 	});
 
 	// Update name
@@ -449,12 +461,24 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 
 	// Update select field
 	duplicator.on('change.admin', '.instance select[name*="[dynamic_options]"]', function() {
-		var select = $(this),
-			isDynamic = (select.val() !== '');
+		$(this).parents('.instance').find('[data-condition=associative]').toggle($.isNumeric(this.value));
+	}).trigger('change.admin');
 
-		select.parents('.instance').find('.show-associations').toggle(isDynamic);
-	});
-	duplicator.find('.instance select[name*="[dynamic_options]"]').trigger('change.admin');
+	// Update tag field
+	duplicator.on('change.admin', '.instance select[name*="[pre_populate_source]"]', function() {
+		var selected = $(this).val(),
+			show = false;
+		
+		if(selected) {
+			selected = jQuery.grep(selected, function(value) {
+				return value != 'existing';
+			});
+
+			show = (selected.length > 0);
+		}
+
+		$(this).parents('.instance').find('[data-condition=associative]').toggle(show);
+	}).trigger('change.admin');
 
 	// Remove field
 	duplicator.on('destructstart.duplicator', function(event) {
@@ -538,7 +562,7 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 	Blueprints - Datasource Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(action) {
+Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function(action) {
 	if(!action) return;
 
 	var context = $('#ds-context'),
@@ -592,7 +616,7 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(act
 	}).trigger('update.admin');
 
 	// Data source manager options
-	Symphony.Elements.contents.find('select optgroup').each(function() {
+	Symphony.Elements.contents.find('.contextual select optgroup').each(function() {
 		var optgroup = $(this),
 			select = optgroup.parents('select'),
 			label = optgroup.attr('data-label'),
@@ -659,7 +683,7 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:', function(act
 	Blueprints - Event Editor
 --------------------------------------------------------------------------*/
 
-Symphony.View.add('/blueprints/events/:action:/:name:/:status:', function() {
+Symphony.View.add('/blueprints/events/:action:/:name:/:status:/:*:', function() {
 	var context = $('#event-context'),
 		source = $('#event-source'),
 		filters = $('#event-filters'),
