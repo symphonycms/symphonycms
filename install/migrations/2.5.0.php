@@ -3,7 +3,7 @@
 	Class migration_250 extends Migration {
 
 		static function getVersion(){
-			return '2.5.0-rc.2';
+			return '2.5.0';
 		}
 
 		static function getReleaseNotes(){
