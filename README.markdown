@@ -3,7 +3,7 @@
 [![Code Climate](https://codeclimate.com/github/symphonycms/symphony-2.png)](https://codeclimate.com/github/symphonycms/symphony-2)
 
 - Version: 2.5.0
-- Date: 15th September 2015
+- Date: 15th September 2014
 - [Release notes](http://getsymphony.com/download/releases/version/2.5/)
 - [Github repository](https://github.com/symphonycms/symphony-2/releases/tag/2.5.0)
 
