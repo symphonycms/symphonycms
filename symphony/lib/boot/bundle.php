@@ -30,7 +30,7 @@
             : E_ALL & ~E_NOTICE
     );
 
-    // Turn of old-style magic:
+    // Turn off old-style magic:
     ini_set('magic_quotes_runtime', false);
 
     // Redirect to installer if it exists
