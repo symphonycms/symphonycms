@@ -155,7 +155,7 @@ class CacheDatabase implements iCache
     public function delete($hash = null)
     {
         if (!is_null($hash)) {
-            $this->Database->delete("`tbl_cache`", sprintf("`hash` = %s", $hash));
+            $this->Database->delete("`tbl_cache`", sprintf("`hash` = '%s'", $hash));
         } else {
             $this->Database->delete("`tbl_cache`", "UNIX_TIMESTAMP() > `expiry`");
         }
