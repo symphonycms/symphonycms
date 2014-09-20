@@ -506,16 +506,32 @@ Class AdministrationPage extends HTMLPage
             }
         }
 
-        if (
-            $page_limit == 'author'
-            or ($page_limit == 'developer' && Symphony::Author()->isDeveloper())
-            or ($page_limit == 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper()))
-            or ($page_limit == 'primary' && Symphony::Author()->isPrimaryAccount())
-        ) {
-            return true;
-        } else {
-            return false;
+        return $this->doesAuthorHaveAccess($page_limit);
+    }
+
+    /**
+     * Given the limit of the current navigation item or page, this function
+     * returns if the current Author can access that item or not.
+     *
+     * @since Symphony 2.5.1
+     * @param string $item_limit
+     * @return boolean
+     */
+    public function doesAuthorHaveAccess($item_limit = null)
+    {
+        $can_access = false;
+
+        if (!isset($item_limit) || $item_limit == 'author') {
+            $can_access = true;
+        } elseif ($item_limit == 'developer' && Symphony::Author()->isDeveloper()) {
+            $can_access = true;
+        } elseif ($item_limit == 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper())) {
+            $can_access = true;
+        } elseif ($item_limit == 'primary' && Symphony::Author()->isPrimaryAccount()) {
+            $can_access = true;
         }
+
+        return $can_access;
     }
 
     /**
@@ -776,19 +792,7 @@ Class AdministrationPage extends HTMLPage
                 continue;
             }
 
-            $can_access = false;
-
-            if (!isset($n['limit']) || $n['limit'] == 'author') {
-                $can_access = true;
-            } elseif ($n['limit'] == 'developer' && Symphony::Author()->isDeveloper()) {
-                $can_access = true;
-            } elseif ($n['limit'] == 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper())) {
-                $can_access = true;
-            } elseif ($n['limit'] == 'primary' && Symphony::Author()->isPrimaryAccount()) {
-                $can_access = true;
-            }
-
-            if ($can_access) {
+            if ($this->doesAuthorHaveAccess($n['limit'])) {
                 $xGroup = new XMLElement('li', $n['name'], array('role' => 'presentation'));
 
                 if (isset($n['class']) && trim($n['name']) != '') {
@@ -805,19 +809,7 @@ Class AdministrationPage extends HTMLPage
                             continue;
                         }
 
-                        $can_access_child = false;
-
-                        if (!isset($c['limit']) || $c['limit'] == 'author') {
-                            $can_access_child = true;
-                        } elseif ($c['limit'] == 'developer' && Symphony::Author()->isDeveloper()) {
-                            $can_access_child = true;
-                        } elseif ($c['limit'] == 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper())) {
-                            $can_access_child = true;
-                        } elseif ($c['limit'] == 'primary' && Symphony::Author()->isPrimaryAccount()) {
-                            $can_access_child = true;
-                        }
-
-                        if ($can_access_child) {
+                        if ($this->doesAuthorHaveAccess($c['limit'])) {
                             $xChild = new XMLElement('li');
                             $xChild->setAttribute('role', 'menuitem');
                             $linkChild = Widget::Anchor($c['name'], SYMPHONY_URL . $c['link']);
