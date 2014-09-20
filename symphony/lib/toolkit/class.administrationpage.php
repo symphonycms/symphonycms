@@ -992,13 +992,7 @@ Class AdministrationPage extends HTMLPage
                             $index = General::array_find_available_index($nav, $item['location']);
 
                             // Actual group
-                            $nav[$index] = array(
-                                'name' => $item['name'],
-                                'type' => isset($item['type']) ? $item['type'] : 'structure',
-                                'index' => $index,
-                                'children' => array(),
-                                'limit' => isset($item['limit']) ? $item['limit'] : null
-                            );
+                            $nav[$index] = self::createParentNavItem($index, $item);
 
                             // Render its children
                             foreach ($item['children'] as $child) {
@@ -1008,13 +1002,7 @@ Class AdministrationPage extends HTMLPage
                                     $link = '/' . ltrim($child['link'], '/');
                                 }
 
-                                $nav[$index]['children'][] = array(
-                                    'link' => $link,
-                                    'name' => $child['name'],
-                                    'visible' => (isset($child['visible']) && $child['visible'] == 'no') ? 'no' : 'yes',
-                                    'limit' => isset($child['limit']) ? $child['limit'] : null,
-                                    'target' => isset($child['target']) ? $child['target'] : null
-                                );
+                                $nav[$index]['children'][] = self::createChildNavItem($link, $child);
                             }
 
                             break;
@@ -1035,13 +1023,7 @@ Class AdministrationPage extends HTMLPage
                                 $group_index = $item['location'];
                             }
 
-                            $child = array(
-                                'link' => $link,
-                                'name' => $item['name'],
-                                'visible' => (isset($item['visible']) && $item['visible'] == 'no') ? 'no' : 'yes',
-                                'limit' => isset($item['limit']) ? $item['limit'] : null,
-                                'target' => isset($item['target']) ? $item['target'] : null
-                            );
+                            $child = self::createChildNavItem($link, $item);
 
                             if ($group_index === false) {
                                 $group_index = General::array_find_available_index($nav, 0);
@@ -1062,6 +1044,48 @@ Class AdministrationPage extends HTMLPage
                 }
             }
         }
+    }
+
+    /**
+     * This function builds out a navigation menu item for parents. Parents display
+     * in the top level navigation of the backend and may have children (dropdown menus)
+     *
+     * @since Symphony 2.5.1
+     * @param integer $index
+     * @param array $item
+     * @return array
+     */
+    private static function createParentNavItem($index, $item) {
+        $nav_item = array(
+            'name' => $item['name'],
+            'type' => isset($item['type']) ? $item['type'] : 'structure',
+            'index' => $index,
+            'children' => array(),
+            'limit' => isset($item['limit']) ? $item['limit'] : null
+        );
+
+        return $nav_item;
+    }
+
+    /**
+     * This function builds out a navigation menu item for children. Children
+     * live under a parent navigation item and are shown on hover.
+     *
+     * @since Symphony 2.5.1
+     * @param string $link
+     * @param array $item
+     * @return array
+     */
+    private static function createChildNavItem($link, $item) {
+        $nav_item = array(
+            'link' => $link,
+            'name' => $item['name'],
+            'visible' => (isset($item['visible']) && $item['visible'] == 'no') ? 'no' : 'yes',
+            'limit' => isset($item['limit']) ? $item['limit'] : null,
+            'target' => isset($item['target']) ? $item['target'] : null
+        );
+
+        return $nav_item;
     }
 
     /**
