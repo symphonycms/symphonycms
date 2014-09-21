@@ -894,7 +894,7 @@ class contentBlueprintsSections extends AdministrationPage
         return $this->__actionNew();
     }
 
-    public function addSectionOptions(array $meta = null)
+    public function addSectionOptions(array &$meta = null)
     {
         $fieldset = new XMLElement('fieldset');
         $fieldset->setAttribute('class', 'settings');
