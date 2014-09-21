@@ -199,47 +199,78 @@ class Administration extends Symphony
                 $this->_callback['context'] = array();
             }
 
-            // Do any extensions need updating?
-            $extensions = Symphony::ExtensionManager()->listInstalledHandles();
-
-            if (is_array($extensions) && !empty($extensions) && $this->__canAccessAlerts()) {
-                foreach ($extensions as $name) {
-                    $about = Symphony::ExtensionManager()->about($name);
-
-                    if (array_key_exists('status', $about) && in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
-                        $this->Page->pageAlert(
-                            __('An extension requires updating.') . ' <a href="' . SYMPHONY_URL . '/system/extensions/">' . __('View extensions') . '</a>'
-                        );
-                        break;
-                    }
-                }
+            if($this->__canAccessAlerts()) {
+                // Can the core be updated?
+                $this->checkCoreForUpdates();
+                // Do any extensions need updating?
+                $this->checkExtensionsForUpdates();
             }
 
-            // Check for update Alert
-            // Scan install/migrations directory for the most recent updater and compare
-            if ($this->isInstallerAvailable() && $this->__canAccessAlerts()) {
-                try {
-                    // The updater contains a version higher than the current Symphony version.
-                    if ($this->isUpgradeAvailable()) {
-                        $message = __('An update has been found in your installation to upgrade Symphony to %s.', array($this->getMigrationVersion())) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
-
-                        // The updater contains a version lower than the current Symphony version.
-                        // The updater is the same version as the current Symphony install.
-                    } else {
-                        $message = __('Your Symphony installation is up to date, but the installer was still detected. For security reasons, it should be removed.') . ' <a href="' . URL . '/install/?action=remove">' . __('Remove installer?') . '</a>';
-                    }
-
-                    // Can't detect update Symphony version
-                } catch (Exception $e) {
-                    $message = __('An update script has been found in your installation.') . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
-                }
-
-                $this->Page->pageAlert($message, Alert::NOTICE);
-            }
             $this->Page->build($this->_callback['context']);
         }
 
         return $this->Page;
+    }
+
+    /**
+     * Scan the install directory to look for new migrations that can be applied
+     * to update this version of Symphony. If one if found, a new Alert is added
+     * to the page.
+     *
+     * @since Symphony 2.5.2
+     * @return boolean
+     *  Returns true if there is an update available, false otherwise.
+     */
+    public function checkCoreForUpdates()
+    {
+        // Is there even an install directory to check?
+        if ($this->isInstallerAvailable() === false) {
+            return false;
+        }
+
+        try {
+            // The updater contains a version higher than the current Symphony version.
+            if ($this->isUpgradeAvailable()) {
+                $message = __('An update has been found in your installation to upgrade Symphony to %s.', array($this->getMigrationVersion())) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
+
+                // The updater contains a version lower than the current Symphony version.
+                // The updater is the same version as the current Symphony install.
+            } else {
+                $message = __('Your Symphony installation is up to date, but the installer was still detected. For security reasons, it should be removed.') . ' <a href="' . URL . '/install/?action=remove">' . __('Remove installer?') . '</a>';
+            }
+
+            // Can't detect update Symphony version
+        } catch (Exception $e) {
+            $message = __('An update script has been found in your installation.') . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
+        }
+
+        $this->Page->pageAlert($message, Alert::NOTICE);
+
+        return true;
+    }
+
+    /**
+     * Checks all installed extensions to see any have an outstanding update. If any do
+     * an Alert will be added to the current page directing the Author to the Extension page
+     *
+     * @since Symphony 2.5.2
+     */
+    public function checkExtensionsForUpdates()
+    {
+        $extensions = Symphony::ExtensionManager()->listInstalledHandles();
+
+        if (is_array($extensions) && !empty($extensions)) {
+            foreach ($extensions as $name) {
+                $about = Symphony::ExtensionManager()->about($name);
+
+                if (array_key_exists('status', $about) && in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+                    $this->Page->pageAlert(
+                        __('An extension requires updating.') . ' <a href="' . SYMPHONY_URL . '/system/extensions/">' . __('View extensions') . '</a>'
+                    );
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -252,7 +283,7 @@ class Administration extends Symphony
      */
     private function __canAccessAlerts()
     {
-        if ($this->Page instanceof AdministrationPage && $this->isLoggedIn() && Symphony::Author()->isDeveloper()) {
+        if ($this->Page instanceof AdministrationPage && self::isLoggedIn() && Symphony::Author()->isDeveloper()) {
             return true;
         }
 
