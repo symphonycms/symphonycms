@@ -161,31 +161,13 @@ class FieldAuthor extends Field implements ExportableField
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
         // Allow multiple selection
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column');
-        $input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
-
-        if ($this->get('allow_multiple_selection') == 'yes') {
-            $input->setAttribute('checked', 'checked');
-        }
-
-        $label->setValue(__('%s Allow selection of multiple authors', array($input->generate())));
-        $div->appendChild($label);
+        $this->createCheckboxSetting($div, 'allow_multiple_selection', 'Allow selection of multiple authors');
 
         // Default to current logged in user
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column');
-        $input = Widget::Input('fields['.$this->get('sortorder').'][default_to_current_user]', 'yes', 'checkbox');
-
-        if ($this->get('default_to_current_user') == 'yes') {
-            $input->setAttribute('checked', 'checked');
-        }
-
-        $label->setValue(__('%s Select current user by default', array($input->generate())));
-        $div->appendChild($label);
-        $wrapper->appendChild($div);
+        $this->createCheckboxSetting($div, 'default_to_current_user', 'Select current user by default');
 
         // Requirements and table display
+        $wrapper->appendChild($div);
         $this->appendStatusFooter($wrapper);
     }
 

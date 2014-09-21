@@ -683,7 +683,6 @@ class Field
             // Create interface select
             if (!empty($interfaces)) {
                 $label = Widget::Label(__('Association Interface'), null, 'column');
-                $label->setAttribute('class', 'column');
                 $label->appendChild(new XMLElement('i', __('Optional')));
 
                 $options = array(
@@ -701,7 +700,6 @@ class Field
             // Create editor select
             if (!empty($editors)) {
                 $label = Widget::Label(__('Association Editor'), null, 'column');
-                $label->setAttribute('class', 'column');
                 $label->appendChild(new XMLElement('i', __('Optional')));
 
                 $options = array(
@@ -765,7 +763,7 @@ class Field
                 'data-child-section-id' => $association_context['child_section_id'],
                 'data-child-section-field-id' => $association_context['child_section_field_id'],
                 'data-interface' => $association_context['interface'],
-                'data-editor' => $association_context['editor']        
+                'data-editor' => $association_context['editor']
             ));
         }
     }
@@ -785,22 +783,7 @@ class Field
             return;
         }
 
-        $order = $this->get('sortorder');
-        $name = "fields[{$order}][required]";
-
-        $wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
-
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column');
-        $input = Widget::Input($name, 'yes', 'checkbox');
-
-        if ($this->get('required') == 'yes') {
-            $input->setAttribute('checked', 'checked');
-        }
-
-        $label->setValue(__('%s Make this a required field', array($input->generate())));
-
-        $wrapper->appendChild($label);
+        $this->createCheckboxSetting($wrapper, 'required', 'Make this a required field');
     }
 
     /**
@@ -817,42 +800,7 @@ class Field
             return;
         }
 
-        $order = $this->get('sortorder');
-        $name = "fields[{$order}][show_column]";
-
-        $wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
-
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column');
-        $input = Widget::Input($name, 'yes', 'checkbox');
-
-        if ($this->get('show_column') == 'yes') {
-            $input->setAttribute('checked', 'checked');
-        }
-
-        $label->setValue(__('%s Display in entries table', array($input->generate())));
-
-        $wrapper->appendChild($label);
-    }
-
-    /**
-     * Append the default status footer to the field settings panel.
-     * Displays the required and show column checkboxes.
-     *
-     * @param XMLElement $wrapper
-     *    the parent XML element to append the checkbox to.
-     * @throws InvalidArgumentException
-     */
-    public function appendStatusFooter(XMLElement &$wrapper)
-    {
-        $fieldset = new XMLElement('fieldset');
-        $div = new XMLElement('div', null, array('class' => 'two columns'));
-
-        $this->appendRequiredCheckbox($div);
-        $this->appendShowColumnCheckbox($div);
-
-        $fieldset->appendChild($div);
-        $wrapper->appendChild($fieldset);
+        $this->createCheckboxSetting($wrapper, 'show_column', 'Display in entries table');
     }
 
     /**
@@ -873,31 +821,55 @@ class Field
             return;
         }
 
-        $order = $this->get('sortorder');
-        $name = "fields[{$order}][show_association]";
-
-        $wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
-
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column');
+        $label = $this->createCheckboxSetting($wrapper, 'show_association', 'Display associations in entries table', $help);
         $label->setAttribute('data-condition', 'associative');
+    }
 
-        if ($help) {
-            $label->addClass('inline-help');
-        }
+    /**
+     * Given the setting name and the label, this helper method will add
+     * the required markup for a checkbox to the given `$wrapper`.
+     *
+     * @since Symphony 2.5.2
+     * @param XMLElement $wrapper
+     *  Passed by reference, this will have the resulting markup appended to it
+     * @param string $setting
+     *  This will be used with $this->get() to get the existing value
+     * @param string $label_description
+     *  This will be localisable and displayed after the checkbox when
+     *  generated.
+     * @param string $help (optional)
+     *    A help message to show below the checkbox.
+     * @return XMLElement
+     *  The Label and Checkbox that was just added to the `$wrapper`.
+     */
+    public function createCheckboxSetting(XMLElement &$wrapper, $setting, $label_description, $help = null)
+    {
+        $order = $this->get('sortorder');
+        $name = "fields[$order][$setting]";
 
-        $input = Widget::Input($name, 'yes', 'checkbox');
+        $label = Widget::Checkbox($name, $this->get($setting), $label_description, $wrapper, $help);
 
-        if ($this->get('show_association') == 'yes') {
-            $input->setAttribute('checked', 'checked');
-        }
+        return $label;
+    }
 
-        $label->setValue(__('%s Display associations in entries table %s', array(
-            $input->generate(),
-            ($help) ? ' <i>(' . $help . ')</i>' : ''
-        )));
+    /**
+     * Append the default status footer to the field settings panel.
+     * Displays the required and show column checkboxes.
+     *
+     * @param XMLElement $wrapper
+     *    the parent XML element to append the checkbox to.
+     * @throws InvalidArgumentException
+     */
+    public function appendStatusFooter(XMLElement &$wrapper)
+    {
+        $fieldset = new XMLElement('fieldset');
+        $div = new XMLElement('div', null, array('class' => 'two columns'));
 
-        $wrapper->appendChild($label);
+        $this->appendRequiredCheckbox($div);
+        $this->appendShowColumnCheckbox($div);
+
+        $fieldset->appendChild($div);
+        $wrapper->appendChild($fieldset);
     }
 
     /**

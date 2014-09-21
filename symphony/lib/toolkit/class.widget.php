@@ -102,6 +102,75 @@ class Widget
     }
 
     /**
+     * Generates a XMLElement representation of a `<input type='checkbox'>`. This also
+     * includes the actual label of the Checkbox and any help text if required. Note that
+     * this includes two input fields, one is the hidden 'no' value and the other
+     * is the actual checkbox ('yes' value). This is provided so if the checkbox is
+     * not checked, 'no' is still sent in the form request for this `$name`.
+     *
+     * @since Symphony 2.5.2
+     * @param string $name
+     *  The name attribute of the resulting checkbox
+     * @param string $value
+     *  The value attribute of the resulting checkbox
+     * @param string $description
+     *  This will be localisable and displayed after the checkbox when
+     *  generated.
+     * @param XMLElement $wrapper
+     *  Passed by reference, if this is provided the elements will be automatically
+     *  added to the wrapper, otherwise they will just be returned.
+     * @param string $help (optional)
+     *  A help message to show below the checkbox.
+     * @throws InvalidArgumentException
+     * @return XMLElement
+     *  The markup for the label and the checkbox.
+     */
+    public static function Checkbox($name, $value, $description = null, XMLElement &$wrapper = null, $help = null)
+    {
+        General::ensureType(array(
+            'name' => array('var' => $name, 'type' => 'string'),
+            'value' => array('var' => $value, 'type' => 'string', 'optional' => true),
+            'description' => array('var' => $description, 'type' => 'string'),
+            'help' => array('var' => $help, 'type' => 'string', 'optional' => true),
+        ));
+
+        // Build the label
+        $label = Widget::Label();
+        $label->setAttribute('class', 'column');
+        if ($help) {
+            $label->addClass('inline-help');
+        }
+
+        // Add the 'no' default option to the label, or to the wrapper if it's provided
+        $default_hidden = Widget::Input($name, 'no', 'hidden');
+        if(is_null($wrapper)) {
+            $label->appendChild($default_hidden);
+        }
+        else {
+            $wrapper->appendChild($default_hidden);
+        }
+
+        // Include the actual checkbox.
+        $input = Widget::Input($name, 'yes', 'checkbox');
+        if ($value === 'yes') {
+            $input->setAttribute('checked', 'checked');
+        }
+
+        // Build the checkbox, then label, then help
+        $label->setValue(__('%s ' . $description . ' %s', array(
+            $input->generate(),
+            ($help) ? ' <i>(' . $help . ')</i>' : ''
+        )));
+
+        // If a wrapper was given, add the label to it
+        if(!is_null($wrapper)) {
+            $wrapper->appendChild($label);
+        }
+
+        return $label;
+    }
+
+    /**
      * Generates a XMLElement representation of `<textarea>`
      *
      * @param string $name
