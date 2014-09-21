@@ -996,24 +996,12 @@ Class AdministrationPage extends HTMLPage
 
                             // Render its children
                             foreach ($item['children'] as $child) {
-                                if (!isset($child['relative']) || $child['relative'] == true) {
-                                    $link = '/extension/' . $e . '/' . ltrim($child['link'], '/');
-                                } else {
-                                    $link = '/' . ltrim($child['link'], '/');
-                                }
-
-                                $nav[$index]['children'][] = self::createChildNavItem($link, $child);
+                                $nav[$index]['children'][] = self::createChildNavItem($child, $e);
                             }
 
                             break;
 
                         case Extension::NAV_CHILD:
-                            if (!isset($item['relative']) || $item['relative'] == true) {
-                                $link = '/extension/' . $e . '/' . ltrim($item['link'], '/');
-                            } else {
-                                $link = '/' . ltrim($item['link'], '/');
-                            }
-
                             if (!is_numeric($item['location'])) {
                                 // is a navigation group
                                 $group_name = $item['location'];
@@ -1023,17 +1011,17 @@ Class AdministrationPage extends HTMLPage
                                 $group_index = $item['location'];
                             }
 
-                            $child = self::createChildNavItem($link, $item);
+                            $child = self::createChildNavItem($item, $e);
 
                             if ($group_index === false) {
                                 $group_index = General::array_find_available_index($nav, 0);
+
+                                $nav_parent = self::createParentNavItem($group_index, $item);
+                                $nav_parent['name'] = $group_name;
+                                $nav_parent['children'] = array($child);
+
                                 // add new navigation group
-                                $nav[$group_index] = array(
-                                    'name' => $group_name,
-                                    'index' => $group_index,
-                                    'children' => array($child),
-                                    'limit' => isset($item['limit']) ? $item['limit'] : null
-                                );
+                                $nav[$group_index] = $nav_parent;
                             } else {
                                 // add new location by index
                                 $nav[$group_index]['children'][] = $child;
@@ -1072,11 +1060,17 @@ Class AdministrationPage extends HTMLPage
      * live under a parent navigation item and are shown on hover.
      *
      * @since Symphony 2.5.1
-     * @param string $link
      * @param array $item
+     * @param string $extension_handle
      * @return array
      */
-    private static function createChildNavItem($link, $item) {
+    private static function createChildNavItem($item, $extension_handle) {
+        if (!isset($item['relative']) || $item['relative'] == true) {
+            $link = '/extension/' . $extension_handle . '/' . ltrim($item['link'], '/');
+        } else {
+            $link = '/' . ltrim($item['link'], '/');
+        }
+
         $nav_item = array(
             'link' => $link,
             'name' => $item['name'],
