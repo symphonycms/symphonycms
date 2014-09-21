@@ -81,7 +81,6 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         if (isset($_POST['fields'])) {
             $fields = $_POST['fields'];
-            $fields['paginate_results'] = ($fields['paginate_results'] == 'on') ? 'yes' : 'no';
 
             if (
                 !in_array($fields['source'], array('authors', 'navigation', 'static_xml'))
@@ -189,12 +188,9 @@ class contentBlueprintsDatasources extends ResourcesPage
                 }
             }
         } else {
-            $fields['paginate_results'] = 'yes';
             $fields['max_records'] = '20';
             $fields['page_number'] = '1';
-
             $fields['order'] = 'desc';
-            $fields['associated_entry_counts'] = null;
         }
 
         // Handle name on edited changes, or from reading an edited datasource
@@ -319,25 +315,19 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $group = new XMLElement('div');
         $group->setAttribute('class', 'two columns ds-param');
-        
-        $label = Widget::Label();
+
+        $label = Widget::Checkbox('fields[redirect_on_required]', $fields['redirect_on_required'], 'Redirect to 404 page when the required parameter is not present');
         $label->setAttribute('class', 'column');
-        $input = Widget::Input('fields[redirect_on_required]', 'yes', 'checkbox', (isset($fields['redirect_on_required']) && $fields['redirect_on_required'] == 'yes') ? array('checked' => 'checked') : null);
-        $label->setValue(__('%s Redirect to 404 page when the required parameter is not present', array($input->generate(false))));
         $group->appendChild($label);
 
-        $label = Widget::Label();
+        $label = Widget::Checkbox('fields[redirect_on_forbidden]', $fields['redirect_on_forbidden'], 'Redirect to 404 page when the forbidden parameter is present');
         $label->setAttribute('class', 'column');
-        $input = Widget::Input('fields[redirect_on_forbidden]', 'yes', 'checkbox', (isset($fields['redirect_on_forbidden']) && $fields['redirect_on_forbidden'] == 'yes') ? array('checked' => 'checked') : null);
-        $label->setValue(__('%s Redirect to 404 page when the forbidden parameter is present', array($input->generate(false))));
         $group->appendChild($label);
 
         $fieldset->appendChild($group);
 
-        $label = Widget::Label();
+        $label = Widget::Checkbox('fields[redirect_on_empty]', $fields['redirect_on_empty'], 'Redirect to 404 page when no results are found');
         $label->setAttribute('class', 'column');
-        $input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) && $fields['redirect_on_empty'] == 'yes') ? array('checked' => 'checked') : null);
-        $label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
         $fieldset->appendChild($label);
 
         $this->Form->appendChild($fieldset);
@@ -732,10 +722,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $fieldset->appendChild($group);
 
-        $label = Widget::Label();
-        $input = Widget::Input('fields[paginate_results]', null, 'checkbox', ($fields['paginate_results'] == 'yes' ? array('checked' => 'checked') : null));
-        $label->setValue(__('%1$s Enable pagination', array($input->generate(false))));
-
+        $label = Widget::Checkbox('fields[paginate_results]', $fields['paginate_results'], 'Enable pagination');
         $fieldset->appendChild($label);
         $this->Form->appendChild($fieldset);
 
@@ -886,17 +873,13 @@ class contentBlueprintsDatasources extends ResourcesPage
         $fieldset->appendChild($group);
 
         // Associations
-        $label = Widget::Label();
+        $label = Widget::Checkbox('fields[associated_entry_counts]', $fields['associated_entry_counts'], 'Include a count of entries in associated sections');
         $this->setContext($label, array('sections'));
-        $input = Widget::Input('fields[associated_entry_counts]', 'yes', 'checkbox', ((isset($fields['associated_entry_counts']) && $fields['associated_entry_counts'] == 'yes') ? array('checked' => 'checked') : null));
-        $label->setValue(__('%s Include a count of entries in associated sections', array($input->generate(false))));
         $fieldset->appendChild($label);
 
         // Encoding
-        $label = Widget::Label();
+        $label = Widget::Checkbox('fields[html_encode]', $fields['html_encode'], 'HTML-encode text');
         $this->setContext($label, array('sections'));
-        $input = Widget::Input('fields[html_encode]', 'yes', 'checkbox', (isset($fields['html_encode']) && $fields['html_encode'] == 'yes' ? array('checked' => 'checked') : null));
-        $label->setValue(__('%s HTML-encode text', array($input->generate(false))));
         $fieldset->appendChild($label);
 
         $this->Form->appendChild($fieldset);
@@ -1146,7 +1129,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             }
         } elseif (is_numeric($fields['source'])) {
             if (strlen(trim($fields['max_records'])) == 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)) {
-                if (isset($fields['paginate_results'])) {
+                if ($fields['paginate_results'] === 'yes') {
                     $this->_errors['max_records'] = __('A result limit must be set');
                 }
             } elseif (!self::__isValidPageString($fields['max_records'])) {
@@ -1154,7 +1137,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             }
 
             if (strlen(trim($fields['page_number'])) == 0 || (is_numeric($fields['page_number']) && $fields['page_number'] < 1)) {
-                if (isset($fields['paginate_results'])) {
+                if ($fields['paginate_results'] === 'yes') {
                     $this->_errors['page_number'] = __('A page number must be set');
                 }
             } elseif (!self::__isValidPageString($fields['page_number'])) {
@@ -1248,9 +1231,9 @@ class contentBlueprintsDatasources extends ResourcesPage
                         $elements = $fields['xml_elements'];
 
                         $params['order'] = $fields['order'];
-                        $params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
-                        $params['redirectonforbidden'] = (isset($fields['redirect_on_forbidden']) ? 'yes' : 'no');
-                        $params['redirectonrequired'] = (isset($fields['redirect_on_required']) ? 'yes' : 'no');
+                        $params['redirectonempty'] = $fields['redirect_on_empty'];
+                        $params['redirectonforbidden'] = $fields['redirect_on_forbidden'];
+                        $params['redirectonrequired'] = $fields['redirect_on_required'];
                         $params['requiredparam'] = trim($fields['required_url_param']);
                         $params['negateparam'] = trim($fields['negate_url_param']);
                         $params['paramoutput'] = $fields['param'];
@@ -1264,9 +1247,9 @@ class contentBlueprintsDatasources extends ResourcesPage
                         }
 
                         $params['order'] = $fields['order'];
-                        $params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
-                        $params['redirectonforbidden'] = (isset($fields['redirect_on_forbidden']) ? 'yes' : 'no');
-                        $params['redirectonrequired'] = (isset($fields['redirect_on_required']) ? 'yes' : 'no');
+                        $params['redirectonempty'] = $fields['redirect_on_empty'];
+                        $params['redirectonforbidden'] = $fields['redirect_on_forbidden'];
+                        $params['redirectonrequired'] = $fields['redirect_on_required'];
                         $params['requiredparam'] = trim($fields['required_url_param']);
                         $params['negateparam'] = trim($fields['negate_url_param']);
 
@@ -1301,22 +1284,18 @@ class contentBlueprintsDatasources extends ResourcesPage
 
                         $params['order'] = $fields['order'];
                         $params['group'] = $fields['group'];
-                        $params['paginateresults'] = (isset($fields['paginate_results']) ? 'yes' : 'no');
+                        $params['paginateresults'] = $fields['paginate_results'];
                         $params['limit'] = $fields['max_records'];
                         $params['startpage'] = $fields['page_number'];
-                        $params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
-                        $params['redirectonforbidden'] = (isset($fields['redirect_on_forbidden']) ? 'yes' : 'no');
-                        $params['redirectonrequired'] = (isset($fields['redirect_on_required']) ? 'yes' : 'no');
+                        $params['redirectonempty'] = $fields['redirect_on_empty'];
+                        $params['redirectonforbidden'] = $fields['redirect_on_forbidden'];
+                        $params['redirectonrequired'] = $fields['redirect_on_required'];
                         $params['requiredparam'] = trim($fields['required_url_param']);
                         $params['negateparam'] = trim($fields['negate_url_param']);
                         $params['paramoutput'] = $fields['param'];
                         $params['sort'] = $fields['sort'];
                         $params['htmlencode'] = $fields['html_encode'];
                         $params['associatedentrycounts'] = $fields['associated_entry_counts'];
-
-                        if ($params['associatedentrycounts'] == null) {
-                            $params['associatedentrycounts'] = 'no';
-                        }
 
                         break;
                 }
