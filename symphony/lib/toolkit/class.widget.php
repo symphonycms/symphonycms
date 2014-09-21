@@ -136,7 +136,6 @@ class Widget
 
         // Build the label
         $label = Widget::Label();
-        $label->setAttribute('class', 'column');
         if ($help) {
             $label->addClass('inline-help');
         }

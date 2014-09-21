@@ -848,6 +848,7 @@ class Field
         $name = "fields[$order][$setting]";
 
         $label = Widget::Checkbox($name, $this->get($setting), $label_description, $wrapper, $help);
+        $label->addClass('column');
 
         return $label;
     }
