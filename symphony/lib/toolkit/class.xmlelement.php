@@ -870,9 +870,9 @@ class XMLElement implements IteratorAggregate
 
             if ($node->hasChildNodes()) {
                 foreach ($node->childNodes as $childNode) {
-					if ($childNode instanceof DOMCdataSection) {
-						$el->setValue(General::wrapInCDATA($childNode->data));
-					}
+                    if ($childNode instanceof DOMCdataSection) {
+                    	$el->setValue(General::wrapInCDATA($childNode->data));
+                    }
                     else if ($childNode instanceof DOMText) {
                         if ($childNode->isWhitespaceInElementContent() === false) {
                             $root->setValue(General::sanitize($childNode->data));
@@ -908,9 +908,9 @@ class XMLElement implements IteratorAggregate
 
         if ($node->hasChildNodes()) {
             foreach ($node->childNodes as $childNode) {
-				if ($childNode instanceof DOMCdataSection) {
-					$el->setValue(General::wrapInCDATA($childNode->data));
-				}
+                if ($childNode instanceof DOMCdataSection) {
+                	$el->setValue(General::wrapInCDATA($childNode->data));
+                }
                 else if ($childNode instanceof DOMText) {
                     if ($childNode->isWhitespaceInElementContent() === false) {
                         $el->setValue(General::sanitize($childNode->data));
