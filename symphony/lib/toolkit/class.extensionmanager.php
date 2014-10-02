@@ -696,11 +696,14 @@ class ExtensionManager implements FileResource
         }
 
         $context += array('page' => $page, 'delegate' => $delegate);
+        $profiling = is_callable('Symphony::Profiler()');
 
         foreach ($services as $s) {
-            // Initial seeding and query count
-            Symphony::Profiler()->seed();
-            $queries = Symphony::Database()->queryCount();
+            if($profiling) {
+                // Initial seeding and query count
+                Symphony::Profiler()->seed();
+                $queries = Symphony::Database()->queryCount();
+            }
 
             // Get instance of extension and execute the callback passing
             // the `$context` along
@@ -711,8 +714,10 @@ class ExtensionManager implements FileResource
             }
 
             // Complete the Profiling sample
-            $queries = Symphony::Database()->queryCount() - $queries;
-            Symphony::Profiler()->sample($delegate . '|' . $s['name'], PROFILE_LAP, 'Delegate', $queries);
+            if($profiling) {
+                $queries = Symphony::Database()->queryCount() - $queries;
+                Symphony::Profiler()->sample($delegate . '|' . $s['name'], PROFILE_LAP, 'Delegate', $queries);
+            }
         }
     }
 
