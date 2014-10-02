@@ -696,7 +696,7 @@ class ExtensionManager implements FileResource
         }
 
         $context += array('page' => $page, 'delegate' => $delegate);
-        $profiling = is_callable('Symphony::Profiler()');
+        $profiling = Symphony::Profiler() instanceof Profiler;
 
         foreach ($services as $s) {
             if($profiling) {
