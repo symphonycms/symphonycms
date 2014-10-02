@@ -631,6 +631,11 @@ class FrontendPage extends XSLTPage
             }
         }
 
+        // Nothing resolved, bail now
+        if (!is_array($row) || empty($row)) {
+            return false;
+        }
+
         // Process the extra URL params
         $url_params = preg_split('/\//', $row['params'], -1, PREG_SPLIT_NO_EMPTY);
 
@@ -646,10 +651,6 @@ class FrontendPage extends XSLTPage
             for ($i = 0, $ii = count($page_extra_bits); $i < $ii; $i++) {
                 $this->_env['url'][$url_params[$i]] = str_replace(' ', '+', $page_extra_bits[$i]);
             }
-        }
-
-        if (!is_array($row) || empty($row)) {
-            return false;
         }
 
         $row['type'] = PageManager::fetchPageTypes($row['id']);
