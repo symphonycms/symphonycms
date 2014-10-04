@@ -300,10 +300,13 @@ abstract class Symphony implements Singleton
      * Setter for `$ExtensionManager` using the current
      * Symphony instance as the parent. If for some reason this fails,
      * a Symphony Error page will be thrown
+     * @param Boolean $force (optional)
+     *  When set to true, this function will always create a new
+     *  instance of ExtensionManager, replacing self::$ExtensionManager.
      */
-    public static function initialiseExtensionManager()
+    public static function initialiseExtensionManager($force=false)
     {
-        if (self::$ExtensionManager instanceof ExtensionManager) {
+        if (!$force && self::$ExtensionManager instanceof ExtensionManager) {
             return true;
         }
 

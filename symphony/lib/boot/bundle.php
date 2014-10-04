@@ -8,21 +8,6 @@
     require_once DOCROOT . '/symphony/lib/boot/defines.php';
     require_once CORE . '/class.symphony.php';
 
-    if(!defined('PHP_VERSION_ID'))
-    {
-        $version = PHP_VERSION;
-
-        /**
-         * For versions of PHP below 5.2.7, the PHP_VERSION_ID constant, doesn't
-         * exist, so this will just mimic the functionality as described on the
-         * PHP documentation
-         *
-         * @link http://php.net/manual/en/function.phpversion.php
-         * @var integer
-         */
-        define('PHP_VERSION_ID', ($version{0} * 10000 + $version{2} * 100 + $version{4}));
-    }
-
     // Set appropriate error reporting:
     error_reporting(
         PHP_VERSION_ID >= 50300
