@@ -129,9 +129,9 @@ abstract class Symphony implements Singleton
      */
     public static function Engine()
     {
-        if (class_exists('Administration')) {
+        if (class_exists('Administration', false)) {
             return Administration::instance();
-        } elseif (class_exists('Frontend')) {
+        } elseif (class_exists('Frontend', false)) {
             return Frontend::instance();
         } else {
             throw new Exception(__('No suitable engine object found'));
@@ -580,7 +580,7 @@ abstract class Symphony implements Singleton
                     );
 
                     // Only set custom author language in the backend
-                    if (class_exists('Administration')) {
+                    if (class_exists('Administration', false)) {
                         Lang::set(self::$Author->get('language'));
                     }
 

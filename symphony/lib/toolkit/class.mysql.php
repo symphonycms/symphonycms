@@ -541,7 +541,7 @@ class MySQL
          *  The time that it took to run `$query`
          */
         if (Symphony::ExtensionManager() instanceof ExtensionManager) {
-            Symphony::ExtensionManager()->notifyMembers('PostQueryExecution', class_exists('Administration') ? '/backend/' : '/frontend/', array(
+            Symphony::ExtensionManager()->notifyMembers('PostQueryExecution', class_exists('Administration', false) ? '/backend/' : '/frontend/', array(
                 'query' => $query,
                 'query_hash' => $query_hash,
                 'execution_time' => $stop
@@ -895,7 +895,7 @@ class MySQL
          *  The error number that corresponds with the MySQL error message
          */
         if (Symphony::ExtensionManager() instanceof ExtensionManager) {
-            Symphony::ExtensionManager()->notifyMembers('QueryExecutionError', class_exists('Administration') ? '/backend/' : '/frontend/', array(
+            Symphony::ExtensionManager()->notifyMembers('QueryExecutionError', class_exists('Administration', false) ? '/backend/' : '/frontend/', array(
                 'query' => $this->_lastQuery,
                 'query_hash' => $this->_lastQueryHash,
                 'msg' => $msg,

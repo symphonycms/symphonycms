@@ -27,10 +27,12 @@
                 'singleton' => FACE . '/interface.singleton.php',
 
                 // Core
+                'administration' => CORE . '/class.administration.php',
                 'cacheable' => CORE . '/class.cacheable.php',
                 'configuration' => CORE . '/class.configuration.php',
                 'cookie' => CORE . '/class.cookie.php',
                 'datetimeobj' => CORE . '/class.datetimeobj.php',
+                'frontend' => CORE .'/class.frontend.php',
                 'genericexceptionhandler' => CORE . '/class.errorhandler.php',
                 'genericerrorhandler' => CORE . '/class.errorhandler.php',
                 'log' => CORE . '/class.log.php',

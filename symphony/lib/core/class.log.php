@@ -230,7 +230,7 @@ class Log
             return false;
         }
 
-        $permissions = (class_exists('Symphony')) ? Symphony::Configuration()->get('write_mode', 'file') : '0664';
+        $permissions = class_exists('Symphony', false) ? Symphony::Configuration()->get('write_mode', 'file') : '0664';
 
         return General::writeFile($this->_log_path, $message . ($addbreak ? PHP_EOL : ''), $permissions, 'a+');
     }
