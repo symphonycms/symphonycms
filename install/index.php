@@ -30,11 +30,19 @@
 	// Required boot components
 	define('VERSION', '2.5.2');
 	define('INSTALL', DOCROOT . '/install');
+
+	// Is there a vendor autoloader?
+	if (@file_exists(DOCROOT . '/vendor/autoload.php')) {
+		require_once DOCROOT . '/vendor/autoload.php';
+	} else {
+		require_once DOCROOT . '/symphony/lib/boot/autoload.php';
+	}
+
+	// Run the bundle
 	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
 
 	define('INSTALL_LOGS', MANIFEST . '/logs');
 	define('INSTALL_URL', URL . '/install');
-	require_once(DOCROOT . '/symphony/lib/boot/autoload.php');
 
 	// If prompt to remove, delete the entire `/install` directory
 	// and then redirect to Symphony

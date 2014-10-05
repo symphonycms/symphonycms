@@ -9,7 +9,7 @@
     } else {
         require_once DOCROOT . '/symphony/lib/boot/autoload.php';
     }
-    
+
     // Include the boot script:
     require_once DOCROOT . '/symphony/lib/boot/bundle.php';
 
