@@ -218,14 +218,10 @@ function symphony($mode)
 function symphony_launcher($mode)
 {
     if (strtolower($mode) == 'administration') {
-        require_once CORE . "/class.administration.php";
-
         $renderer = Administration::instance();
     }
 
     else {
-        require_once CORE . "/class.frontend.php";
-
         $renderer = Frontend::instance();
     }
 

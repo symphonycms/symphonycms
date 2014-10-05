@@ -4,8 +4,6 @@
      * @package boot
      */
 
-    require_once DOCROOT . '/symphony/lib/boot/autoload.php';
-
     // Set appropriate error reporting:
     error_reporting(
         PHP_VERSION_ID >= 50300

@@ -1,0 +1,27 @@
+{
+    "name": "symphonycms/symphony-2",
+    "version": "2.5.1",
+    "description": "Symphony is a PHP & MySQL based CMS that utilises XML and XSLT as its core technologies.",
+    "homepage": "http://www.getsymphony.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Symphony Team",
+            "email": "team@getsymphony.com"
+        }
+    ],
+    "support": {
+      "forum": "http://www.getsymphony.com/discuss/",
+      "issues": "https://github.com/symphonycms/symphony-2/issues",
+      "wiki": "https://github.com/symphonycms/symphony-2/wiki"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+      "classmap": ["symphony/content", "symphony/lib", "symphony/template"],
+      "files": [
+        "symphony/lib/boot/func.utilities.php",
+        "symphony/lib/boot/defines.php",
+        "symphony/lib/toolkit/util.validators.php"
+      ]
+    }
+}
