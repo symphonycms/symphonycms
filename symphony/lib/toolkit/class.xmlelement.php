@@ -862,26 +862,7 @@ class XMLElement implements IteratorAggregate
         $root = new XMLElement($root_element);
 
         foreach ($xpath->query('.') as $node) {
-            if ($node->hasAttributes()) {
-                foreach ($node->attributes as $name => $attrEl) {
-                    $root->setAttribute($name, General::sanitize($attrEl->value));
-                }
-            }
-
-            if ($node->hasChildNodes()) {
-                foreach ($node->childNodes as $childNode) {
-                    if ($childNode instanceof DOMCdataSection) {
-                    	$el->setValue(General::wrapInCDATA($childNode->data));
-                    }
-                    else if ($childNode instanceof DOMText) {
-                        if ($childNode->isWhitespaceInElementContent() === false) {
-                            $root->setValue(General::sanitize($childNode->data));
-                        }
-                    } elseif ($childNode instanceof DOMElement) {
-                        self::convert($root, $childNode);
-                    }
-                }
-            }
+            self::convertNode($root, $node);
         }
 
         return $root;
@@ -900,31 +881,44 @@ class XMLElement implements IteratorAggregate
     {
         $el = new XMLElement($node->tagName);
 
+        self::convertNode($el, $node);
+
+        if (is_null($root)) {
+            return $el;
+        } else {
+            $root->appendChild($el);
+        }
+    }
+
+    /**
+     * Given a DOMNode, this function will help replicate it as an
+     * XMLElement object
+     *
+     * @since Symphony 2.5.2
+     * @param XMLElement $element
+     * @param DOMNode $node
+     */
+    private static function convertNode(XMLElement $element, DOMNode $node)
+    {
         if ($node->hasAttributes()) {
             foreach ($node->attributes as $name => $attrEl) {
-                $el->setAttribute($name, General::sanitize($attrEl->value));
+                $element->setAttribute($name, General::sanitize($attrEl->value));
             }
         }
 
         if ($node->hasChildNodes()) {
             foreach ($node->childNodes as $childNode) {
                 if ($childNode instanceof DOMCdataSection) {
-                	$el->setValue(General::wrapInCDATA($childNode->data));
+                    $element->setValue(General::wrapInCDATA($childNode->data));
                 }
                 else if ($childNode instanceof DOMText) {
                     if ($childNode->isWhitespaceInElementContent() === false) {
-                        $el->setValue(General::sanitize($childNode->data));
+                        $element->setValue(General::sanitize($childNode->data));
                     }
                 } elseif ($childNode instanceof DOMElement) {
-                    self::convert($el, $childNode);
+                    self::convert($element, $childNode);
                 }
             }
-        }
-
-        if (is_null($root)) {
-            return $el;
-        } else {
-            $root->appendChild($el);
         }
     }
 }
