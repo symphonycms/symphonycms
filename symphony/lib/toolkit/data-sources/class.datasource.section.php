@@ -162,7 +162,7 @@ class SectionDatasource extends Datasource
                     list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
 
                     if (self::$_fieldPool[$field_id]->get('element_name') == $handle) {
-                        self::$_fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false), $mode, $entry->get('id'));
+                        self::$_fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE === 'yes' ? true : false), $mode, $entry->get('id'));
                     }
                 }
             }
