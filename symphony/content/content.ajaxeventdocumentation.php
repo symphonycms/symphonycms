@@ -144,7 +144,7 @@ class contentAjaxEventDocumentation extends TextPage
             $code->appendChild(new XMLElement('field-name', null, array('type' => 'invalid | missing')));
         }
 
-        $code->setValue('...', false);
+        $code->setValue('...');
         $doc_parts[] = self::processDocumentationCode($code);
     }
 
@@ -157,7 +157,7 @@ class contentAjaxEventDocumentation extends TextPage
             $code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
             $code->appendChild(new XMLElement('filter', null, array('name' => 'admin-only', 'status' => 'failed')));
             $code->appendChild(new XMLElement('filter', __('Recipient not found'), array('name' => 'send-email', 'status' => 'failed')));
-            $code->setValue('...', false);
+            $code->setValue('...');
 
             $doc_parts[] = self::processDocumentationCode($code);
         }

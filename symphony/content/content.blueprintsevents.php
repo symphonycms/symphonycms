@@ -500,15 +500,15 @@ class contentBlueprintsEvents extends ResourcesPage
                 $doc_parts = array();
 
                 // Add Documentation (Success/Failure)
-                $ajaxEventDoc->addEntrySuccessDoc($doc_parts, $rootelement, $fields['source'], $filters);
-                $ajaxEventDoc->addEntryFailureDoc($doc_parts, $rootelement, $fields['source'], $filters);
+                $ajaxEventDoc->addEntrySuccessDoc($doc_parts, $rootelement, $filters);
+                $ajaxEventDoc->addEntryFailureDoc($doc_parts, $rootelement, $filters);
 
                 // Filters
-                $ajaxEventDoc->addDefaultFiltersDoc($doc_parts, $rootelement, $fields['source'], $filters);
+                $ajaxEventDoc->addDefaultFiltersDoc($doc_parts, $rootelement, $filters);
 
                 // Frontend Markup
                 $ajaxEventDoc->addFrontendMarkupDoc($doc_parts, $rootelement, $fields['source'], $filters);
-                $ajaxEventDoc->addSendMailFilterDoc($doc_parts, $rootelement, $fields['source'], $filters);
+                $ajaxEventDoc->addSendMailFilterDoc($doc_parts, $filters);
 
                 /**
                  * Allows adding documentation for new filters. A reference to the $documentation
