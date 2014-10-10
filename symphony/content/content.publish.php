@@ -228,6 +228,14 @@ class contentPublish extends AdministrationPage
             Administration::instance()->errorPageNotFound();
         }
 
+        // Is this request allowed by server?
+        if ($this->isRequestValid() === false) {
+            $this->pageAlert(__('This request exceeds the maximum allowed request size of %s specified by your host.', array(
+                    ini_get('post_max_size')
+                )),
+                Alert::ERROR
+            );
+        }
         $this->$function();
     }
 

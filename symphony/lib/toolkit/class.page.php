@@ -322,4 +322,21 @@ abstract class Page
             }
         }
     }
+
+    /**
+     * This function will check to ensure that this post request is not larger than
+     * what the server is set to handle. If it is, a notice is shown.
+     *
+     * @link https://github.com/symphonycms/symphony-2/issues/1187
+     * @since Symphony 2.5.2
+     */
+    public function isRequestValid()
+    {
+        $max_size = ini_get('post_max_size');
+        if (getenv('REQUEST_METHOD') === 'POST' && (int)getenv('CONTENT_LENGTH') > General::convertHumanFileSizeToBytes($max_size)) {
+            return false;
+        }
+
+        return true;
+    }
 }

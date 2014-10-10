@@ -1390,6 +1390,36 @@ class General
     }
 
     /**
+     * Gets the number of bytes from 'human readable' size value. Supports
+     * the output of `General::formatFilesize` as well as reading values
+     * from the PHP configuration. eg. 1 MB or 1M
+     *
+     * @since Symphony 2.5.2
+     * @param string $file_size
+     * @return integer
+     */
+    public static function convertHumanFileSizeToBytes($file_size)
+    {
+        $file_size = str_replace(
+            array(' MB', ' KB', ' bytes'),
+            array('M', 'K', 'B'),
+            trim($file_size)
+        );
+
+        $last = strtolower($file_size[strlen($file_size)-1]);
+        switch($last) {
+            case 'g':
+                $file_size *= 1024;
+            case 'm':
+                $file_size *= 1024;
+            case 'k':
+                $file_size *= 1024;
+        }
+
+        return $file_size;
+    }
+
+    /**
      * Construct an XML fragment that reflects the structure of the input timestamp.
      *
      * @param integer $timestamp
