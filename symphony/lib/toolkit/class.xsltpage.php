@@ -107,22 +107,6 @@ class XSLTPage extends Page
     }
 
     /**
-     * Sets the parameters that will output with the resulting page
-     * and be accessible in the XSLT. This function translates all ' into
-     * `&apos;`, with the tradeoff being that a <xsl:value-of select='$param' />
-     * that has a ' will output `&apos;` but the benefit that ' and " can be
-     * in the params
-     *
-     * @link http://www.php.net/manual/en/xsltprocessor.setparameter.php#81077
-     * @param array $param
-     *  An associative array of params for this page
-     */
-    public function setRuntimeParam($param)
-    {
-        $this->_param = str_replace("'", "&apos;", $param);
-    }
-
-    /**
      * Returns an iterator of errors from the `XsltProcess`. Use this function
      * inside a loop to get all the errors that occurring when transforming
      * `$this->_xml` with `$this->_xsl`.
