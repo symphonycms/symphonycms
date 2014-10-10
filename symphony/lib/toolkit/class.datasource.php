@@ -18,7 +18,7 @@
  * `TEMPLATE . /datasource.tpl`.
  */
 
-class DataSource
+class Datasource
 {
     /**
      * A constant that represents if this filter is an AND filter in which
@@ -212,11 +212,11 @@ class DataSource
      * @param string $value
      *  The filter string for a field.
      * @return integer
-     *  DataSource::FILTER_OR or DataSource::FILTER_AND
+     *  Datasource::FILTER_OR or Datasource::FILTER_AND
      */
     public function __determineFilterType($value)
     {
-        return (preg_match('/\s+\+\s+/', $value) ? DataSource::FILTER_AND : DataSource::FILTER_OR);
+        return (preg_match('/\s+\+\s+/', $value) ? Datasource::FILTER_AND : Datasource::FILTER_OR);
     }
 
     /**
