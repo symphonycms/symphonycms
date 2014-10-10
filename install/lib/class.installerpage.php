@@ -1,4 +1,4 @@
-L10<?php
+<?php
 
 	/**
 	 * @package content
