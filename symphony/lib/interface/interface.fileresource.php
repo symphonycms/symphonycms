@@ -18,7 +18,7 @@ interface FileResource
      * any Symphony conventions such as `field.*.php`
      *
      * @param string $filename
-     * @return string
+     * @return string|boolean
      */
     public static function __getHandleFromFilename($filename);
 
@@ -28,7 +28,7 @@ interface FileResource
      * class with the type of the object. eg. field{Class}, formatter{Class}
      *
      * @param string $name
-     * @return string
+     * @return string|boolean
      */
     public static function __getClassName($name);
 
@@ -36,7 +36,7 @@ interface FileResource
      * Given a name, return the path to the class of that object
      *
      * @param string $name
-     * @return string
+     * @return string|boolean
      */
     public static function __getClassPath($name);
 
@@ -44,7 +44,7 @@ interface FileResource
      * Given a name, return the path to the driver of that object
      *
      * @param string $name
-     * @return string
+     * @return string|boolean
      */
     public static function __getDriverPath($name);
 
@@ -70,7 +70,7 @@ interface FileResource
      *  The name of the object that has an `about()` function. This should be
      *  lowercase and free from any Symphony conventions. eg. `author`,
      *  not `field.author.php`.
-     * @return boolean|array
+     * @return array|boolean
      *  False is object doesn't exist or an associative array of information
      */
     public static function about($name);

@@ -103,7 +103,7 @@ class contentSystemAuthors extends AdministrationPage
                         $td1->appendChild(Widget::Label(__('Select Author %s', array($a->getFullName())), null, 'accessible', null, array(
                             'for' => 'author-' . $a->get('id')
                         )));
-                        $td1->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox', array(
+                        $td1->appendChild(Widget::Input('items['.$a->get('id').']', 'on', 'checkbox', array(
                             'id' => 'author-' . $a->get('id')
                         )));
                     }

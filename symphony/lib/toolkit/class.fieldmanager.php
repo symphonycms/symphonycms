@@ -59,7 +59,7 @@ class FieldManager implements FileResource
      *
      * @param string $type
      *  The field handle, that is, `field.{$handle}.php`
-     * @return string
+     * @return string|boolean
      */
     public static function __getClassPath($type)
     {

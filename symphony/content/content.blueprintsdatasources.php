@@ -281,8 +281,6 @@ class contentBlueprintsDatasources extends ResourcesPage
             $group->appendChild($label);
         }
 
-        $div = new XMLElement('div', null, array('class' => 'column'));
-
         $fieldset->appendChild($group);
         $this->Form->appendChild($fieldset);
 
@@ -302,8 +300,6 @@ class contentBlueprintsDatasources extends ResourcesPage
         $label->appendChild(new XMLElement('i', __('Optional')));
         $label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array('placeholder' => __('$param'))));
         $group->appendChild($label);
-
-        $div = new XMLElement('div', null, array('class' => 'column'));
 
         $label = Widget::Label(__('Forbidden Parameter'));
         $label->setAttribute('class', 'column');
@@ -842,8 +838,6 @@ class contentBlueprintsDatasources extends ResourcesPage
                 $optgroup['options'][] = $option;
             }
 
-            $authorOverride = false;
-
             if (is_array($section_data['fields']) && !empty($section_data['fields'])) {
                 foreach ($section_data['fields'] as $input) {
 
@@ -1189,7 +1183,6 @@ class contentBlueprintsDatasources extends ResourcesPage
         if (empty($this->_errors)) {
             $filters = array();
             $elements = null;
-            $placeholder = '<!-- GRAB -->';
             $source = $fields['source'];
             $params = array(
                 'rootelement' => $rootelement

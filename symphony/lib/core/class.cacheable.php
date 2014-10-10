@@ -174,12 +174,10 @@ class Cacheable
      * @deprecated This function will be removed in the next major
      *  version of Symphony. Use `delete()` instead.
      *
-     * @param string $hash
-     *  The user defined hash of the data
      * @return boolean
      */
     public function clean()
     {
-        return $this->delete($hash);
+        return $this->delete();
     }
 }

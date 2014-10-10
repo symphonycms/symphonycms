@@ -70,7 +70,8 @@
 			catch(DatabaseException $e){
 				self::__abort(
 					'There was a problem while trying to establish a connection to the MySQL server. Please check your settings.',
-				$start);
+					time()
+				);
 			}
 
 			// MySQL: Setting prefix & character encoding

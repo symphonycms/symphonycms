@@ -17,10 +17,7 @@ require_once CONTENT . '/class.sortable.php';
 class contentPublish extends AdministrationPage
 {
     public $_errors = array();
-
-    private $_filteringForm = null;
     private $_filteringFields = array();
-    private $_filteringOptions = array();
 
     public function sort(&$sort, &$order, $params)
     {
@@ -1607,7 +1604,8 @@ class contentPublish extends AdministrationPage
                             $pagination = new XMLElement('li', null, array(
                                 'class' => 'association-more',
                                 'data-current-page' => '1',
-                                'data-total-pages' => ceil($entries['total-entries'] / $show_entries)
+                                'data-total-pages' => ceil($entries['total-entries'] / $show_entries),
+                                'data-total-entries' => $entries['total-entries']
                             ));
                             $counts = new XMLElement('a', __('Show more entries'), array(
                                 'href' => $link

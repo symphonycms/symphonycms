@@ -48,7 +48,7 @@ class EventManager implements FileResource
      * @param string $handle
      *  The handle of the Event free from any Symphony conventions
      *  such as `event.*.php`
-     * @return mixed
+     * @return string|boolean
      *  If the Event is found, the function returns the path it's folder, otherwise false.
      */
     public static function __getClassPath($handle)

@@ -127,7 +127,7 @@ class contentBlueprintsEvents extends ResourcesPage
         }
 
         $this->setPageType('form');
-        $this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($about['name'], __('Events'), __('Symphony'))));
+        $this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($name, __('Events'), __('Symphony'))));
         $this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
         $this->insertBreadcrumbs(array(
             Widget::Anchor(__('Events'), SYMPHONY_URL . '/blueprints/events/'),
@@ -461,9 +461,6 @@ class contentBlueprintsEvents extends ResourcesPage
         }
 
         if (empty($this->_errors)) {
-            $multiple = in_array('expect-multiple', $filters);
-            $elements = null;
-            $placeholder = '<!-- GRAB -->';
             $source = $fields['source'];
             $params = array(
                 'rootelement' => $rootelement,
@@ -500,7 +497,6 @@ class contentBlueprintsEvents extends ResourcesPage
                 // Add Documentation
                 require_once(CONTENT . '/content.ajaxeventdocumentation.php');
                 $ajaxEventDoc = new contentAjaxEventDocumentation();
-                $documentation = null;
                 $doc_parts = array();
 
                 // Add Documentation (Success/Failure)

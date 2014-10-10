@@ -321,13 +321,8 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     public function processRawFieldData($data, &$status, &$message = null, $simulate = false, $entry_id = null)
     {
         $status = self::__OK__;
-
         $data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
         $data = array_map('trim', $data);
-        $result = array(
-            'value' =>  array(),
-            'handle' => array()
-        );
 
         if (empty($data)) {
             return null;
@@ -339,7 +334,6 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         sort($data);
 
         $result = array();
-
         foreach ($data as $value) {
             $result['value'][] = $value;
             $result['handle'][] = Lang::createHandle($value);

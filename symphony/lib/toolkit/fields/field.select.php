@@ -551,9 +551,6 @@ class FieldSelect extends Field implements ExportableField, ImportableField
     {
         parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
 
-        $data = preg_split('/,\s*/i', $data);
-        $data = array_map('trim', $data);
-
         $existing_options = $this->getToggleStates();
 
         if (is_array($existing_options) && !empty($existing_options)) {

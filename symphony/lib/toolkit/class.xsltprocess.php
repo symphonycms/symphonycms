@@ -39,6 +39,7 @@ class XsltProcess
      *  The XML for the transformation to be applied to
      * @param string $xsl
      *  The XSL for the transformation
+	 * @return boolean
      */
     public function __construct($xml = null, $xsl = null)
     {
@@ -78,8 +79,8 @@ class XsltProcess
      *  An array of available parameters the XSL will have access to
      * @param array $register_functions
      *  An array of available PHP functions that the XSL can use
-     * @return string
-     *  The string of the resulting transform.
+     * @return string|boolean
+     *  The string of the resulting transform, or false if there was an error
      */
     public function process($xml = null, $xsl = null, array $parameters = array(), array $register_functions = array())
     {

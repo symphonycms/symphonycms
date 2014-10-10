@@ -13,10 +13,9 @@
 		static function upgrade(){
 			if(version_compare(self::$existing_version, '2.3.3beta1', '<=')) {
 				// Update DB for the new author role #1692
-				Symphony::Database()->query(sprintf(
-					"ALTER TABLE `tbl_authors` CHANGE `user_type` `user_type` enum('author', 'manager', 'developer') DEFAULT 'author'",
-					$field
-				));
+				Symphony::Database()->query(
+					"ALTER TABLE `tbl_authors` CHANGE `user_type` `user_type` enum('author', 'manager', 'developer') DEFAULT 'author'"
+				);
 
 				// Remove directory from the upload fields, #1719
 				$upload_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_upload`");

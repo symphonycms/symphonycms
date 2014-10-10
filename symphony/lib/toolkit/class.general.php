@@ -1010,10 +1010,11 @@ class General
      * back to using a mapping of known of common mimetypes. If no matches
      * are found `application/octet-stream` will be returned.
      *
-         * @author Michael Eichelsdoerfer
+     * @author Michael Eichelsdoerfer
      * @author Huib Keemink
      * @param string $file
-     * @return string MIMEtype
+     * @return string|boolean
+     *  the mime type of the file, or false is none found
      */
     public function getMimeType($file)
     {
@@ -1023,11 +1024,6 @@ class General
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);
                 $mime_type = finfo_file($finfo, $file);
                 finfo_close($finfo);
-
-                /**
-                 * fallback
-                 * this may be removed when Symphony requires PHP 5.3
-                 */
             } else {
                 // A few mimetypes to "guess" using the file extension.
                 $mimetypes = array(

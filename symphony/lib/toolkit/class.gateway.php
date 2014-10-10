@@ -281,7 +281,7 @@ class Gateway
      * @see toolkit.Gateway#getInfoLast()
      * @param string $force_connection_method
      *  Only one valid parameter, `Gateway::FORCE_SOCKET`
-     * @return string
+     * @return string|boolean
      *  The result of the transfer as a string. If any errors occur during
      *  a socket request, false will be returned.
      */

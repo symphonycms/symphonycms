@@ -55,7 +55,7 @@ class TextformatterManager implements FileResource
      * @param string $handle
      *  The handle of the Text Formatter free from any Symphony conventions
      *  such as `formatter.*.php`
-     * @return mixed
+     * @return string|boolean
      *  If the Text Formatter is found, the function returns the path it's folder,
      *  otherwise false.
      */

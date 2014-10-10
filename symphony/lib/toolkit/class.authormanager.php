@@ -233,7 +233,7 @@ class AuthorManager
             ));
 
             if (!is_array($records) || empty($records)) {
-                return array();
+                return null;
             }
 
             $author = new Author;

@@ -50,7 +50,7 @@ class DatasourceManager implements FileResource
      * @param string $handle
      *  The handle of the Datasource free from any Symphony conventions
      *  such as `data.*.php`
-     * @return mixed
+     * @return string|boolean
      *  If the datasource is found, the function returns the path it's folder, otherwise false.
      */
     public static function __getClassPath($handle)

@@ -394,29 +394,18 @@ class Widget
             foreach ($columns as $col) {
                 $th = new XMLElement('th');
 
-                $scope = $attributes = null;
-                $value = $col[0];
-
-                if (isset($col[1])) {
-                    $scope = $col[1];
-                }
-
-                if (isset($col[2])) {
-                    $attributes = $col[2];
-                }
-
-                if (is_object($value)) {
-                    $th->appendChild($value);
+                if (is_object($col[0])) {
+                    $th->appendChild($col[0]);
                 } else {
-                    $th->setValue($value);
+                    $th->setValue($col[0]);
                 }
 
-                if ($scope && $scope != '') {
-                    $th->setAttribute('scope', $scope);
+                if ($col[1] && $col[1] != '') {
+                    $th->setAttribute('scope', $col[1]);
                 }
 
-                if (is_array($attributes) && !empty($attributes)) {
-                    $th->setAttributeArray($attributes);
+                if (is_array($col[2]) && !empty($col[2])) {
+                    $th->setAttributeArray($col[2]);
                 }
 
                 $tr->appendChild($th);

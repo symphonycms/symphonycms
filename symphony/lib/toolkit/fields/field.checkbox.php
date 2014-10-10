@@ -232,9 +232,8 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
 
     public function prepareImportValue($data, $mode, $entry_id = null)
     {
-        $value = $status = $message = null;
+        $status = $message = null;
         $modes = (object)$this->getImportModes();
-
         $value = $this->processRawFieldData($data, $status, $message, true, $entry_id);
 
         if ($mode === $modes->getValue) {

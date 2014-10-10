@@ -244,7 +244,7 @@ abstract class Symphony implements Singleton
         self::$Log->setMaxSize(intval(self::Configuration()->get('maxsize', 'log')));
         self::$Log->setDateTimeFormat(self::Configuration()->get('date_format', 'region') . ' ' . self::Configuration()->get('time_format', 'region'));
 
-        if (self::$Log->open(Log::APPEND, self::Configuration()->get('write_mode', 'file')) == 1) {
+        if (self::$Log->open(Log::APPEND, self::Configuration()->get('write_mode', 'file')) == '1') {
             self::$Log->initialise('Symphony Log');
         }
     }
