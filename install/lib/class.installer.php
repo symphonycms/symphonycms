@@ -582,7 +582,6 @@
 					try{
 						Symphony::Database()->import(
 							file_get_contents(DOCROOT . '/workspace/install.sql'),
-							($fields['database']['use-server-encoding'] != 'yes' ? true : false),
 							true
 						);
 					}

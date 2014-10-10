@@ -37,12 +37,12 @@
 				return ($canProceed === false) ? false : true;
 			}
 			catch(DatabaseException $e) {
-				Symphony::Log()->writeToLog('Could not complete upgrading. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getMessage(), E_ERROR, true);
+				Symphony::Log()->pushToLog('Could not complete upgrading. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getMessage(), E_ERROR, true);
 
 				return false;
 			}
 			catch(Exception $e){
-				Symphony::Log()->writeToLog('Could not complete upgrading because of the following error: ' . $e->getMessage(), E_ERROR, true);
+				Symphony::Log()->pushToLog('Could not complete upgrading because of the following error: ' . $e->getMessage(), E_ERROR, true);
 
 				return false;
 			}
@@ -67,7 +67,7 @@
 		 * @return string
 		 */
 		static function getReleaseNotes(){
-			return array();
+			return null;
 		}
 
 		/**

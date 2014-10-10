@@ -944,7 +944,6 @@ class MySQL
      */
     public function getStatistics()
     {
-        $stats = array();
         $query_timer = 0.0;
         $slow_queries = array();
 
@@ -966,14 +965,14 @@ class MySQL
      * Convenience function to allow you to execute multiple SQL queries at once
      * by providing a string with the queries delimited with a `;`
      *
+     * @throws DatabaseException
+     * @throws Exception
      * @param string $sql
      *  A string containing SQL queries delimited by `;`
      * @param boolean $force_engine
      *  If set to true, this will set MySQL's default storage engine to MyISAM.
      *  Defaults to false, which will use MySQL's default storage engine when
      *  tables don't explicitly define which engine they should be created with
-     * @throws DatabaseException
-     * @throws Exception
      * @return boolean
      *  If one of the queries fails, false will be returned and no further queries
      *  will be executed, otherwise true will be returned.

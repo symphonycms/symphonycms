@@ -157,7 +157,6 @@ class Entry
         $schema = $section->fetchFieldsSchema();
 
         foreach ($schema as $info) {
-            $result = null;
             $message = null;
             $field = FieldManager::fetch($info['id']);
 
@@ -239,7 +238,6 @@ class Entry
         $schema = $section->fetchFieldsSchema();
 
         foreach ($schema as $info) {
-            $result = null;
             $message = null;
             $field = FieldManager::fetch($info['id']);
 
@@ -339,9 +337,7 @@ class Entry
 
         foreach ($associated_sections as $as) {
             $field = FieldManager::fetch($as['child_section_field_id']);
-
             $parent_section_field_id = $as['parent_section_field_id'];
-            $search_value = null;
 
             if (!is_null($parent_section_field_id)) {
                 $search_value = $field->fetchAssociatedEntrySearchValue(

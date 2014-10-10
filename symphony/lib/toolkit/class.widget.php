@@ -394,8 +394,7 @@ class Widget
             foreach ($columns as $col) {
                 $th = new XMLElement('th');
 
-                $value = $scope = $attributes = null;
-
+                $scope = $attributes = null;
                 $value = $col[0];
 
                 if (isset($col[1])) {

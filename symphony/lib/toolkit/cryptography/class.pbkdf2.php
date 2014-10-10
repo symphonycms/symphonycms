@@ -174,7 +174,6 @@ class PBKDF2 extends Cryptography
      */
     public static function requiresMigration($hash)
     {
-        $version = substr($hash, 0, 8);
         $length = self::extractSaltlength($hash);
         $iterations = self::extractIterations($hash);
         $keylength = strlen(base64_decode(self::extractHash($hash)));

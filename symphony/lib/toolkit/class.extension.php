@@ -274,7 +274,7 @@ abstract class Extension
      * @since Symphony 2.5.0
      * @param string $type
      *  One of the `iProvider` constants
-     * @return boolean
+     * @return array
      */
     public static function providerOf($type = null)
     {

@@ -47,7 +47,7 @@ class Log
 
     /**
      * Whether to archive olds logs or not, by default they will not be archived.
-     * @var string
+     * @var boolean
      */
     private $_archive = false;
 
@@ -162,9 +162,10 @@ class Log
      * Function will return the last message added to `$_log` and remove
      * it from the array.
      *
-     * @return array
+     * @return array|boolean
      *  Returns an associative array of a log message, containing the type of the log
-     *  message, the actual message and the time at the which it was added to the log
+     *  message, the actual message and the time at the which it was added to the log.
+     *  If the log is empty, this function removes false.
      */
     public function popFromLog()
     {
@@ -200,7 +201,6 @@ class Log
      */
     public function pushToLog($message, $type = E_NOTICE, $writeToLog = false, $addbreak = true, $append = false)
     {
-
         if ($append) {
             $this->_log[count($this->_log) - 1]['message'] =  $this->_log[count($this->_log) - 1]['message'] . $message;
         } else {
@@ -228,7 +228,7 @@ class Log
     public function writeToLog($message, $addbreak = true)
     {
         if (file_exists($this->_log_path) && !is_writable($this->_log_path)) {
-            $this->pushToLog('Could Not Write To Log. It is not readable.');
+            $this->pushToLog('Could not write to Log. It is not readable.');
             return false;
         }
 

@@ -80,7 +80,6 @@ class SMTP
                     break;
                 default:
                     throw new SMTPException(__('Unsupported SSL type'));
-                    break;
             }
         }
 

@@ -295,7 +295,6 @@ class Section
     public function commit()
     {
         $settings = $this->_data;
-        $section_id = null;
 
         if (isset($settings['id'])) {
             $id = $settings['id'];

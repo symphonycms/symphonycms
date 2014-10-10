@@ -157,9 +157,6 @@ abstract class ResourcesPage extends AdministrationPage
                     );
                 }
 
-                // Resource name
-                $action = isset($r['can_parse']) && $r['can_parse'] === true ? 'edit' : 'info';
-
                 $name = Widget::TableData(
                     Widget::Anchor(
                         $r['name'],

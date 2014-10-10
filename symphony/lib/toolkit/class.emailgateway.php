@@ -576,7 +576,6 @@ abstract Class EmailGateway
         $output = '';
 
         foreach ($this->_attachments as $key => $file) {
-            $file_content = null;
             $tmp_file = false;
 
             // If the attachment is a URL, download the file to a temporary location.
@@ -734,12 +733,13 @@ abstract Class EmailGateway
     protected function contentInfoString($type = null, $file = null, $filename = null, $charset = null)
     {
         $data = $this->contentInfoArray($type, $file, $filename, $charset);
+        $fields = array();
 
         foreach ($data as $key => $value) {
-            $field[] = EmailHelper::fold(sprintf('%s: %s', $key, $value));
+            $fields[] = EmailHelper::fold(sprintf('%s: %s', $key, $value));
         }
 
-        return !empty($field) ? implode("\r\n", $field)."\r\n\r\n" : null;
+        return !empty($fields) ? implode("\r\n", $fields)."\r\n\r\n" : null;
     }
 
     /**
@@ -753,10 +753,8 @@ abstract Class EmailGateway
         switch ($type) {
             case 'multipart/mixed':
                 return $this->_boundary_mixed;
-                break;
             case 'multipart/alternative':
                 return $this->_boundary_alter;
-                break;
         }
     }
 

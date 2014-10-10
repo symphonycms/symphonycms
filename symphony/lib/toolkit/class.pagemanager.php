@@ -164,7 +164,6 @@ class PageManager
     {
         $new = PageManager::resolvePageFileLocation($new_path, $new_handle);
         $old = PageManager::resolvePageFileLocation($old_path, $old_handle);
-        $data = null;
 
         // Nothing to do:
         if (file_exists($new) && $new == $old) {
@@ -845,7 +844,6 @@ class PageManager
      */
     public static function resolvePage($page_id, $column)
     {
-        $path = array();
         $page = Symphony::Database()->fetchRow(0, sprintf(
             "SELECT
                 p.%s,

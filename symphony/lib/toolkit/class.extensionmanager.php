@@ -542,13 +542,6 @@ class ExtensionManager implements FileResource
      */
     public static function removeDelegates($name)
     {
-        $classname = self::__getClassName($name);
-        $path = self::__getDriverPath($name);
-
-        if (!file_exists($path)) {
-            return false;
-        }
-
         $delegates = Symphony::Database()->fetchCol('id', sprintf("
             SELECT tbl_extensions_delegates.`id`
             FROM `tbl_extensions_delegates`
@@ -968,7 +961,6 @@ class ExtensionManager implements FileResource
                 );
 
                 // If it exists, load in the 'min/max' version data for this release
-                $required_version = null;
                 $required_min_version = $xpath->evaluate('string(@min)', $release);
                 $required_max_version = $xpath->evaluate('string(@max)', $release);
                 $current_symphony_version = Symphony::Configuration()->get('version', 'symphony');

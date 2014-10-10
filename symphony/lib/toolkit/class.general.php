@@ -118,13 +118,7 @@ class General
      */
     public static function validateXML($data, &$errors, $isFile = true, $xsltProcessor = null, $encoding = 'UTF-8')
     {
-        $_parser = null;
-        $_data = null;
-        $_vals = array();
-        $_index = array();
-
         $_data = ($isFile) ? file_get_contents($data) : $data;
-
         $_data = preg_replace('/<!DOCTYPE[-.:"\'\/\\w\\s]+>/', null, $_data);
 
         if (strpos($_data, '<?xml') === false) {
@@ -1296,7 +1290,6 @@ class General
      */
     public static function limitWords($string, $maxChars = 200, $appendHellip = false)
     {
-
         if ($appendHellip) {
             $maxChars -= 1;
         }
@@ -1313,7 +1306,6 @@ class General
         $string = trim(substr($string, 0, $maxChars));
 
         $array = explode(' ', $string);
-        $result = '';
         $length = 0;
 
         while (!empty($array) && $length > $maxChars) {

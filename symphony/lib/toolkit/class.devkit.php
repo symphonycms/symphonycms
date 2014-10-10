@@ -122,8 +122,6 @@ class DevKit extends HTMLPage
         $xml->formatOutput = true;
         $xml->load(ASSETS . '/xml/devkit_navigation.xml');
         $root = $xml->documentElement;
-        $first = $root->firstChild;
-        $xpath = new DOMXPath($xml);
         $list = new XMLElement('ul');
         $list->setAttribute('id', 'navigation');
 

@@ -107,11 +107,10 @@ class DatasourceManager implements FileResource
 
                 if ($about = self::about($f)) {
                     $classname = self::__getClassName($f);
-                    $path = self::__getDriverPath($f);
-
                     $can_parse = false;
                     $type = null;
                     $env = array();
+
                     $class = new $classname($env, false);
 
                     try {
