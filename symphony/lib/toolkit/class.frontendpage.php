@@ -544,6 +544,7 @@ class FrontendPage extends XSLTPage
         </xsl:stylesheet>';
 
         $this->setXSL($xsl, false);
+        $this->setRuntimeParam($this->_param);
 
         Symphony::Profiler()->seed($start);
         Symphony::Profiler()->sample('Page Built', PROFILE_LAP);
