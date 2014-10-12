@@ -107,28 +107,17 @@ class DatasourceManager implements FileResource
 
                 if ($about = self::about($f)) {
                     $classname = self::__getClassName($f);
-                    $can_parse = false;
-                    $type = null;
                     $env = array();
-
                     $class = new $classname($env, false);
 
-                    try {
-                        $method = new ReflectionMethod($classname, 'allowEditorToParse');
-                        $can_parse = $method->invoke($class);
-                    } catch (ReflectionException $e) {
+                    $about['can_parse'] = method_exists($class, 'allowEditorToParse')
+                        ? $class->allowEditorToParse()
+                        : false;
 
-                    }
+                    $about['source'] = method_exists($class, 'getSource')
+                        ? $class->getSource()
+                        : null;
 
-                    try {
-                        $method = new ReflectionMethod($classname, 'getSource');
-                        $type = $method->invoke($class);
-                    } catch (ReflectionException $e) {
-
-                    }
-
-                    $about['can_parse'] = $can_parse;
-                    $about['source'] = $type;
                     $result[$f] = $about;
                 }
             }
