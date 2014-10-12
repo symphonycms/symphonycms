@@ -98,7 +98,16 @@ class GenericExceptionHandler
             }
 
             if (!headers_sent()) {
-                Page::renderStatusCode(Page::HTTP_STATUS_ERROR);
+                $httpStatus = null;
+                if ($e instanceof SymphonyErrorPage) {
+                    $httpStatus = $e->getHttpStatusCode();
+                } else if ($e instanceof FrontendPageNotFoundException) {
+                    $httpStatus = Page::HTTP_STATUS_NOT_FOUND;
+                }
+                if (!$httpStatus || $httpStatus == Page::HTTP_STATUS_OK) {
+                    $httpStatus = Page::HTTP_STATUS_ERROR;
+                }
+                Page::renderStatusCode($httpStatus);
                 header('Content-Type: text/html; charset=utf-8');
             }
 
