@@ -412,7 +412,7 @@ class SectionDatasource extends Datasource
             } elseif ($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
                 $date_joins = '';
                 $date_where = '';
-                $date = new fieldDate();
+                $date = new FieldDate();
                 $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == Datasource::FILTER_AND ? true : false));
 
                 // Replace the date field where with the `creation_date` or `modification_date`.

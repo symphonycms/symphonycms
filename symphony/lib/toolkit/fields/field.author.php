@@ -461,7 +461,7 @@ class FieldAuthor extends Field implements ExportableField
                 $this->_key++;
                 $value = $this->cleanValue($value);
 
-                if (fieldAuthor::__parseFilter($value) == "author_id") {
+                if (FieldAuthor::__parseFilter($value) == "author_id") {
                     $where .= "
                         AND t{$field_id}_{$this->_key}.author_id = '{$value}'
                     ";
