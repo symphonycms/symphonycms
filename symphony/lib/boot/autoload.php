@@ -19,11 +19,13 @@
         public static function init() {
             self::$classes = array(
                 // Interfaces
-                'cache' => FACE . '/interface.cache.php',
+                'icache' => FACE . '/interface.cache.php',
+                'idatasource' => FACE . '/interface.datasource.php',
+                'ievent' => FACE . '/interface.event.php',
                 'exportablefield' => FACE . '/interface.exportablefield.php',
                 'fileresource' => FACE . '/interface.fileresource.php',
                 'importablefield' => FACE . '/interface.importablefield.php',
-                'provider' => FACE . '/interface.provider.php',
+                'iprovider' => FACE . '/interface.provider.php',
                 'singleton' => FACE . '/interface.singleton.php',
 
                 // Core
