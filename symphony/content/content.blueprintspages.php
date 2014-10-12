@@ -62,24 +62,6 @@ class contentBlueprintsPages extends AdministrationPage
         ));
     }
 
-    public function listAllPages($separator = '/')
-    {
-        $pages = PageManager::fetch(false, array('id', 'handle', 'title', 'path'));
-
-        foreach ($pages as &$page) {
-            $parents = explode('/', $page['path']);
-
-            foreach ($parents as &$parent) {
-                $parent = PageManager::fetchTitleFromHandle($parent);
-            }
-
-            $parents = implode($separator, $parents);
-            $page['title'] = ($parents ? $parents . $separator . $page['title'] : $page['title']);
-        }
-
-        return $pages;
-    }
-
     public function __viewIndex()
     {
         $this->setPageType('table');
@@ -264,38 +246,32 @@ class contentBlueprintsPages extends AdministrationPage
         // Status message:
         if (isset($this->_context[2])) {
             $flag = $this->_context[2];
-            $link_suffix = '';
+            $link_suffix = $message = '';
             $time = Widget::Time();
 
             if (isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])) {
-                $link_suffix = "?parent=" . $_REQUEST['parent'];
+                $parent_link_suffix = "?parent=" . $_REQUEST['parent'];
             } elseif ($nesting == true && isset($existing) && !is_null($existing['parent'])) {
-                $link_suffix = '?parent=' . $existing['parent'];
+                $parent_link_suffix = '?parent=' . $existing['parent'];
             }
 
             switch ($flag) {
                 case 'saved':
-                    $this->pageAlert(
-                        __('Page updated at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
-                        . __('View all Pages')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
+                    $message = __('Page updated at %s.', array($time->generate()));
                     break;
                 case 'created':
-                    $this->pageAlert(
-                        __('Page created at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
-                        . __('View all Pages')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
+                    $message = __('Page created at %s.', array($time->generate()));
             }
+
+            $this->pageAlert(
+                $message
+                . ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/' . $parent_link_suffix . '" accesskey="c">'
+                . __('Create another?')
+                . '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
+                . __('View all Pages')
+                . '</a>',
+                Alert::SUCCESS
+            );
         }
 
         // Find values:
@@ -332,12 +308,10 @@ class contentBlueprintsPages extends AdministrationPage
         $page_id = isset($page_id) ? $page_id : null;
 
         if (!empty($title)) {
-            $template_name = $fields['handle'];
             $page_url = URL . '/' . PageManager::resolvePagePath($page_id) . '/';
 
             if ($existing['parent']) {
                 $parents = PageManager::resolvePagePath($existing['parent']);
-                $template_name = PageManager::createFilePath($parents, $fields['handle']);
             }
 
             $this->appendSubheading($title, array(
