@@ -243,28 +243,21 @@ class contentSystemAuthors extends AdministrationPage
 
             switch ($this->_context[2]) {
                 case 'saved':
-                    $this->pageAlert(
-                        __('Author updated at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
-                        . __('View all Authors')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
+                    $message = __('Author updated at %s.', array($time->generate()));
                     break;
                 case 'created':
-                    $this->pageAlert(
-                        __('Author created at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
-                        . __('View all Authors')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
-                    break;
+                    $message = __('Author created at %s.', array($time->generate()));
             }
+
+            $this->pageAlert(
+                $message
+                . ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
+                . __('Create another?')
+                . '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
+                . __('View all Authors')
+                . '</a>',
+                Alert::SUCCESS
+            );
         }
 
         $this->setPageType('form');

@@ -1105,30 +1105,23 @@ class contentPublish extends AdministrationPage
             if (empty($this->_errors)) {
                 $time = Widget::Time();
 
-                switch($this->_context['flag']) {
+                switch ($this->_context['flag']) {
                     case 'saved':
-                        $this->pageAlert(
-                            __('Entry updated at %s.', array($time->generate()))
-                            . ' <a href="' . SYMPHONY_URL . $new_link . '" accesskey="c">'
-                            . __('Create another?')
-                            . '</a> <a href="' . SYMPHONY_URL . $filter_link . '" accesskey="a">'
-                            . __('View all Entries')
-                            . '</a>',
-                            Alert::SUCCESS
-                        );
+                        $message = __('Entry updated at %s.', array($time->generate()));
                         break;
                     case 'created':
-                        $this->pageAlert(
-                            __('Entry created at %s.', array($time->generate()))
-                            . ' <a href="' . SYMPHONY_URL . $new_link . '" accesskey="c">'
-                            . __('Create another?')
-                            . '</a> <a href="' . SYMPHONY_URL . $filter_link . '" accesskey="a">'
-                            . __('View all Entries')
-                            . '</a>',
-                            Alert::SUCCESS
-                        );
-                        break;
+                        $message = __('Entry created at %s.', array($time->generate()));
                 }
+
+                $this->pageAlert(
+                    $message
+                    . ' <a href="' . SYMPHONY_URL . $new_link . '" accesskey="c">'
+                    . __('Create another?')
+                    . '</a> <a href="' . SYMPHONY_URL . $filter_link . '" accesskey="a">'
+                    . __('View all Entries')
+                    . '</a>',
+                    Alert::SUCCESS
+                );
             }
         }
 

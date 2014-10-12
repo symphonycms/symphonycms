@@ -517,7 +517,7 @@ abstract class Symphony implements Singleton
             return false;
         }
 
-        if (strlen($token) == 6 | strlen($token) == 16) {
+        if (strlen($token) == 6 || strlen($token) == 16) {
             $row = self::Database()->fetchRow(0, sprintf(
                 "SELECT `a`.`id`, `a`.`username`, `a`.`password`
                 FROM `tbl_authors` AS `a`, `tbl_forgotpass` AS `f`

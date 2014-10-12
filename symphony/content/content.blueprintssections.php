@@ -340,28 +340,21 @@ class contentBlueprintsSections extends AdministrationPage
 
             switch ($this->_context[2]) {
                 case 'saved':
-                    $this->pageAlert(
-                        __('Section updated at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/sections/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/sections/" accesskey="a">'
-                        . __('View all Sections')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
+                    $message = __('Section updated at %s.', array($time->generate()));
                     break;
                 case 'created':
-                    $this->pageAlert(
-                        __('Section created at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/sections/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/sections/" accesskey="a">'
-                        . __('View all Sections')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
-                    break;
+                    $message = __('Section created at %s.', array($time->generate()));
             }
+
+            $this->pageAlert(
+                $message
+                . ' <a href="' . SYMPHONY_URL . '/blueprints/sections/new/" accesskey="c">'
+                . __('Create another?')
+                . '</a> <a href="' . SYMPHONY_URL . '/blueprints/sections/" accesskey="a">'
+                . __('View all Sections')
+                . '</a>',
+                Alert::SUCCESS
+            );
         }
 
         if (isset($_POST['fields'])) {

@@ -253,6 +253,8 @@ class contentBlueprintsPages extends AdministrationPage
                 $parent_link_suffix = "?parent=" . $_REQUEST['parent'];
             } elseif ($nesting == true && isset($existing) && !is_null($existing['parent'])) {
                 $parent_link_suffix = '?parent=' . $existing['parent'];
+            } else {
+                $parent_link_suffix = '';
             }
 
             switch ($flag) {
@@ -309,10 +311,6 @@ class contentBlueprintsPages extends AdministrationPage
 
         if (!empty($title)) {
             $page_url = URL . '/' . PageManager::resolvePagePath($page_id) . '/';
-
-            if ($existing['parent']) {
-                $parents = PageManager::resolvePagePath($existing['parent']);
-            }
 
             $this->appendSubheading($title, array(
                 Widget::Anchor(__('View Page'), $page_url, __('View Page on Frontend'), 'button', null, array('target' => '_blank', 'accesskey' => 'v'))

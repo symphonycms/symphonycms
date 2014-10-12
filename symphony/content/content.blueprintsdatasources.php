@@ -50,28 +50,21 @@ class contentBlueprintsDatasources extends ResourcesPage
 
             switch ($this->_context[2]) {
                 case 'saved':
-                    $this->pageAlert(
-                        __('Data source updated at %s.', array($time->generate))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
-                        . __('View all Data sources')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
+                    $message = __('Data Source updated at %s.', array($time->generate()));
                     break;
                 case 'created':
-                    $this->pageAlert(
-                        __('Data source created at %s.', array($time->generate))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
-                        . __('View all Data sources')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
-                    break;
+                    $message = __('Data Source created at %s.', array($time->generate()));
             }
+
+            $this->pageAlert(
+                $message
+                . ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
+                . __('Create another?')
+                . '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
+                . __('View all Data Sources')
+                . '</a>',
+                Alert::SUCCESS
+            );
         }
 
         $providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::DATASOURCE);

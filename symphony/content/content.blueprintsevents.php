@@ -53,28 +53,21 @@ class contentBlueprintsEvents extends ResourcesPage
 
             switch ($this->_context[2]) {
                 case 'saved':
-                    $this->pageAlert(
-                        __('Event updated at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'
-                        . __('View all Events')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
+                    $message = __('Event updated at %s.', array($time->generate()));
                     break;
                 case 'created':
-                    $this->pageAlert(
-                        __('Event created at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'
-                        . __('View all Events')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
-                    break;
+                    $message = __('Event created at %s.', array($time->generate()));
             }
+
+            $this->pageAlert(
+                $message
+                . ' <a href="' . SYMPHONY_URL . '/blueprints/events/new/" accesskey="c">'
+                . __('Create another?')
+                . '</a> <a href="' . SYMPHONY_URL . '/blueprints/events/" accesskey="a">'
+                . __('View all Events')
+                . '</a>',
+                Alert::SUCCESS
+            );
         }
 
         $isEditing = ($readonly ? true : false);
