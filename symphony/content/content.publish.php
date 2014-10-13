@@ -1107,7 +1107,7 @@ class contentPublish extends AdministrationPage
         }
 
         if ($field) {
-            $title = $field->prepareReadableValue($existingEntry->getData($field->get('id')), $entry_id);
+            $title = $field->prepareReadableValue($existingEntry->getData($field->get('id')), $entry_id, true);
         } else {
             $title = '';
         }
