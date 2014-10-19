@@ -21,7 +21,7 @@ class XSRF
      */
     public static function getSession()
     {
-        $tokens = $_SESSION['sym-']['xsrf-token'];
+        $tokens = $_SESSION[__SYM_COOKIE_PREFIX__]['xsrf-token'];
 
         return is_null($tokens) ? array() : $tokens;
     }
@@ -33,7 +33,7 @@ class XSRF
      */
     public static function setSessionToken($token = array())
     {
-        $_SESSION['sym-']['xsrf-token'] = $token;
+        $_SESSION[__SYM_COOKIE_PREFIX__]['xsrf-token'] = $token;
     }
 
     /**
@@ -47,7 +47,7 @@ class XSRF
             return;
         }
 
-        unset($_SESSION['sym-']['xsrf-token'][$token]);
+        unset($_SESSION[__SYM_COOKIE_PREFIX__]['xsrf-token'][$token]);
     }
 
     /**
