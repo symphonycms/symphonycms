@@ -347,10 +347,6 @@ fieldset.frame,
 	the first `transitionend` event.
 -----------------------------------------------------------------------------*/
 
-.collapsible {
-	transform: translatez(0);
-}
-
 .collapsible .instance {
 	overflow: hidden;
 }
