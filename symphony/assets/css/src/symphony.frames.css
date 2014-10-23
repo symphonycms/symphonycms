@@ -294,7 +294,7 @@ fieldset.frame,
 }
 
 .frame:not(.collapsible) .ordering .frame-header {
-    box-shadow: 0px 0.1rem 0.4rem #7093c3;
+	box-shadow: 0px 0.1rem 0.4rem #7093c3;
 }
 
 .frame .ordering .frame-header span,
@@ -346,10 +346,6 @@ fieldset.frame,
 	a "jump" in the animation because the class `.js-animate` is removed on
 	the first `transitionend` event.
 -----------------------------------------------------------------------------*/
-
-.collapsible {
-	transform: translatez(0);
-}
 
 .collapsible .instance {
 	overflow: hidden;
