@@ -294,7 +294,7 @@ fieldset.frame,
 }
 
 .frame:not(.collapsible) .ordering .frame-header {
-    box-shadow: 0px 0.1rem 0.4rem #7093c3;
+	box-shadow: 0px 0.1rem 0.4rem #7093c3;
 }
 
 .frame .ordering .frame-header span,
