@@ -356,6 +356,7 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 	duplicator.on('constructshow.duplicator', '.instance', function() {
 		var instance = $(this),
 			sections = instance.find('.js-fetch-sections'),
+			sectionsParent = sections.parent(),
 			selected = [],
 			options;
 
@@ -373,24 +374,28 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 				dataType: 'json',
 				url: Symphony.Context.get('symphony') + '/ajax/sections/',
 				success: function(result) {
+					// offline DOM manipulation
+					sections.detach();
+
 					if(result.sections.length) {
 						sections.prop('disabled', false);
 					}
+					var options = $();
 
 					if (!sections.attr('data-required')) {
 						// Allow de-selection, if permitted
-						$('<option />', {
+						options = options.add($('<option />', {
 							text: Symphony.Language.get('None'),
 							value: ''
-						}).appendTo(sections);
+						}));
 					}
 
 					// Append sections
 					$.each(result.sections, function(index, section) {
 						var optgroup = $('<optgroup />', {
 							label: section.name
-						}).appendTo(sections);
-
+						});
+						options = options.add(optgroup);
 						// Append fields
 						$.each(section.fields, function(index, field) {
 							var option = $('<option />', {
@@ -403,6 +408,8 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 							}
 						});
 					});
+					sections.append(options);
+					sectionsParent.append(sections);
 					sections.trigger('change.admin');
 				}
 			});
