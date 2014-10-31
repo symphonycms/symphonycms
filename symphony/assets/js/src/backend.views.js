@@ -683,14 +683,22 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 	// Make sure autocomplete is off for newly added filters
 	// Switch the 'help' text if it's available.
 	Symphony.Elements.contents.find('.filters-duplicator').on('constructshow.duplicator', '.instance', function() {
-		var duplicator = $(this),
-				help = duplicator.find('.help');
+		var duplicator = $(this);
 
 		duplicator.find('input').attr('autocomplete', 'off');
+		setupDatasourceFiltersHelper(duplicator);
+	});
+
+	function setupDatasourceFiltersHelper(duplicator) {
+		var help = duplicator.find('.help'),
+				input = duplicator.find('input'),
+				filters = duplicator.find('.tags');
 
 		// Swap the help text if it exists, or restore what was previously there.
 		help.attr('data-help', help.html());
-		duplicator.find('input').on('change', function(event, data) {
+
+		// Handle changes
+		input.on('change', function(event, data) {
 			if (data && data.tag) {
 				help.html(data.tag.attr('data-help'));
 			} else {
@@ -699,7 +707,21 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 
 			$(this).focus();
 		});
-	});
+
+		// Handle existing values
+		filters.find('li').each(function(i, el) {
+			var filter = $(el),
+					match = new RegExp('^' + filter.text() + '\\s*');
+
+			if (match.test(input.val())) {
+				input.trigger('change', {
+					tag: filter
+				});
+			}
+		});
+	}
+
+	setupDatasourceFiltersHelper(Symphony.Elements.contents.find('.filters-duplicator'));
 });
 
 /*--------------------------------------------------------------------------
