@@ -681,8 +681,24 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 	});
 
 	// Make sure autocomplete is off for newly added filters
+	// Switch the 'help' text if it's available.
 	Symphony.Elements.contents.find('.filters-duplicator').on('constructshow.duplicator', '.instance', function() {
-		$(this).find('input').attr('autocomplete', 'off');
+		var duplicator = $(this),
+				help = duplicator.find('.help');
+
+		duplicator.find('input').attr('autocomplete', 'off');
+
+		// Swap the help text if it exists, or restore what was previously there.
+		help.attr('data-help', help.html());
+		duplicator.find('input').on('change', function(event, data) {
+			if (data && data.tag) {
+				help.html(data.tag.attr('data-help'));
+			} else {
+				help.html(help.attr('data-help'));
+			}
+
+			$(this).focus();
+		});
 	});
 });
 
