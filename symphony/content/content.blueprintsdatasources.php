@@ -7,7 +7,7 @@
  * The Datasource Editor page allows a developer to create new datasources
  * from the four Symphony types, Section, Authors, Navigation and Static XML
  */
-require_once TOOLKIT . '/class.gateway.php';
+require_once TOOLKIT . '/class.httpgateway.php';
 require_once TOOLKIT . '/class.resourcespage.php';
 require_once FACE . '/interface.provider.php';
 
@@ -1538,7 +1538,7 @@ class contentBlueprintsDatasources extends ResourcesPage
     }
 
     /**
-     * Given a `$url` and `$timeout`, this function will use the `Gateway`
+     * Given a `$url` and `$timeout`, this function will use the `HTTPGateway`
      * class to determine that it is a valid URL and returns successfully
      * before the `$timeout`. If it does not, an error message will be
      * returned, otherwise true.
@@ -1562,7 +1562,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         }
 
         // Check that URL was provided
-        $gateway = new Gateway;
+        $gateway = new HTTPGateway();
         $gateway->init($url);
         $gateway->setopt('TIMEOUT', $timeout);
         $data = $gateway->exec();

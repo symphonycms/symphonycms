@@ -11,7 +11,7 @@
  * @since Symphony 2.3
  */
 
-require_once TOOLKIT . '/class.gateway.php';
+require_once TOOLKIT . '/class.httpgateway.php';
 require_once TOOLKIT . '/class.xsltprocess.php';
 require_once CORE . '/class.cacheable.php';
 
@@ -72,13 +72,13 @@ class DynamicXMLDatasource extends Datasource
             || (time() - $cachedData['creation']) > ($this->dsParamCACHE * 60) // The cache is old.
         ) {
             if (Mutex::acquire($cache_id, $timeout, TMP)) {
-                $ch = new Gateway;
-                $ch->init($this->dsParamURL);
-                $ch->setopt('TIMEOUT', $timeout);
-                $ch->setopt('HTTPHEADER', array('Accept: text/xml, */*'));
+                $http = new HTTPGateway();
+                $http->init($this->dsParamURL);
+                $http->setopt('TIMEOUT', $timeout);
+                $http->setopt('HTTPHEADER', array('Accept: text/xml, */*'));
 
-                $data = $ch->exec();
-                $info = $ch->getInfoLast();
+                $data = $http->exec();
+                $info = $http->getInfoLast();
 
                 Mutex::release($cache_id, TMP);
 
