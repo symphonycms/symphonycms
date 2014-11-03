@@ -3,7 +3,7 @@
 	Class migration_252 extends Migration {
 
 		static function getVersion(){
-			return '2.5.2-rc.1';
+			return '2.5.2';
 		}
 
 		static function getReleaseNotes(){
