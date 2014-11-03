@@ -82,6 +82,19 @@ abstract class SectionEvent extends Event
         foreach ($errors as $field_id => $message) {
             $field = FieldManager::fetch($field_id);
 
+            // Do a little bit of a check for files so that we can correctly show
+            // whether they are 'missing' or 'invalid'. If it's missing, then we
+            // want to remove the data so `__reduceType` will correctly resolve to
+            // missing instead of invalid.
+            // @see https://github.com/symphonists/s3upload_field/issues/17
+            if (isset($_FILES['fields']['error'][$field->get('element_name')])) {
+                $upload = $_FILES['fields']['error'][$field->get('element_name')];
+
+                if ($upload === UPLOAD_ERR_NO_FILE) {
+                    unset($fields[$field->get('element_name')]);
+                }
+            }
+
             if (is_array($fields[$field->get('element_name')])) {
                 $type = array_reduce($fields[$field->get('element_name')], array('SectionEvent', '__reduceType'));
             } else {
