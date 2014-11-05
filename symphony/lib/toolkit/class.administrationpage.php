@@ -50,7 +50,7 @@ Class AdministrationPage extends HTMLPage
      * @since Symphony 2.3
      * @var XMLElement
      */
-    private $Breadcrumbs = null;
+    public $Breadcrumbs = null;
 
     /**
      * An array of Drawer widgets for the current page

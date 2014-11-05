@@ -350,6 +350,13 @@ class contentPublish extends AdministrationPage
             $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'));
         }
 
+        // Flag filtering
+        if (isset($_REQUEST['filter'])) {
+            $filter_stats = new XMLElement('p', '<span>– ' . __('filtered (%d of %d)', array($entries['total-entries'], EntryManager::fetchCount($section_id))) . '</span>', array('class' => 'inactive'));
+            $this->Breadcrumbs->appendChild($filter_stats);
+        }
+
+        // Build table
         $visible_columns = $section->fetchVisibleColumns();
         $columns = array();
 

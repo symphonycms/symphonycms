@@ -41,7 +41,7 @@
 			}
 
 			// Highlight filtering
-			highlightFiltering();
+			// highlightFiltering();
 
 			// Clear search
 			filter.find('.destructor').on('click', clear).on('mouseover mouseout', prepareClear);
