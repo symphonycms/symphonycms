@@ -7,8 +7,6 @@
  * of a Symphony backend JSON page.
  */
 
-require_once TOOLKIT . '/class.textpage.php';
-
 abstract class JSONPage extends TextPage
 {
     /**

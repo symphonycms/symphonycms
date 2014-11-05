@@ -12,8 +12,6 @@
  * add, edit, delete and fetching methods for Entries.
  */
 
-require_once TOOLKIT . '/class.entry.php';
-
 class EntryManager
 {
     /**

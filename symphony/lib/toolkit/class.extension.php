@@ -25,6 +25,38 @@ abstract class Extension
     const NAV_CHILD = 0;
 
     /**
+     * Status when an extension is installed and enabled
+     * @var integer
+     */
+    const EXTENSION_ENABLED = 10;
+
+    /**
+     * Status when an extension is disabled
+     * @var integer
+     */
+    const EXTENSION_DISABLED = 11;
+
+    /**
+     * Status when an extension is in the file system, but has not been installed.
+     * @var integer
+     */
+    const EXTENSION_NOT_INSTALLED = 12;
+
+    /**
+     * Status when an extension version in the file system is different to
+     * the version stored in the database for the extension
+     * @var integer
+     */
+    const EXTENSION_REQUIRES_UPDATE = 13;
+
+    /**
+     * Status when the extension is not compatible with the current version of
+     * Symphony
+     * @var integer
+     */
+    const EXTENSION_NOT_COMPATIBLE = 14;
+
+    /**
      * Holds an associative array of all the objects this extension provides
      * to Symphony where the key is one of the Provider constants, and the
      * value is the name of the classname

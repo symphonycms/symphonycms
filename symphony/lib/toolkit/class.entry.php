@@ -10,8 +10,23 @@
  * Entries are typically created from the Symphony backend, but
  * can also be created using Events from the Frontend.
  */
+
 class Entry
 {
+    /**
+     * The constant for when an Entry is ok, that is, no errors have
+     * been raised by any of it's Fields.
+     * @var integer
+     */
+    const __ENTRY_OK__ = 0;
+
+    /**
+     * The constant for an Entry if there is an error is raised by any of
+     * it's Fields.
+     * @var integer
+     */
+    const __ENTRY_FIELD_ERROR__ = 100;
+
     /**
      * An associative array of basic metadata/settings for this Entry
      * @var array
@@ -142,14 +157,14 @@ class Entry
      */
     public function setDataFromPost($data, &$errors = null, $simulate = false, $ignore_missing_fields = false)
     {
-        $status = __ENTRY_OK__;
+        $status = Entry::__ENTRY_OK__;
 
         // Entry has no ID, create it:
         if (!$this->get('id') && $simulate == false) {
             $entry_id = $this->assignEntryId();
 
             if (is_null($entry_id)) {
-                return __ENTRY_FIELD_ERROR__;
+                return Entry::__ENTRY_FIELD_ERROR__;
             }
         }
 
@@ -167,7 +182,7 @@ class Entry
             $result = $field->processRawFieldData((isset($data[$info['element_name']]) ? $data[$info['element_name']] : null), $s, $message, $simulate, $this->get('id'));
 
             if ($s != Field::__OK__) {
-                $status = __ENTRY_FIELD_ERROR__;
+                $status = Entry::__ENTRY_FIELD_ERROR__;
                 $errors[$info['id']] = $message;
             }
 
@@ -175,7 +190,7 @@ class Entry
         }
 
         // Failed to create entry, cleanup
-        if ($status != __ENTRY_OK__ and !is_null($entry_id)) {
+        if ($status != Entry::__ENTRY_OK__ and !is_null($entry_id)) {
             Symphony::Database()->delete('tbl_entries', sprintf(" `id` = %d ", $entry_id));
         }
 
@@ -229,11 +244,11 @@ class Entry
      *  provided in the $data
      * @throws Exception
      * @return integer
-     *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
+     *  Either `Entry::__ENTRY_OK__` or `Entry::__ENTRY_FIELD_ERROR__`
      */
     public function checkPostData($data, &$errors = null, $ignore_missing_fields = false)
     {
-        $status = __ENTRY_OK__;
+        $status = Entry::__ENTRY_OK__;
         $section = SectionManager::fetch($this->get('section_id'));
         $schema = $section->fetchFieldsSchema();
 
@@ -246,7 +261,7 @@ class Entry
             }
 
             if (Field::__OK__ != $field->checkPostFieldData((isset($data[$info['element_name']]) ? $data[$info['element_name']] : null), $message, $this->get('id'))) {
-                $status = __ENTRY_FIELD_ERROR__;
+                $status = Entry::__ENTRY_FIELD_ERROR__;
                 $errors[$info['id']] = $message;
             }
         }
@@ -355,17 +370,3 @@ class Entry
         return $counts;
     }
 }
-
- /**
-  * The constant for when an Entry is ok, that is, no errors have
-  * been raised by any of it's Fields.
-  * @var integer
-  */
-define_safe('__ENTRY_OK__', 0);
-
-/**
- * The constant for an Entry if there is an error is raised by any of
- * it's Fields.
- * @var integer
- */
-define_safe('__ENTRY_FIELD_ERROR__', 100);

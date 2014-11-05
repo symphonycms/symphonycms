@@ -13,7 +13,6 @@ if (!defined('__IN_SYMPHONY__')) {
  * to determine similar things. The Cookie class is tightly integrated with
  * PHP's `$_SESSION` global and it's related functions.
  */
-require_once CORE . '/class.session.php';
 
 class Cookie
 {

@@ -581,8 +581,6 @@ abstract Class EmailGateway
             // If the attachment is a URL, download the file to a temporary location.
             // This prevents downloading the file twice - once for info, once for data.
             if (filter_var($file['file'], FILTER_VALIDATE_URL)) {
-                require_once TOOLKIT . '/class.gateway.php';
-
                 $gateway = new Gateway();
                 $gateway->init($file['file']);
                 $gateway->setopt('TIMEOUT', 30);

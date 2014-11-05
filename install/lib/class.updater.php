@@ -1,11 +1,5 @@
 <?php
 
-	require_once(CORE . '/class.administration.php');
-
-	require_once(INSTALL . '/lib/class.installer.php');
-	require_once(INSTALL . '/lib/class.updaterpage.php');
-	require_once(INSTALL . '/lib/class.migration.php');
-
 	Class Updater extends Installer {
 
 		/**

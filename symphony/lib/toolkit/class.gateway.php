@@ -9,7 +9,6 @@
  * it falls back to use sockets.
  * @example
  *  `
- * require_once(TOOLKIT . '/class.gateway.php');
  * $ch = new Gateway;
  * $ch->init('http://www.example.com/');
  * $ch->setopt('POST', 1);

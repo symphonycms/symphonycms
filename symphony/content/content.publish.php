@@ -9,10 +9,6 @@
  * from Sections. This Page controls the entries table as well as
  * the Entry creation screens.
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.entrymanager.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once CONTENT . '/class.sortable.php';
 
 class contentPublish extends AdministrationPage
 {
@@ -948,11 +944,11 @@ class contentPublish extends AdministrationPage
             }
 
             // Initial checks to see if the Entry is ok
-            if (__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
+            if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
                 $this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
                 // Secondary checks, this will actually process the data and attempt to save
-            } elseif (__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
+            } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
                 foreach ($errors as $field_id => $message) {
                     $this->pageAlert($message, Alert::ERROR);
                 }

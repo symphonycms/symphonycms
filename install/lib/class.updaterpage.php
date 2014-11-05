@@ -4,8 +4,6 @@
 	 * @package content
 	 */
 
-	require_once(INSTALL . '/lib/class.installerpage.php');
-
 	Class UpdaterPage extends InstallerPage {
 
 		public function __construct($template, $params = array()) {

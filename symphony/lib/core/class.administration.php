@@ -10,8 +10,6 @@
  * using XMLElement before being rendered as HTML. These pages do not
  * use XSLT. The Administration is only accessible by logged in Authors
  */
-require_once CORE . '/class.symphony.php';
-require_once TOOLKIT . '/class.htmlpage.php';
 
 class Administration extends Symphony
 {

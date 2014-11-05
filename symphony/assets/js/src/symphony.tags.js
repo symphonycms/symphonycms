@@ -97,7 +97,10 @@
 				input.val(tags.join(', '));
 			}
 
-			input.trigger('change');
+			// Include the tag that was just triggered.
+			input.trigger('change', {
+				'tag': item
+			});
 		});
 
 	/*-----------------------------------------------------------------------*/

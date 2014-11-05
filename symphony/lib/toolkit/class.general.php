@@ -7,9 +7,6 @@
  * functions that are used throughout Symphony.
  */
 
-define_safe('CDATA_BEGIN', '<![CDATA[');
-define_safe('CDATA_END', ']]>');
-
 class General
 {
     /**
@@ -396,7 +393,7 @@ class General
      * Computes the length of the string.
      * This function will attempt to use PHP's `mbstring` functions if they are available.
      * This function also forces utf-8 encoding.
-     * 
+     *
      * @since Symphony 2.5.0
      * @param string $str
      *  the string to operate on
@@ -415,7 +412,7 @@ class General
      * Creates a sub string.
      * This function will attempt to use PHP's `mbstring` functions if they are available.
      * This function also forces utf-8 encoding.
-     * 
+     *
      * @since Symphony 2.5.0
      * @param string $str
      *  the string to operate on

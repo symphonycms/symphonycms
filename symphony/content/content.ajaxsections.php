@@ -7,8 +7,6 @@
  * that are available for pre-population
  */
 
-require_once TOOLKIT . '/class.jsonpage.php';
-
 class contentAjaxSections extends JSONPage
 {
     public function view()

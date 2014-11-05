@@ -11,9 +11,6 @@
  * @see XMLPage
  * @see JSONPage
  */
-
-require_once TOOLKIT . '/class.xmlpage.php';
-
 abstract class AjaxPage extends XMLPage
 {
 

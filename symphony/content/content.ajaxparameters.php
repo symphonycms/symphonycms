@@ -5,8 +5,6 @@
 /**
  * The AjaxParameters returns an JSON array of all available parameters.
  */
-require_once TOOLKIT . '/class.datasourcemanager.php';
-require_once TOOLKIT . '/class.jsonpage.php';
 
 class contentAjaxParameters extends JSONPage
 {

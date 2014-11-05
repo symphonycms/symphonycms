@@ -9,13 +9,21 @@
  *
  * @since Symphony 2.3
  */
-require_once TOOLKIT . '/class.eventmanager.php';
-require_once TOOLKIT . '/class.datasourcemanager.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once TOOLKIT . '/class.pagemanager.php';
 
 class ResourceManager
 {
+    /**
+     * The integer value for event-type resources.
+     * @var integer
+     */
+    const RESOURCE_TYPE_EVENT = 20;
+
+    /**
+     * The integer value for datasource-type resources.
+     * @var integer
+     */
+    const RESOURCE_TYPE_DS = 21;
+
     /**
      * A private method used to return the `tbl_pages` column related to
      * the given resource type.
@@ -28,9 +36,9 @@ class ResourceManager
     private static function getColumnFromType($type)
     {
         switch($type) {
-            case RESOURCE_TYPE_EVENT:
+            case ResourceManager::RESOURCE_TYPE_EVENT:
                 return 'events';
-            case RESOURCE_TYPE_DS:
+            case ResourceManager::RESOURCE_TYPE_DS:
                 return 'data_sources';
         }
     }
@@ -46,9 +54,9 @@ class ResourceManager
     public static function getManagerFromType($type)
     {
         switch($type) {
-            case RESOURCE_TYPE_EVENT:
+            case ResourceManager::RESOURCE_TYPE_EVENT:
                 return 'EventManager';
-            case RESOURCE_TYPE_DS:
+            case ResourceManager::RESOURCE_TYPE_DS:
                 return 'DatasourceManager';
         }
     }
@@ -442,15 +450,3 @@ class ResourceManager
         return true;
     }
 }
-
-/**
- * The integer value for event-type resources.
- * @var integer
- */
-define_safe('RESOURCE_TYPE_EVENT', 20);
-
-/**
- * The integer value for datasource-type resources.
- * @var integer
- */
-define_safe('RESOURCE_TYPE_DS', 21);

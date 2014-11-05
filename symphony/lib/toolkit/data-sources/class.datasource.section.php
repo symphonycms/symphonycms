@@ -14,8 +14,6 @@
  * @link http://getsymphony.com/learn/concepts/view/data-sources/
  */
 
-require_once TOOLKIT . '/class.entrymanager.php';
-
 class SectionDatasource extends Datasource
 {
     /**
@@ -369,7 +367,7 @@ class SectionDatasource extends Datasource
 
             if (!is_array($filter)) {
                 $filter_type = $this->__determineFilterType($filter);
-                $value = preg_split('/'.($filter_type == DataSource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
+                $value = preg_split('/'.($filter_type == Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
                 $value = array_map('trim', $value);
                 $value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
             } else {
@@ -412,18 +410,16 @@ class SectionDatasource extends Datasource
                     $where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
                 }
             } elseif ($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
-                require_once TOOLKIT . '/fields/field.date.php';
-
                 $date_joins = '';
                 $date_where = '';
-                $date = new fieldDate();
-                $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == DataSource::FILTER_AND ? true : false));
+                $date = new FieldDate();
+                $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == Datasource::FILTER_AND ? true : false));
 
                 // Replace the date field where with the `creation_date` or `modification_date`.
                 $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
                 $where .= $date_where;
             } else {
-                if (!self::$_fieldPool[$field_id]->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == DataSource::FILTER_AND ? true : false))) {
+                if (!self::$_fieldPool[$field_id]->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false))) {
                     $this->_force_empty_result = true;
                     return;
                 }

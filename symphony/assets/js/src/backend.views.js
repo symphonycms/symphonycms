@@ -73,6 +73,12 @@ Symphony.View.add('/:context*:', function() {
 	var oldSorting = null,
 		orderable = Symphony.Elements.contents.find('table.orderable[data-interactive]');
 
+	// Ignore tables with less than two rows
+	orderable = orderable.filter(function() {
+		return ($(this).find('tbody tr').length > 1);
+	});
+
+	// Initalise ordering
 	orderable.symphonyOrderable({
 			items: 'tr',
 			handles: 'td'
@@ -681,9 +687,47 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 	});
 
 	// Make sure autocomplete is off for newly added filters
+	// Switch the 'help' text if it's available.
 	Symphony.Elements.contents.find('.filters-duplicator').on('constructshow.duplicator', '.instance', function() {
-		$(this).find('input').attr('autocomplete', 'off');
+		var duplicator = $(this);
+
+		duplicator.find('input').attr('autocomplete', 'off');
+		setupDatasourceFiltersHelper(duplicator);
 	});
+
+	function setupDatasourceFiltersHelper(duplicator) {
+		var help = duplicator.find('.help'),
+				input = duplicator.find('input'),
+				filters = duplicator.find('.tags');
+
+		// Swap the help text if it exists, or restore what was previously there.
+		help.attr('data-help', help.html());
+
+		// Handle changes
+		input.on('change', function(event, data) {
+			if (data && data.tag) {
+				help.html(data.tag.attr('data-help'));
+			} else {
+				help.html(help.attr('data-help'));
+			}
+
+			$(this).focus();
+		});
+
+		// Handle existing values
+		filters.find('li').each(function(i, el) {
+			var filter = $(el),
+					match = new RegExp('^' + filter.text() + '\\s*');
+
+			if (match.test(input.val())) {
+				input.trigger('change', {
+					tag: filter
+				});
+			}
+		});
+	}
+
+	setupDatasourceFiltersHelper(Symphony.Elements.contents.find('.filters-duplicator'));
 });
 
 /*--------------------------------------------------------------------------
@@ -784,6 +828,11 @@ Symphony.View.add('/system/authors/:action:/:id:/:status:', function(action, id,
 			text: Symphony.Language.get('Please reset your password')
 		}).insertAfter(legend);
 	}
+
+	// Highlight confirmation promt
+	Symphony.Elements.contents.find('input, select').on('change.admin input.admin', function() {
+		$('#confirmation').addClass('highlight');
+	});
 });
 
 /*--------------------------------------------------------------------------

@@ -7,8 +7,6 @@
  * of a Symphony backend page.
  */
 
-require_once TOOLKIT . '/class.page.php';
-
 class HTMLPage extends Page
 {
     /**

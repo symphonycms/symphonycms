@@ -11,9 +11,6 @@
  * @link http://getsymphony.com/learn/concepts/view/events/
  */
 
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once TOOLKIT . '/class.entrymanager.php';
-
 abstract class SectionEvent extends Event
 {
     /**
@@ -81,6 +78,19 @@ abstract class SectionEvent extends Event
 
         foreach ($errors as $field_id => $message) {
             $field = FieldManager::fetch($field_id);
+
+            // Do a little bit of a check for files so that we can correctly show
+            // whether they are 'missing' or 'invalid'. If it's missing, then we
+            // want to remove the data so `__reduceType` will correctly resolve to
+            // missing instead of invalid.
+            // @see https://github.com/symphonists/s3upload_field/issues/17
+            if (isset($_FILES['fields']['error'][$field->get('element_name')])) {
+                $upload = $_FILES['fields']['error'][$field->get('element_name')];
+
+                if ($upload === UPLOAD_ERR_NO_FILE) {
+                    unset($fields[$field->get('element_name')]);
+                }
+            }
 
             if (is_array($fields[$field->get('element_name')])) {
                 $type = array_reduce($fields[$field->get('element_name')], array('SectionEvent', '__reduceType'));
@@ -340,15 +350,16 @@ abstract class SectionEvent extends Event
         }
 
         // Validate the data. `$entry->checkPostData` loops over all fields calling
-        // checkPostFieldData function. If the return of the function is `__ENTRY_FIELD_ERROR__`
-        // then abort the event, adding the error messages to the `$result`.
-        if (__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))) {
+        // their `checkPostFieldData` function. If the return of the function is
+        // `Entry::__ENTRY_FIELD_ERROR__` then abort the event and add the error
+        // messages to the `$result`.
+        if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))) {
             $result = self::appendErrors($result, $fields, $errors, $post_values);
             return false;
 
             // If the data is good, process the data, almost ready to save it to the
             // Database. If processing fails, abort the event and display the errors
-        } elseif (__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors, false, ($entry->get('id') ? true : false))) {
+        } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors, false, ($entry->get('id') ? true : false))) {
             $result = self::appendErrors($result, $fields, $errors, $post_values);
             return false;
 

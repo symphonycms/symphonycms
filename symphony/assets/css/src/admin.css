@@ -377,10 +377,15 @@ fieldset.settings fieldset legend {
 
 fieldset.settings.highlight {
 	background: #fff9a2;
-	margin: 0;
+	margin-left: 0;
+	margin-right: 0;
+	margin-bottom: 0;
 	padding-right: 1.8rem;
 	padding-left: 29.3rem;
+	padding-bottom: 2rem;
 	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.1);
+	-webkit-transition: background 0.25s ease-in;
+	transition: background 0.25s ease-in;
 }
 
 .single #contents fieldset.highlight + .actions {
@@ -418,24 +423,24 @@ fieldset.settings.highlight {
 
 /* Condensed, pickable settings, e. g. email gateways */
 
-.active .settings.condensed:not(.pickable) {
+.js-active .settings.condensed:not(.pickable) {
 	margin-bottom: 0.5rem;
 }
 
-.active .settings.condensed:not(.pickable) label {
+.js-active .settings.condensed:not(.pickable) label {
 	margin-bottom: 0;
 }
 
-.active .settings.pickable.condensed {
+.js-active .settings.pickable.condensed {
 	border-bottom: none;
 	margin-bottom: 0;
 	padding-bottom: 0;
 }
-.active .settings.pickable.condensed {
+.js-active .settings.pickable.condensed {
 	border-top: 0;
 	padding-top: 0;
 }
-.active .settings.pickable.condensed legend {
+.js-active .settings.pickable.condensed legend {
 	display: none;
 }
 

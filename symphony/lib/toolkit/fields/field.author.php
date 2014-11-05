@@ -4,8 +4,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-
 /**
  * The Author field allows Symphony Authors to be selected in your entries.
  * It is a read only field, new Authors cannot be added from the Frontend using
@@ -463,7 +461,7 @@ class FieldAuthor extends Field implements ExportableField
                 $this->_key++;
                 $value = $this->cleanValue($value);
 
-                if (fieldAuthor::__parseFilter($value) == "author_id") {
+                if (FieldAuthor::__parseFilter($value) == "author_id") {
                     $where .= "
                         AND t{$field_id}_{$this->_key}.author_id = '{$value}'
                     ";

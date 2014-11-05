@@ -134,7 +134,7 @@ class SMTP
      * @throws Exception
      * @return boolean
      */
-    public function sendMail($from, $to, $subject, $message)
+    public function sendMail($from, $to, $message)
     {
         $this->_connect($this->_host, $this->_port);
         $this->mail($from);

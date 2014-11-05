@@ -9,9 +9,6 @@
  * an index view of all the pages in this Symphony install as well as the
  * forms for the creation/editing of a Page
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.resourcemanager.php';
-require_once TOOLKIT . '/class.xsltprocess.php';
 
 class contentBlueprintsPages extends AdministrationPage
 {
@@ -440,7 +437,7 @@ class contentBlueprintsPages extends AdministrationPage
         $label = Widget::Label(__('Events'));
         $label->setAttribute('class', 'column');
 
-        $events = ResourceManager::fetch(RESOURCE_TYPE_EVENT, array(), array(), 'name ASC');
+        $events = ResourceManager::fetch(ResourceManager::RESOURCE_TYPE_EVENT, array(), array(), 'name ASC');
         $options = array();
 
         if (is_array($events) && !empty($events)) {
@@ -463,7 +460,7 @@ class contentBlueprintsPages extends AdministrationPage
         $label = Widget::Label(__('Data Sources'));
         $label->setAttribute('class', 'column');
 
-        $datasources = ResourceManager::fetch(RESOURCE_TYPE_DS, array(), array(), 'name ASC');
+        $datasources = ResourceManager::fetch(ResourceManager::RESOURCE_TYPE_DS, array(), array(), 'name ASC');
         $options = array();
 
         if (is_array($datasources) && !empty($datasources)) {

@@ -4,9 +4,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
-
 /**
  * A simple Select field that essentially maps to HTML's `<select/>`. The
  * options for this field can be static, or feed from another field.

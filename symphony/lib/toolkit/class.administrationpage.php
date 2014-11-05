@@ -12,10 +12,6 @@
  * and the view/action being the view.
  */
 
-require_once TOOLKIT . '/class.pagemanager.php';
-require_once TOOLKIT . '/class.htmlpage.php';
-require_once TOOLKIT . '/class.alert.php';
-
 Class AdministrationPage extends HTMLPage
 {
     /**
@@ -932,8 +928,6 @@ Class AdministrationPage extends HTMLPage
     private function buildSectionNavigation(&$nav)
     {
         // Build the section navigation, grouped by their navigation groups
-        require_once TOOLKIT . '/class.sectionmanager.php';
-
         $sections = SectionManager::fetch(null, 'asc', 'sortorder');
 
         if (is_array($sections) && !empty($sections)) {

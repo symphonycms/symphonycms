@@ -12,8 +12,6 @@
  * to view them.
  */
 
-require_once TOOLKIT . '/class.htmlpage.php';
-
 class DevKit extends HTMLPage
 {
     /**

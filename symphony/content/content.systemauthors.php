@@ -9,9 +9,6 @@
  * including making new Authors, editing Authors or deleting
  * Authors from Symphony
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once CONTENT . '/class.sortable.php';
 
 class contentSystemAuthors extends AdministrationPage
 {
@@ -222,9 +219,6 @@ class contentSystemAuthors extends AdministrationPage
 
     public function __form()
     {
-
-        require_once TOOLKIT . '/class.field.php';
-
         // Handle unknown context
         if (!in_array($this->_context[0], array('new', 'edit'))) {
             Administration::instance()->errorPageNotFound();
@@ -497,7 +491,8 @@ class contentSystemAuthors extends AdministrationPage
         // Administration password double check
         if ($isEditing && !$isOwner) {
             $group = new XMLElement('fieldset');
-            $group->setAttribute('class', 'settings highlight');
+            $group->setAttribute('class', 'settings');
+            $group->setAttribute('id', 'confirmation');
             $group->appendChild(new XMLElement('legend', __('Confirmation')));
             $group->appendChild(new XMLELement('p', __('Please confirm changes to this author with your password.'), array('class' => 'help')));
 

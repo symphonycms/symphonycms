@@ -14,8 +14,6 @@
   * 
   * @see ExtensionManager#getCacheProvider()
   */
-require_once FACE . '/interface.cache.php';
-require_once TOOLKIT . '/class.mutex.php';
 
 class CacheDatabase implements iCache
 {

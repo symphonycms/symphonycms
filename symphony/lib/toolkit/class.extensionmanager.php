@@ -170,16 +170,16 @@ class ExtensionManager implements FileResource
 
         if (isset($about['handle']) && array_key_exists($about['handle'], self::$_extensions)) {
             if (self::$_extensions[$about['handle']]['status'] == 'enabled') {
-                $return[] = EXTENSION_ENABLED;
+                $return[] = Extension::EXTENSION_ENABLED;
             } else {
-                $return[] = EXTENSION_DISABLED;
+                $return[] = Extension::EXTENSION_DISABLED;
             }
         } else {
-            $return[] = EXTENSION_NOT_INSTALLED;
+            $return[] = Extension::EXTENSION_NOT_INSTALLED;
         }
 
         if (isset($about['handle'], $about['version']) && self::__requiresUpdate($about['handle'], $about['version'])) {
-            $return[] = EXTENSION_REQUIRES_UPDATE;
+            $return[] = Extension::EXTENSION_REQUIRES_UPDATE;
         }
 
         return $return;
@@ -979,12 +979,12 @@ class ExtensionManager implements FileResource
 
                 // Min version
                 if (!empty($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
-                    $about['status'][] = EXTENSION_NOT_COMPATIBLE;
+                    $about['status'][] = Extension::EXTENSION_NOT_COMPATIBLE;
                     $about['required_version'] = $required_min_version;
 
                     // Max version
                 } elseif (!empty($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
-                    $about['status'][] = EXTENSION_NOT_COMPATIBLE;
+                    $about['status'][] = Extension::EXTENSION_NOT_COMPATIBLE;
                     $about['required_version'] = $required_max_version;
                 }
             }
@@ -1083,36 +1083,3 @@ class ExtensionManager implements FileResource
         }
     }
 }
-
-/**
- * Status when an extension is installed and enabled
- * @var integer
- */
-define_safe('EXTENSION_ENABLED', 10);
-
-/**
- * Status when an extension is disabled
- * @var integer
- */
-define_safe('EXTENSION_DISABLED', 11);
-
-/**
- * Status when an extension is in the file system, but has not been installed.
- * @var integer
- */
-define_safe('EXTENSION_NOT_INSTALLED', 12);
-
-/**
- * Status when an extension version in the file system is different to
- * the version stored in the database for the extension
- * @var integer
- */
-define_safe('EXTENSION_REQUIRES_UPDATE', 13);
-
-/**
- * Status when the extension is not compatible with the current version of
- * Symphony
- * @since Symphony 2.3
- * @var integer
- */
-define_safe('EXTENSION_NOT_COMPATIBLE', 14);

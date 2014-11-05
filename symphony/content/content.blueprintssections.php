@@ -7,11 +7,6 @@
  * This page controls the creation and maintenance of Symphony
  * Sections through the Section Index and Section Editor.
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once TOOLKIT . '/class.fieldmanager.php';
-require_once TOOLKIT . '/class.entrymanager.php';
-require_once FACE . '/interface.provider.php';
 
 class contentBlueprintsSections extends AdministrationPage
 {
@@ -67,8 +62,14 @@ class contentBlueprintsSections extends AdministrationPage
                 $td2 = Widget::TableData(Widget::Anchor("$entry_count", SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
                 $td3 = Widget::TableData($s->get('navigation_group'));
 
-                // Add a row to the body array, assigning each cell to the row
-                $aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
+                // Create row
+                $tr = Widget::TableRow(array($td1, $td2, $td3));
+
+                if ($s->get('hidden') === 'yes') {
+                    $tr->setAttribute('class', 'inactive');
+                }
+                
+                $aTableBody[] = $tr; 
             }
         }
 

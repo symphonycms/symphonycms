@@ -4,8 +4,6 @@
 	 * @package content
 	 */
 
-	require_once(TOOLKIT . '/class.htmlpage.php');
-
 	Class InstallerPage extends HTMLPage {
 
 		private $_template;
