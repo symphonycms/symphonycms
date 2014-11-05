@@ -418,24 +418,24 @@ fieldset.settings.highlight {
 
 /* Condensed, pickable settings, e. g. email gateways */
 
-.active .settings.condensed:not(.pickable) {
+.js-active .settings.condensed:not(.pickable) {
 	margin-bottom: 0.5rem;
 }
 
-.active .settings.condensed:not(.pickable) label {
+.js-active .settings.condensed:not(.pickable) label {
 	margin-bottom: 0;
 }
 
-.active .settings.pickable.condensed {
+.js-active .settings.pickable.condensed {
 	border-bottom: none;
 	margin-bottom: 0;
 	padding-bottom: 0;
 }
-.active .settings.pickable.condensed {
+.js-active .settings.pickable.condensed {
 	border-top: 0;
 	padding-top: 0;
 }
-.active .settings.pickable.condensed legend {
+.js-active .settings.pickable.condensed legend {
 	display: none;
 }
 
