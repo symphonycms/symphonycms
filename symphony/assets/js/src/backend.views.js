@@ -828,6 +828,11 @@ Symphony.View.add('/system/authors/:action:/:id:/:status:', function(action, id,
 			text: Symphony.Language.get('Please reset your password')
 		}).insertAfter(legend);
 	}
+
+	// Highlight confirmation promt
+	Symphony.Elements.contents.find('input, select').on('change.admin input.admin', function() {
+		$('#confirmation').addClass('highlight');
+	});
 });
 
 /*--------------------------------------------------------------------------

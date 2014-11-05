@@ -491,7 +491,8 @@ class contentSystemAuthors extends AdministrationPage
         // Administration password double check
         if ($isEditing && !$isOwner) {
             $group = new XMLElement('fieldset');
-            $group->setAttribute('class', 'settings highlight');
+            $group->setAttribute('class', 'settings');
+            $group->setAttribute('id', 'confirmation');
             $group->appendChild(new XMLElement('legend', __('Confirmation')));
             $group->appendChild(new XMLELement('p', __('Please confirm changes to this author with your password.'), array('class' => 'help')));
 
