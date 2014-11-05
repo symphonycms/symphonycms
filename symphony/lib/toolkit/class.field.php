@@ -1210,7 +1210,7 @@ class Field
         )));
 
         $label = Widget::Label(__('Value'));
-        $label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : null)));
+        $label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : null), 'text', array('autocomplete' => 'off')));
 
         $filterTags = new XMLElement('ul');
         $filterTags->setAttribute('class', 'tags singular');

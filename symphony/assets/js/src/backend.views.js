@@ -686,48 +686,39 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 		source: Symphony.Context.get('path') + '/ajax/parameters/?filter=page&template=$%s'
 	});
 
-	// Make sure autocomplete is off for newly added filters
-	// Switch the 'help' text if it's available.
-	Symphony.Elements.contents.find('.filters-duplicator').on('constructshow.duplicator', '.instance', function() {
-		var duplicator = $(this);
+	// Toggle filter help
+	Symphony.Elements.contents.find('.filters-duplicator').on('input.admin change.admin', 'input', function toggleFilterHelp(event) {
+		var item = $(event.target).parents('.instance'),
+			value = event.target.value,
+			filter = value.split(':')[0],
+			filters = item.data('filters'),
+			help = item.find('.help');
 
-		duplicator.find('input').attr('autocomplete', 'off');
-		setupDatasourceFiltersHelper(duplicator);
+		// Store filters
+		if(!filters) {
+			filters = {
+				'default': help.html()
+			};
+
+			item.find('.tags li').each(function() {
+				var name = $.trim(this.textContent).slice(0, -1);
+
+				filters[name] = this.getAttribute('data-help');
+			});
+
+			item.data('filters', filters);
+		}
+
+		// Filter help
+		if(filters[filter]) {
+			help.html(filters[filter]);
+		}
+
+		// Default help
+		else {
+			help.html(filters['default']);
+		}
 	});
-
-	function setupDatasourceFiltersHelper(duplicator) {
-		var help = duplicator.find('.help'),
-				input = duplicator.find('input'),
-				filters = duplicator.find('.tags');
-
-		// Swap the help text if it exists, or restore what was previously there.
-		help.attr('data-help', help.html());
-
-		// Handle changes
-		input.on('change', function(event, data) {
-			if (data && data.tag) {
-				help.html(data.tag.attr('data-help'));
-			} else {
-				help.html(help.attr('data-help'));
-			}
-
-			$(this).focus();
-		});
-
-		// Handle existing values
-		filters.find('li').each(function(i, el) {
-			var filter = $(el),
-					match = new RegExp('^' + filter.text() + '\\s*');
-
-			if (match.test(input.val())) {
-				input.trigger('change', {
-					tag: filter
-				});
-			}
-		});
-	}
-
-	setupDatasourceFiltersHelper(Symphony.Elements.contents.find('.filters-duplicator'));
 });
 
 /*--------------------------------------------------------------------------
