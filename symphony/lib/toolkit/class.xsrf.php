@@ -17,13 +17,17 @@ class XSRF
     /**
      * Return's the location of the XSRF tokens in the Session
      *
-     * @return array
+     * @return string|null
      */
-    public static function getSession()
+    public static function getSessionToken()
     {
-        $tokens = $_SESSION[__SYM_COOKIE_PREFIX__]['xsrf-token'];
+        $token = $_SESSION[__SYM_COOKIE_PREFIX__]['xsrf-token'];
 
-        return is_null($tokens) ? array() : $tokens;
+        if (is_array($token)) {
+            $token = key($token);
+        }
+
+        return is_null($token) ? null : $token;
     }
 
     /**
@@ -47,7 +51,7 @@ class XSRF
             return;
         }
 
-        unset($_SESSION[__SYM_COOKIE_PREFIX__]['xsrf-token'][$token]);
+        $_SESSION[__SYM_COOKIE_PREFIX__]['xsrf-token'] = null;
     }
 
     /**
@@ -106,13 +110,19 @@ class XSRF
      */
     public static function getToken()
     {
-        $tokens = self::getSession();
-        if (empty($tokens)) {
+        $token = self::getSessionToken();
+        if (is_null($token)) {
             $nonce = self::generateNonce(20);
-            $tokens[$nonce] = 1;
-            self::setSessionToken($tokens);
+            self::setSessionToken($nonce);
+
+        // Handle old tokens (< 2.6.0)
+        } elseif (is_array($token)) {
+            $nonce = key($token);
+            self::setSessionToken($nonce);
+
+        // New style tokens
         } else {
-            $nonce = key($tokens);
+            $nonce = $token;
         }
 
         return $nonce;
@@ -127,23 +137,9 @@ class XSRF
      */
     public static function validateToken($xsrf)
     {
-        $tokens = self::getSession();
+        $token = self::getSessionToken();
 
-        // Sanity check
-        if (empty($tokens)) {
-            return false;
-        }
-
-        // Check that the token exists
-        foreach ($tokens as $key => $expires) {
-            if ($key == $xsrf) {
-                return true;
-            } else {
-                self::removeSessionToken($key);
-            }
-        }
-
-        return false;
+        return $token === $xsrf;
     }
 
     /**
@@ -183,5 +179,17 @@ class XSRF
             . '<br/><br/>' .
             __('Please go back and try again.');
         throw new SymphonyErrorPage($msg, __('Access Denied'), 'generic', array(), Page::HTTP_STATUS_FORBIDDEN);
+    }
+
+    /**
+     * Return's the location of the XSRF tokens in the Session
+     *
+     * @deprecated This function will be removed in Symphony 2.8.0. Use
+     *  getSessionToken instead.
+     * @return string|null
+     */
+    public static function getSession()
+    {
+        return self::getSessionToken();
     }
 }
