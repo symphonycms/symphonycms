@@ -73,6 +73,12 @@ Symphony.View.add('/:context*:', function() {
 	var oldSorting = null,
 		orderable = Symphony.Elements.contents.find('table.orderable[data-interactive]');
 
+	// Ignore tables with less than two rows
+	orderable = orderable.filter(function() {
+		return ($(this).find('tbody tr').length > 1);
+	});
+
+	// Initalise ordering
 	orderable.symphonyOrderable({
 			items: 'tr',
 			handles: 'td'
