@@ -1534,7 +1534,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
     private static function __isValidPageString($string)
     {
-        return (bool)preg_match('/^(?:\{\$[\w-]+(?::\$[\w-]+)*(?::\d+)?}|\d+)$/', $string);
+        return (bool)preg_match('/^\{\$[\w-]+(.[\w]+(-[\w]+)?){0,1}\}|[\d]+$/', $string);
     }
 
     /**
