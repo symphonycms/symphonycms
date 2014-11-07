@@ -453,6 +453,7 @@ class Administration extends Symphony
      * AdminPagePostGenerate. This function runs the Profiler for the page build
      * process.
      *
+     * @uses AdminPagePreBuild
      * @uses AdminPagePreGenerate
      * @uses AdminPagePostGenerate
      * @see core.Symphony#__buildPage()
@@ -468,6 +469,19 @@ class Administration extends Symphony
     public function display($page)
     {
         Symphony::Profiler()->sample('Page build process started');
+
+        /**
+         * Immediately before building the admin page. Provided with the page parameter
+         * @delegate AdminPagePreBuild
+         * @since Symphony 2.6.0
+         * @param string $context
+         *  '/backend/'
+         * @param string $page
+         *  The result of getCurrentPage, which returns the $_GET['symphony-page']
+         *  variable.
+         */
+        Symphony::ExtensionManager()->notifyMembers('AdminPagePreBuild', '/backend/', array('page' => $page));
+
         $this->__buildPage($page);
 
         // Add XSRF token to form's in the backend
