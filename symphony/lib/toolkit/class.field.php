@@ -210,7 +210,7 @@ class Field
      */
     public function canPublishFilter()
     {
-        return false;
+        return $this->canFilter();
     }
 
     /**

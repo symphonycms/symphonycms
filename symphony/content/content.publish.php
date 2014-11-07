@@ -75,20 +75,34 @@ class contentPublish extends AdministrationPage
     public function createFilteringInterface()
     {
         //Check if section has filtering enabled
-        $context = Administration::instance()->Page->_context;
+        $context = $this->getContext();
         $handle = $context['section_handle'];
         $section_id = SectionManager::fetchIDFromHandle($handle);
         $section = SectionManager::fetch($section_id);
         $filter = $section->get('filter');
 
-        if (isset($filter) && $filter !='no') {
+        if (isset($filter) && $filter !== 'no') {
             // Get filtering fields
-            $this->getFilteringFields();
+            $this->getFilteringFields($section);
 
             // Append drawer
             $this->insertDrawer(
                 Widget::Drawer('filtering', __('Filter Entries'), $this->createFilteringDrawer())
             );
+        }
+    }
+
+    /**
+     * Get filter field names
+     */
+    public function getFilteringFields(Section $section)
+    {
+        foreach ($section->fetchFilterableFields() as $field) {
+            if (!$field->canPublishFilter()) {
+                continue;
+            }
+
+            $this->_filteringFields[] = array($field->get('element_name'), false, $field->get('label'));
         }
     }
 
@@ -164,29 +178,6 @@ class contentPublish extends AdministrationPage
         );
 
         $this->filteringForm->appendChild($row);
-    }
-
-    /**
-     * Get filter field names
-     */
-    public function getFilteringFields()
-    {
-        $context = $this->getContext();
-        $section_id = SectionManager::fetchIDFromHandle($context['section_handle']);
-
-        if (!$section_id) {
-            return;
-        }
-
-        // Filterable sections
-        $section = SectionManager::fetch($section_id);
-        foreach ($section->fetchFilterableFields() as $field) {
-            if (!$field->canPublishFilter()) {
-                continue;
-            }
-
-            $this->_filteringFields[] = array($field->get('element_name'), false, $field->get('label'));
-        }
     }
 
     public function build(array $context = array())
