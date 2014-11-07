@@ -295,6 +295,12 @@ Symphony.View.add('/publish/:context*:', function() {
 			}
 		}
 	}).appendTo('label.file:has(a) span.frame');
+
+	// Calendars
+	$('.field-date[data-interactive]').each(function() {
+		var calendar = new Symphony.Interface.Calendar();
+		calendar.init(this);
+	});
 });
 
 Symphony.View.add('/:context*:/new', function() {

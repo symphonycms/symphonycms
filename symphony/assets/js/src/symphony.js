@@ -312,6 +312,13 @@ var Symphony = (function($, crossroads) {
 		Support: Storage.Support,
 
 		/**
+		 * A namespace for core interface components
+		 *
+		 * @since Symphony 2.6
+		 */
+		Interface: {},
+
+		/**
 		 * A namespace for extension to store global functions
 		 *
 		 * @since Symphony 2.3
