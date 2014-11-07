@@ -2,8 +2,8 @@
 	'use strict';
 
 	Symphony.Interface.Calendar = function() {
-		var template = '<div class="calendar"><nav><a class="previous"></a><div class="switch"><ul class="months"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul><ul class="years"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul></div><a class="next"></a></nav><table><thead><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>',
-			context, calendar, storage, format, datetime;
+		var template = '<div class="calendar"><nav><a class="clndr-previous-button">previous</a><div class="switch"><ul class="months"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul><ul class="years"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul></div><a class="clndr-next-button">next</a></nav><table><thead><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>',
+			context, calendar, storage, format, datetime, clndr;
 
 		var init = function(element) {
 			context = $(element);
@@ -18,6 +18,10 @@
 			// Create calendar
 			prepareTemplate();
 			create();
+
+			// Switch sheets
+			calendar.on('click.calendar', '.months li', switchMonth);
+			calendar.on('click.calendar', '.years li', switchYear);
 		};
 
 		var prepareTemplate = function() {
@@ -27,7 +31,7 @@
 		};
 
 		var create = function() {
-			calendar.clndr({
+			clndr = calendar.clndr({
 				startWithMonth: datetime,
 				showAdjacentMonths: true,
 				adjacentDaysChangeMonth: true,
@@ -50,7 +54,7 @@
 			return sheet.html();
 		};
 
-		var renderTitles = function(sheet, data) {
+		var renderTitles = function() {
 			template.find('thead td').each(function(index) {
 				this.textContent = moment().day(index).format('dd');
 			});
@@ -93,6 +97,14 @@
 			datetime.set('date', date.date());
 
 			storage.val(datetime.format(format));
+		};
+
+		var switchMonth = function(event) {
+			clndr.setMonth(event.target.textContent);
+		};
+
+		var switchYear = function(event) {
+			clndr.setYear(event.target.textContent);
 		};
 
 		// API
