@@ -854,4 +854,34 @@ class Widget
 
         return $drawer;
     }
+
+    /**
+     * Generates a XMLElement representation of a Symphony calendar.
+     *
+     * @since Symphony 2.6
+     * @param boolean $time
+     *  Wheather or not to display the time, defaults to true
+     * @return XMLElement
+     */
+    public static function Calendar($time = true)
+    {
+        $calendar = new XMLElement('div');
+        $calendar->setAttribute('class', 'calendar');
+
+        $date = DateTimeObj::convertDateToMoment(DateTimeObj::getSetting('date_format'));
+        if($date) {
+            if ($time === true) {
+                $separator = DateTimeObj::convertDateToMoment(DateTimeObj::getSetting('datetime_separator'));
+                $time = DateTimeObj::convertDateToMoment(DateTimeObj::getSetting('time_format'));
+        
+                $calendar->setAttribute('data-calendar', 'datetime');
+                $calendar->setAttribute('data-format', $date . $separator . $time);
+            } else {
+                $calendar->setAttribute('data-calendar', 'date');
+                $calendar->setAttribute('data-format', $date);
+            }
+        }
+
+        return $calendar;
+    }
 }

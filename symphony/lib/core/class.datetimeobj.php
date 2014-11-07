@@ -23,6 +23,38 @@ class DateTimeObj
     private static $settings = array();
 
     /**
+     * Mapping PHP to Moment date formats.
+     */
+    protected static $date_mappings = array(
+        'Y/m/d' => 'YYYY/MM/DD',    // e. g. 2014/01/02
+        'd/m/Y' => 'DD/MM/YYYY',    // e. g. 01/02/2014
+        'm/d/Y' => 'MM/DD/YYYY',    // e. g. 01/02/2014
+        'm/d/y' => 'MM/DD/YY',      // e. g. 01/02/14
+        'Y-m-d' => 'YYYY-MM-DD',    // e. g. 2014-01-02
+        'm-d-Y' => 'MM-DD-YYYY',    // e. g. 01-02-2014
+        'm-d-y' => 'MM-DD-YY',      // e. g. 01-02-14
+        'd.m.Y' => 'DD.MM.YYYY',    // e. g. 02.01.2014
+        'j.n.Y' => 'D.M.YYYY',      // e. g. 2.1.2014 - no leading zeros
+        'j.n.y' => 'D.M.YY',        // e. g. 2.1.14 - no leading zeros
+        'd.m.Y' => 'DD.MM.YYYY',    // e. g. 02.01.2014
+        'd.m.y' => 'DD.MM.YYYY',    // e. g. 02.01.14
+        'd F Y' => 'DD MMMM YYYY',  // e. g. 02 January 2014
+        'd M Y' => 'DD MMM YYYY',   // e. g. 02 Jan 2014
+        'j. F Y' => 'D. MMMM YYYY', // e. g. 2. January 2014 - no leading zeros
+        'j. M. Y' => 'D. MMM. YYY', // e. g. 2. Jan. 2014 - no leading zeros
+    );
+
+    /**
+     * Mapping PHP to Moment time formats.
+     */
+    protected static $time_mappings = array(
+        'H:i:s' => 'HH:mm:ss',      // e. g. 20:45:32
+        'H:i' => 'HH:mm',           // e. g. 20:45
+        'g:i:s a' => 'h:mm:ss a',   // e. g. 8:45:32 pm
+        'g:i a' => 'h:mm a',        // e. g. 8:45 pm
+    );
+
+    /**
      * This function takes an array of settings for `DateTimeObj` to use when parsing
      * input dates. The following settings are supported, `time_format`, `date_format`,
      * `datetime_separator` and `timezone`. This equates to Symphony's default `region`
@@ -375,24 +407,47 @@ class DateTimeObj
      */
     public static function getDateFormats()
     {
-        return array(
-            'Y/m/d',    // e. g. 2014/01/02
-            'd/m/Y',    // e. g. 01/02/2014
-            'm/d/Y',    // e. g. 01/02/2014
-            'm/d/y',    // e. g. 01/02/14
-            'Y-m-d',    // e. g. 2014-01-02
-            'm-d-Y',    // e. g. 01-02-2014
-            'm-d-y',    // e. g. 01-02-14
-            'd.m.Y',    // e. g. 02.01.2014
-            'j.n.Y',    // e. g. 2.1.2014 - no leading zeros
-            'j.n.y',    // e. g. 2.1.14 - no leading zeros
-            'd.m.Y',    // e. g. 02.01.2014
-            'd.m.y',    // e. g. 02.01.14
-            'd F Y',    // e. g. 02 January 2014
-            'd M Y',    // e. g. 02 Jan 2014
-            'j. F Y',   // e. g. 2. January 2014 - no leading zeros
-            'j. M. Y',  // e. g. 2. Jan. 2014 - no leading zeros
-        );
+        return array_keys(self::$date_mappings);
+    }
+
+    /**
+     * Returns an array of the date formats Symphony supports. These
+     * formats are a combination of valid Moment format tokens.
+     *
+     * @link http://momentjs.com/docs/#/parsing/
+     * @since Symphony 2.6
+     * @return array
+     */
+    public static function getMomentDateFormats()
+    {
+        return array_values(self::$date_mappings);
+    }
+
+    /**
+     * Returns the Moment representation of a given PHP format token.
+     *
+     * @since Symphony 2.6
+     * @param string $format
+     *  A valid PHP date token
+     * @return string
+     */
+    public static function convertDateToMoment($format)
+    {
+        return self::$date_mappings[$format];
+    }
+
+    /**
+     * Returns the PHP representation of a given Moment format token.
+     *
+     * @since Symphony 2.6
+     * @param string $format
+     *  A valid Moment date token
+     * @return string
+     */
+    public static function convertMomentToDate($format)
+    {
+        $formats = array_flip(self::$date_mappings);
+        return $formats[$format];
     }
 
     /**
@@ -435,14 +490,48 @@ class DateTimeObj
      */
     public static function getTimeFormats()
     {
-        return array(
-            'H:i:s',    // e. g. 20:45:32
-            'H:i',      // e. g. 20:45
-            'g:i:s a',  // e. g. 8:45:32 pm
-            'g:i a',    // e. g. 8:45 pm
-        );
+        return array_keys(self::$time_mappings);
     }
 
+    /**
+     * Returns an array of the time formats Symphony supports. These
+     * formats are a combination of valid Moment format tokens.
+     *
+     * @link http://momentjs.com/docs/#/parsing/
+     * @since Symphony 2.6
+     * @return array
+     */
+    public static function getMomentTimeFormats()
+    {
+        return array_keys(self::$time_mappings);
+    }
+
+    /**
+     * Returns the Moment time representation of a given PHP format token.
+     *
+     * @since Symphony 2.6
+     * @param string $format
+     *  A valid PHP time token
+     * @return string
+     */
+    public static function convertTimeToMoment($format)
+    {
+        return self::$time_mappings[$format];
+    }
+
+    /**
+     * Returns the PHP time representation of a given Moment format token.
+     *
+     * @since Symphony 2.6
+     * @param string $format
+     *  A valid Moment time token
+     * @return string
+     */
+    public static function convertMomentToTime($format)
+    {
+        $formats = array_flip(self::$time_mappings);
+        return $formats[$format];
+    }
     /**
      * Returns an array of the time formats Symphony supports by applying
      * the format to the current datetime. The array returned is for use with

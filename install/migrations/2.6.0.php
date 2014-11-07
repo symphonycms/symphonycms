@@ -10,4 +10,18 @@
 			return 'http://getsymphony.com/download/releases/version/2.6.0/';
 		}
 
+		static function upgrade() {
+			// Add date field options
+			try {
+				Symphony::Database()->query('
+					ALTER TABLE `tbl_fields_date`
+					ADD `calendar` enum("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "no",
+					ADD `time` enum("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "yes";
+				');
+			}
+			catch (Exception $ex) {}
+
+			// Update the version information
+			return parent::upgrade();
+		}
 	}
