@@ -2,7 +2,7 @@
 	'use strict';
 
 	Symphony.Interface.Calendar = function() {
-		var template = '<div class="calendar"><nav><a class="clndr-previous-button">previous</a><div class="switch"><ul class="months"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul><ul class="years"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul></div><a class="clndr-next-button">next</a></nav><table><thead><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>',
+		var template = '<div class="calendar"><nav><a class="clndr-previous-button">previous</a><div class="switch"><ul class="months"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul><ul class="years"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul></div><a class="clndr-next-button">next</a></nav><table><thead><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr></thead><tbody><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr></tbody></table></div>',
 			context, calendar, storage, format, datetime, clndr;
 
 		var init = function(element) {
@@ -77,11 +77,15 @@
 		};
 
 		var renderDays = function(sheet, data) {
-			sheet.find('tbody td').each(function(index) {
+			sheet.find('tbody td span').each(function(index) {
 				var date = data.days[index];
 
 				this.textContent = date.day;
 				this.setAttribute('class', date.classes);
+
+				if(date.date.isSame(datetime, 'day')) {
+					this.classList.add('active');
+				}
 			});
 
 			return sheet;
@@ -91,12 +95,14 @@
 			var date = day.date;
 
 			date.subtract(date.zone(), 'minutes');
-
 			datetime.set('year', date.year());
 			datetime.set('month', date.month());
 			datetime.set('date', date.date());
 
 			storage.val(datetime.format(format));
+
+			calendar.find('.active').removeClass('active');
+			day.element.classList.add('active');
 		};
 
 		var switchMonth = function(event) {
