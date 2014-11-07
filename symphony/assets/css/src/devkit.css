@@ -2,26 +2,25 @@
  * Devkits
  */
 
-
 /*---------------------------------------------------------------------------------
 	Reset
 ---------------------------------------------------------------------------------*/
 
 * {
-	border: none;
 	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
 	color: inherit;
 	font: inherit;
 	line-height: 140%;
-	margin: 0;
+	border: none;
 	outline: none;
-	padding: 0;
 }
 
 body {
-	background: hsl(210, 5%, 10%);
-	font: 80% sans-serif;
 	overflow: hidden;
+	font: 80% sans-serif;
+	background: hsl(210, 5%, 10%);
 }
 
 a {
@@ -39,18 +38,18 @@ a:hover {
 ---------------------------------------------------------------------------------*/
 
 #header {
-	background: hsl(210, 5%, 20%);
-	border-left: 1px solid hsl(210, 5%, 30%);
-	bottom: 0;
-	color: #ffffff;
-	padding: 20px;
 	position: absolute;
-	text-shadow: 2px 2px 3px hsl(210, 5%, 5%);
-	right: 0;
 	top: 0;
-	width: 270px;
+	right: 0;
+	bottom: 0;
 	overflow: hidden;
 	overflow-y: auto;
+	width: 270px;
+	padding: 20px;
+	color: #fff;
+	border-left: 1px solid hsl(210, 5%, 30%);
+	background: hsl(210, 5%, 20%);
+	text-shadow: 2px 2px 3px hsl(210, 5%, 5%);
 }
 
 #header,
@@ -59,12 +58,12 @@ a:hover {
 }
 
 #header h1 {
-	font-size: 120%;
 	margin: 0;
+	font-size: 120%;
 }
 
 #header h1 a {
-	color: #ffffff;
+	color: #fff;
 }
 
 #header #navigation {
@@ -78,9 +77,9 @@ a:hover {
 
 #header #jump {
 	float: left;
-	margin: 20px 0 0 -20px;
 	overflow: hidden;
 	width: 269px;
+	margin: 20px 0 0 -20px;
 }
 
 #header #jump ul {
@@ -102,8 +101,8 @@ a:hover {
 }
 
 #header #jump a.active {
-	background: hsl(210, 5%, 25%);
 	color: hsl(210, 5%, 100%);
+	background: hsl(210, 5%, 25%);
 }
 
 /*---------------------------------------------------------------------------------
@@ -111,11 +110,11 @@ a:hover {
 ---------------------------------------------------------------------------------*/
 
 #content {
-	background: hsl(210, 5%, 10%);
-	bottom: 0;
-	left: 0;
 	position: absolute;
-	overflow: auto;
-	right: 270px;
 	top: 0;
+	left: 0;
+	right: 270px;
+	bottom: 0;
+	overflow: auto;
+	background: hsl(210, 5%, 10%);
 }

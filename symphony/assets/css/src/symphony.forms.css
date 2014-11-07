@@ -14,13 +14,13 @@
 input,
 textarea,
 select[multiple] {
-	padding: 0.2rem 0.3rem;
-	border: 0.1rem solid rgba(0, 0, 0, 0.25);
 	box-sizing: border-box;
-	margin-top: 0.2rem;
 	width: 100%;
-	font-size: 109.09%;
+	margin-top: 0.2rem;
+	padding: 0.2rem 0.3rem;
 	font-family: inherit;
+	font-size: 109.09%;
+	border: 0.1rem solid rgba(0, 0, 0, 0.25);
 }
 
 input,
@@ -33,10 +33,10 @@ input {
 }
 
 input[type=file] {
-	border: none;
-	padding: 0;
-	margin: 0;
 	height: auto;
+	margin: 0;
+	padding: 0;
+	border: none;
 	background: transparent;
 }
 
@@ -46,22 +46,22 @@ textarea:active,
 textarea:focus,
 select[multiple]:active,
 select[multiple]:focus {
-	outline: none;
 	border-color: rgba(0, 0, 0, 0.4);
+	outline: none;
 }
 
 select {
-	width: 100%;
 	display: block;
-	margin-top: 0.2rem;
 	box-sizing: border-box;
+	width: 100%;
+	margin-top: 0.2rem;
 }
 
 select[multiple] {
-	font-size: 1.1rem;
 	width: 100%;
 	height: 10rem;
 	padding: 0;
+	font-size: 1.1rem;
 }
 
 select[size] {
@@ -73,17 +73,17 @@ input[size] {
 	width: auto;
 }
 
-input[type="radio"],
-input[type="checkbox"] {
+input[type='radio'],
+input[type='checkbox'] {
 	display: inline;
 	width: auto;
-	margin-right: 0.5rem;
 	height: auto;
+	margin-top: 0;
+	margin-right: 0.5rem;
 	padding: inherit;
+	font-size: inherit;
 	border: none;
 	box-shadow: none;
-	margin-top: 0;
-	font-size: inherit;
 }
 
 button,
@@ -106,19 +106,19 @@ fieldset {
 	outline: 0;
 }
 
-input[type="reset"],
-input[type="button"],
-input[type="submit"] {
+input[type='reset'],
+input[type='button'],
+input[type='submit'] {
 	width: auto;
 	font-size: inherit;
 }
 
 button::-moz-focus-inner,
-input[type="reset"]::-moz-focus-inner,
-input[type="button"]::-moz-focus-inner,
-input[type="submit"]::-moz-focus-inner,
+input[type='reset']::-moz-focus-inner,
+input[type='button']::-moz-focus-inner,
+input[type='submit']::-moz-focus-inner,
 select::-moz-focus-inner,
-input[type="file"] > input[type="button"]::-moz-focus-inner {
+input[type='file'] > input[type='button']::-moz-focus-inner {
 	border: none;
 }
 
@@ -127,7 +127,7 @@ input[type="file"] > input[type="button"]::-moz-focus-inner {
 .invalid input
 .invalid select[multiple],
 .invalid textarea {
-	border-color: #cc3311;
+	border-color: #c31;
 }
 
 .invalid input:active,
@@ -153,11 +153,11 @@ button,
 	min-height: 2rem;
 	margin-left: 1rem;
 	padding: 0 1rem;
-	background-image: linear-gradient(to bottom, #fbfbfa 0%, #e3e3df 100%);
 	color: rgba(85, 85, 85, 0.95);
+	line-height: 1.85;
 	border: 0.1rem solid rgba(0, 0, 0, 0.25);
 	border-radius: 0.4rem;
-	line-height: 1.85;
+	background-image: linear-gradient(to bottom, #fbfbfa 0%, #e3e3df 100%);
 }
 
 input[type=submit]:hover,
@@ -169,21 +169,21 @@ button:focus,
 .button:hover,
 .button:active,
 .button:focus {
-	background-image: linear-gradient(to bottom, #fbfbfa 0%, #e3e3df 50%);
-	border-color: rgba(0, 0, 0, 0.35);
 	color: #3c3c3c;
+	border-color: rgba(0, 0, 0, 0.35);
+	background-image: linear-gradient(to bottom, #fbfbfa 0%, #e3e3df 50%);
 	cursor: pointer;
 }
 
 input[type=submit].selected,
 button.selected,
 .button.selected {
-	box-shadow: inset 0 0 0.15rem rgba(0, 0, 0, 0.2);
-	background: #e3e3df;
-	cursor: pointer;
 	color: rgba(0, 0, 0, 0.7);
-	text-shadow: 0.1rem 0.1rem 0 rgba(255, 255, 255, 0.7);
 	border-color: rgba(0, 0, 0, 0.3);
+	background: #e3e3df;
+	box-shadow: inset 0 0 0.15rem rgba(0, 0, 0, 0.2);
+	text-shadow: 0.1rem 0.1rem 0 rgba(255, 255, 255, 0.7);
+	cursor: pointer;
 }
 
 textarea[disabled=disabled],
@@ -205,17 +205,17 @@ button[disabled=disabled],
 button[disabled=disabled]:hover,
 button[disabled=disabled]:active,
 button[disabled=disabled]:focus {
-	cursor: not-allowed;
 	opacity: 0.5;
+	cursor: not-allowed;
 }
 
 /* Create buttons */
 
 button.create,
 .button.create {
-	background-image: linear-gradient(to bottom, #b3d47d 0%, #88bb33 100%);
-	border-color: #799747;
 	color: #fff;
+	border-color: #799747;
+	background-image: linear-gradient(to bottom, #b3d47d 0%, #8b3 100%);
 }
 
 button.create:hover,
@@ -224,8 +224,8 @@ button.create:focus,
 .button.create:hover,
 .button.create:active,
 .button.create:focus {
-	background-image: linear-gradient(to bottom, #b3d47d 0%, #88bb33 50%);
 	border-color: #6b863f;
+	background-image: linear-gradient(to bottom, #b3d47d 0%, #8b3 50%);
 }
 
 /* Delete buttons */
@@ -236,9 +236,9 @@ button.delete:focus,
 .button.delete:hover,
 .button.delete:active,
 .button.delete:focus {
-	background-image: linear-gradient(to bottom, #e90a20 0%, #9e0b19 100%);
-	border-color: #870915;
 	color: rgba(255, 255, 255, 0.8);
+	border-color: #870915;
+	background-image: linear-gradient(to bottom, #e90a20 0%, #9e0b19 100%);
 }
 
 /* Installer */
@@ -251,15 +251,15 @@ button.delete:focus,
 
 .apply,
 .apply.inactive:hover {
-	background: #fbfbfa;
-	border: 0.1rem solid rgba(0, 0, 0, 0.25);
-	border-radius: 0.4rem;
 	display: block;
 	float: right;
 	height: 1.85em;
-	margin: 0;
 	min-height: 2rem;
+	margin: 0;
 	padding: 0;
+	border: 0.1rem solid rgba(0, 0, 0, 0.25);
+	border-radius: 0.4rem;
+	background: #fbfbfa;
 }
 
 .apply.inactive {
@@ -267,11 +267,11 @@ button.delete:focus,
 }
 
 .apply div {
-	text-align: left;
-	overflow: hidden;
 	float: left;
-	background-repeat: no-repeat;
+	overflow: hidden;
+	text-align: left;
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAwCAYAAADHEYBIAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAORJREFUeNpiYIAAHiDuBmJWEOf///9YMRNUcRUQOwJxJgMeAFLsBcRuUH4cEFvhUsyITRBkJS6TiQYgxb5AfAYJW+FTvBmId0H5i4D4GCEbiAo6RlyeoYoHRxUPacWMjIwMQMwKxBZADOYTMtkQiKWAWIuQM+SAWAbKVwNicfrnQRYglgdiYySxo0D8EpfJD4H4CZR/C5dCZADKexYwZ43mwVHF5OZBEC3DCAEETZYEYl4gFiXkDH4g5oPyhaFVxgDkQX5omQEDj4H4Cy6TPwLxJyj/LS6FMJNB4DnU/a/xOQMgwACLFl2Yo1jbdgAAAABJRU5ErkJggg==);
+	background-repeat: no-repeat;
 	background-position: right -1.4rem;
 }
 
@@ -284,23 +284,23 @@ button.delete:focus,
 }
 
 .apply select {
-	-webkit-appearance: none;
+	display: inline-block;
 	-moz-appearance: none;
 	-ms-appearance: none;
 	-o-appearance: none;
 	appearance: none;
-	background: transparent;
-	border: none;
-	border-radius: 0.5rem;
-	color: rgb(60, 60, 60);
-	cursor: pointer;
-	display: inline-block;
-	line-height: 1.5;
-	margin: 0.2rem 0 0 0;
-	outline: none;
-	padding: 0 0 0 0.7rem;
 	width: 110% !important;
 	min-width: 17rem;
+	margin: 0.2rem 0 0 0;
+	padding: 0 0 0 0.7rem;
+	color: rgb(60, 60, 60);
+	line-height: 1.5;
+	border: none;
+	border-radius: 0.5rem;
+	-webkit-appearance: none;
+	background: transparent;
+	outline: none;
+	cursor: pointer;
 }
 
 .apply.inactive select {
@@ -316,21 +316,21 @@ button.delete:focus,
 .apply-button-left,
 .apply-label-right,
 .apply-label-left {
-	margin: 0;
-	border: none;
-	border-left: 0.1rem solid rgba(0, 0, 0, 0.15);
-	border-right: none;
-	border-radius: 0 0.4rem 0.4rem 0;
-	line-height: 1.85;
-	height: 1.85rem;
 	float: right;
+	height: 1.85rem;
+	margin: 0;
+	line-height: 1.85;
+	border: none;
+	border-right: none;
+	border-left: 0.1rem solid rgba(0, 0, 0, 0.15);
+	border-radius: 0 0.4rem 0.4rem 0;
 }
 
 .apply-button-left,
 .apply-label-left {
 	float: left;
-	border-left: none;
 	border-right: 0.1rem solid rgba(0, 0, 0, 0.15);
+	border-left: none;
 	border-radius: 0.4rem 0 0 0.4rem;
 }
 
@@ -357,11 +357,11 @@ button.delete:focus,
 }
 
 .apply.single button {
+	height: auto;
+	white-space: nowrap;
 	border: 0.1rem solid rgba(0, 0, 0, 0.25);
 	border-bottom-color: rgba(0, 0, 0, 0.3);
 	border-radius: 0.4rem;
-	height: auto;
-	white-space: nowrap;
 }
 
 .apply.single button:before {
@@ -373,8 +373,8 @@ button.delete:focus,
 fieldset input[type=submit],
 fieldset button,
 fieldset .button {
-	margin-left: 0;
 	margin-right: 1rem;
+	margin-left: 0;
 }
 
 /*--------------------------------------------------------------------------
@@ -391,24 +391,24 @@ fieldset .button {
 
 ul.suggestionlist {
 	position: absolute;
-	border-radius: 0 0 0.4rem 0.4rem;
+	overflow: auto;
+	box-sizing: border-box;
+	width: 100%;
+	max-height: 24rem;
+	margin: 0;
 	border: 0.1rem solid #c0c0c0;
 	border-top: none;
-	margin: 0;
-	width: 100%;
-	box-sizing: border-box;
-	box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.2);
-	z-index: 10000;
-	max-height: 24rem;
-	overflow: auto;
-	transition: max-height .25s ease-out;
+	border-radius: 0 0 0.4rem 0.4rem;
 	background: #fff;
+	box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.2);
+	transition: max-height 0.25s ease-out;
+	z-index: 10000;
 }
 
 ul.suggestionlist li {
+	box-sizing: border-box;
 	height: 2.2rem;
 	padding: 0.2rem 0.5rem;
-	box-sizing: border-box;
 	border-bottom: 0.1rem solid #f3f3f3;
 }
 
@@ -417,8 +417,7 @@ ul.suggestionlist li:last-of-type {
 }
 
 ul.suggestionlist li.active {
-	background: #668ABE;
 	color: #fff;
+	background: #668abe;
 	cursor: pointer;
 }
-

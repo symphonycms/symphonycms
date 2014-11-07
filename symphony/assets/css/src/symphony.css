@@ -21,11 +21,11 @@ fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td {
 	margin: 0;
 	padding: 0;
-	border: 0;
 	font-size: 1em;
 	vertical-align: baseline;
-	background: transparent;
 	text-decoration: none;
+	border: 0;
+	background: transparent;
 }
 input, select, textarea, button {
 	margin: 0;
@@ -34,15 +34,15 @@ input, select, textarea, button {
 	vertical-align: baseline;
 }
 button::-moz-focus-inner {
-	border:0;
-	padding:0;
+	padding: 0;
+	border: 0;
 }
 ol, ul {
 	list-style: none;
 }
 table {
-	border-collapse: collapse;
 	border-spacing: 0;
+	border-collapse: collapse;
 }
 header, nav, section, aside, footer {
 	display: block;
@@ -57,9 +57,9 @@ html {
 }
 
 body {
+	color: #222;
 	font: 1.1rem/1.5 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
 	background: #fff;
-	color: #222;
 }
 
 body > div,
@@ -68,10 +68,6 @@ body > form {
 }
 
 /* Headlines */
-
-h1,
-h2 {
-}
 
 h3 {
 	font-weight: bold;
@@ -117,7 +113,7 @@ ul, ol {
 ul.tags {
 	margin: -0.75rem 0 1.5rem 0;
 	padding: 0;
-	color: #A2A2A2;
+	color: #a2a2a2;
 	color: rgba(0, 0, 0, 0.4);
 	list-style: none;
 }
@@ -126,11 +122,11 @@ ul.tags li,
 ul.tags li:first-of-type,
 ul.tags li:last-of-type {
 	display: inline;
-	padding: 0 6px 0 0;
-	cursor: pointer;
 	float: none;
-	border: none;
+	padding: 0 6px 0 0;
 	font-size: 90.91%;
+	border: none;
+	cursor: pointer;
 }
 
 ul.tags li:hover {
@@ -158,28 +154,28 @@ code,
 pre {
 	margin-bottom: 1.5rem;
 	color: #474742;
-	background: #f4f4f4;
-	white-space: normal;
 	font: inherit;
+	white-space: normal;
+	background: #f4f4f4;
 }
 
 pre code {
 	display: block;
+	overflow: auto;
+	padding: 0.5rem 0.7rem;
 	white-space: pre;
 	border: 0.1rem solid #d5d6d0;
-	padding: 0.5rem 0.7rem;
-	overflow: auto;
 }
 
 i code {
-	font-size-adjust: 0;
 	font-size: 1em;
+	font-size-adjust: 0;
 }
 
 i, var {
 	color: #a9a9a9;
-	text-shadow: none;
 	font-style: normal;
+	text-shadow: none;
 }
 
 /* Forms */
@@ -190,23 +186,23 @@ fieldset {
 }
 
 legend {
-	line-height: 1;
 	padding: 0;
 	color: rgba(0, 0, 0, 0.65);
 	font-weight: bold;
+	line-height: 1;
 }
 
 label {
 	display: block;
-	margin-bottom: 1.5rem;
 	position: relative;
+	margin-bottom: 1.5rem;
 }
 
 label > i,
 p.label > i {
 	position: absolute;
-	right: 0;
 	top: 0;
+	right: 0;
 }
 
 label.inline-help > i {
@@ -239,7 +235,7 @@ label.inline-help > i {
 }
 
 .selected, .selected a {
-	border-bottom-color: rgba(255, 255, 255, 0.2)
+	border-bottom-color: rgba(255, 255, 255, 0.2);
 }
 
 .selected a:hover {
@@ -247,8 +243,8 @@ label.inline-help > i {
 }
 
 .help {
-	color: #808080;
 	clear: both;
+	color: #808080;
 }
 
 .centered {
@@ -256,10 +252,10 @@ label.inline-help > i {
 }
 
 .accessible {
-	position:absolute;
-	left:-10000px;
-	top:auto;
-	width:1px;
-	height:1px;
-	overflow:hidden;
+	position: absolute;
+	top: auto;
+	left: -10000px;
+	overflow: hidden;
+	width: 1px;
+	height: 1px;
 }

@@ -2,41 +2,40 @@
  * Style definition for the Symphony backend
  */
 
-
 /*--------------------------------------------------------------------------
 	Structure
 --------------------------------------------------------------------------*/
 
 #wrapper {
-	background: #fff;
 	position: relative;
+	background: #fff;
 }
 
 /* Header */
 
 #header {
+	position: relative;
 	margin: 0 0 0;
 	color: #fff;
-	position: relative;
-	z-index: 9000;
 	border-bottom: 1px solid #e6e6e6;
+	z-index: 9000;
 }
 
 #header h1 {
-	background: #282828;
-	padding: 1.8rem;
-	text-shadow: -0.1rem 0.2rem 0.3rem #111;
-	font-weight: normal;
-	font-size: 1.5rem;
-	line-height: 1;
-	z-index: 10;
 	position: relative;
+	padding: 1.8rem;
+	font-size: 1.5rem;
+	font-weight: normal;
+	line-height: 1;
+	background: #282828;
+	text-shadow: -0.1rem 0.2rem 0.3rem #111;
+	z-index: 10;
 }
 
 #header h1 a, #session a {
-	border: none;
 	color: #e6e6e6;
 	color: rgba(255, 255, 255, 0.85);
+	border: none;
 }
 
 #header h1 a:hover, #header h1 a:focus,
@@ -52,10 +51,10 @@
 /* Session */
 
 #session {
+	position: relative;
+	float: right;
 	margin: -3.1rem 0 0;
 	padding: 0 0.9rem;
-	float: right;
-	position: relative;
 	z-index: 11;
 }
 
@@ -68,24 +67,24 @@
 
 #nav {
 	display: block;
+	float: left;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 3.1rem;
 	margin: 0;
 	padding: 0 0.8rem 0;
-	min-height: 3.1rem;
-	list-style: none;
-	background-image: linear-gradient(to bottom, #EFEFED 0px, #EFEFED 0.6rem, #D7D7D2 2.5rem, #D7D7D2 3rem, #BBBBB7 3rem);
-	background-size: 100% 3.1rem;
-	float: left;
 	font-size: 12px;
+	list-style: none;
+	border-bottom: 0.1rem solid #e0e0e0;
+	background-image: linear-gradient(to bottom, #efefed 0px, #efefed 0.6rem, #d7d7d2 2.5rem, #d7d7d2 3rem, #bbbbb7 3rem);
+	background-size: 100% 3.1rem;
 	z-index: 3;
-	width: 100%;
-	box-sizing: border-box;
-	border-bottom: 0.1rem solid #E0E0E0;
 }
 
 #nav ul {
+	float: left;
 	margin: 0;
 	padding: 0;
-	float: left;
 }
 
 #nav.wide ul.structure {
@@ -94,67 +93,67 @@
 
 #nav > ul > li {
 	display: block;
-	color: #555;
+	position: relative;
 	float: left;
 	height: 3.1rem;
-	line-height: 3.1rem;
 	padding: 0 1rem;
-	position: relative;
-	text-shadow: 0 0.1rem 0 rgba(255, 255, 255, 0.3);
-	border-left: 0.1rem solid transparent;
-	border-right: 0.1rem solid transparent;
-	z-index: 3;
-	cursor: default;
+	color: #555;
+	line-height: 3.1rem;
 	white-space: nowrap;
+	border-right: 0.1rem solid transparent;
+	border-left: 0.1rem solid transparent;
+	text-shadow: 0 0.1rem 0 rgba(255, 255, 255, 0.3);
+	cursor: default;
+	z-index: 3;
 }
 
 #nav > ul > li.active {
+	height: 3.1rem;
 	color: #fff;
 	background-color: #4d78b4;
 	background-image: linear-gradient(to bottom, #6f92c2 0%, #6f92c2 35%, #4d78b4 65%, #4d78b4 100%);
-	height: 3.1rem;
 	text-shadow: 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.2);
 	z-index: 2;
 }
 
 #nav > ul > li:hover, #nav > ul > li.active:hover {
+	height: 3.1rem;
 	color: #555;
 	background: #fff;
-	height: 3.1rem;
 	text-shadow: none;
 	z-index: 10000;
 }
 
 #nav > ul > li:hover:after {
-	content: "";
+	content: '';
+	position: absolute;
+	left: -0.1rem;
+	bottom: 0;
 	width: 100%;
 	max-width: 11.8rem;
 	height: 0.3re,;
-	background: #fff;
-	position: absolute;
-	bottom: 0;
-	left: -0.1rem;
 	padding: 0 0.1rem;
+	background: #fff;
 }
 
 /* Dropdown */
 
 #nav li ul {
-	background: #fff;
-	margin: 0;
-	padding: 0;
 	display: none;
-	box-shadow: 0 0.4rem 0.5rem rgba(0, 0, 0, 0.03), 0 7px 15px -5px rgba(0, 0, 0, 0.15);
-	list-style: none;
-	min-width: 12rem;
 	position: absolute;
 	top: 3.1rem;
 	left: -0.2rem;
-	text-shadow: none;
+	min-width: 12rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
 	border: 0.1rem solid rgba(187, 187, 187, 0.5);
 	border-top: none;
 	border-bottom-right-radius: 0.4rem;
 	border-bottom-left-radius: 0.4rem;
+	background: #fff;
+	box-shadow: 0 0.4rem 0.5rem rgba(0, 0, 0, 0.03), 0 7px 15px -5px rgba(0, 0, 0, 0.15);
+	text-shadow: none;
 }
 
 #nav.wide ul.structure li ul {
@@ -167,19 +166,19 @@
 }
 
 #nav ul a {
-	color: #555;
 	display: block;
-	font-weight: normal;
 	padding: 0 0.9rem;
+	color: #555;
+	font-weight: normal;
+	-webkit-font-smoothing: subpixel-antialiased !important;
 	border: 0.1rem solid transparent;
 	cursor: pointer;
-	-webkit-font-smoothing: subpixel-antialiased !important;
 }
 
 #nav ul a:hover {
 	color: #fff;
-	background: #888888;
 	border: 0.1rem solid #fff;
+	background: #888;
 	text-shadow: 0.1rem 0.1rem 0 #807d79;
 }
 
@@ -191,37 +190,37 @@
 /* Context */
 
 #context {
+	position: relative;
 	clear: both;
+	min-height: 3.8rem;
 	margin: 0;
 	padding: 2.5rem 1.8rem 0;
-	position: relative;
 	color: #000;
 	background-color: #f4f4f4;
-	min-height: 3.8rem;
 }
 
 #context:after {
-	content: " ";
+	content: ' ';
 	display: block;
-	visibility: hidden;
 	clear: both;
+	visibility: hidden;
 }
 
 #context h2 {
-	border-bottom: 0;
-	padding: 0;
 	float: left;
+	padding: 0;
 	font-size: 127.28%;
-	line-height: 1.35;
 	font-weight: normal;
+	line-height: 1.35;
+	border-bottom: 0;
 }
 
 #context .actions {
+	position: absolute;
+	top: 2.1rem;
+	right: 1.8rem;
 	margin: 0;
 	padding: 0;
-	position: absolute;
-	right: 1.8rem;
-	top: 2.1rem;
 }
 
 #context .actions li {
@@ -232,26 +231,26 @@
 
 #breadcrumbs nav,
 #breadcrumbs p {
+	float: left;
 	margin: 0;
 	padding: 0;
-	float: left;
 }
 
 #breadcrumbs:after {
 	content: ' ';
-	visibility: hidden;
 	display: block;
-	font-size: 0;
 	clear: both;
+	font-size: 0;
+	visibility: hidden;
 }
 
 #breadcrumbs a,
 #breadcrumbs span {
-	padding: 0;
-	font: 127.28%/1.35 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
-	color: #2E2E2E;
-	text-shadow: 0 0 0.1rem #fff;
 	float: left;
+	padding: 0;
+	color: #2e2e2e;
+	font: 127.28%/1.35 'Lucida Grande', Leelawadee, Tahoma, Verdana, sans-serif;
+	text-shadow: 0 0 0.1rem #fff;
 }
 
 #breadcrumbs a {
@@ -260,9 +259,9 @@
 
 #breadcrumbs a:hover,
 #breadcrumbs a:focus {
-	border-bottom-color: #a9a9a9;
-	color: #2E2E2E;
+	color: #2e2e2e;
 	color: rgba(0, 0, 0, 0.8);
+	border-bottom-color: #a9a9a9;
 }
 
 #breadcrumbs span {
@@ -276,13 +275,13 @@
 /* Contents */
 
 #contents {
-	clear: both;
 	position: relative;
-	background: #fff;
+	clear: both;
+	min-height: 100%;
 	padding: 0 0 5rem;
 	border-top: 0.1rem solid rgba(191, 191, 183, 0.65);
+	background: #fff;
 	box-shadow: 0 -0.2rem 0.3rem rgba(0, 0, 0, 0.05);
-	min-height: 100%;
 }
 
 #contents h2 {
@@ -294,7 +293,7 @@
 }
 
 #contents h2:after {
-	content: "";
+	content: '';
 	display: block;
 	clear: both;
 	height: 0;
@@ -311,15 +310,15 @@
 
 fieldset.settings {
 	position: relative;
-	padding: 1rem 0 1rem 27.5rem;
 	margin: 0 1.8rem 1rem;
+	padding: 1rem 0 1rem 27.5rem;
 	border-top: 0.1rem solid rgba(0, 0, 0, 0.1);
 }
 
 fieldset.settings > legend {
 	position: absolute;
-	text-indent: -27.5rem;
 	line-height: 1.5;
+	text-indent: -27.5rem;
 }
 
 fieldset.settings select {
@@ -346,8 +345,8 @@ fieldset.settings:first-of-type {
 
 fieldset.settings > legend + .help {
 	position: absolute;
-	margin: 1.75rem 0 0 -27.5rem;
 	width: 22rem;
+	margin: 1.75rem 0 0 -27.5rem;
 }
 
 fieldset.settings > legend + .help p {
@@ -368,22 +367,22 @@ fieldset.settings fieldset legend {
 	display: inline;
 	margin: 0;
 	padding: 0;
+	color: #665;
 	font-weight: normal;
 	line-height: 1.5;
 	text-indent: 0;
 	background: #fff;
-	color: #665;
 }
 
 fieldset.settings.highlight {
-	background: #fff9a2;
-	margin-left: 0;
 	margin-right: 0;
 	margin-bottom: 0;
+	margin-left: 0;
 	padding-right: 1.8rem;
-	padding-left: 29.3rem;
 	padding-bottom: 2rem;
+	padding-left: 29.3rem;
 	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.1);
+	background: #fff9a2;
 	-webkit-transition: background 0.25s ease-in;
 	transition: background 0.25s ease-in;
 }
@@ -409,16 +408,15 @@ fieldset.settings.highlight {
 
 	fieldset.settings > legend {
 		position: relative;
-		text-indent: 0;
 		padding: 0 1rem 0 0;
+		text-indent: 0;
 	}
 
 	fieldset.settings > legend + .help {
 		position: relative;
-		margin: 0 0 1.5rem;
 		width: auto;
+		margin: 0 0 1.5rem;
 	}
-
 }
 
 /* Condensed, pickable settings, e. g. email gateways */
@@ -432,14 +430,16 @@ fieldset.settings.highlight {
 }
 
 .js-active .settings.pickable.condensed {
-	border-bottom: none;
 	margin-bottom: 0;
 	padding-bottom: 0;
+	border-bottom: none;
 }
+
 .js-active .settings.pickable.condensed {
-	border-top: 0;
 	padding-top: 0;
+	border-top: 0;
 }
+
 .js-active .settings.pickable.condensed legend {
 	display: none;
 }
@@ -449,14 +449,14 @@ fieldset.settings.highlight {
 --------------------------------------------------------------------------*/
 
 #password {
-	border: none;
-	padding: 0;
 	margin: 0 0 0 -1.5rem;
+	padding: 0;
+	border: none;
 }
 
 #password legend {
-	padding: 0 0 0 1.5rem;
 	margin: 0 !important;
+	padding: 0 0 0 1.5rem;
 	color: #222;
 	line-height: 1.5;
 	text-shadow: none;
@@ -471,9 +471,9 @@ fieldset.settings.highlight {
 div.password {
 	position: absolute;
 	left: 0;
+	box-sizing: border-box;
 	width: 100%;
 	padding: 0 0 0 27.5rem;
-	box-sizing: border-box;
 	z-index: 1000;
 }
 
@@ -482,7 +482,6 @@ div.password {
 	div.password {
 		padding: 0;
 	}
-
 }
 
 /*--------------------------------------------------------------------------
@@ -502,9 +501,9 @@ div.password {
 
 .page-index .actions,
 .index .actions {
-	text-align: right;
-	padding: 3rem 1.8rem 0;
 	height: 3.8rem;
+	padding: 3rem 1.8rem 0;
+	text-align: right;
 }
 
 .page-index .actions + ul.page,
@@ -515,9 +514,9 @@ div.password {
 /* Pagination */
 
 ul.page {
+	height: 3.6rem;
 	margin: -6.1rem 0 0;
 	padding: 2.3rem 5rem 0 1.9rem;
-	height: 3.6rem;
 	color: #9e9e9e;
 	cursor: default;
 }
@@ -535,10 +534,10 @@ ul.page a {
 
 ul.page form {
 	display: inline-block;
-	border: 0.1rem solid transparent;
-	padding: 0;
-	min-height: 2rem;
 	box-sizing: border-box;
+	min-height: 2rem;
+	padding: 0;
+	border: 0.1rem solid transparent;
 	border-radius: 0.4rem;
 }
 
@@ -553,8 +552,8 @@ ul.page form.active {
 }
 
 ul.page form.invalid {
-	background-color: #fff9a2;
 	border-color: rgba(0, 0, 0, 0.4);
+	background-color: #fff9a2;
 	box-shadow: 0 0 0.7rem rgba(0, 0, 0, 0.1);
 }
 
@@ -563,17 +562,17 @@ ul.page form.invalid input {
 }
 
 ul.page input {
-	text-align: center !important;
 	height: 20px;
-	border: none;
-	outline: none;
-	line-height: 1;
-	color: #666;
-	border-radius: 0.4rem;
-	padding: 0;
-	box-shadow: none;
-	font-size: 1rem;
 	margin: 0;
+	padding: 0;
+	color: #666;
+	font-size: 1rem;
+	line-height: 1;
+	text-align: center !important;
+	border: none;
+	border-radius: 0.4rem;
+	box-shadow: none;
+	outline: none;
 }
 
 ul.page form:hover input {
@@ -600,9 +599,9 @@ ul.page form span {
 --------------------------------------------------------------------------*/
 
 .field {
+	box-sizing: border-box;
 	min-height: 4.7rem;
 	margin-bottom: 1.5rem;
-	box-sizing: border-box;
 }
 
 /* Checkboxes */
@@ -627,18 +626,19 @@ div.field-checkbox + .field:not(.field-checkbox) {
 }
 
 .file span.frame {
-	text-align: left;
 	margin-top: 0.1rem;
+	text-align: left;
 }
 
 .file span.frame span {
 	float: left;
-	max-width: 50%;
 	overflow: hidden;
+	max-width: 50%;
 }
 
 .file a {
 	word-wrap: break-word;
+
 	overflow-wrap: break-word;
 }
 
@@ -650,8 +650,8 @@ div.field-checkbox + .field:not(.field-checkbox) {
 .file em {
 	float: right;
 	color: #998;
-	border-bottom: 0.1rem solid rgba(153, 153, 136, 0.3);
 	font-style: normal;
+	border-bottom: 0.1rem solid rgba(153, 153, 136, 0.3);
 	cursor: pointer;
 }
 
@@ -665,9 +665,9 @@ div.field-checkbox + .field:not(.field-checkbox) {
 .page-single #contents .actions,
 .single #contents .actions {
 	clear: both;
-	border-top: 0.1rem solid rgba(0, 0, 0, 0.1);
-	padding: 1.75rem 0 0;
 	margin: 0 1.8rem;
+	padding: 1.75rem 0 0;
+	border-top: 0.1rem solid rgba(0, 0, 0, 0.1);
 }
 
 .page-single #contents .columns .actions,
@@ -693,12 +693,12 @@ div.field-checkbox + .field:not(.field-checkbox) {
 
 #utilities > li {
 	min-height: 3rem;
-	line-height: 3rem;
 	padding: 0 1rem;
+	line-height: 3rem;
 }
 
 #utilities > li:nth-child(2n) {
-	background: #FFF;
+	background: #fff;
 }
 
 #utilities > li.selected {
@@ -706,9 +706,9 @@ div.field-checkbox + .field:not(.field-checkbox) {
 }
 
 #version {
-	color: #9E9E9E;
-	margin: 3.3rem 0 0 1.9rem;
 	float: left;
+	margin: 3.3rem 0 0 1.9rem;
+	color: #9e9e9e;
 }
 
 .actions #version {

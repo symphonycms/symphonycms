@@ -7,41 +7,41 @@
 
 .frame {
 	position: relative;
+	box-sizing: border-box;
 	margin: 0 0 4.5rem;
 	padding: 0;
 	list-style: none;
-	background: #f5f5f5;
-	border-radius: 0.4rem;
-	box-sizing: border-box;
 	border: 0.1rem solid #c5c5c5;
+	border-radius: 0.4rem;
+	background: #f5f5f5;
 }
 
 .frame h1 {
-	background: #282828;
-	color: #fff;
 	margin: -1.1rem -1.1rem 1.5rem;
 	padding: 1.8rem 1.1rem;
-	border-radius: 0.4rem 0.4rem 0 0;
-	line-height: 1.5;
+	color: #fff;
 	font-size: 1.5rem;
 	font-weight: normal;
+	line-height: 1.5;
+	border-radius: 0.4rem 0.4rem 0 0;
+	background: #282828;
 }
 
 .frame.empty {
-	border: 0.1rem dashed #b8b8b8;
 	height: 3rem;
+	border: 0.1rem dashed #b8b8b8;
 }
 
 .frame::after {
-	content: "";
-	clear: both;
+	content: '';
 	display: block;
+	clear: both;
 }
 
 .frame ol,
 .frame ul {
-	padding: 0;
 	margin: 0;
+	padding: 0;
 }
 
 .frame .tags {
@@ -53,8 +53,8 @@
 
 .frame-header {
 	position: relative;
-	color: #3d3d3d;
 	padding: 0.8rem 1rem 0.7rem;
+	color: #3d3d3d;
 	border-top: 0.1rem solid #d0d0d0;
 	border-bottom: 0.1rem solid #dcdcdc;
 }
@@ -74,35 +74,35 @@
 
 .frame-header span {
 	margin: 0 0 0 1rem;
-	font-weight: normal;
 	color: #a1a1a1;
+	font-weight: normal;
 }
 
 .main::before,
 .sidebar::before {
-	content: "";
+	content: '';
 	display: block;
+	float: left;
 	width: 0.1rem;
 	height: 1rem;
-	float: left;
 	margin: 0.3rem 0.7rem 0 0;
-	border-left: 0.6rem solid #b8b8b8;
 	border-right: 0.3rem solid #dcdcdc;
+	border-left: 0.6rem solid #b8b8b8;
 }
 
 .sidebar::before {
-	border-left: 0.6rem solid #dcdcdc;
 	border-right: 0.3rem solid #b8b8b8;
+	border-left: 0.6rem solid #dcdcdc;
 }
 
 .highlight .main::before {
-	border-left: 0.6rem solid #747474;
 	border-right: 0.3rem solid #b9b9b9;
+	border-left: 0.6rem solid #747474;
 }
 
 .highlight .sidebar::before {
-	border-left: 0.6rem solid #b9b9b9;
 	border-right: 0.3rem solid #747474;
+	border-left: 0.6rem solid #b9b9b9;
 }
 
 /* Content: light scheme */
@@ -129,8 +129,8 @@
 /* Content: dark scheme */
 
 .frame.dark .content {
-	background: #323230;
 	color: #fff;
+	background: #323230;
 }
 
 .frame.dark legend {
@@ -163,9 +163,9 @@ fieldset.frame,
 --------------------------------------------------------------------------*/
 
 #login .frame {
+	overflow: visible;
 	width: 28rem;
 	margin: 10rem auto;
-	overflow: visible;
 	padding: 1rem 1rem 1.5rem;
 	text-align: left;
 }
@@ -178,9 +178,9 @@ fieldset.frame,
 	display: none;
 }
 
-#login .action-link  {
-	margin-top: 0.3rem;
+#login .action-link {
 	float: left;
+	margin-top: 0.3rem;
 }
 
 #login button {
@@ -196,10 +196,10 @@ fieldset.frame,
 	position: absolute;
 	top: 0.8rem;
 	right: 1rem;
-	color: #aeaeae;
-	border-bottom: none;
-	font-weight: normal;
 	margin: 0;
+	color: #aeaeae;
+	font-weight: normal;
+	border-bottom: none;
 }
 
 .frame .destructor:hover,
@@ -210,21 +210,21 @@ fieldset.frame,
 
 .frame .disabled {
 	color: #adadad;
-	cursor: not-allowed;
 	opacity: 0.4;
+	cursor: not-allowed;
 }
 
 /* Applicators */
 
 .frame .apply {
+	position: absolute;
+	right: 0;
+	bottom: -3.5rem;
 	clear: left;
-	cursor: default;
 	margin: 1rem 0 0;
 	text-align: right;
-	position: absolute;
-	bottom: -3.5rem;
-	right: 0;
 	border-color: rgba(0, 0, 0, 0.25);
+	cursor: default;
 }
 
 .frame .apply:hover {
@@ -232,8 +232,8 @@ fieldset.frame,
 }
 
 .frame .actions {
-	margin: 0 0 0.7rem;
 	height: 2rem;
+	margin: 0 0 0.7rem;
 }
 
 .frame .actions input {
@@ -255,8 +255,8 @@ fieldset.frame,
 
 .frame .selected,
 .frame .ordering {
-	background-color: #668abe;
 	position: relative;
+	background-color: #668abe;
 }
 
 .frame .selected::before,
@@ -266,11 +266,11 @@ fieldset.frame,
 	content: '';
 	display: block;
 	position: absolute;
-	width: 0.1rem;
-	height: 100%;
-	background: #4D78B4;
 	top: 0;
 	left: -0.1rem;
+	width: 0.1rem;
+	height: 100%;
+	background: #4d78b4;
 	z-index: 1000;
 }
 
@@ -281,20 +281,20 @@ fieldset.frame,
 }
 
 .frame .ordering + .instance .frame-header {
-	border-top: 0.1rem solid #4D78B4;
+	border-top: 0.1rem solid #4d78b4;
 }
 
 .ordering .frame-header {
 	color: #fff;
-	background: #5c83ba;
-	border-top: 0.1rem solid #4D78B4;
+	border-top: 0.1rem solid #4d78b4;
 	border-bottom-color: #7093c3;
-	cursor: move;
+	background: #5c83ba;
 	transition: none;
+	cursor: move;
 }
 
 .frame:not(.collapsible) .ordering .frame-header {
-	box-shadow: 0px 0.1rem 0.4rem #7093c3;
+	box-shadow: 0 0.1rem 0.4rem #7093c3;
 }
 
 .frame .ordering .frame-header span,
@@ -306,14 +306,14 @@ fieldset.frame,
 
 .frame .ordering .content,
 .frame .ordering .content legend {
-	background: #668abe;
 	color: #fff;
+	background: #668abe;
 }
 
 .frame.dark .ordering .content,
 .frame.dark .ordering .content legend {
-	background: #4D78B4;
 	color: #fff;
+	background: #4d78b4;
 }
 
 .frame .ordering .content input,
@@ -326,13 +326,13 @@ fieldset.frame,
 }
 
 .frame .ordering .main::before {
-	border-left: 0.6rem solid #cedaea;
 	border-right: 0.3rem solid #7c9bc7;
+	border-left: 0.6rem solid #cedaea;
 }
 
 .frame .ordering .sidebar::before {
-	border-left: 0.6rem solid #7c9bc7;
 	border-right: 0.3rem solid #cedaea;
+	border-left: 0.6rem solid #7c9bc7;
 }
 
 .frame .highlight {
@@ -368,13 +368,13 @@ fieldset.frame,
 }
 
 .collapsible legend {
-	background: #e8e8e8;
 	padding-right: 0.5rem;
+	background: #e8e8e8;
 }
 
 .frame .js-animate {
-	transition: max-height 0.25s linear;
 	overflow: hidden;
+	transition: max-height 0.25s linear;
 }
 
 .collapsed.js-animate,
@@ -400,8 +400,8 @@ fieldset.frame,
 -----------------------------------------------------------------------------*/
 
 .duplicator ol {
-	border-radius: 0.4rem;
 	margin-top: -0.1rem;
+	border-radius: 0.4rem;
 }
 
 .duplicator .template {
@@ -413,14 +413,14 @@ fieldset.frame,
 -----------------------------------------------------------------------------*/
 
 .invalid {
-	background: #eb6347;
-	border: 0.1rem solid #c31;
-	padding: 1rem;
-	margin: 0 0 1.5rem;
-	box-sizing: border-box;
 	display: block;
+	box-sizing: border-box;
+	margin: 0 0 1.5rem;
+	padding: 1rem;
 	color: #fff;
+	border: 0.1rem solid #c31;
 	border-radius: 0.4rem;
+	background: #eb6347;
 }
 
 .invalid p {
@@ -457,17 +457,17 @@ fieldset.frame,
 
 .conflict.collapsed .frame-header span,
 .conflict.collapsed .destructor {
-	color: #BD7053;
+	color: #bd7053;
 }
 
 .conflict.collapsed .frame-header::before {
-	border-left: 0.6rem solid #BD7053;
-	border-right: 0.3rem solid #E7A973;
+	border-right: 0.3rem solid #e7a973;
+	border-left: 0.6rem solid #bd7053;
 }
 
 .conflict.collapsed .frame-header.sidebar::before {
-	border-left: 0.6rem solid #E7A973;
-	border-right: 0.3rem solid #BD7053;
+	border-right: 0.3rem solid #bd7053;
+	border-left: 0.6rem solid #e7a973;
 }
 
 /*--------------------------------------------------------------------------
@@ -480,14 +480,14 @@ fieldset.frame,
 
 #error .frame {
 	display: block;
+	overflow: hidden;
 	min-width: 50rem;
 	max-width: 80rem;
 	margin: 0 auto;
-	overflow: hidden;
 }
 
 #error .frame::after {
-	content: "";
+	content: '';
 	display: block;
 	clear: both;
 }
@@ -498,13 +498,13 @@ fieldset.frame,
 
 #error .frame h1 em {
 	color: rgba(255, 255, 255, 0.5);
-	font-style: normal;
 	font-family: inherit;
+	font-style: normal;
 }
 
 #error p {
-	padding: 1rem;
 	margin: 0;
+	padding: 1rem;
 }
 
 #error .frame pre {
@@ -513,9 +513,9 @@ fieldset.frame,
 
 #error .frame pre,
 #error .frame ul ul {
-	background: #fefefe;
-	padding: 1rem 0;
 	overflow: auto;
+	padding: 1rem 0;
+	background: #fefefe;
 }
 
 #error .content ul {
@@ -523,10 +523,10 @@ fieldset.frame,
 }
 
 #error .frame ul ul li {
-	border-top: 0.1rem solid rgba(0, 0, 0, 0.05);
-	line-height: 1.8;
 	padding: 0 1rem;
+	line-height: 1.8;
 	white-space: nowrap;
+	border-top: 0.1rem solid rgba(0, 0, 0, 0.05);
 }
 
 #error .frame ul ul li.full {
@@ -538,16 +538,16 @@ fieldset.frame,
 }
 
 #error .frame .error {
-	background-color: #fff9a2;
 	color: #bd7053;
+	background-color: #fff9a2;
 }
 #error .frame .error b {
-	background: rgba(167, 31, 45, 0.7);
-	color: #fff;
 	display: inline-block;
-	line-height: 1.8;
 	margin: -0.2rem 0 -0.1rem;
 	padding: 0.2rem 0 0.1rem;
+	color: #fff;
+	line-height: 1.8;
+	background: rgba(167, 31, 45, 0.7);
 }
 
 #error .frame code a {
@@ -556,14 +556,14 @@ fieldset.frame,
 
 #error .frame strong,
 #error .frame em {
-	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
 	color: rgba(0, 0, 0, 0.5);
+	font: 100%/1.5 Monaco, Consolas, 'Andale Mono', monospace;
 	font-style: normal;
 }
 
 #error .frame .content {
-	background: #fefefe;
 	padding-bottom: 0;
+	background: #fefefe;
 }
 
 #error .frame .content:last-of-type ul {

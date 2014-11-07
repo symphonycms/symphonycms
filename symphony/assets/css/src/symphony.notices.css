@@ -11,27 +11,27 @@
 
 .notifier {
 	overflow: hidden;
-	background: #383838;
 	border-bottom: 0.1rem solid #575757;
+	background: #383838;
 }
 
 .notifier nav {
+	display: block;
 	position: absolute;
 	top: 0;
 	right: 1.8rem;
-	display: block;
 	padding: 0.4rem 0;
 	cursor: pointer;
 }
 
 .notifier nav:before {
-	content: "\2193";
+	content: '\2193';
 	padding-right: 0.3rem;
 	opacity: 0.2;
 }
 
 .notifier .notice:last-child nav:before {
-	content: "\2191";
+	content: '\2191';
 }
 
 .notifier nav:hover:before {
@@ -40,9 +40,9 @@
 
 @keyframes success {
 	to {
-		background-color: #383838;
-		border-color: #575757;
 		color: #9b9b9b;
+		border-color: #575757;
+		background-color: #383838;
 	}
 }
 
@@ -59,19 +59,19 @@
 
 .notice {
 	position: relative;
+	box-sizing: border-box;
+	width: 100%;
 	margin: 0;
 	padding: 0.4rem 9rem 0.3rem 1.8rem;
-	border-bottom: 0.1rem solid #575757;
 	color: #9b9b9b;
+	border-bottom: 0.1rem solid #575757;
 	background: #383838;
-	width: 100%;
-	box-sizing: border-box;
 }
 
 .notice a {
+	margin: 0 0.3rem;
 	color: #bdc3c3;
 	border-bottom: 0.1rem solid rgba(189, 195, 195, 0.2);
-	margin: 0 0.3rem;
 }
 
 .notice a:hover,
@@ -84,9 +84,9 @@
 /* Success messages */
 
 .notice.success {
-	background-color: #bfdc96;
-	border-color: #90c349;
 	color: #6d7841;
+	border-color: #90c349;
+	background-color: #bfdc96;
 	animation: success 0.5s ease-out 10s 1 forwards;
 }
 
@@ -104,9 +104,9 @@
 /* Errors messages */
 
 .notice.error {
-	background-color: #fff9a2;
-	border-color: #e7a973;
 	color: #bd7053;
+	border-color: #e7a973;
+	background-color: #fff9a2;
 }
 
 .notice.error a {
