@@ -32,7 +32,10 @@
 				showAdjacentMonths: true,
 				adjacentDaysChangeMonth: true,
 				forceSixRows: true,
-				render: render,				
+				render: render,
+				clickEvents: {
+					click: select
+				}			
 			});	
 		};
 
@@ -78,6 +81,18 @@
 			});
 
 			return sheet;
+		};
+
+		var select = function(day) {
+			var date = day.date;
+
+			date.subtract(date.zone(), 'minutes');
+
+			datetime.set('year', date.year());
+			datetime.set('month', date.month());
+			datetime.set('date', date.date());
+
+			storage.val(datetime.format(format));
 		};
 
 		// API
