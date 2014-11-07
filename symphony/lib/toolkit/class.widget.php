@@ -871,8 +871,8 @@ class Widget
         $date = DateTimeObj::convertDateToMoment(DateTimeObj::getSetting('date_format'));
         if($date) {
             if ($time === true) {
-                $separator = DateTimeObj::convertDateToMoment(DateTimeObj::getSetting('datetime_separator'));
-                $time = DateTimeObj::convertDateToMoment(DateTimeObj::getSetting('time_format'));
+                $separator = DateTimeObj::getSetting('datetime_separator');
+                $time = DateTimeObj::convertTimeToMoment(DateTimeObj::getSetting('time_format'));
         
                 $calendar->setAttribute('data-calendar', 'datetime');
                 $calendar->setAttribute('data-format', $date . $separator . $time);

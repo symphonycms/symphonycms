@@ -20,6 +20,7 @@
 			create();
 
 			// Switch sheets
+			calendar.on('click.calendar', '.switch', switchSheet);
 			calendar.on('click.calendar', '.months li', switchMonth);
 			calendar.on('click.calendar', '.years li', switchYear);
 		};
@@ -56,7 +57,7 @@
 
 		var renderTitles = function() {
 			template.find('thead td').each(function(index) {
-				this.textContent = moment().day(index).format('dd');
+				this.textContent = moment().day(index).format('dd').substr(0, 1);
 			});
 		};
 
@@ -103,6 +104,26 @@
 
 			calendar.find('.active').removeClass('active');
 			day.element.classList.add('active');
+		};
+
+		var switchSheet = function(event) {
+			var selector;
+			
+			event.stopPropagation();
+			event.preventDefault();
+
+			selector = calendar.find('.switch');
+			selector.addClass('select');
+
+			// Close selector
+			Symphony.Elements.body.on('click.calendar', function(event) {
+				var target = $(event.target);
+
+				if(!target.parents('.switch').length) {
+					selector.removeClass('select');
+					Symphony.Elements.body.off('click.calendar');
+				}
+			});
 		};
 
 		var switchMonth = function(event) {
