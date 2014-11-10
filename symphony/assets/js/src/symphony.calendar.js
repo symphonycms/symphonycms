@@ -10,19 +10,27 @@
 			calendar = context.find('.calendar');
 			storage = context.find('input');
 			format = calendar.attr('data-format');
-			datetime = moment.utc(storage.val(), format);
 
 			// Set locale
 			moment.locale(Symphony.Elements.html.attr('lang'));
 
 			// Create calendar
+			storeDate();
 			prepareTemplate();
 			create();
 
 			// Switch sheets
+			calendar.on('click.calendar', 'a', function(event) {
+				event.stopPropagation();
+				event.preventDefault();
+			});
 			calendar.on('click.calendar', '.switch', switchSheet);
 			calendar.on('click.calendar', '.months li', switchMonth);
 			calendar.on('click.calendar', '.years li', switchYear);
+
+			// Handle current date
+			storage.on('focus.calendar', focusDate);
+			storage.on('change.calendar', updateDate);
 		};
 
 		var prepareTemplate = function() {
@@ -132,6 +140,20 @@
 
 		var switchYear = function(event) {
 			clndr.setYear(event.target.textContent);
+		};
+
+		var storeDate = function() {
+			datetime = moment.utc(storage.val(), format);
+		};
+
+		var focusDate = function() {
+			clndr.setMonth(datetime.get('month'));
+			clndr.setYear(datetime.get('year'));
+		};
+
+		var updateDate = function() {
+			storeDate();
+			focusDate();
 		};
 
 		// API

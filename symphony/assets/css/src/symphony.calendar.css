@@ -39,7 +39,7 @@
 
 .calendar .switch {
 	position: absolute;
-	top: 0.7rem;
+	top: 0.8rem;
 	left: 50%;
 	float: left;
 	overflow: hidden;
@@ -54,7 +54,7 @@
 }
 
 .calendar .select {
-	top: calc(-2.2rem * 6);
+	top: calc(-2.2rem * 6 + 0.3rem);
 	overflow: visible;
 	height: auto;
 	background: #fcfcfc;
@@ -68,7 +68,7 @@
 	float: left;
 	box-sizing: border-box;
 	width: 8rem;
-	margin: calc(-2.2rem * 6 - 0.2rem) 0 0;
+	margin: calc(-2.2rem * 6 - 0.5rem) 0 0;
 	padding: 0.25rem 0.15rem 0.25rem 0.25rem;
 	font-size: 1.2rem;
 	border: none;
@@ -195,7 +195,7 @@
 	box-sizing: boder-box;
 	width: 2.5rem;
 	height: 2.5rem;
-	line-height: 2.5rem;
+	line-height: 2.3rem;
 	border: 0.1rem solid transparent;
 	border-radius: 50%;
 	cursor: pointer;
