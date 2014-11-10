@@ -102,11 +102,11 @@ class contentPublish extends AdministrationPage
     public function createFilteringDuplicator($section, $section_id)
     {
         $filters = $_GET['filter'];
- 
+
         $div = new XMLElement('div');
         $div->setAttribute('class', 'frame filters-duplicator');
         $div->setAttribute('data-interactive', 'data-interactive');
- 
+
         $ol = new XMLElement('ol');
         $ol->setAttribute('data-add', __('Add filter'));
         $ol->setAttribute('data-remove', __('Clear filter'));
