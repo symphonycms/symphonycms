@@ -80,8 +80,9 @@ class contentPublish extends AdministrationPage
         $section_id = SectionManager::fetchIDFromHandle($handle);
         $section = SectionManager::fetch($section_id);
         $filter = $section->get('filter');
+        $count = EntryManager::fetchCount($section_id);
 
-        if (isset($filter) && $filter !== 'no') {
+        if ($filter !== 'no' && $count > 1) {
             // Get filtering fields
             $this->getFilteringFields($section);
 
