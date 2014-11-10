@@ -1,6 +1,13 @@
+/**
+ * @package assets
+ */
+
 (function($, Symphony, moment) {
 	'use strict';
 
+	/**
+	 * Symphony calendar interface.
+	 */
 	Symphony.Interface.Calendar = function() {
 		var template = '<div class="calendar"><nav><a class="clndr-previous-button">previous</a><div class="switch"><ul class="months"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul><ul class="years"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul></div><a class="clndr-next-button">next</a></nav><table><thead><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr></thead><tbody><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr></tbody></table></div>',
 			context, calendar, storage, format, datetime, clndr;
@@ -33,12 +40,18 @@
 			storage.on('change.calendar', updateDate);
 		};
 
+		/**
+		 * Load calendar template and add week day titles.
+		 */
 		var prepareTemplate = function() {
 			template = $(template);
 			
 			renderTitles();
 		};
 
+		/**
+		 * Create CLNDR instance.
+		 */
 		var create = function() {
 			clndr = calendar.clndr({
 				startWithMonth: datetime,
@@ -52,6 +65,12 @@
 			});	
 		};
 
+		/**
+		 * Render calendar sheet.
+		 *
+		 * @param object data
+		 *  The CLDNR data object
+		 */
 		var render = function(data) {
 			var sheet = template.clone(),
 				month = moment().month(data.month).get('month');
@@ -63,12 +82,25 @@
 			return sheet.html();
 		};
 
+		/**
+		 * Render week day titles.
+		 */
 		var renderTitles = function() {
 			template.find('thead td').each(function(index) {
 				this.textContent = moment().day(index).format('dd').substr(0, 1);
 			});
 		};
 
+		/**
+		 * Render month selector.
+		 *
+		 * @param jQuery sheet
+		 *  The calendar sheet jQuery object
+		 * @param object data
+		 *  The CLNDR data object
+		 * @param integer month
+		 *  The current month
+		 */
 		var renderMonths = function(sheet, data, month) {
 			sheet.find('.months li').each(function(index) {
 				this.textContent = moment().month(month - 6 + index).format('MMMM');
@@ -77,6 +109,14 @@
 			return sheet;
 		};
 
+		/**
+		 * Render year selector.
+		 *
+		 * @param jQuery sheet
+		 *  The calendar sheet jQuery object
+		 * @param object data
+		 *  The CLNDR data object
+		 */
 		var renderYears = function(sheet, data) {
 			sheet.find('.years li').each(function(index) {
 				this.textContent = data.year - 6 + index;
@@ -85,6 +125,14 @@
 			return sheet;
 		};
 
+		/**
+		 * Render day in calendar sheet.
+		 *
+		 * @param jQuery sheet
+		 *  The calendar sheet jQuery object
+		 * @param object data
+		 *  The CLNDR data object
+		 */
 		var renderDays = function(sheet, data) {
 			sheet.find('tbody td span').each(function(index) {
 				var date = data.days[index];
@@ -100,6 +148,12 @@
 			return sheet;
 		};
 
+		/**
+		 * Select day in calendar.
+		 *
+		 * @param object day
+		 *  The CLNDR day object
+		 */
 		var select = function(day) {
 			var date = day.date;
 
@@ -114,6 +168,12 @@
 			day.element.classList.add('active');
 		};
 
+		/**
+		 * Switch sheets.
+		 *
+		 * @param Event event
+		 *  The click event
+		 */
 		var switchSheet = function(event) {
 			var selector;
 			
@@ -134,23 +194,44 @@
 			});
 		};
 
+		/**
+		 * Switch months.
+		 *
+		 * @param Event event
+		 *  The click event
+		 */
 		var switchMonth = function(event) {
 			clndr.setMonth(event.target.textContent);
 		};
 
+		/**
+		 * Switch year.
+		 *
+		 * @param Event event
+		 *  The click event
+		 */
 		var switchYear = function(event) {
 			clndr.setYear(event.target.textContent);
 		};
 
+		/**
+		 * Store current date.
+		 */
 		var storeDate = function() {
 			datetime = moment.utc(storage.val(), format);
 		};
 
+		/**
+		 * Focus current date.
+		 */
 		var focusDate = function() {
 			clndr.setMonth(datetime.get('month'));
 			clndr.setYear(datetime.get('year'));
 		};
 
+		/**
+		 * Set current date to active in calendar view.
+		 */
 		var updateDate = function() {
 			storeDate();
 			focusDate();
