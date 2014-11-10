@@ -6,48 +6,48 @@
 			comparisonSelectize, searchSelectize, fieldsSelectize;
 
 		var init = function(context) {
-			filter = $(context);
-			fields = filter.find('.filtering-fields');
-			comparison = filter.find('.filtering-comparison');
-			search = filter.find('.filtering-search');
-			rows = Symphony.Elements.context.find('.filtering-row:not(.template)');
-			maxRows = Symphony.Elements.context.find('.filtering-row.template .filtering-fields option').length;
+			// filter = $(context);
+			// fields = filter.find('.filtering-fields');
+			// comparison = filter.find('.filtering-comparison');
+			// search = filter.find('.filtering-search');
+			// rows = Symphony.Elements.context.find('.filtering-row:not(.template)');
+			// maxRows = Symphony.Elements.context.find('.filtering-row.template .filtering-fields option').length;
 
-			// Setup interface
-			fields.selectize().on('change', switchField);
-			comparison.selectize().on('change', switchComparison);
-			search.addClass('init').selectize({
-				create: true,
-				maxItems: 1,
-				sortField: 'text',
-				render: {
-					item: itemPreview,
-					option_create: searchPreview
-				},
-				onItemAdd: searchEntries
-			});
+			// // Setup interface
+			// fields.selectize().on('change', switchField);
+			// comparison.selectize().on('change', switchComparison);
+			// search.addClass('init').selectize({
+			// 	create: true,
+			// 	maxItems: 1,
+			// 	sortField: 'text',
+			// 	render: {
+			// 		item: itemPreview,
+			// 		option_create: searchPreview
+			// 	},
+			// 	onItemAdd: searchEntries
+			// });
 
-			// Store Selectize instances
-			fieldsSelectize = fields[0].selectize;
-			comparisonSelectize = comparison[0].selectize;
-			searchSelectize = search[0].selectize;
+			// // Store Selectize instances
+			// fieldsSelectize = fields[0].selectize;
+			// comparisonSelectize = comparison[0].selectize;
+			// searchSelectize = search[0].selectize;
 
-			// Reduce field options
-			rows.not(filter).each(reduceFields);
+			// // Reduce field options
+			// rows.not(filter).each(reduceFields);
 
-			// Remove add button
-			if(rows.length >= maxRows) {
-				Symphony.Elements.context.find('.filtering-add').hide();
-			}
+			// // Remove add button
+			// if(rows.length >= maxRows) {
+			// 	Symphony.Elements.context.find('.filtering-add').hide();
+			// }
 
-			// Highlight filtering
-			// highlightFiltering();
+			// // Highlight filtering
+			// // highlightFiltering();
 
-			// Clear search
-			filter.find('.destructor').on('click', clear).on('mouseover mouseout', prepareClear);
+			// // Clear search
+			// filter.find('.destructor').on('click', clear).on('mouseover mouseout', prepareClear);
 
-			// Finish initialisation
-			search.removeClass('init');
+			// // Finish initialisation
+			// search.removeClass('init');
 		};
 
 		var reduceFields = function() {

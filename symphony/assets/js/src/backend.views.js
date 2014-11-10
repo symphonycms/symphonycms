@@ -13,11 +13,11 @@
 Symphony.View.add('/:context*:', function() {
 
 	// Initialise core plugins
-	Symphony.Elements.contents.find('.filters-duplicator[data-interactive]').symphonyDuplicator();
-	Symphony.Elements.contents.find('.tags[data-interactive]').symphonyTags();
 	Symphony.Elements.contents.find('select.picker[data-interactive]').symphonyPickable();
 	Symphony.Elements.contents.find('ul.orderable[data-interactive]').symphonyOrderable();
 	Symphony.Elements.contents.find('table.selectable[data-interactive]').symphonySelectable();
+	Symphony.Elements.wrapper.find('.filters-duplicator[data-interactive]').symphonyDuplicator();
+	Symphony.Elements.wrapper.find('.tags[data-interactive]').symphonyTags();
 	Symphony.Elements.wrapper.find('div.drawer').symphonyDrawer();
 	Symphony.Elements.header.symphonyNotify();
 
@@ -194,28 +194,6 @@ Symphony.View.add('/:context*:', function() {
 });
 
 Symphony.View.add('/publish/:context*:', function() {
-	var filters = Symphony.Elements.context.find('.filtering');
-
-	// Add filters
-	$('<a />', {
-		class: 'button filtering-add',
-		text: Symphony.Language.get('Add filter'),
-		on: {
-			click: function() {
-				var filtering = new Symphony.Extensions.Filtering(),
-					template = filters.find('.template').clone().removeClass('template');
-
-				template.insertBefore(this).css('display', 'block');
-				filtering.init(template);
-			}
-		}
-	}).appendTo(filters);
-
-	// Filtering
-	filters.find('.filtering-row:not(.template)').each(function(index, filter) {
-		var filtering = new Symphony.Extensions.Filtering();
-		filtering.init(filter);
-	});
 
 	// Pagination
 	Symphony.Elements.contents.find('.page').each(function() {

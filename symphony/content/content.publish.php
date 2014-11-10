@@ -13,7 +13,6 @@
 class contentPublish extends AdministrationPage
 {
     public $_errors = array();
-    private $_filteringFields = array();
 
     public function sort(&$sort, &$order, $params)
     {
@@ -83,102 +82,89 @@ class contentPublish extends AdministrationPage
         $count = EntryManager::fetchCount($section_id);
 
         if ($filter !== 'no' && $count > 1) {
-            // Get filtering fields
-            $this->getFilteringFields($section);
-
-            // Append drawer
             $this->insertDrawer(
-                Widget::Drawer('filtering', __('Filter Entries'), $this->createFilteringDrawer())
+                Widget::Drawer('filtering', __('Filter Entries'), $this->createFilteringDrawer($section, $section_id))
             );
-        }
-    }
-
-    /**
-     * Get filter field names
-     */
-    public function getFilteringFields(Section $section)
-    {
-        foreach ($section->fetchFilterableFields() as $field) {
-            if (!$field->canPublishFilter()) {
-                continue;
-            }
-
-            $this->_filteringFields[] = array($field->get('element_name'), false, $field->get('label'));
         }
     }
 
     /**
      * Create filtering drawer
      */
-    public function createFilteringDrawer()
+    public function createFilteringDrawer($section, $section_id)
     {
-        $filters = $_GET['filter'];
         $this->filteringForm = Widget::Form(null, 'get', 'filtering');
-
-        // Create existing filters
-        if (is_array($filters) && !empty($filters)) {
-            foreach ($filters as $field => $search) {
-                $this->createFilter($field, $search);
-            }
-
-            // Create empty filter
-        } else {
-            $this->createFilter();
-        }
-
-        // Create template
-        $this->createFilter(null, null, 'template');
+        $this->createFilteringDuplicator($section, $section_id);
 
         return $this->filteringForm;
     }
 
-    public function createFilter($field = null, $search = null, $class = null)
+    public function createFilteringDuplicator($section, $section_id)
     {
-        $row = new XMLElement('div');
+        $filters = $_GET['filter'];
+ 
+        $div = new XMLElement('div');
+        $div->setAttribute('class', 'frame filters-duplicator');
+        $div->setAttribute('data-interactive', 'data-interactive');
+ 
+        $ol = new XMLElement('ol');
+        $ol->setAttribute('data-add', __('Add filter'));
+        $ol->setAttribute('data-remove', __('Clear filter'));
 
-        if ($class) {
-            $row->setAttribute('class', 'filtering-row ' . $class);
-        } else {
-            $row->setAttribute('class', 'filtering-row');
-        }
-
-        // Fields
-        $fields = $this->_filteringFields;
-
-        for ($i = 1; $i < count($fields); $i++) {
-            if ($fields[$i][0] === $field) {
-                $fields[$i][1] = true;
+        foreach ($section->fetchFilterableFields() as $field) {
+            if (!$field->canPublishFilter()) {
+                continue;
             }
+
+            // Add existing filter
+            $filter = $filters[$field->get('element_name')];
+            if (isset($filter)) {
+                $this->createFilter($ol, $section_id, $field, 'unique', $filter);
+            }
+
+            // Add filter template
+            $this->createFilter($ol, $section_id, $field, 'unique template');
         }
 
-        $div = new XMLElement('div', null, array('class' => 'filtering-controls'));
-        $div->appendChild(
-            Widget::Select('fields', $fields, array(
-                'class' => 'filtering-fields'
-            ))
-        );
+        $div->appendChild($ol);
+        $this->filteringForm->appendChild($div);
+    }
 
-        // Comparison
-        $needle = str_replace('regexp:', '', $search);
-        $div->appendChild(
-            Widget::Select('comparison', array(
-                array('contains', (strpos($search, 'regexp:') !== false), __('contains')),
-                array('is', (strpos($search, 'regexp:') === false), __('is'))
-            ), array(
-                'class' => 'filtering-comparison'
-            ))
-        );
-        $row->appendChild($div);
+    public function createFilter(&$ol, $section_id, $field, $class = '', $filter = '')
+    {
+        $li = new XMLElement('li');
+        $li->setAttribute('class', $class);
+        $li->setAttribute('data-type', $field->get('element_name'));
 
-        // Search
-        $row->appendChild(
-            Widget::Input('search', $needle, 'text', array(
-                'class' => 'filtering-search',
-                'placeholder' => __('Type to search') . ' …')
-            )
-        );
+        $li->appendChild(new XMLElement('header', $field->get('label'), array(
+            'data-name' => $field->get('label')
+        )));
 
-        $this->filteringForm->appendChild($row);
+        // Filter options
+        $div = new XMLElement('div', null, array('class' => 'two columns'));
+        $li->appendChild($div);
+
+        $options = array();
+        foreach ($field->fetchFilterableOperators() as $value) {
+            $options[] = array($value['filter'], false, $value['title']);
+        }
+
+        $label = Widget::Label();
+        $label->appendChild(Widget::Select('comparison', $options));
+        $label->setAttribute('class', 'column secondary');
+        $div->appendChild($label);
+
+        $label = Widget::Label();
+        $label->appendChild(Widget::Input('filter', $filter));
+        $label->setAttribute('class', 'column primary');
+        $div->appendChild($label);
+
+        $ol->appendChild($li);
+    }
+
+    public function createSystemFilter()
+    {
+
     }
 
     public function build(array $context = array())
