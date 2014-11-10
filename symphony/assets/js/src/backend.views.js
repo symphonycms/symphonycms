@@ -195,6 +195,9 @@ Symphony.View.add('/:context*:', function() {
 
 Symphony.View.add('/publish/:context*:', function() {
 
+	// Filtering
+	Symphony.Extensions.Filtering.init();
+
 	// Pagination
 	Symphony.Elements.contents.find('.page').each(function() {
 		var pagination = $(this),

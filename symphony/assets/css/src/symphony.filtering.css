@@ -1,9 +1,24 @@
-#drawer-filtering .frame {
+#drawer-filtering .contents {
+	padding-top: 0;
 	border: none;
 }
 
-#drawer-filtering .frame.empty {
-	height: 1rem;
+#drawer-filtering .frame {
+	border: none;
+	border-top: 0.1rem solid #e7e7e7;
+}
+
+#drawer-filtering .frame.empty ol {
+	border-bottom: 0.1rem solid #e7e7e7;
+}
+
+#drawer-filtering .frame.empty ol::before {
+	content: 'No filters applied yet.';
+	display: block;
+	margin-top: 1.5rem;
+	margin-bottom: 1.5rem;
+	color: #b4b4b4;
+	font-size: 1.4rem;
 }
 
 #drawer-filtering .instance {
@@ -22,4 +37,26 @@
 
 #drawer-filtering .content {
 	padding: 0 0 1rem;
+}
+
+/* Buttons */
+
+#drawer-filtering .clear-filters {
+	margin-top: 1rem;
+	margin-left: 0;
+	cursor: pointer;
+}
+
+#drawer-filtering .apply-filters {
+	float: right;
+	margin-top: 1rem;
+	cursor: pointer;
+}
+
+#drawer-filtering .apply {
+	position: relative;
+	right: auto;
+	bottom: auto;
+	float: right;
+	clear: none;
 }

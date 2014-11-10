@@ -144,18 +144,29 @@ class contentPublish extends AdministrationPage
         $div = new XMLElement('div', null, array('class' => 'two columns'));
         $li->appendChild($div);
 
-        $options = array();
+        $query = '';
+        $options = array(
+            array('', false, __('is'))
+        );
         foreach ($field->fetchFilterableOperators() as $value) {
-            $options[] = array($value['filter'], false, $value['title']);
+            $selected = false;
+            if (strpos($filter, $value['filter']) === 0) {
+                $selected = true;
+                $query = substr($filter, strlen($value['filter']));
+            }
+
+            $options[] = array($value['filter'], $selected, __($value['title']));
         }
 
         $label = Widget::Label();
-        $label->appendChild(Widget::Select('comparison', $options));
+        $label->appendChild(Widget::Select($field->get('element_name') . '-comparison', $options, array('class' => 'comparison')));
         $label->setAttribute('class', 'column secondary');
         $div->appendChild($label);
 
         $label = Widget::Label();
-        $label->appendChild(Widget::Input('filter', $filter));
+        $input = Widget::Input($field->get('element_name'), $query);
+        $input->setAttribute('class', 'filter');
+        $label->appendChild($input);
         $label->setAttribute('class', 'column primary');
         $div->appendChild($label);
 
