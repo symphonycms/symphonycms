@@ -190,7 +190,7 @@
 		var createCalendar = function(suggestions) {
 			var calendar = new Symphony.Interface.Calendar();
 
-			suggestions.prepend('<li class="calendar" />');
+			suggestions.prepend('<li class="calendar" data-format="YYYY-MM-DD" />');
 			calendar.init(suggestions.parents('label'));
 		}
 
