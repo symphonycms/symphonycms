@@ -14,9 +14,9 @@
 
 			context.on('input.suggestions', selector, handleChange);
 			context.on('focus.suggestions', selector, handleChange);
-			context.on('mouseover.suggestions', '.suggestions li:not(.help)', handleOver);
-			context.on('mouseout.suggestions', '.suggestions li:not(.help)', handleOut);
-			context.on('mousedown.suggestions', '.suggestions li:not(.help)', handleSelect);
+			context.on('mouseover.suggestions', '.suggestions li:not(.help):not(.calendar)', handleOver);
+			context.on('mouseout.suggestions', '.suggestions li:not(.help):not(.calendar)', handleOut);
+			context.on('mousedown.suggestions', '.suggestions li:not(.help):not(.calendar)', handleSelect);
 			context.on('keydown.suggestions', selector, handleNavigation);
 		};
 
@@ -41,10 +41,6 @@
 
 		var handleOver = function(event) {
 			var suggestion = $(event.target);
-
-			if(suggestion.is('.calendar').length) {
-				return;
-			}
 
 			suggestion.siblings('li:not(.help)').removeClass('active');
 			suggestion.addClass('active');

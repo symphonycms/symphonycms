@@ -25,7 +25,7 @@
 
 #drawer-filtering .instance {
 	border-bottom: 0.1rem solid #e7e7e7;
-	height: 6rem;
+	min-height: 6rem;
 }
 
 #drawer-filtering .frame-header {
@@ -62,4 +62,22 @@
 	bottom: auto;
 	float: right;
 	clear: none;
+}
+
+
+@media screen and (max-width: 700px) {
+
+	#drawer-filtering .columns {
+		margin-left: 0;
+	}
+	
+	#drawer-filtering .primary,
+	#drawer-filtering .secondary {
+		width: 100%;
+		clear: both;
+		float: none;
+		margin: 0;
+		padding: 0 0 0.7rem;
+		border-top: none;
+	}
 }

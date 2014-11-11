@@ -162,6 +162,8 @@
 			datetime.set('month', date.month());
 			datetime.set('date', date.date());
 
+			console.log(datetime.format(format), storage);
+
 			storage.val(datetime.format(format));
 
 			calendar.find('.active').removeClass('active');
