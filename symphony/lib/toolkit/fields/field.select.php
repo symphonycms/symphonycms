@@ -95,6 +95,11 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         return !$this->canToggle();
     }
 
+    public function fetchSuggestionTypes()
+    {
+        return array('association', 'static');
+    }
+
     /*-------------------------------------------------------------------------
         Setup:
     -------------------------------------------------------------------------*/

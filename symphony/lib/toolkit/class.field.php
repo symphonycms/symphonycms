@@ -1189,6 +1189,22 @@ class Field
     }
 
     /**
+     * Returns the types of filter suggestion this field supports. 
+     * The array may contain the following values:
+     *
+     * - `entry` for searching entries in the current section
+     * - `association` for searching entries in associated sections
+     * - `static` for searching static values
+     *
+     * @since Symphony 2.6.0
+     * @return array
+     */
+    public function fetchSuggestionTypes()
+    {
+        return array('entry');
+    }
+
+    /**
      * Display the default data-source filter panel.
      *
      * @param XMLElement $wrapper

@@ -125,6 +125,7 @@ class contentPublish extends AdministrationPage
             $data['name'] = $field->get('label');
             $data['filter'] = $filter;
             $data['instance'] = 'unique';
+            $data['search'] = $field->fetchSuggestionTypes();
             $data['operators'] = $field->fetchFilterableOperators();
             $data['comparisons'] = $this->createFilterComparisons($data);
             $data['query'] = $this->getFilterQuery($data, $filter);
@@ -206,7 +207,9 @@ class contentPublish extends AdministrationPage
     {
         $ul = new XMLElement('ul');
         $ul->setAttribute('class', 'suggestions');
-        $ul->setAttribute('data-search-id', $data['field-id']);
+        $ul->setAttribute('data-field-id', $data['field-id']);
+        $ul->setAttribute('data-associated-ids', '0');
+        $ul->setAttribute('data-search-types', implode($data['search'], ','));
 
         // Add default filter help
         $operator = array(

@@ -10,6 +10,7 @@ Class contentAjaxQuery extends JSONPage
         $database = Symphony::Configuration()->get('db', 'database');
         $field_ids = explode(',', General::sanitize($_GET['field_id']));
         $search = General::sanitize($_GET['query']);
+        $types = explode(',', General::sanitize($_GET['types']));
         $limit = intval(General::sanitize($_GET['limit']));
 
         // Set limit
@@ -21,12 +22,48 @@ Class contentAjaxQuery extends JSONPage
             $max = ' LIMIT ' . $limit;
         }
 
-        foreach($field_ids as $field_id) {
-            $this->get($database, intval($field_id), $search, $max);
+        // Entries
+        if(in_array('entry', $types)) {
+            foreach($field_ids as $field_id) {
+                $this->get($database, intval($field_id), $search, $max);
+            }
+        }
+
+        // Associations
+
+
+        // Static values
+        if(in_array('static', $types)) {
+            foreach($field_ids as $field_id) {
+                $this->getStatic($field_id, $search);
+            }
         }
 
         // Return results
         return $this->_Result;
+    }
+
+    private function getStatic($field_id, $search = null)
+    {
+        $options = array();
+
+        if (!empty($field_id)) {
+            $field = FieldManager::fetch($field_id);
+
+            if (!empty($field) && $field->canPublishFilter() === true) {
+                if (method_exists($field, 'getToggleStates')) {
+                    $options = $field->getToggleStates();
+                } elseif (method_exists($field, 'findAllTags')) {
+                    $options = $field->findAllTags();
+                }
+            }
+        }
+
+        foreach ($options as $value => $data) {
+            if (!$search || strripos($data, $search) !== false || strripos($value, $search) !== false) {
+                $this->_Result['entries'][]['value'] = ($data ? $data : $value);
+            }
+        }
     }
 
     private function get($database, $field_id, $search, $max)

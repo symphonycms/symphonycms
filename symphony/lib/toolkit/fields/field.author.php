@@ -71,6 +71,11 @@ class FieldAuthor extends Field implements ExportableField
         return true;
     }
 
+    public function fetchSuggestionTypes()
+    {
+        return array('static');
+    }
+
     /*-------------------------------------------------------------------------
         Setup:
     -------------------------------------------------------------------------*/

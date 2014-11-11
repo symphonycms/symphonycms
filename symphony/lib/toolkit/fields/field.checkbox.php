@@ -62,6 +62,16 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         return true;
     }
 
+    public function fetchFilterableOperators()
+    {
+        return array();
+    }
+
+    public function fetchSuggestionTypes()
+    {
+        return array('static');
+    }
+
     /*-------------------------------------------------------------------------
         Setup:
     -------------------------------------------------------------------------*/

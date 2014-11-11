@@ -25,13 +25,14 @@
 	-------------------------------------------------------------------------*/
 
 		var handleChange = function() {
-			var input = $(this);
+			var input = $(this),
+				suggestions = input.next('.suggestions');
 
-			if(input.val()) {
+			if(input.val() || suggestions.attr('data-search-types').indexOf('static') !== false) {
 				load(input);
 			}
 			else {
-				clear(input.next('.suggestions'));
+				clear(suggestions);
 			}
 		};
 
@@ -90,7 +91,9 @@
 			else if(event.which == 13) {
 				active = input.next('.suggestions').find('li:not(.help).active').text();
 
-				select(active, input);
+				if(active) {
+					select(active, input);
+				}
 			}
 		};
 
@@ -112,8 +115,9 @@
 				type: 'GET',
 				url: Symphony.Context.get('symphony') + '/ajax/query/',
 				data: {
-					'field_id': suggestions.attr('data-search-id'),
-					'query': input.val()
+					'field_id': suggestions.attr('data-field-id'),
+					'query': input.val(),
+					'types': suggestions.attr('data-search-types')
 				},
 				success: function(result) {
 					var help = suggestions.find('.help:first');
