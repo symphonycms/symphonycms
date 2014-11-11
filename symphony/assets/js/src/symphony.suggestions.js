@@ -120,7 +120,8 @@
 					'types': suggestions.attr('data-search-types')
 				},
 				success: function(result) {
-					var help = suggestions.find('.help:first');
+					var help = suggestions.find('.help:first'),
+						values = [];
 
 					// Clear existing suggestions
 					clear(suggestions);
@@ -128,8 +129,16 @@
 					// Add suggestions
 					if(result.entries) {
 						$.each(result.entries, function(index, data) {
+							values.push(data.value);
+						});
+
+						values = values.filter(function(item, index, array) {
+							return array.indexOf(item) === index; 
+						});
+
+						$.each(values, function(index, value) {
 							var suggestion = $('<li />', {
-								text: data.value
+								text: value
 							});
 
 							if(help) {
@@ -159,6 +168,10 @@
 		};
 	}();
 
+
+	/**
+	 * TODO: This needs to be merged with the object above.
+	 */
 	$.fn.symphonySuggestions = function(options) {
 		var objects = this,
 			settings = {

@@ -30,7 +30,15 @@ Class contentAjaxQuery extends JSONPage
         }
 
         // Associations
+        if(in_array('association', $types)) {
+            foreach($field_ids as $field_id) {
+                $association_id = $this->getAssociationId($field_id);
 
+                if($association_id) {
+                    $this->get($database, $association_id, $search, $max);
+                }
+            }
+        }
 
         // Static values
         if(in_array('static', $types)) {
@@ -41,6 +49,21 @@ Class contentAjaxQuery extends JSONPage
 
         // Return results
         return $this->_Result;
+    }
+
+    private function getAssociationId($field_id)
+    {
+        $field = FieldManager::fetch($field_id);
+        $parent_section = SectionManager::fetch($field->get('parent_section'));
+
+        $association_id = Symphony::Database()->fetchCol('parent_section_field_id',
+            sprintf(
+                "SELECT `parent_section_field_id` FROM tbl_sections_association WHERE `child_section_field_id` = %d AND `child_section_id` = %d LIMIT 1;",
+                $field_id, $parent_section->get('id')
+            )
+        );
+
+        return $association_id[0];
     }
 
     private function getStatic($field_id, $search = null)
