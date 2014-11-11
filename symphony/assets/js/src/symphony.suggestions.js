@@ -28,7 +28,10 @@
 			var input = $(this),
 				suggestions = input.next('.suggestions');
 
-			if(input.val() || suggestions.attr('data-search-types').indexOf('static') !== false) {
+			if(suggestions.attr('data-search-types').indexOf('date') !== -1) {
+				schedule(input);
+			}
+			else if(input.val() || suggestions.attr('data-search-types').indexOf('static') !== -1) {
 				load(input);
 			}
 			else {
@@ -38,6 +41,10 @@
 
 		var handleOver = function(event) {
 			var suggestion = $(event.target);
+
+			if(suggestion.is('.calendar').length) {
+				return;
+			}
 
 			suggestion.siblings('li:not(.help)').removeClass('active');
 			suggestion.addClass('active');
@@ -124,11 +131,12 @@
 						'types': suggestions.attr('data-search-types')
 					},
 					success: function(result) {
-						var help = suggestions.find('.help:first'),
+						var clone = suggestions.clone(),
+							help = clone.find('.help:first'),
 							values = [];
 
 						// Clear existing suggestions
-						clear(suggestions);
+						clear(clone);
 
 						// Add suggestions
 						if(result.entries) {
@@ -149,12 +157,24 @@
 									suggestion.insertBefore(help);
 								}
 								else {
-									suggestions.append(suggestion);
+									clone.append(suggestion);
 								}
 							});
+
+							suggestions.replaceWith(clone);
 						}
 					}
-				});			}
+				});
+			}
+		};
+
+		var schedule = function(input) {
+			var suggestions = input.next('.suggestions'),
+				calendar = suggestions.find('.calendar');
+
+			if(!calendar.length) {
+				createCalendar(suggestions);
+			}
 		};
 
 		var select = function(value, input) {
@@ -167,7 +187,21 @@
 			suggestions.find('li:not(.help)').remove();
 		};
 
-		// API
+	/*-------------------------------------------------------------------------
+		Utilities
+	-------------------------------------------------------------------------*/
+
+		var createCalendar = function(suggestions) {
+			var calendar = new Symphony.Interface.Calendar();
+
+			suggestions.prepend('<li class="calendar" />');
+			calendar.init(suggestions.parents('label'));
+		}
+
+	/*-------------------------------------------------------------------------
+		API
+	-------------------------------------------------------------------------*/
+
 		return {
 			init: init
 		};

@@ -392,7 +392,7 @@ fieldset .button {
 	overflow: auto;
 	box-sizing: border-box;
 	width: 100%;
-	max-height: 24rem;
+	max-height: 35rem;
 	margin: 0.3rem 0 0 0 !important;
 	border: 0.1rem solid #b3b3b3;
 	border-right-color: #a6a6a6;
@@ -413,18 +413,21 @@ textarea:focus ~ .suggestions:not(:empty) {
 	display: block;
 }
 
-.suggestions li {
+.suggestions li:not(.calendar) {
 	box-sizing: border-box;
 	padding: 0.5rem 0.8rem;
 	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.1);
+}
+
+.suggestions .calendar + li {
+	border-top: 0.1rem solid rgba(0, 0, 0, 0.1);
 }
 
 .suggestions li:last-of-type {
 	border-bottom: none;
 }
 
-.suggestions .active,
-.suggestions li:hover {
+.suggestions .active {
 	color: #fff;
 	background-color: #668abe;
 	cursor: pointer;

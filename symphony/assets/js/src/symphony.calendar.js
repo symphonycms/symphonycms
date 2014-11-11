@@ -218,7 +218,14 @@
 		 * Store current date.
 		 */
 		var storeDate = function() {
-			datetime = moment.utc(storage.val(), format);
+			var date = storage.val();
+
+			if(date) {
+				datetime = moment.utc(date, format);		
+			}
+			else {
+				datetime = moment.utc();
+			}
 		};
 
 		/**

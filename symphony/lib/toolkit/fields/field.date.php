@@ -64,6 +64,33 @@ class FieldDate extends Field implements ExportableField, ImportableField
         return true;
     }
 
+    public function fetchFilterableOperators()
+    {
+        return array(
+            array(
+                'title' => 'later than',
+                'filter' => 'later than '
+            ),
+            array(
+                'title' => 'earlier than',
+                'filter' => 'earlier than '
+            ),
+            array(
+                'title' => 'equal to or later than',
+                'filter' => 'equal to or later than '
+            ),
+            array(
+                'title' => 'equal to or earlier than',
+                'filter' => 'equal to or earlier than '
+            ),
+        );
+    }
+
+    public function fetchSuggestionTypes()
+    {
+        return array('date');
+    }
+
     /*-------------------------------------------------------------------------
         Setup:
     -------------------------------------------------------------------------*/

@@ -227,6 +227,10 @@ class contentPublish extends AdministrationPage
     }
 
     private function createFilterHelp(&$wrapper, $operator) {
+        if(empty($operator['help'])) {
+            return;
+        }
+
         $li = new XMLElement('li', __('Comparison mode') . ': ' . $operator['help'], array(
             'class' => 'help',
             'data-comparison' => $operator['filter']

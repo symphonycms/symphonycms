@@ -8,6 +8,11 @@
 	box-shadow: 0 0.2rem 0.15rem rgba(0, 0, 0, 0.15);
 }
 
+.suggestions .calendar {
+	box-shadow: none;
+	border: none;
+}
+
 /* Pagination */
 
 .calendar .clndr-previous-button,
@@ -167,6 +172,10 @@
 	background-color: #f5f5f5;
 }
 
+.suggestions .calendar table {
+	background-color: #fff;
+}
+
 .calendar thead td {
 	color: #333331;
 	text-transform: uppercase;
@@ -179,6 +188,7 @@
 	height: 3.3rem;
 	padding: 0;
 	border: none;
+	background-color: inherit;
 }
 
 .calendar tr:first-of-type td {

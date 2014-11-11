@@ -6,23 +6,26 @@
 #drawer-filtering .frame {
 	border: none;
 	border-top: 0.1rem solid #e7e7e7;
+	min-height: 9.5rem;
+	margin-bottom: 2rem;
 }
 
 #drawer-filtering .frame.empty ol {
 	border-bottom: 0.1rem solid #e7e7e7;
+	height: 6rem;
 }
 
 #drawer-filtering .frame.empty ol::before {
 	content: attr(data-empty);
 	display: block;
-	margin-top: 1.5rem;
-	margin-bottom: 1.5rem;
+	padding-top: 2rem;
 	color: #b4b4b4;
 	font-size: 1.4rem;
 }
 
 #drawer-filtering .instance {
 	border-bottom: 0.1rem solid #e7e7e7;
+	height: 6rem;
 }
 
 #drawer-filtering .frame-header {
@@ -36,7 +39,7 @@
 }
 
 #drawer-filtering .content {
-	padding: 0 0 1rem;
+	padding: 0;
 }
 
 /* Buttons */

@@ -1195,6 +1195,10 @@ class Field
      * - `entry` for searching entries in the current section
      * - `association` for searching entries in associated sections
      * - `static` for searching static values
+     * - `date` for searching in a calendar
+     * - `environment` for searching in parameters
+     *
+     * If the date type is set, only the calendar will be shown in the suggestion dropdown.
      *
      * @since Symphony 2.6.0
      * @return array
