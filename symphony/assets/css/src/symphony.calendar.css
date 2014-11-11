@@ -57,8 +57,13 @@
 	top: calc(-2.2rem * 6 + 0.3rem);
 	overflow: visible;
 	height: auto;
+	border: 0.1rem solid #b3b3b3;
+	border-right-color: #a6a6a6;
+	border-bottom-color: #999;
+	border-left-color: #a6a6a6;
+	border-radius: 0.4rem;
 	background: #fcfcfc;
-	box-shadow: 0 1rem 1.5rem rgba(0, 0, 0, 0.5);
+	box-shadow: 0 1rem 1.5rem rgba(0, 0, 0, 0.35);
 }
 
 .calendar .months,

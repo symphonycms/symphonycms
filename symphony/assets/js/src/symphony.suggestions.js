@@ -160,6 +160,7 @@
 		var select = function(value, input) {
 			input.val(value);
 			input.addClass('updated');
+			input.change();
 		};
 
 		var clear = function(suggestions) {
