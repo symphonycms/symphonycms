@@ -110,72 +110,139 @@ class contentPublish extends AdministrationPage
         $ol = new XMLElement('ol');
         $ol->setAttribute('data-add', __('Add filter'));
         $ol->setAttribute('data-remove', __('Clear filter'));
+        $ol->setAttribute('data-empty', __('No filters applied yet.'));
 
         foreach ($section->fetchFilterableFields() as $field) {
             if (!$field->canPublishFilter()) {
                 continue;
             }
+        
+            $filter = $filters[$field->get('element_name')];
+
+            // Filter data
+            $data = array();
+            $data['type'] = $field->get('element_name');
+            $data['name'] = $field->get('label');
+            $data['filter'] = $filter;
+            $data['instance'] = 'unique';
+            $data['operators'] = $field->fetchFilterableOperators();
+            $data['comparisons'] = $this->createFilterComparisons($data);
+            $data['query'] = $this->getFilterQuery($data, $filter);
+            $data['field-id'] = $field->get('id');
 
             // Add existing filter
-            $filter = $filters[$field->get('element_name')];
             if (isset($filter)) {
-                $this->createFilter($ol, $section_id, $field, 'unique', $filter);
+                $this->createFilter($ol, $data);
             }
 
             // Add filter template
-            $this->createFilter($ol, $section_id, $field, 'unique template');
+            $data['instance'] = 'unique template';
+            $this->createFilter($ol, $data);
         }
 
         $div->appendChild($ol);
         $this->filteringForm->appendChild($div);
     }
 
-    public function createFilter(&$ol, $section_id, $field, $class = '', $filter = '')
+    private function createFilter(&$wrapper, $data)
     {
         $li = new XMLElement('li');
-        $li->setAttribute('class', $class);
-        $li->setAttribute('data-type', $field->get('element_name'));
+        $li->setAttribute('class', $data['instance']);
+        $li->setAttribute('data-type', $data['type']);
 
-        $li->appendChild(new XMLElement('header', $field->get('label'), array(
-            'data-name' => $field->get('label')
+        // Header
+        $li->appendChild(new XMLElement('header', $data['name'], array(
+            'data-name' => $data['name']
         )));
 
-        // Filter options
+        // Settings
         $div = new XMLElement('div', null, array('class' => 'two columns'));
-        $li->appendChild($div);
 
-        $query = '';
-        $options = array(
-            array('', false, __('is'))
-        );
-        foreach ($field->fetchFilterableOperators() as $value) {
-            $selected = false;
-            if (strpos($filter, $value['filter']) === 0) {
-                $selected = true;
-                $query = substr($filter, strlen($value['filter']));
-            }
-
-            $options[] = array($value['filter'], $selected, __($value['title']));
-        }
-
+        // Comparisons
         $label = Widget::Label();
-        $label->appendChild(Widget::Select($field->get('element_name') . '-comparison', $options, array('class' => 'comparison')));
         $label->setAttribute('class', 'column secondary');
+        
+        $select = Widget::Select($data['type'] . '-comparison', $data['comparisons'], array(
+            'class' => 'comparison'
+        ));
+ 
+        $label->appendChild($select);
         $div->appendChild($label);
 
+        // Query
         $label = Widget::Label();
-        $input = Widget::Input($field->get('element_name'), $query);
+        $label->setAttribute('class', 'column primary');
+        
+        $input = Widget::Input($data['type'], $data['query'], 'text', array(
+            'placeholder' => __('Type and hit enter to apply filter …'),
+            'autocomplete' => 'off'
+        ));
         $input->setAttribute('class', 'filter');
         $label->appendChild($input);
-        $label->setAttribute('class', 'column primary');
-        $div->appendChild($label);
 
-        $ol->appendChild($li);
+        $this->createFilterSuggestions($label, $data);
+        
+        $div->appendChild($label);
+        $li->appendChild($div);
+        $wrapper->appendChild($li);
     }
 
-    public function createSystemFilter()
+    private function createFilterComparisons($data)
     {
+        // Default comparison
+        $comparisons = array(
+            array('', false, __('is'))
+        );
 
+        // Custom field comparisons
+        foreach ($data['operators'] as $operator) {
+            $comparisons[] = array($operator['filter'], (strpos($data['filter'], $operator['filter']) === 0), __($operator['title']));
+        }
+
+        return $comparisons;
+    }
+
+    private function createFilterSuggestions(&$wrapper, $data)
+    {
+        $ul = new XMLElement('ul');
+        $ul->setAttribute('class', 'suggestions');
+        $ul->setAttribute('data-search-id', $data['field-id']);
+
+        // Add default filter help
+        $operator = array(
+            'filter' => 'is',
+            'help' => __('Find values that are an exact match for the given string.')
+        );
+        $this->createFilterHelp($ul, $operator);
+        
+        // Add custom filter help
+        foreach ($data['operators'] as $operator) {
+            $this->createFilterHelp($ul, $operator);
+        }
+
+        $wrapper->appendChild($ul);
+    }
+
+    private function createFilterHelp(&$wrapper, $operator) {
+        $li = new XMLElement('li', __('Comparison mode') . ': ' . $operator['help'], array(
+            'class' => 'help',
+            'data-comparison' => $operator['filter']
+        ));
+
+        $wrapper->appendChild($li);
+    }
+
+    private function getFilterQuery($data) 
+    {
+        $query = $data['filter'];
+
+        foreach ($data['operators'] as $operator) {
+            if (strpos($data['filter'], $operator['filter']) === 0) {
+                $query = substr($data['filter'], strlen($operator['filter']));
+            }
+        }
+
+        return $query;
     }
 
     public function build(array $context = array())

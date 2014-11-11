@@ -381,43 +381,63 @@ fieldset .button {
 	Dropdowns
 --------------------------------------------------------------------------*/
 
-.frame.suggestions {
+.frame.suggests,
+.suggests {
 	overflow: visible;
 }
 
 .suggestions {
-	overflow: visible;
-}
-
-ul.suggestionlist {
+	display: none;
 	position: absolute;
 	overflow: auto;
 	box-sizing: border-box;
 	width: 100%;
 	max-height: 24rem;
-	margin: 0;
-	border: 0.1rem solid #c0c0c0;
-	border-top: none;
-	border-radius: 0 0 0.4rem 0.4rem;
+	margin: 0.3rem 0 0 0 !important;
+	border: 0.1rem solid #b3b3b3;
+	border-right-color: #a6a6a6;
+	border-bottom-color: #999;
+	border-left-color: #a6a6a6;
+	border-radius: 0.4rem;
 	background: #fff;
-	box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.2);
-	transition: max-height 0.25s ease-out;
+	box-shadow: 0 1rem 1.5rem rgba(0, 0, 0, 0.35);
 	z-index: 10000;
 }
 
-ul.suggestionlist li {
-	box-sizing: border-box;
-	height: 2.2rem;
-	padding: 0.2rem 0.5rem;
-	border-bottom: 0.1rem solid #f3f3f3;
+.column .suggestions {
+	width: calc(100% - 1.5rem);
 }
 
-ul.suggestionlist li:last-of-type {
+input:focus ~ .suggestions:not(:empty),
+textarea:focus ~ .suggestions:not(:empty) {
+	display: block;
+}
+
+.suggestions li {
+	box-sizing: border-box;
+	padding: 0.5rem 0.8rem;
+	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.1);
+}
+
+.suggestions li:last-of-type {
 	border-bottom: none;
 }
 
-ul.suggestionlist li.active {
+.suggestions .active,
+.suggestions li:hover {
 	color: #fff;
-	background: #668abe;
+	background-color: #668abe;
 	cursor: pointer;
+}
+
+.suggestions .help {
+	display: none;
+}
+
+.suggestions .help.active {
+	display: block;
+	color: #999;
+	border-bottom: none;
+	background-color: #f5f5f5;
+	cursor: default;
 }

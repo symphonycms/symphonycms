@@ -1,7 +1,7 @@
 (function($, Symphony) {
 	'use strict';
 
-	Symphony.Extensions.Filtering = function() {
+	Symphony.Interface.Filtering = function() {
 		var filtering, duplicator, apply;
 
 		var init = function() {
@@ -24,7 +24,19 @@
 			}).insertBefore(apply);
 
 			// Apply filtering
-			filtering.on('keydown.filtering', '.filter', handleFiltering);
+			filtering.on('keyup.filtering', '.filter', handleFiltering);
+			filtering.on('change.filtering', '.filter', handleFiltering);
+
+			// Clear single filter
+			duplicator.on('destructstop.duplicator', filter);
+
+			// Show suggestions
+			Symphony.Interface.Suggestions.init(filtering, '.filter');
+
+			// Show help
+			duplicator.on('constructstop.duplicator', '.instance', handleComparisons);
+			filtering.on('change', '.comparison', handleComparisons);
+			filtering.find('.instance').each(handleComparisons);
 		};
 
 	/*-------------------------------------------------------------------------
@@ -32,7 +44,9 @@
 	-------------------------------------------------------------------------*/
 
 		var handleFiltering = function(event) {
-			if(event.keyCode === 13 || event.target.classList.contains('apply-filters')) {
+			var target = $(event.target);
+
+			if(event.keyCode === 13 || target.is('.apply-filters') || target.is('.updated')) {
 				event.preventDefault();
 				event.stopPropagation();
 
@@ -45,6 +59,22 @@
 			event.stopPropagation();
 
 			clear();
+		};
+
+		var handleComparisons = function() {
+			var item = $(this),
+				comparison;
+
+			// Show help contextually
+			if(item.is('.instance')) {
+				comparison = item.find('.comparison').val();
+			}
+			else {
+				comparison = item.val();
+				item = item.parents('.instance');
+			}
+
+			switchHelp(item, comparison);
 		};
 
 	/*-------------------------------------------------------------------------
@@ -66,7 +96,7 @@
 		var build = function() {
 			var filters = [];
 
-			filtering.find('.instance:not(.template)').each(function() {
+			filtering.find('.instance:not(.template):visible').each(function() {
 				var item = $(this),
 					comparison = item.find('.comparison'),
 					query = item.find('.filter'),
@@ -80,6 +110,17 @@
 
 		var clear = function() {
 			window.location = Symphony.Context.get('symphony') + Symphony.Context.get('route');
+		};
+
+		var switchHelp = function(item, comparison) {
+			var help = item.find('.suggestions .help');
+
+			if(!comparison) {
+				comparison = 'is';
+			}
+
+			help.removeClass('active');
+			help.filter('[data-comparison="' + comparison + '"]').addClass('active');
 		};
 
 		// API
