@@ -108,49 +108,53 @@
 	-------------------------------------------------------------------------*/
 
 		var load = function(input) {
-			var suggestions = input.next('.suggestions');
+			var suggestions = input.next('.suggestions'),
+				query = input.val();
 
 			// Load suggestions
-			$.ajax({
-				type: 'GET',
-				url: Symphony.Context.get('symphony') + '/ajax/query/',
-				data: {
-					'field_id': suggestions.attr('data-field-id'),
-					'query': input.val(),
-					'types': suggestions.attr('data-search-types')
-				},
-				success: function(result) {
-					var help = suggestions.find('.help:first'),
-						values = [];
+			if(query !== suggestions.attr('data-last-query')) {
+				suggestions.attr('data-last-query', query);
 
-					// Clear existing suggestions
-					clear(suggestions);
+				$.ajax({
+					type: 'GET',
+					url: Symphony.Context.get('symphony') + '/ajax/query/',
+					data: {
+						'field_id': suggestions.attr('data-field-id'),
+						'query': query,
+						'types': suggestions.attr('data-search-types')
+					},
+					success: function(result) {
+						var help = suggestions.find('.help:first'),
+							values = [];
 
-					// Add suggestions
-					if(result.entries) {
-						$.each(result.entries, function(index, data) {
-							values.push(data.value);
-						});
+						// Clear existing suggestions
+						clear(suggestions);
 
-						values = values.filter(function(item, index, array) {
-							return array.indexOf(item) === index; 
-						});
-
-						$.each(values, function(index, value) {
-							var suggestion = $('<li />', {
-								text: value
+						// Add suggestions
+						if(result.entries) {
+							$.each(result.entries, function(index, data) {
+								values.push(data.value);
 							});
 
-							if(help) {
-								suggestion.insertBefore(help);
-							}
-							else {
-								suggestions.append(suggestion);
-							}
-						});
+							values = values.filter(function(item, index, array) {
+								return array.indexOf(item) === index; 
+							});
+
+							$.each(values, function(index, value) {
+								var suggestion = $('<li />', {
+									text: value
+								});
+
+								if(help) {
+									suggestion.insertBefore(help);
+								}
+								else {
+									suggestions.append(suggestion);
+								}
+							});
+						}
 					}
-				}
-			});
+				});			}
 		};
 
 		var select = function(value, input) {
