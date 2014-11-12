@@ -18,6 +18,7 @@ module.exports = function (grunt) {
                         'symphony/assets/css/src/symphony.drawers.css',
                         'symphony/assets/css/src/symphony.associations.css',
                         'symphony/assets/css/src/symphony.notices.css',
+                        'symphony/assets/css/src/symphony.suggestions.css',
                         'symphony/assets/css/src/symphony.calendar.css',
                         'symphony/assets/css/src/symphony.filtering.css',
                         'symphony/assets/css/src/admin.css'

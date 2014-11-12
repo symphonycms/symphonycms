@@ -26,18 +26,25 @@
 			prepareTemplate();
 			create();
 
+			/**
+			 * Events
+			 *
+			 * Use `mousedown` instead of `click` event in order to prevent 
+			 * conflicts with suggestions and other core plugins.
+			 */
+
 			// Switch sheets
-			calendar.on('click.calendar', 'a', function(event) {
+			calendar.on('mousedown.calendar', 'a, .clndr', function(event) {
 				event.stopPropagation();
 				event.preventDefault();
 			});
-			calendar.on('click.calendar', '.switch', switchSheet);
-			calendar.on('click.calendar', '.months li', switchMonth);
-			calendar.on('click.calendar', '.years li', switchYear);
+			calendar.on('mousedown.calendar', '.switch', switchSheet);
+			calendar.on('mousedown.calendar', '.months li', switchMonth);
+			calendar.on('mousedown.calendar', '.years li', switchYear);
 
 			// Handle current date
 			storage.on('focus.calendar', focusDate);
-			storage.on('change.calendar', updateDate);
+			storage.on('input.calendar', updateDate);
 		};
 
 		/**

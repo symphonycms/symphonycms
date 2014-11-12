@@ -1,16 +1,28 @@
 .calendar {
 	position: relative;
-	padding-bottom: 0.5rem;
 	border: 0.1rem solid #c5c5c5;
+	padding-bottom: 0.5rem;
 	border-radius: 0.4rem 0.4rem 0 0;
-	background-color: #fcfcfc;
 	background-color: #f5f5f5;
 	box-shadow: 0 0.2rem 0.15rem rgba(0, 0, 0, 0.15);
+	margin-top: 0.2rem;
 }
 
 .suggestions .calendar {
-	box-shadow: none;
 	border: none;
+	border-bottom: 0.5rem solid #fff;
+	box-shadow: none;
+	margin-top: 0;
+	padding-bottom: 0;
+	border-radius: 0 0 0.4rem 0.4rem;
+}
+
+.calendar nav {
+	display: block;
+	position: relative;
+	box-sizing: border-box;
+	height: 3.3rem;
+	margin: 0;
 }
 
 /* Pagination */
@@ -79,7 +91,7 @@
 	box-sizing: border-box;
 	width: 8rem;
 	margin: calc(-2.2rem * 6 - 0.5rem) 0 0;
-	padding: 0.25rem 0.15rem 0.25rem 0.25rem;
+	padding: 0.25rem 0.25rem 0.25rem 0.15rem;
 	font-size: 1.2rem;
 	border: none;
 	border-radius: 0.4rem;
@@ -87,6 +99,7 @@
 
 .calendar .months {
 	width: 10rem;
+	padding: 0.25rem 0.15rem 0.25rem 0.25rem;
 	text-align: right;
 	border-right: 0.1rem solid transparent;
 }
@@ -120,15 +133,19 @@
 }
 
 .calendar .months li,
-.calendar .years li {
+.calendar .years li,
+.calendar .months li:hover,
+.calendar .years li:hover {
 	position: relative;
 	box-sizing: border-box;
 	height: 2.2rem;
 	padding: 0 0.4rem;
+	color: inherit;
 	line-height: 2.2rem;
 	border: none;
 	border-radius: 0.2rem 0 0 0.2rem;
 	background: none;
+	box-shadow: none;
 	cursor: pointer;
 	z-index: 3000;
 }
@@ -166,7 +183,7 @@
 /* Sheets */
 
 .calendar table {
-	margin-top: 3.3rem;
+	margin: 0;
 	border-top: 0.1rem solid rgba(0, 0, 0, 0.075);
 	border-collapse: separate;
 	background-color: #f5f5f5;

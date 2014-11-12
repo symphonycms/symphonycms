@@ -4,15 +4,15 @@
 }
 
 .drawer-filtering .frame {
-	border: none;
-	border-top: 0.1rem solid #e7e7e7;
 	min-height: 9.5rem;
 	margin-bottom: 2rem;
+	border: none;
+	border-top: 0.1rem solid #e7e7e7;
 }
 
 .drawer-filtering .frame.empty ol {
-	border-bottom: 0.1rem solid #e7e7e7;
 	height: 6rem;
+	border-bottom: 0.1rem solid #e7e7e7;
 }
 
 .drawer-filtering .frame.empty ol::before {
@@ -24,8 +24,8 @@
 }
 
 .drawer-filtering .instance {
-	border-bottom: 0.1rem solid #e7e7e7;
 	min-height: 6rem;
+	border-bottom: 0.1rem solid #e7e7e7;
 }
 
 .drawer-filtering .frame-header {
@@ -64,18 +64,17 @@
 	clear: none;
 }
 
-
 @media screen and (max-width: 700px) {
 
 	.drawer-filtering .columns {
 		margin-left: 0;
 	}
-	
+
 	.drawer-filtering .primary,
 	.drawer-filtering .secondary {
-		width: 100%;
-		clear: both;
 		float: none;
+		clear: both;
+		width: 100%;
 		margin: 0;
 		padding: 0 0 0.7rem;
 		border-top: none;
