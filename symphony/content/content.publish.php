@@ -82,9 +82,9 @@ class contentPublish extends AdministrationPage
         $count = EntryManager::fetchCount($section_id);
 
         if ($filter !== 'no' && $count > 1) {
-            $this->insertDrawer(
-                Widget::Drawer('filtering', __('Filter Entries'), $this->createFilteringDrawer($section, $section_id))
-            );
+            $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), $this->createFilteringDrawer($section, $section_id));
+            $drawer->addClass('drawer-filtering');
+            $this->insertDrawer($drawer);
         }
     }
 

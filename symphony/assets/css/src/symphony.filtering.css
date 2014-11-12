@@ -1,21 +1,21 @@
-#drawer-filtering .contents {
-	padding-top: 0;
-	border: none;
+.drawer-filtering .contents {
+	padding-top: 0 !important;
+	border: none !important;
 }
 
-#drawer-filtering .frame {
+.drawer-filtering .frame {
 	border: none;
 	border-top: 0.1rem solid #e7e7e7;
 	min-height: 9.5rem;
 	margin-bottom: 2rem;
 }
 
-#drawer-filtering .frame.empty ol {
+.drawer-filtering .frame.empty ol {
 	border-bottom: 0.1rem solid #e7e7e7;
 	height: 6rem;
 }
 
-#drawer-filtering .frame.empty ol::before {
+.drawer-filtering .frame.empty ol::before {
 	content: attr(data-empty);
 	display: block;
 	padding-top: 2rem;
@@ -23,40 +23,40 @@
 	font-size: 1.4rem;
 }
 
-#drawer-filtering .instance {
+.drawer-filtering .instance {
 	border-bottom: 0.1rem solid #e7e7e7;
 	min-height: 6rem;
 }
 
-#drawer-filtering .frame-header {
+.drawer-filtering .frame-header {
 	padding: 0.8rem 0 0.3rem;
 	border: none;
-	box-shadow: none;
+	box-shadow: none !important;
 }
 
-#drawer-filtering .destructor {
+.drawer-filtering .destructor {
 	right: 0;
 }
 
-#drawer-filtering .content {
+.drawer-filtering .content {
 	padding: 0;
 }
 
 /* Buttons */
 
-#drawer-filtering .clear-filters {
+.drawer-filtering .clear-filters {
 	margin-top: 1rem;
 	margin-left: 0;
 	cursor: pointer;
 }
 
-#drawer-filtering .apply-filters {
+.drawer-filtering .apply-filters {
 	float: right;
 	margin-top: 1rem;
 	cursor: pointer;
 }
 
-#drawer-filtering .apply {
+.drawer-filtering .apply {
 	position: relative;
 	right: auto;
 	bottom: auto;
@@ -67,12 +67,12 @@
 
 @media screen and (max-width: 700px) {
 
-	#drawer-filtering .columns {
+	.drawer-filtering .columns {
 		margin-left: 0;
 	}
 	
-	#drawer-filtering .primary,
-	#drawer-filtering .secondary {
+	.drawer-filtering .primary,
+	.drawer-filtering .secondary {
 		width: 100%;
 		clear: both;
 		float: none;
