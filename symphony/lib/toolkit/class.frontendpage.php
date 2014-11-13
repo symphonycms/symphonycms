@@ -422,7 +422,7 @@ class FrontendPage extends XSLTPage
 
         if (is_array($_COOKIE[__SYM_COOKIE_PREFIX__]) && !empty($_COOKIE[__SYM_COOKIE_PREFIX__])) {
             foreach ($_COOKIE[__SYM_COOKIE_PREFIX__] as $key => $val) {
-                if ($key === 'xsrf-token') {
+                if ($key === 'xsrf-token' && is_array($val)) {
                     $val = key($val);
                 }
 
