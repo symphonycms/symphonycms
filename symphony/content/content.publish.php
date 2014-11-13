@@ -262,14 +262,7 @@ class contentPublish extends AdministrationPage
 
         // Custom field comparisons
         foreach ($data['operators'] as $operator) {
-            $selected = false;
-            $filter = trim($operator['filter']);
-
-            if(!empty($filter) && strpos(trim($data['filter']), $filter) === 0) {
-                $selected = true;
-            }
-
-            $comparisons[] = array($operator['filter'], $selected, __($operator['title']));
+            $comparisons[] = array(trim($operator['filter']), (strpos($data['filter'], $operator['filter']) === 0), __($operator['title']));
         }
 
         return $comparisons;
