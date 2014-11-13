@@ -9,7 +9,8 @@
 	 * Filtering interface for the publish area.
 	 */
 	Symphony.Interface.Filtering = function() {
-		var filtering, duplicator, apply;
+		var filtering, duplicator, apply,
+			actions = [];
 
 		/**
 		 * Initialise filtering interface.
@@ -22,6 +23,10 @@
 			// Add buttons
 			createAddButton();
 			createClearButton();
+
+			// Set state
+			toggleState();
+			duplicator.on('constructstop.duplicator destructstart.duplicator', '.instance', toggleState);
 
 			// Handle filtering
 			filtering.on('keyup.filtering', '.filter', handleFiltering);
@@ -158,6 +163,26 @@
 			help.filter('[data-comparison="' + comparison + '"]').addClass('active');
 		};
 
+		var toggleState = function() {
+			if(duplicator.find('.instance:not(.template)').length) {
+				activate();
+			}
+			else {
+				deactivate();
+			}
+		};
+
+		var activate = function() {
+			actions.apply.prop('disabled', false);
+			actions.apply.removeAttr('disabled');
+			actions.clear.show();
+		};
+
+		var deactivate = function() {
+			actions.apply.prop('disabled', true);
+			actions.clear.hide();
+		};
+
 	/*-------------------------------------------------------------------------
 		Utilities
 	-------------------------------------------------------------------------*/
@@ -166,7 +191,7 @@
 		 * Create add button.
 		 */
 		var createAddButton = function() {
-			$('<button/>', {
+			actions.apply = $('<button/>', {
 				'text': 'Apply filters',
 				'class': 'apply-filters',
 				'click': handleFiltering
@@ -177,7 +202,7 @@
 		 * Create clear button.
 		 */
 		var createClearButton = function() {
-			$('<button/>', {
+			actions.clear = $('<button/>', {
 				'text': 'Clear filters',
 				'class': 'clear-filters delete',
 				'click': handleClearing
