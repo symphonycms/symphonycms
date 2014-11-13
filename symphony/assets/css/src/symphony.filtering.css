@@ -4,23 +4,23 @@
 }
 
 .drawer-filtering .frame {
-	min-height: 9.5rem;
+	min-height: 6.2rem;
 	margin-bottom: 2rem;
 	border: none;
 	border-top: 0.1rem solid #e7e7e7;
 }
 
 .drawer-filtering .frame.empty ol {
-	height: 6rem;
+	height: 3.3rem;
 	border-bottom: 0.1rem solid #e7e7e7;
 }
 
 .drawer-filtering .frame.empty ol::before {
 	content: attr(data-empty);
 	display: block;
-	padding-top: 2rem;
+	line-height: 3.3rem;
 	color: #b4b4b4;
-	font-size: 1.4rem;
+	font-size: 1.1rem;
 }
 
 .drawer-filtering .instance {
