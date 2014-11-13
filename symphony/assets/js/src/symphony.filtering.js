@@ -127,9 +127,9 @@
 
 			filtering.find('.instance:not(.template):visible').each(function() {
 				var item = $(this),
-					comparison = item.find('.comparison'),
+					comparison = item.find('.comparison').val(),
 					query = item.find('.filter'),
-					value = 'filter[' + query.attr('name') + ']=' + comparison.val() + query.val();
+					value = 'filter[' + query.attr('name') + ']=' + (comparison ? comparison : '') + query.val();
 
 				filters.push(value);
 			});
