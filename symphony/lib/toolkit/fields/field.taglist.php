@@ -495,10 +495,8 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         Filtering:
     -------------------------------------------------------------------------*/
 
-    public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null)
+    public function displayFilteringOptions(XMLElement &$wrapper)
     {
-        parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
-
         if ($this->get('pre_populate_source') != null) {
 
             $existing_tags = $this->getToggleStates();

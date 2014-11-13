@@ -672,10 +672,14 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 	// Toggle filter help
 	Symphony.Elements.contents.find('.filters-duplicator').on('input.admin change.admin', 'input', function toggleFilterHelp(event) {
 		var item = $(event.target).parents('.instance'),
-			value = event.target.value;
-			filter = $.trim(value.split(':')[0]),
+			value = event.target.value,
 			filters = item.data('filters'),
 			help = item.find('.help');
+
+		// Handle values that don't contain predicates
+		var filter = value.search(/:/)
+			? $.trim(value.split(':')[0])
+			: $.trim(value);
 
 		// Store filters
 		if(!filters) {

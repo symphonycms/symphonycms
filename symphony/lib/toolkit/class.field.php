@@ -1235,11 +1235,22 @@ class Field
         )));
 
         $label = Widget::Label(__('Value'));
-        $input = Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : null), 'text', array('autocomplete' => 'off'));
+        $label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : null), 'text', array('autocomplete' => 'off')));
         $input->setAttribute('data-search-types', 'parameters');
         $input->setAttribute('data-trigger', '{$');
-        $label->appendChild($input);
+        $wrapper->appendChild($label);
 
+        $this->displayFilteringOptions($wrapper);
+    }
+
+    /**
+     * Inserts tags at the bottom of the filter panel
+     *
+     * @param XMLElement $wrapper
+     */
+    public function displayFilteringOptions(XMLElement &$wrapper)
+    {
+        // Add filter tags
         $filterTags = new XMLElement('ul');
         $filterTags->setAttribute('class', 'tags singular');
         $filterTags->setAttribute('data-interactive', 'data-interactive');
@@ -1255,15 +1266,12 @@ class Field
 
             $filterTags->appendChild($item);
         }
-
-        $wrapper->appendChild($label);
         $wrapper->appendChild($filterTags);
 
         $help = new XMLElement('p');
         $help->setAttribute('class', 'help');
         $first = array_shift($filters);
         $help->setValue($first['help']);
-
         $wrapper->appendChild($help);
     }
 

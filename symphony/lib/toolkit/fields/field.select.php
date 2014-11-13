@@ -549,10 +549,8 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         Filtering:
     -------------------------------------------------------------------------*/
 
-    public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null)
+    public function displayFilteringOptions(XMLElement &$wrapper)
     {
-        parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
-
         $existing_options = $this->getToggleStates();
 
         if (is_array($existing_options) && !empty($existing_options)) {
