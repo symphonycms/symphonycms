@@ -356,7 +356,10 @@ class contentBlueprintsDatasources extends ResourcesPage
                 $li->setAttribute('data-type', 'system:id');
                 $li->appendChild(new XMLElement('header', '<h4>' . __('System ID') . '</h4>'));
                 $label = Widget::Label(__('Value'));
-                $label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:id]', General::sanitize($id)));
+                $input = Widget::Input('fields[filter]['.$section_id.'][system:id]', General::sanitize($id));
+                $input->setAttribute('data-search-types', 'parameters');
+                $input->setAttribute('data-trigger', '{$');
+                $label->appendChild($input);
                 $li->appendChild($label);
                 $ol->appendChild($li);
             }
@@ -366,7 +369,10 @@ class contentBlueprintsDatasources extends ResourcesPage
             $li->setAttribute('data-type', 'system:id');
             $li->appendChild(new XMLElement('header', '<h4>' . __('System ID') . '</h4>'));
             $label = Widget::Label(__('Value'));
-            $label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:id]'));
+            $input = Widget::Input('fields[filter]['.$section_id.'][system:id]', General::sanitize($id));
+            $input->setAttribute('data-search-types', 'parameters');
+            $input->setAttribute('data-trigger', '{$');
+            $label->appendChild($input);
             $li->appendChild($label);
             $ol->appendChild($li);
 
@@ -384,9 +390,10 @@ class contentBlueprintsDatasources extends ResourcesPage
                 $li->setAttribute('data-type', 'system:creation-date');
                 $li->appendChild(new XMLElement('header', '<h4>' . __('System Creation Date') . '</h4>'));
                 $label = Widget::Label(__('Value'));
-                $label->appendChild(
-                    Widget::Input('fields[filter]['.$section_id.'][system:creation-date]', General::sanitize($creation_date))
-                );
+                $input = Widget::Input('fields[filter]['.$section_id.'][system:creation-date]', General::sanitize($creation_date));
+                $input->setAttribute('data-search-types', 'parameters');
+                $input->setAttribute('data-trigger', '{$');
+                $label->appendChild($input);
                 $li->appendChild($label);
                 $ol->appendChild($li);
             }
@@ -396,7 +403,10 @@ class contentBlueprintsDatasources extends ResourcesPage
             $li->setAttribute('data-type', 'system:creation-date');
             $li->appendChild(new XMLElement('header', '<h4>' . __('System Creation Date') . '</h4>'));
             $label = Widget::Label(__('Value'));
-            $label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:creation-date]'));
+            $input = Widget::Input('fields[filter]['.$section_id.'][system:creation-date]');
+            $input->setAttribute('data-search-types', 'parameters');
+            $input->setAttribute('data-trigger', '{$');
+            $label->appendChild($input);
             $li->appendChild($label);
             $ol->appendChild($li);
 
@@ -406,7 +416,10 @@ class contentBlueprintsDatasources extends ResourcesPage
                 $li->setAttribute('data-type', 'system:modification-date');
                 $li->appendChild(new XMLElement('header', '<h4>' . __('System Modification Date') . '</h4>'));
                 $label = Widget::Label(__('Value'));
-                $label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:modification-date]', General::sanitize($fields['filter'][$section_id]['system:modification-date'])));
+                $input = Widget::Input('fields[filter]['.$section_id.'][system:modification-date]', General::sanitize($fields['filter'][$section_id]['system:modification-date']));
+                $input->setAttribute('data-search-types', 'parameters');
+                $input->setAttribute('data-trigger', '{$');
+                $label->appendChild($input);
                 $li->appendChild($label);
                 $ol->appendChild($li);
             }
@@ -416,7 +429,10 @@ class contentBlueprintsDatasources extends ResourcesPage
             $li->setAttribute('data-type', 'system:modification-date');
             $li->appendChild(new XMLElement('header', '<h4>' . __('System Modification Date') . '</h4>'));
             $label = Widget::Label(__('Value'));
-            $label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:modification-date]'));
+            $input = Widget::Input('fields[filter]['.$section_id.'][system:modification-date]');
+            $input->setAttribute('data-search-types', 'parameters');
+            $input->setAttribute('data-trigger', '{$');
+            $label->appendChild($input);
             $li->appendChild($label);
             $ol->appendChild($li);
 

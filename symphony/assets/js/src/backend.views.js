@@ -665,10 +665,10 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 	});
 
 	// Enable parameter suggestions
-	// pagination.symphonySuggestions();
-	// Symphony.Elements.contents.find('.filters-duplicator').symphonySuggestions();
-	// Symphony.Elements.contents.find('.ds-order').symphonySuggestions();
-	// Symphony.Elements.contents.find('.ds-param').symphonySuggestions({
+	Symphony.Elements.contents.find('.filters-duplicator, .ds-order, .ds-param').add(pagination).each(function() {
+		Symphony.Interface.Suggestions.init(this, 'input:visible');
+	});
+	// Symphony.Elements.contents.find('').symphonySuggestions({
 	// 	trigger: '$',
 	// 	source: Symphony.Context.get('path') + '/ajax/parameters/?filter=page&template=$%s'
 	// });

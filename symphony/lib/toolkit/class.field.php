@@ -1196,7 +1196,7 @@ class Field
      * - `association` for searching entries in associated sections
      * - `static` for searching static values
      * - `date` for searching in a calendar
-     * - `environment` for searching in parameters
+     * - `parameters` for searching in parameters
      *
      * If the date type is set, only the calendar will be shown in the suggestion dropdown.
      *
@@ -1230,7 +1230,10 @@ class Field
         )));
 
         $label = Widget::Label(__('Value'));
-        $label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : null), 'text', array('autocomplete' => 'off')));
+        $input = Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : null), 'text', array('autocomplete' => 'off'));
+        $input->setAttribute('data-search-types', 'parameters');
+        $input->setAttribute('data-trigger', '{$');
+        $label->appendChild($input);
 
         $filterTags = new XMLElement('ul');
         $filterTags->setAttribute('class', 'tags singular');
