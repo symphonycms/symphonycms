@@ -10,7 +10,6 @@
 .suggestions {
 	position: absolute;
 	overflow: hidden;
-	overflow: auto;
 	box-sizing: border-box;
 	width: 100%;
 	max-height: 0;
@@ -27,10 +26,6 @@
 	z-index: 10000;
 }
 
-.suggestions[data-search-types='date'] {
-	overflow: visible;
-}
-
 @media screen and (min-width: 700px) {
 
 	.column .suggestions {
@@ -43,6 +38,11 @@ textarea:focus ~ .suggestions:not(:empty) {
 	max-height: 35rem;
 	transition: opacity 0s ease-in 0.15s, max-height 0s ease-in 0s;
 	opacity: 1;
+	overflow: auto;
+}
+
+input:focus ~ .suggestions[data-search-types='date'] {
+	overflow: visible;
 }
 
 .suggestions li:not(.calendar) {

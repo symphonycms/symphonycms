@@ -221,7 +221,7 @@
 	-------------------------------------------------------------------------*/
 
 		// Suggestions
-		objects.addClass('suggestions');
+		// objects.addClass('suggestions');
 
 		// Build suggestion list
 		var suggestions = $('<ul class="suggestionlist" />').hide();
@@ -244,23 +244,23 @@
 		Functions
 	-------------------------------------------------------------------------*/
 
-		function stayInFocus() {
-			var active = suggestions.find('li.active'),
-				distance;
+		// function stayInFocus() {
+		// 	var active = suggestions.find('li.active'),
+		// 		distance;
 
-			// Get distance
-			if(!active.is(':visible:first')) {
-				distance = ((active.prevAll(':visible').length + 1) * active.outerHeight()) - 180;
-			}
-			else {
-				distance = 0;
-			}
+		// 	// Get distance
+		// 	if(!active.is(':visible:first')) {
+		// 		distance = ((active.prevAll(':visible').length + 1) * active.outerHeight()) - 180;
+		// 	}
+		// 	else {
+		// 		distance = 0;
+		// 	}
 
-			// Focus
-			suggestions.animate({
-				'scrollTop': distance
-			}, 150);
-		}
+		// 	// Focus
+		// 	suggestions.animate({
+		// 		'scrollTop': distance
+		// 	}, 150);
+		// }
 
 	/*-------------------------------------------------------------------------
 		Events
@@ -307,70 +307,70 @@
 		});
 
 		// Hide suggestions
-		objects.on('blur.suggestions', 'input', function suggest() {
-			var current = $(this).next('ul.suggestionlist');
+		// objects.on('blur.suggestions', 'input', function suggest() {
+		// 	var current = $(this).next('ul.suggestionlist');
 
-			setTimeout(function hideSuggestions() {
-				current.hide();
-			}, 200);
-		});
+		// 	setTimeout(function hideSuggestions() {
+		// 		current.hide();
+		// 	}, 200);
+		// });
 
 		// Keyboard interactions
-		objects.on('keydown.suggestions', 'input', function keyboardSuggestion(event) {
-			if(suggestions.is(':visible')) {
-				var active = suggestions.find('li.active');
+		// objects.on('keydown.suggestions', 'input', function keyboardSuggestion(event) {
+		// 	if(suggestions.is(':visible')) {
+		// 		var active = suggestions.find('li.active');
 
-				// Down
-				if(event.which == 40) {
-					event.preventDefault();
-					var next = active.nextAll('li:visible:first');
-					active.removeClass('active');
+		// 		// Down
+		// 		if(event.which == 40) {
+		// 			event.preventDefault();
+		// 			var next = active.nextAll('li:visible:first');
+		// 			active.removeClass('active');
 
-					// First
-					if(active.length === 0 || next.length === 0) {
-						suggestions.find('li:visible:first').addClass('active');
-					}
+		// 			// First
+		// 			if(active.length === 0 || next.length === 0) {
+		// 				suggestions.find('li:visible:first').addClass('active');
+		// 			}
 
-					// Next
-					else {
-						next.addClass('active');
-					}
+		// 			// Next
+		// 			else {
+		// 				next.addClass('active');
+		// 			}
 
-					stayInFocus();
-				}
+		// 			stayInFocus();
+		// 		}
 
-				// Up
-				if(event.which == 38) {
-					event.preventDefault();
-					var prev = active.prevAll('li:visible:first');
-					active.removeClass('active');
+		// 		// Up
+		// 		if(event.which == 38) {
+		// 			event.preventDefault();
+		// 			var prev = active.prevAll('li:visible:first');
+		// 			active.removeClass('active');
 
-					// last
-					if(active.length === 0 || prev.length === 0) {
-						suggestions.find('li:visible:last').addClass('active');
-					}
+		// 			// last
+		// 			if(active.length === 0 || prev.length === 0) {
+		// 				suggestions.find('li:visible:last').addClass('active');
+		// 			}
 
-					// Next
-					else {
-						prev.addClass('active');
-					}
+		// 			// Next
+		// 			else {
+		// 				prev.addClass('active');
+		// 			}
 
-					stayInFocus();
-				}
+		// 			stayInFocus();
+		// 		}
 
-				// Enter
-				if(event.which == 13) {
-					event.preventDefault();
-					active.trigger('click.suggestions');
-				}
-			}
-		});
+		// 		// Enter
+		// 		if(event.which == 13) {
+		// 			event.preventDefault();
+		// 			active.trigger('click.suggestions');
+		// 		}
+		// 	}
+		// });
 
 		// Highlight active suggestions
-		suggestions.on('mouseover.suggestions', 'li', function hoverSuggestion() {
-			suggestions.find('li').removeClass('active');
-			$(this).addClass('active');
-		});
+		// suggestions.on('mouseover.suggestions', 'li', function hoverSuggestion() {
+		// 	suggestions.find('li').removeClass('active');
+		// 	$(this).addClass('active');
+		// });
 
 		// Select
 		suggestions.on('click.suggestions', 'li', function addSuggestion() {

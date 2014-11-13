@@ -47,14 +47,75 @@
 			storage.on('input.calendar', updateDate);
 		};
 
+	/*-------------------------------------------------------------------------
+		Event handling
+	-------------------------------------------------------------------------*/
+
 		/**
-		 * Load calendar template and add week day titles.
+		 * Switch sheets.
+		 *
+		 * @param Event event
+		 *  The click event
 		 */
-		var prepareTemplate = function() {
-			template = $(template);
+		var switchSheet = function(event) {
+			var selector;
 			
-			renderTitles();
+			event.stopPropagation();
+			event.preventDefault();
+
+			selector = calendar.find('.switch');
+			selector.addClass('select');
+
+			// Close selector
+			Symphony.Elements.body.on('click.calendar', function(event) {
+				var target = $(event.target);
+
+				if(!target.parents('.switch').length) {
+					selector.removeClass('select');
+					Symphony.Elements.body.off('click.calendar');
+				}
+			});
 		};
+
+		/**
+		 * Switch months.
+		 *
+		 * @param Event event
+		 *  The click event
+		 */
+		var switchMonth = function(event) {
+			clndr.setMonth(event.target.textContent);
+		};
+
+		/**
+		 * Switch year.
+		 *
+		 * @param Event event
+		 *  The click event
+		 */
+		var switchYear = function(event) {
+			clndr.setYear(event.target.textContent);
+		};
+
+		/**
+		 * Focus current date.
+		 */
+		var focusDate = function() {
+			clndr.setMonth(datetime.get('month'));
+			clndr.setYear(datetime.get('year'));
+		};
+
+		/**
+		 * Set current date to active in calendar view.
+		 */
+		var updateDate = function() {
+			storeDate();
+			focusDate();
+		};
+
+	/*-------------------------------------------------------------------------
+		Calendar
+	-------------------------------------------------------------------------*/
 
 		/**
 		 * Create CLNDR instance.
@@ -164,63 +225,14 @@
 		var select = function(day) {
 			var date = day.date;
 
-			date.subtract(date.zone(), 'minutes');
 			datetime.set('year', date.year());
 			datetime.set('month', date.month());
 			datetime.set('date', date.date());
-
-			console.log(datetime.format(format), storage);
 
 			storage.val(datetime.format(format));
 
 			calendar.find('.active').removeClass('active');
 			day.element.classList.add('active');
-		};
-
-		/**
-		 * Switch sheets.
-		 *
-		 * @param Event event
-		 *  The click event
-		 */
-		var switchSheet = function(event) {
-			var selector;
-			
-			event.stopPropagation();
-			event.preventDefault();
-
-			selector = calendar.find('.switch');
-			selector.addClass('select');
-
-			// Close selector
-			Symphony.Elements.body.on('click.calendar', function(event) {
-				var target = $(event.target);
-
-				if(!target.parents('.switch').length) {
-					selector.removeClass('select');
-					Symphony.Elements.body.off('click.calendar');
-				}
-			});
-		};
-
-		/**
-		 * Switch months.
-		 *
-		 * @param Event event
-		 *  The click event
-		 */
-		var switchMonth = function(event) {
-			clndr.setMonth(event.target.textContent);
-		};
-
-		/**
-		 * Switch year.
-		 *
-		 * @param Event event
-		 *  The click event
-		 */
-		var switchYear = function(event) {
-			clndr.setYear(event.target.textContent);
 		};
 
 		/**
@@ -230,27 +242,24 @@
 			var date = storage.val();
 
 			if(date) {
-				datetime = moment.utc(date, format);		
+				datetime = moment(date, format);		
 			}
 			else {
-				datetime = moment.utc();
+				datetime = moment();
 			}
 		};
 
-		/**
-		 * Focus current date.
-		 */
-		var focusDate = function() {
-			clndr.setMonth(datetime.get('month'));
-			clndr.setYear(datetime.get('year'));
-		};
+	/*-------------------------------------------------------------------------
+		Utilities
+	-------------------------------------------------------------------------*/
 
 		/**
-		 * Set current date to active in calendar view.
+		 * Load calendar template and add week day titles.
 		 */
-		var updateDate = function() {
-			storeDate();
-			focusDate();
+		var prepareTemplate = function() {
+			template = $(template);
+			
+			renderTitles();
 		};
 
 		// API

@@ -665,13 +665,13 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 	});
 
 	// Enable parameter suggestions
-	pagination.symphonySuggestions();
-	Symphony.Elements.contents.find('.filters-duplicator').symphonySuggestions();
-	Symphony.Elements.contents.find('.ds-order').symphonySuggestions();
-	Symphony.Elements.contents.find('.ds-param').symphonySuggestions({
-		trigger: '$',
-		source: Symphony.Context.get('path') + '/ajax/parameters/?filter=page&template=$%s'
-	});
+	// pagination.symphonySuggestions();
+	// Symphony.Elements.contents.find('.filters-duplicator').symphonySuggestions();
+	// Symphony.Elements.contents.find('.ds-order').symphonySuggestions();
+	// Symphony.Elements.contents.find('.ds-param').symphonySuggestions({
+	// 	trigger: '$',
+	// 	source: Symphony.Context.get('path') + '/ajax/parameters/?filter=page&template=$%s'
+	// });
 
 	// Toggle filter help
 	Symphony.Elements.contents.find('.filters-duplicator').on('input.admin change.admin', 'input', function toggleFilterHelp(event) {

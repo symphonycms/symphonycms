@@ -1,48 +1,53 @@
+/**
+ * @package assets
+ */
+
 (function($, Symphony) {
 	'use strict';
 
+	/**
+	 * Filtering interface for the publish area.
+	 */
 	Symphony.Interface.Filtering = function() {
 		var filtering, duplicator, apply;
 
+		/**
+		 * Initialise filtering interface.
+		 */
 		var init = function() {
 			filtering = Symphony.Elements.context.find('.filtering');
 			duplicator = filtering.find('.filters-duplicator');
 			apply = duplicator.find('.apply');
 
-			// Add apply button
-			$('<button/>', {
-				'text': 'Apply filters',
-				'class': 'apply-filters',
-				'click': handleFiltering
-			}).insertBefore(apply);
+			// Add buttons
+			createAddButton();
+			createClearButton();
 
-			// Add clear button
-			$('<button/>', {
-				'text': 'Clear filters',
-				'class': 'clear-filters delete',
-				'click': handleClearing
-			}).insertBefore(apply);
-
-			// Apply filtering
+			// Handle filtering
 			filtering.on('keyup.filtering', '.filter', handleFiltering);
 			filtering.on('change.filtering', '.filter', handleFiltering);
-
-			// Clear single filter
 			duplicator.on('destructstop.duplicator', filter);
-
-			// Show suggestions
-			Symphony.Interface.Suggestions.init(filtering, '.filter');
 
 			// Show help
 			duplicator.on('constructstop.duplicator', '.instance', handleComparisons);
 			filtering.on('change', '.comparison', handleComparisons);
 			filtering.find('.instance').each(handleComparisons);
+
+			// Show suggestions
+			Symphony.Interface.Suggestions.init(filtering, '.filter');
 		};
 
 	/*-------------------------------------------------------------------------
 		Event handling
 	-------------------------------------------------------------------------*/
 
+		/**
+		 * Apply filtering if either the input field is left or
+		 * if the enter key was pressed.
+		 *
+		 * @param Event event
+		 *  The keyup or change event
+		 */
 		var handleFiltering = function(event) {
 			var target = $(event.target);
 
@@ -54,6 +59,12 @@
 			}
 		};
 
+		/**
+		 * Clear filters on click.
+		 *
+		 * @param Event event
+		 *  The click event
+		 */
 		var handleClearing = function(event) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -61,6 +72,13 @@
 			clear();
 		};
 
+		/**
+		 * Update help text, if the user changes the comparison mode or
+		 * adds a new filter panel.
+		 *
+		 * @param Event event
+		 *  The keyup or change event
+		 */
 		var handleComparisons = function() {
 			var item = $(this),
 				comparison;
@@ -81,6 +99,9 @@
 		Filtering
 	-------------------------------------------------------------------------*/
 
+		/**
+		 * Apply filters.
+		 */
 		var filter = function() {
 			var filters = build(),
 				base, url;
@@ -93,6 +114,9 @@
 			window.location = url;
 		};
 
+		/**
+		 * Build filter string to be used in the URL.
+		 */
 		var build = function() {
 			var filters = [];
 
@@ -108,10 +132,21 @@
 			return filters.join('&');
 		};
 
+		/**
+		 * Clear all filters.
+		 */
 		var clear = function() {
 			window.location = Symphony.Context.get('symphony') + Symphony.Context.get('route');
 		};
 
+		/**
+		 * Switch help texts.
+		 *
+		 * @param jQuery item
+		 *  The filter instance
+		 * @param string comparison
+		 *  The selected comparison mode
+		 */
 		var switchHelp = function(item, comparison) {
 			var help = item.find('.suggestions .help');
 
@@ -123,7 +158,36 @@
 			help.filter('[data-comparison="' + comparison + '"]').addClass('active');
 		};
 
-		// API
+	/*-------------------------------------------------------------------------
+		Utilities
+	-------------------------------------------------------------------------*/
+
+		/**
+		 * Create add button.
+		 */
+		var createAddButton = function() {
+			$('<button/>', {
+				'text': 'Apply filters',
+				'class': 'apply-filters',
+				'click': handleFiltering
+			}).insertBefore(apply);
+		};
+
+		/**
+		 * Create clear button.
+		 */
+		var createClearButton = function() {
+			$('<button/>', {
+				'text': 'Clear filters',
+				'class': 'clear-filters delete',
+				'click': handleClearing
+			}).insertBefore(apply);
+		};
+
+	/*-------------------------------------------------------------------------
+		Public API
+	-------------------------------------------------------------------------*/
+
 		return {
 			init: init
 		};
