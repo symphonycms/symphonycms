@@ -453,6 +453,10 @@ class FieldAuthor extends Field implements ExportableField
                 AND (
                     t{$field_id}_{$this->_key}.author_id {$regex} '{$pattern}'
                     OR t{$field_id}_{$this->_key}_authors.username {$regex} '{$pattern}'
+                    OR CONCAT_WS(' ',
+                        t{$field_id}_{$this->_key}_authors.first_name,
+                        t{$field_id}_{$this->_key}_authors.last_name
+                    ) {$regex} '{$pattern}'
                 )
             ";
 
@@ -480,7 +484,13 @@ class FieldAuthor extends Field implements ExportableField
                             ON (t{$field_id}_{$this->_key}.author_id = t{$field_id}_{$this->_key}_authors.id)
                     ";
                     $where .= "
-                        AND t{$field_id}_{$this->_key}_authors.username = '{$value}'
+                        AND (
+                            t{$field_id}_{$this->_key}_authors.username = '{$value}'
+                            OR CONCAT_WS(' ',
+                                t{$field_id}_{$this->_key}_authors.first_name,
+                                t{$field_id}_{$this->_key}_authors.last_name
+                            ) = '{$value}'
+                        )
                     ";
                 }
             }
@@ -509,7 +519,11 @@ class FieldAuthor extends Field implements ExportableField
                     t{$field_id}_{$this->_key}.author_id IN ('{$data}')
                     OR
                     t{$field_id}_{$this->_key}_authors.username IN ('{$data}')
-                    )
+                    OR CONCAT_WS(' ',
+                        t{$field_id}_{$this->_key}_authors.first_name,
+                        t{$field_id}_{$this->_key}_authors.last_name
+                    ) IN ('{$data}')
+                )
             ";
         }
 
