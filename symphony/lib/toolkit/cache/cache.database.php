@@ -14,8 +14,7 @@
   *
   * @see ExtensionManager#getCacheProvider()
   */
-
-class CacheDatabase implements iCache
+class CacheDatabase implements iNamespacedCache
 {
     /**
      * An instance of the MySQL class to communicate with `tbl_cache`

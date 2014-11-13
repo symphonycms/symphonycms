@@ -5,11 +5,12 @@
  */
 /**
  * This interface is to be implemented by Extensions who wish to provide
- * cacheable objects for Symphony to use.
+ * cacheable objects for Symphony to use and whose cache providers support
+ * namespacing to make bulk read, writes and deletes.
  *
- * @since Symphony 2.3.5
+ * @since Symphony 2.6.0
  */
-interface iCache
+interface iNamespacedCache
 {
     /**
      * Returns the human readable name of this cache type. This is
@@ -37,12 +38,14 @@ interface iCache
      *
      * @param string $hash
      *  The hash of the Cached object, as defined by the user
+     * @param string $namespace
+     *  The namespace allows a group of data to be retrieved at once
      * @return array|boolean
      *  An associative array of the cached object including the creation time,
      *  expiry time, the hash and the data. If the object is not found, false will
      *  be returned.
      */
-    public function read($hash);
+    public function read($hash, $namespace = null);
 
     /**
      * This function will compress data for storage in `tbl_cache`.
@@ -60,10 +63,13 @@ interface iCache
      * @param integer $ttl
      *  A integer representing how long the data should be valid for in minutes.
      *  By default this is null, meaning the data is valid forever
+     * @param string $namespace
+     *  The namespace allows data to be grouped and saved so it can be
+     *  retrieved later.
      * @return boolean
      *  If an error occurs, this function will return false otherwise true
      */
-    public function write($hash, $data, $ttl = null);
+    public function write($hash, $data, $ttl = null, $namespace = null);
 
     /**
      * Given the hash of a cacheable object, remove it from `tbl_cache`
@@ -74,6 +80,8 @@ interface iCache
      * @see core.Cacheable#optimise()
      * @param string $hash
      *  The hash of the Cached object, as defined by the user
+     * @param string $namespace
+     *  The namespace allows similar data to be deleted quickly.
      */
-    public function delete($hash);
+    public function delete($hash, $namespace = null);
 }
