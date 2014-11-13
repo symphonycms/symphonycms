@@ -18,9 +18,9 @@
 .drawer-filtering .frame.empty ol::before {
 	content: attr(data-empty);
 	display: block;
-	line-height: 3.3rem;
 	color: #b4b4b4;
 	font-size: 1.1rem;
+	line-height: 3.3rem;
 }
 
 .drawer-filtering .instance {
@@ -45,8 +45,9 @@
 /* Buttons */
 
 .drawer-filtering .clear-filters {
-	margin-top: 1rem;
-	margin-left: 0;
+	position: absolute;
+	bottom: 0rem;
+	left: -1rem;
 	cursor: pointer;
 }
 
