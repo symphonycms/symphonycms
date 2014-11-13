@@ -529,7 +529,7 @@ abstract class Symphony implements Singleton
                 $token
             ));
 
-            self::Database()->delete('tbl_forgotpass', sprintf(" `token` = %s ", $token));
+            self::Database()->delete('tbl_forgotpass', sprintf(" `token` = '%s' ", $token));
         } else {
             $row = self::Database()->fetchRow(0, sprintf(
                 "SELECT `id`, `username`, `password`
