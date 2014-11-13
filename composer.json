@@ -17,7 +17,7 @@
     },
     "minimum-stability": "stable",
     "autoload": {
-      "classmap": ["symphony/content", "symphony/lib", "symphony/template"],
+      "classmap": ["symphony/content", "symphony/lib", "symphony/template", "install"],
       "files": [
         "symphony/lib/boot/func.utilities.php",
         "symphony/lib/boot/defines.php",
