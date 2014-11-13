@@ -129,8 +129,13 @@
 				var item = $(this),
 					comparison = item.find('.comparison').val(),
 					query = item.find('.filter'),
-					value = 'filter[' + query.attr('name') + ']=' + (comparison ? comparison : '') + query.val();
+					value;
 
+				if(!$.trim(comparison)) {
+					comparison = '';
+				}
+
+				value = 'filter[' + query.attr('name') + ']=' + comparison + $.trim(query.val());
 				filters.push(value);
 			});
 
