@@ -82,7 +82,7 @@ class contentPublish extends AdministrationPage
         $count = EntryManager::fetchCount($section_id);
 
         if ($filter !== 'no' && $count > 1) {
-            $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), $this->createFilteringDrawer($section, $section_id));
+            $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), $this->createFilteringDrawer($section));
             $drawer->addClass('drawer-filtering');
             $this->insertDrawer($drawer);
         }
@@ -91,18 +91,16 @@ class contentPublish extends AdministrationPage
     /**
      * Create filtering drawer
      */
-    public function createFilteringDrawer($section, $section_id)
+    public function createFilteringDrawer($section)
     {
         $this->filteringForm = Widget::Form(null, 'get', 'filtering');
-        $this->createFilteringDuplicator($section, $section_id);
+        $this->createFilteringDuplicator($section);
 
         return $this->filteringForm;
     }
 
-    public function createFilteringDuplicator($section, $section_id)
+    public function createFilteringDuplicator($section)
     {
-        $filters = $_GET['filter'];
-
         $div = new XMLElement('div');
         $div->setAttribute('class', 'frame filters-duplicator');
         $div->setAttribute('data-interactive', 'data-interactive');
@@ -112,6 +110,17 @@ class contentPublish extends AdministrationPage
         $ol->setAttribute('data-remove', __('Clear filter'));
         $ol->setAttribute('data-empty', __('No filters applied yet.'));
 
+        $this->createFieldFilters($ol, $section);
+        $this->createSystemDateFilters($ol);
+
+        $div->appendChild($ol);
+        $this->filteringForm->appendChild($div);
+    }
+
+    private function createFieldFilters(&$wrapper, $section)
+    {
+        $filters = $_GET['filter'];
+ 
         foreach ($section->fetchFilterableFields() as $field) {
             if (!$field->canPublishFilter()) {
                 continue;
@@ -133,16 +142,74 @@ class contentPublish extends AdministrationPage
 
             // Add existing filter
             if (isset($filter)) {
-                $this->createFilter($ol, $data);
+                $this->createFilter($wrapper, $data);
             }
 
             // Add filter template
             $data['instance'] = 'unique template';
-            $this->createFilter($ol, $data);
+            $data['query'] = '';
+            $this->createFilter($wrapper, $data);
         }
+    }
 
-        $div->appendChild($ol);
-        $this->filteringForm->appendChild($div);
+    private function createSystemDateFilters(&$wrapper)
+    {
+        $filters = $_GET['filter'];
+
+        $fields = array(
+            array(
+                'type' => 'system:creation-date',
+                'label' => __('System Creation Date')
+            ),
+            array(
+                'type' => 'system:modification-date',
+                'label' => __('System Modification Date')
+            )
+        );
+
+        $operators = array(
+            array(
+                'title' => 'later than',
+                'filter' => 'later than '
+            ),
+            array(
+                'title' => 'earlier than',
+                'filter' => 'earlier than '
+            ),
+            array(
+                'title' => 'equal to or later than',
+                'filter' => 'equal to or later than '
+            ),
+            array(
+                'title' => 'equal to or earlier than',
+                'filter' => 'equal to or earlier than '
+            ),
+        );
+
+        foreach ($fields as $field) {
+            $filter = $filters[$field['type']];
+
+            // Filter data
+            $data = array();
+            $data['type'] = $field['type'];
+            $data['name'] = $field['label'];
+            $data['filter'] = $filter;
+            $data['instance'] = 'unique';
+            $data['search'] = array('date');
+            $data['operators'] = $operators;
+            $data['comparisons'] = $this->createFilterComparisons($data);
+            $data['query'] = $this->getFilterQuery($data, $filter);
+
+            // Add existing filter
+            if (isset($filter)) {
+                $this->createFilter($wrapper, $data);
+            }
+
+            // Add filter template
+            $data['instance'] = 'unique template';
+            $data['query'] = '';
+            $this->createFilter($wrapper, $data);
+        }
     }
 
     private function createFilter(&$wrapper, $data)
