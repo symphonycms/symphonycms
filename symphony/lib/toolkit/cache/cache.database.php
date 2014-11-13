@@ -11,7 +11,7 @@
   *
   * This cache will be initialised by default if no other caches are specified
   * in the install.
-  * 
+  *
   * @see ExtensionManager#getCacheProvider()
   */
 
@@ -70,24 +70,50 @@ class CacheDatabase implements iCache
      *
      * @param string $hash
      *  The hash of the Cached object, as defined by the user
+     * @param string $namespace
+     *  The namespace allows a group of data to be retrieved at once
      * @return array|boolean
      *  An associative array of the cached object including the creation time,
      *  expiry time, the hash and the data. If the object is not found, false will
      *  be returned.
      */
-    public function read($hash)
+    public function read($hash, $namespace = null)
     {
-        if ($c = $this->Database->fetchRow(0, "SELECT SQL_NO_CACHE * FROM `tbl_cache` WHERE `hash` = '$hash' AND (`expiry` IS NULL OR UNIX_TIMESTAMP() <= `expiry`) LIMIT 1")) {
-            if (!$c['data'] = Cacheable::decompressData($c['data'])) {
-                $this->delete($hash);
+        $data = false;
+
+        // Check namespace first
+        if (!is_null($namespace)) {
+            $data = $this->Database->fetch("
+                SELECT SQL_NO_CACHE *
+                FROM `tbl_cache`
+                WHERE `namespace` = '$namepspace'
+                AND (`expiry` IS NULL OR UNIX_TIMESTAMP() <= `expiry`)
+            ");
+        }
+
+        // Then check hash
+        if (!is_null($hash)) {
+            $data = $this->Database->fetchRow(0, "
+                SELECT SQL_NO_CACHE *
+                FROM `tbl_cache`
+                WHERE `hash` = '$hash'
+                AND (`expiry` IS NULL OR UNIX_TIMESTAMP() <= `expiry`)
+                LIMIT 1
+            ");
+        }
+
+        // If the data exists, see if it's still valid
+        if ($data) {
+            if (!$data['data'] = Cacheable::decompressData($data['data'])) {
+                $this->delete($hash, $namespace);
 
                 return false;
             }
 
-            return $c;
+            return $data;
         }
 
-        $this->delete();
+        $this->delete(null, $namespace);
 
         return false;
     }
@@ -101,6 +127,7 @@ class CacheDatabase implements iCache
      * mechanism.
      *
      * @see toolkit.Mutex
+     * @throws DatabaseException
      * @param string $hash
      *  The hash of the Cached object, as defined by the user
      * @param string $data
@@ -108,11 +135,13 @@ class CacheDatabase implements iCache
      * @param integer $ttl
      *  A integer representing how long the data should be valid for in minutes.
      *  By default this is null, meaning the data is valid forever
-     * @throws DatabaseException
+     * @param string $namespace
+     *  The namespace allows data to be grouped and saved so it can be
+     *  retrieved later.
      * @return boolean
      *  If an error occurs, this function will return false otherwise true
      */
-    public function write($hash, $data, $ttl = null)
+    public function write($hash, $data, $ttl = null, $namespace = null)
     {
         if (!Mutex::acquire($hash, 2, TMP)) {
             return false;
@@ -122,7 +151,6 @@ class CacheDatabase implements iCache
         $expiry = null;
 
         $ttl = intval($ttl);
-
         if ($ttl > 0) {
             $expiry = $creation + ($ttl * 60);
         }
@@ -131,8 +159,14 @@ class CacheDatabase implements iCache
             return false;
         }
 
-        $this->delete($hash);
-        $this->Database->insert(array('hash' => $hash, 'creation' => $creation, 'expiry' => $expiry, 'data' => $data), 'tbl_cache');
+        $this->delete($hash, $namespace);
+        $this->Database->insert(array(
+            'hash' => $hash,
+            'creation' => $creation,
+            'expiry' => $expiry,
+            'data' => $data,
+            'namespace' => $namespace
+        ), 'tbl_cache');
 
         Mutex::release($hash, TMP);
 
@@ -146,14 +180,18 @@ class CacheDatabase implements iCache
      * After removing, the function uses the `__optimise` function
      *
      * @see core.Cacheable#optimise()
+     * @throws DatabaseException
      * @param string $hash
      *  The hash of the Cached object, as defined by the user
-     * @throws DatabaseException
+     * @param string $namespace
+     *  The namespace allows similar data to be deleted quickly.
      */
-    public function delete($hash = null)
+    public function delete($hash = null, $namespace = null)
     {
         if (!is_null($hash)) {
             $this->Database->delete("`tbl_cache`", sprintf("`hash` = '%s'", $hash));
+        } elseif (!is_null($namespace)) {
+            $this->Database->delete("`tbl_cache`", sprintf("`namespace` = '%s'", $namespace));
         } else {
             $this->Database->delete("`tbl_cache`", "UNIX_TIMESTAMP() > `expiry`");
         }

@@ -42,7 +42,7 @@ interface iCache
      *  expiry time, the hash and the data. If the object is not found, false will
      *  be returned.
      */
-    public function read($hash);
+    public function read($hash, $namespace = null);
 
     /**
      * This function will compress data for storage in `tbl_cache`.
@@ -63,7 +63,7 @@ interface iCache
      * @return boolean
      *  If an error occurs, this function will return false otherwise true
      */
-    public function write($hash, $data, $ttl = null);
+    public function write($hash, $data, $ttl = null, $namespace = null);
 
     /**
      * Given the hash of a cacheable object, remove it from `tbl_cache`
@@ -75,5 +75,5 @@ interface iCache
      * @param string $hash
      *  The hash of the Cached object, as defined by the user
      */
-    public function delete($hash);
+    public function delete($hash, $namespace = null);
 }
