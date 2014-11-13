@@ -262,7 +262,14 @@ class contentPublish extends AdministrationPage
 
         // Custom field comparisons
         foreach ($data['operators'] as $operator) {
-            $comparisons[] = array($operator['filter'], (strpos($data['filter'], $operator['filter']) === 0), __($operator['title']));
+            $selected = false;
+            $filter = trim($operator['filter']);
+
+            if(!empty($filter) && strpos(trim($data['filter']), $filter) === 0) {
+                $selected = true;
+            }
+
+            $comparisons[] = array($operator['filter'], $selected, __($operator['title']));
         }
 
         return $comparisons;
@@ -309,12 +316,14 @@ class contentPublish extends AdministrationPage
         $query = $data['filter'];
 
         foreach ($data['operators'] as $operator) {
-            if (strpos($data['filter'], $operator['filter']) === 0) {
+            $filter = trim($operator['filter']);
+
+            if (!empty($filter) && strpos($data['filter'], $filter) === 0) {
                 $query = substr($data['filter'], strlen($operator['filter']));
             }
         }
 
-        return $query;
+        return (string)$query;
     }
 
     public function build(array $context = array())
