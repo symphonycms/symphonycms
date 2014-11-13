@@ -447,28 +447,28 @@ class contentBlueprintsDatasources extends ResourcesPage
             $ol->appendChild($li);
 
             if (is_array($section_data['fields']) && !empty($section_data['fields'])) {
-                foreach ($section_data['fields'] as $input) {
+                foreach ($section_data['fields'] as $field) {
 
-                    if (!$input->canFilter()) {
+                    if (!$field->canFilter()) {
                         continue;
                     }
 
-                    if (isset($fields['filter'][$section_id], $fields['filter'][$section_id][$input->get('id')])) {
+                    if (isset($fields['filter'][$section_id], $fields['filter'][$section_id][$field->get('id')])) {
                         $wrapper = new XMLElement('li');
                         $wrapper->setAttribute('class', 'unique');
-                        $wrapper->setAttribute('data-type', $input->get('element_name'));
-                        $errors = isset($this->_errors[$input->get('id')])
-                            ? $this->_errors[$input->get('id')]
+                        $wrapper->setAttribute('data-type', $field->get('element_name'));
+                        $errors = isset($this->_errors[$field->get('id')])
+                            ? $this->_errors[$field->get('id')]
                             : array();
 
-                        $input->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_id][$input->get('id')], $errors, $section_id);
+                        $field->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_id][$field->get('id')], $errors, $section_id);
                         $ol->appendChild($wrapper);
                     }
 
                     $wrapper = new XMLElement('li');
                     $wrapper->setAttribute('class', 'unique template');
-                    $wrapper->setAttribute('data-type', $input->get('element_name'));
-                    $input->displayDatasourceFilterPanel($wrapper, null, null, $section_id);
+                    $wrapper->setAttribute('data-type', $field->get('element_name'));
+                    $field->displayDatasourceFilterPanel($wrapper, null, null, $section_id);
                     $ol->appendChild($wrapper);
 
                 }

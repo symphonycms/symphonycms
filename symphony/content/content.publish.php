@@ -120,12 +120,12 @@ class contentPublish extends AdministrationPage
     private function createFieldFilters(&$wrapper, $section)
     {
         $filters = $_GET['filter'];
- 
+
         foreach ($section->fetchFilterableFields() as $field) {
             if (!$field->canPublishFilter()) {
                 continue;
             }
-        
+
             $filter = $filters[$field->get('element_name')];
 
             // Filter data
@@ -229,18 +229,18 @@ class contentPublish extends AdministrationPage
         // Comparisons
         $label = Widget::Label();
         $label->setAttribute('class', 'column secondary');
-        
+
         $select = Widget::Select($data['type'] . '-comparison', $data['comparisons'], array(
             'class' => 'comparison'
         ));
- 
+
         $label->appendChild($select);
         $div->appendChild($label);
 
         // Query
         $label = Widget::Label();
         $label->setAttribute('class', 'column primary');
-        
+
         $input = Widget::Input($data['type'], $data['query'], 'text', array(
             'placeholder' => __('Type and hit enter to apply filter …'),
             'autocomplete' => 'off'
@@ -249,7 +249,7 @@ class contentPublish extends AdministrationPage
         $label->appendChild($input);
 
         $this->createFilterSuggestions($label, $data);
-        
+
         $div->appendChild($label);
         $li->appendChild($div);
         $wrapper->appendChild($li);
@@ -258,9 +258,7 @@ class contentPublish extends AdministrationPage
     private function createFilterComparisons($data)
     {
         // Default comparison
-        $comparisons = array(
-            array('', false, __('is'))
-        );
+        $comparisons = array();
 
         // Custom field comparisons
         foreach ($data['operators'] as $operator) {
@@ -284,7 +282,7 @@ class contentPublish extends AdministrationPage
             'help' => __('Find values that are an exact match for the given string.')
         );
         $this->createFilterHelp($ul, $operator);
-        
+
         // Add custom filter help
         foreach ($data['operators'] as $operator) {
             $this->createFilterHelp($ul, $operator);
@@ -306,7 +304,7 @@ class contentPublish extends AdministrationPage
         $wrapper->appendChild($li);
     }
 
-    private function getFilterQuery($data) 
+    private function getFilterQuery($data)
     {
         $query = $data['filter'];
 

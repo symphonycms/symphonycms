@@ -1172,6 +1172,11 @@ class Field
     {
         return array(
             array(
+                'title' => 'is',
+                'filter' => ' ',
+                'help' => __('Find values that are an exact match for the given string.')
+            ),
+            array(
                 'title' => 'contains',
                 'filter' => 'regexp: ',
                 'help' => __('Find values that match the given <a href="%s">MySQL regular expressions</a>.', array(
@@ -1239,9 +1244,15 @@ class Field
         $filterTags->setAttribute('class', 'tags singular');
         $filterTags->setAttribute('data-interactive', 'data-interactive');
 
-        foreach ($this->fetchFilterableOperators() as $value) {
-            $item = new XMLElement('li', $value['filter']);
-            $item->setAttribute('data-help', General::sanitize($value['help']));
+        $filters = $this->fetchFilterableOperators();
+        foreach ($filters as $value) {
+            $item = new XMLElement('li', $value['title']);
+            $item->setAttribute('data-value', $value['filter']);
+
+            if (isset($value['help'])) {
+                $item->setAttribute('data-help', General::sanitize($value['help']));
+            }
+
             $filterTags->appendChild($item);
         }
 
@@ -1250,7 +1261,8 @@ class Field
 
         $help = new XMLElement('p');
         $help->setAttribute('class', 'help');
-        $help->setValue(__('Find values that are an exact match for the given string.'));
+        $first = array_shift($filters);
+        $help->setValue($first['help']);
 
         $wrapper->appendChild($help);
     }

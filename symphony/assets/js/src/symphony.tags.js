@@ -37,7 +37,7 @@
 				object = item.parent(),
 				input = object.prev().find('input, textarea'),
 				value = input.val(),
-				tag = item.attr('class') || item.text();
+				tag = item.attr('class') || item.data('value') || item.text();
 
 			// Singular
 			if(object.is('.singular')) {

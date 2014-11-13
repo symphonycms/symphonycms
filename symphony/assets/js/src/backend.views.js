@@ -672,21 +672,20 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 	// Toggle filter help
 	Symphony.Elements.contents.find('.filters-duplicator').on('input.admin change.admin', 'input', function toggleFilterHelp(event) {
 		var item = $(event.target).parents('.instance'),
-			value = event.target.value,
-			filter = value.split(':')[0],
+			value = event.target.value;
+			filter = $.trim(value.split(':')[0]),
 			filters = item.data('filters'),
 			help = item.find('.help');
 
 		// Store filters
 		if(!filters) {
-			filters = {
-				'default': help.html()
-			};
-
+			filters = {};
 			item.find('.tags li').each(function() {
-				var name = $.trim(this.textContent).slice(0, -1);
-
-				filters[name] = this.getAttribute('data-help');
+				var val = $.trim(this.getAttribute('data-value'));
+				if (val.search(/:/)) {
+					val = val.slice(0, -1);
+				}
+				filters[val] = this.getAttribute('data-help');
 			});
 
 			item.data('filters', filters);
@@ -695,11 +694,6 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 		// Filter help
 		if(filters[filter]) {
 			help.html(filters[filter]);
-		}
-
-		// Default help
-		else {
-			help.html(filters['default']);
 		}
 	});
 });
