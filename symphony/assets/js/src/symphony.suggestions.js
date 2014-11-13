@@ -114,21 +114,25 @@
 
 			// Down
 			if(event.which == 40) {
+				event.preventDefault();
 				down(input);
 			}
 
 			// Up
 			else if(event.which == 38) {
+				event.preventDefault();
 				up(input);
 			}
 
 			// Exit
 			else if(event.which == 27) {
+				event.preventDefault();
 				input.blur();
 			}
 
 			// Enter
 			else if(event.which == 13) {
+				event.preventDefault();
 				active = input.next('.suggestions').find('li:not(.help).active').text();
 
 				if(active) {
@@ -211,7 +215,7 @@
 					data: data,
 					success: function(result) {
 						if(types && types.indexOf('parameters') !== -1) {
-							listtoken(suggestions, result);
+							listtoken(input, suggestions, result);
 						}
 						else {
 							list(suggestions, result);
@@ -221,13 +225,19 @@
 			}
 		};
 
-		var listtoken = function(suggestions, result) {
+		var listtoken = function(input, suggestions, result) {
 			var clone = suggestions.clone(),
-				help = clone.find('.help:first');
+				help = clone.find('.help:first'),
+				trigger = input.attr('data-trigger'),
+				prefix = trigger.substr(0, 1);
 
 			$.each(result, function(index, value) {
 				if(index === 'status') {
 					return;
+				}
+
+				if(prefix === '{') {
+					value = '{' + value + '}';
 				}
 
 				var suggestion = $('<li />', {
@@ -300,6 +310,8 @@
 				input.addClass('updated');
 				input.change();
 			}
+
+			clear(input.next('.suggestions'));
 		};
 
 		var insert = function(suggestion, input) {

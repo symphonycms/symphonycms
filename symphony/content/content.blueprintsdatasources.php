@@ -283,18 +283,28 @@ class contentBlueprintsDatasources extends ResourcesPage
         $fieldset->appendChild($p);
 
         $group = new XMLElement('div');
-        $group->setAttribute('class', 'two columns ds-param');
+        $group->setAttribute('class', 'two columns');
 
         $label = Widget::Label(__('Required Parameter'));
-        $label->setAttribute('class', 'column');
+        $label->setAttribute('class', 'column ds-param');
         $label->appendChild(new XMLElement('i', __('Optional')));
-        $label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array('placeholder' => __('$param'))));
+        $input = Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array(
+            'placeholder' => __('$param'),
+            'data-search-types' => 'parameters',
+            'data-trigger' => '$'
+        ));
+        $label->appendChild($input);
         $group->appendChild($label);
 
         $label = Widget::Label(__('Forbidden Parameter'));
-        $label->setAttribute('class', 'column');
+        $label->setAttribute('class', 'column ds-param');
         $label->appendChild(new XMLElement('i', __('Optional')));
-        $label->appendChild(Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array('placeholder' => __('$param'))));
+        $input = Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array(
+            'placeholder' => __('$param'),
+            'data-search-types' => 'parameters',
+            'data-trigger' => '$'
+        ));
+        $label->appendChild($input);
         $group->appendChild($label);
 
         $fieldset->appendChild($group);
@@ -647,9 +657,13 @@ class contentBlueprintsDatasources extends ResourcesPage
         $div->appendChild($label);
 
         $label = Widget::Label(__('Sort Order'));
-        $label->setAttribute('class', 'ds-order');
+        $label->setAttribute('class', 'ds-param');
 
-        $input = Widget::Input('fields[order]', $fields['order']);
+        $input = Widget::Input('fields[order]', $fields['order'], 'text', array(
+            'placeholder' => __('{$param}'),
+            'data-search-types' => 'parameters',
+            'data-trigger' => '{$'
+        ));
         $label->appendChild($input);
         $div->appendChild($label);
 
@@ -713,13 +727,23 @@ class contentBlueprintsDatasources extends ResourcesPage
         $group->setAttribute('class', 'two columns pagination');
 
         $label = Widget::Label(__('Entries per Page'));
-        $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('fields[max_records]', isset($fields['max_records']) ? $fields['max_records'] : '10'));
+        $label->setAttribute('class', 'column ds-param');
+        $input = Widget::Input('fields[max_records]', isset($fields['max_records']) ? $fields['max_records'] : '10', 'text', array(
+            'placeholder' => __('{$param}'),
+            'data-search-types' => 'parameters',
+            'data-trigger' => '{$'
+        ));
+        $label->appendChild($input);
         $group->appendChild($label);
 
         $label = Widget::Label(__('Page Number'));
-        $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('fields[page_number]', $fields['page_number']));
+        $label->setAttribute('class', 'column ds-param');
+        $input = Widget::Input('fields[page_number]', $fields['page_number'], 'text', array(
+            'placeholder' => __('{$param}'),
+            'data-search-types' => 'parameters',
+            'data-trigger' => '{$'
+        ));
+        $label->appendChild($input);
         $group->appendChild($label);
 
         $fieldset->appendChild($group);

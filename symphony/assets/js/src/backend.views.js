@@ -665,13 +665,9 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 	});
 
 	// Enable parameter suggestions
-	Symphony.Elements.contents.find('.filters-duplicator, .ds-order, .ds-param').add(pagination).each(function() {
-		Symphony.Interface.Suggestions.init(this, 'input:visible');
+	Symphony.Elements.contents.find('.filters-duplicator, .ds-param').each(function() {
+		Symphony.Interface.Suggestions.init(this, 'input[type="text"]');
 	});
-	// Symphony.Elements.contents.find('').symphonySuggestions({
-	// 	trigger: '$',
-	// 	source: Symphony.Context.get('path') + '/ajax/parameters/?filter=page&template=$%s'
-	// });
 
 	// Toggle filter help
 	Symphony.Elements.contents.find('.filters-duplicator').on('input.admin change.admin', 'input', function toggleFilterHelp(event) {

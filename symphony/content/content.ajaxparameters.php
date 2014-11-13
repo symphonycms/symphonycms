@@ -8,7 +8,7 @@
 
 class contentAjaxParameters extends JSONPage
 {
-    private $template = '{$%s}';
+    private $template = '$%s';
 
     public function view()
     {
@@ -41,7 +41,6 @@ class contentAjaxParameters extends JSONPage
         sort($params);
         $this->_Result = $params;
     }
-
 
     /**
      * Utilities
