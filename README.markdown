@@ -1,6 +1,6 @@
 # Symphony 2
 
-[![Code Climate](https://codeclimate.com/github/symphonycms/symphony-2.png)](https://codeclimate.com/github/symphonycms/symphony-2)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=integration)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=integration)
 
 - Version: 2.6.0-alpha.1
 - Date: unreleasd
