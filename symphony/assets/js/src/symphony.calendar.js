@@ -245,7 +245,7 @@
 				datetime = moment(date, format);		
 			}
 			else {
-				datetime = moment();
+				datetime = moment({hour: 0, minute: 0, seconds: 0});
 			}
 		};
 
