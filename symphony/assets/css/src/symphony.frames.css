@@ -348,6 +348,10 @@ fieldset.frame,
 -----------------------------------------------------------------------------*/
 
 .collapsible .instance {
+	overflow: visible;
+}
+
+.collapsible .instance.collapsed {
 	overflow: hidden;
 }
 
@@ -380,6 +384,10 @@ fieldset.frame,
 .collapsed.js-animate,
 .destructed.js-animate {
 	transition: max-height 0.25s ease-out;
+}
+
+.collapsible .js-animate {
+	overflow: hidden;
 }
 
 .collapsible .js-animate .content {
