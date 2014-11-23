@@ -21,7 +21,7 @@ class XSRF
      */
     public static function getSessionToken()
     {
-        $tokens = Symphony::Session()->get('xsrf-token');
+        $token = Symphony::Session()->get('xsrf-token');
 
         return is_null($token) ? null : $token;
     }
