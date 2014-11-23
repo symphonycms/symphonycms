@@ -15,8 +15,6 @@
  * instead.
  */
 
-require_once TOOLKIT . '/class.xsltpage.php';
-
 class FrontendPage extends XSLTPage
 {
     /**
@@ -190,7 +188,7 @@ class FrontendPage extends XSLTPage
             ));
         }
 
-        Symphony::Profiler()->sample('Page creation process started');
+        Symphony::Profiler()->sample('Page creation started');
         $this->_page = $page;
         $this->__buildPage();
 
@@ -254,9 +252,11 @@ class FrontendPage extends XSLTPage
 
             // In Symphony 2.4, the XML structure stays as an object until
             // the very last moment.
+            Symphony::Profiler()->seed(precision_timer());
             if($this->_xml instanceof XMLElement) {
                 $this->setXML($this->_xml->generate(true, 0));
             }
+            Symphony::Profiler()->sample('XML Generation', PROFILE_LAP);
 
             $output = parent::generate();
             $this->_param = $backup_param;
@@ -372,6 +372,7 @@ class FrontendPage extends XSLTPage
             'page-title' => $page['title'],
             'root' => URL,
             'workspace' => URL . '/workspace',
+            'http-host' => HTTP_HOST,
             'root-page' => ($root_page ? $root_page : $page['handle']),
             'current-page' => $page['handle'],
             'current-page-id' => $page['id'],
@@ -421,7 +422,7 @@ class FrontendPage extends XSLTPage
 
         if (is_array($_COOKIE[__SYM_COOKIE_PREFIX__]) && !empty($_COOKIE[__SYM_COOKIE_PREFIX__])) {
             foreach ($_COOKIE[__SYM_COOKIE_PREFIX__] as $key => $val) {
-                if ($key === 'xsrf-token') {
+                if ($key === 'xsrf-token' && is_array($val)) {
                     $val = key($val);
                 }
 
@@ -434,6 +435,9 @@ class FrontendPage extends XSLTPage
 
         // Add Page Types to parameters so they are not flattened too early
         $this->_param['page-types'] = $page['type'];
+
+        // Add Page events the same way
+        $this->_param['page-events'] = explode(',', trim(str_replace('_', '-', $page['events']), ','));
 
         /**
          * Just after having resolved the page params, but prior to any commencement of output creation
@@ -531,10 +535,7 @@ class FrontendPage extends XSLTPage
         }
         $xml->prependChild($params);
 
-        Symphony::Profiler()->seed();
         $this->setXML($xml);
-        Symphony::Profiler()->sample('XML Generation', PROFILE_LAP);
-
         $xsl = '<?xml version="1.0" encoding="UTF-8"?>
         <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
             <xsl:import href="./workspace/pages/' . basename($page['filelocation']).'"/>
@@ -628,6 +629,11 @@ class FrontendPage extends XSLTPage
             }
         }
 
+        // Nothing resolved, bail now
+        if (!is_array($row) || empty($row)) {
+            return false;
+        }
+
         // Process the extra URL params
         $url_params = preg_split('/\//', $row['params'], -1, PREG_SPLIT_NO_EMPTY);
 
@@ -643,10 +649,6 @@ class FrontendPage extends XSLTPage
             for ($i = 0, $ii = count($page_extra_bits); $i < $ii; $i++) {
                 $this->_env['url'][$url_params[$i]] = str_replace(' ', '+', $page_extra_bits[$i]);
             }
-        }
-
-        if (!is_array($row) || empty($row)) {
-            return false;
         }
 
         $row['type'] = PageManager::fetchPageTypes($row['id']);
@@ -921,8 +923,8 @@ class FrontendPage extends XSLTPage
                 if ($xml instanceof XMLElement) {
                     $wrapper->appendChild($xml);
                 } else {
-                    $wrapper->setValue(
-                        $wrapper->getValue() . PHP_EOL . '    ' . trim($xml)
+                    $wrapper->appendChild(
+                        '    ' . trim($xml) . PHP_EOL
                     );
                 }
             }

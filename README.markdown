@@ -1,12 +1,11 @@
 # Symphony 2
 
-[![Code Climate](https://codeclimate.com/github/symphonycms/symphony-2.png)](https://codeclimate.com/github/symphonycms/symphony-2)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=integration)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=integration)
 
-- Version: 2.5.0beta2
-- Date: in development
-- [Release notes](http://getsymphony.com/download/releases/version/2.5/)
-- [Github repository](http://github.com/symphonycms/symphony-2/tree/integration)
-
+- Version: 2.6.0-alpha.1
+- Date: unreleasd
+- [Release notes](http://getsymphony.com/download/releases/version/2.6.0/)
+- [Github repository](https://github.com/symphonycms/symphony-2/tree/integration)
 
 ## Contents
 
@@ -24,7 +23,7 @@
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.5.0beta2` and is considered unstable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.6.0-alpha.1` and is considered unstable. Do not use this in production.
 
 Useful places:
 
@@ -37,11 +36,10 @@ Useful places:
 
 - PHP 5.3 or above
 - PHP’s LibXML module, with the XSLT extension enabled (`--with-xsl`)
-- MySQL 5.0 or above
+- MySQL 5.5 or above is recommended
 - A webserver (known to be used with Apache, Litespeed, Nginx and Hiawatha)
 - Apache’s `mod_rewrite` module or equivalent
 - PHP’s built in `json` functions, which are enabled by default in PHP 5.2 and above; if they are missing, ensure PHP wasn’t compiled with `--disable-json`
-
 
 
 ## Installing

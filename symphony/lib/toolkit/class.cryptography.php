@@ -13,9 +13,6 @@
  * @see cryptography.SHA1
  * @see cryptography.PBKDF2
  */
-require_once TOOLKIT . '/cryptography/class.md5.php';
-require_once TOOLKIT . '/cryptography/class.sha1.php';
-require_once TOOLKIT . '/cryptography/class.pbkdf2.php';
 
 class Cryptography
 {

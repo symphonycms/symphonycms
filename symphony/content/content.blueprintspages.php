@@ -9,9 +9,6 @@
  * an index view of all the pages in this Symphony install as well as the
  * forms for the creation/editing of a Page
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.resourcemanager.php';
-require_once TOOLKIT . '/class.xsltprocess.php';
 
 class contentBlueprintsPages extends AdministrationPage
 {
@@ -60,24 +57,6 @@ class contentBlueprintsPages extends AdministrationPage
             array(Widget::Anchor(__('Pages'), SYMPHONY_URL . '/blueprints/pages/')),
             $pages
         ));
-    }
-
-    public function listAllPages($separator = '/')
-    {
-        $pages = PageManager::fetch(false, array('id', 'handle', 'title', 'path'));
-
-        foreach ($pages as &$page) {
-            $parents = explode('/', $page['path']);
-
-            foreach ($parents as &$parent) {
-                $parent = PageManager::fetchTitleFromHandle($parent);
-            }
-
-            $parents = implode($separator, $parents);
-            $page['title'] = ($parents ? $parents . $separator . $page['title'] : $page['title']);
-        }
-
-        return $pages;
     }
 
     public function __viewIndex()
@@ -264,38 +243,34 @@ class contentBlueprintsPages extends AdministrationPage
         // Status message:
         if (isset($this->_context[2])) {
             $flag = $this->_context[2];
-            $link_suffix = '';
+            $link_suffix = $message = '';
             $time = Widget::Time();
 
             if (isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])) {
-                $link_suffix = "?parent=" . $_REQUEST['parent'];
+                $parent_link_suffix = "?parent=" . $_REQUEST['parent'];
             } elseif ($nesting == true && isset($existing) && !is_null($existing['parent'])) {
-                $link_suffix = '?parent=' . $existing['parent'];
+                $parent_link_suffix = '?parent=' . $existing['parent'];
+            } else {
+                $parent_link_suffix = '';
             }
 
             switch ($flag) {
                 case 'saved':
-                    $this->pageAlert(
-                        __('Page updated at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
-                        . __('View all Pages')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
+                    $message = __('Page updated at %s.', array($time->generate()));
                     break;
                 case 'created':
-                    $this->pageAlert(
-                        __('Page created at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
-                        . __('View all Pages')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
+                    $message = __('Page created at %s.', array($time->generate()));
             }
+
+            $this->pageAlert(
+                $message
+                . ' <a href="' . SYMPHONY_URL . '/blueprints/pages/new/' . $parent_link_suffix . '" accesskey="c">'
+                . __('Create another?')
+                . '</a> <a href="' . SYMPHONY_URL . '/blueprints/pages/" accesskey="a">'
+                . __('View all Pages')
+                . '</a>',
+                Alert::SUCCESS
+            );
         }
 
         // Find values:
@@ -332,13 +307,7 @@ class contentBlueprintsPages extends AdministrationPage
         $page_id = isset($page_id) ? $page_id : null;
 
         if (!empty($title)) {
-            $template_name = $fields['handle'];
             $page_url = URL . '/' . PageManager::resolvePagePath($page_id) . '/';
-
-            if ($existing['parent']) {
-                $parents = PageManager::resolvePagePath($existing['parent']);
-                $template_name = PageManager::createFilePath($parents, $fields['handle']);
-            }
 
             $this->appendSubheading($title, array(
                 Widget::Anchor(__('View Page'), $page_url, __('View Page on Frontend'), 'button', null, array('target' => '_blank', 'accesskey' => 'v'))
@@ -468,7 +437,7 @@ class contentBlueprintsPages extends AdministrationPage
         $label = Widget::Label(__('Events'));
         $label->setAttribute('class', 'column');
 
-        $events = ResourceManager::fetch(RESOURCE_TYPE_EVENT, array(), array(), 'name ASC');
+        $events = ResourceManager::fetch(ResourceManager::RESOURCE_TYPE_EVENT, array(), array(), 'name ASC');
         $options = array();
 
         if (is_array($events) && !empty($events)) {
@@ -491,7 +460,7 @@ class contentBlueprintsPages extends AdministrationPage
         $label = Widget::Label(__('Data Sources'));
         $label->setAttribute('class', 'column');
 
-        $datasources = ResourceManager::fetch(RESOURCE_TYPE_DS, array(), array(), 'name ASC');
+        $datasources = ResourceManager::fetch(ResourceManager::RESOURCE_TYPE_DS, array(), array(), 'name ASC');
         $options = array();
 
         if (is_array($datasources) && !empty($datasources)) {

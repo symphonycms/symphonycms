@@ -6,9 +6,6 @@
  * The AjaxHandle page is used for generating handles on the fly
  * that are used in Symphony's javascript
  */
-
-require_once TOOLKIT . '/class.jsonpage.php';
-
 class contentAjaxHandle extends JSONPage
 {
     public function view()

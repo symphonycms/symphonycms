@@ -1,11 +1,5 @@
 <?php
 
-	require_once(CORE . '/class.administration.php');
-
-	require_once(INSTALL . '/lib/class.installer.php');
-	require_once(INSTALL . '/lib/class.updaterpage.php');
-	require_once(INSTALL . '/lib/class.migration.php');
-
 	Class Updater extends Installer {
 
 		/**
@@ -70,7 +64,8 @@
 			catch(DatabaseException $e){
 				self::__abort(
 					'There was a problem while trying to establish a connection to the MySQL server. Please check your settings.',
-				$start);
+					time()
+				);
 			}
 
 			// MySQL: Setting prefix & character encoding

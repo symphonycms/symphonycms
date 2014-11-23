@@ -34,7 +34,9 @@
 		'Search for {$item}': false,
 		'Add filter': false,
 		'filtered': false,
-		'None': false
+		'None': false,
+		'Clear filters': false,
+		'Apply filters': false
 	});
 
 	// Initialise backend

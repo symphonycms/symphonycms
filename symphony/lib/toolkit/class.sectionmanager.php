@@ -58,7 +58,7 @@ class SectionManager
      */
     public static function edit($section_id, array $settings)
     {
-        if (!Symphony::Database()->update($settings, 'tbl_sections', " `id` = $section_id")) {
+        if (!Symphony::Database()->update($settings, 'tbl_sections', sprintf(" `id` = %d", $section_id))) {
             return false;
         }
 
@@ -78,7 +78,10 @@ class SectionManager
      */
     public static function delete($section_id)
     {
-        $details = Symphony::Database()->fetchRow(0, "SELECT `sortorder` FROM tbl_sections WHERE `id` = '$section_id'");
+        $details = Symphony::Database()->fetchRow(0, sprintf("
+            SELECT `sortorder` FROM tbl_sections WHERE `id` = %d",
+            $section_id
+        ));
 
         // Delete all the entries
         include_once TOOLKIT . '/class.entrymanager.php';
@@ -95,13 +98,17 @@ class SectionManager
         }
 
         // Delete the section
-        Symphony::Database()->delete('tbl_sections', " `id` = '$section_id'");
+        Symphony::Database()->delete('tbl_sections', sprintf("
+            `id` = %d", $section_id
+        ));
 
         // Update the sort orders
         Symphony::Database()->query("UPDATE tbl_sections SET `sortorder` = (`sortorder` - 1) WHERE `sortorder` > '".$details['sortorder']."'");
 
         // Delete the section associations
-        Symphony::Database()->delete('tbl_sections_association', " `parent_section_id` = '$section_id'");
+        Symphony::Database()->delete('tbl_sections_association', sprintf("
+            `parent_section_id` = %d", $section_id
+        ));
 
         return true;
     }
@@ -324,8 +331,8 @@ class SectionManager
      */
     public static function fetchChildAssociations($section_id, $respect_visibility = false)
     {
-        return Symphony::Database()->fetch(sprintf(
-            "SELECT *
+        return Symphony::Database()->fetch(sprintf("
+            SELECT *
             FROM `tbl_sections_association` AS `sa`, `tbl_sections` AS `s`
             WHERE `sa`.`parent_section_id` = %d
             AND `s`.`id` = `sa`.`child_section_id`

@@ -8,9 +8,6 @@
  * of a Page that will be generated using XSLT.
  */
 
-require_once TOOLKIT . '/class.page.php';
-require_once TOOLKIT . '/class.xsltprocess.php';
-
 class XSLTPage extends Page
 {
     /**
@@ -147,7 +144,9 @@ class XSLTPage extends Page
     public function registerPHPFunction($function)
     {
         if (is_array($function)) {
-            $this->_registered_php_functions += $function;
+            $this->_registered_php_functions = array_unique(
+              array_merge($this->_registered_php_functions, $function)
+            );
         } else {
             $this->_registered_php_functions[] = $function;
         }

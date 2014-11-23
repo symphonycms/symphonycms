@@ -7,8 +7,6 @@
  * Symphony Log.
  */
 
-require_once TOOLKIT . '/class.textpage.php';
-
 class contentAjaxLog extends TextPage
 {
     public function view()

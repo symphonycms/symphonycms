@@ -10,8 +10,6 @@
  * (edit) and deleted (delete).
  */
 
-require_once TOOLKIT . '/class.author.php';
-
 class AuthorManager
 {
     /**
@@ -171,10 +169,8 @@ class AuthorManager
             return null;
         }
 
-        $authors = array();
-        $pooled_authors = array();
-
         // Get all the Author ID's that are already in `self::$_pool`
+        $authors = array();
         $pooled_authors = array_intersect($id, array_keys(self::$_pool));
 
         foreach ($pooled_authors as $pool_author) {
@@ -235,7 +231,7 @@ class AuthorManager
             ));
 
             if (!is_array($records) || empty($records)) {
-                return array();
+                return null;
             }
 
             $author = new Author;

@@ -9,18 +9,10 @@
  * from Sections. This Page controls the entries table as well as
  * the Entry creation screens.
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.entrymanager.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once CONTENT . '/class.sortable.php';
 
 class contentPublish extends AdministrationPage
 {
     public $_errors = array();
-
-    private $_filteringForm = null;
-    private $_filteringFields = array();
-    private $_filteringOptions = array();
 
     public function sort(&$sort, &$order, $params)
     {
@@ -82,118 +74,249 @@ class contentPublish extends AdministrationPage
     public function createFilteringInterface()
     {
         //Check if section has filtering enabled
-        $context = Administration::instance()->Page->_context;
+        $context = $this->getContext();
         $handle = $context['section_handle'];
         $section_id = SectionManager::fetchIDFromHandle($handle);
         $section = SectionManager::fetch($section_id);
         $filter = $section->get('filter');
+        $count = EntryManager::fetchCount($section_id);
 
-        if (isset($filter) && $filter !='no') {
-            // Get filtering fields
-            $this->getFilteringFields();
-
-            // Append drawer
-            $this->insertDrawer(
-                Widget::Drawer('filtering', __('Filter Entries'), $this->createFilteringDrawer())
-            );
+        if ($filter !== 'no' && $count > 1) {
+            $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), $this->createFilteringDrawer($section));
+            $drawer->addClass('drawer-filtering');
+            $this->insertDrawer($drawer);
         }
     }
 
     /**
      * Create filtering drawer
      */
-    public function createFilteringDrawer()
+    public function createFilteringDrawer($section)
     {
-        $filters = $_GET['filter'];
         $this->filteringForm = Widget::Form(null, 'get', 'filtering');
-
-        // Create existing filters
-        if (is_array($filters) && !empty($filters)) {
-            foreach ($filters as $field => $search) {
-                $this->createFilter($field, $search);
-            }
-
-            // Create empty filter
-        } else {
-            $this->createFilter();
-        }
-
-        // Create template
-        $this->createFilter(null, null, 'template');
+        $this->createFilteringDuplicator($section);
 
         return $this->filteringForm;
     }
 
-    public function createFilter($field = null, $search = null, $class = null)
+    public function createFilteringDuplicator($section)
     {
-        $row = new XMLElement('div');
+        $div = new XMLElement('div');
+        $div->setAttribute('class', 'frame filters-duplicator');
+        $div->setAttribute('data-interactive', 'data-interactive');
 
-        if ($class) {
-            $row->setAttribute('class', 'filtering-row ' . $class);
-        } else {
-            $row->setAttribute('class', 'filtering-row');
-        }
+        $ol = new XMLElement('ol');
+        $ol->setAttribute('data-add', __('Add filter'));
+        $ol->setAttribute('data-remove', __('Clear filter'));
+        $ol->setAttribute('data-empty', __('No filters applied yet.'));
 
-        // Fields
-        $fields = $this->_filteringFields;
+        $this->createFieldFilters($ol, $section);
+        $this->createSystemDateFilters($ol);
 
-        for ($i = 1; $i < count($fields); $i++) {
-            if ($fields[$i][0] === $field) {
-                $fields[$i][1] = true;
-            }
-        }
-
-        $div = new XMLElement('div', null, array('class' => 'filtering-controls'));
-        $div->appendChild(
-            Widget::Select('fields', $fields, array(
-                'class' => 'filtering-fields'
-            ))
-        );
-
-        // Comparison
-        $needle = str_replace('regexp:', '', $search);
-        $div->appendChild(
-            Widget::Select('comparison', array(
-                array('contains', (strpos($search, 'regexp:') !== false), __('contains')),
-                array('is', (strpos($search, 'regexp:') === false), __('is'))
-            ), array(
-                'class' => 'filtering-comparison'
-            ))
-        );
-        $row->appendChild($div);
-
-        // Search
-        $row->appendChild(
-            Widget::Input('search', $needle, 'text', array(
-                'class' => 'filtering-search',
-                'placeholder' => __('Type to search') . ' …')
-            )
-        );
-
-        $this->filteringForm->appendChild($row);
+        $div->appendChild($ol);
+        $this->filteringForm->appendChild($div);
     }
 
-    /**
-     * Get filter field names
-     */
-    public function getFilteringFields()
+    private function createFieldFilters(&$wrapper, $section)
     {
-        $context = $this->getContext();
-        $section_id = SectionManager::fetchIDFromHandle($context['section_handle']);
+        $filters = $_GET['filter'];
 
-        if (!$section_id) {
-            return;
-        }
-
-        // Filterable sections
-        $section = SectionManager::fetch($section_id);
         foreach ($section->fetchFilterableFields() as $field) {
             if (!$field->canPublishFilter()) {
                 continue;
             }
 
-            $this->_filteringFields[] = array($field->get('element_name'), false, $field->get('label'));
+            $filter = $filters[$field->get('element_name')];
+
+            // Filter data
+            $data = array();
+            $data['type'] = $field->get('element_name');
+            $data['name'] = $field->get('label');
+            $data['filter'] = $filter;
+            $data['instance'] = 'unique';
+            $data['search'] = $field->fetchSuggestionTypes();
+            $data['operators'] = $field->fetchFilterableOperators();
+            $data['comparisons'] = $this->createFilterComparisons($data);
+            $data['query'] = $this->getFilterQuery($data, $filter);
+            $data['field-id'] = $field->get('id');
+
+            // Add existing filter
+            if (isset($filter)) {
+                $this->createFilter($wrapper, $data);
+            }
+
+            // Add filter template
+            $data['instance'] = 'unique template';
+            $data['query'] = '';
+            $this->createFilter($wrapper, $data);
         }
+    }
+
+    private function createSystemDateFilters(&$wrapper)
+    {
+        $filters = $_GET['filter'];
+
+        $fields = array(
+            array(
+                'type' => 'system:creation-date',
+                'label' => __('System Creation Date')
+            ),
+            array(
+                'type' => 'system:modification-date',
+                'label' => __('System Modification Date')
+            )
+        );
+
+        $operators = array(
+            array(
+                'title' => 'later than',
+                'filter' => 'later than '
+            ),
+            array(
+                'title' => 'earlier than',
+                'filter' => 'earlier than '
+            ),
+            array(
+                'title' => 'equal to or later than',
+                'filter' => 'equal to or later than '
+            ),
+            array(
+                'title' => 'equal to or earlier than',
+                'filter' => 'equal to or earlier than '
+            ),
+        );
+
+        foreach ($fields as $field) {
+            $filter = $filters[$field['type']];
+
+            // Filter data
+            $data = array();
+            $data['type'] = $field['type'];
+            $data['name'] = $field['label'];
+            $data['filter'] = $filter;
+            $data['instance'] = 'unique';
+            $data['search'] = array('date');
+            $data['operators'] = $operators;
+            $data['comparisons'] = $this->createFilterComparisons($data);
+            $data['query'] = $this->getFilterQuery($data, $filter);
+
+            // Add existing filter
+            if (isset($filter)) {
+                $this->createFilter($wrapper, $data);
+            }
+
+            // Add filter template
+            $data['instance'] = 'unique template';
+            $data['query'] = '';
+            $this->createFilter($wrapper, $data);
+        }
+    }
+
+    private function createFilter(&$wrapper, $data)
+    {
+        $li = new XMLElement('li');
+        $li->setAttribute('class', $data['instance']);
+        $li->setAttribute('data-type', $data['type']);
+
+        // Header
+        $li->appendChild(new XMLElement('header', $data['name'], array(
+            'data-name' => $data['name']
+        )));
+
+        // Settings
+        $div = new XMLElement('div', null, array('class' => 'two columns'));
+
+        // Comparisons
+        $label = Widget::Label();
+        $label->setAttribute('class', 'column secondary');
+
+        $select = Widget::Select($data['type'] . '-comparison', $data['comparisons'], array(
+            'class' => 'comparison'
+        ));
+
+        $label->appendChild($select);
+        $div->appendChild($label);
+
+        // Query
+        $label = Widget::Label();
+        $label->setAttribute('class', 'column primary');
+
+        $input = Widget::Input($data['type'], $data['query'], 'text', array(
+            'placeholder' => __('Type and hit enter to apply filter …'),
+            'autocomplete' => 'off'
+        ));
+        $input->setAttribute('class', 'filter');
+        $label->appendChild($input);
+
+        $this->createFilterSuggestions($label, $data);
+
+        $div->appendChild($label);
+        $li->appendChild($div);
+        $wrapper->appendChild($li);
+    }
+
+    private function createFilterComparisons($data)
+    {
+        // Default comparison
+        $comparisons = array();
+
+        // Custom field comparisons
+        foreach ($data['operators'] as $operator) {
+            $comparisons[] = array(trim($operator['filter']), (strpos($data['filter'], $operator['filter']) === 0), __($operator['title']));
+        }
+
+        return $comparisons;
+    }
+
+    private function createFilterSuggestions(&$wrapper, $data)
+    {
+        $ul = new XMLElement('ul');
+        $ul->setAttribute('class', 'suggestions');
+        $ul->setAttribute('data-field-id', $data['field-id']);
+        $ul->setAttribute('data-associated-ids', '0');
+        $ul->setAttribute('data-search-types', implode($data['search'], ','));
+
+        // Add default filter help
+        $operator = array(
+            'filter' => 'is',
+            'help' => __('Find values that are an exact match for the given string.')
+        );
+        $this->createFilterHelp($ul, $operator);
+
+        // Add custom filter help
+        foreach ($data['operators'] as $operator) {
+            $this->createFilterHelp($ul, $operator);
+        }
+
+        $wrapper->appendChild($ul);
+    }
+
+    private function createFilterHelp(&$wrapper, $operator) {
+        if(empty($operator['help'])) {
+            return;
+        }
+
+        $li = new XMLElement('li', __('Comparison mode') . ': ' . $operator['help'], array(
+            'class' => 'help',
+            'data-comparison' => $operator['filter']
+        ));
+
+        $wrapper->appendChild($li);
+    }
+
+    private function getFilterQuery($data)
+    {
+        $query = $data['filter'];
+
+        foreach ($data['operators'] as $operator) {
+            $filter = trim($operator['filter']);
+
+            if (!empty($filter) && strpos($data['filter'], $filter) === 0) {
+                $query = substr($data['filter'], strlen($operator['filter']));
+            }
+        }
+
+        return (string)$query;
     }
 
     public function build(array $context = array())
@@ -228,6 +351,14 @@ class contentPublish extends AdministrationPage
             Administration::instance()->errorPageNotFound();
         }
 
+        // Is this request allowed by server?
+        if ($this->isRequestValid() === false) {
+            $this->pageAlert(__('This request exceeds the maximum allowed request size of %s specified by your host.', array(
+                    ini_get('post_max_size')
+                )),
+                Alert::ERROR
+            );
+        }
         $this->$function();
     }
 
@@ -269,21 +400,37 @@ class contentPublish extends AdministrationPage
             }
 
             foreach ($filters as $handle => $value) {
-                $field_id = FieldManager::fetchFieldIDFromElementName(
-                    Symphony::Database()->cleanValue($handle),
-                    $section->get('id')
-                );
+                $handle = Symphony::Database()->cleanValue($handle);
 
-                $field = FieldManager::fetch($field_id);
+                // Handle date meta data #2003
+                if (in_array($handle, array('system:creation-date', 'system:modification-date'))) {
+                    require_once TOOLKIT . '/fields/field.date.php';
 
-                if ($field instanceof Field) {
-                    // For deprecated reasons, call the old, typo'd function name until the switch to the
-                    // properly named buildDSRetrievalSQL function.
-                    $field->buildDSRetrievalSQL(array($value), $joins, $where, false);
-                    $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, rawurlencode($value));
-                    $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, rawurlencode($value));
+                    $date_joins = '';
+                    $date_where = '';
+                    $date = new fieldDate();
+                    $date->buildDSRetrievalSQL(array($value), $date_joins, $date_where, true);
+
+                    // Replace the date field where with the `creation_date` or `modification_date`.
+                    $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
+                    $where .= $date_where;
+
                 } else {
-                    unset($filters[$handle]);
+                    // Handle normal fields
+                    $field_id = FieldManager::fetchFieldIDFromElementName(
+                        $handle,
+                        $section->get('id')
+                    );
+
+                    $field = FieldManager::fetch($field_id);
+
+                    if ($field instanceof Field) {
+                        $field->buildDSRetrievalSQL(array($value), $joins, $where, true);
+                        $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, rawurlencode($value));
+                        $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, rawurlencode($value));
+                    } else {
+                        unset($filters[$handle]);
+                    }
                 }
             }
 
@@ -349,6 +496,13 @@ class contentPublish extends AdministrationPage
             $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'));
         }
 
+        // Flag filtering
+        if (isset($_REQUEST['filter'])) {
+            $filter_stats = new XMLElement('p', '<span>– ' . __('filtered (%d of %d)', array($entries['total-entries'], EntryManager::fetchCount($section_id))) . '</span>', array('class' => 'inactive'));
+            $this->Breadcrumbs->appendChild($filter_stats);
+        }
+
+        // Build table
         $visible_columns = $section->fetchVisibleColumns();
         $columns = array();
 
@@ -792,8 +946,11 @@ class contentPublish extends AdministrationPage
         $section = SectionManager::fetch($section_id);
 
         $this->setPageType('form');
-        $this->Form->setAttribute('enctype', 'multipart/form-data');
         $this->setTitle(__('%1$s &ndash; %2$s', array($section->get('name'), __('Symphony'))));
+
+        // Ensure errored entries still maintain any prepopulated values [#2211]
+        $this->Form->setAttribute('action', $this->Form->getAttribute('action') . $this->getPrepopulateString());
+        $this->Form->setAttribute('enctype', 'multipart/form-data');
 
         $sidebar_fields = $section->fetchFields(null, 'sidebar');
         $main_fields = $section->fetchFields(null, 'main');
@@ -814,20 +971,8 @@ class contentPublish extends AdministrationPage
         }
 
         // Build filtered breadcrumb [#1378}
-        if (isset($_REQUEST['prepopulate'])) {
-            $link = '?';
-
-            foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
-                $handle = FieldManager::fetchHandleFromID($field_id);
-                $link .= "filter[$handle]=$value&amp;";
-            }
-            $link = preg_replace("/&amp;$/", '', $link);
-        } else {
-            $link = '';
-        }
-
         $this->insertBreadcrumbs(array(
-            Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle'] . '/' . $link),
+            Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle'] . '/' . $this->getFilterString()),
         ));
 
         $this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
@@ -952,11 +1097,11 @@ class contentPublish extends AdministrationPage
             }
 
             // Initial checks to see if the Entry is ok
-            if (__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
+            if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
                 $this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
                 // Secondary checks, this will actually process the data and attempt to save
-            } elseif (__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
+            } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
                 foreach ($errors as $field_id => $message) {
                     $this->pageAlert($message, Alert::ERROR);
                 }
@@ -992,21 +1137,13 @@ class contentPublish extends AdministrationPage
                      */
                     Symphony::ExtensionManager()->notifyMembers('EntryPostCreate', '/publish/new/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 
-                    $prepopulate_querystring = '';
-
-                    if (isset($_POST['prepopulate'])) {
-                        foreach ($_POST['prepopulate'] as $field_id => $value) {
-                            $prepopulate_querystring .= sprintf("prepopulate[%s]=%s&", $field_id, rawurldecode($value));
-                        }
-                        $prepopulate_querystring = trim($prepopulate_querystring, '&');
-                    }
-
+                    $prepopulate_querystring = $this->getPrepopulateString();
                     redirect(sprintf(
                         '%s/publish/%s/edit/%d/created/%s',
                         SYMPHONY_URL,
                         $this->_context['section_handle'],
                         $entry->get('id'),
-                        (!empty($prepopulate_querystring) ? "?" . $prepopulate_querystring : null)
+                        (!empty($prepopulate_querystring) ? $prepopulate_querystring : null)
                     ));
                 }
             }
@@ -1083,16 +1220,8 @@ class contentPublish extends AdministrationPage
         // Breadcrumb links. If `prepopulate` doesn't exist, this will
         // just use the standard pages (ie. no filtering)
         if (isset($_REQUEST['prepopulate'])) {
-            $new_link .= '?';
-            $filter_link .= '?';
-
-            foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
-                $new_link .= "prepopulate[$field_id]=$value&amp;";
-                $field_name = FieldManager::fetchHandleFromID($field_id);
-                $filter_link .= "filter[$field_name]=$value&amp;";
-            }
-            $new_link = preg_replace("/&amp;$/", '', $new_link);
-            $filter_link = preg_replace("/&amp;$/", '', $filter_link);
+            $new_link .= $this->getPrepopulateString();
+            $filter_link .= $this->getFilterString();
         }
 
         if (isset($this->_context['flag'])) {
@@ -1100,30 +1229,23 @@ class contentPublish extends AdministrationPage
             if (empty($this->_errors)) {
                 $time = Widget::Time();
 
-                switch($this->_context['flag']) {
+                switch ($this->_context['flag']) {
                     case 'saved':
-                        $this->pageAlert(
-                            __('Entry updated at %s.', array($time->generate()))
-                            . ' <a href="' . SYMPHONY_URL . $new_link . '" accesskey="c">'
-                            . __('Create another?')
-                            . '</a> <a href="' . SYMPHONY_URL . $filter_link . '" accesskey="a">'
-                            . __('View all Entries')
-                            . '</a>',
-                            Alert::SUCCESS
-                        );
+                        $message = __('Entry updated at %s.', array($time->generate()));
                         break;
                     case 'created':
-                        $this->pageAlert(
-                            __('Entry created at %s.', array($time->generate()))
-                            . ' <a href="' . SYMPHONY_URL . $new_link . '" accesskey="c">'
-                            . __('Create another?')
-                            . '</a> <a href="' . SYMPHONY_URL . $filter_link . '" accesskey="a">'
-                            . __('View all Entries')
-                            . '</a>',
-                            Alert::SUCCESS
-                        );
-                        break;
+                        $message = __('Entry created at %s.', array($time->generate()));
                 }
+
+                $this->pageAlert(
+                    $message
+                    . ' <a href="' . SYMPHONY_URL . $new_link . '" accesskey="c">'
+                    . __('Create another?')
+                    . '</a> <a href="' . SYMPHONY_URL . $filter_link . '" accesskey="a">'
+                    . __('View all Entries')
+                    . '</a>',
+                    Alert::SUCCESS
+                );
             }
         }
 
@@ -1134,7 +1256,7 @@ class contentPublish extends AdministrationPage
         }
 
         if ($field) {
-            $title = $field->prepareReadableValue($existingEntry->getData($field->get('id')), $entry_id);
+            $title = $field->prepareReadableValue($existingEntry->getData($field->get('id')), $entry_id, true);
         } else {
             $title = '';
         }
@@ -1290,21 +1412,13 @@ class contentPublish extends AdministrationPage
                      */
                     Symphony::ExtensionManager()->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 
-                    $prepopulate_querystring = '';
-
-                    if (isset($_POST['prepopulate'])) {
-                        foreach ($_POST['prepopulate'] as $field_id => $value) {
-                            $prepopulate_querystring .= sprintf("prepopulate[%s]=%s&", $field_id, $value);
-                        }
-                        $prepopulate_querystring = trim($prepopulate_querystring, '&');
-                    }
-
+                    $prepopulate_querystring = $this->getPrepopulateString();
                     redirect(sprintf(
                         '%s/publish/%s/edit/%d/saved/%s',
                         SYMPHONY_URL,
                         $this->_context['section_handle'],
                         $entry->get('id'),
-                        (!empty($prepopulate_querystring) ? "?" . $prepopulate_querystring : null)
+                        (!empty($prepopulate_querystring) ? $prepopulate_querystring : null)
                     ));
                 }
             }
@@ -1364,6 +1478,28 @@ class contentPublish extends AdministrationPage
             (isset($this->_errors[$field->get('id')]) ? $this->_errors[$field->get('id')] : null),
             null, null, (is_numeric($entry->get('id')) ? $entry->get('id') : null)
         );
+
+        /**
+         * Allows developers modify the field before it is rendered in the publish
+         * form. Passes the `Field` object, `Entry` object, the `XMLElement` div and
+         * any errors for the entire `Entry`. Only the `$div` element
+         * will be altered before appending to the page, the rest are read only.
+         *
+         * @since Symphony 2.5.0
+         * @delegate ModifyFieldPublishWidget
+         * @param string $context
+         * '/backend/'
+         * @param Field $field
+         * @param Entry $entry
+         * @param array $errors
+         * @param Widget $widget
+         */
+        Symphony::ExtensionManager()->notifyMembers('ModifyFieldPublishWidget', '/backend/', array(
+            'field' => $field,
+            'entry' => $entry,
+            'errors' => $this->_errors,
+            'widget' => &$div
+        ));
 
         return $div;
     }
@@ -1577,7 +1713,8 @@ class contentPublish extends AdministrationPage
                             $pagination = new XMLElement('li', null, array(
                                 'class' => 'association-more',
                                 'data-current-page' => '1',
-                                'data-total-pages' => ceil($entries['total-entries'] / $show_entries)
+                                'data-total-pages' => ceil($entries['total-entries'] / $show_entries),
+                                'data-total-entries' => $entries['total-entries']
                             ));
                             $counts = new XMLElement('a', __('Show more entries'), array(
                                 'href' => $link
@@ -1602,5 +1739,60 @@ class contentPublish extends AdministrationPage
 
         $drawer = Widget::Drawer('section-associations', __('Show Associations'), $content);
         $this->insertDrawer($drawer, $drawer_position, 'prepend');
+    }
+
+    /**
+     * If this entry is being prepopulated, this function will return the prepopulated
+     * fields and values as a query string.
+     *
+     * @since Symphony 2.5.2
+     * @return string
+     */
+    public function getPrepopulateString()
+    {
+        $prepopulate_querystring = '?';
+
+        if (isset($_REQUEST['prepopulate'])) {
+            foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
+                $prepopulate_querystring .= sprintf("prepopulate[%s]=%s&", $field_id, rawurldecode($value));
+            }
+            $prepopulate_querystring = trim($prepopulate_querystring, '&');
+        }
+
+        // This is to prevent the value being interpreted as an additional GET
+        // parameter. eg. prepopulate[cat]=Minx&June, would come through as:
+        // $_GET['cat'] = Minx
+        // $_GET['June'] = ''
+        $prepopulate_querystring = preg_replace("/&amp;$/", '', $prepopulate_querystring);
+
+        return $prepopulate_querystring;
+    }
+
+    /**
+     * If the entry is being prepopulated, we may want to filter other views by this entry's
+     * value. This function will create that filter query string.
+     *
+     * @since Symphony 2.5.2
+     * @return string
+     */
+    public function getFilterString()
+    {
+        $filter_querystring = '?';
+
+        if (isset($_REQUEST['prepopulate'])) {
+            foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
+                $handle = FieldManager::fetchHandleFromID($field_id);
+                $filter_querystring .= sprintf("filter[%s]=%s&", $handle, rawurldecode($value));
+            }
+            $filter_querystring = trim($filter_querystring, '&');
+        }
+
+        // This is to prevent the value being interpreted as an additional GET
+        // parameter. eg. filter[cat]=Minx&June, would come through as:
+        // $_GET['cat'] = Minx
+        // $_GET['June'] = ''
+        $filter_querystring = preg_replace("/&amp;$/", '', $filter_querystring);
+
+        return $filter_querystring;
     }
 }

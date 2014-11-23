@@ -7,8 +7,6 @@
  * event by invoking all fields to return their documentation.
  * Accepts three parameters, `section`, `filters` and `name`.
  */
-require_once TOOLKIT . '/class.datasourcemanager.php';
-
 class contentAjaxEventDocumentation extends TextPage
 {
 
@@ -24,19 +22,18 @@ class contentAjaxEventDocumentation extends TextPage
         $section = General::sanitize($_REQUEST['section']);
         $filters = self::processFilters($_REQUEST['filters']);
         $rootelement = Lang::createHandle($name);
-        $documentation = null;
         $doc_parts = array();
 
         // Add Documentation (Success/Failure)
-        $this->addEntrySuccessDoc($doc_parts, $rootelement, $section, $filters);
-        $this->addEntryFailureDoc($doc_parts, $rootelement, $section, $filters);
+        $this->addEntrySuccessDoc($doc_parts, $rootelement, $filters);
+        $this->addEntryFailureDoc($doc_parts, $rootelement, $filters);
 
         // Filters
-        $this->addDefaultFiltersDoc($doc_parts, $rootelement, $section, $filters);
+        $this->addDefaultFiltersDoc($doc_parts, $rootelement, $filters);
 
         // Frontend Markup
         $this->addFrontendMarkupDoc($doc_parts, $rootelement, $section, $filters);
-        $this->addSendMailFilterDoc($doc_parts, $rootelement, $section, $filters);
+        $this->addSendMailFilterDoc($doc_parts, $filters);
 
         /**
          * Allows adding documentation for new filters. A reference to the $documentation
@@ -104,7 +101,7 @@ class contentAjaxEventDocumentation extends TextPage
         return new XMLElement('pre', '<code>' . str_replace('<', '&lt;', str_replace('&', '&amp;', trim((is_object($code) ? $code->generate(true) : $code)))) . '</code>', array('class' => 'XML'));
     }
 
-    public function addEntrySuccessDoc(array &$doc_parts, $rootelement, $section, $filters)
+    public function addEntrySuccessDoc(array &$doc_parts, $rootelement, $filters)
     {
         $doc_parts[] = new XMLElement('h3', __('Success and Failure XML Examples'));
         $doc_parts[] = new XMLElement('p', __('When saved successfully, the following XML will be returned:'));
@@ -123,11 +120,12 @@ class contentAjaxEventDocumentation extends TextPage
         $doc_parts[] = self::processDocumentationCode($code);
     }
 
-    public function addEntryFailureDoc(array &$doc_parts, $rootelement, $section, $filters)
+    public function addEntryFailureDoc(array &$doc_parts, $rootelement, $filters)
     {
-        $doc_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned') . ($multiple ? ' (<strong> ' . __('Notice that it is possible to get mixtures of success and failure messages when using the ‘Allow Multiple’ option') . '</strong>)' : null) . ':');
+        $doc_parts[] = new XMLElement('p', __('When an error occurs during saving, due to either missing or invalid fields, the following XML will be returned.'));
 
         if ($this->hasMultipleFilter($filters)) {
+            $doc_parts[] = new XMLElement('p', __('Notice that it is possible to get mixtures of success and failure messages when using the ‘Allow Multiple’ option.'));
             $code = new XMLElement($rootelement);
 
             $entry = new XMLElement('entry', null, array('index' => '0', 'result' => 'error'));
@@ -144,11 +142,11 @@ class contentAjaxEventDocumentation extends TextPage
             $code->appendChild(new XMLElement('field-name', null, array('type' => 'invalid | missing')));
         }
 
-        $code->setValue('...', false);
+        $code->setValue('...');
         $doc_parts[] = self::processDocumentationCode($code);
     }
 
-    public function addDefaultFiltersDoc(array &$doc_parts, $rootelement, $section, $filters)
+    public function addDefaultFiltersDoc(array &$doc_parts, $rootelement, $filters)
     {
         if (is_array($filters) && !empty($filters)) {
             $doc_parts[] = new XMLElement('p', __('The following is an example of what is returned if any options return an error:'));
@@ -157,7 +155,7 @@ class contentAjaxEventDocumentation extends TextPage
             $code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
             $code->appendChild(new XMLElement('filter', null, array('name' => 'admin-only', 'status' => 'failed')));
             $code->appendChild(new XMLElement('filter', __('Recipient not found'), array('name' => 'send-email', 'status' => 'failed')));
-            $code->setValue('...', false);
+            $code->setValue('...');
 
             $doc_parts[] = self::processDocumentationCode($code);
         }
@@ -165,6 +163,7 @@ class contentAjaxEventDocumentation extends TextPage
 
     public function addFrontendMarkupDoc(array &$doc_parts, $rootelement, $section, $filters)
     {
+        $multiple = $this->hasMultipleFilter($filters);
         $doc_parts[] = new XMLElement('h3', __('Example Front-end Form Markup'));
         $doc_parts[] = new XMLElement('p', __('This is an example of the form markup you can use on your frontend:'));
         $container = new XMLElement('form', null, array('method' => 'post', 'action' => '{$current-url}/', 'enctype' => 'multipart/form-data'));
@@ -196,7 +195,7 @@ class contentAjaxEventDocumentation extends TextPage
         $doc_parts[] = self::processDocumentationCode(Widget::Input('redirect', URL.'/success/', 'hidden'));
     }
 
-    public function addSendMailFilterDoc(array &$doc_parts, $rootelement, $section, $filters)
+    public function addSendMailFilterDoc(array &$doc_parts, $filters)
     {
         if ($this->hasSendEmailFilter($filters)) {
             $doc_parts[] = new XMLElement('h3', __('Send Notification Email'));

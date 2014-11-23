@@ -85,7 +85,7 @@ class Mutex
      */
     public static function release($id, $path = '.')
     {
-        $lockFile = self::__GenerateLockFileName($id, $path);
+        $lockFile = self::__generateLockFileName($id, $path);
 
         if (!empty(self::$lockFiles[$lockFile])) {
             unset(self::$lockFiles[$lockFile]);
@@ -114,7 +114,7 @@ class Mutex
      */
     public static function refresh($id, $ttl = 5, $path = '.')
     {
-        return touch(self::__generateLockFileName($id, $path));
+        return touch(self::__generateLockFileName($id, $path), time() + $ttl, time());
     }
 
     /**

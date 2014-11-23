@@ -9,36 +9,6 @@
  * CMS and initialises the toolkit classes. Symphony is extended by
  * the Frontend and Administration classes
  */
-require_once CORE . '/class.errorhandler.php';
-require_once CORE . '/class.configuration.php';
-require_once CORE . '/class.log.php';
-require_once CORE . '/class.cookies.php';
-require_once CORE . '/class.session.php';
-require_once CORE . '/class.databasesessionhandler.php';
-require_once CORE . '/class.sessionflash.php';
-require_once FACE . '/interface.singleton.php';
-require_once TOOLKIT . '/class.page.php';
-require_once TOOLKIT . '/class.ajaxpage.php';
-require_once TOOLKIT . '/class.xmlelement.php';
-require_once TOOLKIT . '/class.widget.php';
-require_once TOOLKIT . '/class.general.php';
-require_once TOOLKIT . '/class.cryptography.php';
-require_once TOOLKIT . '/class.xsrf.php';
-require_once TOOLKIT . '/class.profiler.php';
-require_once TOOLKIT . '/class.author.php';
-require_once TOOLKIT . '/class.email.php';
-require_once TOOLKIT . '/class.mysql.php';
-require_once TOOLKIT . '/class.extensionmanager.php';
-require_once TOOLKIT . '/class.pagemanager.php';
-require_once TOOLKIT . '/class.authormanager.php';
-require_once TOOLKIT . '/class.emailgatewaymanager.php';
-require_once TOOLKIT . '/class.entrymanager.php';
-require_once TOOLKIT . '/class.fieldmanager.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once TOOLKIT . '/class.textformattermanager.php';
-require_once TOOLKIT . '/class.datasourcemanager.php';
-require_once TOOLKIT . '/class.eventmanager.php';
-
 abstract class Symphony implements Singleton
 {
     /**
@@ -126,7 +96,6 @@ abstract class Symphony implements Singleton
     protected function __construct()
     {
         self::$Profiler = Profiler::instance();
-        self::$Profiler->sample('Engine Initialisation');
 
         if (get_magic_quotes_gpc()) {
             General::cleanArray($_SERVER);
@@ -135,31 +104,30 @@ abstract class Symphony implements Singleton
             General::cleanArray($_POST);
         }
 
-        self::initialiseConfiguration();
-
+        // Set date format throughout the system
         define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
         define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
         define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
-
         DateTimeObj::setSettings(self::Configuration()->get('region'));
 
-        // Initialize language management
-        Lang::initialize();
-
+        // Initialise logging
         self::initialiseLog();
-
         GenericExceptionHandler::initialise(self::Log());
         GenericErrorHandler::initialise(self::Log());
 
         self::initialiseSessionAndCookies();
+
+        // Initialize language management
+        Lang::initialize();
+        Lang::set(self::$Configuration->get('lang', 'symphony'));
 
         // If the user is not a logged in Author, turn off the verbose error messages.
         if (!self::isLoggedIn() && is_null(self::$Author)) {
             GenericExceptionHandler::$enabled = false;
         }
 
-        // Set system language
-        Lang::set(self::$Configuration->get('lang', 'symphony'));
+        // Engine is ready.
+        self::$Profiler->sample('Engine Initialisation');
     }
 
     /**
@@ -172,9 +140,9 @@ abstract class Symphony implements Singleton
      */
     public static function Engine()
     {
-        if (class_exists('Administration')) {
+        if (class_exists('Administration', false)) {
             return Administration::instance();
-        } elseif (class_exists('Frontend')) {
+        } elseif (class_exists('Frontend', false)) {
             return Frontend::instance();
         } else {
             throw new Exception(__('No suitable engine object found'));
@@ -261,7 +229,7 @@ abstract class Symphony implements Singleton
         self::$Log->setMaxSize(intval(self::Configuration()->get('maxsize', 'log')));
         self::$Log->setDateTimeFormat(self::Configuration()->get('date_format', 'region') . ' ' . self::Configuration()->get('time_format', 'region'));
 
-        if (self::$Log->open(Log::APPEND, self::Configuration()->get('write_mode', 'file')) == 1) {
+        if (self::$Log->open(Log::APPEND, self::Configuration()->get('write_mode', 'file')) == '1') {
             self::$Log->initialise('Symphony Log');
         }
     }
@@ -289,7 +257,7 @@ abstract class Symphony implements Singleton
      * @deprecated Prior to Symphony 2.3.2, the constant `__SYM_COOKIE_PREFIX_`
      *  had a typo where it was missing the second underscore. Symphony will
      *  support both constants, `__SYM_COOKIE_PREFIX_` and `__SYM_COOKIE_PREFIX__`
-     *  until Symphony 2.5
+     *  until Symphony 2.6.0.
      */
     public static function initialiseSessionAndCookies()
     {
@@ -398,13 +366,26 @@ abstract class Symphony implements Singleton
     }
 
     /**
+     * Accessor for the current `$Cookie` instance.
+     *
+     * @since Symphony 2.5.0
+     * @return Cookie
+     */
+    public static function Cookie() {
+        return self::$Cookie;
+    }
+
+    /**
      * Setter for `$ExtensionManager` using the current
      * Symphony instance as the parent. If for some reason this fails,
      * a Symphony Error page will be thrown
+     * @param Boolean $force (optional)
+     *  When set to true, this function will always create a new
+     *  instance of ExtensionManager, replacing self::$ExtensionManager.
      */
-    public static function initialiseExtensionManager()
+    public static function initialiseExtensionManager($force=false)
     {
-        if (self::$ExtensionManager instanceof ExtensionManager) {
+        if (!$force && self::$ExtensionManager instanceof ExtensionManager) {
             return true;
         }
 
@@ -524,14 +505,14 @@ abstract class Symphony implements Singleton
     }
 
     /**
-	 * Accessor for the current `$Author` instance.
-	 *
+     * Accessor for the current `$Author` instance.
+     *
      * @since Symphony 2.5.0
-	 * @return Author
-	 */
-	public static function Author() {
-		return self::$Author;
-	}
+     * @return Author
+     */
+    public static function Author() {
+        return self::$Author;
+    }
 
     /**
      * Attempts to log an Author in given a username and password.
@@ -571,7 +552,9 @@ abstract class Symphony implements Singleton
                 if (self::isUpgradeAvailable() === false && Cryptography::requiresMigration(self::$Author->get('password'))) {
                     self::$Author->set('password', Cryptography::hash($password));
 
-                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors', " `id` = '" . self::$Author->get('id') . "'");
+                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors', sprintf(
+                        " `id` = %d", self::$Author->get('id')
+                    ));
                 }
 
                 self::Session()->set('username', $username);
@@ -613,7 +596,7 @@ abstract class Symphony implements Singleton
             return false;
         }
 
-        if (strlen($token) == 6 | strlen($token) == 16) {
+        if (strlen($token) == 6 || strlen($token) == 16) {
             $row = self::Database()->fetchRow(0, sprintf(
                 "SELECT `a`.`id`, `a`.`username`, `a`.`password`
                 FROM `tbl_authors` AS `a`, `tbl_forgotpass` AS `f`
@@ -625,7 +608,7 @@ abstract class Symphony implements Singleton
                 $token
             ));
 
-            self::Database()->delete('tbl_forgotpass', " `token` = '{$token}' ");
+            self::Database()->delete('tbl_forgotpass', sprintf(" `token` = '%s' ", $token));
         } else {
             $row = self::Database()->fetchRow(0, sprintf(
                 "SELECT `id`, `username`, `password`
@@ -700,7 +683,7 @@ abstract class Symphony implements Singleton
                     );
 
                     // Only set custom author language in the backend
-                    if (class_exists('Administration')) {
+                    if (class_exists('Administration', false)) {
                         Lang::set(self::$Author->get('language'));
                     }
 

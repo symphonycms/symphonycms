@@ -4,9 +4,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
-
 /**
  * Checkbox field simulates a HTML checkbox field, in that it represents a
  * simple yes/no field.
@@ -63,6 +60,22 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
     public function allowDatasourceParamOutput()
     {
         return true;
+    }
+
+    public function fetchFilterableOperators()
+    {
+        return array(
+            array(
+                'title' => 'is',
+                'filter' => ' ',
+                'help' => __('Find values that are an exact match for the given string.')
+            )
+        );
+    }
+
+    public function fetchSuggestionTypes()
+    {
+        return array('static');
     }
 
     /*-------------------------------------------------------------------------
@@ -232,9 +245,8 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
 
     public function prepareImportValue($data, $mode, $entry_id = null)
     {
-        $value = $status = $message = null;
+        $status = $message = null;
         $modes = (object)$this->getImportModes();
-
         $value = $this->processRawFieldData($data, $status, $message, true, $entry_id);
 
         if ($mode === $modes->getValue) {
@@ -310,10 +322,8 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         Filtering:
     -------------------------------------------------------------------------*/
 
-    public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null)
+    public function displayFilteringOptions(XMLElement &$wrapper)
     {
-        parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
-
         $existing_options = array('yes', 'no');
 
         if (is_array($existing_options) && !empty($existing_options)) {

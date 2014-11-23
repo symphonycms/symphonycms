@@ -10,7 +10,7 @@
  *
  *  @param string $url
  */
-function redirect($url)
+function redirect ($url)
 {
     // Just make sure.
     $url = str_replace('Location:', null, $url);
@@ -28,6 +28,7 @@ function redirect($url)
         $url  = str_replace($host, idn_to_ascii($host), $url);
     }
 
+    header('Status: 302 Found');
     header('Expires: Mon, 12 Dec 1982 06:00:00 GMT');
     header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
     header('Cache-Control: no-cache, must-revalidate, max-age=0');
@@ -132,14 +133,51 @@ function ini_size_to_bytes($val)
  * @author creativedutchmen (Huib Keemink)
  * @return void
  */
-function cleanup_session_cookies($mode)
+function cleanup_session_cookies()
 {
-    if (strtolower($mode) != 'administration') {
-        $session_is_empty = is_session_empty();
+    /*
+    Unfortunately there is no way to delete a specific previously set cookie from PHP.
+    The only way seems to be the method employed here: store all the cookie we need to keep, then delete every cookie and add the stored cookies again.
+    Luckily we can just store the raw header and output them again, so we do not need to actively parse the header string.
+    */
+    $cookie_params = session_get_cookie_params();
+    $list = headers_list();
+    $custom_cookies = array();
 
-        if ($session_is_empty && Symphony::Cookies()->exists(session_name())) {
-            Symphony::Cookies()->remove(session_name());
+    foreach ($list as $hdr) {
+        if ((stripos($hdr, 'Set-Cookie') !== false) && (stripos($hdr, session_id()) === false)) {
+            $custom_cookies[] = $hdr;
         }
+    }
+
+    header_remove('Set-Cookie');
+
+    foreach ($custom_cookies as $custom_cookie) {
+        header($custom_cookie);
+    }
+
+    $session_is_empty = is_session_empty();
+
+    if ($session_is_empty && !empty($_COOKIE[session_name()])) {
+        setcookie(
+            session_name(),
+            session_id(),
+            time() - 3600,
+            $cookie_params['path'],
+            $cookie_params['domain'],
+            $cookie_params['secure'],
+            $cookie_params['httponly']
+        );
+    } elseif (!$session_is_empty) {
+        setcookie(
+            session_name(),
+            session_id(),
+            time() + TWO_WEEKS,
+            $cookie_params['path'],
+            $cookie_params['domain'],
+            $cookie_params['secure'],
+            $cookie_params['httponly']
+        );
     }
 }
 
@@ -152,7 +190,6 @@ function cleanup_session_cookies($mode)
 function is_session_empty()
 {
     $session_is_empty = true;
-
     foreach ($_SESSION as $contents) {
         if (!empty($contents)) {
             $session_is_empty = false;
@@ -165,7 +202,7 @@ function is_session_empty()
 /**
  * Responsible for picking the launcher function and starting it.
  */
-function symphony($mode)
+function symphony($mode) 
 {
     $launcher = SYMPHONY_LAUNCHER;
     $launcher($mode);
@@ -180,23 +217,19 @@ function symphony($mode)
  */
 function symphony_launcher($mode)
 {
-    header('Expires: Mon, 12 Dec 1982 06:14:00 GMT');
-    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-    header('Cache-Control: no-cache, must-revalidate, max-age=0');
-    header('Pragma: no-cache');
-
     if (strtolower($mode) == 'administration') {
-        require_once CORE . "/class.administration.php";
         $renderer = Administration::instance();
-    } else {
-        require_once CORE . "/class.frontend.php";
+    }
+
+    else {
         $renderer = Frontend::instance();
     }
 
     $output = $renderer->display(getCurrentPage());
 
     // #1808
-    if (isset($_SERVER['HTTP_MOD_REWRITE'])) {
+    if (isset($_SERVER['HTTP_MOD_REWRITE'])) 
+    {
         $output = file_get_contents(GenericExceptionHandler::getTemplate('fatalerror.rewrite'));
         $output = str_replace('{APPLICATION_URL}', APPLICATION_URL, $output);
         $output = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $output);
@@ -205,9 +238,7 @@ function symphony_launcher($mode)
         exit;
     }
 
-    cleanup_session_cookies($mode);
-
-    Symphony::Cookies()->save();
+    cleanup_session_cookies();
 
     echo $output;
 

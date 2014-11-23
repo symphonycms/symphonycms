@@ -3,9 +3,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
-
 /**
  * The Tag List field is really a different interface for the Select Box
  * field, offering a tag interface that can have static suggestions,
@@ -101,7 +98,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     }
 
     /**
-     * @depracted Will be removed in Symphony 2.5, use `getToggleStates()` instead
+     * @deprecated Will be removed in Symphony 2.6.0, use `getToggleStates()` instead
      */
     public function findAllTags()
     {
@@ -321,13 +318,8 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     public function processRawFieldData($data, &$status, &$message = null, $simulate = false, $entry_id = null)
     {
         $status = self::__OK__;
-
         $data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
         $data = array_map('trim', $data);
-        $result = array(
-            'value' =>  array(),
-            'handle' => array()
-        );
 
         if (empty($data)) {
             return null;
@@ -339,7 +331,6 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         sort($data);
 
         $result = array();
-
         foreach ($data as $value) {
             $result['value'][] = $value;
             $result['handle'][] = Lang::createHandle($value);
@@ -504,10 +495,8 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         Filtering:
     -------------------------------------------------------------------------*/
 
-    public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null)
+    public function displayFilteringOptions(XMLElement &$wrapper)
     {
-        parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
-
         if ($this->get('pre_populate_source') != null) {
 
             $existing_tags = $this->getToggleStates();

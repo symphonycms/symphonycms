@@ -5,12 +5,10 @@
 /**
  * The AjaxParameters returns an JSON array of all available parameters.
  */
-require_once TOOLKIT . '/class.datasourcemanager.php';
-require_once TOOLKIT . '/class.jsonpage.php';
 
 class contentAjaxParameters extends JSONPage
 {
-    private $template = '{$%s}';
+    private $template = '$%s';
 
     public function view()
     {
@@ -43,7 +41,6 @@ class contentAjaxParameters extends JSONPage
         sort($params);
         $this->_Result = $params;
     }
-
 
     /**
      * Utilities

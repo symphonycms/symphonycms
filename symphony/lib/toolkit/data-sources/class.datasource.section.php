@@ -14,8 +14,6 @@
  * @link http://getsymphony.com/learn/concepts/view/data-sources/
  */
 
-require_once TOOLKIT . '/class.entrymanager.php';
-
 class SectionDatasource extends Datasource
 {
     /**
@@ -162,7 +160,7 @@ class SectionDatasource extends Datasource
                     list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
 
                     if (self::$_fieldPool[$field_id]->get('element_name') == $handle) {
-                        self::$_fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE ? true : false), $mode, $entry->get('id'));
+                        self::$_fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE === 'yes' ? true : false), $mode, $entry->get('id'));
                     }
                 }
             }
@@ -369,7 +367,7 @@ class SectionDatasource extends Datasource
 
             if (!is_array($filter)) {
                 $filter_type = $this->__determineFilterType($filter);
-                $value = preg_split('/'.($filter_type == DataSource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
+                $value = preg_split('/'.($filter_type == Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
                 $value = array_map('trim', $value);
                 $value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
             } else {
@@ -394,8 +392,8 @@ class SectionDatasource extends Datasource
                     $c = 'NOT IN';
                 }
 
-                // Cast all ID's to integers.
-                $value = array_map(create_function('$x', 'return (int)$x;'), $value);
+                // Cast all ID's to integers. (RE: #2191)
+                $value = array_map('General::intval', $value);
                 $count = array_sum($value);
                 $value = array_filter($value);
 
@@ -404,7 +402,7 @@ class SectionDatasource extends Datasource
                 // Datasource will return ALL results, which is not the
                 // desired behaviour. RE: #1619
                 if ($count === 0) {
-                    $value[] = '0';
+                    $value[] = 0;
                 }
 
                 // If there are no ID's, no need to filter. RE: #1567
@@ -412,18 +410,16 @@ class SectionDatasource extends Datasource
                     $where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
                 }
             } elseif ($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
-                require_once TOOLKIT . '/fields/field.date.php';
-
                 $date_joins = '';
                 $date_where = '';
-                $date = new fieldDate();
-                $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == DataSource::FILTER_AND ? true : false));
+                $date = new FieldDate();
+                $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == Datasource::FILTER_AND ? true : false));
 
                 // Replace the date field where with the `creation_date` or `modification_date`.
                 $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
                 $where .= $date_where;
             } else {
-                if (!self::$_fieldPool[$field_id]->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == DataSource::FILTER_AND ? true : false))) {
+                if (!self::$_fieldPool[$field_id]->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false))) {
                     $this->_force_empty_result = true;
                     return;
                 }
@@ -454,6 +450,10 @@ class SectionDatasource extends Datasource
         ));
 
         if ($this->_force_empty_result == true) {
+            if ($this->dsParamREDIRECTONREQUIRED == 'yes') {
+                throw new FrontendPageNotFoundException;
+            }
+
             $this->_force_empty_result = false; //this is so the section info element doesn't disappear.
             $error = new XMLElement('error', __("Data source not executed, required parameter is missing."), array(
                 'required-param' => $this->dsParamREQUIREDPARAM
@@ -465,6 +465,10 @@ class SectionDatasource extends Datasource
         }
 
         if ($this->_negate_result == true) {
+            if ($this->dsParamREDIRECTONFORBIDDEN == 'yes') {
+                throw new FrontendPageNotFoundException;
+            }
+
             $this->_negate_result = false; //this is so the section info element doesn't disappear.
             $result = $this->negateXMLSet();
             $result->prependChild($sectioninfo);

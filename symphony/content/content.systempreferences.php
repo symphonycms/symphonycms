@@ -10,7 +10,6 @@
  * page so they can have their own settings. This page is typically
  * a UI for a subset of the `CONFIG` file.
  */
-require_once TOOLKIT . '/class.administrationpage.php';
 
 class contentSystemPreferences extends AdministrationPage {
 

@@ -3,10 +3,6 @@
  * @package email-gateways
  */
 
-require_once TOOLKIT . '/class.emailgateway.php';
-require_once TOOLKIT . '/class.emailhelper.php';
-require_once TOOLKIT . '/class.smtp.php';
-
 /**
  * One of the two core email gateways.
  * Provides simple SMTP functionalities.
@@ -135,7 +131,7 @@ class SMTPGateway extends EmailGateway
             }
 
             // Send the email command. If the envelope from variable is set, use that for the MAIL command. This improves bounce handling.
-            $this->_SMTP->sendMail(is_null($this->_envelope_from)?$this->_sender_email_address:$this->_envelope_from, $this->_recipients, $this->_subject, $this->_body);
+            $this->_SMTP->sendMail(is_null($this->_envelope_from)?$this->_sender_email_address:$this->_envelope_from, $this->_recipients, $this->_body);
 
             if ($this->_keepalive == false) {
                 $this->closeConnection();

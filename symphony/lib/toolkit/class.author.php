@@ -169,8 +169,6 @@ class Author
      */
     public function validate(&$errors)
     {
-        require_once TOOLKIT . '/util.validators.php';
-
         $errors = array();
         $current_author = null;
 

@@ -157,5 +157,3 @@ abstract class Event
         return $this->execute();
     }
 }
-
-require_once TOOLKIT . '/events/class.event.section.php';

@@ -11,9 +11,6 @@
  * @since Symphony 2.3
  * @see toolkit.AdministrationPage
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.resourcemanager.php';
-require_once CONTENT . '/class.sortable.php';
 
 abstract class ResourcesPage extends AdministrationPage
 {
@@ -98,13 +95,13 @@ abstract class ResourcesPage extends AdministrationPage
      * can be overridden with a Datasource's `getSourceColumn` method (if it exists).
      *
      * @param integer $resource_type
-     *  Either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DATASOURCE`
+     *  Either `ResourceManager::RESOURCE_TYPE_EVENT` or `ResourceManager::RESOURCE_TYPE_DATASOURCE`
      * @throws InvalidArgumentException
      */
     public function __viewIndex($resource_type)
     {
         $manager = ResourceManager::getManagerFromType($resource_type);
-        $friendly_resource = ($resource_type === RESOURCE_TYPE_EVENT) ? __('Event') : __('DataSource');
+        $friendly_resource = ($resource_type === ResourceManager::RESOURCE_TYPE_EVENT) ? __('Event') : __('DataSource');
 
         $this->setPageType('table');
 
@@ -156,9 +153,6 @@ abstract class ResourcesPage extends AdministrationPage
                         'data-status' => ' — ' . __('read only')
                     );
                 }
-
-                // Resource name
-                $action = isset($r['can_parse']) && $r['can_parse'] === true ? 'edit' : 'info';
 
                 $name = Widget::TableData(
                     Widget::Anchor(
@@ -303,13 +297,13 @@ abstract class ResourcesPage extends AdministrationPage
      * This function is called from the resources index when a user uses the
      * With Selected, or Apply, menu. The type of resource is given by
      * `$resource_type`. At this time the only two valid values,
-     * `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DATASOURCE`.
+     * `ResourceManager::RESOURCE_TYPE_EVENT` or `ResourceManager::RESOURCE_TYPE_DATASOURCE`.
      *
      * The function handles 'delete', 'attach', 'detach', 'attach all',
      * 'detach all' actions.
      *
      * @param integer $resource_type
-     *  Either `RESOURCE_TYPE_EVENT` or `RESOURCE_TYPE_DATASOURCE`
+     *  Either `ResourceManager::RESOURCE_TYPE_EVENT` or `ResourceManager::RESOURCE_TYPE_DATASOURCE`
      * @throws Exception
      */
     public function __actionIndex($resource_type)

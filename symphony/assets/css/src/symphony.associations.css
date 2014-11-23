@@ -25,7 +25,7 @@
 }
 
 .empty + .empty {
-	margin-top:  0;
+	margin-top: 0;
 }
 
 .association:last-of-type {
@@ -59,8 +59,8 @@
 }
 
 .association header i {
-	margin-left: 0.3rem;
 	float: right;
+	margin-left: 0.3rem;
 }
 
 .association .association-section {
@@ -68,35 +68,35 @@
 }
 
 .association-links {
-	padding: 1rem 0 0;
-	margin: 0;
 	width: 26rem;
+	margin: 0;
+	padding: 1rem 0 0;
 }
 
 .association-links li {
 	display: block;
-	line-height: 2;
 	box-sizing: border-box;
+	line-height: 2;
 	white-space: nowrap;
 }
 
 .association-links a,
 .association-links a:hover {
+	display: inline-block;
+	overflow: hidden;
 	width: 26rem;
 	line-height: 3rem;
-	display: inline-block;
 	text-overflow: ellipsis;
-	overflow: hidden;
-	border-color: #E8E8E8;
+	border-color: #e8e8e8;
 }
 
 .association-links li a::before {
-	content: "\2192 ";
+	content: '\2192 ';
 	margin-right: 0.3rem;
 }
 
 .association-links.parent li a::before {
-	content: "\2190 ";
+	content: '\2190 ';
 	margin-right: 0.3rem;
 }
 
@@ -105,7 +105,7 @@
 }
 
 .association-more a::before {
-	content: "\00B7\00B7\00B7" !important;
+	content: '\00B7\00B7\00B7' !important;
 }
 
 .association-new {

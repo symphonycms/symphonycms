@@ -28,17 +28,25 @@
 	define('DOCROOT', $clean_path);
 
 	// Required boot components
+	define('VERSION', '2.6.0-alpha.1');
+	define('INSTALL', DOCROOT . '/install');
+
+	// Is there a vendor autoloader?
+	if (@file_exists(DOCROOT . '/vendor/autoload.php')) {
+		require_once DOCROOT . '/vendor/autoload.php';
+	} else {
+		require_once DOCROOT . '/symphony/lib/boot/autoload.php';
+	}
+
+	// Run the bundle
 	require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
 
-	define('VERSION', '2.5.0beta2');
-	define('INSTALL', DOCROOT . '/install');
 	define('INSTALL_LOGS', MANIFEST . '/logs');
 	define('INSTALL_URL', URL . '/install');
 
 	// If prompt to remove, delete the entire `/install` directory
 	// and then redirect to Symphony
 	if(isset($_GET['action']) && $_GET['action'] == 'remove') {
-		require_once(DOCROOT . '/symphony/lib/toolkit/class.general.php');
 		General::deleteDirectory(INSTALL);
 		redirect(SYMPHONY_URL);
 	}
@@ -46,15 +54,11 @@
 	// If Symphony is already installed, run the updater
 	if(file_exists(CONFIG)) {
 		// System updater
-		require_once(INSTALL . '/lib/class.updater.php');
-
 		$script = Updater::instance();
 	}
 	// If there's no config file, run the installer
 	else{
 		// System installer
-		require_once(INSTALL . '/lib/class.installer.php');
-
 		$script = Installer::instance();
 	}
 

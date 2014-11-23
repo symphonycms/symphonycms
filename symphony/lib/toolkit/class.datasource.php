@@ -18,7 +18,7 @@
  * `TEMPLATE . /datasource.tpl`.
  */
 
-class DataSource
+class Datasource
 {
     /**
      * A constant that represents if this filter is an AND filter in which
@@ -156,7 +156,7 @@ class DataSource
     /**
      * @deprecated This function has been renamed to `execute` as of
      *  Symphony 2.3.1, please use `execute()` instead. This function will
-     *  be removed in Symphony 2.5
+     *  be removed in Symphony 3.0.0
      * @see execute()
      */
     public function grab(array &$param_pool = null)
@@ -212,11 +212,11 @@ class DataSource
      * @param string $value
      *  The filter string for a field.
      * @return integer
-     *  DataSource::FILTER_OR or DataSource::FILTER_AND
+     *  Datasource::FILTER_OR or Datasource::FILTER_AND
      */
     public function __determineFilterType($value)
     {
-        return (preg_match('/\s+\+\s+/', $value) ? DataSource::FILTER_AND : DataSource::FILTER_OR);
+        return (preg_match('/\s+\+\s+/', $value) ? Datasource::FILTER_AND : Datasource::FILTER_OR);
     }
 
     /**
@@ -308,7 +308,7 @@ class DataSource
 
                 // If a filter gets evaluated to nothing, eg. ` + ` or ``, then remove
                 // the filter. RE: #1759
-                if (strlen(trim($new_value)) == 0 || !preg_match('/\w+/', $new_value)) {
+                if (strlen(trim($new_value)) == 0 || !preg_match('/\w+/u', $new_value)) {
                     unset($this->dsParamFILTERS[$key]);
                 } else {
                     $this->dsParamFILTERS[$key] = $new_value;
@@ -537,9 +537,3 @@ class DataSource
         return null;
     }
 }
-
-require_once TOOLKIT . '/data-sources/class.datasource.author.php';
-require_once TOOLKIT . '/data-sources/class.datasource.section.php';
-require_once TOOLKIT . '/data-sources/class.datasource.static.php';
-require_once TOOLKIT . '/data-sources/class.datasource.dynamic_xml.php';
-require_once TOOLKIT . '/data-sources/class.datasource.navigation.php';

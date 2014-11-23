@@ -9,8 +9,6 @@
  * in a `fields` folder in an extension directory.
  */
 
-require_once TOOLKIT . '/class.field.php';
-
 class FieldManager implements FileResource
 {
     /**
@@ -59,7 +57,7 @@ class FieldManager implements FileResource
      *
      * @param string $type
      *  The field handle, that is, `field.{$handle}.php`
-     * @return string
+     * @return string|boolean
      */
     public static function __getClassPath($type)
     {
@@ -174,7 +172,7 @@ class FieldManager implements FileResource
      */
     public static function edit($id, array $fields)
     {
-        if (!Symphony::Database()->update($fields, "tbl_fields", " `id` = '$id'")) {
+        if (!Symphony::Database()->update($fields, "tbl_fields", sprintf(" `id` = %d", $id))) {
             return false;
         }
 
@@ -198,8 +196,8 @@ class FieldManager implements FileResource
         $existing = self::fetch($id);
         $existing->tearDown();
 
-        Symphony::Database()->delete('tbl_fields', " `id` = '$id'");
-        Symphony::Database()->delete('tbl_fields_'.$existing->handle(), " `field_id` = '$id'");
+        Symphony::Database()->delete('tbl_fields', sprintf(" `id` = %d", $id));
+        Symphony::Database()->delete('tbl_fields_'.$existing->handle(), sprintf(" `field_id` = %d", $id));
         SectionManager::removeSectionAssociation($id);
 
         Symphony::Database()->query('DROP TABLE IF EXISTS `tbl_entries_data_'.$id.'`');
@@ -363,7 +361,10 @@ class FieldManager implements FileResource
      */
     public static function fetchFieldTypeFromID($id)
     {
-        return Symphony::Database()->fetchVar('type', 0, "SELECT `type` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
+        return Symphony::Database()->fetchVar('type', 0, sprintf("
+            SELECT `type` FROM `tbl_fields` WHERE `id` = %d LIMIT 1",
+            $id
+        ));
     }
 
     /**
@@ -374,7 +375,10 @@ class FieldManager implements FileResource
      */
     public static function fetchHandleFromID($id)
     {
-        return Symphony::Database()->fetchVar('element_name', 0, "SELECT `element_name` FROM `tbl_fields` WHERE `id` = '$id' LIMIT 1");
+        return Symphony::Database()->fetchVar('element_name', 0, sprintf("
+            SELECT `element_name` FROM `tbl_fields` WHERE `id` = %d LIMIT 1",
+            $id
+        ));
     }
 
     /**
@@ -401,8 +405,8 @@ class FieldManager implements FileResource
     public static function fetchFieldIDFromElementName($element_name, $section_id = null)
     {
         if (is_null($element_name)) {
-            $schema_sql = sprintf(
-                "SELECT `id`
+            $schema_sql = sprintf("
+                SELECT `id`
                 FROM `tbl_fields`
                 WHERE `parent_section` = %d
                 ORDER BY `sortorder` ASC",
@@ -430,8 +434,8 @@ class FieldManager implements FileResource
                 $element_names[] = Symphony::Database()->cleanValue(trim($parts[0]));
             }
 
-            $schema_sql = empty($element_names) ? null : sprintf(
-                "SELECT `id`
+            $schema_sql = empty($element_names) ? null : sprintf("
+                SELECT `id`
                 FROM `tbl_fields`
                 WHERE 1
                 %s

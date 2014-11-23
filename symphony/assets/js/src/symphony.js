@@ -1,5 +1,5 @@
 /*!
- * Symphony 2.4, http://getsymphony.com, MIT license
+ * Symphony 2.6.x, http://getsymphony.com, MIT license
  */
 
 /**
@@ -310,6 +310,13 @@ var Symphony = (function($, crossroads) {
 		 * @class
 		 */
 		Support: Storage.Support,
+
+		/**
+		 * A namespace for core interface components
+		 *
+		 * @since Symphony 2.6
+		 */
+		Interface: {},
 
 		/**
 		 * A namespace for extension to store global functions

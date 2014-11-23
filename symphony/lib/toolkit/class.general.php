@@ -7,9 +7,6 @@
  * functions that are used throughout Symphony.
  */
 
-define_safe('CDATA_BEGIN', '<![CDATA[');
-define_safe('CDATA_END', ']]>');
-
 class General
 {
     /**
@@ -118,13 +115,7 @@ class General
      */
     public static function validateXML($data, &$errors, $isFile = true, $xsltProcessor = null, $encoding = 'UTF-8')
     {
-        $_parser = null;
-        $_data = null;
-        $_vals = array();
-        $_index = array();
-
         $_data = ($isFile) ? file_get_contents($data) : $data;
-
         $_data = preg_replace('/<!DOCTYPE[-.:"\'\/\\w\\s]+>/', null, $_data);
 
         if (strpos($_data, '<?xml') === false) {
@@ -1016,10 +1007,11 @@ class General
      * back to using a mapping of known of common mimetypes. If no matches
      * are found `application/octet-stream` will be returned.
      *
-         * @author Michael Eichelsdoerfer
+     * @author Michael Eichelsdoerfer
      * @author Huib Keemink
      * @param string $file
-     * @return string MIMEtype
+     * @return string|boolean
+     *  the mime type of the file, or false is none found
      */
     public function getMimeType($file)
     {
@@ -1029,11 +1021,6 @@ class General
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);
                 $mime_type = finfo_file($finfo, $file);
                 finfo_close($finfo);
-
-                /**
-                 * fallback
-                 * this may be removed when Symphony requires PHP 5.3
-                 */
             } else {
                 // A few mimetypes to "guess" using the file extension.
                 $mimetypes = array(
@@ -1296,7 +1283,6 @@ class General
      */
     public static function limitWords($string, $maxChars = 200, $appendHellip = false)
     {
-
         if ($appendHellip) {
             $maxChars -= 1;
         }
@@ -1313,7 +1299,6 @@ class General
         $string = trim(substr($string, 0, $maxChars));
 
         $array = explode(' ', $string);
-        $result = '';
         $length = 0;
 
         while (!empty($array) && $length > $maxChars) {
@@ -1384,6 +1369,36 @@ class General
             $file_size = intval($file_size * (1/1024)) . ' KB';
         } else {
             $file_size = intval($file_size) . ' bytes';
+        }
+
+        return $file_size;
+    }
+
+    /**
+     * Gets the number of bytes from 'human readable' size value. Supports
+     * the output of `General::formatFilesize` as well as reading values
+     * from the PHP configuration. eg. 1 MB or 1M
+     *
+     * @since Symphony 2.5.2
+     * @param string $file_size
+     * @return integer
+     */
+    public static function convertHumanFileSizeToBytes($file_size)
+    {
+        $file_size = str_replace(
+            array(' MB', ' KB', ' bytes'),
+            array('M', 'K', 'B'),
+            trim($file_size)
+        );
+
+        $last = strtolower($file_size[strlen($file_size)-1]);
+        switch($last) {
+            case 'g':
+                $file_size *= 1024;
+            case 'm':
+                $file_size *= 1024;
+            case 'k':
+                $file_size *= 1024;
         }
 
         return $file_size;
@@ -1592,5 +1607,23 @@ class General
     public static function unwrapCDATA($value)
     {
         return str_replace(array(CDATA_BEGIN, CDATA_END), '', $value);
+    }
+
+    /**
+     * Converts a value to a positive integer. This method makes sure that the
+     * value is a valid positive integer representation before doing the cast.
+     *
+     * @since Symphony 2.5
+     * @param mixed $value
+     *  The value to cast to an integer
+     * @return int
+     *  The casted integer value if the input is valid, -1 otherwise.
+     */
+    public static function intval($value)
+    {
+        if (is_numeric($value) && preg_match('/[0-9]+/i', $value) === 1) {
+            return intval($value);
+        }
+        return -1;
     }
 }

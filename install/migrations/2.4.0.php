@@ -98,6 +98,10 @@
 				$notes[] = __("As Symphony 2.4 adds the Publish Filtering extension into the core, the standalone extension has been uninstalled. You can remove it from your installation at any time.");
 			}
 
+			$notes[] = __("The Dynamic XML Datasource has been deprecated from the core in favour of the %s extension. You will no longer be able to create new Dynamic XML Data Sources from the Symphony Data Source editor. Existing Dynamic XML Data Sources can be edited and will continue to function until Symphony 2.7.0.", array(
+				"<a href='http://symphonyextensions.com/extensions/remote_datasource/'>Remote Datasource</a>"
+			));
+
 			return $notes;
 		}
 

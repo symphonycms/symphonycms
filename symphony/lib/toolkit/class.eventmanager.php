@@ -10,9 +10,6 @@
  * they are not limited to that facet.
  */
 
-require_once TOOLKIT . '/class.event.php';
-require_once FACE . '/interface.fileresource.php';
-
 class EventManager implements FileResource
 {
     /**
@@ -48,7 +45,7 @@ class EventManager implements FileResource
      * @param string $handle
      *  The handle of the Event free from any Symphony conventions
      *  such as `event.*.php`
-     * @return mixed
+     * @return string|boolean
      *  If the Event is found, the function returns the path it's folder, otherwise false.
      */
     public static function __getClassPath($handle)
@@ -104,27 +101,17 @@ class EventManager implements FileResource
 
                 if ($about = self::about($f)) {
                     $classname = self::__getClassName($f);
-                    $can_parse = false;
-                    $source = null;
                     $env = array();
                     $class = new $classname($env);
 
-                    try {
-                        $method = new ReflectionMethod($classname, 'allowEditorToParse');
-                        $can_parse = $method->invoke($class);
-                    } catch (ReflectionException $e) {
+                    $about['can_parse'] = method_exists($class, 'allowEditorToParse')
+                        ? $class->allowEditorToParse()
+                        : false;
 
-                    }
+                    $about['source'] = method_exists($class, 'getSource')
+                        ? $class->getSource()
+                        : null;
 
-                    try {
-                        $method = new ReflectionMethod($classname, 'getSource');
-                        $source = $method->invoke($class);
-                    } catch (ReflectionException $e) {
-
-                    }
-
-                    $about['can_parse'] = $can_parse;
-                    $about['source'] = $source;
                     $result[$f] = $about;
                 }
             }

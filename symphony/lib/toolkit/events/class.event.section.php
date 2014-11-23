@@ -11,9 +11,6 @@
  * @link http://getsymphony.com/learn/concepts/view/events/
  */
 
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once TOOLKIT . '/class.entrymanager.php';
-
 abstract class SectionEvent extends Event
 {
     /**
@@ -81,6 +78,19 @@ abstract class SectionEvent extends Event
 
         foreach ($errors as $field_id => $message) {
             $field = FieldManager::fetch($field_id);
+
+            // Do a little bit of a check for files so that we can correctly show
+            // whether they are 'missing' or 'invalid'. If it's missing, then we
+            // want to remove the data so `__reduceType` will correctly resolve to
+            // missing instead of invalid.
+            // @see https://github.com/symphonists/s3upload_field/issues/17
+            if (isset($_FILES['fields']['error'][$field->get('element_name')])) {
+                $upload = $_FILES['fields']['error'][$field->get('element_name')];
+
+                if ($upload === UPLOAD_ERR_NO_FILE) {
+                    unset($fields[$field->get('element_name')]);
+                }
+            }
 
             if (is_array($fields[$field->get('element_name')])) {
                 $type = array_reduce($fields[$field->get('element_name')], array('SectionEvent', '__reduceType'));
@@ -226,30 +236,31 @@ abstract class SectionEvent extends Event
         $entry_id = $position = $fields = null;
         $post = General::getPostData();
         $success = true;
+        if (!is_array($post['fields'])) {
+            $post['fields'] = array();
+        }
 
         if (in_array('expect-multiple', $this->eParamFILTERS)) {
-            if (is_array($post['fields'])) {
-                foreach ($post['fields'] as $position => $fields) {
-                    if (isset($post['id'][$position]) && is_numeric($post['id'][$position])) {
-                        $entry_id = $post['id'][$position];
-                    } else {
-                        $entry_id = null;
-                    }
-
-                    $entry = new XMLElement('entry', null, array('position' => $position));
-
-                    // Reset errors for each entry execution
-                    $this->filter_results = $this->filter_errors = array();
-
-                    // Execute the event for this entry
-                    $ret = $this->__doit($fields, $entry, $position, $entry_id);
-
-                    if (!$ret) {
-                        $success = false;
-                    }
-
-                    $result->appendChild($entry);
+            foreach ($post['fields'] as $position => $fields) {
+                if (isset($post['id'][$position]) && is_numeric($post['id'][$position])) {
+                    $entry_id = $post['id'][$position];
+                } else {
+                    $entry_id = null;
                 }
+
+                $entry = new XMLElement('entry', null, array('position' => $position));
+
+                // Reset errors for each entry execution
+                $this->filter_results = $this->filter_errors = array();
+
+                // Execute the event for this entry
+                $ret = $this->__doit($fields, $entry, $position, $entry_id);
+
+                if (!$ret) {
+                    $success = false;
+                }
+
+                $result->appendChild($entry);
             }
         } else {
             $fields = $post['fields'];
@@ -288,7 +299,7 @@ abstract class SectionEvent extends Event
      * @return XMLElement
      *  The result of the Event
      */
-    public function __doit($fields, XMLElement &$result, $position = null, $entry_id = null)
+    public function __doit(array $fields = array(), XMLElement &$result, $position = null, $entry_id = null)
     {
         $post_values = new XMLElement('post-values');
 
@@ -306,7 +317,7 @@ abstract class SectionEvent extends Event
         }
 
         // Create the post data element
-        if (is_array($fields) && !empty($fields)) {
+        if (!empty($fields)) {
             General::array_to_xml($post_values, $fields, true);
         }
 
@@ -339,15 +350,16 @@ abstract class SectionEvent extends Event
         }
 
         // Validate the data. `$entry->checkPostData` loops over all fields calling
-        // checkPostFieldData function. If the return of the function is `__ENTRY_FIELD_ERROR__`
-        // then abort the event, adding the error messages to the `$result`.
-        if (__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))) {
+        // their `checkPostFieldData` function. If the return of the function is
+        // `Entry::__ENTRY_FIELD_ERROR__` then abort the event and add the error
+        // messages to the `$result`.
+        if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))) {
             $result = self::appendErrors($result, $fields, $errors, $post_values);
             return false;
 
             // If the data is good, process the data, almost ready to save it to the
             // Database. If processing fails, abort the event and display the errors
-        } elseif (__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors, false, ($entry->get('id') ? true : false))) {
+        } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors, false, ($entry->get('id') ? true : false))) {
             $result = self::appendErrors($result, $fields, $errors, $post_values);
             return false;
 
@@ -472,6 +484,8 @@ abstract class SectionEvent extends Event
             }
         }
 
+        // Reset the filter results to prevent duplicates. RE: #2179
+        $this->filter_results = array();
         return $can_proceed;
     }
 
@@ -524,6 +538,8 @@ abstract class SectionEvent extends Event
             }
         }
 
+        // Reset the filter results to prevent duplicates. RE: #2179
+        $this->filter_results = array();
         return $result;
     }
 
@@ -583,6 +599,8 @@ abstract class SectionEvent extends Event
             }
         }
 
+        // Reset the filter results to prevent duplicates. RE: #2179
+        $this->filter_results = array();
         return $result;
     }
 
@@ -734,11 +752,13 @@ class EventMessages
     const ENTRY_EDITED_SUCCESS = 101;
     const ENTRY_ERRORS = 102;
     const ENTRY_MISSING = 103;
+    const ENTRY_NOT_UNIQUE = 104;
 
     const SECTION_MISSING = 200;
 
     const FIELD_MISSING = 301;
     const FIELD_INVALID = 302;
+    const FIELD_NOT_UNIQUE = 303;
 
     const FILTER_FAILED = 400;
 

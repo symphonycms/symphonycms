@@ -164,7 +164,6 @@ class PageManager
     {
         $new = PageManager::resolvePageFileLocation($new_path, $new_handle);
         $old = PageManager::resolvePageFileLocation($old_path, $old_handle);
-        $data = null;
 
         // Nothing to do:
         if (file_exists($new) && $new == $old) {
@@ -259,7 +258,7 @@ class PageManager
             unset($fields['id']);
         }
 
-        if (Symphony::Database()->update($fields, 'tbl_pages', "`id` = '$page_id'")) {
+        if (Symphony::Database()->update($fields, 'tbl_pages', sprintf("`id` = %d", $page_id))) {
             // If set, this will clear the page's types.
             if ($delete_types) {
                 PageManager::deletePageTypes($page_id);
@@ -845,7 +844,6 @@ class PageManager
      */
     public static function resolvePage($page_id, $column)
     {
-        $path = array();
         $page = Symphony::Database()->fetchRow(0, sprintf(
             "SELECT
                 p.%s,

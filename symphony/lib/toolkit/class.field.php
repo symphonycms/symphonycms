@@ -201,7 +201,7 @@ class Field
 
     /**
      * Test whether this field can be filtered in the publish index. This default
-     * implementation allows filtering. Publish Filtering allows the index view
+     * implementation prohibts filtering. Publish Filtering allows the index view
      * to filter results. Subclasses should override this if
      * filtering is supported.
      *
@@ -210,7 +210,7 @@ class Field
      */
     public function canPublishFilter()
     {
-        return true;
+        return $this->canFilter();
     }
 
     /**
@@ -581,8 +581,6 @@ class Field
      */
     public function buildFormatterSelect($selected = null, $name = 'fields[format]', $label_value)
     {
-        require_once TOOLKIT . '/class.textformattermanager.php';
-
         $formatters = TextformatterManager::listAll();
 
         if (!$label_value) {
@@ -657,7 +655,7 @@ class Field
     }
 
     /**
-     * Append the html widget for selecting an association interface and editor 
+     * Append the html widget for selecting an association interface and editor
      * for this field.
      *
      * @param XMLElement $wrapper
@@ -668,7 +666,7 @@ class Field
     public function appendAssociationInterfaceSelect(XMLElement &$wrapper)
     {
         $wrapper->setAttribute('data-condition', 'associative');
- 
+
         $interfaces = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATION_UI);
         $editors = Symphony::ExtensionManager()->getProvidersOf(iProvider::ASSOCIATION_EDITOR);
 
@@ -683,7 +681,6 @@ class Field
             // Create interface select
             if (!empty($interfaces)) {
                 $label = Widget::Label(__('Association Interface'), null, 'column');
-                $label->setAttribute('class', 'column');
                 $label->appendChild(new XMLElement('i', __('Optional')));
 
                 $options = array(
@@ -701,7 +698,6 @@ class Field
             // Create editor select
             if (!empty($editors)) {
                 $label = Widget::Label(__('Association Editor'), null, 'column');
-                $label->setAttribute('class', 'column');
                 $label->appendChild(new XMLElement('i', __('Optional')));
 
                 $options = array(
@@ -733,7 +729,7 @@ class Field
         $count = 0;
 
         if (!empty($associations)) {
-            for ($i = 0; $i < count($associations); $i++) { 
+            for ($i = 0; $i < count($associations); $i++) {
                 if ($associations[$i]['child_section_field_id'] == $this->get('id')) {
                     if ($count === 0) {
                         $field_association = $associations[$i];
@@ -751,7 +747,7 @@ class Field
 
     /**
      * Set association data for the current field.
-     * 
+     *
      * @since Symphony 2.5.0
      * @param XMLElement $wrapper
      */
@@ -765,7 +761,7 @@ class Field
                 'data-child-section-id' => $association_context['child_section_id'],
                 'data-child-section-field-id' => $association_context['child_section_field_id'],
                 'data-interface' => $association_context['interface'],
-                'data-editor' => $association_context['editor']        
+                'data-editor' => $association_context['editor']
             ));
         }
     }
@@ -785,22 +781,7 @@ class Field
             return;
         }
 
-        $order = $this->get('sortorder');
-        $name = "fields[{$order}][required]";
-
-        $wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
-
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column');
-        $input = Widget::Input($name, 'yes', 'checkbox');
-
-        if ($this->get('required') == 'yes') {
-            $input->setAttribute('checked', 'checked');
-        }
-
-        $label->setValue(__('%s Make this a required field', array($input->generate())));
-
-        $wrapper->appendChild($label);
+        $this->createCheckboxSetting($wrapper, 'required', 'Make this a required field');
     }
 
     /**
@@ -817,42 +798,7 @@ class Field
             return;
         }
 
-        $order = $this->get('sortorder');
-        $name = "fields[{$order}][show_column]";
-
-        $wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
-
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column');
-        $input = Widget::Input($name, 'yes', 'checkbox');
-
-        if ($this->get('show_column') == 'yes') {
-            $input->setAttribute('checked', 'checked');
-        }
-
-        $label->setValue(__('%s Display in entries table', array($input->generate())));
-
-        $wrapper->appendChild($label);
-    }
-
-    /**
-     * Append the default status footer to the field settings panel.
-     * Displays the required and show column checkboxes.
-     *
-     * @param XMLElement $wrapper
-     *    the parent XML element to append the checkbox to.
-     * @throws InvalidArgumentException
-     */
-    public function appendStatusFooter(XMLElement &$wrapper)
-    {
-        $fieldset = new XMLElement('fieldset');
-        $div = new XMLElement('div', null, array('class' => 'two columns'));
-
-        $this->appendRequiredCheckbox($div);
-        $this->appendShowColumnCheckbox($div);
-
-        $fieldset->appendChild($div);
-        $wrapper->appendChild($fieldset);
+        $this->createCheckboxSetting($wrapper, 'show_column', 'Display in entries table');
     }
 
     /**
@@ -873,31 +819,56 @@ class Field
             return;
         }
 
-        $order = $this->get('sortorder');
-        $name = "fields[{$order}][show_association]";
-
-        $wrapper->appendChild(Widget::Input($name, 'no', 'hidden'));
-
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column');
+        $label = $this->createCheckboxSetting($wrapper, 'show_association', 'Display associations in entries table', $help);
         $label->setAttribute('data-condition', 'associative');
+    }
 
-        if ($help) {
-            $label->addClass('inline-help');
-        }
+    /**
+     * Given the setting name and the label, this helper method will add
+     * the required markup for a checkbox to the given `$wrapper`.
+     *
+     * @since Symphony 2.5.2
+     * @param XMLElement $wrapper
+     *  Passed by reference, this will have the resulting markup appended to it
+     * @param string $setting
+     *  This will be used with $this->get() to get the existing value
+     * @param string $label_description
+     *  This will be localisable and displayed after the checkbox when
+     *  generated.
+     * @param string $help (optional)
+     *    A help message to show below the checkbox.
+     * @return XMLElement
+     *  The Label and Checkbox that was just added to the `$wrapper`.
+     */
+    public function createCheckboxSetting(XMLElement &$wrapper, $setting, $label_description, $help = null)
+    {
+        $order = $this->get('sortorder');
+        $name = "fields[$order][$setting]";
 
-        $input = Widget::Input($name, 'yes', 'checkbox');
+        $label = Widget::Checkbox($name, $this->get($setting), $label_description, $wrapper, $help);
+        $label->addClass('column');
 
-        if ($this->get('show_association') == 'yes') {
-            $input->setAttribute('checked', 'checked');
-        }
+        return $label;
+    }
 
-        $label->setValue(__('%s Display associations in entries table %s', array(
-            $input->generate(),
-            ($help) ? ' <i>(' . $help . ')</i>' : ''
-        )));
+    /**
+     * Append the default status footer to the field settings panel.
+     * Displays the required and show column checkboxes.
+     *
+     * @param XMLElement $wrapper
+     *    the parent XML element to append the checkbox to.
+     * @throws InvalidArgumentException
+     */
+    public function appendStatusFooter(XMLElement &$wrapper)
+    {
+        $fieldset = new XMLElement('fieldset');
+        $div = new XMLElement('div', null, array('class' => 'two columns'));
 
-        $wrapper->appendChild($label);
+        $this->appendRequiredCheckbox($div);
+        $this->appendShowColumnCheckbox($div);
+
+        $fieldset->appendChild($div);
+        $wrapper->appendChild($fieldset);
     }
 
     /**
@@ -955,7 +926,7 @@ class Field
 
     /**
      * Format this field value for display in the publish index tables.
-     * 
+     *
      * Since Symphony 2.5.0, this function will call `Field::prepareReadableValue`
      * in order to get the field's human readable value.
      *
@@ -984,10 +955,10 @@ class Field
     }
 
     /**
-     * Format this field value for display as readable  text value. By default, it 
+     * Format this field value for display as readable  text value. By default, it
      * will call `Field::prepareTextValue` to get the raw text value of this field.
      *
-     * If $truncate is set to true, Symphony will truncate the value to the 
+     * If $truncate is set to true, Symphony will truncate the value to the
      * configuration setting `cell_truncation_length`.
      *
      * @since Symphony 2.5.0
@@ -1021,7 +992,7 @@ class Field
     }
 
     /*
-     * Format this field value for complete display as text (string). By default, 
+     * Format this field value for complete display as text (string). By default,
      * it looks for the 'value' key in the $data array and strip tags from it.
      *
      * @since Symphony 2.5.0
@@ -1039,7 +1010,7 @@ class Field
     }
 
     /**
-     * This is general purpose factory method that makes it easier to create the 
+     * This is general purpose factory method that makes it easier to create the
      * markup needed in order to create an Associations Drawer XMLElement.
      *
      * @since Symphony 2.5.0
@@ -1068,7 +1039,7 @@ class Field
     /**
      * Format this field value for display in the Associations Drawer publish index.
      * By default, Symphony will use the return value of the `prepareReadableValue` function.
-     * 
+     *
      * @since Symphony 2.4
      * @since Symphony 2.5.0 The prepopulate parameter was added.
      *
@@ -1085,7 +1056,7 @@ class Field
     public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association, $prepopulate = '')
     {
         $value = $this->prepareReadableValue($e->getData($this->get('id')), $e->get('id'));
-        
+
         // fallback for compatibility since the default
         // `preparePlainTextValue` is not compatible with all fields
         // this should be removed in Symphony 2.6.0
@@ -1191,6 +1162,58 @@ class Field
     }
 
     /**
+     * Returns the keywords that this field supports for filtering. Note
+     * that no filter will do a simple 'straight' match on the value.
+     *
+     * @since Symphony 2.6.0
+     * @return array
+     */
+    public function fetchFilterableOperators()
+    {
+        return array(
+            array(
+                'title' => 'is',
+                'filter' => ' ',
+                'help' => __('Find values that are an exact match for the given string.')
+            ),
+            array(
+                'title' => 'contains',
+                'filter' => 'regexp: ',
+                'help' => __('Find values that match the given <a href="%s">MySQL regular expressions</a>.', array(
+                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+                ))
+            ),
+            array(
+                'title' => 'does not contain',
+                'filter' => 'not-regexp: ',
+                'help' => __('Find values that do not match the given <a href="%s">MySQL regular expressions</a>.', array(
+                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+                ))
+            ),
+        );
+    }
+
+    /**
+     * Returns the types of filter suggestion this field supports. 
+     * The array may contain the following values:
+     *
+     * - `entry` for searching entries in the current section
+     * - `association` for searching entries in associated sections
+     * - `static` for searching static values
+     * - `date` for searching in a calendar
+     * - `parameters` for searching in parameters
+     *
+     * If the date type is set, only the calendar will be shown in the suggestion dropdown.
+     *
+     * @since Symphony 2.6.0
+     * @return array
+     */
+    public function fetchSuggestionTypes()
+    {
+        return array('entry');
+    }
+
+    /**
      * Display the default data-source filter panel.
      *
      * @param XMLElement $wrapper
@@ -1212,8 +1235,46 @@ class Field
         )));
 
         $label = Widget::Label(__('Value'));
-        $label->appendChild(Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : null)));
+        $input = Widget::Input('fields[filter]'.($fieldnamePrefix ? '['.$fieldnamePrefix.']' : '').'['.$this->get('id').']'.($fieldnamePostfix ? '['.$fieldnamePostfix.']' : ''), ($data ? General::sanitize($data) : null));
+        $input->setAttribute('autocomplete', 'off');
+        $input->setAttribute('data-search-types', 'parameters');
+        $input->setAttribute('data-trigger', '{$');
+        $label->appendChild($input);
         $wrapper->appendChild($label);
+
+        $this->displayFilteringOptions($wrapper);
+    }
+
+    /**
+     * Inserts tags at the bottom of the filter panel
+     *
+     * @param XMLElement $wrapper
+     */
+    public function displayFilteringOptions(XMLElement &$wrapper)
+    {
+        // Add filter tags
+        $filterTags = new XMLElement('ul');
+        $filterTags->setAttribute('class', 'tags singular');
+        $filterTags->setAttribute('data-interactive', 'data-interactive');
+
+        $filters = $this->fetchFilterableOperators();
+        foreach ($filters as $value) {
+            $item = new XMLElement('li', $value['title']);
+            $item->setAttribute('data-value', $value['filter']);
+
+            if (isset($value['help'])) {
+                $item->setAttribute('data-help', General::sanitize($value['help']));
+            }
+
+            $filterTags->appendChild($item);
+        }
+        $wrapper->appendChild($filterTags);
+
+        $help = new XMLElement('p');
+        $help->setAttribute('class', 'help');
+        $first = array_shift($filters);
+        $help->setValue($first['help']);
+        $wrapper->appendChild($help);
     }
 
     /**
@@ -1249,7 +1310,7 @@ class Field
 
     /**
      * Builds a basic REGEXP statement given a `$filter`. This function supports
-     * `regexp:` or `not-regexp`. Users should keep in mind this function
+     * `regexp:` or `not-regexp:`. Users should keep in mind this function
      * uses MySQL patterns, not the usual PHP patterns, the syntax between these
      * flavours differs at times.
      *
@@ -1461,8 +1522,8 @@ class Field
      */
     public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null)
     {
-        $wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? 
-                              General::sanitize($this->prepareReadableValue($data, $entry_id)) : 
+        $wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ?
+                              General::sanitize($this->prepareReadableValue($data, $entry_id)) :
                               $this->prepareReadableValue($data, $entry_id))));
     }
 
@@ -1619,9 +1680,9 @@ class Field
     /**
      * Find related entries from a linking field's data table. Default implementation uses
      * column names `entry_id` and `relation_id` as with the Select Box Link
-     * 
+     *
      * @since Symphony 2.5.0
-     * 
+     *
      * @param  integer $entry_id
      * @return array
      */
@@ -1644,9 +1705,9 @@ class Field
     /**
      * Find related entries for the current field. Default implementation uses
      * column names `entry_id` and `relation_id` as with the Select Box Link
-     * 
+     *
      * @since Symphony 2.5.0
-     * 
+     *
      * @param  integer $field_id
      * @param  integer $entry_id
      * @return array

@@ -3,9 +3,6 @@
  * @package email-gateways
  */
 
-require_once TOOLKIT . '/class.emailgateway.php';
-require_once TOOLKIT . '/class.emailhelper.php';
-
 /**
  * The basic gateway sending emails using Sendmail, php's mail function.
  *

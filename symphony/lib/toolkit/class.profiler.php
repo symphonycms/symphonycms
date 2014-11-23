@@ -208,17 +208,3 @@ class Profiler implements Singleton
         return $total;
     }
 }
-
-/**
- * Defines a constant for when the Profiler should be a complete snapshot of
- * the page load, from the very start, to the very end.
- * @var integer
- */
-define_safe('PROFILE_RUNNING_TOTAL', 0);
-
-/**
- * Defines a constant for when a snapshot should be between two points,
- * usually when a start time has been given
- * @var integer
- */
-define_safe('PROFILE_LAP', 1);

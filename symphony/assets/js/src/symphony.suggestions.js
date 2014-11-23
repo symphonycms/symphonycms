@@ -3,180 +3,320 @@
  */
 
 (function($, Symphony) {
+	'use strict';
 
-	$.fn.symphonySuggestions = function(options) {
-		var objects = this,
-			settings = {
-				trigger: '{$',
-				source: Symphony.Context.get('path') + '/ajax/parameters/'
-			};
+	Symphony.Interface.Suggestions = function() {
 
-		$.extend(settings, options);
+		var context;
 
-	/*-------------------------------------------------------------------------
-		Initialisation
-	-------------------------------------------------------------------------*/
+		/**
+		 * Initialise suggestions
+		 */
+		var init = function(element, selector) {
+			context = $(element);
 
-		// Suggestions
-		objects.addClass('suggestions');
+			// Disable autocomplete
+			context.find(selector).each(function() {
+				this.autocomplete = 'off';
+			});
 
-		// Build suggestion list
-		var suggestions = $('<ul class="suggestionlist" />').hide();
+			// Create suggestion lists
+			createSuggestions(selector);
 
-		// Disable autocomplete
-		objects.find('input[type="text"]').attr('autocomplete', 'off');
-
-		// Add suggestion
-		$.ajax({
-			type: 'GET',
-			url: Symphony.Context.get('root') + settings.source,
-			success: function(result) {
-				$.each(result, function addSuggestions(index, name) {
-					$('<li data-name="' + name + '">' + name + '</li>').appendTo(suggestions);
-				});
-			}
-		});
+			// Interactions
+			context.on('input.suggestions', selector, handleChange);
+			context.on('click.suggestions', selector, handleChange);
+			context.on('focus.suggestions', selector, handleChange);
+			context.on('keydown.suggestions', selector, handleChange);
+			context.on('mouseover.suggestions', '.suggestions li:not(.help):not(.calendar)', handleOver);
+			context.on('mouseout.suggestions', '.suggestions li:not(.help):not(.calendar)', handleOut);
+			context.on('mousedown.suggestions', '.suggestions li:not(.help):not(.calendar)', handleSelect);
+			context.on('keydown.suggestions', selector, handleNavigation);
+		};
 
 	/*-------------------------------------------------------------------------
-		Functions
+		Event handling
 	-------------------------------------------------------------------------*/
 
-		function stayInFocus() {
-			var active = suggestions.find('li.active'),
-				distance;
-
-			// Get distance
-			if(!active.is(':visible:first')) {
-				distance = ((active.prevAll(':visible').length + 1) * active.outerHeight()) - 180;
-			}
-			else {
-				distance = 0;
-			}
-
-			// Focus
-			suggestions.animate({
-				'scrollTop': distance
-			}, 150);
-		}
-
-	/*-------------------------------------------------------------------------
-		Events
-	-------------------------------------------------------------------------*/
-
-		// Show suggestions
-		objects.on('keyup.suggestions click.suggestions', 'input', function suggest(event) {
+		/**
+		 * Load suggestions based on type while the user types.
+		 */
+		var handleChange = function(event) {
 			var input = $(this),
-				value = input.val();
-				selectionStart = input[0].selectionStart || 0,
-				selectionEnd = input[0].selectionEnd || 0,
+				value = input.val(),
+				suggestions = input.next('.suggestions'),
+				types = suggestions.attr('data-search-types'),
+				trigger = input.attr('data-trigger');
+
+			// Stop when navigating the suggestion list
+			if(jQuery.inArray(event.which, [13, 27, 38, 40]) !== -1) {
+				return;
+			}
+
+			// Dates
+			if(types && types.indexOf('date') !== -1) {
+				schedule(input);
+			}
+
+			// Tokens
+			else if(value && trigger) {
+				tokenize(input, suggestions, value, trigger);
+			}
+
+			// Entries
+			else if(value || (types && types.indexOf('static') !== -1)) {
+				load(input);
+			}
+
+			// No input
+			else {
+				clear(suggestions);
+			}
+		};
+
+		/**
+		 * Handle mouse interactions on the suggestion list.
+	     * In order to make this work with the keyboard as well, set the class
+	     * `.active` to the current target.
+	     *
+	     * @param Event event
+	     *  The mouseover event
+		 */
+		var handleOver = function(event) {
+			var suggestion = $(event.target);
+
+			suggestion.siblings('li:not(.help)').removeClass('active');
+			suggestion.addClass('active');
+		};
+
+		/**
+		 * Handle finished mouse interactions on the suggestion list and
+	     * remove `.active` class set by `handleOver`.
+	     *
+	     * @param Event event
+	     *  The mouseout event
+		 */
+		var handleOut = function(event) {
+			var suggestion = $(event.target);
+
+			suggestion.removeClass('active');
+		};
+
+		/**
+		 * Handle keyboard navigation in the suggestion list.
+	     *
+	     * @param Event event
+	     *  The keydown event
+		 */
+		var handleNavigation = function(event) {
+			var input = $(this),
+				active;
+
+			// Down
+			if(event.which == 40) {
+				event.preventDefault();
+				down(input);
+			}
+
+			// Up
+			else if(event.which == 38) {
+				event.preventDefault();
+				up(input);
+			}
+
+			// Exit
+			else if(event.which == 27) {
+				event.preventDefault();
+				input.blur();
+			}
+
+			// Enter
+			else if(event.which == 13) {
+				event.preventDefault();
+				active = input.next('.suggestions').find('li:not(.help).active').text();
+
+				if(active) {
+					select(active, input);
+				}
+			}
+		};
+
+		/**
+		 * Handle suggestion selection by click.
+	     *
+	     * @param Event event
+	     *  The mousedown event
+		 */
+		var handleSelect = function(event) {
+			var input = $(event.target).parent('.suggestions').prev('input');
+
+			select(event.target.textContent, input);
+		};
+
+	/*-------------------------------------------------------------------------
+		Suggestions
+	-------------------------------------------------------------------------*/
+
+		var tokenize = function(input, suggestions, value, trigger) {
+			var selectionStart = input[0].selectionStart || 0,
 				before = value.substring(0, selectionStart).split(' '),
 				after = value.substr(selectionStart).split(' '),
 				token = before[before.length - 1],
 				param = before[before.length - 1] + after[0];
 
 			// Token found
-			if(token.indexOf(settings.trigger) == 0) {
-
-				// Relocate suggestions
-				if(input.nextAll('ul.suggestionlist').length == 0) {
-					input.after(suggestions);
-					suggestions.width(input.innerWidth());
-					suggestions.find('.active').removeClass();
-				}
-
-				// Find suggestions
-				var suggested = suggestions.find('li').hide().filter('[data-name^="' + token + '"]').filter('[data-name!="' + param + '"]').show();
-
-				// Show suggestion list
-				if(suggested.length > 0) {
-					suggestions.show();
-				}
-
-				// Hide suggestion list
-				else {
-					suggestions.hide();
-				}
+			if(token && token.indexOf(trigger) === 0) {
+				load(input, param);
 			}
-
-			// No token found
 			else {
-				suggestions.hide();
+				clear(suggestions);
 			}
-		});
+		};
 
-		// Hide suggestions
-		objects.on('blur.suggestions', 'input', function suggest(event) {
-			var current = $(this).next('ul.suggestionlist');
+		var load = function(input, value) {
+			var suggestions = input.next('.suggestions'),
+				types = suggestions.attr('data-search-types'),
+				query = value,
+				data, url;
 
-			setTimeout(function hideSuggestions() {
-				current.hide();
-			}, 200);
-		});
-
-		// Keyboard interactions
-		objects.on('keydown.suggestions', 'input', function keyboardSuggestion(event) {
-			if(suggestions.is(':visible')) {
-				var active = suggestions.find('li.active');
-
-				// Down
-				if(event.which == 40) {
-					event.preventDefault();
-					var next = active.nextAll('li:visible:first');
-					active.removeClass('active');
-
-					// First
-					if(active.length == 0 || next.length == 0) {
-						suggestions.find('li:visible:first').addClass('active');
-					}
-
-					// Next
-					else {
-						next.addClass('active');
-					}
-
-					stayInFocus();
-				}
-
-				// Up
-				if(event.which == 38) {
-					event.preventDefault();
-					var prev = active.prevAll('li:visible:first');
-					active.removeClass('active');
-
-					// last
-					if(active.length == 0 || prev.length == 0) {
-						suggestions.find('li:visible:last').addClass('active');
-					}
-
-					// Next
-					else {
-						prev.addClass('active');
-					}
-
-					stayInFocus();
-				}
-
-				// Enter
-				if(event.which == 13) {
-					event.preventDefault();
-					active.trigger('click.suggestions');
-				}
+			// Get value
+			if(!query) {
+				query = input.val();
 			}
-		});
 
-		// Highlight active suggestions
-		suggestions.on('mouseover.suggestions', 'li', function hoverSuggestion(event) {
-			suggestions.find('li').removeClass('active');
-			$(this).addClass('active');
-		});
+			// Get data
+			if(types && types.indexOf('parameters') !== -1) {
+				url = Symphony.Context.get('symphony') + '/ajax/parameters/';
+				data = {
+					'query': query
+				};
+			}
+			else {
+				url = Symphony.Context.get('symphony') + '/ajax/query/';
+				data = {
+					'field_id': suggestions.attr('data-field-id'),
+					'query': query,
+					'types': types
+				};
+			}
 
-		// Select
-		suggestions.on('click.suggestions', 'li', function addSuggestion(event) {
-			var suggestion = $(this).text(),
-				input = suggestions.prev('input'),
-				value = input.val(),
+			// Get custom url
+			if(input.attr('data-url')) {
+				url = input.attr('data-url');
+			}
+
+			// Load suggestions
+			if(query !== suggestions.attr('data-last-query')) {
+				suggestions.attr('data-last-query', query);
+
+				$.ajax({
+					type: 'GET',
+					url: url,
+					data: data,
+					success: function(result) {
+						if(types && types.indexOf('parameters') !== -1) {
+							listtoken(input, suggestions, result);
+						}
+						else {
+							list(suggestions, result);
+						}
+					}
+				});
+			}
+		};
+
+		var listtoken = function(input, suggestions, result) {
+			var clone = suggestions.clone(),
+				help = clone.find('.help:first'),
+				trigger = input.attr('data-trigger'),
+				prefix = trigger.substr(0, 1);
+
+			$.each(result, function(index, value) {
+				if(index === 'status') {
+					return;
+				}
+
+				if(prefix === '{') {
+					value = '{' + value + '}';
+				}
+
+				var suggestion = $('<li />', {
+					text: value
+				});
+
+				if(help.length) {
+					suggestion.insertBefore(help);
+				}
+				else {
+					clone.append(suggestion);
+				}
+			});
+
+			suggestions.replaceWith(clone);
+		};
+
+		var list = function(suggestions, result) {
+			var clone = suggestions.clone(),
+				help = clone.find('.help:first'),
+				values = [];
+
+			// Clear existing suggestions
+			clear(clone);
+
+			// Add suggestions
+			if(result.entries) {
+				$.each(result.entries, function(index, data) {
+					values.push(data.value);
+				});
+
+				values = values.filter(function(item, index, array) {
+					return array.indexOf(item) === index;
+				});
+
+				$.each(values, function(index, value) {
+					var suggestion = $('<li />', {
+						text: value
+					});
+
+					if(help) {
+						suggestion.insertBefore(help);
+					}
+					else {
+						clone.append(suggestion);
+					}
+				});
+
+				suggestions.replaceWith(clone);
+			}
+		};
+
+		var schedule = function(input) {
+			var suggestions = input.next('.suggestions'),
+				calendar = suggestions.find('.calendar');
+
+			if(!calendar.length) {
+				createCalendar(suggestions);
+			}
+		};
+
+		var select = function(value, input) {
+			var types = input.attr('data-search-types');
+
+			if(types && types.indexOf('parameters') !== -1) {
+				insert(value, input);
+			}
+			else {
+				input.val(value);
+				input.addClass('updated');
+				input.change();
+			}
+
+			clear(input.next('.suggestions'));
+		};
+
+		var insert = function(suggestion, input) {
+			var value = input.val(),
 				selectionStart = input[0].selectionStart || 0,
-				selectionEnd = input[0].selectionEnd || 0,
 				beforeSelection = value.substring(0, selectionStart).split(' '),
 				afterSelection = value.substr(selectionStart).split(' '),
 				before = '',
@@ -201,10 +341,112 @@
 			var length = before.length + suggestion.length;
 			input[0].selectionStart = length;
 			input[0].selectionEnd = length;
-			input.trigger('focus');
-		});
+			input.focus();
+		};
 
-	/*-----------------------------------------------------------------------*/
+		var clear = function(suggestions) {
+			suggestions.removeAttr('data-last-query');
+			suggestions.find('li:not(.help)').remove();
+		};
+
+		var up = function(input) {
+			var suggestions = input.next('.suggestions'),
+				active = suggestions.find('li:not(.help).active').removeClass('active'),
+				prev = active.prev('li:not(.help):visible');
+
+			// First
+			if(active.length === 0 || prev.length === 0) {
+				suggestions.find('li:not(.help)').last().addClass('active');
+			}
+
+			// Next
+			else {
+				prev.addClass('active');
+			}
+		};
+
+		var down = function(input) {
+			var suggestions = input.next('.suggestions'),
+				active = suggestions.find('li:not(.help).active').removeClass('active'),
+				next = active.next('li:not(.help):visible');
+
+			// First
+			if(active.length === 0 || next.length === 0) {
+				suggestions.find('li:not(.help)').first().addClass('active');
+			}
+
+			// Next
+			else {
+				next.addClass('active');
+			}
+		};
+
+	/*-------------------------------------------------------------------------
+		Utilities
+	-------------------------------------------------------------------------*/
+
+		var createSuggestions = function(selector) {
+			var inputs = context.find(selector);
+
+			inputs.each(function() {
+				var input = $(this),
+					suggestions = input.next('.suggestions'),
+					list, types;
+
+				if(!suggestions.length) {
+					list = $('<ul class="suggestions" />');
+
+					types = input.attr('data-search-types');
+					if(types) {
+						list.attr('data-search-types', types);
+					}
+
+					list.insertAfter(input);
+				}
+			});
+		};
+
+		var createCalendar = function(suggestions) {
+			var calendar = new Symphony.Interface.Calendar();
+
+			suggestions.prepend('<li class="calendar" data-format="YYYY-MM-DD" />');
+			calendar.init(suggestions.parents('label'));
+		};
+
+	/*-------------------------------------------------------------------------
+		API
+	-------------------------------------------------------------------------*/
+
+		return {
+			init: init
+		};
+	}();
+
+
+	/**
+	 * Symphony suggestion plugin for jQuery.
+	 *
+	 * @deprecated As of Symphony 2.6.0 this plugin is deprecated,
+	 *  use `Symphony.Interface.Suggestions` instead.
+	 */
+	$.fn.symphonySuggestions = function(options) {
+		var objects = this,
+			settings = {
+				trigger: '{$',
+				source: Symphony.Context.get('path') + '/ajax/parameters/'
+			};
+
+		$.extend(settings, options);
+
+		objects.each(function() {
+			var input = $(this).find('input[type="text"]');
+
+			input.attr('data-trigger', settings.trigger);
+			input.attr('data-url', settings.source);
+			input.attr('data-search-types', 'parameters');
+
+			Symphony.Interface.Suggestions.init(this, 'input[type="text"]');
+		});
 
 		return objects;
 	};

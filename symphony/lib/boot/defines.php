@@ -258,3 +258,88 @@ define_safe('URL', 'http' . (defined('__SECURE__') && __SECURE__ ? 's' : '') . '
  * @var string
  */
 define_safe('APPLICATION_URL', URL . '/symphony');
+
+/**
+ * The integer value for event-type resources.
+  * @deprecated Use ResourceManager::RESOURCE_TYPE_EVENT, this will be removed in Symphony 2.8.0.
+ * @var integer
+ */
+define_safe('RESOURCE_TYPE_EVENT', 20);
+
+/**
+ * The integer value for datasource-type resources.
+  * @deprecated Use ResourceManager::RESOURCE_TYPE_DS, this will be removed in Symphony 2.8.0.
+ * @var integer
+ */
+define_safe('RESOURCE_TYPE_DS', 21);
+
+ /**
+  * The constant for when an Entry is ok, that is, no errors have
+  * been raised by any of it's Fields.
+  * @deprecated Use Entry::__ENTRY_OK__, this will be removed in Symphony 2.8.0.
+  * @var integer
+  */
+define_safe('__ENTRY_OK__', 0);
+
+/**
+ * The constant for an Entry if there is an error is raised by any of
+ * it's Fields.
+ * @deprecated Use Entry::__ENTRY_FIELD_ERROR__, this will be removed in Symphony 2.8.0.
+ * @var integer
+ */
+define_safe('__ENTRY_FIELD_ERROR__', 100);
+
+/**
+ * Status when an extension is installed and enabled
+ * @deprecated Use Extension::EXTENSION_ENABLED, this will be removed in Symphony 2.8.0.
+ * @var integer
+ */
+define_safe('EXTENSION_ENABLED', 10);
+
+/**
+ * Status when an extension is disabled
+ * @deprecated Use Extension::EXTENSION_DISABLED, this will be removed in Symphony 2.8.0.
+ * @var integer
+ */
+define_safe('EXTENSION_DISABLED', 11);
+
+/**
+ * Status when an extension is in the file system, but has not been installed.
+ * @deprecated Use Extension::EXTENSION_NOT_INSTALLED, this will be removed in Symphony 2.8.0.
+ * @var integer
+ */
+define_safe('EXTENSION_NOT_INSTALLED', 12);
+
+/**
+ * Status when an extension version in the file system is different to
+ * the version stored in the database for the extension
+ * @deprecated Use Extension::EXTENSION_REQUIRES_UPDATE, this will be removed in Symphony 2.8.0.
+ * @var integer
+ */
+define_safe('EXTENSION_REQUIRES_UPDATE', 13);
+
+/**
+ * Status when the extension is not compatible with the current version of
+ * Symphony
+ * @deprecated Use Extension::EXTENSION_NOT_COMPATIBLE, this will be removed in Symphony 2.8.0.
+ * @since Symphony 2.3
+ * @var integer
+ */
+define_safe('EXTENSION_NOT_COMPATIBLE', 14);
+
+/**
+ * Defines a constant for when the Profiler should be a complete snapshot of
+ * the page load, from the very start, to the very end.
+ * @var integer
+ */
+define_safe('PROFILE_RUNNING_TOTAL', 0);
+
+/**
+ * Defines a constant for when a snapshot should be between two points,
+ * usually when a start time has been given
+ * @var integer
+ */
+define_safe('PROFILE_LAP', 1);
+
+define_safe('CDATA_BEGIN', '<![CDATA[');
+define_safe('CDATA_END', ']]>');

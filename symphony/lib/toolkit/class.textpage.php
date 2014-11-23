@@ -7,8 +7,6 @@
  * of a Symphony backend text page.
  */
 
-require_once TOOLKIT . '/class.page.php';
-
 abstract class TextPage extends Page
 {
     /**

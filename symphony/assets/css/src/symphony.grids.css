@@ -10,20 +10,20 @@
 -----------------------------------------------------------------------------*/
 
 .columns {
-	margin-left: -1.5rem;
 	clear: both;
+	margin-left: -1.5rem;
 }
 
 .columns:after {
-	content: "";
-	clear: both;
+	content: '';
 	display: block;
+	clear: both;
 }
 
 .columns .column,
 .columns > .invalid {
-	box-sizing: border-box;
 	float: left;
+	box-sizing: border-box;
 	margin: 0 0 1.5rem;
 	padding: 0 0 0 1.5rem;
 }
@@ -62,18 +62,18 @@ form.columns {
 }
 
 form.columns .column.primary {
-	padding: 0;
 	width: 100%;
+	padding: 0;
 }
 
 .two.columns .column.primary {
-	margin: 0;
 	width: 65%;
+	margin: 0;
 }
 
 .two.columns .column.secondary {
-	margin: 0;
 	width: 35%;
+	margin: 0;
 }
 
 @media screen and (max-width: 700px) {
@@ -86,35 +86,34 @@ form.columns .column.primary {
 	}
 
 	.two.columns .column.secondary {
-		padding: 1.5rem 0 0 0;
 		margin-top: 0.5rem;
+		padding: 1.5rem 0 0 0;
 		border-top: 0.1rem solid rgba(0, 0, 0, 0.1);
 	}
 
 	.two.columns .column.secondary p.label {
 		margin-top: 1rem;
 	}
-
 }
 
 /* Errors in columns */
 
 .columns > .invalid {
-	background: none;
 	border: none;
 	border-radius: 0;
+	background: none;
 	box-shadow: none;
 }
 
 .columns > .invalid .column {
-	background-color: #eb6347;
+	float: none;
+	width: 100%;
+	margin: 0;
+	padding: 1rem;
 	border: 0.1rem solid #c31;
 	border-bottom: 0;
 	border-radius: 0.4rem 0.4rem 0 0;
-	padding: 1rem;
-	width: 100%;
-	float: none;
-	margin: 0;
+	background-color: #eb6347;
 }
 
 .columns > .invalid > .column > i {
@@ -127,12 +126,12 @@ form.columns .column.primary {
 }
 
 .columns > .invalid > p {
-	background-color: #eb6347;
+	padding: 0 1rem 1rem;
 	border: 0.1rem solid #c31;
 	border-top: 0;
 	border-radius: 0 0 0.4rem 0.4rem;
+	background-color: #eb6347;
 	box-shadow: 0 0.1rem 0.2rem rgba(204, 51, 17, 0.3);
-	padding: 0 1rem 1rem;
 }
 
 /*-----------------------------------------------------------------------------

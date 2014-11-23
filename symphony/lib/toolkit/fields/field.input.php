@@ -4,10 +4,6 @@
  * @package toolkit
  */
 
-require_once TOOLKIT . '/class.xsltprocess.php';
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
-
 /**
  * A simple Input field that essentially maps to HTML's `<input type='text'/>`.
  */

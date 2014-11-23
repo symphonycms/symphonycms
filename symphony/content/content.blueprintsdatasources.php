@@ -7,9 +7,6 @@
  * The Datasource Editor page allows a developer to create new datasources
  * from the four Symphony types, Section, Authors, Navigation and Static XML
  */
-require_once TOOLKIT . '/class.gateway.php';
-require_once TOOLKIT . '/class.resourcespage.php';
-require_once FACE . '/interface.provider.php';
 
 class contentBlueprintsDatasources extends ResourcesPage
 {
@@ -17,7 +14,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
     public function __viewIndex($resource_type)
     {
-        parent::__viewIndex(RESOURCE_TYPE_DS);
+        parent::__viewIndex(ResourceManager::RESOURCE_TYPE_DS);
 
         $this->setTitle(__('%1$s &ndash; %2$s', array(__('Data Sources'), __('Symphony'))));
         $this->appendSubheading(__('Data Sources'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a new data source'), 'create button', null, array('accesskey' => 'c')));
@@ -50,28 +47,21 @@ class contentBlueprintsDatasources extends ResourcesPage
 
             switch ($this->_context[2]) {
                 case 'saved':
-                    $this->pageAlert(
-                        __('Data source updated at %s.', array($time->generate))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
-                        . __('View all Data sources')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
+                    $message = __('Data Source updated at %s.', array($time->generate()));
                     break;
                 case 'created':
-                    $this->pageAlert(
-                        __('Data source created at %s.', array($time->generate))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
-                        . __('View all Data sources')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
-                    break;
+                    $message = __('Data Source created at %s.', array($time->generate()));
             }
+
+            $this->pageAlert(
+                $message
+                . ' <a href="' . SYMPHONY_URL . '/blueprints/datasources/new/" accesskey="c">'
+                . __('Create another?')
+                . '</a> <a href="' . SYMPHONY_URL . '/blueprints/datasources/" accesskey="a">'
+                . __('View all Data Sources')
+                . '</a>',
+                Alert::SUCCESS
+            );
         }
 
         $providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::DATASOURCE);
@@ -81,7 +71,6 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         if (isset($_POST['fields'])) {
             $fields = $_POST['fields'];
-            $fields['paginate_results'] = ($fields['paginate_results'] == 'on') ? 'yes' : 'no';
 
             if (
                 !in_array($fields['source'], array('authors', 'navigation', 'static_xml'))
@@ -135,6 +124,8 @@ class contentBlueprintsDatasources extends ResourcesPage
             $fields['html_encode'] = isset($existing->dsParamHTMLENCODE) ? $existing->dsParamHTMLENCODE : 'no';
             $fields['associated_entry_counts'] = isset($existing->dsParamASSOCIATEDENTRYCOUNTS) ? $existing->dsParamASSOCIATEDENTRYCOUNTS : 'no';
             $fields['redirect_on_empty'] = isset($existing->dsParamREDIRECTONEMPTY) ? $existing->dsParamREDIRECTONEMPTY : 'no';
+            $fields['redirect_on_forbidden'] = isset($existing->dsParamREDIRECTONFORBIDDEN) ? $existing->dsParamREDIRECTONFORBIDDEN : 'no';
+            $fields['redirect_on_required'] = isset($existing->dsParamREDIRECTONREQUIRED) ? $existing->dsParamREDIRECTONREQUIRED : 'no';
 
             if (!isset($existing->dsParamFILTERS) || !is_array($existing->dsParamFILTERS)) {
                 $existing->dsParamFILTERS = array();
@@ -187,12 +178,9 @@ class contentBlueprintsDatasources extends ResourcesPage
                 }
             }
         } else {
-            $fields['paginate_results'] = 'yes';
             $fields['max_records'] = '20';
             $fields['page_number'] = '1';
-
             $fields['order'] = 'desc';
-            $fields['associated_entry_counts'] = null;
         }
 
         // Handle name on edited changes, or from reading an edited datasource
@@ -283,8 +271,6 @@ class contentBlueprintsDatasources extends ResourcesPage
             $group->appendChild($label);
         }
 
-        $div = new XMLElement('div', null, array('class' => 'column'));
-
         $fieldset->appendChild($group);
         $this->Form->appendChild($fieldset);
 
@@ -297,27 +283,47 @@ class contentBlueprintsDatasources extends ResourcesPage
         $fieldset->appendChild($p);
 
         $group = new XMLElement('div');
-        $group->setAttribute('class', 'two columns ds-param');
+        $group->setAttribute('class', 'two columns');
 
         $label = Widget::Label(__('Required Parameter'));
-        $label->setAttribute('class', 'column');
+        $label->setAttribute('class', 'column ds-param');
         $label->appendChild(new XMLElement('i', __('Optional')));
-        $label->appendChild(Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array('placeholder' => __('$param'))));
+        $input = Widget::Input('fields[required_url_param]', trim($fields['required_url_param']), 'text', array(
+            'placeholder' => __('$param'),
+            'data-search-types' => 'parameters',
+            'data-trigger' => '$'
+        ));
+        $label->appendChild($input);
         $group->appendChild($label);
 
-        $div = new XMLElement('div', null, array('class' => 'column'));
-
         $label = Widget::Label(__('Forbidden Parameter'));
-        $label->setAttribute('class', 'column');
+        $label->setAttribute('class', 'column ds-param');
         $label->appendChild(new XMLElement('i', __('Optional')));
-        $label->appendChild(Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array('placeholder' => __('$param'))));
+        $input = Widget::Input('fields[negate_url_param]', trim($fields['negate_url_param']), 'text', array(
+            'placeholder' => __('$param'),
+            'data-search-types' => 'parameters',
+            'data-trigger' => '$'
+        ));
+        $label->appendChild($input);
         $group->appendChild($label);
 
         $fieldset->appendChild($group);
 
-        $label = Widget::Label();
-        $input = Widget::Input('fields[redirect_on_empty]', 'yes', 'checkbox', (isset($fields['redirect_on_empty']) && $fields['redirect_on_empty'] == 'yes') ? array('checked' => 'checked') : null);
-        $label->setValue(__('%s Redirect to 404 page when no results are found', array($input->generate(false))));
+        $group = new XMLElement('div');
+        $group->setAttribute('class', 'two columns ds-param');
+
+        $label = Widget::Checkbox('fields[redirect_on_required]', $fields['redirect_on_required'], 'Redirect to 404 page when the required parameter is not present');
+        $label->setAttribute('class', 'column');
+        $group->appendChild($label);
+
+        $label = Widget::Checkbox('fields[redirect_on_forbidden]', $fields['redirect_on_forbidden'], 'Redirect to 404 page when the forbidden parameter is present');
+        $label->setAttribute('class', 'column');
+        $group->appendChild($label);
+
+        $fieldset->appendChild($group);
+
+        $label = Widget::Checkbox('fields[redirect_on_empty]', $fields['redirect_on_empty'], 'Redirect to 404 page when no results are found');
+        $label->setAttribute('class', 'column');
         $fieldset->appendChild($label);
 
         $this->Form->appendChild($fieldset);
@@ -360,7 +366,10 @@ class contentBlueprintsDatasources extends ResourcesPage
                 $li->setAttribute('data-type', 'system:id');
                 $li->appendChild(new XMLElement('header', '<h4>' . __('System ID') . '</h4>'));
                 $label = Widget::Label(__('Value'));
-                $label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:id]', General::sanitize($id)));
+                $input = Widget::Input('fields[filter]['.$section_id.'][system:id]', General::sanitize($id));
+                $input->setAttribute('data-search-types', 'parameters');
+                $input->setAttribute('data-trigger', '{$');
+                $label->appendChild($input);
                 $li->appendChild($label);
                 $ol->appendChild($li);
             }
@@ -370,7 +379,10 @@ class contentBlueprintsDatasources extends ResourcesPage
             $li->setAttribute('data-type', 'system:id');
             $li->appendChild(new XMLElement('header', '<h4>' . __('System ID') . '</h4>'));
             $label = Widget::Label(__('Value'));
-            $label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:id]'));
+            $input = Widget::Input('fields[filter]['.$section_id.'][system:id]', General::sanitize($id));
+            $input->setAttribute('data-search-types', 'parameters');
+            $input->setAttribute('data-trigger', '{$');
+            $label->appendChild($input);
             $li->appendChild($label);
             $ol->appendChild($li);
 
@@ -388,9 +400,10 @@ class contentBlueprintsDatasources extends ResourcesPage
                 $li->setAttribute('data-type', 'system:creation-date');
                 $li->appendChild(new XMLElement('header', '<h4>' . __('System Creation Date') . '</h4>'));
                 $label = Widget::Label(__('Value'));
-                $label->appendChild(
-                    Widget::Input('fields[filter]['.$section_id.'][system:creation-date]', General::sanitize($creation_date))
-                );
+                $input = Widget::Input('fields[filter]['.$section_id.'][system:creation-date]', General::sanitize($creation_date));
+                $input->setAttribute('data-search-types', 'parameters');
+                $input->setAttribute('data-trigger', '{$');
+                $label->appendChild($input);
                 $li->appendChild($label);
                 $ol->appendChild($li);
             }
@@ -400,7 +413,10 @@ class contentBlueprintsDatasources extends ResourcesPage
             $li->setAttribute('data-type', 'system:creation-date');
             $li->appendChild(new XMLElement('header', '<h4>' . __('System Creation Date') . '</h4>'));
             $label = Widget::Label(__('Value'));
-            $label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:creation-date]'));
+            $input = Widget::Input('fields[filter]['.$section_id.'][system:creation-date]');
+            $input->setAttribute('data-search-types', 'parameters');
+            $input->setAttribute('data-trigger', '{$');
+            $label->appendChild($input);
             $li->appendChild($label);
             $ol->appendChild($li);
 
@@ -408,9 +424,12 @@ class contentBlueprintsDatasources extends ResourcesPage
                 $li = new XMLElement('li');
                 $li->setAttribute('class', 'unique');
                 $li->setAttribute('data-type', 'system:modification-date');
-                $li->appendChild(new XMLElement('header', '<h4>' . __('System Modified Date') . '</h4>'));
+                $li->appendChild(new XMLElement('header', '<h4>' . __('System Modification Date') . '</h4>'));
                 $label = Widget::Label(__('Value'));
-                $label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:modification-date]', General::sanitize($fields['filter'][$section_id]['system:modification-date'])));
+                $input = Widget::Input('fields[filter]['.$section_id.'][system:modification-date]', General::sanitize($fields['filter'][$section_id]['system:modification-date']));
+                $input->setAttribute('data-search-types', 'parameters');
+                $input->setAttribute('data-trigger', '{$');
+                $label->appendChild($input);
                 $li->appendChild($label);
                 $ol->appendChild($li);
             }
@@ -418,35 +437,38 @@ class contentBlueprintsDatasources extends ResourcesPage
             $li = new XMLElement('li');
             $li->setAttribute('class', 'unique template');
             $li->setAttribute('data-type', 'system:modification-date');
-            $li->appendChild(new XMLElement('header', '<h4>' . __('System Modified Date') . '</h4>'));
+            $li->appendChild(new XMLElement('header', '<h4>' . __('System Modification Date') . '</h4>'));
             $label = Widget::Label(__('Value'));
-            $label->appendChild(Widget::Input('fields[filter]['.$section_id.'][system:modification-date]'));
+            $input = Widget::Input('fields[filter]['.$section_id.'][system:modification-date]');
+            $input->setAttribute('data-search-types', 'parameters');
+            $input->setAttribute('data-trigger', '{$');
+            $label->appendChild($input);
             $li->appendChild($label);
             $ol->appendChild($li);
 
             if (is_array($section_data['fields']) && !empty($section_data['fields'])) {
-                foreach ($section_data['fields'] as $input) {
+                foreach ($section_data['fields'] as $field) {
 
-                    if (!$input->canFilter()) {
+                    if (!$field->canFilter()) {
                         continue;
                     }
 
-                    if (isset($fields['filter'][$section_id], $fields['filter'][$section_id][$input->get('id')])) {
+                    if (isset($fields['filter'][$section_id], $fields['filter'][$section_id][$field->get('id')])) {
                         $wrapper = new XMLElement('li');
                         $wrapper->setAttribute('class', 'unique');
-                        $wrapper->setAttribute('data-type', $input->get('element_name'));
-                        $errors = isset($this->_errors[$input->get('id')])
-                            ? $this->_errors[$input->get('id')]
+                        $wrapper->setAttribute('data-type', $field->get('element_name'));
+                        $errors = isset($this->_errors[$field->get('id')])
+                            ? $this->_errors[$field->get('id')]
                             : array();
 
-                        $input->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_id][$input->get('id')], $errors, $section_id);
+                        $field->displayDatasourceFilterPanel($wrapper, $fields['filter'][$section_id][$field->get('id')], $errors, $section_id);
                         $ol->appendChild($wrapper);
                     }
 
                     $wrapper = new XMLElement('li');
                     $wrapper->setAttribute('class', 'unique template');
-                    $wrapper->setAttribute('data-type', $input->get('element_name'));
-                    $input->displayDatasourceFilterPanel($wrapper, null, null, $section_id);
+                    $wrapper->setAttribute('data-type', $field->get('element_name'));
+                    $field->displayDatasourceFilterPanel($wrapper, null, null, $section_id);
                     $ol->appendChild($wrapper);
 
                 }
@@ -635,9 +657,13 @@ class contentBlueprintsDatasources extends ResourcesPage
         $div->appendChild($label);
 
         $label = Widget::Label(__('Sort Order'));
-        $label->setAttribute('class', 'ds-order');
+        $label->setAttribute('class', 'ds-param');
 
-        $input = Widget::Input('fields[order]', $fields['order']);
+        $input = Widget::Input('fields[order]', $fields['order'], 'text', array(
+            'placeholder' => __('{$param}'),
+            'data-search-types' => 'parameters',
+            'data-trigger' => '{$'
+        ));
         $label->appendChild($input);
         $div->appendChild($label);
 
@@ -665,8 +691,6 @@ class contentBlueprintsDatasources extends ResourcesPage
         foreach ($field_groups as $section_id => $section_data) {
             $optgroup = array('label' => $section_data['section']->get('name'), 'data-label' => 'section-' . $section_data['section']->get('id'), 'options' => array());
 
-            $authorOverride = false;
-
             if (is_array($section_data['fields']) && !empty($section_data['fields'])) {
                 foreach ($section_data['fields'] as $input) {
 
@@ -674,16 +698,8 @@ class contentBlueprintsDatasources extends ResourcesPage
                         continue;
                     }
 
-                    if ($input->get('element_name') == 'author') {
-                        $authorOverride = true;
-                    }
-
                     $optgroup['options'][] = array($input->get('id'), ($fields['source'] == $section_id && $fields['group'] == $input->get('id')), $input->get('label'));
                 }
-            }
-
-            if (!$authorOverride) {
-                $optgroup['options'][] = array('author', ($fields['source'] == $section_id && $fields['group'] == 'author'), __('Author'));
             }
 
             $options[] = $optgroup;
@@ -711,21 +727,28 @@ class contentBlueprintsDatasources extends ResourcesPage
         $group->setAttribute('class', 'two columns pagination');
 
         $label = Widget::Label(__('Entries per Page'));
-        $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('fields[max_records]', isset($fields['max_records']) ? $fields['max_records'] : '10'));
+        $label->setAttribute('class', 'column ds-param');
+        $input = Widget::Input('fields[max_records]', isset($fields['max_records']) ? $fields['max_records'] : '10', 'text', array(
+            'placeholder' => __('{$param}'),
+            'data-search-types' => 'parameters',
+            'data-trigger' => '{$'
+        ));
+        $label->appendChild($input);
         $group->appendChild($label);
 
         $label = Widget::Label(__('Page Number'));
-        $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('fields[page_number]', $fields['page_number']));
+        $label->setAttribute('class', 'column ds-param');
+        $input = Widget::Input('fields[page_number]', $fields['page_number'], 'text', array(
+            'placeholder' => __('{$param}'),
+            'data-search-types' => 'parameters',
+            'data-trigger' => '{$'
+        ));
+        $label->appendChild($input);
         $group->appendChild($label);
 
         $fieldset->appendChild($group);
 
-        $label = Widget::Label();
-        $input = Widget::Input('fields[paginate_results]', null, 'checkbox', ($fields['paginate_results'] == 'yes' ? array('checked' => 'checked') : null));
-        $label->setValue(__('%1$s Enable pagination', array($input->generate(false))));
-
+        $label = Widget::Checkbox('fields[paginate_results]', $fields['paginate_results'], 'Enable pagination');
         $fieldset->appendChild($label);
         $this->Form->appendChild($fieldset);
 
@@ -845,8 +868,6 @@ class contentBlueprintsDatasources extends ResourcesPage
                 $optgroup['options'][] = $option;
             }
 
-            $authorOverride = false;
-
             if (is_array($section_data['fields']) && !empty($section_data['fields'])) {
                 foreach ($section_data['fields'] as $input) {
 
@@ -876,17 +897,13 @@ class contentBlueprintsDatasources extends ResourcesPage
         $fieldset->appendChild($group);
 
         // Associations
-        $label = Widget::Label();
+        $label = Widget::Checkbox('fields[associated_entry_counts]', $fields['associated_entry_counts'], 'Include a count of entries in associated sections');
         $this->setContext($label, array('sections'));
-        $input = Widget::Input('fields[associated_entry_counts]', 'yes', 'checkbox', ((isset($fields['associated_entry_counts']) && $fields['associated_entry_counts'] == 'yes') ? array('checked' => 'checked') : null));
-        $label->setValue(__('%s Include a count of entries in associated sections', array($input->generate(false))));
         $fieldset->appendChild($label);
 
         // Encoding
-        $label = Widget::Label();
+        $label = Widget::Checkbox('fields[html_encode]', $fields['html_encode'], 'HTML-encode text');
         $this->setContext($label, array('sections'));
-        $input = Widget::Input('fields[html_encode]', 'yes', 'checkbox', (isset($fields['html_encode']) && $fields['html_encode'] == 'yes' ? array('checked' => 'checked') : null));
-        $label->setValue(__('%s HTML-encode text', array($input->generate(false))));
         $fieldset->appendChild($label);
 
         $this->Form->appendChild($fieldset);
@@ -927,7 +944,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $pages = PageManager::fetch();
         $ds_handle = str_replace('-', '_', Lang::createHandle($fields['name']));
-        $connections = ResourceManager::getAttachedPages(RESOURCE_TYPE_DS, $ds_handle);
+        $connections = ResourceManager::getAttachedPages(ResourceManager::RESOURCE_TYPE_DS, $ds_handle);
         $selected = array();
 
         foreach ($connections as $connection) {
@@ -1064,7 +1081,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
     public function __actionIndex($resource_type)
     {
-        return parent::__actionIndex(RESOURCE_TYPE_DS);
+        return parent::__actionIndex(ResourceManager::RESOURCE_TYPE_DS);
     }
 
     public function __actionEdit()
@@ -1091,10 +1108,10 @@ class contentBlueprintsDatasources extends ResourcesPage
                     Alert::ERROR
                 );
             } else {
-                $pages = ResourceManager::getAttachedPages(RESOURCE_TYPE_DS, $this->_context[1]);
+                $pages = ResourceManager::getAttachedPages(ResourceManager::RESOURCE_TYPE_DS, $this->_context[1]);
 
                 foreach ($pages as $page) {
-                    ResourceManager::detach(RESOURCE_TYPE_DS, $this->_context[1], $page['id']);
+                    ResourceManager::detach(ResourceManager::RESOURCE_TYPE_DS, $this->_context[1], $page['id']);
                 }
 
                 redirect(SYMPHONY_URL . '/blueprints/datasources/');
@@ -1136,7 +1153,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             }
         } elseif (is_numeric($fields['source'])) {
             if (strlen(trim($fields['max_records'])) == 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)) {
-                if (isset($fields['paginate_results'])) {
+                if ($fields['paginate_results'] === 'yes') {
                     $this->_errors['max_records'] = __('A result limit must be set');
                 }
             } elseif (!self::__isValidPageString($fields['max_records'])) {
@@ -1144,7 +1161,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             }
 
             if (strlen(trim($fields['page_number'])) == 0 || (is_numeric($fields['page_number']) && $fields['page_number'] < 1)) {
-                if (isset($fields['paginate_results'])) {
+                if ($fields['paginate_results'] === 'yes') {
                     $this->_errors['page_number'] = __('A page number must be set');
                 }
             } elseif (!self::__isValidPageString($fields['page_number'])) {
@@ -1196,7 +1213,6 @@ class contentBlueprintsDatasources extends ResourcesPage
         if (empty($this->_errors)) {
             $filters = array();
             $elements = null;
-            $placeholder = '<!-- GRAB -->';
             $source = $fields['source'];
             $params = array(
                 'rootelement' => $rootelement
@@ -1238,7 +1254,9 @@ class contentBlueprintsDatasources extends ResourcesPage
                         $elements = $fields['xml_elements'];
 
                         $params['order'] = $fields['order'];
-                        $params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
+                        $params['redirectonempty'] = $fields['redirect_on_empty'];
+                        $params['redirectonforbidden'] = $fields['redirect_on_forbidden'];
+                        $params['redirectonrequired'] = $fields['redirect_on_required'];
                         $params['requiredparam'] = trim($fields['required_url_param']);
                         $params['negateparam'] = trim($fields['negate_url_param']);
                         $params['paramoutput'] = $fields['param'];
@@ -1252,7 +1270,9 @@ class contentBlueprintsDatasources extends ResourcesPage
                         }
 
                         $params['order'] = $fields['order'];
-                        $params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
+                        $params['redirectonempty'] = $fields['redirect_on_empty'];
+                        $params['redirectonforbidden'] = $fields['redirect_on_forbidden'];
+                        $params['redirectonrequired'] = $fields['redirect_on_required'];
                         $params['requiredparam'] = trim($fields['required_url_param']);
                         $params['negateparam'] = trim($fields['negate_url_param']);
 
@@ -1287,20 +1307,18 @@ class contentBlueprintsDatasources extends ResourcesPage
 
                         $params['order'] = $fields['order'];
                         $params['group'] = $fields['group'];
-                        $params['paginateresults'] = (isset($fields['paginate_results']) ? 'yes' : 'no');
+                        $params['paginateresults'] = $fields['paginate_results'];
                         $params['limit'] = $fields['max_records'];
                         $params['startpage'] = $fields['page_number'];
-                        $params['redirectonempty'] = (isset($fields['redirect_on_empty']) ? 'yes' : 'no');
+                        $params['redirectonempty'] = $fields['redirect_on_empty'];
+                        $params['redirectonforbidden'] = $fields['redirect_on_forbidden'];
+                        $params['redirectonrequired'] = $fields['redirect_on_required'];
                         $params['requiredparam'] = trim($fields['required_url_param']);
                         $params['negateparam'] = trim($fields['negate_url_param']);
                         $params['paramoutput'] = $fields['param'];
                         $params['sort'] = $fields['sort'];
                         $params['htmlencode'] = $fields['html_encode'];
                         $params['associatedentrycounts'] = $fields['associated_entry_counts'];
-
-                        if ($params['associatedentrycounts'] == null) {
-                            $params['associatedentrycounts'] = 'no';
-                        }
 
                         break;
                 }
@@ -1401,7 +1419,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
                 // Attach this datasources to pages
                 $connections = $fields['connections'];
-                ResourceManager::setPages(RESOURCE_TYPE_DS, is_null($existing_handle) ? $classname : $existing_handle, $connections);
+                ResourceManager::setPages(ResourceManager::RESOURCE_TYPE_DS, is_null($existing_handle) ? $classname : $existing_handle, $connections);
 
                 // If the datasource has been updated and the name changed, then adjust all the existing pages that have the old datasource name
                 if ($queueForDeletion) {
@@ -1553,7 +1571,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
     private static function __isValidPageString($string)
     {
-        return (bool)preg_match('/^(?:\{\$[\w-]+(?::\$[\w-]+)*(?::\d+)?}|\d+)$/', $string);
+        return (bool)preg_match('/^\{\$[\w-]+(.[\w]+(-[\w]+)?){0,1}\}|[\d]+$/', $string);
     }
 
     /**

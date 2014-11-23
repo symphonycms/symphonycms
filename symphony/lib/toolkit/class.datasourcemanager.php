@@ -11,9 +11,6 @@
  * Typically, a Datasource returns XML.
  */
 
-require_once TOOLKIT . '/class.datasource.php';
-require_once FACE . '/interface.fileresource.php';
-
 class DatasourceManager implements FileResource
 {
     /**
@@ -50,7 +47,7 @@ class DatasourceManager implements FileResource
      * @param string $handle
      *  The handle of the Datasource free from any Symphony conventions
      *  such as `data.*.php`
-     * @return mixed
+     * @return string|boolean
      *  If the datasource is found, the function returns the path it's folder, otherwise false.
      */
     public static function __getClassPath($handle)
@@ -107,29 +104,17 @@ class DatasourceManager implements FileResource
 
                 if ($about = self::about($f)) {
                     $classname = self::__getClassName($f);
-                    $path = self::__getDriverPath($f);
-
-                    $can_parse = false;
-                    $type = null;
                     $env = array();
                     $class = new $classname($env, false);
 
-                    try {
-                        $method = new ReflectionMethod($classname, 'allowEditorToParse');
-                        $can_parse = $method->invoke($class);
-                    } catch (ReflectionException $e) {
+                    $about['can_parse'] = method_exists($class, 'allowEditorToParse')
+                        ? $class->allowEditorToParse()
+                        : false;
 
-                    }
+                    $about['source'] = method_exists($class, 'getSource')
+                        ? $class->getSource()
+                        : null;
 
-                    try {
-                        $method = new ReflectionMethod($classname, 'getSource');
-                        $type = $method->invoke($class);
-                    } catch (ReflectionException $e) {
-
-                    }
-
-                    $about['can_parse'] = $can_parse;
-                    $about['source'] = $type;
                     $result[$f] = $about;
                 }
             }

@@ -10,7 +10,6 @@
  * structure. This class contains functions for finding Fields within a Section and
  * saving a Section's settings.
  */
-require_once TOOLKIT . '/class.fieldmanager.php';
 
 class Section
 {
@@ -295,7 +294,6 @@ class Section
     public function commit()
     {
         $settings = $this->_data;
-        $section_id = null;
 
         if (isset($settings['id'])) {
             $id = $settings['id'];

@@ -4,8 +4,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-
 /**
  * The Author field allows Symphony Authors to be selected in your entries.
  * It is a read only field, new Authors cannot be added from the Frontend using
@@ -71,6 +69,11 @@ class FieldAuthor extends Field implements ExportableField
     public function allowDatasourceParamOutput()
     {
         return true;
+    }
+
+    public function fetchSuggestionTypes()
+    {
+        return array('static');
     }
 
     /*-------------------------------------------------------------------------
@@ -161,31 +164,13 @@ class FieldAuthor extends Field implements ExportableField
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
         // Allow multiple selection
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column');
-        $input = Widget::Input('fields['.$this->get('sortorder').'][allow_multiple_selection]', 'yes', 'checkbox');
-
-        if ($this->get('allow_multiple_selection') == 'yes') {
-            $input->setAttribute('checked', 'checked');
-        }
-
-        $label->setValue(__('%s Allow selection of multiple authors', array($input->generate())));
-        $div->appendChild($label);
+        $this->createCheckboxSetting($div, 'allow_multiple_selection', 'Allow selection of multiple authors');
 
         // Default to current logged in user
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column');
-        $input = Widget::Input('fields['.$this->get('sortorder').'][default_to_current_user]', 'yes', 'checkbox');
-
-        if ($this->get('default_to_current_user') == 'yes') {
-            $input->setAttribute('checked', 'checked');
-        }
-
-        $label->setValue(__('%s Select current user by default', array($input->generate())));
-        $div->appendChild($label);
-        $wrapper->appendChild($div);
+        $this->createCheckboxSetting($div, 'default_to_current_user', 'Select current user by default');
 
         // Requirements and table display
+        $wrapper->appendChild($div);
         $this->appendStatusFooter($wrapper);
     }
 
@@ -284,6 +269,11 @@ class FieldAuthor extends Field implements ExportableField
         }
 
         $label = Widget::Label($this->get('label'));
+
+        if ($this->get('required') != 'yes') {
+            $label->appendChild(new XMLElement('i', __('Optional')));
+        }
+
         $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : null)));
 
         if ($flagWithError != null) {
@@ -297,7 +287,7 @@ class FieldAuthor extends Field implements ExportableField
     {
         $status = self::__OK__;
 
-        if (!is_array($data) && !is_null($data)) {
+        if (!is_array($data) && !empty($data)) {
             return array('author_id' => $data);
         }
 
@@ -348,7 +338,7 @@ class FieldAuthor extends Field implements ExportableField
 
     public function prepareTextValue($data, $entry_id = null)
     {
-        $value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::AUTHOR, $entry_id);
+        $value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::VALUE, $entry_id);
         return General::sanitize(implode(', ', $value));
     }
 
@@ -468,6 +458,10 @@ class FieldAuthor extends Field implements ExportableField
                 AND (
                     t{$field_id}_{$this->_key}.author_id {$regex} '{$pattern}'
                     OR t{$field_id}_{$this->_key}_authors.username {$regex} '{$pattern}'
+                    OR CONCAT_WS(' ',
+                        t{$field_id}_{$this->_key}_authors.first_name,
+                        t{$field_id}_{$this->_key}_authors.last_name
+                    ) {$regex} '{$pattern}'
                 )
             ";
 
@@ -476,7 +470,7 @@ class FieldAuthor extends Field implements ExportableField
                 $this->_key++;
                 $value = $this->cleanValue($value);
 
-                if (fieldAuthor::__parseFilter($value) == "author_id") {
+                if (FieldAuthor::__parseFilter($value) == "author_id") {
                     $where .= "
                         AND t{$field_id}_{$this->_key}.author_id = '{$value}'
                     ";
@@ -495,7 +489,13 @@ class FieldAuthor extends Field implements ExportableField
                             ON (t{$field_id}_{$this->_key}.author_id = t{$field_id}_{$this->_key}_authors.id)
                     ";
                     $where .= "
-                        AND t{$field_id}_{$this->_key}_authors.username = '{$value}'
+                        AND (
+                            t{$field_id}_{$this->_key}_authors.username = '{$value}'
+                            OR CONCAT_WS(' ',
+                                t{$field_id}_{$this->_key}_authors.first_name,
+                                t{$field_id}_{$this->_key}_authors.last_name
+                            ) = '{$value}'
+                        )
                     ";
                 }
             }
@@ -524,7 +524,11 @@ class FieldAuthor extends Field implements ExportableField
                     t{$field_id}_{$this->_key}.author_id IN ('{$data}')
                     OR
                     t{$field_id}_{$this->_key}_authors.username IN ('{$data}')
-                    )
+                    OR CONCAT_WS(' ',
+                        t{$field_id}_{$this->_key}_authors.first_name,
+                        t{$field_id}_{$this->_key}_authors.last_name
+                    ) IN ('{$data}')
+                )
             ";
         }
 
@@ -593,22 +597,27 @@ class FieldAuthor extends Field implements ExportableField
 
         foreach ($records as $r) {
             $data = $r->getData($this->get('id'));
+            $author_id = !isset($data['author_id']) ? 0 : $data['author_id'];
 
-            if (!isset($data['author_id'])) {
-                continue;
-            }
+            if (!isset($groups[$this->get('element_name')][$author_id])) {
+                $author = AuthorManager::fetchByID($author_id);
+                // If there is an author, use those values, otherwise just blank it.
+                if($author instanceof Author) {
+                    $username = $author->get('username');
+                    $full_name = $author->getFullName();
+                } else {
+                    $username = '';
+                    $full_name = '';
+                }
 
-            if (!isset($groups[$this->get('element_name')][$data['author_id']])) {
-                $author = AuthorManager::fetchByID($data['author_id']);
-
-                $groups[$this->get('element_name')][$data['author_id']] = array(
-                    'attr' => array('author-id' => $data['author_id'], 'username' => $author->get('username'), 'full-name' => $author->getFullName()),
+                $groups[$this->get('element_name')][$author_id] = array(
+                    'attr' => array('author-id' => $author_id, 'username' => $username, 'full-name' => $full_name),
                     'records' => array(),
                     'groups' => array()
                 );
             }
 
-            $groups[$this->get('element_name')][$data['author_id']]['records'][] = $r;
+            $groups[$this->get('element_name')][$author_id]['records'][] = $r;
         }
 
         return $groups;

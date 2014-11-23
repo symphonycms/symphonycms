@@ -4,9 +4,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
-
 /**
  * A simple Upload field that essentially maps to HTML's `<input type='file '/>`.
  */
@@ -582,7 +579,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         return null;
     }
 
-    public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association)
+    public function prepareAssociationsDrawerXMLElement(Entry $e, array $parent_association, $prepopulate = '')
     {
         $li = parent::prepareAssociationsDrawerXMLElement($e, $parent_association);
         $a = $li->getChild(0);

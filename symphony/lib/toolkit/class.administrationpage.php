@@ -12,10 +12,6 @@
  * and the view/action being the view.
  */
 
-require_once TOOLKIT . '/class.pagemanager.php';
-require_once TOOLKIT . '/class.htmlpage.php';
-require_once TOOLKIT . '/class.alert.php';
-
 Class AdministrationPage extends HTMLPage
 {
     /**
@@ -54,7 +50,7 @@ Class AdministrationPage extends HTMLPage
      * @since Symphony 2.3
      * @var XMLElement
      */
-    private $Breadcrumbs = null;
+    public $Breadcrumbs = null;
 
     /**
      * An array of Drawer widgets for the current page
@@ -416,7 +412,7 @@ Class AdministrationPage extends HTMLPage
          * @since In Symphony 2.3.2 this delegate was renamed from
          *  `InitaliseAdminPageHead` to the correct spelling of
          *  `InitialiseAdminPageHead`. The old delegate is supported
-         *  until Symphony 2.5.
+         *  until Symphony 2.6.0.
          *
          * @delegate InitialiseAdminPageHead
          * @param string $context
@@ -506,16 +502,32 @@ Class AdministrationPage extends HTMLPage
             }
         }
 
-        if (
-            $page_limit == 'author'
-            or ($page_limit == 'developer' && Symphony::Author()->isDeveloper())
-            or ($page_limit == 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper()))
-            or ($page_limit == 'primary' && Symphony::Author()->isPrimaryAccount())
-        ) {
-            return true;
-        } else {
-            return false;
+        return $this->doesAuthorHaveAccess($page_limit);
+    }
+
+    /**
+     * Given the limit of the current navigation item or page, this function
+     * returns if the current Author can access that item or not.
+     *
+     * @since Symphony 2.5.1
+     * @param string $item_limit
+     * @return boolean
+     */
+    public function doesAuthorHaveAccess($item_limit = null)
+    {
+        $can_access = false;
+
+        if (!isset($item_limit) || $item_limit == 'author') {
+            $can_access = true;
+        } elseif ($item_limit == 'developer' && Symphony::Author()->isDeveloper()) {
+            $can_access = true;
+        } elseif ($item_limit == 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper())) {
+            $can_access = true;
+        } elseif ($item_limit == 'primary' && Symphony::Author()->isPrimaryAccount()) {
+            $can_access = true;
         }
+
+        return $can_access;
     }
 
     /**
@@ -776,19 +788,7 @@ Class AdministrationPage extends HTMLPage
                 continue;
             }
 
-            $can_access = false;
-
-            if (!isset($n['limit']) || $n['limit'] == 'author') {
-                $can_access = true;
-            } elseif ($n['limit'] == 'developer' && Symphony::Author()->isDeveloper()) {
-                $can_access = true;
-            } elseif ($n['limit'] == 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper())) {
-                $can_access = true;
-            } elseif ($n['limit'] == 'primary' && Symphony::Author()->isPrimaryAccount()) {
-                $can_access = true;
-            }
-
-            if ($can_access) {
+            if ($this->doesAuthorHaveAccess($n['limit'])) {
                 $xGroup = new XMLElement('li', $n['name'], array('role' => 'presentation'));
 
                 if (isset($n['class']) && trim($n['name']) != '') {
@@ -805,19 +805,7 @@ Class AdministrationPage extends HTMLPage
                             continue;
                         }
 
-                        $can_access_child = false;
-
-                        if (!isset($c['limit']) || $c['limit'] == 'author') {
-                            $can_access_child = true;
-                        } elseif ($c['limit'] == 'developer' && Symphony::Author()->isDeveloper()) {
-                            $can_access_child = true;
-                        } elseif ($c['limit'] == 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper())) {
-                            $can_access_child = true;
-                        } elseif ($c['limit'] == 'primary' && Symphony::Author()->isPrimaryAccount()) {
-                            $can_access_child = true;
-                        }
-
-                        if ($can_access_child) {
+                        if ($this->doesAuthorHaveAccess($c['limit'])) {
                             $xChild = new XMLElement('li');
                             $xChild->setAttribute('role', 'menuitem');
                             $linkChild = Widget::Anchor($c['name'], SYMPHONY_URL . $c['link']);
@@ -940,8 +928,6 @@ Class AdministrationPage extends HTMLPage
     private function buildSectionNavigation(&$nav)
     {
         // Build the section navigation, grouped by their navigation groups
-        require_once TOOLKIT . '/class.sectionmanager.php';
-
         $sections = SectionManager::fetch(null, 'asc', 'sortorder');
 
         if (is_array($sections) && !empty($sections)) {
@@ -1000,40 +986,16 @@ Class AdministrationPage extends HTMLPage
                             $index = General::array_find_available_index($nav, $item['location']);
 
                             // Actual group
-                            $nav[$index] = array(
-                                'name' => $item['name'],
-                                'type' => isset($item['type']) ? $item['type'] : 'structure',
-                                'index' => $index,
-                                'children' => array(),
-                                'limit' => isset($item['limit']) ? $item['limit'] : null
-                            );
+                            $nav[$index] = self::createParentNavItem($index, $item);
 
                             // Render its children
                             foreach ($item['children'] as $child) {
-                                if (!isset($child['relative']) || $child['relative'] == true) {
-                                    $link = '/extension/' . $e . '/' . ltrim($child['link'], '/');
-                                } else {
-                                    $link = '/' . ltrim($child['link'], '/');
-                                }
-
-                                $nav[$index]['children'][] = array(
-                                    'link' => $link,
-                                    'name' => $child['name'],
-                                    'visible' => (isset($child['visible']) && $child['visible'] == 'no') ? 'no' : 'yes',
-                                    'limit' => isset($child['limit']) ? $child['limit'] : null,
-                                    'target' => isset($child['target']) ? $child['target'] : null
-                                );
+                                $nav[$index]['children'][] = self::createChildNavItem($child, $e);
                             }
 
                             break;
 
                         case Extension::NAV_CHILD:
-                            if (!isset($item['relative']) || $item['relative'] == true) {
-                                $link = '/extension/' . $e . '/' . ltrim($item['link'], '/');
-                            } else {
-                                $link = '/' . ltrim($item['link'], '/');
-                            }
-
                             if (!is_numeric($item['location'])) {
                                 // is a navigation group
                                 $group_name = $item['location'];
@@ -1043,23 +1005,17 @@ Class AdministrationPage extends HTMLPage
                                 $group_index = $item['location'];
                             }
 
-                            $child = array(
-                                'link' => $link,
-                                'name' => $item['name'],
-                                'visible' => (isset($item['visible']) && $item['visible'] == 'no') ? 'no' : 'yes',
-                                'limit' => isset($item['limit']) ? $item['limit'] : null,
-                                'target' => isset($item['target']) ? $item['target'] : null
-                            );
+                            $child = self::createChildNavItem($item, $e);
 
                             if ($group_index === false) {
                                 $group_index = General::array_find_available_index($nav, 0);
+
+                                $nav_parent = self::createParentNavItem($group_index, $item);
+                                $nav_parent['name'] = $group_name;
+                                $nav_parent['children'] = array($child);
+
                                 // add new navigation group
-                                $nav[$group_index] = array(
-                                    'name' => $group_name,
-                                    'index' => $group_index,
-                                    'children' => array($child),
-                                    'limit' => isset($item['limit']) ? $item['limit'] : null
-                                );
+                                $nav[$group_index] = $nav_parent;
                             } else {
                                 // add new location by index
                                 $nav[$group_index]['children'][] = $child;
@@ -1070,6 +1026,54 @@ Class AdministrationPage extends HTMLPage
                 }
             }
         }
+    }
+
+    /**
+     * This function builds out a navigation menu item for parents. Parents display
+     * in the top level navigation of the backend and may have children (dropdown menus)
+     *
+     * @since Symphony 2.5.1
+     * @param integer $index
+     * @param array $item
+     * @return array
+     */
+    private static function createParentNavItem($index, $item) {
+        $nav_item = array(
+            'name' => $item['name'],
+            'type' => isset($item['type']) ? $item['type'] : 'structure',
+            'index' => $index,
+            'children' => array(),
+            'limit' => isset($item['limit']) ? $item['limit'] : null
+        );
+
+        return $nav_item;
+    }
+
+    /**
+     * This function builds out a navigation menu item for children. Children
+     * live under a parent navigation item and are shown on hover.
+     *
+     * @since Symphony 2.5.1
+     * @param array $item
+     * @param string $extension_handle
+     * @return array
+     */
+    private static function createChildNavItem($item, $extension_handle) {
+        if (!isset($item['relative']) || $item['relative'] == true) {
+            $link = '/extension/' . $extension_handle . '/' . ltrim($item['link'], '/');
+        } else {
+            $link = '/' . ltrim($item['link'], '/');
+        }
+
+        $nav_item = array(
+            'link' => $link,
+            'name' => $item['name'],
+            'visible' => (isset($item['visible']) && $item['visible'] == 'no') ? 'no' : 'yes',
+            'limit' => isset($item['limit']) ? $item['limit'] : null,
+            'target' => isset($item['target']) ? $item['target'] : null
+        );
+
+        return $nav_item;
     }
 
     /**

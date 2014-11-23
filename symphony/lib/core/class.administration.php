@@ -10,8 +10,6 @@
  * using XMLElement before being rendered as HTML. These pages do not
  * use XSLT. The Administration is only accessible by logged in Authors
  */
-require_once CORE . '/class.symphony.php';
-require_once TOOLKIT . '/class.htmlpage.php';
 
 class Administration extends Symphony
 {
@@ -96,7 +94,7 @@ class Administration extends Symphony
     public static function isLoggedIn()
     {
         if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && in_array(strlen($_REQUEST['auth-token']), array(6, 8, 16))) {
-            return $this->loginFromToken($_REQUEST['auth-token']);
+            return parent::loginFromToken($_REQUEST['auth-token']);
         }
 
         return parent::isLoggedIn();
@@ -199,47 +197,78 @@ class Administration extends Symphony
                 $this->_callback['context'] = array();
             }
 
-            // Do any extensions need updating?
-            $extensions = Symphony::ExtensionManager()->listInstalledHandles();
-
-            if (is_array($extensions) && !empty($extensions) && $this->__canAccessAlerts()) {
-                foreach ($extensions as $name) {
-                    $about = Symphony::ExtensionManager()->about($name);
-
-                    if (array_key_exists('status', $about) && in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
-                        $this->Page->pageAlert(
-                            __('An extension requires updating.') . ' <a href="' . SYMPHONY_URL . '/system/extensions/">' . __('View extensions') . '</a>'
-                        );
-                        break;
-                    }
-                }
+            if($this->__canAccessAlerts()) {
+                // Can the core be updated?
+                $this->checkCoreForUpdates();
+                // Do any extensions need updating?
+                $this->checkExtensionsForUpdates();
             }
 
-            // Check for update Alert
-            // Scan install/migrations directory for the most recent updater and compare
-            if ($this->isInstallerAvailable() && $this->__canAccessAlerts()) {
-                try {
-                    // The updater contains a version higher than the current Symphony version.
-                    if ($this->isUpgradeAvailable()) {
-                        $message = __('An update has been found in your installation to upgrade Symphony to %s.', array($this->getMigrationVersion())) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
-
-                        // The updater contains a version lower than the current Symphony version.
-                        // The updater is the same version as the current Symphony install.
-                    } else {
-                        $message = __('Your Symphony installation is up to date, but the installer was still detected. For security reasons, it should be removed.') . ' <a href="' . URL . '/install/?action=remove">' . __('Remove installer?') . '</a>';
-                    }
-
-                    // Can't detect update Symphony version
-                } catch (Exception $e) {
-                    $message = __('An update script has been found in your installation.') . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
-                }
-
-                $this->Page->pageAlert($message, Alert::NOTICE);
-            }
             $this->Page->build($this->_callback['context']);
         }
 
         return $this->Page;
+    }
+
+    /**
+     * Scan the install directory to look for new migrations that can be applied
+     * to update this version of Symphony. If one if found, a new Alert is added
+     * to the page.
+     *
+     * @since Symphony 2.5.2
+     * @return boolean
+     *  Returns true if there is an update available, false otherwise.
+     */
+    public function checkCoreForUpdates()
+    {
+        // Is there even an install directory to check?
+        if ($this->isInstallerAvailable() === false) {
+            return false;
+        }
+
+        try {
+            // The updater contains a version higher than the current Symphony version.
+            if ($this->isUpgradeAvailable()) {
+                $message = __('An update has been found in your installation to upgrade Symphony to %s.', array($this->getMigrationVersion())) . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
+
+                // The updater contains a version lower than the current Symphony version.
+                // The updater is the same version as the current Symphony install.
+            } else {
+                $message = __('Your Symphony installation is up to date, but the installer was still detected. For security reasons, it should be removed.') . ' <a href="' . URL . '/install/?action=remove">' . __('Remove installer?') . '</a>';
+            }
+
+            // Can't detect update Symphony version
+        } catch (Exception $e) {
+            $message = __('An update script has been found in your installation.') . ' <a href="' . URL . '/install/">' . __('View update.') . '</a>';
+        }
+
+        $this->Page->pageAlert($message, Alert::NOTICE);
+
+        return true;
+    }
+
+    /**
+     * Checks all installed extensions to see any have an outstanding update. If any do
+     * an Alert will be added to the current page directing the Author to the Extension page
+     *
+     * @since Symphony 2.5.2
+     */
+    public function checkExtensionsForUpdates()
+    {
+        $extensions = Symphony::ExtensionManager()->listInstalledHandles();
+
+        if (is_array($extensions) && !empty($extensions)) {
+            foreach ($extensions as $name) {
+                $about = Symphony::ExtensionManager()->about($name);
+
+                if (array_key_exists('status', $about) && in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+                    $this->Page->pageAlert(
+                        __('An extension requires updating.') . ' <a href="' . SYMPHONY_URL . '/system/extensions/">' . __('View extensions') . '</a>'
+                    );
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -252,7 +281,7 @@ class Administration extends Symphony
      */
     private function __canAccessAlerts()
     {
-        if ($this->Page instanceof AdministrationPage && $this->isLoggedIn() && Symphony::Author()->isDeveloper()) {
+        if ($this->Page instanceof AdministrationPage && self::isLoggedIn() && Symphony::Author()->isDeveloper()) {
             return true;
         }
 
@@ -424,6 +453,7 @@ class Administration extends Symphony
      * AdminPagePostGenerate. This function runs the Profiler for the page build
      * process.
      *
+     * @uses AdminPagePreBuild
      * @uses AdminPagePreGenerate
      * @uses AdminPagePostGenerate
      * @see core.Symphony#__buildPage()
@@ -439,6 +469,19 @@ class Administration extends Symphony
     public function display($page)
     {
         Symphony::Profiler()->sample('Page build process started');
+
+        /**
+         * Immediately before building the admin page. Provided with the page parameter
+         * @delegate AdminPagePreBuild
+         * @since Symphony 2.6.0
+         * @param string $context
+         *  '/backend/'
+         * @param string $page
+         *  The result of getCurrentPage, which returns the $_GET['symphony-page']
+         *  variable.
+         */
+        Symphony::ExtensionManager()->notifyMembers('AdminPagePreBuild', '/backend/', array('page' => $page));
+
         $this->__buildPage($page);
 
         // Add XSRF token to form's in the backend

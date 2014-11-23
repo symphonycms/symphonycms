@@ -7,11 +7,6 @@
  * This page controls the creation and maintenance of Symphony
  * Sections through the Section Index and Section Editor.
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once TOOLKIT . '/class.fieldmanager.php';
-require_once TOOLKIT . '/class.entrymanager.php';
-require_once FACE . '/interface.provider.php';
 
 class contentBlueprintsSections extends AdministrationPage
 {
@@ -67,8 +62,14 @@ class contentBlueprintsSections extends AdministrationPage
                 $td2 = Widget::TableData(Widget::Anchor("$entry_count", SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
                 $td3 = Widget::TableData($s->get('navigation_group'));
 
-                // Add a row to the body array, assigning each cell to the row
-                $aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
+                // Create row
+                $tr = Widget::TableRow(array($td1, $td2, $td3));
+
+                if ($s->get('hidden') === 'yes') {
+                    $tr->setAttribute('class', 'inactive');
+                }
+                
+                $aTableBody[] = $tr; 
             }
         }
 
@@ -244,54 +245,7 @@ class contentBlueprintsSections extends AdministrationPage
         $fieldset->appendChild($div);
         $this->Form->appendChild($fieldset);
 
-        $fieldset = new XMLElement('fieldset');
-        $fieldset->setAttribute('class', 'settings');
-        $fieldset->appendChild(new XMLElement('legend', __('Options')));
-
-        $div = new XMLElement('div', null, array('class' => 'two columns'));
-
-        $hidediv = new XMLElement('div', null, array('class' => 'column'));
-
-        $label = Widget::Label();
-        $input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : null));
-        $label->setValue(__('%s Hide this section from the back-end menu', array($input->generate(false))));
-        $hidediv->appendChild($label);
-
-        $div->appendChild($hidediv);
-
-        $filterdiv = new XMLElement('div', null, array('class' => 'column'));
-
-        $label = Widget::Label();
-        $input = Widget::Input('meta[filter]', 'yes', 'checkbox', array('checked' => 'checked'));
-        $label->setValue(__('%s Allow filtering of section entries', array($input->generate(false))));
-        $filterdiv->appendChild($label);
-
-        $div->appendChild($filterdiv);
-        $fieldset->appendChild($div);
-        $this->Form->appendChild($fieldset);
-
-        /**
-         * Allows extensions to add elements to the header of the Section Editor
-         * form. Usually for section settings, this delegate is passed the current
-         * `$meta` array and the `$this->_errors` array.
-         *
-         * @delegate AddSectionElements
-         * @since Symphony 2.2
-         * @param string $context
-         * '/blueprints/sections/'
-         * @param XMLElement $form
-         *  An XMLElement of the current `$this->Form`, just after the Section
-         *  settings have been appended, but before the Fields duplicator
-         * @param array $meta
-         *  The current $_POST['meta'] array
-         * @param array $errors
-         *  The current errors array
-         */
-        Symphony::ExtensionManager()->notifyMembers('AddSectionElements', '/blueprints/sections/', array(
-            'form' => &$this->Form,
-            'meta' => &$meta,
-            'errors' => &$this->_errors
-        ));
+        $this->addSectionOptions($meta);
 
         $fieldset = new XMLElement('fieldset');
         $fieldset->setAttribute('class', 'settings');
@@ -387,28 +341,21 @@ class contentBlueprintsSections extends AdministrationPage
 
             switch ($this->_context[2]) {
                 case 'saved':
-                    $this->pageAlert(
-                        __('Section updated at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/sections/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/sections/" accesskey="a">'
-                        . __('View all Sections')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
+                    $message = __('Section updated at %s.', array($time->generate()));
                     break;
                 case 'created':
-                    $this->pageAlert(
-                        __('Section created at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/blueprints/sections/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/blueprints/sections/" accesskey="a">'
-                        . __('View all Sections')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
-                    break;
+                    $message = __('Section created at %s.', array($time->generate()));
             }
+
+            $this->pageAlert(
+                $message
+                . ' <a href="' . SYMPHONY_URL . '/blueprints/sections/new/" accesskey="c">'
+                . __('Create another?')
+                . '</a> <a href="' . SYMPHONY_URL . '/blueprints/sections/" accesskey="a">'
+                . __('View all Sections')
+                . '</a>',
+                Alert::SUCCESS
+            );
         }
 
         if (isset($_POST['fields'])) {
@@ -510,54 +457,7 @@ class contentBlueprintsSections extends AdministrationPage
         $fieldset->appendChild($div);
         $this->Form->appendChild($fieldset);
 
-        $fieldset = new XMLElement('fieldset');
-        $fieldset->setAttribute('class', 'settings');
-        $fieldset->appendChild(new XMLElement('legend', __('Options')));
-
-        $div = new XMLElement('div', null, array('class' => 'two columns'));
-
-        $hidediv = new XMLElement('div', null, array('class' => 'column'));
-
-        $label = Widget::Label();
-        $input = Widget::Input('meta[hidden]', 'yes', 'checkbox', ($meta['hidden'] == 'yes' ? array('checked' => 'checked') : null));
-        $label->setValue(__('%s Hide this section from the back-end menu', array($input->generate(false))));
-        $hidediv->appendChild($label);
-
-        $div->appendChild($hidediv);
-
-        $filterdiv = new XMLElement('div', null, array('class' => 'column'));
-
-        $label = Widget::Label();
-        $input = Widget::Input('meta[filter]', 'yes', 'checkbox', ($meta['filter'] == 'yes' ? array('checked' => 'checked') : null));
-        $label->setValue(__('%s Allow filtering of section entries', array($input->generate(false))));
-        $filterdiv->appendChild($label);
-
-        $div->appendChild($filterdiv);
-        $fieldset->appendChild($div);
-        $this->Form->appendChild($fieldset);
-
-        /**
-         * Allows extensions to add elements to the header of the Section Editor
-         * form. Usually for section settings, this delegate is passed the current
-         * `$meta` array and the `$this->_errors` array.
-         *
-         * @delegate AddSectionElements
-         * @since Symphony 2.2
-         * @param string $context
-         * '/blueprints/sections/'
-         * @param XMLElement $form
-         *  An XMLElement of the current `$this->Form`, just after the Section
-         *  settings have been appended, but before the Fields duplicator
-         * @param array $meta
-         *  The current $_POST['meta'] array
-         * @param array $errors
-         *  The current errors array
-         */
-        Symphony::ExtensionManager()->notifyMembers('AddSectionElements', '/blueprints/sections/', array(
-            'form' => &$this->Form,
-            'meta' => &$meta,
-            'errors' => &$this->_errors
-        ));
+        $this->addSectionOptions($meta);
 
         $fieldset = new XMLElement('fieldset');
         $fieldset->setAttribute('class', 'settings');
@@ -803,6 +703,7 @@ class contentBlueprintsSections extends AdministrationPage
             if ($canProceed) {
                 // If we are creating a new Section
                 if (!$edit) {
+
                     $meta['sortorder'] = SectionManager::fetchNextSortOrder();
 
                     /**
@@ -829,8 +730,6 @@ class contentBlueprintsSections extends AdministrationPage
 
                     // We are editing a Section
                 } else {
-                    $meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
-                    $meta['filter'] = (isset($meta['filter']) ? 'yes' : 'no');
 
                     /**
                      * Just prior to updating the Section settings. Use with caution as
@@ -987,5 +886,50 @@ class contentBlueprintsSections extends AdministrationPage
     public function __actionEdit()
     {
         return $this->__actionNew();
+    }
+
+    public function addSectionOptions(array &$meta = null)
+    {
+        $fieldset = new XMLElement('fieldset');
+        $fieldset->setAttribute('class', 'settings');
+        $fieldset->appendChild(new XMLElement('legend', __('Options')));
+
+        $div = new XMLElement('div', null, array('class' => 'two columns'));
+
+        $hidediv = new XMLElement('div', null, array('class' => 'column'));
+        $label = Widget::Checkbox('meta[hidden]', $meta['hidden'], 'Hide this section from the back-end menu');
+        $hidediv->appendChild($label);
+        $div->appendChild($hidediv);
+
+        $filterdiv = new XMLElement('div', null, array('class' => 'column'));
+        $label = Widget::Checkbox('meta[filter]', $meta['filter'], 'Allow filtering of section entries');
+        $filterdiv->appendChild($label);
+
+        $div->appendChild($filterdiv);
+        $fieldset->appendChild($div);
+        $this->Form->appendChild($fieldset);
+
+        /**
+         * Allows extensions to add elements to the header of the Section Editor
+         * form. Usually for section settings, this delegate is passed the current
+         * `$meta` array and the `$this->_errors` array.
+         *
+         * @delegate AddSectionElements
+         * @since Symphony 2.2
+         * @param string $context
+         * '/blueprints/sections/'
+         * @param XMLElement $form
+         *  An XMLElement of the current `$this->Form`, just after the Section
+         *  settings have been appended, but before the Fields duplicator
+         * @param array $meta
+         *  The current $_POST['meta'] array
+         * @param array $errors
+         *  The current errors array
+         */
+        Symphony::ExtensionManager()->notifyMembers('AddSectionElements', '/blueprints/sections/', array(
+            'form' => &$this->Form,
+            'meta' => &$meta,
+            'errors' => &$this->_errors
+        ));
     }
 }

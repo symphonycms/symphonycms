@@ -9,9 +9,6 @@
  * including making new Authors, editing Authors or deleting
  * Authors from Symphony
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once CONTENT . '/class.sortable.php';
 
 class contentSystemAuthors extends AdministrationPage
 {
@@ -103,7 +100,7 @@ class contentSystemAuthors extends AdministrationPage
                         $td1->appendChild(Widget::Label(__('Select Author %s', array($a->getFullName())), null, 'accessible', null, array(
                             'for' => 'author-' . $a->get('id')
                         )));
-                        $td1->appendChild(Widget::Input('items['.$name.']', 'on', 'checkbox', array(
+                        $td1->appendChild(Widget::Input('items['.$a->get('id').']', 'on', 'checkbox', array(
                             'id' => 'author-' . $a->get('id')
                         )));
                     }
@@ -222,9 +219,6 @@ class contentSystemAuthors extends AdministrationPage
 
     public function __form()
     {
-
-        require_once TOOLKIT . '/class.field.php';
-
         // Handle unknown context
         if (!in_array($this->_context[0], array('new', 'edit'))) {
             Administration::instance()->errorPageNotFound();
@@ -243,28 +237,21 @@ class contentSystemAuthors extends AdministrationPage
 
             switch ($this->_context[2]) {
                 case 'saved':
-                    $this->pageAlert(
-                        __('Author updated at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
-                        . __('View all Authors')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
+                    $message = __('Author updated at %s.', array($time->generate()));
                     break;
                 case 'created':
-                    $this->pageAlert(
-                        __('Author created at %s.', array($time->generate()))
-                        . ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
-                        . __('Create another?')
-                        . '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
-                        . __('View all Authors')
-                        . '</a>',
-                        Alert::SUCCESS
-                    );
-                    break;
+                    $message = __('Author created at %s.', array($time->generate()));
             }
+
+            $this->pageAlert(
+                $message
+                . ' <a href="' . SYMPHONY_URL . '/system/authors/new/" accesskey="c">'
+                . __('Create another?')
+                . '</a> <a href="' . SYMPHONY_URL . '/system/authors/" accesskey="a">'
+                . __('View all Authors')
+                . '</a>',
+                Alert::SUCCESS
+            );
         }
 
         $this->setPageType('form');
@@ -504,7 +491,8 @@ class contentSystemAuthors extends AdministrationPage
         // Administration password double check
         if ($isEditing && !$isOwner) {
             $group = new XMLElement('fieldset');
-            $group->setAttribute('class', 'settings highlight');
+            $group->setAttribute('class', 'settings');
+            $group->setAttribute('id', 'confirmation');
             $group->appendChild(new XMLElement('legend', __('Confirmation')));
             $group->appendChild(new XMLELement('p', __('Please confirm changes to this author with your password.'), array('class' => 'help')));
 
@@ -704,7 +692,11 @@ class contentSystemAuthors extends AdministrationPage
 
                 // All good, let's save the Author
                 if (is_array($this->_errors) && empty($this->_errors) && $this->_Author->commit()) {
-                    Symphony::Database()->delete('tbl_forgotpass', " `expiry` < '".DateTimeObj::getGMT('c')."' OR `author_id` = '".$author_id."' ");
+                    Symphony::Database()->delete('tbl_forgotpass', sprintf("
+                        `expiry` < %d OR `author_id` = %d", 
+                        DateTimeObj::getGMT('c'),
+                        $author_id
+                    ));
 
                     if ($isOwner) {
                         Administration::instance()->login($this->_Author->get('username'), $this->_Author->get('password'), true);
