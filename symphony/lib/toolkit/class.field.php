@@ -991,7 +991,7 @@ class Field
         return $value;
     }
 
-    /*
+    /**
      * Format this field value for complete display as text (string). By default,
      * it looks for the 'value' key in the $data array and strip tags from it.
      *
