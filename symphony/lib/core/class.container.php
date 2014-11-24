@@ -37,14 +37,14 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
      * Calling a container value as a method has two possible results; Like 'get'
      * if the key points to a callable object, it will return the result of that
      * callable, otherwise it will return the value of the key.
-     * @param  string $name
+     * @param  string $key
      *  The key within the container
      * @param  array  $arguments
      *  Any arguments passed will be provided to a callable, after `$this`
      * @return mixed
      *  Whatever the value is in the container
      */
-    public function __call($name, $arguments)
+    public function __call($key, $arguments)
     {
         if (!isset($this->keys[$key])) {
             return null;
