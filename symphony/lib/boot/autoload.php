@@ -20,6 +20,7 @@
             self::$classes = array(
                 // Interfaces
                 'icache' => FACE . '/interface.cache.php',
+                'inamespacedcache' => FACE . '/interface.namespacedcache.php',
                 'idatasource' => FACE . '/interface.datasource.php',
                 'ievent' => FACE . '/interface.event.php',
                 'exportablefield' => FACE . '/interface.exportablefield.php',
