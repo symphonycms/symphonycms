@@ -184,8 +184,8 @@ class XSRF
     /**
      * Return's the location of the XSRF tokens in the Session
      *
-     * @deprecated This function will be removed in Symphony 2.8.0. Use
-     *  getSessionToken instead.
+     * @deprecated This function will be removed in Symphony 3.0. Use
+     *  `getSessionToken()` instead.
      * @return string|null
      */
     public static function getSession()

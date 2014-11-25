@@ -169,8 +169,7 @@ class Cacheable
 -------------------------------------------------------------------------*/
 
     /**
-     * @deprecated This function will be removed in the next major
-     *  version of Symphony. Use `read()` instead.
+     * @deprecated This function will be removed in Symphony 3.0. Use `read()` instead.
      *
      * @param string $hash
      *  The hash of the Cached object, as defined by the user
@@ -182,8 +181,7 @@ class Cacheable
     }
 
     /**
-     * @deprecated This function will be removed in the next major
-     *  version of Symphony. Use `delete()` instead.
+     * @deprecated This function will be removed in Symphony 3.0. Use `delete()` instead.
      *
      * @param string $hash
      *  The user defined hash of the data
@@ -195,8 +193,7 @@ class Cacheable
     }
 
     /**
-     * @deprecated This function will be removed in the next major
-     *  version of Symphony. Use `delete()` instead.
+     * @deprecated This function will be removed in Symphony 3.0. Use `delete()` instead.
      *
      * @return boolean
      */

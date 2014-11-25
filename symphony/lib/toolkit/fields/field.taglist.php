@@ -98,7 +98,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     }
 
     /**
-     * @deprecated Will be removed in Symphony 2.6.0, use `getToggleStates()` instead
+     * @deprecated Will be removed in Symphony 3.0, use `getToggleStates()` instead
      */
     public function findAllTags()
     {

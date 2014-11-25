@@ -427,7 +427,8 @@
 	 * Symphony suggestion plugin for jQuery.
 	 *
 	 * @deprecated As of Symphony 2.6.0 this plugin is deprecated,
-	 *  use `Symphony.Interface.Suggestions` instead.
+	 *  use `Symphony.Interface.Suggestions` instead. This will be
+	 *  removed in Symphony 3.0
 	 */
 	$.fn.symphonySuggestions = function(options) {
 		var objects = this,

@@ -106,7 +106,8 @@ abstract class Page
     /**
      * The HTTP status code of the page using the `HTTP_STATUSES` constants
      *
-     * @deprecated @since Symphony 2.3.2
+     * @deprecated Since Symphony 2.3.2, this has been deprecated. It will be
+     * removed in Symphony 3.0
      * @see $this->setHttpStatus and self::$HTTP_STATUSES
      *
      * @var integer

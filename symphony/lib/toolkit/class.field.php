@@ -1059,7 +1059,7 @@ class Field
 
         // fallback for compatibility since the default
         // `preparePlainTextValue` is not compatible with all fields
-        // this should be removed in Symphony 2.6.0
+        // this should be removed in Symphony 3.0
         if (empty($value)) {
             $value = strip_tags($this->prepareTableValue($e->getData($this->get('id')), null, $e->get('id')));
         }
@@ -1668,9 +1668,9 @@ class Field
      * @return void|array
      *  this default implementation returns void. overriding implementations should
      *  return an array of the associated entry ids.
-     * @deprecated @since Symphony 2.5.0
-     *  this method is not called anymore in the core. Please use
-     *  `Field::findRelatedEntries` and `Field::findParentRelatedEntries` instead.
+     * @deprecated Since Symphony 2.5.0 this method is not called anymore in the core. Please use
+     *  `Field::findRelatedEntries` and `Field::findParentRelatedEntries` instead. This method
+	 *  will be removed in Symphony 3.0
      */
     public function fetchAssociatedEntryIDs($value)
     {
