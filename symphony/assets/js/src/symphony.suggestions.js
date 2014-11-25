@@ -231,6 +231,10 @@
 				trigger = input.attr('data-trigger'),
 				prefix = trigger.substr(0, 1);
 
+			// Clear existing suggestions
+			clear(clone);
+
+			// Add suggestions
 			$.each(result, function(index, value) {
 				if(index === 'status') {
 					return;
@@ -363,6 +367,8 @@
 			else {
 				prev.addClass('active');
 			}
+			
+			stayInFocus(suggestions);
 		};
 
 		var down = function(input) {
@@ -379,6 +385,8 @@
 			else {
 				next.addClass('active');
 			}
+			
+			stayInFocus(suggestions);
 		};
 
 	/*-------------------------------------------------------------------------
@@ -413,6 +421,26 @@
 			calendar.init(suggestions.parents('label'));
 		};
 
+		var stayInFocus = function(suggestions) {
+			var active = suggestions.find('li.active'),
+				distance;
+
+			// Get distance
+			if(!active.is(':visible:first')) {
+				distance = ((active.prevAll().length + 1) * active.outerHeight()) - 180;
+			}
+			else {
+				distance = 0;
+			}
+
+			console.log('stayInFocus', distance);
+
+			// Focus
+			suggestions.animate({
+				'scrollTop': distance
+			}, 150);
+		};
+
 	/*-------------------------------------------------------------------------
 		API
 	-------------------------------------------------------------------------*/
@@ -421,7 +449,6 @@
 			init: init
 		};
 	}();
-
 
 	/**
 	 * Symphony suggestion plugin for jQuery.

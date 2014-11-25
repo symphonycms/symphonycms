@@ -13,7 +13,7 @@ class contentAjaxParameters extends JSONPage
     public function view()
     {
         $params = array();
-        $filter = $_GET['filter'];
+        $filter = $_GET['query'];
 
         if ($_GET['template']) {
             $this->template = General::sanitize($_GET['template']);
@@ -38,8 +38,13 @@ class contentAjaxParameters extends JSONPage
             $params = array_merge($params, $this->__getDSParams());
         }
 
-        sort($params);
-        $this->_Result = $params;
+        foreach ($params as $param) { 
+            if (empty($filter) || strripos($param, $filter) !== false) {
+                $this->_Result[] = $param;
+            }
+        }
+
+        sort($this->_Result);
     }
 
     /**
