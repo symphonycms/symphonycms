@@ -433,8 +433,6 @@
 				distance = 0;
 			}
 
-			console.log('stayInFocus', distance);
-
 			// Focus
 			suggestions.animate({
 				'scrollTop': distance
