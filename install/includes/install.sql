@@ -23,6 +23,7 @@ DROP TABLE IF EXISTS `tbl_cache`;
 CREATE TABLE `tbl_cache` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `hash` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `namespace` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `creation` int(14) NOT NULL DEFAULT '0',
   `expiry` int(14) unsigned DEFAULT NULL,
   `data` longtext COLLATE utf8_unicode_ci NOT NULL,

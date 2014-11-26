@@ -99,7 +99,7 @@
                 // Datasources
                 'authordatasource' => TOOLKIT . '/data-sources/class.datasource.author.php',
                 'sectiondatasource' => TOOLKIT . '/data-sources/class.datasource.section.php',
-                'staticdatasource' => TOOLKIT . '/data-sources/class.datasource.static.php',
+                'staticxmldatasource' => TOOLKIT . '/data-sources/class.datasource.static.php',
                 'dynamicxmldatasource' => TOOLKIT . '/data-sources/class.datasource.dynamic_xml.php',
                 'navigationdatasource' => TOOLKIT . '/data-sources/class.datasource.navigation.php',
 
