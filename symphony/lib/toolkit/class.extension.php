@@ -187,14 +187,16 @@ abstract class Extension
      *
      * A simple case would look like this.
      *
-     * `return array(
+     * ```
+     * return array(
      *      array(
      *          'name' => 'Extension Name',
      *          'link' => '/link/relative/to/extension/handle/',
      *          'location' => 200
      *      )
      *  )
-     * );`
+     * );
+     * ```
      *
      * If an extension wants to create a new group in the navigation
      * it is possible by returning an array with the group information and then an
@@ -202,7 +204,8 @@ abstract class Extension
      * by the children. An example of a returned navigation
      * array is provided below.
      *
-     * `return array(
+     * ```
+     * return array(
      *      'name' => 'New Group',
      *      'children' => array(
      *          array(
@@ -210,14 +213,16 @@ abstract class Extension
      *              'link' => '/link/relative/to/extension/handle/'
      *          )
      *      )
-     * );`
+     * );
+     * ```
      *
      * All links are relative to the Extension by default
      * (ie. `EXTENSIONS . /extension_handle/`. )
      * Set the 'relative' key to false tobe able to create links
      * relative to /symphony/.
      *
-     * `return array(
+     * ```
+     * return array(
      *      array(
      *          'name' => 'Extension Name',
      *          'link' => '/link/retative/to/symphony/',
@@ -225,49 +230,56 @@ abstract class Extension
      *          'location' => 200
      *      )
      *  )
-     * );`
+     * );
+     * ```
      *
      * You can also set the `target` attribute on your links via the 'target' attribute.
      * This works both on links in standard menus and on child links of groups.
      *
-     * `return array(
+     * ```
+     * return array(
      *      array(
      *          'name' => 'Extension Name',
      *          'link' => '/.../',
      *          'target' => '_blank'
      *      )
      *  )
-     * );`
+     * );
+     * ```
      *
-     * Links can also be hidden dynamically usign two other keys:
+     * Links can also be hidden dynamically using two other keys:
      * 'visible' and 'limit'. When 'visible' is set to 'no', the link
      * will not be rendered. Leave unset or set it dynamically in order
      * to fit your needs
      *
-     * `return array(
+     * ```
+     * return array(
      *      array(
      *          'name' => 'Extension Name',
      *          'link' => '/.../',
      *          'visible' => $this->shouldWeOrNot() ? 'yes' : 'no'
      *      )
      *  )
-     * );`
+     * );
+     * ```
      *
-     * The 'limit' key is specificaly designed to restrict the rendering process
+     * The 'limit' key is specifically designed to restrict the rendering process
      * of a link if the current user does not have access to it based on its role.
      * Symphony supports four roles which are 'author', 'manager', 'developer'
      * and 'primary'.
      *
      * Note that setting 'visible' to 'no' will hide the link no matter what.
      *
-     * `return array(
+     * ```
+     * return array(
      *      array(
      *          'name' => 'Developers Only',
      *          'link' => '/developers-only/',
      *          'limit' => 'developer'
      *      )
      *  )
-     * );`
+     * );
+     * ```
      *
      * The 'limit' key is also available for navigation groups.
      *
