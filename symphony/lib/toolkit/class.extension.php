@@ -217,15 +217,15 @@ abstract class Extension
      * ```
      *
      * All links are relative to the Extension by default
-     * (ie. `EXTENSIONS . /extension_handle/`. )
-     * Set the 'relative' key to false tobe able to create links
+     * (i.e. `EXTENSIONS . /extension_handle/`. )
+     * Set the 'relative' key to false to be able to create links
      * relative to /symphony/.
      *
      * ```
      * return array(
      *      array(
      *          'name' => 'Extension Name',
-     *          'link' => '/link/retative/to/symphony/',
+     *          'link' => '/link/relative/to/symphony/',
      *          'relative' => false,
      *          'location' => 200
      *      )
