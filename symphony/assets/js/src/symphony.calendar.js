@@ -84,6 +84,7 @@
 		 *  The click event
 		 */
 		var switchMonth = function(event) {
+			event.preventDefault();
 			clndr.setMonth(event.target.textContent);
 		};
 
@@ -94,6 +95,7 @@
 		 *  The click event
 		 */
 		var switchYear = function(event) {
+			event.preventDefault();
 			clndr.setYear(event.target.textContent);
 		};
 
