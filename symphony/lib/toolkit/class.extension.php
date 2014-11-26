@@ -206,11 +206,13 @@ abstract class Extension
      *
      * ```
      * return array(
-     *      'name' => 'New Group',
-     *      'children' => array(
-     *          array(
-     *              'name' => 'Extension Name',
-     *              'link' => '/link/relative/to/extension/handle/'
+     *      array(
+     *          'name' => 'New Group',
+     *          'children' => array(
+     *              array(
+     *                  'name' => 'Extension Name',
+     *                  'link' => '/link/relative/to/extension/handle/'
+     *              )
      *          )
      *      )
      * );
