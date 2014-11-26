@@ -194,7 +194,6 @@ abstract class Extension
      *          'link' => '/link/relative/to/extension/handle/',
      *          'location' => 200
      *      )
-     *  )
      * );
      * ```
      *
@@ -231,7 +230,6 @@ abstract class Extension
      *          'relative' => false,
      *          'location' => 200
      *      )
-     *  )
      * );
      * ```
      *
@@ -245,7 +243,6 @@ abstract class Extension
      *          'link' => '/.../',
      *          'target' => '_blank'
      *      )
-     *  )
      * );
      * ```
      *
@@ -261,7 +258,6 @@ abstract class Extension
      *          'link' => '/.../',
      *          'visible' => $this->shouldWeOrNot() ? 'yes' : 'no'
      *      )
-     *  )
      * );
      * ```
      *
@@ -279,7 +275,6 @@ abstract class Extension
      *          'link' => '/developers-only/',
      *          'limit' => 'developer'
      *      )
-     *  )
      * );
      * ```
      *
