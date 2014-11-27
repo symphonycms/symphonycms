@@ -1,7 +1,7 @@
 <?php
 
     // Find out where we are:
-    define('DOCROOT', rtrim(dirname(__FILE__), '\\/'));
+    define('DOCROOT', __DIR__);
 
     // Is there vendor autoloader?
     if (@file_exists(DOCROOT . '/vendor/autoload.php')) {
