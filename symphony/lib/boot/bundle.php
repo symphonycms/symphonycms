@@ -5,11 +5,7 @@
      */
 
     // Set appropriate error reporting:
-    error_reporting(
-        PHP_VERSION_ID >= 50300
-            ? E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT
-            : E_ALL & ~E_NOTICE
-    );
+    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 
     // Turn off old-style magic:
     ini_set('magic_quotes_runtime', false);
