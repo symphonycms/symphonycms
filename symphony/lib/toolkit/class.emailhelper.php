@@ -250,7 +250,7 @@ abstract Class EmailHelper
     {
         $return = array();
         foreach ($array as $name => $email) {
-            $return[] = empty($name)
+            $return[] = empty($name) || General::intval($name) > -1
                         ? $email
                         : $name . ' <' . $email . '>';
         }
