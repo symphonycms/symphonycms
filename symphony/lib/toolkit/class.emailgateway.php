@@ -208,7 +208,10 @@ abstract Class EmailGateway
     {
         if (!is_array($email)) {
             $email = explode(',', $email);
+            // trim all values
             array_walk($email, create_function('&$val', '$val = trim($val);'));
+            // remove empty elements
+            $email = array_filter($email);
         }
 
         foreach ($email as $e) {
