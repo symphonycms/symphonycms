@@ -174,8 +174,6 @@ class contentBlueprintsSections extends AdministrationPage
             ksort($fields);
         }
 
-        $meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
-
         // Set navigation group, if not already set
         if (!isset($meta['navigation_group'])) {
             $meta['navigation_group'] = (isset($this->_navigation[0]['name']) ? $this->_navigation[0]['name'] : __('Content'));
@@ -376,9 +374,6 @@ class contentBlueprintsSections extends AdministrationPage
 
         if (isset($_POST['meta'])) {
             $meta = $_POST['meta'];
-            $meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
-            $meta['filter'] = (isset($meta['filter']) ? 'yes' : 'no');
-
             if ($meta['name'] == '') {
                 $meta['name'] = $section->get('name');
             }
