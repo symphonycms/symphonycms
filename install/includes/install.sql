@@ -28,8 +28,8 @@ CREATE TABLE `tbl_cache` (
   `expiry` int(14) unsigned DEFAULT NULL,
   `data` longtext COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `expiry` (`expiry`),
-  KEY `hash` (`hash`)
+  UNIQUE KEY `hash` (`hash`),
+  KEY `expiry` (`expiry`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- *** STRUCTURE: `tbl_entries` ***
