@@ -815,6 +815,7 @@ class ExtensionManager implements FileResource
     public static function fetch(array $select = array(), array $where = array(), $order_by = null)
     {
         $extensions = self::listAll();
+        $data = array();
 
         if (empty($select) && empty($where) && is_null($order_by)) {
             return $extensions;
@@ -825,6 +826,7 @@ class ExtensionManager implements FileResource
         }
 
         if (!is_null($order_by)) {
+            $author = $name = $label = array();
             $order_by = array_map('strtolower', explode(' ', $order_by));
             $order = ($order_by[1] == 'desc') ? SORT_DESC : SORT_ASC;
             $sort = $order_by[0];
@@ -833,8 +835,6 @@ class ExtensionManager implements FileResource
                 foreach ($extensions as $key => $about) {
                     $author[$key] = $about['author'];
                 }
-
-                $data = array();
 
                 uasort($author, array('self', 'sortByAuthor'));
 
@@ -855,10 +855,7 @@ class ExtensionManager implements FileResource
 
                 array_multisort($name, $order, $label, $order, $extensions);
             }
-
         }
-
-        $data = array();
 
         foreach($extensions as $i => $e){
             $data[$i] = array();

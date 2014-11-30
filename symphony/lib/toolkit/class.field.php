@@ -1176,13 +1176,13 @@ class Field
                 'filter' => ' ',
                 'help' => __('Find values that are an exact match for the given string.')
             ),
-            array(
-                'title' => 'contains',
-                'filter' => 'regexp: ',
-                'help' => __('Find values that match the given <a href="%s">MySQL regular expressions</a>.', array(
-                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
-                ))
-            ),
+    array(
+        'title' => 'contains',
+        'filter' => 'regexp: ',
+        'help' => __('Find values that match the given <a href="%s">MySQL regular expressions</a>.', array(
+            'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+        ))
+    ),
             array(
                 'title' => 'does not contain',
                 'filter' => 'not-regexp: ',
@@ -1248,6 +1248,7 @@ class Field
     /**
      * Inserts tags at the bottom of the filter panel
      *
+     * @since Symphony 2.6.0
      * @param XMLElement $wrapper
      */
     public function displayFilteringOptions(XMLElement &$wrapper)

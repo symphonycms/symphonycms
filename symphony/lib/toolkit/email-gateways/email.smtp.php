@@ -16,7 +16,7 @@ class SMTPGateway extends EmailGateway
     protected $_host;
     protected $_port;
     protected $_protocol = 'tcp';
-    protected $_secure = false;
+    protected $_secure = 'no';
     protected $_auth = false;
     protected $_user;
     protected $_pass;
@@ -71,6 +71,7 @@ class SMTPGateway extends EmailGateway
             }
 
             // Encode recipient names (but not any numeric array indexes)
+            $recipients = array();
             foreach ($this->_recipients as $name => $email) {
                 // Support Bcc header
                 if (isset($this->_header_fields['Bcc']) && $this->_header_fields['Bcc'] == $email) {

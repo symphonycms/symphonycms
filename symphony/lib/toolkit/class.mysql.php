@@ -607,6 +607,7 @@ class MySQL
         // Multiple Insert
         if (is_array(current($fields))) {
             $sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys(current($fields))).'`) VALUES ';
+            $rows = array();
 
             foreach ($fields as $key => $array) {
                 // Sanity check: Make sure we dont end up with ',()' in the SQL.
@@ -661,6 +662,7 @@ class MySQL
     {
         self::cleanFields($fields);
         $sql = "UPDATE $table SET ";
+        $rows = array();
 
         foreach ($fields as $key => $val) {
             $rows[] = " `$key` = $val";
@@ -782,11 +784,12 @@ class MySQL
             return array();
         }
 
+        $rows = array();
         foreach ($result as $row) {
-            $return[] = $row[$column];
+            $rows[] = $row[$column];
         }
 
-        return $return;
+        return $rows;
     }
 
     /**
