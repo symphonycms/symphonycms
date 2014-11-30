@@ -29,6 +29,15 @@
 			}
 			catch (Exception $ex) {}
 
+			// Add UNIQUE key constraint to the `hash` RE: #2163
+			try {
+				Symphony::Database()->import('
+					ALTER TABLE `tbl_cache` DROP INDEX `hash`;
+					ALTER TABLE `tbl_cache` ADD UNIQUE INDEX `hash` (`hash`)
+				');
+			}
+			catch (Exception $ex) {}
+
 			// Update the version information
 			return parent::upgrade();
 		}
