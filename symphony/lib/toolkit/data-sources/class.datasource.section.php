@@ -266,7 +266,7 @@ class SectionDatasource extends Datasource
                 if ($singleParam) {
                     $this->_param_pool[$key][] = $entry->get('author_id');
                 }
-            } elseif ($param === 'system:creation-date' or $param === 'system:date') {
+            } elseif ($param === 'system:creation-date' || $param === 'system:date') {
                 $this->_param_pool[$param_key][] = $entry->get('creation_date');
 
                 if ($singleParam) {

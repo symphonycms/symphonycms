@@ -355,7 +355,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             // Add system:id filter
             if (
                 isset($fields['filter'][$section_id]['system:id'])
-                or isset($fields['filter'][$section_id]['id'])
+                || isset($fields['filter'][$section_id]['id'])
             ) {
                 $id = isset($fields['filter'][$section_id]['system:id'])
                     ? $fields['filter'][$section_id]['system:id']
@@ -389,7 +389,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             // Add system:date filter
             if (
                 isset($fields['filter'][$section_id]['system:creation-date'])
-                or isset($fields['filter'][$section_id]['system:date'])
+                || isset($fields['filter'][$section_id]['system:date'])
             ) {
                 $creation_date = isset($fields['filter'][$section_id]['system:creation-date'])
                     ? $fields['filter'][$section_id]['system:creation-date']

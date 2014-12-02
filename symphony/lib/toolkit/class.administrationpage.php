@@ -617,7 +617,7 @@ Class AdministrationPage extends HTMLPage
 
                 // Add prefixes to all context values by making the
                 // class be {key}-{value}. #1397 ^BA
-            } elseif (!is_numeric($key) and isset($value)) {
+            } elseif (!is_numeric($key) && isset($value)) {
                 $value = str_replace('_', '-', $key) . '-'. $value;
             }
 
@@ -743,7 +743,7 @@ Class AdministrationPage extends HTMLPage
 
         if (
             ($a->{'type'} == Alert::ERROR && $a->{'type'} != $b->{'type'})
-            or ($a->{'type'} == Alert::SUCCESS && $b->{'type'} == Alert::NOTICE)
+            || ($a->{'type'} == Alert::SUCCESS && $b->{'type'} == Alert::NOTICE)
         ) {
             return -1;
         }

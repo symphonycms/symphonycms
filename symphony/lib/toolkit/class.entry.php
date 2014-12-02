@@ -190,7 +190,7 @@ class Entry
         }
 
         // Failed to create entry, cleanup
-        if ($status != Entry::__ENTRY_OK__ and !is_null($entry_id)) {
+        if ($status != Entry::__ENTRY_OK__ && !is_null($entry_id)) {
             Symphony::Database()->delete('tbl_entries', sprintf(" `id` = %d ", $entry_id));
         }
 

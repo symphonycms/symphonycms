@@ -258,7 +258,7 @@
 			catch(DatabaseException $e){
 				// Invalid credentials
 				// @link http://dev.mysql.com/doc/refman/5.5/en/error-messages-server.html
-				if($e->getDatabaseErrorCode() === 1044 or $e->getDatabaseErrorCode() === 1045) {
+				if($e->getDatabaseErrorCode() === 1044 || $e->getDatabaseErrorCode() === 1045) {
 					$errors['database-invalid-credentials'] = array(
 						'msg' => 'Database credentials were denied',
 						'details' => __('Symphony was unable to access the database with these credentials.')

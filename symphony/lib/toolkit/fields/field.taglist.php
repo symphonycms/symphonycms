@@ -351,7 +351,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
         $list = new XMLElement($this->get('element_name'));
 
-        if (!is_array($data['handle']) and !is_array($data['value'])) {
+        if (!is_array($data['handle']) && !is_array($data['value'])) {
             $data = array(
                 'handle'    => array($data['handle']),
                 'value'     => array($data['value'])
