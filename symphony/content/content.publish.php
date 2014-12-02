@@ -1707,9 +1707,6 @@ class contentPublish extends AdministrationPage
 
                         // If we are only showing 'some' of the entries, then show this on the UI
                         if ($entries['total-entries'] > $show_entries) {
-                            $total_entries = new XMLElement('a', __('%d entries', array($entries['total-entries'])), array(
-                                'href' => $link,
-                            ));
                             $pagination = new XMLElement('li', null, array(
                                 'class' => 'association-more',
                                 'data-current-page' => '1',

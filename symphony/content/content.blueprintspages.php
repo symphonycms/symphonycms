@@ -243,15 +243,13 @@ class contentBlueprintsPages extends AdministrationPage
         // Status message:
         if (isset($this->_context[2])) {
             $flag = $this->_context[2];
-            $link_suffix = $message = '';
+            $parent_link_suffix = $message = '';
             $time = Widget::Time();
 
             if (isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])) {
                 $parent_link_suffix = "?parent=" . $_REQUEST['parent'];
             } elseif ($nesting == true && isset($existing) && !is_null($existing['parent'])) {
                 $parent_link_suffix = '?parent=' . $existing['parent'];
-            } else {
-                $parent_link_suffix = '';
             }
 
             switch ($flag) {

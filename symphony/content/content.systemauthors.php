@@ -387,7 +387,6 @@ class contentSystemAuthors extends AdministrationPage
         }
 
         // New password
-        $callback = Administration::instance()->getPageCallback();
         $placeholder = ($isEditing ? __('New Password') : __('Password'));
         $label = Widget::Label(null, null, 'column');
         $label->appendChild(Widget::Input('fields[password]', null, 'password', array('placeholder' => $placeholder, 'autocomplete' => 'off')));

@@ -134,7 +134,8 @@ class EntryManager
                 }
             }
 
-            for ($ii = 0; $ii < count($fields); $ii++) {
+            $fieldCount = count($fields);
+            for ($ii = 0; $ii < $fieldCount; $ii++) {
                 $fields[$ii] = array_merge($data, $fields[$ii]);
             }
 

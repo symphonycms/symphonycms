@@ -575,7 +575,7 @@ class contentBlueprintsEvents extends ResourcesPage
             }
 
             // Write the file
-            if (!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file'))) {
+            if (!is_writable(dirname($file)) || !General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file'))) {
                 $this->pageAlert(
                     __('Failed to write Event to disk.')
                     . ' ' . __('Please check permissions on %s.', array('<code>/workspace/events</code>')),

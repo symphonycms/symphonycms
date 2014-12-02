@@ -12,10 +12,7 @@
 class AuthorDatasource extends Datasource
 {
     public function __processAuthorFilter($field, $filter)
-    { //, $filtertype=DS_FILTER_OR){
-
-        //$bits = preg_split('/'.($filtertype == DS_FILTER_AND ? '\+' : ',').'\s*/', $filter);
-
+    {
         if (!is_array($filter)) {
             $bits = preg_split('/,\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
             $bits = array_map('trim', $bits);
@@ -23,30 +20,12 @@ class AuthorDatasource extends Datasource
             $bits = $filter;
         }
 
-        //switch($filtertype){
-
-            /*case DS_FILTER_AND:
-
-                $sql = "SELECT `a`.`id`
-                        FROM (
-
-                            SELECT `tbl_authors`.id, COUNT(`tbl_authors`.id) AS `count`
-                            FROM  `tbl_authors`
-                            WHERE `tbl_authors`.`".$field."` IN ('".implode("', '", $bits)."')
-                            GROUP BY `tbl_authors`.`id`
-
-                        ) AS `a`
-                        WHERE `a`.`count` >= " . count($bits);
-
-                break;*/
-
-            //case DS_FILTER_OR:
-                $sql = "SELECT `id` FROM `tbl_authors` WHERE `".$field."` IN ('".implode("', '", $bits)."')";
-                //break;
-
-        //}
-
-        $authors = Symphony::Database()->fetchCol('id', $sql);
+        $authors = Symphony::Database()->fetchCol('id', sprintf("
+                SELECT `id` FROM `tbl_authors`
+                WHERE `%s` IN ('%s')",
+                $field,
+                implode("', '", $bits)
+        ));
 
         return (is_array($authors) && !empty($authors) ? $authors : null);
     }

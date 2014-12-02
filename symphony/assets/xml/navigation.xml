@@ -37,5 +37,4 @@
 			<item link="/system/log/" limit="primary" visible="no" name="Activity Log" />
 		</children>
 	</group>
-
 </navigation>

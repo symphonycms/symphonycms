@@ -729,7 +729,8 @@ class Field
         $count = 0;
 
         if (!empty($associations)) {
-            for ($i = 0; $i < count($associations); $i++) {
+            $associationsCount = count($associations);
+            for ($i = 0; $i < $associationsCount; $i++) {
                 if ($associations[$i]['child_section_field_id'] == $this->get('id')) {
                     if ($count === 0) {
                         $field_association = $associations[$i];
