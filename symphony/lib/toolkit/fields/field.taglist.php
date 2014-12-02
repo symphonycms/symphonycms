@@ -345,7 +345,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
     public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null)
     {
-        if (!is_array($data) || empty($data)) {
+        if (!is_array($data) || empty($data) || is_null($data['value'])) {
             return;
         }
 

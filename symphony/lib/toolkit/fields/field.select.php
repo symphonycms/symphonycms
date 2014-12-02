@@ -8,7 +8,7 @@
  * A simple Select field that essentially maps to HTML's `<select/>`. The
  * options for this field can be static, or feed from another field.
  */
-class FieldSelect extends Field implements ExportableField, ImportableField
+class FieldSelect extends FieldTagList implements ExportableField, ImportableField
 {
     public function __construct()
     {
@@ -124,25 +124,6 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         Utilities:
     -------------------------------------------------------------------------*/
 
-    public function fetchAssociatedEntryCount($value)
-    {
-        return Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
-    }
-
-    public function fetchAssociatedEntryIDs($value)
-    {
-        return Symphony::Database()->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
-    }
-
-    public function fetchAssociatedEntrySearchValue($data, $field_id = null, $parent_entry_id = null)
-    {
-        if (!is_array($data)) {
-            return $data;
-        }
-
-        return $data['value'];
-    }
-
     public function findAndAddDynamicOptions(&$values)
     {
         if (!is_array($values)) {
@@ -214,7 +195,7 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
     public function displaySettingsPanel(XMLElement &$wrapper, $errors = null)
     {
-        parent::displaySettingsPanel($wrapper, $errors);
+        Field::displaySettingsPanel($wrapper, $errors);
 
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
@@ -285,12 +266,12 @@ class FieldSelect extends Field implements ExportableField, ImportableField
             $errors['dynamic_options'] = __('At least one source must be specified, dynamic or static.');
         }
 
-        parent::checkFields($errors, $checkForDuplicates);
+        Field::checkFields($errors, $checkForDuplicates);
     }
 
     public function commit()
     {
-        if (!parent::commit()) {
+        if (!Field::commit()) {
             return false;
         }
 
@@ -371,6 +352,11 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         }
     }
 
+    public function checkPostFieldData($data, &$message, $entry_id = null)
+    {
+        return Field::checkPostFieldData($data, $message, $entry_id);
+    }
+
     public function processRawFieldData($data, &$status, &$message = null, $simulate = false, $entry_id = null)
     {
         $status = self::__OK__;
@@ -403,34 +389,6 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         Output:
     -------------------------------------------------------------------------*/
 
-    public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null)
-    {
-        if (!is_array($data) || is_null($data['value'])) {
-            return;
-        }
-
-        $list = new XMLElement($this->get('element_name'));
-
-        if (!is_array($data['handle']) && !is_array($data['value'])) {
-            $data = array(
-                'handle'    => array($data['handle']),
-                'value'     => array($data['value'])
-            );
-        }
-
-        foreach ($data['value'] as $index => $value) {
-            $list->appendChild(new XMLElement(
-                'item',
-                General::sanitize($value),
-                array(
-                    'handle'    => $data['handle'][$index]
-                )
-            ));
-        }
-
-        $wrapper->appendChild($list);
-    }
-
     public function prepareTextValue($data, $entry_id = null)
     {
         $value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::VALUE, $entry_id);
@@ -438,22 +396,9 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         return implode(', ', $value);
     }
 
-    public function getParameterPoolValue(array $data, $entry_id = null)
-    {
-        return $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::HANDLE, $entry_id);
-    }
-
     /*-------------------------------------------------------------------------
         Import:
     -------------------------------------------------------------------------*/
-
-    public function getImportModes()
-    {
-        return array(
-            'getValue' =>       ImportableField::STRING_VALUE,
-            'getPostdata' =>    ImportableField::ARRAY_VALUE
-        );
-    }
 
     public function prepareImportValue($data, $mode, $entry_id = null)
     {
@@ -566,53 +511,6 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
             $wrapper->appendChild($optionlist);
         }
-    }
-
-    public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false)
-    {
-        $field_id = $this->get('id');
-
-        if (self::isFilterRegex($data[0])) {
-            $this->buildRegexSQL($data[0], array('value', 'handle'), $joins, $where);
-        } elseif ($andOperation) {
-            foreach ($data as $value) {
-                $this->_key++;
-                $value = $this->cleanValue($value);
-                $joins .= "
-                    LEFT JOIN
-                        `tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-                        ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-                ";
-                $where .= "
-                    AND (
-                        t{$field_id}_{$this->_key}.value = '{$value}'
-                        OR t{$field_id}_{$this->_key}.handle = '{$value}'
-                    )
-                ";
-            }
-        } else {
-            if (!is_array($data)) {
-                $data = array($data);
-            }
-
-            foreach ($data as &$value) {
-                $value = $this->cleanValue($value);
-            }
-
-            $this->_key++;
-            $data = implode("', '", $data);
-            $joins .= "
-                LEFT JOIN
-                    `tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-                    ON (e.id = t{$field_id}_{$this->_key}.entry_id)";
-            $where .= "
-                AND (
-                    t{$field_id}_{$this->_key}.value IN ('{$data}')
-                    OR t{$field_id}_{$this->_key}.handle IN ('{$data}')
-                )";
-        }
-
-        return true;
     }
 
     /*-------------------------------------------------------------------------
