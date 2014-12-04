@@ -137,7 +137,7 @@ class contentPublish extends AdministrationPage
             $data['search'] = $field->fetchSuggestionTypes();
             $data['operators'] = $field->fetchFilterableOperators();
             $data['comparisons'] = $this->createFilterComparisons($data);
-            $data['query'] = $this->getFilterQuery($data, $filter);
+            $data['query'] = $this->getFilterQuery($data);
             $data['field-id'] = $field->get('id');
 
             // Add existing filter
@@ -198,7 +198,7 @@ class contentPublish extends AdministrationPage
             $data['search'] = array('date');
             $data['operators'] = $operators;
             $data['comparisons'] = $this->createFilterComparisons($data);
-            $data['query'] = $this->getFilterQuery($data, $filter);
+            $data['query'] = $this->getFilterQuery($data);
 
             // Add existing filter
             if (isset($filter)) {
