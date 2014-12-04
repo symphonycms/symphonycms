@@ -176,12 +176,18 @@
 		var load = function(input, value) {
 			var suggestions = input.next('.suggestions'),
 				types = suggestions.attr('data-search-types'),
+				trigger = input.attr('data-trigger'),
+				prefix = trigger.substr(0, 1),
 				query = value,
 				data, url;
 
 			// Get value
 			if(!query) {
 				query = input.val();
+			}
+
+			if(prefix === '{') {
+				query = query.substr(1);
 			}
 
 			// Get data
