@@ -84,6 +84,7 @@ Class SymphonyLoader
             'fieldmanager'                  => TOOLKIT . '/class.fieldmanager.php',
             'fieldselect'                   => TOOLKIT . '/fields/field.select.php',
             'fieldtaglist'                  => TOOLKIT . '/fields/field.taglist.php',
+            'fieldtextarea'                 => TOOLKIT . '/fields/field.textarea.php',
             'fieldupload'                   => TOOLKIT . '/fields/field.upload.php',
             'fileresource'                  => FACE    . '/interface.fileresource.php',
             'frontend'                      => CORE    . '/class.frontend.php',
