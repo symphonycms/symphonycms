@@ -371,12 +371,12 @@ class MySQL
      * Sets the MySQL connection to use this timezone instead of the default
      * MySQL server timezone.
      *
+     * @throws DatabaseException
      * @link https://dev.mysql.com/doc/refman/5.6/en/time-zone-support.html
+     * @link https://github.com/symphonycms/symphony-2/issues/1726
      * @since Symphony 2.3.3
      * @param string $timezone
-     *  Timezone will be a offset, `+10:00`, as not all MySQL installations will
-     *  have the humanreadable timezone database available
-     * @throws DatabaseException
+     *  Timezone will human readable, such as Australia/Brisbane.
      */
     public function setTimeZone($timezone = null)
     {
@@ -384,7 +384,16 @@ class MySQL
             return;
         }
 
-        $this->query("SET time_zone = '$timezone'");
+        // What is the time now in the install timezone
+        $symphony_date = new DateTime('now', new DateTimeZone($timezone));
+
+        // MySQL wants the offset to be in the format +/-H:I, getOffset returns offset in seconds
+        $utc = new DateTime('now ' . $symphony_date->getOffset() . ' seconds', new DateTimeZone("UTC"));
+
+        // Get the difference between the symphony install timezone and UTC
+        $offset = $symphony_date->diff($utc)->format('%R%H:%I');
+
+        $this->query("SET time_zone = '$offset'");
     }
 
     /**
