@@ -237,8 +237,9 @@ class FieldManager implements FileResource
      *  `__UNFILTERABLE_ONLY__` or `__FIELD_ALL__`. Defaults to `__FIELD_ALL__`
      * @throws DatabaseException
      * @throws Exception
-     * @return array
+     * @return array|Field
      *  An array of Field objects. If no Field are found, null is returned.
+     *  Id $id is a single numeric value, the field instance is returned.
      */
     public static function fetch($id = null, $section_id = null, $order = 'ASC', $sortfield = 'sortorder', $type = null, $location = null, $where = null, $restrict = Field::__FIELD_ALL__)
     {

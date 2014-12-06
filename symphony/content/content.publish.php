@@ -14,6 +14,12 @@ class contentPublish extends AdministrationPage
 {
     public $_errors = array();
 
+    /**
+     * The XMLElement that holds the filtering form
+     * @var XMLElement
+     */
+    private $filteringForm = null;
+
     public function sort(&$sort, &$order, $params)
     {
         $section = $params['current-section'];
@@ -399,6 +405,7 @@ class contentPublish extends AdministrationPage
                 $filters = $_REQUEST['filter'];
             }
 
+            $field_id = null;
             foreach ($filters as $handle => $value) {
                 $handle = Symphony::Database()->cleanValue($handle);
 
@@ -943,6 +950,8 @@ class contentPublish extends AdministrationPage
             );
         }
 
+        $error = array();
+        $message = null;
         $section = SectionManager::fetch($section_id);
 
         $this->setPageType('form');
@@ -1165,6 +1174,7 @@ class contentPublish extends AdministrationPage
         $base = '/publish/'.$this->_context['section_handle'] . '/';
         $new_link = $base . 'new/';
         $filter_link = $base;
+        $message = null;
 
         EntryManager::setFetchSorting('id', 'DESC');
 
@@ -1251,6 +1261,7 @@ class contentPublish extends AdministrationPage
 
         // Determine the page title
         $field_id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
+        $field = null;
         if (!is_null($field_id)) {
             $field = FieldManager::fetch($field_id);
         }
@@ -1370,6 +1381,7 @@ class contentPublish extends AdministrationPage
 
             $post = General::getPostData();
             $fields = $post['fields'];
+            $errors = array();
 
             // Initial checks to see if the Entry is ok
             if (__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
@@ -1588,6 +1600,7 @@ class contentPublish extends AdministrationPage
             if (!is_null($parent_associations) && !empty($parent_associations)) {
                 foreach ($parent_associations as $as) {
                     if ($field = FieldManager::fetch($as['parent_section_field_id'])) {
+                        $prepopulate_field = null;
                         if (isset($_GET['prepopulate'])) {
                             $prepopulate_field = key($_GET['prepopulate']);
                         }
