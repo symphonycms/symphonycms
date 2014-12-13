@@ -1601,7 +1601,7 @@ class contentPublish extends AdministrationPage
      */
     public function getPrepopulateString()
     {
-        $prepopulate_querystring = '?';
+        $prepopulate_querystring = '';
 
         if (isset($_REQUEST['prepopulate'])) {
             foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
@@ -1616,7 +1616,7 @@ class contentPublish extends AdministrationPage
         // $_GET['June'] = ''
         $prepopulate_querystring = preg_replace("/&amp;$/", '', $prepopulate_querystring);
 
-        return $prepopulate_querystring;
+        return $prepopulate_querystring ? '?' . $prepopulate_querystring : null;
     }
 
     /**
@@ -1628,7 +1628,7 @@ class contentPublish extends AdministrationPage
      */
     public function getFilterString()
     {
-        $filter_querystring = '?';
+        $filter_querystring = '';
 
         if (isset($_REQUEST['prepopulate'])) {
             foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
@@ -1644,6 +1644,6 @@ class contentPublish extends AdministrationPage
         // $_GET['June'] = ''
         $filter_querystring = preg_replace("/&amp;$/", '', $filter_querystring);
 
-        return $filter_querystring;
+        return $filter_querystring ? '?' . $filter_querystring : null;
     }
 }
