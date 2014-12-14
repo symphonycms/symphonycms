@@ -298,7 +298,7 @@ class contentPublish extends AdministrationPage
 
         $li = new XMLElement('li', __('Comparison mode') . ': ' . $operator['help'], array(
             'class' => 'help',
-            'data-comparison' => $operator['filter']
+            'data-comparison' => trim($operator['filter'])
         ));
 
         $wrapper->appendChild($li);
