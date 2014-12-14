@@ -65,7 +65,7 @@
 
 			// Entries
 			else if(value || (types && types.indexOf('static') !== -1)) {
-				load(input);
+				load(input, value);
 			}
 
 			// No input
@@ -177,9 +177,13 @@
 			var suggestions = input.next('.suggestions'),
 				types = suggestions.attr('data-search-types'),
 				trigger = input.attr('data-trigger'),
-				prefix = trigger.substr(0, 1),
 				query = value,
-				data, url;
+				prefix, data, url;
+
+			// Prefix
+			if(trigger) {
+				prefix = trigger.substr(0, 1);
+			}
 
 			// Get value
 			if(!query) {
@@ -235,7 +239,12 @@
 			var clone = suggestions.clone(),
 				help = clone.find('.help:first'),
 				trigger = input.attr('data-trigger'),
+				prefix;
+
+			// Prefix
+			if(trigger) {
 				prefix = trigger.substr(0, 1);
+			}
 
 			// Clear existing suggestions
 			clear(clone);
