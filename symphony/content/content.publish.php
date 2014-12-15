@@ -423,8 +423,8 @@ class contentPublish extends AdministrationPage
                         $field->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false));
 
                         $encoded_value = rawurlencode(implode(',' , $value));
-                        $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, $value);
-                        $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, $value);
+                        $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, $encoded_value);
+                        $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, $encoded_value);
                     } else {
                         unset($filters[$handle]);
                     }
