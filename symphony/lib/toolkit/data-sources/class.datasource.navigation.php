@@ -95,7 +95,7 @@ class NavigationDatasource extends Datasource
         ));
 
         if ((!is_array($pages) || empty($pages))) {
-            if ($this->dsParamREDIRECTONEMPTY == 'yes') {
+            if ($this->dsParamREDIRECTONEMPTY === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
             $result->appendChild($this->__noRecordsFound());

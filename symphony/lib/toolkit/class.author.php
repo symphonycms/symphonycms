@@ -83,7 +83,7 @@ class Author
      */
     public function isPrimaryAccount()
     {
-        return ($this->get('primary') == 'yes');
+        return ($this->get('primary') === 'yes');
     }
 
     /**
@@ -129,7 +129,7 @@ class Author
      */
     public function isTokenActive()
     {
-        return ($this->get('auth_token_active') == 'yes' ? true : false);
+        return ($this->get('auth_token_active') === 'yes' ? true : false);
     }
 
     /**
@@ -201,13 +201,13 @@ class Author
             // it is not already used by another Author
         } elseif ($this->get('id')) {
             if (
-                $current_author['email'] != $this->get('email') &&
+                $current_author['email'] !== $this->get('email') &&
                 Symphony::Database()->fetchVar('count', 0, sprintf(
                     "SELECT COUNT(`id`) as `count`
                     FROM `tbl_authors`
                     WHERE `email` = '%s'",
                     General::sanitize($this->get('email'))
-                )) != 0
+                )) !== 0
             ) {
                 $errors['email'] = __('E-mail address is already taken');
             }
@@ -231,13 +231,13 @@ class Author
             // in use by another Author if they are trying to change it.
         } elseif ($this->get('id')) {
             if (
-                $current_author['username'] != $this->get('username') &&
+                $current_author['username'] !== $this->get('username') &&
                 Symphony::Database()->fetchVar('count', 0, sprintf(
                     "SELECT COUNT(`id`) as `count`
                     FROM `tbl_authors`
                     WHERE `username` = '%s'",
                     General::sanitize($this->get('username'))
-                )) != 0
+                )) !== 0
             ) {
                 $errors['username'] = __('Username is already taken');
             }

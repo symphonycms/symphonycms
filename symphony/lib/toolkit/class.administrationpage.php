@@ -136,7 +136,7 @@ Class AdministrationPage extends HTMLPage
     public function setBodyClass($class)
     {
         // Prevents duplicate "index" classes
-        if (!isset($this->_context['page']) || $this->_context['page'] != 'index' || $class != 'index') {
+        if (!isset($this->_context['page']) || $this->_context['page'] !== 'index' || $class !== 'index') {
             $this->_body_class .= $class;
         }
     }
@@ -486,18 +486,18 @@ Class AdministrationPage extends HTMLPage
             ) {
                 if (is_array($item['children'])) {
                     foreach ($item['children'] as $c) {
-                        if ($c['link'] == $page && isset($c['limit'])) {
+                        if ($c['link'] === $page && isset($c['limit'])) {
                             $page_limit = $c['limit'];
                         }
                     }
                 }
 
-                if (isset($item['limit']) && $page_limit != 'primary') {
-                    if ($page_limit == 'author' && $item['limit'] == 'developer') {
+                if (isset($item['limit']) && $page_limit !== 'primary') {
+                    if ($page_limit === 'author' && $item['limit'] === 'developer') {
                         $page_limit = 'developer';
                     }
                 }
-            } elseif (isset($item['link']) && $page == $item['link'] && isset($item['limit'])) {
+            } elseif (isset($item['link']) && $page === $item['link'] && isset($item['limit'])) {
                 $page_limit = $item['limit'];
             }
         }
@@ -517,13 +517,13 @@ Class AdministrationPage extends HTMLPage
     {
         $can_access = false;
 
-        if (!isset($item_limit) || $item_limit == 'author') {
+        if (!isset($item_limit) || $item_limit === 'author') {
             $can_access = true;
-        } elseif ($item_limit == 'developer' && Symphony::Author()->isDeveloper()) {
+        } elseif ($item_limit === 'developer' && Symphony::Author()->isDeveloper()) {
             $can_access = true;
-        } elseif ($item_limit == 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper())) {
+        } elseif ($item_limit === 'manager' && (Symphony::Author()->isManager() || Symphony::Author()->isDeveloper())) {
             $can_access = true;
-        } elseif ($item_limit == 'primary' && Symphony::Author()->isPrimaryAccount()) {
+        } elseif ($item_limit === 'primary' && Symphony::Author()->isPrimaryAccount()) {
             $can_access = true;
         }
 
@@ -675,7 +675,7 @@ Class AdministrationPage extends HTMLPage
      */
     public function __switchboard($type = 'view')
     {
-        if (!isset($this->_context[0]) || trim($this->_context[0]) == '') {
+        if (!isset($this->_context[0]) || trim($this->_context[0]) === '') {
             $context = 'index';
         } else {
             $context = $this->_context[0];
@@ -737,13 +737,13 @@ Class AdministrationPage extends HTMLPage
     // Errors first, success next, then notices.
     public function sortAlerts($a, $b)
     {
-        if ($a->{'type'} == $b->{'type'}) {
+        if ($a->{'type'} === $b->{'type'}) {
             return 0;
         }
 
         if (
-            ($a->{'type'} == Alert::ERROR && $a->{'type'} != $b->{'type'})
-            || ($a->{'type'} == Alert::SUCCESS && $b->{'type'} == Alert::NOTICE)
+            ($a->{'type'} === Alert::ERROR && $a->{'type'} !== $b->{'type'})
+            || ($a->{'type'} === Alert::SUCCESS && $b->{'type'} === Alert::NOTICE)
         ) {
             return -1;
         }
@@ -784,14 +784,14 @@ Class AdministrationPage extends HTMLPage
         $structureNav = new XMLElement('ul', null, array('class' => 'structure', 'role' => 'menubar'));
 
         foreach ($nav as $n) {
-            if (isset($n['visible']) && $n['visible'] == 'no') {
+            if (isset($n['visible']) && $n['visible'] === 'no') {
                 continue;
             }
 
             if ($this->doesAuthorHaveAccess($n['limit'])) {
                 $xGroup = new XMLElement('li', $n['name'], array('role' => 'presentation'));
 
-                if (isset($n['class']) && trim($n['name']) != '') {
+                if (isset($n['class']) && trim($n['name']) !== '') {
                     $xGroup->setAttribute('class', $n['class']);
                 }
 
@@ -801,7 +801,7 @@ Class AdministrationPage extends HTMLPage
                 if (is_array($n['children']) && !empty($n['children'])) {
                     foreach ($n['children'] as $c) {
                         // adapt for Yes and yes
-                        if (strtolower($c['visible']) != 'yes') {
+                        if (strtolower($c['visible']) !== 'yes') {
                             continue;
                         }
 
@@ -1059,7 +1059,7 @@ Class AdministrationPage extends HTMLPage
      * @return array
      */
     private static function createChildNavItem($item, $extension_handle) {
-        if (!isset($item['relative']) || $item['relative'] == true) {
+        if (!isset($item['relative']) || $item['relative'] === true) {
             $link = '/extension/' . $extension_handle . '/' . ltrim($item['link'], '/');
         } else {
             $link = '/' . ltrim($item['link'], '/');
@@ -1130,7 +1130,7 @@ Class AdministrationPage extends HTMLPage
     private static function __navigationFindGroupIndex(array $nav, $group)
     {
         foreach ($nav as $index => $item) {
-            if ($item['name'] == $group) {
+            if ($item['name'] === $group) {
                 return $index;
             }
         }

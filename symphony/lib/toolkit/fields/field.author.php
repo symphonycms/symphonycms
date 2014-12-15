@@ -29,7 +29,7 @@ class FieldAuthor extends Field implements ExportableField
 
     public function canToggle()
     {
-        return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
+        return ($this->get('allow_multiple_selection') === 'yes' ? false : true);
     }
 
     public function getToggleStates()
@@ -219,7 +219,7 @@ class FieldAuthor extends Field implements ExportableField
     {
         $value = isset($data['author_id']) ? $data['author_id'] : null;
 
-        if ($this->get('default_to_current_user') == 'yes' && empty($data) && empty($_POST)) {
+        if ($this->get('default_to_current_user') === 'yes' && empty($data) && empty($_POST)) {
             $value = array(Symphony::Author()->get('id'));
         }
 
@@ -229,7 +229,7 @@ class FieldAuthor extends Field implements ExportableField
 
         $options = array();
 
-        if ($this->get('required') != 'yes') {
+        if ($this->get('required') !== 'yes') {
             $options[] = array(null, false, null);
         }
 
@@ -264,17 +264,17 @@ class FieldAuthor extends Field implements ExportableField
 
         $fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
 
-        if ($this->get('allow_multiple_selection') == 'yes') {
+        if ($this->get('allow_multiple_selection') === 'yes') {
             $fieldname .= '[]';
         }
 
         $label = Widget::Label($this->get('label'));
 
-        if ($this->get('required') != 'yes') {
+        if ($this->get('required') !== 'yes') {
             $label->appendChild(new XMLElement('i', __('Optional')));
         }
 
-        $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : null)));
+        $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') === 'yes' ? array('multiple' => 'multiple') : null)));
 
         if ($flagWithError != null) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
@@ -567,13 +567,13 @@ class FieldAuthor extends Field implements ExportableField
 
         $fieldname = 'fields['.$this->get('element_name').']';
 
-        if ($this->get('allow_multiple_selection') == 'yes') {
+        if ($this->get('allow_multiple_selection') === 'yes') {
             $fieldname .= '[]';
         }
 
         $attr = array();
 
-        if ($this->get('allow_multiple_selection') == 'yes') {
+        if ($this->get('allow_multiple_selection') === 'yes') {
             $attr['multiple'] = 'multiple';
         }
 

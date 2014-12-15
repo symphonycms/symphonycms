@@ -301,7 +301,7 @@ class FrontendPage extends XSLTPage
         // Display the Event Results in the page source if the user is logged
         // into Symphony, the page is not JSON and if it is enabled in the
         // configuration.
-        if ($this->is_logged_in && !General::in_iarray('JSON', $this->_pageData['type']) && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
+        if ($this->is_logged_in && !General::in_iarray('JSON', $this->_pageData['type']) && Symphony::Configuration()->get('display_event_xml_in_source', 'public') === 'yes') {
             $output .= PHP_EOL . '<!-- ' . PHP_EOL . $this->_events_xml->generate(true) . ' -->';
         }
 

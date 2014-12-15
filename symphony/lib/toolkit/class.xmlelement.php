@@ -778,7 +778,8 @@ class XMLElement implements IteratorAggregate
 
         if (!empty($attributes)) {
             foreach ($attributes as $attribute => $value) {
-                if (strlen($value) != 0 || (strlen($value) == 0 && $this->_allowEmptyAttributes)) {
+                $length = strlen($value);
+                if ($length !== 0 || $length === 0 && $this->_allowEmptyAttributes) {
                     $result .= sprintf(' %s="%s"', $attribute, $value);
                 }
             }
@@ -787,7 +788,7 @@ class XMLElement implements IteratorAggregate
         $value = $this->getValue();
         $added_newline = false;
 
-        if ($this->getNumberOfChildren() > 0 || strlen($value) != 0 || !$this->_selfclosing) {
+        if ($this->getNumberOfChildren() > 0 || strlen($value) !== 0 || !$this->_selfclosing) {
             $result .= '>';
 
             foreach ($this->_children as $i => $child) {
@@ -813,9 +814,9 @@ class XMLElement implements IteratorAggregate
 
             // Empty elements:
         } else {
-            if ($this->_elementStyle == 'xml') {
+            if ($this->_elementStyle === 'xml') {
                 $result .= ' />';
-            } else if (in_array($this->_name, XMLElement::$no_end_tags) || (substr($this->getName(), 0, 3) == '!--')) {
+            } else if (in_array($this->_name, XMLElement::$no_end_tags) || (substr($this->getName(), 0, 3) === '!--')) {
                 $result .= '>';
             } else {
                 $result .= sprintf("></%s>", $this->getName());

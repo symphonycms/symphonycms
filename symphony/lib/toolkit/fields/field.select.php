@@ -29,7 +29,7 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
 
     public function canToggle()
     {
-        return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
+        return ($this->get('allow_multiple_selection') === 'yes' ? false : true);
     }
 
     public function getToggleStates()
@@ -48,7 +48,7 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
 
         $states = array_combine($values, $values);
 
-        if ($this->get('sort_options') == 'yes') {
+        if ($this->get('sort_options') === 'yes') {
             natsort($states);
         }
 
@@ -292,7 +292,7 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
         }
 
         $fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
-        $fields['sort_options'] = $this->get('sort_options') == 'yes' ? 'yes' : 'no';
+        $fields['sort_options'] = $this->get('sort_options') === 'yes' ? 'yes' : 'no';
 
         if (!FieldManager::saveSettings($id, $fields)) {
             return false;
@@ -304,7 +304,7 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
         $field_id = $this->get('dynamic_options');
 
         if (!is_null($field_id) && is_numeric($field_id)) {
-            SectionManager::createSectionAssociation(null, $id, (int)$field_id, $this->get('show_association') == 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
+            SectionManager::createSectionAssociation(null, $id, (int)$field_id, $this->get('show_association') === 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
         }
 
         return true;
@@ -333,17 +333,17 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
 
         $fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
 
-        if ($this->get('allow_multiple_selection') == 'yes') {
+        if ($this->get('allow_multiple_selection') === 'yes') {
             $fieldname .= '[]';
         }
 
         $label = Widget::Label($this->get('label'));
 
-        if ($this->get('required') != 'yes') {
+        if ($this->get('required') !== 'yes') {
             $label->appendChild(new XMLElement('i', __('Optional')));
         }
 
-        $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple', 'size' => count($options)) : null)));
+        $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') === 'yes' ? array('multiple' => 'multiple', 'size' => count($options)) : null)));
 
         if ($flagWithError != null) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
@@ -559,12 +559,12 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
 
         $fieldname = 'fields['.$this->get('element_name').']';
 
-        if ($this->get('allow_multiple_selection') == 'yes') {
+        if ($this->get('allow_multiple_selection') === 'yes') {
             $fieldname .= '[]';
         }
 
         $label = Widget::Label($this->get('label'));
-        $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : null)));
+        $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') === 'yes' ? array('multiple' => 'multiple') : null)));
 
         return $label;
     }

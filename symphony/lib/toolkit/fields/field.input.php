@@ -135,7 +135,7 @@ class FieldInput extends Field implements ExportableField, ImportableField
         $value = General::sanitize(isset($data['value']) ? $data['value'] : null);
         $label = Widget::Label($this->get('label'));
 
-        if ($this->get('required') != 'yes') {
+        if ($this->get('required') !== 'yes') {
             $label->appendChild(new XMLElement('i', __('Optional')));
         }
 
@@ -156,7 +156,7 @@ class FieldInput extends Field implements ExportableField, ImportableField
             $data = $data['value'];
         }
 
-        if ($this->get('required') == 'yes' && strlen(trim($data)) == 0) {
+        if ($this->get('required') === 'yes' && strlen(trim($data)) == 0) {
             $message = __('‘%s’ is a required field.', array($this->get('label')));
             return self::__MISSING_FIELDS__;
         }

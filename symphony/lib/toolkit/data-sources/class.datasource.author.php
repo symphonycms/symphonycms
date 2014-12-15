@@ -60,7 +60,7 @@ class AuthorDatasource extends Datasource
             $authors = AuthorManager::fetch($this->dsParamSORT, $this->dsParamORDER);
         }
 
-        if ((!is_array($authors) || empty($authors)) && $this->dsParamREDIRECTONEMPTY == 'yes') {
+        if ((!is_array($authors) || empty($authors)) && $this->dsParamREDIRECTONEMPTY === 'yes') {
             throw new FrontendPageNotFoundException;
         } elseif (!is_array($authors) || empty($authors)) {
             $result = $this->emptyXMLSet();

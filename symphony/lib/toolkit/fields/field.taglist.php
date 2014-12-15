@@ -235,7 +235,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
             if($field_id === 'none') continue;
 
             if (!is_null($field_id) && is_numeric($field_id)) {
-                SectionManager::createSectionAssociation(null, $id, (int) $field_id, $this->get('show_association') == 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
+                SectionManager::createSectionAssociation(null, $id, (int) $field_id, $this->get('show_association') === 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
             }
         }
 
@@ -256,7 +256,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
         $label = Widget::Label($this->get('label'));
 
-        if ($this->get('required') != 'yes') {
+        if ($this->get('required') !== 'yes') {
             $label->appendChild(new XMLElement('i', __('Optional')));
         }
 
@@ -293,7 +293,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     {
         $message = null;
 
-        if ($this->get('required') == 'yes' && strlen(trim($data)) == 0) {
+        if ($this->get('required') === 'yes' && strlen(trim($data)) == 0) {
             $message = __('‘%s’ is a required field.', array($this->get('label')));
             return self::__MISSING_FIELDS__;
         }

@@ -450,7 +450,7 @@ class SectionDatasource extends Datasource
         ));
 
         if ($this->_force_empty_result == true) {
-            if ($this->dsParamREDIRECTONREQUIRED == 'yes') {
+            if ($this->dsParamREDIRECTONREQUIRED === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
 
@@ -465,7 +465,7 @@ class SectionDatasource extends Datasource
         }
 
         if ($this->_negate_result == true) {
-            if ($this->dsParamREDIRECTONFORBIDDEN == 'yes') {
+            if ($this->dsParamREDIRECTONFORBIDDEN === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
 
@@ -522,9 +522,9 @@ class SectionDatasource extends Datasource
         }
 
         $entries = EntryManager::fetchByPage(
-            ($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1),
+            ($this->dsParamPAGINATERESULTS === 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1),
             $this->getSource(),
-            ($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : null),
+            ($this->dsParamPAGINATERESULTS === 'yes' && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : null),
             $where,
             $joins,
             $group,
@@ -550,7 +550,7 @@ class SectionDatasource extends Datasource
         ));
 
         if (($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || $this->dsParamSTARTPAGE == '0') {
-            if ($this->dsParamREDIRECTONEMPTY == 'yes') {
+            if ($this->dsParamREDIRECTONEMPTY === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
 
@@ -570,13 +570,13 @@ class SectionDatasource extends Datasource
                 $result->appendChild($sectioninfo);
 
                 if ($include_pagination_element) {
-                    $t = ($this->dsParamPAGINATERESULTS == 'yes' && isset($this->dsParamLIMIT) && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']);
+                    $t = ($this->dsParamPAGINATERESULTS === 'yes' && isset($this->dsParamLIMIT) && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']);
 
                     $pagination_element = General::buildPaginationElement(
                         $entries['total-entries'],
                         $entries['total-pages'],
                         $t,
-                        ($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1)
+                        ($this->dsParamPAGINATERESULTS === 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1)
                     );
 
                     if ($pagination_element instanceof XMLElement && $result instanceof XMLElement) {
@@ -587,7 +587,7 @@ class SectionDatasource extends Datasource
 
             // If this datasource has a Limit greater than 0 or the Limit is not set
             if (!isset($this->dsParamLIMIT) || $this->dsParamLIMIT > 0) {
-                if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS == 'yes') {
+                if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS === 'yes') {
                     $this->_associated_sections = $section->fetchAssociatedSections();
                 }
 

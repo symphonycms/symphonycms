@@ -308,7 +308,7 @@ class Datasource
 
                 // If a filter gets evaluated to nothing, eg. ` + ` or ``, then remove
                 // the filter. RE: #1759
-                if (strlen(trim($new_value)) == 0 || !preg_match('/\w+/u', $new_value)) {
+                if (strlen(trim($new_value)) === 0 || !preg_match('/\w+/u', $new_value)) {
                     unset($this->dsParamFILTERS[$key]);
                 } else {
                     $this->dsParamFILTERS[$key] = $new_value;
@@ -326,7 +326,7 @@ class Datasource
 
         if (isset($this->dsParamSTARTPAGE)) {
             $this->dsParamSTARTPAGE = $this->__processParametersInString($this->dsParamSTARTPAGE, $this->_env);
-            if ($this->dsParamSTARTPAGE == '') {
+            if ($this->dsParamSTARTPAGE === '') {
                 $this->dsParamSTARTPAGE = '1';
             }
         }
@@ -338,7 +338,7 @@ class Datasource
         if (
             isset($this->dsParamREQUIREDPARAM)
             && strlen(trim($this->dsParamREQUIREDPARAM)) > 0
-            && $this->__processParametersInString(trim($this->dsParamREQUIREDPARAM), $this->_env, false) == ''
+            && $this->__processParametersInString(trim($this->dsParamREQUIREDPARAM), $this->_env, false) === ''
         ) {
             $this->_force_empty_result = true; // don't output any XML
             $this->dsParamPARAMOUTPUT = null; // don't output any parameters
@@ -349,7 +349,7 @@ class Datasource
         if (
             isset($this->dsParamNEGATEPARAM)
             && strlen(trim($this->dsParamNEGATEPARAM)) > 0
-            && $this->__processParametersInString(trim($this->dsParamNEGATEPARAM), $this->_env, false) != ''
+            && $this->__processParametersInString(trim($this->dsParamNEGATEPARAM), $this->_env, false) !== ''
         ) {
             $this->_negate_result = true; // don't output any XML
             $this->dsParamPARAMOUTPUT = null; // don't output any parameters
@@ -359,7 +359,7 @@ class Datasource
 
         $this->_param_output_only = ((!isset($this->dsParamINCLUDEDELEMENTS) || !is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) && !isset($this->dsParamGROUP));
 
-        if (isset($this->dsParamREDIRECTONEMPTY) && $this->dsParamREDIRECTONEMPTY == 'yes' && $this->_force_empty_result) {
+        if (isset($this->dsParamREDIRECTONEMPTY) && $this->dsParamREDIRECTONEMPTY === 'yes' && $this->_force_empty_result) {
             throw new FrontendPageNotFoundException;
         }
     }
@@ -446,7 +446,7 @@ class Datasource
                 $bits = preg_split('/:/', $cleaned, -1, PREG_SPLIT_NO_EMPTY);
 
                 foreach ($bits as $param) {
-                    if ($param{0} != '$') {
+                    if ($param{0} !== '$') {
                         $replacement = $param;
                         break;
                     }

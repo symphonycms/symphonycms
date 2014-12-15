@@ -419,8 +419,8 @@ class FieldDate extends Field implements ExportableField, ImportableField
         }
 
         // New entry
-        if ((is_null($data) || empty($data)) && is_null($flagWithError) && !is_null($this->get('pre_populate')) && $this->get('pre_populate') != 'no') {
-            $prepopulate = ($this->get('pre_populate') == 'yes') ? 'now' : $this->get('pre_populate');
+        if ((is_null($data) || empty($data)) && is_null($flagWithError) && !is_null($this->get('pre_populate')) && $this->get('pre_populate') !== 'no') {
+            $prepopulate = ($this->get('pre_populate') === 'yes') ? 'now' : $this->get('pre_populate');
 
             $date = self::parseDate($prepopulate);
             $date = $date['start'];
@@ -437,7 +437,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
 
         $label = Widget::Label($this->get('label'));
 
-        if ($this->get('required') != 'yes') {
+        if ($this->get('required') !== 'yes') {
             $label->appendChild(new XMLElement('i', __('Optional')));
         }
 
@@ -463,7 +463,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
         $message = null;
 
         // If this field is required
-        if ($this->get('required') == 'yes' && strlen(trim($data)) == 0) {
+        if ($this->get('required') === 'yes' && strlen(trim($data)) == 0) {
             $message = __('‘%s’ is a required field.', array($this->get('label')));
             return self::__MISSING_FIELDS__;
         } elseif (empty($data)) {

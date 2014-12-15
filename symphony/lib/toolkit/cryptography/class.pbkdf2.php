@@ -178,7 +178,7 @@ class PBKDF2 extends Cryptography
         $iterations = self::extractIterations($hash);
         $keylength = strlen(base64_decode(self::extractHash($hash)));
 
-        if ($length != self::SALT_LENGTH || $iterations != self::ITERATIONS || $keylength != self::KEY_LENGTH) {
+        if ($length !== self::SALT_LENGTH || $iterations !== self::ITERATIONS || $keylength !== self::KEY_LENGTH) {
             return true;
         } else {
             return false;

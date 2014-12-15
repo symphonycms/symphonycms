@@ -116,7 +116,7 @@ class Alert
         $p = new XMLElement('p', $this->message, array('role' => 'alert'));
         $p->setAttribute('class', 'notice');
 
-        if ($this->type != self::NOTICE) {
+        if ($this->type !== self::NOTICE) {
             $p->setAttribute('class', 'notice ' . $this->type);
         }
 

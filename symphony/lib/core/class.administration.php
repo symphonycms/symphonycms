@@ -184,7 +184,7 @@ class Administration extends Symphony
         include_once($this->_callback['driver_location']);
         $this->Page = new $this->_callback['classname'];
 
-        if (!$is_logged_in && $this->_callback['driver'] != 'login') {
+        if (!$is_logged_in && $this->_callback['driver'] !== 'login') {
             if (is_callable(array($this->Page, 'handleFailedAuthorisation'))) {
                 $this->Page->handleFailedAuthorisation();
             } else {

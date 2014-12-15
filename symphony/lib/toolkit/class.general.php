@@ -1054,7 +1054,7 @@ class General
 
                 $extension = substr(strrchr($file, '.'), 1);
 
-                if ($mimetypes[strtolower($extension)] != null) {
+                if ($mimetypes[strtolower($extension)] !== null) {
                     $mime_type = $mimetypes[$extension];
                 } else {
                     $mime_type = 'application/octet-stream';
@@ -1173,7 +1173,7 @@ class General
 
         $prefix = str_replace($strip_root, '', $dir);
 
-        if ($prefix != "" && substr($prefix, -1) != "/") {
+        if ($prefix !== "" && substr($prefix, -1) !== "/") {
             $prefix .= "/";
         }
 
@@ -1182,8 +1182,8 @@ class General
 
         foreach (scandir($dir) as $file) {
             if (
-                ($file == '.' || $file == '..')
-                || ($ignore_hidden && $file{0} == '.')
+                ($file == '.' || $file === '..')
+                || ($ignore_hidden && $file{0} === '.')
                 || in_array($file, $exclude)
                 || in_array("$dir/$file", $exclude)
             ) {
@@ -1198,11 +1198,11 @@ class General
                 }
 
                 $files['dirlist'][] = "$prefix$file/";
-            } elseif ($filter_type == 'regex') {
+            } elseif ($filter_type === 'regex') {
                 if (preg_match($filters, $file)) {
                     $files['filelist'][] = "$prefix$file";
                 }
-            } elseif ($filter_type == 'file') {
+            } elseif ($filter_type === 'file') {
                 if (in_array(self::getExtension($file), $filters)) {
                     $files['filelist'][] = "$prefix$file";
                 }

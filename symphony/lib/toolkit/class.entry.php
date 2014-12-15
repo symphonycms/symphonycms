@@ -181,7 +181,7 @@ class Entry
 
             $result = $field->processRawFieldData((isset($data[$info['element_name']]) ? $data[$info['element_name']] : null), $s, $message, $simulate, $this->get('id'));
 
-            if ($s != Field::__OK__) {
+            if ($s !== Field::__OK__) {
                 $status = Entry::__ENTRY_FIELD_ERROR__;
                 $errors[$info['id']] = $message;
             }
@@ -190,7 +190,7 @@ class Entry
         }
 
         // Failed to create entry, cleanup
-        if ($status != Entry::__ENTRY_OK__ && !is_null($entry_id)) {
+        if ($status !== Entry::__ENTRY_OK__ && !is_null($entry_id)) {
             Symphony::Database()->delete('tbl_entries', sprintf(" `id` = %d ", $entry_id));
         }
 
@@ -260,7 +260,7 @@ class Entry
                 continue;
             }
 
-            if (Field::__OK__ != $field->checkPostFieldData((isset($data[$info['element_name']]) ? $data[$info['element_name']] : null), $message, $this->get('id'))) {
+            if (Field::__OK__ !== $field->checkPostFieldData((isset($data[$info['element_name']]) ? $data[$info['element_name']] : null), $message, $this->get('id'))) {
                 $status = Entry::__ENTRY_FIELD_ERROR__;
                 $errors[$info['id']] = $message;
             }

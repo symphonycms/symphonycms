@@ -90,7 +90,7 @@ class Widget
             $obj->setAttribute('type', $type);
         }
 
-        if (strlen($value) != 0) {
+        if (strlen($value) !== 0) {
             $obj->setAttribute('value', $value);
         }
 

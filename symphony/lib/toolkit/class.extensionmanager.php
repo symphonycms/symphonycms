@@ -920,7 +920,7 @@ class ExtensionManager implements FileResource
 
             // Check to see that the extension is named correctly, if it is
             // not, then return nothing
-            if (self::__getClassName($name) != self::__getClassName($xpath->evaluate('string(@id)', $extension))) {
+            if (self::__getClassName($name) !== self::__getClassName($xpath->evaluate('string(@id)', $extension))) {
                 return array();
             }
 

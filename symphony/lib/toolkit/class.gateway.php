@@ -286,7 +286,7 @@ class Gateway
      */
     public function exec($force_connection_method = null)
     {
-        if ($force_connection_method != self::FORCE_SOCKET && self::isCurlAvailable()) {
+        if ($force_connection_method !== self::FORCE_SOCKET && self::isCurlAvailable()) {
             $ch = curl_init();
 
             curl_setopt($ch, CURLOPT_URL, sprintf(
@@ -409,7 +409,7 @@ class Gateway
                     $chunk_size .= $byte;
                     $byte = substr($response, $fp, 1);
                     $fp++;
-                } while ($byte != "\r" && $byte != "\\r");
+                } while ($byte !== "\r" && $byte !== "\\r");
 
                 $chunk_size = hexdec($chunk_size); // convert to real number
 

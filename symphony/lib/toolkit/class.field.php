@@ -381,8 +381,8 @@ class Field
     public function setFromPOST(array $settings = array())
     {
         $settings['location'] = (isset($settings['location']) ? $settings['location'] : 'main');
-        $settings['required'] = (isset($settings['required']) && $settings['required'] == 'yes' ? 'yes' : 'no');
-        $settings['show_column'] = (isset($settings['show_column']) && $settings['show_column'] == 'yes' ? 'yes' : 'no');
+        $settings['required'] = (isset($settings['required']) && $settings['required'] === 'yes' ? 'yes' : 'no');
+        $settings['show_column'] = (isset($settings['show_column']) && $settings['show_column'] === 'yes' ? 'yes' : 'no');
 
         $this->setArray($settings);
     }
@@ -897,20 +897,20 @@ class Field
             $valid_name = preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $element_name);
         }
 
-        if ($label == '') {
+        if ($label === '') {
             $errors['label'] = __('This is a required field.');
-        } elseif (strtolower($label) == 'id') {
+        } elseif (strtolower($label) === 'id') {
             $errors['label'] = __('%s is a reserved name used by the system and is not allowed for a field handle. Try using %s instead.', array('<code>ID</code>', '<code>UID</code>'));
         }
 
-        if ($element_name == '') {
+        if ($element_name === '') {
             $errors['element_name'] = __('This is a required field.');
-        } elseif ($element_name == 'id') {
+        } elseif ($element_name === 'id') {
             $errors['element_name'] = __('%s is a reserved name used by the system and is not allowed for a field handle. Try using %s instead.', array('<code>id</code>', '<code>uid</code>'));
         } elseif (!$valid_name) {
             $errors['element_name'] = __('Invalid element name. Must be valid %s.', array('<code>QName</code>'));
         } elseif ($checkForDuplicates) {
-            if (FieldManager::fetchFieldIDFromElementName($element_name, $parent_section) != $this->get('id')) {
+            if (FieldManager::fetchFieldIDFromElementName($element_name, $parent_section) !== $this->get('id')) {
                 $errors['element_name'] = __('A field with that element name already exists. Please choose another.');
             }
         }
@@ -1124,7 +1124,7 @@ class Field
 
         $has_no_value = is_array($data) ? empty($data) : strlen(trim($data)) == 0;
 
-        if ($this->get('required') == 'yes' && $has_no_value) {
+        if ($this->get('required') === 'yes' && $has_no_value) {
             $message = __('‘%s’ is a required field.', array($this->get('label')));
 
             return self::__MISSING_FIELDS__;
