@@ -58,7 +58,6 @@ class contentPublish extends AdministrationPage
             // If the sort order or direction remains the same, reload the page
             if ($sort == $section->getSortingField() && $order == $section->getSortingOrder()) {
                 if ($params['filters']) {
-
                     $params['filters'] = '?' . trim($params['filters'], '&amp;');
                 }
 
@@ -155,6 +154,7 @@ class contentPublish extends AdministrationPage
     private function createSystemDateFilters(&$wrapper)
     {
         $filters = $_GET['filter'];
+        $dateField = new FieldDate;
 
         $fields = array(
             array(
@@ -167,25 +167,6 @@ class contentPublish extends AdministrationPage
             )
         );
 
-        $operators = array(
-            array(
-                'title' => 'later than',
-                'filter' => 'later than '
-            ),
-            array(
-                'title' => 'earlier than',
-                'filter' => 'earlier than '
-            ),
-            array(
-                'title' => 'equal to or later than',
-                'filter' => 'equal to or later than '
-            ),
-            array(
-                'title' => 'equal to or earlier than',
-                'filter' => 'equal to or earlier than '
-            ),
-        );
-
         foreach ($fields as $field) {
             $filter = $filters[$field['type']];
 
@@ -195,8 +176,8 @@ class contentPublish extends AdministrationPage
             $data['name'] = $field['label'];
             $data['filter'] = $filter;
             $data['instance'] = 'unique';
-            $data['search'] = array('date');
-            $data['operators'] = $operators;
+            $data['search'] = $dateField->fetchSuggestionTypes();
+            $data['operators'] = $dateField->fetchFilterableOperators();
             $data['comparisons'] = $this->createFilterComparisons($data);
             $data['query'] = $this->getFilterQuery($data);
 
@@ -242,7 +223,7 @@ class contentPublish extends AdministrationPage
         $label->setAttribute('class', 'column primary');
 
         $input = Widget::Input($data['type'], $data['query'], 'text', array(
-            'placeholder' => __('Type and hit enter to apply filter …'),
+            'placeholder' => __('Type and hit enter to apply filter…'),
             'autocomplete' => 'off'
         ));
         $input->setAttribute('class', 'filter');
@@ -262,7 +243,13 @@ class contentPublish extends AdministrationPage
 
         // Custom field comparisons
         foreach ($data['operators'] as $operator) {
-            $comparisons[] = array(trim($operator['filter']), (strpos($data['filter'], $operator['filter']) === 0), __($operator['title']));
+            $filter = trim($operator['filter']);
+
+            $comparisons[] = array(
+                $filter,
+                (!empty($filter) && strpos($data['filter'], $filter) === 0),
+                __($operator['title'])
+            );
         }
 
         return $comparisons;
@@ -312,7 +299,7 @@ class contentPublish extends AdministrationPage
             $filter = trim($operator['filter']);
 
             if (!empty($filter) && strpos($data['filter'], $filter) === 0) {
-                $query = substr($data['filter'], strlen($operator['filter']));
+                $query = substr($data['filter'], strlen($filter));
             }
         }
 
