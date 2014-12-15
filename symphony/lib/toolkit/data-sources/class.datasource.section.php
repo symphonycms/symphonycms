@@ -366,7 +366,7 @@ class SectionDatasource extends Datasource
             }
 
             if (!is_array($filter)) {
-                $filter_type = $this->__determineFilterType($filter);
+                $filter_type = Datasource::determineFilterType($filter);
                 $value = preg_split('/'.($filter_type == Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
                 $value = array_map('trim', $value);
                 $value = array_map(array('Datasource', 'removeEscapedCommas'), $value);

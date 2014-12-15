@@ -214,7 +214,7 @@ class Datasource
      * @return integer
      *  Datasource::FILTER_OR or Datasource::FILTER_AND
      */
-    public function __determineFilterType($value)
+    public static function determineFilterType($value)
     {
         return (preg_match('/\s+\+\s+/', $value) ? Datasource::FILTER_AND : Datasource::FILTER_OR);
     }
@@ -535,5 +535,25 @@ class Datasource
         }
 
         return null;
+    }
+
+    /**
+     * By default, all Symphony filters are considering to be AND filters, that is
+     * they are all used and Entries must match each filter to be included. It is
+     * possible to use OR filtering in a field by using an + to separate the values.
+     * eg. If the filter is test1 + test2, this will match any entries where this field
+     * is test1 OR test2. This function is run on each filter (ie. each field) in a
+     * datasource
+     *
+     * @deprecated Since Symphony 2.6.0 it is recommended to use the static version,
+     *  `Datasource::determineFilterType`
+     * @param string $value
+     *  The filter string for a field.
+     * @return integer
+     *  Datasource::FILTER_OR or Datasource::FILTER_AND
+     */
+    public function __determineFilterType($value)
+    {
+        return self::determineFilterType($value);
     }
 }

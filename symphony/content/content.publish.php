@@ -387,16 +387,25 @@ class contentPublish extends AdministrationPage
             }
 
             foreach ($filters as $handle => $value) {
-                $handle = Symphony::Database()->cleanValue($handle);
+                // Handle multiple values through filtering. RE: #2290
+                if ((is_array($value) && empty($value)) || trim($value) == '') {
+                    continue;
+                }
+
+                if (!is_array($value)) {
+                    $filter_type = Datasource::determineFilterType($value);
+                    $value = preg_split('/'.($filter_type == Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
+                    $value = array_map('trim', $value);
+                    $value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
+                }
 
                 // Handle date meta data #2003
+                $handle = Symphony::Database()->cleanValue($handle);
                 if (in_array($handle, array('system:creation-date', 'system:modification-date'))) {
-                    require_once TOOLKIT . '/fields/field.date.php';
-
                     $date_joins = '';
                     $date_where = '';
-                    $date = new fieldDate();
-                    $date->buildDSRetrievalSQL(array($value), $date_joins, $date_where, true);
+                    $date = new FieldDate();
+                    $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == Datasource::FILTER_AND ? true : false));
 
                     // Replace the date field where with the `creation_date` or `modification_date`.
                     $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
@@ -410,11 +419,12 @@ class contentPublish extends AdministrationPage
                     );
 
                     $field = FieldManager::fetch($field_id);
-
                     if ($field instanceof Field) {
-                        $field->buildDSRetrievalSQL(array($value), $joins, $where, true);
-                        $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, rawurlencode($value));
-                        $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, rawurlencode($value));
+                        $field->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false));
+
+                        $encoded_value = rawurlencode(implode(',' , $value));
+                        $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, $value);
+                        $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, $value);
                     } else {
                         unset($filters[$handle]);
                     }
