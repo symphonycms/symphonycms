@@ -80,7 +80,7 @@ class Cryptography
     {
         $version = substr($hash, 0, 8);
 
-        if ($version == 'PBKDF2v1') { // salted PBKDF2, let the responsible class decide
+        if ($version == PBKDF2::PREFIX) { // salted PBKDF2, let the responsible class decide
             return PBKDF2::requiresMigration($hash);
         } else { // everything else
             return true;
