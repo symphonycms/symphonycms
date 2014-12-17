@@ -102,7 +102,7 @@ class PBKDF2 extends Cryptography
         $iterations = self::extractIterations($hash);
         $keylength = strlen(base64_decode(self::extractHash($hash)));
 
-        return $hash == self::hash($input, $salt, $iterations, $keylength);
+        return $hash === self::hash($input, $salt, $iterations, $keylength);
     }
 
     /**
@@ -160,7 +160,7 @@ class PBKDF2 extends Cryptography
     {
         $data = explode("|", $input, 4);
 
-        return $data[1];
+        return (int) $data[1];
     }
 
     /**
