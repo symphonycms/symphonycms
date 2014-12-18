@@ -23,7 +23,7 @@
 	box-shadow: 0 1rem 1.5rem rgba(0, 0, 0, 0.35);
 	transition: opacity 0s ease-in 0.15s, max-height 0s ease-in 0.25s;
 	opacity: 0;
-	z-index: 10000;
+	z-index: -1;
 }
 
 @media screen and (min-width: 700px) {
@@ -39,10 +39,12 @@ textarea:focus ~ .suggestions:not(:empty) {
 	transition: opacity 0s ease-in 0.15s, max-height 0s ease-in 0s;
 	opacity: 1;
 	overflow: auto;
+	z-index: 10000;
 }
 
 input:focus ~ .suggestions[data-search-types='date'] {
 	overflow: visible;
+	z-index: 10000;
 }
 
 .suggestions li:not(.calendar) {
