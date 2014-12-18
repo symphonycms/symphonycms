@@ -27,7 +27,7 @@
 			context.on('input.suggestions', selector, handleChange);
 			context.on('click.suggestions', selector, handleChange);
 			context.on('focus.suggestions', selector, handleChange);
-			context.on('keydown.suggestions', selector, handleChange);
+			context.on('keyup.suggestions', selector, handleChange);
 			context.on('mouseover.suggestions', '.suggestions li:not(.help):not(.calendar)', handleOver);
 			context.on('mouseout.suggestions', '.suggestions li:not(.help):not(.calendar)', handleOut);
 			context.on('mousedown.suggestions', '.suggestions li:not(.help):not(.calendar)', handleSelect);
