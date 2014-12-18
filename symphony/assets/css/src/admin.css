@@ -104,7 +104,7 @@
 	border-left: 0.1rem solid transparent;
 	text-shadow: 0 0.1rem 0 rgba(255, 255, 255, 0.3);
 	cursor: default;
-	z-index: 3;
+	z-index: 11000;
 }
 
 #nav > ul > li.active {
