@@ -3,7 +3,7 @@
 	Class migration_260 extends Migration {
 
 		static function getVersion(){
-			return '2.6.0-beta.1';
+			return '2.6.0-beta.2';
 		}
 
 		static function getReleaseNotes(){

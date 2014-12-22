@@ -2,8 +2,8 @@
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=integration)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=integration)
 
-- Version: 2.6.0-beta.1
-- Date: 30th November 2014
+- Version: 2.6.0-beta.2
+- Date: 22nd December 2014
 - [Release notes](http://getsymphony.com/download/releases/version/2.6.0/)
 - [Github repository](https://github.com/symphonycms/symphony-2/tree/integration)
 
@@ -23,7 +23,7 @@
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.6.0-beta.1` and is considered unstable. Do not use this in production.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.6.0-beta.2` and is considered unstable. Do not use this in production.
 
 Useful places:
 
