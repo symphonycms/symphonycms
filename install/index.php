@@ -10,8 +10,7 @@
 
 	// Show PHP Info
 	if(isset($_REQUEST['info'])){
-		phpinfo();
-		exit;
+		return phpinfo();
 	}
 
 	// Defines some constants
@@ -62,6 +61,4 @@
 		$script = Installer::instance();
 	}
 
-	$script->run();
-
-	exit;
+	return $script->run();
