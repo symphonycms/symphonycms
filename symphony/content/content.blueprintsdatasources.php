@@ -1401,7 +1401,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             }
 
             // Remove left over placeholders
-            $dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\r\n){2,}/', '/(\t+[\r\n]){2,}/'), '', $dsShell);
+            $dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\t+[\r\n]){2,}/', '/(\r\n){2,}/'), '', $dsShell);
 
             // Write the file
             if (!is_writable(dirname($file)) || !General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file'), 'w', true)) {
