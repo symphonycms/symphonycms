@@ -1409,13 +1409,12 @@ class contentPublish extends AdministrationPage
                      */
                     Symphony::ExtensionManager()->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 
-                    $prepopulate_querystring = $this->getPrepopulateString();
                     redirect(sprintf(
                         '%s/publish/%s/edit/%d/saved/%s',
                         SYMPHONY_URL,
                         $this->_context['section_handle'],
                         $entry->get('id'),
-                        (!empty($prepopulate_querystring) ? $prepopulate_querystring : null)
+                        $this->getPrepopulateString()
                     ));
                 }
             }
