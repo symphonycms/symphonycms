@@ -146,7 +146,10 @@ abstract class ResourcesPage extends AdministrationPage
                 $locked = null;
 
                 // Locked resources
-                if (isset($r['can_parse']) && $r['can_parse'] !== true) {
+                if (
+                    isset($r['can_parse']) && $r['can_parse'] !== true ||
+                    ($resource_type === ResourceManager::RESOURCE_TYPE_DS && $r['source']['name'] === 'Dynamic_xml')
+                ) {
                     $action = 'info';
                     $status = 'status-notice';
                     $locked = array(
