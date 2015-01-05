@@ -303,7 +303,11 @@ class Log
                 if ($this->_archive) {
                     $this->close();
                     $file = $this->_log_path . DateTimeObj::get('Ymdh').'.gz';
-                    $handle = gzopen($file, 'w9');
+                    if (function_exists('gzopen64')) {
+                        $handle = gzopen64($file, 'w9');
+                    } else {
+                        $handle = gzopen($file, 'w9');
+                    }
                     gzwrite($handle, file_get_contents($this->_log_path));
                     gzclose($handle);
                     chmod($file, intval($mode, 8));
