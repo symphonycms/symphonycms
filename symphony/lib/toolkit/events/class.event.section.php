@@ -199,6 +199,10 @@ abstract class SectionEvent extends Event
      */
     public function __reduceType($a, $b)
     {
+        if (is_array($b)) {
+            return array_reduce($b, array('SectionEvent', '__reduceType'));
+        }
+
         return (strlen(trim($b)) === 0) ? 'missing' : 'invalid';
     }
 
