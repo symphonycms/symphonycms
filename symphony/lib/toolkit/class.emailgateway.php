@@ -318,6 +318,7 @@ abstract Class EmailGateway
      *      'file' => 'http://example.com/foo.txt',
      *      'filename' => 'bar.txt',
      *      'charset' => 'UTF-8',
+     *      'mime-type' => 'text/csv',
      *   ));
      *   ````
      */
@@ -605,7 +606,7 @@ abstract Class EmailGateway
 
             if ($file_content !== false && !empty($file_content)) {
                 $output .= $this->boundaryDelimiterLine('multipart/mixed')
-                     . $this->contentInfoString(null, $file['file'], $file['filename'], $file['charset'])
+                     . $this->contentInfoString($file['mime-type'], $file['file'], $file['filename'], $file['charset'])
                      . EmailHelper::base64ContentTransferEncode($file_content);
             } else {
                 if (!$tmp_file === false) {
@@ -716,9 +717,14 @@ abstract Class EmailGateway
         } else {
             $charset = '';
         }
+        // if the mime type is not set, try to obtain using the getMimeType
+        if (empty($type)){
+            //assume that the attachment mimetime is appended
+            $type = General::getMimeType($file);
+        } 
         // Return binary description
         return array(
-            'Content-Type'              => General::getMimeType($file).';'.$charset.' name="'.$filename.'"',
+            'Content-Type'              => $type.';'.$charset.' name="'.$filename.'"',
             'Content-Transfer-Encoding' => 'base64',
             'Content-Disposition'       => 'attachment; filename="' .$filename .'"',
         );
