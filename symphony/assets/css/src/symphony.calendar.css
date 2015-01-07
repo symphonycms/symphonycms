@@ -8,6 +8,10 @@
 	box-shadow: 0 0.2rem 0.15rem rgba(0, 0, 0, 0.15);
 }
 
+.calendar.hidden {
+	display: none;
+}
+
 .suggestions .calendar {
 	margin-top: 0;
 	padding-bottom: 0;
@@ -273,8 +277,8 @@
 
 /* Storage */
 
-.calendar + input,
-.calendar + input:focus {
+.calendar:not(.hidden) + input,
+.calendar:not(.hidden) + input:focus {
 	height: 3.3rem;
 	margin-top: 0;
 	padding: 0.6rem 1rem;

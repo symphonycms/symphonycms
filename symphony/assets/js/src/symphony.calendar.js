@@ -17,6 +17,13 @@
 			calendar = context.find('.calendar');
 			storage = context.find('input');
 			format = calendar.attr('data-format');
+			
+			// Don't continue to build the calendar if we don't have a format
+			// to work with. RE: #2306
+			if (format === undefined) {
+				calendar.addClass('hidden');
+				return;
+			}
 
 			// Set locale
 			moment.locale(Symphony.Elements.html.attr('lang'));
@@ -123,6 +130,7 @@
 		 * Create CLNDR instance.
 		 */
 		var create = function() {
+			console.log(datetime, format);
 			clndr = calendar.clndr({
 				startWithMonth: datetime,
 				showAdjacentMonths: true,
