@@ -379,6 +379,7 @@ Class AdministrationPage extends HTMLPage
                 'type'     => Symphony::Author()->get('user_type'),
                 'id'       => Symphony::Author()->get('id')
             ),
+            'date-formats' => DateTimeObj::getDateFormatMappings(),
 
             'env' => array_merge(
 

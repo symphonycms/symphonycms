@@ -20,8 +20,8 @@
 			
 			// Don't continue to build the calendar if we don't have a format
 			// to work with. RE: #2306
-			if (format === undefined) {
-				calendar.addClass('hidden');
+			if(format === undefined) {
+				disable(calendar);
 				return;
 			}
 
@@ -271,6 +271,31 @@
 			
 			renderTitles();
 		};
+
+		/**
+		 * Disable calendar.
+		 */
+		var disable = function(calendar) {
+			var message = Symphony.Language.get('The Symphony calendar widget has been disabled because your system date format is currently not supported. Try one of the following instead or disable the calendar in the field settings:'),
+				formats = Symphony.Context.get('date-formats'),
+				suggestions = [];
+
+			// Hide calendar
+			calendar.addClass('hidden');
+
+			// Suggest supported date formats
+			$.each(formats, function(phpFormat, momentFormat) {
+				var zero = '';
+
+				if(phpFormat.indexOf('j') !== -1 && phpFormat.indexOf('n') !== -1) {
+					zero = ' – ' + Symphony.Language.get('no leading zero');
+				}
+
+				suggestions.push(' - ' + phpFormat + ' (' + moment().format(momentFormat) + zero + ')');
+			});
+
+			console.info(message + '\n\n' + suggestions.join('\n'));			
+		}; 
 
 		// API
 		return {
