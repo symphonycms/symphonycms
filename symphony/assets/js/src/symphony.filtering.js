@@ -197,7 +197,7 @@
 		 */
 		var createAddButton = function() {
 			actions.apply = $('<button/>', {
-				'text': 'Apply filters',
+				'text': Symphony.Language.get('Apply filters'),
 				'class': 'apply-filters',
 				'click': handleFiltering
 			}).insertBefore(apply);
@@ -208,7 +208,7 @@
 		 */
 		var createClearButton = function() {
 			actions.clear = $('<button/>', {
-				'text': 'Clear filters',
+				'text': Symphony.Language.get('Clear filters'),
 				'class': 'clear-filters delete',
 				'click': handleClearing
 			}).insertBefore(apply);
