@@ -487,7 +487,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
         if ($uploaded === false) {
             $message = __(
-                'There was an error while trying to upload the file %1$s to the target directory %2$s.',
+                __('There was an error while trying to upload the file %1$s to the target directory %2$s.'),
                 array(
                     '<code>' . $data['name'] . '</code>',
                     '<code>workspace/' . ltrim($rel_path, '/') . '</code>'

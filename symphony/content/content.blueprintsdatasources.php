@@ -312,17 +312,17 @@ class contentBlueprintsDatasources extends ResourcesPage
         $group = new XMLElement('div');
         $group->setAttribute('class', 'two columns ds-param');
 
-        $label = Widget::Checkbox('fields[redirect_on_required]', $fields['redirect_on_required'], 'Redirect to 404 page when the required parameter is not present');
+        $label = Widget::Checkbox('fields[redirect_on_required]', $fields['redirect_on_required'], __('Redirect to 404 page when the required parameter is not present'));
         $label->setAttribute('class', 'column');
         $group->appendChild($label);
 
-        $label = Widget::Checkbox('fields[redirect_on_forbidden]', $fields['redirect_on_forbidden'], 'Redirect to 404 page when the forbidden parameter is present');
+        $label = Widget::Checkbox('fields[redirect_on_forbidden]', $fields['redirect_on_forbidden'], __('Redirect to 404 page when the forbidden parameter is present'));
         $label->setAttribute('class', 'column');
         $group->appendChild($label);
 
         $fieldset->appendChild($group);
 
-        $label = Widget::Checkbox('fields[redirect_on_empty]', $fields['redirect_on_empty'], 'Redirect to 404 page when no results are found');
+        $label = Widget::Checkbox('fields[redirect_on_empty]', $fields['redirect_on_empty'], __('Redirect to 404 page when no results are found'));
         $label->setAttribute('class', 'column');
         $fieldset->appendChild($label);
 
@@ -748,7 +748,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $fieldset->appendChild($group);
 
-        $label = Widget::Checkbox('fields[paginate_results]', $fields['paginate_results'], 'Enable pagination');
+        $label = Widget::Checkbox('fields[paginate_results]', $fields['paginate_results'], __('Enable pagination'));
         $fieldset->appendChild($label);
         $this->Form->appendChild($fieldset);
 
@@ -897,12 +897,12 @@ class contentBlueprintsDatasources extends ResourcesPage
         $fieldset->appendChild($group);
 
         // Associations
-        $label = Widget::Checkbox('fields[associated_entry_counts]', $fields['associated_entry_counts'], 'Include a count of entries in associated sections');
+        $label = Widget::Checkbox('fields[associated_entry_counts]', $fields['associated_entry_counts'], __('Include a count of entries in associated sections'));
         $this->setContext($label, array('sections'));
         $fieldset->appendChild($label);
 
         // Encoding
-        $label = Widget::Checkbox('fields[html_encode]', $fields['html_encode'], 'HTML-encode text');
+        $label = Widget::Checkbox('fields[html_encode]', $fields['html_encode'], __('HTML-encode text'));
         $this->setContext($label, array('sections'));
         $fieldset->appendChild($label);
 

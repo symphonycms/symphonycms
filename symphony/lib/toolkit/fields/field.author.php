@@ -164,10 +164,10 @@ class FieldAuthor extends Field implements ExportableField
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
         // Allow multiple selection
-        $this->createCheckboxSetting($div, 'allow_multiple_selection', 'Allow selection of multiple authors');
+        $this->createCheckboxSetting($div, 'allow_multiple_selection', __('Allow selection of multiple authors'));
 
         // Default to current logged in user
-        $this->createCheckboxSetting($div, 'default_to_current_user', 'Select current user by default');
+        $this->createCheckboxSetting($div, 'default_to_current_user', __('Select current user by default'));
 
         // Requirements and table display
         $wrapper->appendChild($div);

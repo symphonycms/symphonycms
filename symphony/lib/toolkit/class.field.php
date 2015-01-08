@@ -782,7 +782,7 @@ class Field
             return;
         }
 
-        $this->createCheckboxSetting($wrapper, 'required', 'Make this a required field');
+        $this->createCheckboxSetting($wrapper, 'required', __('Make this a required field'));
     }
 
     /**
@@ -799,7 +799,7 @@ class Field
             return;
         }
 
-        $this->createCheckboxSetting($wrapper, 'show_column', 'Display in entries table');
+        $this->createCheckboxSetting($wrapper, 'show_column', __('Display in entries table'));
     }
 
     /**
@@ -820,7 +820,7 @@ class Field
             return;
         }
 
-        $label = $this->createCheckboxSetting($wrapper, 'show_association', 'Display associations in entries table', $help);
+        $label = $this->createCheckboxSetting($wrapper, 'show_association', __('Display associations in entries table'), $help);
         $label->setAttribute('data-condition', 'associative');
     }
 

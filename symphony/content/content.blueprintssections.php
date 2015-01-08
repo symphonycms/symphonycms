@@ -892,12 +892,12 @@ class contentBlueprintsSections extends AdministrationPage
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
         $hidediv = new XMLElement('div', null, array('class' => 'column'));
-        $label = Widget::Checkbox('meta[hidden]', $meta['hidden'], 'Hide this section from the back-end menu');
+        $label = Widget::Checkbox('meta[hidden]', $meta['hidden'], __('Hide this section from the back-end menu'));
         $hidediv->appendChild($label);
         $div->appendChild($hidediv);
 
         $filterdiv = new XMLElement('div', null, array('class' => 'column'));
-        $label = Widget::Checkbox('meta[filter]', $meta['filter'], 'Allow filtering of section entries');
+        $label = Widget::Checkbox('meta[filter]', $meta['filter'], __('Allow filtering of section entries'));
         $filterdiv->appendChild($label);
 
         $div->appendChild($filterdiv);

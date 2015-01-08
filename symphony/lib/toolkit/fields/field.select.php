@@ -239,10 +239,10 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
         // Allow selection of multiple items
-        $this->createCheckboxSetting($div, 'allow_multiple_selection', 'Allow selection of multiple options');
+        $this->createCheckboxSetting($div, 'allow_multiple_selection', __('Allow selection of multiple options'));
 
         // Sort options?
-        $this->createCheckboxSetting($div, 'sort_options', 'Sort all options alphabetically');
+        $this->createCheckboxSetting($div, 'sort_options', __('Sort all options alphabetically'));
 
         $wrapper->appendChild($div);
 

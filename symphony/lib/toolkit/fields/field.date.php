@@ -374,8 +374,8 @@ class FieldDate extends Field implements ExportableField, ImportableField
 
         // Display settings
         $div = new XMLElement('div', null, array('class' => 'two columns'));
-        $this->createCheckboxSetting($div, 'time', 'Display time');
-        $this->createCheckboxSetting($div, 'calendar', 'Show calendar');
+        $this->createCheckboxSetting($div, 'time', __('Display time'));
+        $this->createCheckboxSetting($div, 'calendar', __('Show calendar'));
         $wrapper->appendChild($div);
 
         // Requirements and table display

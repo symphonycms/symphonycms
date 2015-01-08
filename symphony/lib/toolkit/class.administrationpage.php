@@ -174,13 +174,13 @@ Class AdministrationPage extends HTMLPage
     public function pageAlert($message = null, $type = Alert::NOTICE)
     {
         if (is_null($message) && $type == Alert::ERROR) {
-            $message = 'There was a problem rendering this page. Please check the activity log for more details.';
+            $message = __('There was a problem rendering this page. Please check the activity log for more details.');
+        } else {
+            $message = __($message);
         }
 
-        $message = __($message);
-
         if (strlen(trim($message)) == 0) {
-            throw new Exception('A message must be supplied unless the alert is of type Alert::ERROR');
+            throw new Exception(__('A message must be supplied unless the alert is of type Alert::ERROR'));
         }
 
         $this->Alert[] = new Alert($message, $type);
