@@ -962,9 +962,9 @@ class ExtensionManager implements FileResource
                 $required_max_version = $xpath->evaluate('string(@max)', $release);
                 $current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
 
-                // Remove pre-release notes fro the current Symphony version so that
+                // Remove pre-release notes from the current Symphony version so that
                 // we don't get false erros in the backend
-                $current_symphony_version = preg_replace(array('/dev/i', '/beta\d/i', '/rc\d/i', '/.0/i'), '', $current_symphony_version);
+                $current_symphony_version = preg_replace(array('/dev/i', '/-?beta\.?\d/i', '/-?rc\.?\d/i', '/.0/i'), '', $current_symphony_version);
 
                 // Munge the version number so that it makes sense in the backend.
                 // Consider, 2.3.x. As the min version, this means 2.3 onwards,
@@ -982,7 +982,7 @@ class ExtensionManager implements FileResource
                     // Max version
                 } elseif (!empty($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
                     $about['status'][] = Extension::EXTENSION_NOT_COMPATIBLE;
-                    $about['required_version'] = $required_max_version;
+                    $about['required_version'] = str_replace('p', '.x', $required_max_version);
                 }
             }
 
