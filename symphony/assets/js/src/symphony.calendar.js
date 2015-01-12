@@ -169,7 +169,7 @@
 				var day = index + weekOffset;
 
 				if(day > 6) {
-					day = 0;
+					day = day - 7;
 				}
 
 				this.textContent = moment().day(day).format('dd').substr(0, 1);
