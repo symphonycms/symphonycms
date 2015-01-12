@@ -10,6 +10,7 @@
 	 */
 	Symphony.Interface.Calendar = function() {
 		var template = '<div class="calendar"><nav><a class="clndr-previous-button">previous</a><div class="switch"><ul class="months"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul><ul class="years"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul></div><a class="clndr-next-button">next</a></nav><table><thead><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr></thead><tbody><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr></tbody></table></div>',
+			weekOffset = Symphony.Context.get('weekoffset') || 0,
 			context, calendar, storage, format, datetime, clndr;
 
 		var init = function(element) {
@@ -130,9 +131,9 @@
 		 * Create CLNDR instance.
 		 */
 		var create = function() {
-			console.log(datetime, format);
 			clndr = calendar.clndr({
 				startWithMonth: datetime,
+				weekOffset: weekOffset,
 				showAdjacentMonths: true,
 				adjacentDaysChangeMonth: true,
 				forceSixRows: true,
@@ -165,7 +166,13 @@
 		 */
 		var renderTitles = function() {
 			template.find('thead td').each(function(index) {
-				this.textContent = moment().day(index).format('dd').substr(0, 1);
+				var day = index + weekOffset;
+
+				if(day > 6) {
+					day = 0;
+				}
+
+				this.textContent = moment().day(day).format('dd').substr(0, 1);
 			});
 		};
 
