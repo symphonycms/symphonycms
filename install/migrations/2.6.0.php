@@ -43,7 +43,7 @@
             catch (Exception $ex) {}
 
             if(version_compare(self::$existing_version, self::getVersion(), '<=')) {
-                // [#] Add weekoffset to configuration
+                // [#2312] Add weekoffset to configuration
                 Symphony::Configuration()->set('weekoffset', 0, 'region');
             }
 
