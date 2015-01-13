@@ -38,6 +38,11 @@
 			}
 			catch (Exception $ex) {}
 
+			if(version_compare(self::$existing_version, self::getVersion(), '<=')) {
+				// [#] Add weekoffset to configuration
+				Symphony::Configuration()->set('weekoffset', 0, 'region');
+			}
+
 			// Update the version information
 			return parent::upgrade();
 		}

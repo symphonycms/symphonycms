@@ -380,6 +380,7 @@ Class AdministrationPage extends HTMLPage
                 'id'       => Symphony::Author()->get('id')
             ),
             'date-formats' => DateTimeObj::getDateFormatMappings(),
+            'weekoffset' => Symphony::Configuration()->get('weekoffset', 'region'),
 
             'env' => array_merge(
 
