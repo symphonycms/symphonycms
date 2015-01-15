@@ -127,12 +127,12 @@
 
 			filtering.find('.instance:not(.template):visible').each(function() {
 				var item = $(this),
-					comparison = item.find('.comparison').val(),
+					comparison = $.trim(item.find('.comparison').val()),
 					query = item.find('.filter'),
 					value;
 
-				if(!$.trim(comparison)) {
-					comparison = '';
+				if (!!comparison) {
+					comparison = comparison + ' ';
 				}
 
 				value = 'filter[' + query.attr('name') + ']=' + comparison + $.trim(query.val());
