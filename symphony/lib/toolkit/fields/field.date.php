@@ -349,6 +349,24 @@ class FieldDate extends Field implements ExportableField, ImportableField
         }
     }
 
+    /**
+     * Format the $data parameter according to this field's settings.
+     *
+     * @since Symphony 2.6.0
+     * @param array $date
+     *  The date to format
+     * @return string
+     */
+    public function formatDate($date)
+    {
+        // Get format
+        $format = 'date_format';
+        if ($this->get('time') === 'yes') {
+            $format = 'datetime_format';
+        }
+        return DateTimeObj::format($date, DateTimeObj::getSetting($format));
+    }
+
     /*-------------------------------------------------------------------------
         Settings:
     -------------------------------------------------------------------------*/
@@ -412,19 +430,13 @@ class FieldDate extends Field implements ExportableField, ImportableField
         $name = $this->get('element_name');
         $value = null;
 
-        // Get format
-        $format = 'date_format';
-        if ($this->get('time') === 'yes') {
-            $format = 'datetime_format';
-        }
-
         // New entry
         if ((is_null($data) || empty($data)) && is_null($flagWithError) && !is_null($this->get('pre_populate')) && $this->get('pre_populate') !== 'no') {
             $prepopulate = ($this->get('pre_populate') === 'yes') ? 'now' : $this->get('pre_populate');
 
             $date = self::parseDate($prepopulate);
             $date = $date['start'];
-            $value = DateTimeObj::format($date, DateTimeObj::getSetting($format));
+            $value = $this->formatDate($date);
 
             // Error entry, display original data
         } elseif (!is_null($flagWithError)) {
@@ -432,7 +444,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
 
             // Empty entry
         } elseif (isset($data['value'])) {
-            $value = DateTimeObj::format($data['value'], DateTimeObj::getSetting($format));
+            $value = $this->formatDate($data['value']);
         }
 
         $label = Widget::Label($this->get('label'));
@@ -489,7 +501,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
             if ($this->get('pre_populate') !='') {
                 $date = self::parseDate($this->get('pre_populate'));
                 $date = $date['start'];
-                $timestamp = DateTimeObj::format($date, DateTimeObj::getSetting('datetime_format'));
+                $timestamp = $this->formatDate($date);
             }
 
             // Convert given date to timestamp
@@ -537,12 +549,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
         $value = '';
 
         if (isset($data['value'])) {
-            // Get format
-            $format = 'date_format';
-            if ($this->get('time') === 'yes') {
-                $format = 'datetime_format';
-            }
-            $value = DateTimeObj::format($data['value'], DateTimeObj::getSetting($format), true);
+            $value = $this->formatDate($data['value']);
         }
 
         return $value;
