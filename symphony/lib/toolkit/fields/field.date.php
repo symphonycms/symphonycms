@@ -537,7 +537,12 @@ class FieldDate extends Field implements ExportableField, ImportableField
         $value = '';
 
         if (isset($data['value'])) {
-            $value = DateTimeObj::format($data['value'], DateTimeObj::getSetting('datetime_format'), true);
+            // Get format
+            $format = 'date_format';
+            if ($this->get('time') === 'yes') {
+                $format = 'datetime_format';
+            }
+            $value = DateTimeObj::format($data['value'], DateTimeObj::getSetting($format), true);
         }
 
         return $value;
