@@ -341,5 +341,16 @@ define_safe('PROFILE_RUNNING_TOTAL', 0);
  */
 define_safe('PROFILE_LAP', 1);
 
+/**
+ * Defines a constant for the opening tag of a CDATA section in xml
+ * @since Symphony 2.3.4
+ * @var string
+ */
 define_safe('CDATA_BEGIN', '<![CDATA[');
+
+/**
+ * Defines a constant for the closing tag of a CDATA section in xml
+ * @since Symphony 2.3.4
+ * @var string
+ */
 define_safe('CDATA_END', ']]>');
