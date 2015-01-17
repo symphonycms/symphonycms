@@ -13,7 +13,7 @@
     // Redirect to installer if it exists
     if (!file_exists(CONFIG))
     {
-        $bInsideInstaller = (bool)preg_match('%(/|\\\\)install(/|\\\\)index.php$%', $_SERVER['SCRIPT_FILENAME']);
+        $bInsideInstaller = (bool)preg_match('/(\/|\\\\)install\1index\.php$/', $_SERVER['SCRIPT_FILENAME']);
 
         if (!$bInsideInstaller && Symphony::isInstallerAvailable()) {
             header(sprintf('Location: %s/install/', URL));
