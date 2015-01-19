@@ -283,16 +283,25 @@ class HTMLPage extends Page
 
     /**
      * This function builds a HTTP query string from `$_GET` parameters with
-     * the option to remove parameters with an `$exclude` array
+     * the option to remove parameters with an `$exclude` array. Since Symphony 2.6.0
+     * it is also possible to override the default filters on the resulting string.
      *
+     * @link http://php.net/manual/en/filter.filters.php
      * @param array $exclude
      *  A simple array with the keys that should be omitted in the resulting
      *  query string.
+     * @param integer $filters
+     *  The resulting query string is parsed through `filter_var`. By default
+     *  the options are FILTER_FLAG_STRIP_LOW, FILTER_FLAG_STRIP_HIGH and
+     *  FILTER_SANITIZE_STRING, but these can be overridden as desired.
      * @return string
      */
-    public function __buildQueryString(array $exclude = array())
+    public function __buildQueryString(array $exclude = array(), $filters = null)
     {
         $exclude[] = 'page';
+        if (is_null($filters)) {
+            $filters = FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH | FILTER_SANITIZE_STRING;
+        }
 
         // Generate the full query string and then parse it back to an array
         $pre_exclusion = http_build_query($_GET, null, '&');
@@ -304,6 +313,6 @@ class HTMLPage extends Page
 
         $query = http_build_query($post_exclusion, null, '&');
 
-        return filter_var(urldecode($query), FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH | FILTER_SANITIZE_STRING);
+        return filter_var(urldecode($query), $filters);
     }
 }

@@ -190,6 +190,11 @@ class Administration extends Symphony
             } else {
                 include_once(CONTENT . '/content.login.php');
                 $this->Page = new contentLogin;
+
+                // Include the query string for the login, RE: #2324
+                if ($queryString = $this->Page->__buildQueryString(['symphony-page', 'mode'], FILTER_SANITIZE_STRING)) {
+                    $page .= '?' . $queryString;
+                }
                 $this->Page->build(array('redirect' => $page));
             }
         } else {
