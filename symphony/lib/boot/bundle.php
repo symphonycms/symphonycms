@@ -28,6 +28,7 @@
         // Load configuration file:
         include CONFIG;
         Symphony::initialiseConfiguration($settings);
+        Symphony::initialiseErrorHandler();
         Symphony::initialiseDatabase();
         Symphony::initialiseExtensionManager();
 

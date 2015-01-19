@@ -99,10 +99,7 @@ abstract class Symphony implements Singleton
         define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
         DateTimeObj::setSettings(self::Configuration()->get('region'));
 
-        // Initialise logging
-        self::initialiseLog();
-        GenericExceptionHandler::initialise(self::Log());
-        GenericErrorHandler::initialise(self::Log());
+        self::initialiseErrorHandler();
 
         // Initialize language management
         Lang::initialize();
@@ -117,6 +114,19 @@ abstract class Symphony implements Singleton
 
         // Engine is ready.
         self::$Profiler->sample('Engine Initialisation');
+    }
+
+    /**
+     * Setter for the Symphony Log and Error Handling system
+     *
+     * @since Symphony 2.6.0
+     */
+    public static function initialiseErrorHandler()
+    {
+        // Initialise logging
+        self::initialiseLog();
+        GenericExceptionHandler::initialise(self::Log());
+        GenericErrorHandler::initialise(self::Log());
     }
 
     /**
