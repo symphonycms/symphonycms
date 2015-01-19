@@ -2,41 +2,6 @@
 /**
 * @package toolkit
 */
-/**
-* The translation function accepts an English string and returns its translation
-* to the active system language. If the given string is not available in the
-* current dictionary the original English string will be returned. Given an optional
-* `$inserts` array, the function will replace translation placeholders using `vsprintf()`.
-* Since Symphony 2.3, it is also possible to have multiple translation of the same string
-* according to the page namespace (i.e. the value returned by Symphony's `getPageNamespace()`
-* method). In your lang file, use the `$dictionary` key as namespace and its value as an array
-* of context-aware translations, as shown below:
-*
-* $dictionary = array(
-*        [...]
-*
-*        'Create new' => 'Translation for Create New',
-*
-*        '/blueprints/datasources' => array(
-*            'Create new' =>
-*            'If we are inside a /blueprints/datasources/* page, this translation will be returned for the string'
-*        ),
-*
-*        [...]
-*  );
-*
-* @see core.Symphony#getPageNamespace()
-* @param string $string
-*  The string that should be translated
-* @param array $inserts (optional)
-*  Optional array used to replace translation placeholders, defaults to NULL
-* @return string
-*  Returns the translated string
-*/
-function __($string, $inserts=NULL)
-{
-    return Lang::translate($string, $inserts);
-}
 
 /**
  * The Lang class loads and manages languages
