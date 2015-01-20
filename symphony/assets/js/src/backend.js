@@ -36,7 +36,9 @@
 		'filtered': false,
 		'None': false,
 		'Clear filters': false,
-		'Apply filters': false
+		'Apply filters': false,
+		'The Symphony calendar widget has been disabled because your system date format is currently not supported. Try one of the following instead or disable the calendar in the field settings:': false,
+		'no leading zero': false
 	});
 
 	// Initialise backend

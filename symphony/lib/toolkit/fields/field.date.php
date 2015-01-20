@@ -391,8 +391,9 @@ class FieldDate extends Field implements ExportableField, ImportableField
         $wrapper->appendChild($label);
 
         // Display settings
-        $div = new XMLElement('div', null, array('class' => 'columns'));
+        $div = new XMLElement('div', null, array('class' => 'two columns'));
         $this->createCheckboxSetting($div, 'time', __('Display time'));
+        $this->createCheckboxSetting($div, 'calendar', __('Show calendar'));
         $wrapper->appendChild($div);
 
         // Requirements and table display
@@ -415,6 +416,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
 
         $fields['pre_populate'] = ($this->get('pre_populate') ? $this->get('pre_populate') : '');
         $fields['time'] = ($this->get('time') ? $this->get('time') : 'no');
+        $fields['calendar'] = ($this->get('calendar') ? $this->get('calendar') : 'no');
 
         return FieldManager::saveSettings($id, $fields);
     }
@@ -449,6 +451,12 @@ class FieldDate extends Field implements ExportableField, ImportableField
 
         if ($this->get('required') !== 'yes') {
             $label->appendChild(new XMLElement('i', __('Optional')));
+        }
+
+        // Calendar
+        if ($this->get('calendar') === 'yes') {
+            $wrapper->setAttribute('data-interactive', 'data-interactive');
+            $label->appendChild(Widget::Calendar(($this->get('time') === 'yes')));
         }
 
         // Input

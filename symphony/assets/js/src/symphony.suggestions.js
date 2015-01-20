@@ -28,9 +28,9 @@
 			context.on('click.suggestions', selector, handleChange);
 			context.on('focus.suggestions', selector, handleChange);
 			context.on('keyup.suggestions', selector, handleChange);
-			context.on('mouseover.suggestions', '.suggestions li:not(.help)', handleOver);
-			context.on('mouseout.suggestions', '.suggestions li:not(.help)', handleOut);
-			context.on('mousedown.suggestions', '.suggestions li:not(.help)', handleSelect);
+			context.on('mouseover.suggestions', '.suggestions li:not(.help):not(.calendar)', handleOver);
+			context.on('mouseout.suggestions', '.suggestions li:not(.help):not(.calendar)', handleOut);
+			context.on('mousedown.suggestions', '.suggestions li:not(.help):not(.calendar)', handleSelect);
 			context.on('keydown.suggestions', selector, handleNavigation);
 		};
 
@@ -53,7 +53,13 @@
 				return;
 			}
 
-			if(value && trigger) {
+			// Dates
+			if(types && types.indexOf('date') !== -1) {
+				schedule(input);
+			}
+
+			// Tokens
+			else if(value && trigger) {
 				tokenize(input, suggestions, value, trigger);
 			}
 
@@ -303,6 +309,15 @@
 			}
 		};
 
+		var schedule = function(input) {
+			var suggestions = input.next('.suggestions'),
+				calendar = suggestions.find('.calendar');
+
+			if(!calendar.length) {
+				createCalendar(suggestions);
+			}
+		};
+
 		var select = function(value, input) {
 			var types = input.attr('data-search-types');
 
@@ -412,6 +427,13 @@
 					list.insertAfter(input);
 				}
 			});
+		};
+
+		var createCalendar = function(suggestions) {
+			var calendar = new Symphony.Interface.Calendar();
+
+			suggestions.prepend('<li class="calendar" data-format="YYYY-MM-DD" />');
+			calendar.init(suggestions.parents('label'));
 		};
 
 		var stayInFocus = function(suggestions) {
