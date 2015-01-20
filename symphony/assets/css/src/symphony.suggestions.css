@@ -42,19 +42,10 @@ textarea:focus ~ .suggestions:not(:empty) {
 	z-index: 10000;
 }
 
-input:focus ~ .suggestions[data-search-types='date'] {
-	overflow: visible;
-	z-index: 10000;
-}
-
-.suggestions li:not(.calendar) {
+.suggestions li {
 	box-sizing: border-box;
 	padding: 0.5rem 0.8rem;
 	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.1);
-}
-
-.suggestions .calendar + li {
-	border-top: 0.1rem solid rgba(0, 0, 0, 0.1);
 }
 
 .suggestions li:last-of-type {

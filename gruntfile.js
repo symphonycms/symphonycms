@@ -19,7 +19,6 @@ module.exports = function (grunt) {
                         'symphony/assets/css/src/symphony.associations.css',
                         'symphony/assets/css/src/symphony.notices.css',
                         'symphony/assets/css/src/symphony.suggestions.css',
-                        'symphony/assets/css/src/symphony.calendar.css',
                         'symphony/assets/css/src/symphony.filtering.css',
                         'symphony/assets/css/src/admin.css'
                     ],
@@ -109,7 +108,6 @@ module.exports = function (grunt) {
                         'symphony/assets/js/src/symphony.timeago.js',
                         'symphony/assets/js/src/symphony.notify.js',
                         'symphony/assets/js/src/symphony.drawer.js',
-                        'symphony/assets/js/src/symphony.calendar.js',
                         'symphony/assets/js/src/symphony.filtering.js',
                         'symphony/assets/js/src/symphony.suggestions.js',
                         'symphony/assets/js/src/backend.js',
