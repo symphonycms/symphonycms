@@ -307,8 +307,8 @@ class Datasource
                 $new_value = $this->__processParametersInString($value, $this->_env);
 
                 // If a filter gets evaluated to nothing, eg. ` + ` or ``, then remove
-                // the filter. RE: #1759
-                if (strlen(trim($new_value)) === 0 || !preg_match('/\w+/u', $new_value)) {
+                // the filter. Respects / as this may be real from current-path. RE: #1759
+                if (strlen(trim($new_value)) === 0 || !preg_match('/[\w|\/]+/u', $new_value)) {
                     unset($this->dsParamFILTERS[$key]);
                 } else {
                     $this->dsParamFILTERS[$key] = $new_value;
