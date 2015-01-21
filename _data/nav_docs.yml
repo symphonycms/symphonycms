@@ -1,0 +1,9 @@
+- title: Articles
+  id: articles
+  items:
+  - id: field-extension
+    title: Field Extension
+  - id: getting-git-for-symphony-development
+    title: Getting Git for Symphony Development
+  - id: combining-symphony-with-nginx
+    title: Combining Symphony with Nginx
