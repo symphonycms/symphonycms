@@ -1,6 +1,7 @@
 name: Symphony CMS
 description: An open source CMS.
 url: http://getsymphony.com/
+baseurl: "/symphony-2"
 markdown: redcarpet
 highlighter: pygments
 exclude:
