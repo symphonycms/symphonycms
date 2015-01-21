@@ -1,3 +1,9 @@
+---
+id: chapter-01
+title: Why You Need Symphony
+layout: docs
+---
+
 # Chapter 1: Why You Need Symphony
 
 ## What’s in this Chapter

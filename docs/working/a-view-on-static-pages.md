@@ -1,3 +1,9 @@
+---
+id: a-view-on-static-pages
+title: A view on static pages
+layout: docs
+---
+
 ##META
 * Doc Version: 1
 * Author: Giel Berkers

@@ -1,3 +1,9 @@
+---
+id: chapter-03
+title: Getting Started
+layout: docs
+---
+
 # Chapter 3: Getting Started
 
 It doesn’t take very much to get Symphony up and running. In fact, if you’re already comfortable with basic server-related tasks, five minutes should be about all you need (not including time spent reading this chapter, of course). All you have to do is prepare the server (by uploading Symphony and creating a database) and then run the installer. That's it.

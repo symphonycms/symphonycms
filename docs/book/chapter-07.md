@@ -1,3 +1,9 @@
+---
+id: chapter-07
+title: Data Flow
+layout: docs
+---
+
 # Chapter 7: Data Flow
 
 ## What’s in This Chapter

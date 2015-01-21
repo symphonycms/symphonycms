@@ -1,6 +1,9 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>JavaScript Style Guide</title>
+---
+id: javascript-styleguide
+title: JavaScript Style Guide
+layout: docs
+---
+
 <h1>JavaScript Style Guide</h1>
 <p>This will have, may be, has been the official JavaScript style guide for developers of Symphony CMS.</p>
 

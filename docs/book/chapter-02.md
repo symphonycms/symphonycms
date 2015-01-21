@@ -1,3 +1,9 @@
+---
+id: chapter-02
+title: Symphony in Action
+layout: docs
+---
+
 # Chapter 2: Symphony in Action
 
 ## What’s in this Chapter

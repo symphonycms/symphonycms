@@ -1,3 +1,9 @@
+---
+id: a-symphony-workflow-command-list
+title: A Symphony Workflow - Terminal Command List
+layout: docs
+---
+
 ##META
 * Doc Version: 1
 * Author: John Porter

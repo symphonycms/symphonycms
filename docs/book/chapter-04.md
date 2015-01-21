@@ -1,3 +1,9 @@
+---
+id: chapter-04
+title: Symphony Anatomy
+layout: docs
+---
+
 # Chapter 4: Symphony Anatomy
 
 ## What’s in This Chapter

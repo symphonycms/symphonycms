@@ -1,3 +1,10 @@
+---
+id: symphony-book
+title: Symphony Start to Finish
+layout: docs
+redirect_from: "docs/book/index.html"
+---
+
 # Symphony Start to Finish
 
 Craig Zheng's [Symphony book project was cancelled](http://book.symphony-cms.com/).

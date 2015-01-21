@@ -1,7 +1,9 @@
 name: Symphony CMS
 description: An open source CMS.
-url: http://getsymphony.com/ 
+url: http://getsymphony.com/
 markdown: redcarpet
 highlighter: pygments
 exclude:
 - README.md
+gems:
+- jekyll-redirect-from

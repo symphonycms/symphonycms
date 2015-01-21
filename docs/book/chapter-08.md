@@ -1,3 +1,9 @@
+---
+id: chapter-08
+title: Templating
+layout: docs
+---
+
 # Chapter 8: Templating
 
 ## What’s in This Chapter

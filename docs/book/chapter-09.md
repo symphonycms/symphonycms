@@ -1,3 +1,9 @@
+---
+id: chapter-09
+title: System Management
+layout: docs
+---
+
 # Chapter 9: System Management
 
 ## What’s in This Chapter

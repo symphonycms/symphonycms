@@ -1,3 +1,9 @@
+---
+id: a-symphony-workflow
+title: A Symphony Workflow
+layout: docs
+---
+
 ##META
 * Doc Version: 1
 * Author: John Porter

@@ -1,3 +1,9 @@
+---
+id: chapter-05
+title: Content
+layout: docs
+---
+
 # Chapter 5: Content
 
 #### What's In This Chapter

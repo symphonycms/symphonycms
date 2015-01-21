@@ -1,3 +1,9 @@
+---
+id: chapter-11
+title: Adaptive Techniques
+layout: docs
+---
+
 # Chapter 11: Adaptive Techniques
 
 After that entire chapter on planning, let’s pause for a moment to face the facts. Sometimes requirements change. Sometimes plans blow up in your face.

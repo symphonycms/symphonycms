@@ -1,3 +1,9 @@
+---
+id: chapter-10
+title: Planning Symphony Projects
+layout: docs
+---
+
 # Chapter 10: Planning Symphony Projects
 
 ## What’s in This Chapter

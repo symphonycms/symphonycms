@@ -1,3 +1,9 @@
+---
+id: chapter-06
+title: Front-end
+layout: docs
+---
+
 # Chapter 6: Front-end
 
 ## What’s in This Chapter

@@ -1,3 +1,9 @@
+---
+id: understanding-xslt
+title: Understanding XSLT
+layout: docs
+---
+
 # XSLT Chapter
 
 ...

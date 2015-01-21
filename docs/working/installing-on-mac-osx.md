@@ -1,3 +1,9 @@
+---
+id: installing-on-mac-osx
+title: Installing Symphony on your Mac (OS X >= 10.5)
+layout: docs
+---
+
 ##META
 * Doc Version: 1
 * Author: John Porter
