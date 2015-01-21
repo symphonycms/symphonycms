@@ -68,6 +68,25 @@ class FieldDate extends Field implements ExportableField, ImportableField
     {
         return array(
             array(
+                'title' => 'is',
+                'filter' => ' ',
+                'help' => __('Find values that are an exact match for the given string.')
+            ),
+            array(
+                'title' => 'contains',
+                'filter' => 'regexp: ',
+                'help' => __('Find values that match the given <a href="%s">MySQL regular expressions</a>.', array(
+                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+                ))
+            ),
+            array(
+                'title' => 'does not contain',
+                'filter' => 'not-regexp: ',
+                'help' => __('Find values that do not match the given <a href="%s">MySQL regular expressions</a>.', array(
+                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+                ))
+            ),
+            array(
                 'title' => 'later than',
                 'filter' => 'later than '
             ),

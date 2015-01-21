@@ -48,6 +48,41 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         return true;
     }
 
+    public function fetchFilterableOperators()
+    {
+        return array(
+            array(
+                'title' => 'is',
+                'filter' => ' ',
+                'help' => __('Find files that are an exact match for the given string.')
+            ),
+            array(
+                'title' => 'contains',
+                'filter' => 'regexp: ',
+                'help' => __('Find files that match the given <a href="%s">MySQL regular expressions</a>.', array(
+                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+                ))
+            ),
+            array(
+                'title' => 'does not contain',
+                'filter' => 'not-regexp: ',
+                'help' => __('Find files that do not match the given <a href="%s">MySQL regular expressions</a>.', array(
+                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+                ))
+            ),
+            array(
+                'title' => 'file type is',
+                'filter' => 'mimetype: ',
+                'help' => __('Find files that match the given mimetype.')
+            ),
+            array(
+                'title' => 'size is',
+                'filter' => 'size: ',
+                'help' => __('Find files that match the given size.')
+            )
+        );
+    }
+
     /*-------------------------------------------------------------------------
         Setup:
     -------------------------------------------------------------------------*/
