@@ -260,6 +260,13 @@ define_safe('URL', 'http' . (defined('__SECURE__') && __SECURE__ ? 's' : '') . '
 define_safe('APPLICATION_URL', URL . '/symphony');
 
 /**
+ * Returns the folder name for Symphony as an application
+ * @since Symphony 2.3.2
+ * @var string
+ */
+define_safe('ASSETS_URL', APPLICATION_URL . '/assets');
+
+/**
  * The integer value for event-type resources.
   * @deprecated Use ResourceManager::RESOURCE_TYPE_EVENT, this will be removed in Symphony 3.0.
  * @var integer
