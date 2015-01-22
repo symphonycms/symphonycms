@@ -1,0 +1,177 @@
+/**
+ * SYMPHONY FACTORY
+ * A design framework for the Symphony Network
+ *
+ * @link http://symphonycms.github.com/factory/
+ *
+ * Please add your custom site styling in a separate file.
+ */
+ 
+/*-----------------------------------------------------------------------------
+	Baselines
+-----------------------------------------------------------------------------*/
+
+.show-baselines {
+	background-image: -webkit-linear-gradient(#eee 1px, transparent 1px), -webkit-linear-gradient(#faf5dc 1px, transparent 1px);
+	background-image: -moz-linear-gradient(#eee 1px, transparent 1px), -moz-linear-gradient(#faf5dc 1px, transparent 1px);
+	background-image: -ms-linear-gradient(#eee 1px, transparent 1px), -ms-linear-gradient(#faf5dc 1px, transparent 1px);
+	background-image: -o-linear-gradient(#eee 1px, transparent 1px), -o-linear-gradient(#faf5dc 1px, transparent 1px);
+	background-image: linear-gradient(#eee 1px, transparent 1px), linear-gradient(#faf5dc 1px, transparent 1px);
+	overflow-x: hidden;
+}
+
+.show-baselines.full-width {
+	position: relative;
+}
+
+.show-baselines.full-width:before,
+.show-baselines.full-width:after {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -50px;
+	width: 50px;
+	height: 100%;
+	background: inherit;
+}
+
+.show-baselines.full-width:after {
+	left: auto;
+	right: -50px;
+}
+
+/*-----------------------------------------------------------------------------
+	Grid
+-----------------------------------------------------------------------------*/
+
+/* Inactive grid */
+
+#grid {
+	display: none;
+}
+
+/* Active grid */
+
+.show-grid #grid {
+	display: block;
+	position: fixed;
+	top: 0;
+	left: 50%;
+	height: 100%;
+	pointer-events: none;
+}
+
+.show-grid #grid.fluid {
+	left: auto;
+	width: 100%;
+	padding: 0;
+}
+
+/* Modules and gutter */
+
+.show-grid #grid .module,
+.show-grid #grid .gutter {
+	background: rgba(196, 226, 205, 0.3);
+	height: 100%;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	border-left: 1px solid rgba(196, 226, 205, 0.8);
+	border-right: 1px solid rgba(196, 226, 205, 0.8);
+	position: relative;
+	float: left;
+}
+
+.show-grid #grid .gutter {
+	background: rgba(250, 231, 159, 0.1);
+	border: none;
+}
+
+/* Optical margin alignment */
+
+.show-grid #grid .module .alignment {
+	height: 100%;
+	background: rgba(250, 231, 159, 0.5);
+	display: block;
+	position: absolute;
+	top: 0;
+}
+
+/* Measurements */
+
+.show-grid #grid .module:after,
+.show-grid #grid .gutter:after {
+	content: attr(data-width);
+	position: absolute;
+	bottom: 1em;
+	font-size: 10px;
+	width: 100%;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	z-index: 2000;
+	text-align: center;
+	padding: 0.1em;
+	color: #757A77;
+	background: #fff;
+}
+
+.show-grid #grid .gutter:after {
+	border: none;
+	background: #B20B4F;
+	color: #fff;
+}
+
+/* Fields */
+
+.show-grid .field {
+	background-image: -webkit-linear-gradient(top, #CBE5D3 1px, rgba(255, 255, 255, 0) 1px, rgba(255, 255, 255, 0) 100%);
+	background-image: -moz-linear-gradient(top, #CBE5D3 1px, rgba(255, 255, 255, 0) 1px, rgba(255, 255, 255, 0) 100%);
+	background-image: -ms-linear-gradient(top, #CBE5D3 1px, rgba(255, 255, 255, 0) 1px, rgba(255, 255, 255, 0) 100%);
+	background-image: -o-linear-gradient(top, #CBE5D3 1px, rgba(255, 255, 255, 0) 1px, rgba(255, 255, 255, 0) 100%);
+	background-image: linear-gradient(to bottom, #CBE5D3 1px, rgba(255, 255, 255, 0) 1px, rgba(255, 255, 255, 0) 100%);
+}
+
+.show-labels .field:before {
+	content: attr(class);
+	position: absolute;
+	top: 10px;
+	right: 30px;
+	width: 20px;
+	font-size: 10px;
+	font-weight: normal;
+	text-transform: none;
+	color: #fff;
+	background: #B20B4F;
+	padding: 0.1em 0.4em;
+	border-radius: 2px;
+	z-index: 1000;
+	letter-spacing: 0;
+}
+
+/* Columns */
+
+.show-columns .column {
+	background: rgba(194, 234, 247, 0.5);
+}
+
+.show-labels .column:after {
+	content: attr(class);
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	font-size: 10px;
+	font-weight: normal;
+	text-transform: none;
+	color: #fff;
+	background: #0fbff7;
+	padding: 0.1em 0.4em;
+	border-radius: 2px;
+	z-index: 1000;
+	letter-spacing: 0;
+}
+
+/* Disable grid details for the network toolbar */
+
+.show-grid #network .field:not(header) {
+	background-image: none;
+}

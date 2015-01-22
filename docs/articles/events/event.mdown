@@ -1,0 +1,192 @@
+Forms have been an integral part of any interactive site since the dawn of time, they promote interactivity and are usually the most common way users interact with a site. It's commonplace that when a form is submitted, the website will take 'action' and do something with the data and then provide a user with the result. Symphony provides this logic layer via Events. 
+
+This tutorial assumes you have a basic understanding of how Events work in Symphony (if not, [this may be a good introduction](http://symphony-cms.com/learn/concepts/view/events/)) and are semi comfortable writing some PHP code. I'll be showing you some of the lesser known features of Symphony Events, including event priority, event chaining and a brief demonstration of how to write a custom Event. The difficulty level progresses as we go through, but with any luck you'll be able to learn a thing or two :)
+
+### Getting Started
+
+## The Scenario
+
+Our client requires a form that allows a user to submit some details about their new car purchase. The information is particular to the car, but there's a couple of questions about where they purchased it from, so the data needs to post to two sections in Symphony, Car and Dealers.
+
+## Setup
+
+I've created the following test sections, kept really simple for the purposes of this tutorial.
+
+Cars
+<pre>
+Make : Text Input
+Year Model : Select Box [2008-2011]
+Manufacturer : Text Input
+</pre>
+
+Dealers
+<pre>
+Name | Text Input
+Suburb | Text Input
+</pre>
+
+Now let's create two events, one for each section. I've called mine `Create Car` and `Create Dealer`. We'll next create a page (I've called mine 'New Car') and attach our two events to this page. To get us up and running quickly, lets copy the example form markup from the `Create Car` event into our page XSL. This example form markup now allows us to create a new Car in the Cars section when a user submits the form, but we also want to be able to create a new Dealer entry from the same form so the experience is seamless. To do this, lets copy the field markup from the 'Create Dealer' event and paste it just above the current submit button. Instead of having two 'submit' buttons, lets change the `Create Dealer` submit to be a hidden input field instead. This will just leave one Submit button, but to our Events, there is actually two triggers on this page.
+
+## A detour, a short note on `load` and `__trigger`
+
+Let's open up our Events in a text editor and take a look at something. There's two functions are important here, `load` and `__trigger`. The `load` function acts as a condition, it runs on every page load that the event is attached to and checks to see if it should call the `__trigger` function, which is where the actual event logic takes place. For all Symphony's default events, this `load` checks that the action exists (eg. `isset($_POST['action']['create-car'])`), and if it does, it proceeds to call the `__trigger` function. This opens up a number of possibilities for a developer as your events don't necessarily have to be triggered by a form submit. For instance you could check if a particular value was in the `$_SESSION` array and then do `x`, or if the user came from a specific IP address range redirect them to a particular domain, perhaps for localisation.
+
+## Back on the road
+
+Just before I made a right turn, we had created and attached two events and attached them to our page. We finished setting up our page XSL with one form containing all our fields with two actions. You'll pleasantly surprised that if you submit this form, a new entry will be created in the Cars and Dealers section. Victory!
+
+Or not quite... there is a couple of caveats here that I haven't mentioned. This worked well in this case because our field names were unique to each section, so there was no confusion as to what data should go where. In fact, if we had two name fields, the same input field would of populated both fields in either section. Depending on how you set up your section, you may have found that `Create Dealer` executed, even though there was an error with the other event, or vice versa, `Create Car` worked fine, `Create Dealer` did not.
+
+Let's tackle these one at a time.
+
+### Unique field names
+
+Unique field names are never going to be a realistic situation for every project, so to prevent this from happening, lets prefix our fields by the event handle's `create-car` and `create-dealer`. So `<select name="fields[year]">` becomes `<select name="create-car[fields][year]">` or `<input name="fields[name]" type="text" />` becomes `<input name="create-dealer[fields][name]" type="text" />`.
+
+There's another change we need to make now to our Event classes. Open these up in your text editor again (hey I did say we'd be getting dirty with some PHP ;) and find the `load` function and add `$this->post = $_POST;`:
+
+	public function load(){
+		$this->post = $_POST;
+		if(isset($_POST['action'][self::ROOTELEMENT])) return $this->__trigger();
+	}
+
+Now make your `__trigger()` function look like this:
+
+	protected function __trigger(){
+		unset($_POST['fields']);
+		$_POST['fields'] = $this->post[self::ROOTELEMENT]['fields'];
+
+		include(TOOLKIT . '/events/event.section.php');
+		return $result;
+	}
+
+What have we done? In the `load` function, we've saved a copy of the `$_POST` array to use later, remembering that `load` gets called for each event first, before execution, so every event will have a full copy of the `$_POST` array if it should be executed. If the `__trigger()` is called, we override the `$_POST['fields']` array with the fields that are specific to our current event. What is `self::ROOTELEMENT`? When your events are saved, a `ROOTELEMENT` constant is created as a handle of the event name. This is used by Symphony as the root node name when returning XML for your event. The benefit of using this constant is that if you change the name of your event, you only have to change it in one location. 
+
+While we're at it, change the return value of each event's `allowEditorToParse` function to be `false`, instead of `true`, this will prevent you (or another developer) from overriding your changes should they try to resave the Event from the Symphony backend.
+
+First limit solved, you can now have the same field names across multiple sections and they will be added to their relevant section.
+
+### I only want 'y' to execute if 'x' was successful!
+
+The other, while not important at the moment, is the order that the events are executed. All events have `priority`, which is a crude system of low, normal and high which determines what order events should be triggered. By default, all events are given the normal priority, and then are executed in alphabetical order. For the next part of this tutorial, let's add a Select Box Link field to our Dealers section called Related Cars and link it to the Cars: Make field. 
+
+What we now want to happen is that when a user creates a Car and Dealer entry, that the Car entry is linked to the Dealer. Let's change the priority of the events to ensure that it will always fire in the correct order. This is really for tutorial purposes, as in this case, Create Dealer is alphabetically after Create Car, so will always be called after the Create Car event, but nevertheless, open up the Create Car event in your text editor and add the following:
+
+	public function priority(){
+		return self::kHIGH;
+	}
+
+This current workflow always assumes that the Car entry is created successfully which isn't always the case. Users may enter some incorrect information which causes the entry not to save and instead the event will have some error information to show the user. In this case, we want the event to return before it even tries to create the Dealer entry. To do this, lets start by removing the hidden input field for the Create Dealer event for our form (`<input name="action[create-dealer]" type="hidden" value="Submit" />`). Just before the `return $result` of the Create Car event, lets check the status of the event by looking at the event XML result, what we are looking for is a status of 'success' and if so we want to replicate our hidden field in the `$_POST` data so the Create Dealer event will fire. The Select Box Link uses the Entry ID to maintain the link, so let's add the new Car's entry id into the `$_POST` array for the Create Dealer event, so our new Dealer entry will have a relationship.
+
+	// Check that this event returned successfully, if it did,
+	// inject the Create Dealer event and Car's entry ID
+	if($result->getAttribute('result') == "success") {
+		$_POST['action']['create-dealer'] = 'Submit';
+		$_POST['create-dealer']['fields']['related-car'] = $result->getAttribute('id');
+	}
+
+	return $result;
+
+Tada! We now have two events chained together, with the second event only executing when the first one was successful. 
+
+### Executing 'y' only
+
+There is another case in that the Create Car event worked correctly, but the Create Dealer event did not. There's two different approaches you could employ here, both are based in XSLT and fortunately not in PHP. Our first option is to redisplay the entire form (including the Create Car) fields and instead add the ID of the Create Car entry as a hidden field. This will make the Event edit the entry, instead of creating a new one. It's a useful approach if you want users to have a second chance at updating the information. The second option is to not display any of the fields relating to the Create Car event, and instead just display those fields relating to the Create Dealer event.
+
+Symphony makes it easy to auto populate your forms with this information as it provides `post-values` in the Event response XML. 
+
+	<create-car id="205" result="success" type="created">
+	    <message>Entry created successfully.</message>
+	    <post-values>
+	        <manufacturer>Nissan</manufacturer>
+	        <name>Pulsar</name>
+	        <year>2008</year>
+	    </post-values>
+	</create-car>
+	<create-dealer id="206" result="success" type="created">
+	    <message>Entry created successfully.</message>
+	    <post-values>
+	        <name>Tom Jones</name>
+	        <suburb>Burleigh Heads</suburb>
+	        <related-car>205</related-car>
+	    </post-values>
+	</create-dealer>
+
+In my example, both events were successful, but if something went wrong...
+
+	<create-car id="208" result="success" type="created">
+	    <message>Entry created successfully.</message>
+	    <post-values>
+	        <manufacturer>Nissan</manufacturer>
+	        <name>Pulsar</name>
+	        <year>2008</year>
+	    </post-values>
+	</create-car>
+	<create-dealer result="error">
+	    <message>Entry encountered errors when saving.</message>
+	    <suburb label="Suburb" type="missing" message="'Suburb' is a required field." />
+	    <post-values>
+	        <name>Tom Jones</name>
+	        <related-car>208</related-car>
+	    </post-values>
+	</create-dealer>
+
+In the attached [XSL](https://gist.github.com/raw/901476/new-car.xsl), I've gone with the approach that if the Create Car event is successful, it will display a summary to the user when an error occurs in the Create Dealer event, but with the Event XML it's possible to customise your frontend with XSLT to do whatever you like really.
+
+## Wrap up
+
+Well I hope that has been helpful and given you a little bit of insight into some of the more mysterious aspects of Events. If this all seems a little too difficult, I suggest checking out the [Event Ex](http://symphony-cms.com/download/extensions/view/22125/) extension, it's quite old, but is maintained by Nick Dunn, who also happens to like juggling fire in his spare time.
+
+## But hey, what about Custom Events!?
+
+The beauty of Symphony events is that they are really just a block of PHP that is called before your page renders, so it's possible to do almost anything your heart desires. To keep things simple, lets assume the following scenario. I have a button that upon each click, increments a Field's value one by one until it reaches 10. When it hits 10, we'll send an email to someone to let them know that this has happened. For tutorial purposes, we'll write this as a completely custom event.
+
+### Setup
+
+Here's my test section
+
+Counter
+<pre>
+Count : Text Input
+Max : Text Input
+Email : Text Input
+Email Response : Text Input
+</pre>
+
+I've added one entry, setting the count to 1, max to 10, added my email address and left the Email Response empty. I've also created a new event, called Increment, and a new page with the following form XSL, where `213` is the entry ID of entry with my information in it
+
+	<form method="post">
+	  <label>Count
+	    <input name="fields[count]" type="text" />
+	  </label>
+	  <input type="hidden" name="id" value="213" />
+	  <input name="action[increment]" type="submit" value="Submit" />
+	</form>
+
+### Our custom Increment event
+
+Now we'll jump to our `eventincrement` Class (inside `workspace/events/event.increment.php`). First things first, set the `allowEditorToParse` function to return `false`, then move to the `__trigger()` function and remove the `include` and we'll set the `$result` to be an empty `XMLElement` instance:
+
+	protected function __trigger(){
+		$result = new XMLElement(self::ROOTELEMENT);
+
+		return $result;
+	}
+
+If you click our Submit button, you should get an empty response in our Event XML, `<increment />`. Happy? Didn't think so. I've attached [the `__trigger()` function](https://gist.github.com/raw/901476/increment-trigger.php) with comments to guide you through the rest of the custom event. There's a couple of big omissions here, such as ensuring user input is [sanitized](https://github.com/symphonycms/xssfilter) and checking that the [data is correct](http://symphony-cms.com/learn/api/2.2.1/toolkit/field/#checkPostFieldData) which will need to be covered in a later tutorial, but hopefully this gives you a general idea of creating a custom event which involves reading an Entry's current data, updating Entry data and displaying a result to a user.
+
+One last touch, remember how we removed set `allowEditorToParse` to `false`? This will now show the Event's `documentation()` return value when you click on the Event in the backend. By default, Symphony generates this documentation to the default form needed to populate the fields of the Event and may include some additional information about the filters attached to your event. Because our event is custom, this information is irrelevant and it's considered best practice for you to update this to be a little more descriptive. It's helpful to your future self, who jumps back onto the project in 6 months and can't quite remember how the event works, and to whoever else may use your event (particularly if it's part of an Extension). The `documentation()` function returns either a string of HTML, or a `XMLElement` object
+
+## And that's that!
+
+That's the end of this long tutorial folks, hopefully that gives you a little more insight into Events and has given you some ideas about how you can use them to deliver a rich, interactive experience on your Symphony website.
+
+### References 
+
+* [Event Concept](http://symphony-cms.com/learn/concepts/view/events/)
+* [Event API](http://symphony-cms.com/learn/api/2.2.1/toolkit/event/)
+* [Field API](http://symphony-cms.com/learn/api/2.2.1/toolkit/field/)
+* [Entry API](http://symphony-cms.com/learn/api/2.2.1/toolkit/entry/)
+* [EntryManager API](http://symphony-cms.com/learn/api/2.2.1/toolkit/entrymanager/)
+* [Event Ex extension](http://symphony-cms.com/download/extensions/view/22125/)
+

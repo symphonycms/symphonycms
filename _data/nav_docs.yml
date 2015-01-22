@@ -1,0 +1,62 @@
+- id: articles
+  title: Articles
+  items:
+  - id: field-extension
+    title: Field Extension
+  - id: getting-git-for-symphony-development
+    title: Getting Git for Symphony Development
+  - id: combining-symphony-with-nginx
+    title: Combining Symphony with Nginx
+- id: book
+  title: Book
+  items:
+  - id: symphony-book
+    title: Symphony Start to Finish
+    subitems:
+    - id: chapter-01
+      title: Why You Need Symphony
+    - id: chapter-02
+      title: Symphony in Action
+    - id: chapter-03
+      title: Getting Started
+    - id: chapter-04
+      title: Symphony Anatomy
+    - id: chapter-05
+      title: Content
+    - id: chapter-06
+      title: Front-end
+    - id: chapter-07
+      title: Data Flow
+    - id: chapter-08
+      title: Templating
+    - id: chapter-09
+      title: System Management
+    - id: chapter-10
+      title: Planning Symphony Projects
+    - id: chapter-11
+      title: Adaptive Techniques
+- id: concepts
+  title: Concepts
+  items:
+  - id: xslt-transformation
+    title: XSLT Transformation
+- id: guides
+  title: Guides
+  items:
+  - id: javascript-styleguide
+    title: JavaScript Style Guide
+- id: tutorials
+  title: Tutorials
+- id: working
+  title: Working
+  items:
+  - id: a-symphony-workflow
+    title: A Symphony Workflow
+  - id: a-symphony-workflow-command-list
+    title: A Symphony Workflow - Terminal Command List
+  - id: installing-on-mac-osx
+    title: Installing Symphony on your Mac (OS X >= 10.5)
+  - id: a-view-on-static-pages
+    title: A view on static pages
+  - id: understanding-xslt
+    title: Understanding XSLT

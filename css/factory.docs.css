@@ -1,0 +1,17 @@
+/**
+ * SYMPHONY FACTORY
+ * A design framework for the Symphony Network
+ *
+ * @link http://symphonycms.github.com/factory/
+ *
+ * Custom styling for the Factory docs.
+ */
+
+#docs-column-example .column {
+	background: #E9F4ED;
+	height: 176px;
+	margin-bottom: 30px;
+	text-align: center;
+	padding: 30px;
+	border: 1px solid #D3EADE;
+}
