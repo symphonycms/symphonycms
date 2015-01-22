@@ -13,7 +13,7 @@ layout: docs
 
 
 <h2>Semicolons</h2>
-<p>Apparently some people don’t like using semicolons to terminate statements. Failing to do so may get you flayed.</p>
+<p>Apparently, some people don’t like using semicolons to terminate statements. Failing to do so may get you flayed.</p>
 
 <h4>Right</h4>
 <pre>var value = 'example';</pre>
@@ -23,11 +23,11 @@ layout: docs
 
 
 <h2>Trailing whitespace</h2>
-<p>Just like you brush your teeth after every meal, you clean up any trailing whitespace in your JavaScript files before committing. Otherwise the rotten smell of careless neglect will eventually drive away contributors and/or co–workers.</p>
+<p>Just like you brush your teeth after every meal, clean up trailing whitespace in your JavaScript files before committing. Otherwise the rotten smell of careless neglect will eventually drive away contributors and/or co–workers.</p>
 
 
 <h2>Line length</h2>
-<p>Most reasonable text editors (Textmate and Sublime Text to name a couple) allow intelligent word wrapping inside of your window. We suggest you use this instead of manually wrapping your lines to a fixed number of characters.</p>
+<p>Most reasonable text editors (Textmate and Sublime Text to name a couple) allow intelligent word-wrapping inside of your window. We suggest you use this instead of manually wrapping your lines to a fixed number of characters.</p>
 <p>If you really must manually wrap some text, then do it to the standard 80 characters.</p>
 
 
@@ -57,7 +57,7 @@ layout: docs
 
 
 <h2>Variable declarations</h2>
-<p>Don’t over use <code>var</code> statements, always indent each variable on its own line.</p>
+<p>Don’t overuse <code>var</code> statements, always indent each variable on its own line.</p>
 
 <h4>Right</h4>
 <pre>var foo = 1,
@@ -72,7 +72,7 @@ var bar = 'two';</pre>
 
 
 <h2>Variable and property names</h2>
-<p>Variables and properties should use <a href="http://en.wikipedia.org/wiki/camelCase#Variations_and_synonyms">lower camel case</a> capitalization. They should also be descriptive. Single character variables and uncommon abbreviations should generally be avoided <em>(may get you shot by)</em>.</p>
+<p>Variables and properties should use <a href="http://en.wikipedia.org/wiki/camelCase#Variations_and_synonyms">lower camel case</a> capitalization. They should also be descriptive. Single-character variables and uncommon abbreviations should generally be avoided <em>(may get you shot)</em>.</p>
 
 <h4>Right</h4>
 <pre>var translatedString = Symphony.Language.Dictionary[string];</pre>
