@@ -495,7 +495,10 @@ class contentPublish extends AdministrationPage
 
         // Flag filtering
         if (isset($_REQUEST['filter'])) {
-            $filter_stats = new XMLElement('p', '<span>– ' . __('filtered (%d of %d)', array($entries['total-entries'], EntryManager::fetchCount($section_id))) . '</span>', array('class' => 'inactive'));
+            $filter_stats = new XMLElement('p', '<span>– ' . __('%d of %d entries (filtered)', array($entries['total-entries'], EntryManager::fetchCount($section_id))) . '</span>', array('class' => 'inactive'));
+            $this->Breadcrumbs->appendChild($filter_stats);
+        } else {
+            $filter_stats = new XMLElement('p', '<span>– ' . __('%d entries', array($entries['total-entries'])) . '</span>', array('class' => 'inactive'));
             $this->Breadcrumbs->appendChild($filter_stats);
         }
 
