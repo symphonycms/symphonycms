@@ -404,12 +404,12 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         $message = $status = null;
         $modes = (object)$this->getImportModes();
 
-        if (!is_array($data)) {
-            $data = array($data);
+        if (is_array($data)) {
+            $data = implode(', ', $data);
         }
 
         if ($mode === $modes->getValue) {
-            return implode(', ', $data);
+            return $data;
         } elseif ($mode === $modes->getPostdata) {
             return $this->processRawFieldData($data, $status, $message, true, $entry_id);
         }
