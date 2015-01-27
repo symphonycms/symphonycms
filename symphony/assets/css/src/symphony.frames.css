@@ -581,3 +581,20 @@ fieldset.frame,
 #error .frame .actions {
 	padding: 1rem;
 }
+
+
+/*--------------------------------------------------------------------------
+	Nested frames (e. g. Association filters)
+--------------------------------------------------------------------------*/
+
+.frame .frame{
+	padding: 1em;
+}
+
+
+.frame:not(.collapsible) .frame-header {
+	cursor: pointer;
+}
+.frame:not(.collapsible) .content {
+	background: transparent;
+}

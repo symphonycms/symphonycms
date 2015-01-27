@@ -724,6 +724,8 @@ class Field
                 $group->appendChild($label);
             }
 
+            $wrapper->appendChild($group);
+
             //create association filters
             if (isset($association_context['parent_section_id'])) {
                 $label = Widget::Label(__('Association Filters'), null, 'column');
@@ -733,24 +735,17 @@ class Field
                     array(null, false, __('None'))
                 );
                 
-                $publishPage = new contentPublish;
                 $section_id = $association_context['parent_section_id'];
                 $section = SectionManager::fetch($section_id);
-                $filter = $section->get('filter');
-                $count = EntryManager::fetchCount($section_id);
 
-                // if ($filter !== 'no' && $count > 1) {
-                    $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), $publishPage->createFilteringDrawer($section));
-                    $drawer->addClass('drawer-filtering');
-                    $label->appendChild($drawer);
-                // }
+                $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), Widget::createFilteringDuplicator($section, 'fields[' . $this->get('sortorder') . '][association_filter]'));
+                $drawer->addClass('drawer-filtering');
+                $label->appendChild($drawer);
 
                 // $select = Widget::Select('fields[' . $this->get('sortorder') . '][association_editor]', $options);
                 // $label->appendChild($select);
                 $wrapper->appendChild($label);
             }
-
-            $wrapper->appendChild($group);
         }
     }
 

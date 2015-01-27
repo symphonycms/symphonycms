@@ -95,6 +95,7 @@
 
 			// Collapse item
 			object.on('collapse.collapsible', settings.items, function collapse(event, duration) {
+				event.stopPropagation();
 				var item = $(this);
 				collapseItem(item, getDuration(duration));
 			});
@@ -258,12 +259,12 @@
 			});
 
 			// Refresh state storage after deleting and instance
-			object.on('destructstop.duplicator', settings.items, function refreshState() {
+			object.on('destructstop.duplicator', settings.items, function refreshState(event) {
 				$(this).trigger('store.collapsible');
 			});
 
 			// Update sizes
-			object.on('updatesize.collapsible', settings.items, function updateSizes() {
+			object.on('updatesize.collapsible', settings.items, function updateSizes(event) {
 				var item = $(this),
 					min = item.find(settings.handles).outerHeight(true),
 					max = min + item.find(settings.content).outerHeight(true);
@@ -273,7 +274,7 @@
 			});
 
 			// Set sizes
-			object.on('setsize.collapsible', settings.items, function setSizes() {
+			object.on('setsize.collapsible', settings.items, function setSizes(event) {
 				var item = $(this);
 				var heightMin = item.data('heightMin');
 				var heightMax = item.data('heightMax');

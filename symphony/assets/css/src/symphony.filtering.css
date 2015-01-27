@@ -10,6 +10,10 @@
 	border-top: 0.1rem solid #e7e7e7;
 }
 
+.drawer-filtering .frame.empty{
+	height: auto;
+}
+
 .drawer-filtering .frame.empty ol {
 	height: 3.3rem;
 	border-bottom: 0.1rem solid #e7e7e7;
