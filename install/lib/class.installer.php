@@ -486,28 +486,28 @@
 
             // Create manifest folder structure
             Symphony::Log()->pushToLog('WRITING: Creating ‘manifest’ folder (/manifest)', E_NOTICE, true, true);
-            if(!General::realiseDirectory(DOCROOT . '/manifest', $conf['directory']['write_mode'])){
+            if(!General::realiseDirectory(MANIFEST, $conf['directory']['write_mode'])){
                 self::__abort(
                     'Could not create ‘manifest’ directory. Check permission on the root folder.',
                 $start);
             }
 
             Symphony::Log()->pushToLog('WRITING: Creating ‘logs’ folder (/manifest/logs)', E_NOTICE, true, true);
-            if(!General::realiseDirectory(DOCROOT . '/manifest/logs', $conf['directory']['write_mode'])){
+            if(!General::realiseDirectory(LOGS, $conf['directory']['write_mode'])){
                 self::__abort(
                     'Could not create ‘logs’ directory. Check permission on /manifest.',
                 $start);
             }
 
             Symphony::Log()->pushToLog('WRITING: Creating ‘cache’ folder (/manifest/cache)', E_NOTICE, true, true);
-            if(!General::realiseDirectory(DOCROOT . '/manifest/cache', $conf['directory']['write_mode'])){
+            if(!General::realiseDirectory(CACHE, $conf['directory']['write_mode'])){
                 self::__abort(
                     'Could not create ‘cache’ directory. Check permission on /manifest.',
                 $start);
             }
 
             Symphony::Log()->pushToLog('WRITING: Creating ‘tmp’ folder (/manifest/tmp)', E_NOTICE, true, true);
-            if(!General::realiseDirectory(DOCROOT . '/manifest/tmp', $conf['directory']['write_mode'])){
+            if(!General::realiseDirectory(MANIFEST . '/tmp', $conf['directory']['write_mode'])){
                 self::__abort(
                     'Could not create ‘tmp’ directory. Check permission on /manifest.',
                 $start);
@@ -543,35 +543,35 @@
             if(!is_dir(DOCROOT . '/workspace')){
                 // Create workspace folder structure
                 Symphony::Log()->pushToLog('WRITING: Creating ‘workspace’ folder (/workspace)', E_NOTICE, true, true);
-                if(!General::realiseDirectory(DOCROOT . '/workspace', $conf['directory']['write_mode'])){
+                if(!General::realiseDirectory(WORKSPACE, $conf['directory']['write_mode'])){
                     self::__abort(
                         'Could not create ‘workspace’ directory. Check permission on the root folder.',
                     $start);
                 }
 
                 Symphony::Log()->pushToLog('WRITING: Creating ‘data-sources’ folder (/workspace/data-sources)', E_NOTICE, true, true);
-                if(!General::realiseDirectory(DOCROOT . '/workspace/data-sources', $conf['directory']['write_mode'])){
+                if(!General::realiseDirectory(DATASOURCES, $conf['directory']['write_mode'])){
                     self::__abort(
                         'Could not create ‘workspace/data-sources’ directory. Check permission on the root folder.',
                     $start);
                 }
 
                 Symphony::Log()->pushToLog('WRITING: Creating ‘events’ folder (/workspace/events)', E_NOTICE, true, true);
-                if(!General::realiseDirectory(DOCROOT . '/workspace/events', $conf['directory']['write_mode'])){
+                if(!General::realiseDirectory(EVENTS, $conf['directory']['write_mode'])){
                     self::__abort(
                         'Could not create ‘workspace/events’ directory. Check permission on the root folder.',
                     $start);
                 }
 
                 Symphony::Log()->pushToLog('WRITING: Creating ‘pages’ folder (/workspace/pages)', E_NOTICE, true, true);
-                if(!General::realiseDirectory(DOCROOT . '/workspace/pages', $conf['directory']['write_mode'])){
+                if(!General::realiseDirectory(PAGES, $conf['directory']['write_mode'])){
                     self::__abort(
                         'Could not create ‘workspace/pages’ directory. Check permission on the root folder.',
                     $start);
                 }
 
                 Symphony::Log()->pushToLog('WRITING: Creating ‘utilities’ folder (/workspace/utilities)', E_NOTICE, true, true);
-                if(!General::realiseDirectory(DOCROOT . '/workspace/utilities', $conf['directory']['write_mode'])){
+                if(!General::realiseDirectory(UTILITIES, $conf['directory']['write_mode'])){
                     self::__abort(
                         'Could not create ‘workspace/utilities’ directory. Check permission on the root folder.',
                     $start);
@@ -584,10 +584,10 @@
                 // MySQL: Importing workspace data
                 Symphony::Log()->pushToLog('MYSQL: Importing Workspace Data...', E_NOTICE, true, true);
 
-                if(is_file(DOCROOT . '/workspace/install.sql')) {
+                if(is_file(WORKSPACE . '/install.sql')) {
                     try{
                         Symphony::Database()->import(
-                            file_get_contents(DOCROOT . '/workspace/install.sql'),
+                            file_get_contents(WORKSPACE . '/install.sql'),
                             true
                         );
                     }
@@ -600,10 +600,10 @@
             }
 
             // Write extensions folder
-            if(!is_dir(DOCROOT . '/extensions')) {
+            if(!is_dir(EXTENSIONS)) {
                 // Create extensions folder
                 Symphony::Log()->pushToLog('WRITING: Creating ‘extensions’ folder (/extensions)', E_NOTICE, true, true);
-                if(!General::realiseDirectory(DOCROOT . '/extensions', $conf['directory']['write_mode'])){
+                if(!General::realiseDirectory(EXTENSIONS, $conf['directory']['write_mode'])){
                     self::__abort(
                         'Could not create ‘extension’ directory. Check permission on the root folder.',
                     $start);

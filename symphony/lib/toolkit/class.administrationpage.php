@@ -362,7 +362,7 @@ Class AdministrationPage extends HTMLPage
         $this->addElementToHead(new XMLElement('meta', null, array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1')), 2);
 
         // Add styles
-        $this->addStylesheetToHead(APPLICATION_URL . '/assets/css/symphony.min.css', 'screen', 2, false);
+        $this->addStylesheetToHead(ASSETS_URL . '/css/symphony.min.css', 'screen', 2, false);
 
         // Add scripts
         $environment = array(
@@ -397,7 +397,7 @@ Class AdministrationPage extends HTMLPage
             4
         );
 
-        $this->addScriptToHead(APPLICATION_URL . '/assets/js/symphony.min.js', 6, false);
+        $this->addScriptToHead(ASSETS_URL . '/js/symphony.min.js', 6, false);
 
         // Initialise page containers
         $this->Wrapper = new XMLElement('div', null, array('id' => 'wrapper'));

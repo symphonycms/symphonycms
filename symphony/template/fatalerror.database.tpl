@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<title>Symphony Error</title>
-	<link media="screen" href="{APPLICATION_URL}/assets/css/symphony.min.css" type="text/css" rel="stylesheet">
-	<script type="text/javascript" src="{APPLICATION_URL}/assets/js/symphony.min.js"></script>
+	<link media="screen" href="{ASSETS_URL}/css/symphony.min.css" type="text/css" rel="stylesheet">
+	<script type="text/javascript" src="{ASSETS_URL}/js/symphony.min.js"></script>
 	<script type='text/javascript'>Symphony.Context.add('root', '{URL}');Symphony.Context.add('env', {});</script>
 </head>
 <body id="error">

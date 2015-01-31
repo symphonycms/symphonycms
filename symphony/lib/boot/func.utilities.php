@@ -204,7 +204,7 @@ function is_session_empty()
  *
  *  @param string $mode (optional)
  */
-function symphony($mode) 
+function symphony($mode)
 {
     $launcher = SYMPHONY_LAUNCHER;
     $launcher($mode);
@@ -230,10 +230,10 @@ function symphony_launcher($mode)
     $output = $renderer->display(getCurrentPage());
 
     // #1808
-    if (isset($_SERVER['HTTP_MOD_REWRITE'])) 
+    if (isset($_SERVER['HTTP_MOD_REWRITE']))
     {
         $output = file_get_contents(GenericExceptionHandler::getTemplate('fatalerror.rewrite'));
-        $output = str_replace('{APPLICATION_URL}', APPLICATION_URL, $output);
+        $output = str_replace('{ASSETS_URL}', ASSETS_URL, $output);
         $output = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $output);
         $output = str_replace('{URL}', URL, $output);
         echo $output;
