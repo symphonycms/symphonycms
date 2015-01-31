@@ -472,19 +472,28 @@ class FieldDate extends Field implements ExportableField, ImportableField
             $label->appendChild(new XMLElement('i', __('Optional')));
         }
 
-        // Calendar
-        $label->setAttribute('data-timezone', Symphony::Configuration()->get('timezone', 'region'));
-        if ($this->get('calendar') === 'yes') {
-            $wrapper->setAttribute('data-interactive', 'data-interactive');
-            $label->appendChild(Widget::Calendar(($this->get('time') === 'yes')));
-        }
-
         // Input
         $label->appendChild(Widget::Input("fields{$fieldnamePrefix}[{$name}]", $value));
         $label->setAttribute('class', 'date');
 
         if (!is_null($flagWithError)) {
             $label = Widget::Error($label, $flagWithError);
+        }
+
+        // Calendar
+        if ($this->get('calendar') === 'yes') {
+            $wrapper->setAttribute('data-interactive', 'data-interactive');
+
+            $ul = new XMLElement('ul');
+            $ul->setAttribute('class', 'suggestions');
+            $ul->setAttribute('data-field-id', $this->get('id'));
+            $ul->setAttribute('data-search-types', 'date');
+
+            $calendar = new XMLElement('li');
+            $calendar->appendChild(Widget::Calendar(($this->get('time') === 'yes')));
+            $ul->appendChild($calendar);
+
+            $label->appendChild($ul);
         }
 
         $wrapper->appendChild($label);
