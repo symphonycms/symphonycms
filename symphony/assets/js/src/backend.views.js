@@ -278,9 +278,20 @@ Symphony.View.add('/publish/:context*:', function() {
 	}).appendTo('label.file:has(a) span.frame');
 
 	// Calendars
-	$('.field-date[data-interactive]').each(function() {
-		var calendar = new Symphony.Interface.Calendar();
-		calendar.init(this);
+	$('.field-date').each(function() {
+		var field = $(this),
+			calendar;
+
+		// Add calendar widget
+		if(field.attr('data-interactive')) {
+			calendar = new Symphony.Interface.Calendar();
+			calendar.init(this);
+		}
+
+		// Add timezone offset information
+		if(moment().utcOffset() !== Symphony.Context.get('date-timezoneoffset')) {
+			field.addClass('show-timezone');
+		}
 	});
 });
 

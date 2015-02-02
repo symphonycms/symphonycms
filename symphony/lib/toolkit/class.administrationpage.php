@@ -364,6 +364,11 @@ Class AdministrationPage extends HTMLPage
         // Add styles
         $this->addStylesheetToHead(ASSETS_URL . '/css/symphony.min.css', 'screen', 2, false);
 
+        // Calculate timezone offset from UTC
+        $timezone = new DateTimeZone(Symphony::Configuration()->get('timezone', 'region'));
+        $datetime = new DateTime('now', $timezone);
+        $timezoneOffset = intval($timezone->getOffset($datetime)) / 60;
+
         // Add scripts
         $environment = array(
 
@@ -380,7 +385,7 @@ Class AdministrationPage extends HTMLPage
                 'id'       => Symphony::Author()->get('id')
             ),
             'date-formats' => DateTimeObj::getDateFormatMappings(),
-            'weekoffset' => Symphony::Configuration()->get('weekoffset', 'region'),
+            'date-timezoneoffset' => $timezoneOffset,
 
             'env' => array_merge(
 

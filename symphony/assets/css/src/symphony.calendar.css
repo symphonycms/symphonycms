@@ -285,3 +285,23 @@
 	border-top: none;
 	border-radius: 0 0 0.4rem 0.4rem;
 }
+
+/* Timezone Offset */
+
+.show-timezone label::after {
+	content: attr(data-timezone);
+	display: block;
+	position: absolute;
+	right: 0.1rem;
+	bottom: 0.1rem;
+	height: 2rem;
+	margin: 0;
+	padding: 0 0.5rem 0 1rem;
+	color: #a9a9a9;
+	line-height: 2rem;
+	background-color: #fff;
+}
+
+.show-timezone[data-interactive] label::after {
+	margin-bottom: 0.5rem;
+}

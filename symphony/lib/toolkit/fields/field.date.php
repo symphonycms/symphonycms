@@ -473,6 +473,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
         }
 
         // Calendar
+        $label->setAttribute('data-timezone', Symphony::Configuration()->get('timezone', 'region'));
         if ($this->get('calendar') === 'yes') {
             $wrapper->setAttribute('data-interactive', 'data-interactive');
             $label->appendChild(Widget::Calendar(($this->get('time') === 'yes')));
