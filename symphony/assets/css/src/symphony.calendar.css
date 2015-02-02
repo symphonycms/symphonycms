@@ -304,4 +304,5 @@
 
 .show-timezone[data-interactive] label::after {
 	margin-bottom: 0.5rem;
+	padding-right: 1rem;
 }
