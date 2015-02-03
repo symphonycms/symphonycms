@@ -103,7 +103,12 @@ class SectionManager
         ));
 
         // Update the sort orders
-        Symphony::Database()->query("UPDATE tbl_sections SET `sortorder` = (`sortorder` - 1) WHERE `sortorder` > '".$details['sortorder']."'");
+        Symphony::Database()->query(sprintf("
+            UPDATE tbl_sections
+            SET `sortorder` = (`sortorder` - 1)
+            WHERE `sortorder` > %d",
+            $details['sortorder']
+        ));
 
         // Delete the section associations
         Symphony::Database()->delete('tbl_sections_association', sprintf("

@@ -1256,7 +1256,13 @@ class contentPublish extends AdministrationPage
         }
 
         // Determine the page title
-        $field_id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
+        $field_id = Symphony::Database()->fetchVar('id', 0, sprintf("
+            SELECT `id`
+            FROM `tbl_fields`
+            WHERE `parent_section` = %d
+            ORDER BY `sortorder` LIMIT 1",
+            $section->get('id')
+        ));
         if (!is_null($field_id)) {
             $field = FieldManager::fetch($field_id);
         }

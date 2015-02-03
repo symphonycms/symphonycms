@@ -116,7 +116,6 @@ class XMLElement implements IteratorAggregate
      * @param boolean $createHandle
      *  Whether this function should convert the `$name` to a handle. Defaults to
      *  `false`.
-     * @return XMLElement
      */
     public function __construct($name, $value = null, array $attributes = array(), $createHandle = false)
     {

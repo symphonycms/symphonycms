@@ -72,7 +72,7 @@ class NavigationDatasource extends Datasource
         $type_sql = $parent_sql = null;
 
         if (trim($this->dsParamFILTERS['type']) != '') {
-            $type_sql = $this->__processNavigationTypeFilter($this->dsParamFILTERS['type'], $this->__determineFilterType($this->dsParamFILTERS['type']));
+            $type_sql = $this->__processNavigationTypeFilter($this->dsParamFILTERS['type'], Datasource::determineFilterType($this->dsParamFILTERS['type']));
         }
 
         if (trim($this->dsParamFILTERS['parent']) != '') {

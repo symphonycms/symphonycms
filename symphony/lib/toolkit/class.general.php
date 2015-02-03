@@ -777,7 +777,7 @@ class General
      */
     public static function array_remove_duplicates(array $array, $ignore_case = false)
     {
-        return ($ignore_case == true ? self::array_iunique($array) : array_unique($array));
+        return ($ignore_case === true ? self::array_iunique($array) : array_unique($array));
     }
 
     /**
@@ -882,7 +882,7 @@ class General
                 if ($child->getNumberOfChildren() == 0) {
                     continue;
                 }
-            } elseif ($validate == true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)) {
+            } elseif ($validate === true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)) {
                 continue;
             } else {
                 $child->setValue(self::sanitize($value));
@@ -977,7 +977,7 @@ class General
         try {
             return unlink($file);
         } catch (Exception $ex) {
-            if ($silent == false) {
+            if ($silent === false) {
                 throw new Exception(__('Unable to remove file - %s', array($file)));
             }
 

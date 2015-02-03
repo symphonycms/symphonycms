@@ -258,7 +258,7 @@ class Lang
         self::$_dictionary = array();
 
         // Language file available
-        if ($code !== 'en' && (self::isLanguageEnabled($code) || $checkStatus == false)) {
+        if ($code !== 'en' && (self::isLanguageEnabled($code) || $checkStatus === false)) {
             // Load core translations
             self::load(vsprintf('%s/lang_%s/lang/lang.%s.php', array(
                 EXTENSIONS, self::$_languages[$code]['handle'], $code
@@ -402,7 +402,7 @@ class Lang
 
         // Get available languages
         foreach(self::$_languages as $key => $language) {
-            if(self::isLanguageEnabled($key) || ($checkStatus == false && isset($language['handle']))){
+            if(self::isLanguageEnabled($key) || ($checkStatus === false && isset($language['handle']))){
                 $languages[$key] = $language['name'];
             }
         }
@@ -454,7 +454,7 @@ class Lang
 
             // Translate names to English
             foreach(self::$_datetime_dictionary as $values) {
-                $string = preg_replace('/\b' . self::translate($values) . '\b/i' . (self::isUnicodeCompiled() == true ? 'u' : null), $values, $string);
+                $string = preg_replace('/\b' . self::translate($values) . '\b/i' . (self::isUnicodeCompiled() === true ? 'u' : null), $values, $string);
             }
 
             // Replace custom date and time separator with space:
@@ -491,7 +491,7 @@ class Lang
      */
     public static function createHandle($string, $max_length = 255, $delim = '-', $uriencode = false, $apply_transliteration = true, $additional_rule_set = NULL) {
         // Use the transliteration table if provided
-        if($apply_transliteration == true){
+        if($apply_transliteration === true){
             $string = self::applyTransliterations($string);
         }
 
@@ -512,7 +512,7 @@ class Lang
      */
     public static function createFilename($string, $delim='-', $apply_transliteration = true) {
         // Use the transliteration table if provided
-        if($apply_transliteration == true){
+        if($apply_transliteration === true){
             $file = pathinfo($string);
             $string = self::applyTransliterations($file['filename']) . '.' . $file['extension'];
         }

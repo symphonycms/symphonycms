@@ -17,7 +17,7 @@
          * The current installed version of Symphony, before updating
          * @var string
          */
-        static $existing_version = null;
+        public static $existing_version = null;
 
         /**
          * While we are supporting PHP5.2, we can't do this neatly as 5.2
