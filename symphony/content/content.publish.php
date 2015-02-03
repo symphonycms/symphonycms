@@ -422,8 +422,14 @@ class contentPublish extends AdministrationPage
                     if ($field instanceof Field) {
                         $field->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false));
 
-                        $encoded_value = rawurlencode(implode(',' , $value));
+                        $value = implode(',' , $value);
+                        $encoded_value = rawurlencode($value);
                         $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, $encoded_value);
+
+                        // Some fields require that prepopulation be done via ID. RE: #2331
+                        if (method_exists($field, 'fetchIDfromValue')) {
+                            $encoded_value = $field->fetchIDfromValue($value);
+                        }
                         $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, $encoded_value);
                     } else {
                         unset($filters[$handle]);
