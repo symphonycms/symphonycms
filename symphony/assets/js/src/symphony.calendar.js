@@ -10,7 +10,6 @@
 	 */
 	Symphony.Interface.Calendar = function() {
 		var template = '<div class="calendar"><nav><a class="clndr-previous-button">previous</a><div class="switch"><ul class="months"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul><ul class="years"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul></div><a class="clndr-next-button">next</a></nav><table><thead><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr></thead><tbody><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr><tr><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td><td><span></span></td></tr></tbody></table></div>',
-			//weekOffset = parseInt(Symphony.Context.get('weekoffset'), 10) || 0,
 			context, calendar, storage, format, datetime, clndr;
 
 		var init = function(element) {
@@ -278,14 +277,14 @@
 		 */
 		var disable = function(calendar) {
 			var message = Symphony.Language.get('The Symphony calendar widget has been disabled because your system date format is currently not supported. Try one of the following instead or disable the calendar in the field settings:'),
-				datetime = Symphony.Context.get('datetime'),
+				date = Symphony.Context.get('datetime'),
 				suggestions = [];
 
 			// Hide calendar
 			calendar.addClass('hidden');
 
 			// Suggest supported date formats
-			$.each(datetime.formats, function(phpFormat, momentFormat) {
+			$.each(date.formats, function(phpFormat, momentFormat) {
 				var zero = '';
 
 				if(phpFormat.indexOf('j') !== -1 && phpFormat.indexOf('n') !== -1) {
