@@ -280,6 +280,7 @@ Symphony.View.add('/publish/:context*:', function() {
 	// Calendars
 	$('.field-date').each(function() {
 		var field = $(this),
+			datetime = Symphony.Context.get('datetime'),
 			calendar;
 
 		// Add calendar widget
@@ -289,7 +290,7 @@ Symphony.View.add('/publish/:context*:', function() {
 		}
 
 		// Add timezone offset information
-		if(moment().utcOffset() !== Symphony.Context.get('date-timezoneoffset')) {
+		if(moment().utcOffset() !== datetime['timezone-offset']) {
 			field.addClass('show-timezone');
 		}
 	});

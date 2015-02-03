@@ -384,9 +384,11 @@ Class AdministrationPage extends HTMLPage
                 'type'     => Symphony::Author()->get('user_type'),
                 'id'       => Symphony::Author()->get('id')
             ),
-            'date-formats' => DateTimeObj::getDateFormatMappings(),
-            'date-timezoneoffset' => $timezoneOffset,
+            'datetime' => array(
 
+                'formats'         => DateTimeObj::getDateFormatMappings(),
+                'timezone-offset' => $timezoneOffset
+            ),
             'env' => array_merge(
 
                 array('page-namespace' => Symphony::getPageNamespace()),

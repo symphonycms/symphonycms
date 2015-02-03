@@ -278,14 +278,14 @@
 		 */
 		var disable = function(calendar) {
 			var message = Symphony.Language.get('The Symphony calendar widget has been disabled because your system date format is currently not supported. Try one of the following instead or disable the calendar in the field settings:'),
-				formats = Symphony.Context.get('date-formats'),
+				datetime = Symphony.Context.get('datetime'),
 				suggestions = [];
 
 			// Hide calendar
 			calendar.addClass('hidden');
 
 			// Suggest supported date formats
-			$.each(formats, function(phpFormat, momentFormat) {
+			$.each(datetime.formats, function(phpFormat, momentFormat) {
 				var zero = '';
 
 				if(phpFormat.indexOf('j') !== -1 && phpFormat.indexOf('n') !== -1) {
