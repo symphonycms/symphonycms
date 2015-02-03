@@ -115,7 +115,7 @@ class AuthorManager
             ($where) ? $where : 1,
             'a.'. $sortby,
             $sortdirection,
-            ($limit) ? "LIMIT " . $limit : '',
+            ($limit) ? sprintf("LIMIT %d" , $limit) : '',
             ($start && $limit) ? ', ' . $start : ''
         ));
 

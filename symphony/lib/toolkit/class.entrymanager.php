@@ -383,11 +383,11 @@ class EntryManager
         } elseif (self::$_fetchSortDirection == 'RAND') {
             $sort = 'ORDER BY RAND() ';
         } elseif (self::$_fetchSortField === 'system:creation-date' || self::$_fetchSortField === 'date') {
-            $sort = 'ORDER BY `e`.`creation_date_gmt` ' . self::$_fetchSortDirection;
+            $sort = sprintf('ORDER BY `e`.`creation_date_gmt` %s', self::$_fetchSortDirection);
         } elseif (self::$_fetchSortField === 'system:modification-date') {
-            $sort = 'ORDER BY `e`.`modification_date_gmt` ' . self::$_fetchSortDirection;
+            $sort = sprintf('ORDER BY `e`.`modification_date_gmt` %s', self::$_fetchSortDirection);
         } elseif (self::$_fetchSortField == 'system:id' || self::$_fetchSortField == 'id') {
-            $sort = 'ORDER BY `e`.`id`' . self::$_fetchSortDirection;
+            $sort = sprintf('ORDER BY `e`.`id` %s', self::$_fetchSortDirection);
         } elseif (self::$_fetchSortField && $field = FieldManager::fetch(self::$_fetchSortField)) {
             if ($field->isSortable()) {
                 $field->buildSortingSQL($joins, $where, $sort, self::$_fetchSortDirection);
@@ -405,7 +405,7 @@ class EntryManager
                 $group = $field->requiresSQLGrouping();
             }
         } else {
-            $sort = 'ORDER BY `e`.`id`' . self::$_fetchSortDirection;
+            $sort = sprintf('ORDER BY `e`.`id` %s', self::$_fetchSortDirection);
         }
 
         if ($entry_id && !is_array($entry_id)) {

@@ -145,7 +145,7 @@ class SectionManager
         if (!is_null($section_id)) {
             if (!is_array($section_id)) {
                 $returnSingle = true;
-                $section_ids = array((int)$section_id);
+                $section_ids = array($section_id);
             } else {
                 $section_ids = $section_id;
             }
@@ -155,6 +155,8 @@ class SectionManager
             return self::$_pool[$section_id];
         }
 
+        // Ensure they are always an ID
+        $section_ids = array_map('intval', $section_ids);
         $sql = sprintf(
             "SELECT `s`.*
             FROM `tbl_sections` AS `s`
