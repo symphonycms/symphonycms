@@ -167,6 +167,7 @@ class XSLTPage extends Page
         $result = $this->Proc->process($this->_xml, $this->_xsl, $this->_param, $this->_registered_php_functions);
 
         if ($this->Proc->isErrors()) {
+            $this->setHttpStatus(Page::HTTP_STATUS_ERROR);
             return false;
         }
 
