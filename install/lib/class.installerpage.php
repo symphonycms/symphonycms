@@ -303,22 +303,6 @@
             $options = DateTimeObj::getTimeFormatsSelectOptions($fields['region']['time_format']);
             $Fieldset->appendChild(Widget::Label(__('Time Format'), Widget::Select('fields[region][time_format]', $options)));
 
-            // Week offset
-            $options = array();
-            $weekdays = array(
-                __('Sunday'),
-                __('Monday'),
-                __('Tuesday'),
-                __('Wednesday'),
-                __('Thursday'),
-                __('Friday'),
-                __('Saturday'),
-            );
-            foreach ($weekdays as $wday => $option) {
-                $options[] = array($wday, false, $option);
-            }
-            $Fieldset->appendChild(Widget::Label(__('First day of the week'), Widget::Select('fields[region][weekoffset]', $options)));
-
             $Environment->appendChild($Fieldset);
             $this->Form->appendChild($Environment);
 
