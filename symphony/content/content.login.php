@@ -232,7 +232,7 @@ class contentLogin extends HTMLPage
                         ",
                         DateTimeObj::getGMT('U'),
                         $author['id']
-                    )) {
+                    ))) {
                         // More secure password token generation
                         if (function_exists('openssl_random_pseudo_bytes')) {
                             $seed = openssl_random_pseudo_bytes(16);
