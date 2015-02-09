@@ -1,5 +1,5 @@
 /*!
- * Symphony 2.4, http://getsymphony.com, MIT license
+ * Symphony 2.5.3, http://getsymphony.com, MIT license
  */
 
 /**
