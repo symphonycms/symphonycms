@@ -144,6 +144,19 @@ class Field
     }
 
     /**
+     * Test whether this field can show the association column in
+     * the Publish Index.
+     *
+     * @since Symphony 2.6.0
+     * @return boolean
+     *  true if this can, false otherwise.
+     */
+    public function canShowAssociationColumn()
+    {
+        return $this->_showassociation;
+    }
+
+    /**
      * Test whether this field can be toggled using the With Selected menu
      * on the Publish Index.
      *

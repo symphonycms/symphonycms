@@ -318,6 +318,12 @@ class FieldManager implements FileResource
                 } else {
                     $field = self::create($f['type']);
                     $field->setArray($f);
+                    // If the field has said that's going to have associations, then go find the
+                    // association setting value. In future this check will be most robust with
+                    // an interface, but for now, this is what we've got. RE: #2082
+                    if ($field->canShowAssociationColumn()) {
+                        $field->set('show_association', SectionManager::getSectionAssociationSetting($f['id']));
+                    }
 
                     // Get the context for this field from our previous queries.
                     $context = $field_contexts[$f['type']][$f['id']];

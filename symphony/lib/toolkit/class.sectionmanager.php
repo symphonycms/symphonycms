@@ -296,6 +296,29 @@ class SectionManager
     }
 
     /**
+     * Returns the association settings for the given field id. This is to be used
+     * when configuring the field so we can correctly show the association setting
+     * the UI.
+     *
+     * @since Symphony 2.6.0
+     * @param integer $field_id
+     * @return string
+     */
+    public static function getSectionAssociationSetting($field_id)
+    {
+        // We must inverse the setting. The database stores 'hide', whereas the UI
+        // refers to 'show'. Hence if the database says 'yes', it really means, hide
+        // the association. In the UI, this needs to be flipped to 'no' so the checkbox
+        // won't be checked.
+        return Symphony::Database()->fetchVar('show_association', 0, sprintf('
+            SELECT
+            CASE hide_association WHEN "no" THEN "yes" ELSE "no" END as show_association
+            FROM `tbl_sections_association`
+            WHERE `child_section_field_id` = %d
+        ', $field_id));
+    }
+
+    /**
      * Returns any section associations this section has with other sections
      * linked using fields. Has an optional parameter, `$respect_visibility` that
      * will only return associations that are deemed visible by a field that
