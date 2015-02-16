@@ -94,7 +94,7 @@ class contentPublish extends AdministrationPage
     public function createFilteringDrawer($section)
     {
         $this->filteringForm = Widget::Form(null, 'get', 'filtering');
-        $this->filteringForm->appendChild(Widget::createFilteringDuplicator($section));
+        $this->filteringForm->appendChild(FilteringWidget::FilteringDuplicator($section,null,$_GET['filter']));
 
         return $this->filteringForm;
     }

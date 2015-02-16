@@ -249,7 +249,7 @@ class SectionManager
      * @return boolean
      *    true if the association was successfully made, false otherwise.
      */
-    public static function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true, $interface = null, $editor = null)
+    public static function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true, $interface = null, $editor = null, $filters = null)
     {
         if (is_null($parent_section_id) && (is_null($parent_field_id) || !$parent_field_id)) {
             return false;
@@ -263,6 +263,18 @@ class SectionManager
         $child_field = FieldManager::fetch($child_field_id);
         $child_section_id = $child_field->get('parent_section');
 
+        if (!empty($filters)){
+            foreach ($filters as $key => $value) {
+                if (substr($key,-11) == "-comparison") continue;
+
+                $filters[$key] = $filters[$key ."-comparison" ] . $value;
+                unset ($filters[$key ."-comparison" ]);
+            }
+
+            //encode to save as json string
+            $filters = json_encode($filters);
+        }
+
         $fields = array(
             'parent_section_id' => $parent_section_id,
             'parent_section_field_id' => $parent_field_id,
@@ -270,7 +282,8 @@ class SectionManager
             'child_section_field_id' => $child_field_id,
             'hide_association' => ($show_association ? 'no' : 'yes'),
             'interface' => $interface,
-            'editor' => $editor
+            'editor' => $editor,
+            'filters' => $filters,
         );
 
         return Symphony::Database()->insert($fields, 'tbl_sections_association');
