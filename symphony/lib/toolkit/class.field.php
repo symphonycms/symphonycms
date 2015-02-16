@@ -739,12 +739,18 @@ class Field
                 $section_id = $association_context['parent_section_id'];
                 $section = SectionManager::fetch($section_id);
 
-                $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), Widget::createFilteringDuplicator($section, 'fields[' . $this->get('sortorder') . '][association_filter]'));
+                $filters = $association_context['filters'];
+                if (!empty($filters)){
+                    $filters = json_decode($filters,true);
+                    // var_dump($filters);die;
+                } else {
+                    $filters = array();
+                }
+
+                $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), FilteringWidget::FilteringDuplicator($section, 'fields[' . $this->get('sortorder') . '][association_filter]',$filters));
                 $drawer->addClass('drawer-filtering');
                 $label->appendChild($drawer);
 
-                // $select = Widget::Select('fields[' . $this->get('sortorder') . '][association_editor]', $options);
-                // $label->appendChild($select);
                 $wrapper->appendChild($label);
             }
         }
@@ -798,6 +804,14 @@ class Field
                 'data-interface' => $association_context['interface'],
                 'data-editor' => $association_context['editor']
             ));
+
+            $filters = $association_context['filters'];
+            if (!empty($filters)){
+                $filters = json_decode($filters,true);
+                foreach ($filters as $key => $value) {
+                    $wrapper->setAttribute("data-filter-{$key}",$value);
+                }
+            }
         }
     }
 
