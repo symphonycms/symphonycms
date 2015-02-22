@@ -606,7 +606,7 @@ class FrontendPage extends XSLTPage
                 } else {
                     $page_extra_bits[] = $handle;
                 }
-            } while ($handle = array_pop($pathArr));
+            } while (($handle = array_pop($pathArr)) !== false);
 
             // If the `$pathArr` is empty, that means a page hasn't resolved for
             // the given `$page`, however in some cases the index page may allow
