@@ -54,7 +54,7 @@ CREATE TABLE `tbl_entries` (
 -- *** STRUCTURE: `tbl_extensions` ***
 DROP TABLE IF EXISTS `tbl_extensions`;
 CREATE TABLE `tbl_extensions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `status` enum('enabled','disabled') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'enabled',
   `version` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
@@ -70,6 +70,7 @@ CREATE TABLE `tbl_extensions_delegates` (
   `page` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `delegate` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `callback` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `order` int(11) signed NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `extension_id` (`extension_id`),
   KEY `page` (`page`),
@@ -187,7 +188,7 @@ CREATE TABLE `tbl_fields_upload` (
 -- *** STRUCTURE: `tbl_forgotpass` ***
 DROP TABLE IF EXISTS `tbl_forgotpass`;
 CREATE TABLE `tbl_forgotpass` (
-  `author_id` int(11) NOT NULL DEFAULT '0',
+  `author_id` int(11) unsigned NOT NULL DEFAULT '0',
   `token` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
   `expiry` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`author_id`)
