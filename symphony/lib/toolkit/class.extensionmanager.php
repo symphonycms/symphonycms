@@ -57,12 +57,12 @@ class ExtensionManager implements FileResource
     {
         if (empty(self::$_subscriptions) && Symphony::Database() && Symphony::Database()->isConnected()) {
             $subscriptions = Symphony::Database()
-                ->select(['t1.name', 't2.page', 't2.delegate', 't2.callback'])
+                ->select(['t1.name', 't2.page', 't2.delegate', 't2.callback', 't2.order'])
                 ->from('tbl_extensions', 't1')
                 ->innerJoin('tbl_extensions_delegates', 't2')
                 ->on(['t1.id' => '$t2.extension_id'])
                 ->where(['t1.status' => 'enabled'])
-                ->orderBy(['t2.delegate', 't1.name'], 'ASC')
+                ->orderBy(['t2.delegate', 't2.order', 't1.name'], 'ASC')
                 ->execute();
 
             while ($subscription = $subscriptions->next()) {
@@ -532,7 +532,8 @@ class ExtensionManager implements FileResource
                         'extension_id' => $id,
                         'page' => $delegate['page'],
                         'delegate' => $delegate['delegate'],
-                        'callback' => $delegate['callback']
+                        'callback' => $delegate['callback'],
+                        'order' => isset($delegate['order']) ? (int)$delegate['order'] : 0
                     ])
                     ->execute();
             }
