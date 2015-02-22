@@ -18,7 +18,7 @@ final class migration_300 extends Migration
             'Symphony <code>3.0.0</code> is a major release and breaks some APIs. ' .
             'Most of the changes are about the migration to PDO and the new database API.',
             'There is a compatibility layer to allow for gradual updating of extensions.',
-            'All tables will be migrated to InnoDb but charset and collate will be kept.' .
+            'All tables will be migrated to InnoDb but charset and collate will be kept. ' .
             'Make sure you have an up to date backup in case something goes wrong.',
             'The update process can take a long time if you have many tables. ' .
             'If it ever times out, start the update process again: it will continue where it stopped.',
@@ -89,6 +89,59 @@ final class migration_300 extends Migration
                 true
             );
         }
+
+        // Make extensions id unsigned
+        Symphony::Database()
+            ->alter('tbl_extensions')
+            ->change('id', ['id' => [
+                'type' => 'int(11)',
+                'signed' => false,
+            ]])
+            ->execute();
+
+        // Make extensions delegates extension_id unsigned
+        // and add the order column
+        Symphony::Database()
+            ->alter('tbl_extensions_delegates')
+            ->change('extension_id', ['extension_id' => [
+                'type' => 'int(11)',
+                'signed' => false,
+            ]])
+            ->add([
+                'order' => [
+                    'type' => 'int(11)',
+                    'signed' => true,
+                    'default' => 0
+                ]
+            ])
+            ->after('callback')
+            ->execute();
+
+        // Make parent_section unsigned and sortorder signed
+        Symphony::Database()
+            ->alter('tbl_fields')
+            ->change('parent_section', ['parent_section' => [
+                'type' => 'int(11)',
+                'signed' => false,
+            ]])
+            ->change('sortorder', ['sortorder' => [
+                'type' => 'int(11)',
+                'signed' => true,
+            ]])
+            ->execute();
+
+        // Make author id and parent unsigned
+        Symphony::Database()
+            ->alter('tbl_forgotpass')
+            ->change('author_id', ['author_id' => [
+                'type' => 'int(11)',
+                'signed' => false,
+            ]])
+            ->change('parent', ['parent' => [
+                'type' => 'int(11)',
+                'signed' => false,
+            ]])
+            ->execute();
 
         // Update the version information
         return parent::upgrade();

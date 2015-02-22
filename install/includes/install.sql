@@ -55,7 +55,7 @@ CREATE TABLE `tbl_entries` (
 -- *** STRUCTURE: `tbl_extensions` ***
 DROP TABLE IF EXISTS `tbl_extensions`;
 CREATE TABLE `tbl_extensions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `status` enum('enabled','disabled') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'enabled',
   `version` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -67,10 +67,11 @@ CREATE TABLE `tbl_extensions` (
 DROP TABLE IF EXISTS `tbl_extensions_delegates`;
 CREATE TABLE `tbl_extensions_delegates` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `extension_id` int(11) NOT NULL,
+  `extension_id` int(11) unsigned NOT NULL,
   `page` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `delegate` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `callback` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `order` int(11) signed NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `extension_id` (`extension_id`),
   KEY `page` (`page`),
@@ -84,9 +85,9 @@ CREATE TABLE `tbl_fields` (
   `label` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `element_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `type` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `parent_section` int(11) NOT NULL DEFAULT '0',
+  `parent_section` int(11) unsigned NOT NULL DEFAULT '0',
   `required` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'yes',
-  `sortorder` int(11) NOT NULL DEFAULT '1',
+  `sortorder` int(11) signed NOT NULL DEFAULT '1',
   `location` enum('main','sidebar') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'main',
   `show_column` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'no',
   PRIMARY KEY (`id`),
@@ -188,7 +189,7 @@ CREATE TABLE `tbl_fields_upload` (
 -- *** STRUCTURE: `tbl_forgotpass` ***
 DROP TABLE IF EXISTS `tbl_forgotpass`;
 CREATE TABLE `tbl_forgotpass` (
-  `author_id` int(11) NOT NULL DEFAULT '0',
+  `author_id` int(11) unsigned NOT NULL DEFAULT '0',
   `token` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiry` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`author_id`)
@@ -198,14 +199,14 @@ CREATE TABLE `tbl_forgotpass` (
 DROP TABLE IF EXISTS `tbl_pages`;
 CREATE TABLE `tbl_pages` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `parent` int(11) DEFAULT NULL,
+  `parent` int(11) unsigned DEFAULT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `handle` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `params` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `data_sources` text COLLATE utf8mb4_unicode_ci,
   `events` text COLLATE utf8mb4_unicode_ci,
-  `sortorder` int(11) NOT NULL DEFAULT '0',
+  `sortorder` int(11) signed NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `parent` (`parent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -226,7 +227,7 @@ CREATE TABLE `tbl_sections` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `handle` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sortorder` int(11) NOT NULL DEFAULT '0',
+  `sortorder` int(11) signed NOT NULL DEFAULT '0',
   `hidden` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'no',
   `filter` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'yes',
   `navigation_group` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Content',
