@@ -27,7 +27,7 @@
     define('DOCROOT', $clean_path);
 
     // Required boot components
-    define('VERSION', '2.6.0-beta.2');
+    define('VERSION', '2.6.0-rc.1');
     define('INSTALL', DOCROOT . '/install');
 
     // Is there a vendor autoloader?
