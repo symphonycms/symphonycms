@@ -325,7 +325,7 @@
 				insert(value, input);
 			}
 			else {
-				input.val(value);
+				input.val(value.replace(',', '\\,'));
 				input.addClass('updated');
 				input.change();
 			}
