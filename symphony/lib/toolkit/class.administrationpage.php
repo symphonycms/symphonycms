@@ -376,6 +376,7 @@ Class AdministrationPage extends HTMLPage
             'symphony' => SYMPHONY_URL,
             'path'     => '/' . Symphony::Configuration()->get('admin-path', 'symphony'),
             'route'    => getCurrentPage(),
+            'version'  => Symphony::Configuration()->get('version', 'symphony'),
             'lang'     => Lang::get(),
             'user'     => array(
 
