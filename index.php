@@ -3,12 +3,8 @@
     // Find out where we are:
     define('DOCROOT', __DIR__);
 
-    // Is there vendor autoloader?
-    if (@file_exists(DOCROOT . '/vendor/autoload.php')) {
-        require_once DOCROOT . '/vendor/autoload.php';
-    } else {
-        require_once DOCROOT . '/symphony/lib/boot/autoload.php';
-    }
+    // Include autoloader:
+    require_once DOCROOT . '/vendor/autoload.php';
 
     // Include the boot script:
     require_once DOCROOT . '/symphony/lib/boot/bundle.php';
