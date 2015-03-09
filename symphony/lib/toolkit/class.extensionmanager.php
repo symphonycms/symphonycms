@@ -780,6 +780,20 @@ class ExtensionManager implements FileResource
     }
 
     /**
+     * Returns true if the extension is installed.
+     *
+     * @uses listInstalledHandles()
+     * @since Symphony 3.0.0
+     * @param string $handle
+     *  The name of the extension
+     * @return boolean
+     */
+    public static function isInstalled($handle)
+    {
+        return in_array($handle, self::listInstalledHandles());
+    }
+
+    /**
      * Will return an associative array of all extensions and their about information
      *
      * @param string $filter

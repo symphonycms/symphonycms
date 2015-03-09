@@ -179,7 +179,7 @@ class Administration extends Symphony
             }
         }
 
-        include_once($this->_callback['driver_location']);
+        require_once($this->_callback['driver_location']);
         $this->Page = new $this->_callback['classname'];
 
         if (!$is_logged_in && $this->_callback['driver'] !== 'login') {
@@ -347,9 +347,16 @@ class Administration extends Symphony
             $extension_name = $bits[1];
             $bits = preg_split('/\//', trim($bits[2], '/'), 2, PREG_SPLIT_NO_EMPTY);
 
+            // check if extension is enabled, if it's not, pretend the extension doesn't
+            // even exist. #2367
+            if (!ExtensionManager::isInstalled($extension_name)) {
+                return false;
+            }
+
             $callback['driver'] = 'index';
             $callback['classname'] = 'contentExtension' . ucfirst($extension_name) . 'Index';
             $callback['pageroot'] = '/extension/' . $extension_name. '/';
+            $callback['extension'] = $extension_name;
 
             if (isset($bits[0])) {
                 $callback['driver'] = $bits[0];
@@ -362,6 +369,12 @@ class Administration extends Symphony
             }
 
             $callback['driver_location'] = EXTENSIONS . '/' . $extension_name . '/content/content.' . $callback['driver'] . '.php';
+            // Extensions won't be part of the autoloader chain, so first try to require them if they are available.
+            if (!is_file($callback['driver_location'])) {
+                return false;
+            } else {
+                require_once $callback['driver_location'];
+            }
 
             // Publish page, /symphony/publish/{section_handle}/
         } elseif ($bits[0] == 'publish') {
@@ -442,7 +455,7 @@ class Administration extends Symphony
             'callback' => &$callback
         ));
 
-        if (isset($callback['driver_location']) && !is_file($callback['driver_location'])) {
+        if (!isset($callback['driver_location']) || !is_file($callback['driver_location'])) {
             return false;
         }
 
