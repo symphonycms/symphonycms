@@ -731,6 +731,31 @@ class ExtensionManager implements FileResource
     }
 
     /**
+     * Returns true if extension $handle is installed
+     *
+     * @param string $handle
+     *  The name of the extension
+     *
+     * @since Symphony 2.6.0
+     *
+     * @return boolean
+     */
+    public static function isInstalled($handle)
+    {
+        /*if (Symphony::Database()->isConnected()) {
+            $handle = MySQL::cleanValue($handle);
+            $count = Symphony::Database()->fetchCol(
+                'c',
+                "SELECT count(`id`) as `c` FROM `tbl_extensions` WHERE `status` = 'enabled'
+                 AND `name` = '$handle'"
+            );
+            return intval($count) == 1;
+        }
+        return false;*/
+        return in_array($handle, self::listInstalledHandles());
+    }
+
+    /**
      * Will return an associative array of all extensions and their about information
      *
      * @param string $filter
