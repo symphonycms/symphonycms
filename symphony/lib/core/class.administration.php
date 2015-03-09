@@ -332,9 +332,17 @@ class Administration extends Symphony
             $extension_name = $bits[1];
             $bits = preg_split('/\//', trim($bits[2], '/'), 2, PREG_SPLIT_NO_EMPTY);
 
+            // check if extension is enabled
+            if (!ExtensionManager::isInstalled($extension_name)) {
+                // extension is not enabled:
+                // act as if the extension did not exist.
+                return false;
+            }
+
             $callback['driver'] = 'index';
             $callback['classname'] = 'contentExtension' . ucfirst($extension_name) . 'Index';
             $callback['pageroot'] = '/extension/' . $extension_name. '/';
+            $callback['extension'] = $extension_name;
 
             if (isset($bits[0])) {
                 $callback['driver'] = $bits[0];
