@@ -30,15 +30,11 @@
     define('VERSION', '2.6.0');
     define('INSTALL', DOCROOT . '/install');
 
-    // Is there a vendor autoloader?
-    if (@file_exists(DOCROOT . '/vendor/autoload.php')) {
-        require_once DOCROOT . '/vendor/autoload.php';
-    } else {
-        require_once DOCROOT . '/symphony/lib/boot/autoload.php';
-    }
+    // Include autoloader:
+    require_once DOCROOT . '/vendor/autoload.php';
 
-    // Run the bundle
-    require_once(DOCROOT . '/symphony/lib/boot/bundle.php');
+    // Include the boot script:
+    require_once DOCROOT . '/symphony/lib/boot/bundle.php';
 
     define('INSTALL_LOGS', MANIFEST . '/logs');
     define('INSTALL_URL', URL . '/install');

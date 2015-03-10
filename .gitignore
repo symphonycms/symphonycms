@@ -4,5 +4,3 @@ manifest/
 node_modules/
 install-log.txt
 install/logs/
-vendor/
-composer.lock
