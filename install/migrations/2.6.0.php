@@ -5,7 +5,7 @@
 
         static function getVersion()
         {
-            return '2.6.0-rc.1';
+            return '2.6.0';
         }
 
         static function getReleaseNotes()
