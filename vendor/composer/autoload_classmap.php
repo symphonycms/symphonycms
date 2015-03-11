@@ -8,7 +8,6 @@ $baseDir = dirname($vendorDir);
 return array(
     'Administration' => $baseDir . '/symphony/lib/core/class.administration.php',
     'AdministrationPage' => $baseDir . '/symphony/lib/toolkit/class.administrationpage.php',
-    'AjaxPage' => $baseDir . '/symphony/lib/toolkit/class.ajaxpage.php',
     'Alert' => $baseDir . '/symphony/lib/toolkit/class.alert.php',
     'Author' => $baseDir . '/symphony/lib/toolkit/class.author.php',
     'AuthorDatasource' => $baseDir . '/symphony/lib/toolkit/data-sources/class.datasource.author.php',
@@ -68,7 +67,6 @@ return array(
     'JSONPage' => $baseDir . '/symphony/lib/toolkit/class.jsonpage.php',
     'Lang' => $baseDir . '/symphony/lib/toolkit/class.lang.php',
     'Log' => $baseDir . '/symphony/lib/core/class.log.php',
-    'MD5' => $baseDir . '/symphony/lib/toolkit/cryptography/class.md5.php',
     'Migration' => $baseDir . '/install/lib/class.migration.php',
     'Mutex' => $baseDir . '/symphony/lib/toolkit/class.mutex.php',
     'MySQL' => $baseDir . '/symphony/lib/toolkit/class.mysql.php',
