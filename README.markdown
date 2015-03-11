@@ -3,7 +3,7 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=integration)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
 
 - Version: 2.6.0
-- Date: 10th March 2015
+- Date: 11th March 2015
 - [Release notes](http://getsymphony.com/download/releases/version/2.6.0/)
 - [Github repository](https://github.com/symphonycms/symphony-2/tree/2.6.0)
 
