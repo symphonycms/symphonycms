@@ -156,7 +156,9 @@ class FieldInput extends Field implements ExportableField, ImportableField
             $data = $data['value'];
         }
 
-        if ($this->get('required') === 'yes' && strlen(trim($data)) == 0) {
+        $data = trim($data);
+
+        if ($this->get('required') === 'yes' && strlen($data) == 0) {
             $message = __('‘%s’ is a required field.', array($this->get('label')));
             return self::__MISSING_FIELDS__;
         }
@@ -172,8 +174,9 @@ class FieldInput extends Field implements ExportableField, ImportableField
     public function processRawFieldData($data, &$status, &$message = null, $simulate = false, $entry_id = null)
     {
         $status = self::__OK__;
+        $data = trim($data);
 
-        if (strlen(trim($data)) == 0) {
+        if (strlen($data) == 0) {
             return array();
         }
 
