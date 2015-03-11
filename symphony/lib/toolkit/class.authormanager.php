@@ -56,10 +56,7 @@ class AuthorManager
      */
     public static function edit($id, array $fields)
     {
-        return Symphony::Database()->update($fields, 'tbl_authors', sprintf(
-            " `id` = %d",
-            $id
-        ));
+        return Symphony::Database()->update($fields, 'tbl_authors', '`id` = ?', array($id));
     }
 
     /**
@@ -72,10 +69,7 @@ class AuthorManager
      */
     public static function delete($id)
     {
-        return Symphony::Database()->delete('tbl_authors', sprintf(
-            " `id` = %d",
-            $id
-        ));
+        return Symphony::Database()->delete('tbl_authors', '`id` = ?', array($id));
     }
 
     /**
@@ -221,14 +215,15 @@ class AuthorManager
      */
     public static function fetchByUsername($username)
     {
-        if (!isset(self::$_pool[$username])) {
-            $records = Symphony::Database()->fetchRow(0, sprintf(
-                "SELECT *
-                FROM `tbl_authors`
-                WHERE `username` = '%s'
-                LIMIT 1",
-                Symphony::Database()->cleanValue($username)
-            ));
+        if(!isset(self::$_pool[$username])) {
+            $records = Symphony::Database()->fetchRow(0, "
+                    SELECT *
+                    FROM `tbl_authors`
+                    WHERE `username` = ?
+                    LIMIT 1
+                ",  
+                array($username)
+            );
 
             if (!is_array($records) || empty($records)) {
                 return null;

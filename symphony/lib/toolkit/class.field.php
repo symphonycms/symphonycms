@@ -1628,11 +1628,7 @@ class Field
      */
     public function entryDataCleanup($entry_id, $data = null)
     {
-        $where = is_array($entry_id)
-            ? " `entry_id` IN (" . implode(',', $entry_id) . ") "
-            : " `entry_id` = '$entry_id' ";
-
-        Symphony::Database()->delete('tbl_entries_data_' . $this->get('id'), $where);
+        Symphony::Database()->delete('tbl_entries_data_' . $this->get('id'), "`entry_id` IN (?)", array($entry_id));
 
         return true;
     }
