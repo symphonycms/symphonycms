@@ -152,4 +152,5 @@ return array(
     'migration_260' => $baseDir . '/install/migrations/2.6.0.php',
     'migration_261' => $baseDir . '/install/migrations/2.6.1.php',
     'migration_262' => $baseDir . '/install/migrations/2.6.2.php',
+    'migration_300' => $baseDir . '/install/migrations/3.0.0.php',
 );

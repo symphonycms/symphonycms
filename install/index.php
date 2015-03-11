@@ -27,7 +27,8 @@
     define('DOCROOT', $clean_path);
 
     // Required boot components
-    define('VERSION', '2.6.2');
+    define('VERSION', '3.0.0-alpha.1');
+
     define('INSTALL', DOCROOT . '/install');
 
     // Include autoloader:
