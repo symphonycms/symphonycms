@@ -104,17 +104,6 @@ abstract class Page
     );
 
     /**
-     * The HTTP status code of the page using the `HTTP_STATUSES` constants
-     *
-     * @deprecated Since Symphony 2.3.2, this has been deprecated. It will be
-     * removed in Symphony 3.0
-     * @see $this->setHttpStatus and self::$HTTP_STATUSES
-     *
-     * @var integer
-     */
-    protected $_status = null;
-
-    /**
      * This stores the headers that will be sent when this page is
      * generated as an associative array of header=>value.
      *
@@ -239,8 +228,6 @@ abstract class Page
     public function setHttpStatus($status_code)
     {
         $this->addHeaderToPage('Status', null, $status_code);
-        // Assure we clear the legacy value
-        $this->_status = null;
     }
 
     /**
@@ -253,11 +240,6 @@ abstract class Page
      */
     public function getHttpStatusCode()
     {
-        // Legacy check
-        if ($this->_status != null) {
-            $this->setHttpStatus($this->_status);
-        }
-
         if (isset($this->_headers['status'])) {
             return $this->_headers['status']['response_code'];
         }
@@ -306,11 +288,6 @@ abstract class Page
     {
         if (!is_array($this->_headers) || empty($this->_headers)) {
             return;
-        }
-
-        // Legacy check
-        if ($this->_status != null) {
-            $this->setHttpStatus($this->_status);
         }
 
         foreach ($this->_headers as $key => $value) {

@@ -254,16 +254,10 @@ abstract class Symphony implements Singleton
      *
      * This function also defines two constants, `__SYM_COOKIE_PATH__`
      * and `__SYM_COOKIE_PREFIX__`.
-     *
-     * @deprecated Prior to Symphony 2.3.2, the constant `__SYM_COOKIE_PREFIX_`
-     *  had a typo where it was missing the second underscore. Symphony will
-     *  support both constants, `__SYM_COOKIE_PREFIX_` and `__SYM_COOKIE_PREFIX__`
-     *  until Symphony 3.0
      */
     public static function initialiseCookie()
     {
         define_safe('__SYM_COOKIE_PATH__', DIRROOT === '' ? '/' : DIRROOT);
-        define_safe('__SYM_COOKIE_PREFIX_', self::Configuration()->get('cookie_prefix', 'symphony'));
         define_safe('__SYM_COOKIE_PREFIX__', self::Configuration()->get('cookie_prefix', 'symphony'));
 
         self::$Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);
@@ -452,7 +446,7 @@ abstract class Symphony implements Singleton
                 if (self::isUpgradeAvailable() === false && Cryptography::requiresMigration(self::$Author->get('password'))) {
                     self::$Author->set('password', Cryptography::hash($password));
 
-                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors', 
+                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors',
                         " `id` = ?", array(self::$Author->get('id'))
                     );
                 }
@@ -464,7 +458,7 @@ abstract class Symphony implements Singleton
                     'last_seen' => DateTimeObj::get('Y-m-d H:i:s')
                     ),
                     'tbl_authors',
-                    " `id` = ?", 
+                    " `id` = ?",
                     array(self::$Author->get('id'))
                 );
 
@@ -526,7 +520,7 @@ abstract class Symphony implements Singleton
                 AND `auth_token_active` = 'yes'
                 LIMIT 1",
                 'SHA1'
-                ), 
+                ),
                 array($token)
             );
         }

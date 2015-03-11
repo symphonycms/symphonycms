@@ -889,7 +889,7 @@ class FrontendPage extends XSLTPage
 
             // if the XML is still null, an extension has not run the data source, so run normally
             if (is_null($xml)) {
-                $xml = $ds->grab($this->_env['pool']);
+                $xml = $ds->execute($this->_env['pool']);
             }
 
             if ($xml) {
