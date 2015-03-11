@@ -2,12 +2,12 @@
 
 [![Join the chat at https://gitter.im/symphonycms/symphony-2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/symphonycms/symphony-2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=integration)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=integration)
 
-- Version: 2.6.7
-- Date: 08th February 2016
-- [Release notes](http://getsymphony.com/download/releases/version/2.6.7/)
-- [Github repository](https://github.com/symphonycms/symphony-2/tree/2.6.7)
+- Version: 3.0.0-alpha.1
+- Date: unreleased
+- [Release notes](http://getsymphony.com/download/releases/version/3.0.0/)
+- [Github repository](https://github.com/symphonycms/symphony-2/tree/integration)
 
 ## Contents
 
@@ -25,7 +25,7 @@
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.6.7` and is considered stable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `3.0.0-alpha` and is considered unstable. Do not use this in production.
 
 Useful places:
 
@@ -36,7 +36,7 @@ Useful places:
 
 ## Server requirements
 
-- PHP 5.3 or above
+- PHP 5.6 or above
 - PHP’s LibXML module, with the XSLT extension enabled (`--with-xsl`)
 - MySQL 5.5 or above is recommended
 - A webserver (known to be used with Apache, Litespeed, Nginx and Hiawatha)
