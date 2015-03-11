@@ -137,6 +137,7 @@
 					}
 
 					instance.trigger('destructstop.duplicator');
+					duplicator.trigger('destructstop.duplicator', [instance]);
 				}
 				else {
 					instance.trigger('constructstop.duplicator');

@@ -195,7 +195,7 @@ abstract Class EmailHelper
                 continue;
 
                 // No encoding within ascii range 33 to 126 (exception: 61)
-            } elseif (32 < $ascii && $ascii < 127 && $char != '=') {
+            } elseif (32 < $ascii && $ascii < 127 && $char !== '=') {
                 $replace_length = 1;
                 $replace_char = $char;
                 $blank = false;
@@ -250,7 +250,7 @@ abstract Class EmailHelper
     {
         $return = array();
         foreach ($array as $name => $email) {
-            $return[] = empty($name)
+            $return[] = empty($name) || General::intval($name) > -1
                         ? $email
                         : $name . ' <' . $email . '>';
         }

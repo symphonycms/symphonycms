@@ -12,8 +12,6 @@
  * to view them.
  */
 
-require_once TOOLKIT . '/class.htmlpage.php';
-
 class DevKit extends HTMLPage
 {
     /**
@@ -75,7 +73,7 @@ class DevKit extends HTMLPage
                 'content'       => 'text/html; charset=UTF-8'
             )
         ));
-        $this->addStylesheetToHead(APPLICATION_URL . '/assets/css/devkit.min.css', 'screen', null, false);
+        $this->addStylesheetToHead(ASSETS_URL . '/css/devkit.min.css', 'screen', null, false);
     }
 
     /**
@@ -160,7 +158,7 @@ class DevKit extends HTMLPage
 
         if ($root->hasChildNodes()) {
             foreach ($root->childNodes as $node) {
-                if ($node->getAttribute('active') == 'yes') {
+                if ($node->getAttribute('active') === 'yes') {
                     $item = new XMLElement('li', $node->getAttribute('name'));
 
                 } else {

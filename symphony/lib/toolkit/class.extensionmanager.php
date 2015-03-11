@@ -170,16 +170,16 @@ class ExtensionManager implements FileResource
 
         if (isset($about['handle']) && array_key_exists($about['handle'], self::$_extensions)) {
             if (self::$_extensions[$about['handle']]['status'] == 'enabled') {
-                $return[] = EXTENSION_ENABLED;
+                $return[] = Extension::EXTENSION_ENABLED;
             } else {
-                $return[] = EXTENSION_DISABLED;
+                $return[] = Extension::EXTENSION_DISABLED;
             }
         } else {
-            $return[] = EXTENSION_NOT_INSTALLED;
+            $return[] = Extension::EXTENSION_NOT_INSTALLED;
         }
 
         if (isset($about['handle'], $about['version']) && self::__requiresUpdate($about['handle'], $about['version'])) {
-            $return[] = EXTENSION_REQUIRES_UPDATE;
+            $return[] = Extension::EXTENSION_REQUIRES_UPDATE;
         }
 
         return $return;
@@ -815,6 +815,7 @@ class ExtensionManager implements FileResource
     public static function fetch(array $select = array(), array $where = array(), $order_by = null)
     {
         $extensions = self::listAll();
+        $data = array();
 
         if (empty($select) && empty($where) && is_null($order_by)) {
             return $extensions;
@@ -825,6 +826,7 @@ class ExtensionManager implements FileResource
         }
 
         if (!is_null($order_by)) {
+            $author = $name = $label = array();
             $order_by = array_map('strtolower', explode(' ', $order_by));
             $order = ($order_by[1] == 'desc') ? SORT_DESC : SORT_ASC;
             $sort = $order_by[0];
@@ -833,8 +835,6 @@ class ExtensionManager implements FileResource
                 foreach ($extensions as $key => $about) {
                     $author[$key] = $about['author'];
                 }
-
-                $data = array();
 
                 uasort($author, array('self', 'sortByAuthor'));
 
@@ -855,10 +855,7 @@ class ExtensionManager implements FileResource
 
                 array_multisort($name, $order, $label, $order, $extensions);
             }
-
         }
-
-        $data = array();
 
         foreach($extensions as $i => $e){
             $data[$i] = array();
@@ -923,7 +920,7 @@ class ExtensionManager implements FileResource
 
             // Check to see that the extension is named correctly, if it is
             // not, then return nothing
-            if (self::__getClassName($name) != self::__getClassName($xpath->evaluate('string(@id)', $extension))) {
+            if (self::__getClassName($name) !== self::__getClassName($xpath->evaluate('string(@id)', $extension))) {
                 return array();
             }
 
@@ -965,9 +962,9 @@ class ExtensionManager implements FileResource
                 $required_max_version = $xpath->evaluate('string(@max)', $release);
                 $current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
 
-                // Remove pre-release notes fro the current Symphony version so that
+                // Remove pre-release notes from the current Symphony version so that
                 // we don't get false erros in the backend
-                $current_symphony_version = preg_replace(array('/dev/i', '/beta\d/i', '/rc\d/i', '/.0/i'), '', $current_symphony_version);
+                $current_symphony_version = preg_replace(array('/dev/i', '/-?beta\.?\d/i', '/-?rc\.?\d/i', '/.0/i'), '', $current_symphony_version);
 
                 // Munge the version number so that it makes sense in the backend.
                 // Consider, 2.3.x. As the min version, this means 2.3 onwards,
@@ -979,13 +976,13 @@ class ExtensionManager implements FileResource
 
                 // Min version
                 if (!empty($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
-                    $about['status'][] = EXTENSION_NOT_COMPATIBLE;
+                    $about['status'][] = Extension::EXTENSION_NOT_COMPATIBLE;
                     $about['required_version'] = $required_min_version;
 
                     // Max version
                 } elseif (!empty($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
-                    $about['status'][] = EXTENSION_NOT_COMPATIBLE;
-                    $about['required_version'] = $required_max_version;
+                    $about['status'][] = Extension::EXTENSION_NOT_COMPATIBLE;
+                    $about['required_version'] = str_replace('p', '.x', $required_max_version);
                 }
             }
 
@@ -1083,36 +1080,3 @@ class ExtensionManager implements FileResource
         }
     }
 }
-
-/**
- * Status when an extension is installed and enabled
- * @var integer
- */
-define_safe('EXTENSION_ENABLED', 10);
-
-/**
- * Status when an extension is disabled
- * @var integer
- */
-define_safe('EXTENSION_DISABLED', 11);
-
-/**
- * Status when an extension is in the file system, but has not been installed.
- * @var integer
- */
-define_safe('EXTENSION_NOT_INSTALLED', 12);
-
-/**
- * Status when an extension version in the file system is different to
- * the version stored in the database for the extension
- * @var integer
- */
-define_safe('EXTENSION_REQUIRES_UPDATE', 13);
-
-/**
- * Status when the extension is not compatible with the current version of
- * Symphony
- * @since Symphony 2.3
- * @var integer
- */
-define_safe('EXTENSION_NOT_COMPATIBLE', 14);

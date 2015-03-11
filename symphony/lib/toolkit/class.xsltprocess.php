@@ -39,18 +39,11 @@ class XsltProcess
      *  The XML for the transformation to be applied to
      * @param string $xsl
      *  The XSL for the transformation
-	 * @return boolean
      */
     public function __construct($xml = null, $xsl = null)
     {
-        if (!XsltProcess::isXSLTProcessorAvailable()) {
-            return false;
-        }
-
         $this->_xml = $xml;
         $this->_xsl = $xsl;
-
-        return true;
     }
 
     /**

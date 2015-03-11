@@ -9,9 +9,6 @@
  * an index view of all the pages in this Symphony install as well as the
  * forms for the creation/editing of a Page
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.resourcemanager.php';
-require_once TOOLKIT . '/class.xsltprocess.php';
 
 class contentBlueprintsPages extends AdministrationPage
 {
@@ -67,14 +64,14 @@ class contentBlueprintsPages extends AdministrationPage
         $this->setPageType('table');
         $this->setTitle(__('%1$s &ndash; %2$s', array(__('Pages'), __('Symphony'))));
 
-        $nesting = (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes');
+        $nesting = Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes';
 
-        if ($nesting == true && isset($_GET['parent']) && is_numeric($_GET['parent'])) {
+        if ($nesting && isset($_GET['parent']) && is_numeric($_GET['parent'])) {
             $parent = PageManager::fetchPageByID((int)$_GET['parent'], array('title', 'id'));
         }
 
         $this->appendSubheading(isset($parent) ? $parent['title'] : __('Pages'), Widget::Anchor(
-            __('Create New'), Administration::instance()->getCurrentPageURL() . 'new/' . ($nesting == true && isset($parent) ? "?parent={$parent['id']}" : null),
+            __('Create New'), Administration::instance()->getCurrentPageURL() . 'new/' . ($nesting && isset($parent) ? "?parent={$parent['id']}" : null),
             __('Create a new page'), 'create button', null, array('accesskey' => 'c')
         ));
 
@@ -91,7 +88,7 @@ class contentBlueprintsPages extends AdministrationPage
         );
         $aTableBody = array();
 
-        if ($nesting == true) {
+        if ($nesting) {
             $aTableHead[] = array(__('Children'), 'col');
             $where = array(
                 'parent ' . (isset($parent) ? " = {$parent['id']} " : ' IS NULL ')
@@ -111,7 +108,7 @@ class contentBlueprintsPages extends AdministrationPage
             foreach ($pages as $page) {
                 $class = array();
 
-                $page_title = ($nesting == true ? $page['title'] : PageManager::resolvePageTitle($page['id']));
+                $page_title = ($nesting ? $page['title'] : PageManager::resolvePageTitle($page['id']));
                 $page_url = URL . '/' . PageManager::resolvePagePath($page['id']) . '/';
                 $page_edit_url = Administration::instance()->getCurrentPageURL() . 'edit/' . $page['id'] . '/';
                 $page_template = PageManager::createFilePath($page['path'], $page['handle']);
@@ -148,7 +145,7 @@ class contentBlueprintsPages extends AdministrationPage
 
                 $columns = array($col_title, $col_template, $col_url, $col_params, $col_types);
 
-                if ($nesting == true) {
+                if ($nesting) {
                     if (PageManager::hasChildPages($page['id'])) {
                         $col_children = Widget::TableData(
                             Widget::Anchor(PageManager::getChildPagesCount($page['id']) . ' &rarr;',
@@ -229,7 +226,7 @@ class contentBlueprintsPages extends AdministrationPage
         $nesting = (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes');
 
         // Verify page exists:
-        if ($this->_context[0] == 'edit') {
+        if ($this->_context[0] === 'edit') {
             if (!$page_id = (int)$this->_context[1]) {
                 redirect(SYMPHONY_URL . '/blueprints/pages/');
             }
@@ -246,15 +243,13 @@ class contentBlueprintsPages extends AdministrationPage
         // Status message:
         if (isset($this->_context[2])) {
             $flag = $this->_context[2];
-            $link_suffix = $message = '';
+            $parent_link_suffix = $message = '';
             $time = Widget::Time();
 
             if (isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])) {
                 $parent_link_suffix = "?parent=" . $_REQUEST['parent'];
-            } elseif ($nesting == true && isset($existing) && !is_null($existing['parent'])) {
+            } elseif ($nesting && isset($existing) && !is_null($existing['parent'])) {
                 $parent_link_suffix = '?parent=' . $existing['parent'];
-            } else {
-                $parent_link_suffix = '';
             }
 
             switch ($flag) {
@@ -440,7 +435,7 @@ class contentBlueprintsPages extends AdministrationPage
         $label = Widget::Label(__('Events'));
         $label->setAttribute('class', 'column');
 
-        $events = ResourceManager::fetch(RESOURCE_TYPE_EVENT, array(), array(), 'name ASC');
+        $events = ResourceManager::fetch(ResourceManager::RESOURCE_TYPE_EVENT, array(), array(), 'name ASC');
         $options = array();
 
         if (is_array($events) && !empty($events)) {
@@ -463,7 +458,7 @@ class contentBlueprintsPages extends AdministrationPage
         $label = Widget::Label(__('Data Sources'));
         $label->setAttribute('class', 'column');
 
-        $datasources = ResourceManager::fetch(RESOURCE_TYPE_DS, array(), array(), 'name ASC');
+        $datasources = ResourceManager::fetch(ResourceManager::RESOURCE_TYPE_DS, array(), array(), 'name ASC');
         $options = array();
 
         if (is_array($datasources) && !empty($datasources)) {

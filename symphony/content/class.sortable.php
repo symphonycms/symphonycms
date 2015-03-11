@@ -23,7 +23,7 @@ class Sortable
      * `$object->sort()` method. It is this method that actually invokes the sorting inside
      * the `$object`.
      *
-     * @param object $object
+     * @param HTMLPage $object
      *    The object responsible for sorting the items. It must implement a `sort()` method.
      * @param array $result
      *    This variable stores an array sorted objects. Once set, its value is available
@@ -37,7 +37,7 @@ class Sortable
      * @param array $params (optional)
      *    An array of parameters that can be passed to the context-based method.
      */
-    public static function initialize($object, &$result, &$sort, &$order, array $params = array())
+    public static function initialize(HTMLPage $object, &$result, &$sort, &$order, array $params = array())
     {
         if (isset($_REQUEST['sort'])) {
             $sort = $_REQUEST['sort'];

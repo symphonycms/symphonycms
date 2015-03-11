@@ -7,8 +7,6 @@
  * event by invoking all fields to return their documentation.
  * Accepts three parameters, `section`, `filters` and `name`.
  */
-require_once TOOLKIT . '/class.datasourcemanager.php';
-
 class contentAjaxEventDocumentation extends TextPage
 {
 

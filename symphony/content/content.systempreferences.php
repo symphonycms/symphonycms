@@ -10,7 +10,6 @@
  * page so they can have their own settings. This page is typically
  * a UI for a subset of the `CONFIG` file.
  */
-require_once TOOLKIT . '/class.administrationpage.php';
 
 class contentSystemPreferences extends AdministrationPage {
 
@@ -52,6 +51,7 @@ class contentSystemPreferences extends AdministrationPage {
             // Get language names
             asort($languages);
 
+            $options = array();
             foreach($languages as $code => $name) {
                 $options[] = array($code, $code == Symphony::Configuration()->get('lang', 'symphony'), $name);
             }
@@ -170,7 +170,7 @@ class contentSystemPreferences extends AdministrationPage {
         $attr = array('accesskey' => 's');
 
         if (!$bIsWritable) {
-        	$attr['disabled'] = 'disabled';
+            $attr['disabled'] = 'disabled';
         }
 
         $div->appendChild(Widget::Input('action[save]', __('Save Changes'), 'submit', $attr));
@@ -182,7 +182,7 @@ class contentSystemPreferences extends AdministrationPage {
     {
         // Do not proceed if the config file is read only
         if (!is_writable(CONFIG)) {
-        	redirect(SYMPHONY_URL . '/system/preferences/');
+            redirect(SYMPHONY_URL . '/system/preferences/');
         }
 
         /**
@@ -222,7 +222,7 @@ class contentSystemPreferences extends AdministrationPage {
                 Symphony::Configuration()->write();
 
                 if (function_exists('opcache_invalidate')) {
-                	opcache_invalidate(CONFIG, true);
+                    opcache_invalidate(CONFIG, true);
                 }
 
                 redirect(SYMPHONY_URL . '/system/preferences/success/');

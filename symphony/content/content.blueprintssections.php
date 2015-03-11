@@ -7,11 +7,6 @@
  * This page controls the creation and maintenance of Symphony
  * Sections through the Section Index and Section Editor.
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once TOOLKIT . '/class.fieldmanager.php';
-require_once TOOLKIT . '/class.entrymanager.php';
-require_once FACE . '/interface.provider.php';
 
 class contentBlueprintsSections extends AdministrationPage
 {
@@ -67,8 +62,14 @@ class contentBlueprintsSections extends AdministrationPage
                 $td2 = Widget::TableData(Widget::Anchor("$entry_count", SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
                 $td3 = Widget::TableData($s->get('navigation_group'));
 
-                // Add a row to the body array, assigning each cell to the row
-                $aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
+                // Create row
+                $tr = Widget::TableRow(array($td1, $td2, $td3));
+
+                if ($s->get('hidden') === 'yes') {
+                    $tr->setAttribute('class', 'inactive');
+                }
+                
+                $aTableBody[] = $tr; 
             }
         }
 
@@ -172,8 +173,6 @@ class contentBlueprintsSections extends AdministrationPage
         if (!$showEmptyTemplate) {
             ksort($fields);
         }
-
-        $meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
 
         // Set navigation group, if not already set
         if (!isset($meta['navigation_group'])) {
@@ -375,9 +374,6 @@ class contentBlueprintsSections extends AdministrationPage
 
         if (isset($_POST['meta'])) {
             $meta = $_POST['meta'];
-            $meta['hidden'] = (isset($meta['hidden']) ? 'yes' : 'no');
-            $meta['filter'] = (isset($meta['filter']) ? 'yes' : 'no');
-
             if ($meta['name'] == '') {
                 $meta['name'] = $section->get('name');
             }
@@ -896,12 +892,12 @@ class contentBlueprintsSections extends AdministrationPage
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
         $hidediv = new XMLElement('div', null, array('class' => 'column'));
-        $label = Widget::Checkbox('meta[hidden]', $meta['hidden'], 'Hide this section from the back-end menu');
+        $label = Widget::Checkbox('meta[hidden]', $meta['hidden'], __('Hide this section from the back-end menu'));
         $hidediv->appendChild($label);
         $div->appendChild($hidediv);
 
         $filterdiv = new XMLElement('div', null, array('class' => 'column'));
-        $label = Widget::Checkbox('meta[filter]', $meta['filter'], 'Allow filtering of section entries');
+        $label = Widget::Checkbox('meta[filter]', $meta['filter'], __('Allow filtering of section entries'));
         $filterdiv->appendChild($label);
 
         $div->appendChild($filterdiv);

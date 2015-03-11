@@ -3,8 +3,6 @@
  * @package core
  */
 
-require_once CORE . '/class.log.php';
-
 /**
  * GenericExceptionHandler will handle any uncaught exceptions thrown in
  * Symphony. Additionally, all errors in Symphony that are raised to Exceptions
@@ -77,10 +75,11 @@ class GenericExceptionHandler
      */
     public static function handler(Exception $e)
     {
+        $output = '';
+
         try {
             // Instead of just throwing an empty page, return a 404 page.
             if (self::$enabled !== true) {
-                require_once(CORE . '/class.frontend.php');
                 $e = new FrontendPageNotFoundException();
             };
 
@@ -97,43 +96,45 @@ class GenericExceptionHandler
                 self::$_Log->pushExceptionToLog($e, true);
             }
 
-            if (!headers_sent()) {
-                $httpStatus = null;
-                if ($e instanceof SymphonyErrorPage) {
-                    $httpStatus = $e->getHttpStatusCode();
-                } else if ($e instanceof FrontendPageNotFoundException) {
-                    $httpStatus = Page::HTTP_STATUS_NOT_FOUND;
-                }
-                if (!$httpStatus || $httpStatus == Page::HTTP_STATUS_OK) {
-                    $httpStatus = Page::HTTP_STATUS_ERROR;
-                }
-                Page::renderStatusCode($httpStatus);
-                header('Content-Type: text/html; charset=utf-8');
-            }
+            cleanup_session_cookies();
 
             $output = call_user_func(array($class, 'render'), $e);
 
-            echo $output;
-            exit;
+        // If an exception was raised trying to render the exception, fall back
+        // to the generic exception handler
         } catch (Exception $e) {
             try {
-                if (!headers_sent()) {
-                    Page::renderStatusCode(Page::HTTP_STATUS_ERROR);
-                    header('Content-Type: text/html; charset=utf-8');
-                }
-
                 $output = call_user_func(array('GenericExceptionHandler', 'render'), $e);
 
-                echo $output;
-                exit;
+            // If the generic exception handler couldn't do it, well we're in bad
+            // shape, just output a plaintext response!
             } catch (Exception $e) {
                 echo "<pre>";
                 echo 'A severe error occurred whilst trying to handle an exception, check the Symphony log for more details' . PHP_EOL;
                 echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
+                exit;
             }
         }
-    }
 
+        // Pending nothing disasterous, we should have `$e` 
+        // and `$output` values here.
+        if (!headers_sent()) {
+            $httpStatus = null;
+            if ($e instanceof SymphonyErrorPage) {
+                $httpStatus = $e->getHttpStatusCode();
+            } else if ($e instanceof FrontendPageNotFoundException) {
+                $httpStatus = Page::HTTP_STATUS_NOT_FOUND;
+            }
+            if (!$httpStatus || $httpStatus == Page::HTTP_STATUS_OK) {
+                $httpStatus = Page::HTTP_STATUS_ERROR;
+            }
+            Page::renderStatusCode($httpStatus);
+            header('Content-Type: text/html; charset=utf-8');
+        }
+
+        echo $output;
+        exit;
+    }
 
     /**
      * Returns the path to the error-template by looking at the
@@ -301,7 +302,7 @@ class GenericExceptionHandler
             $queries
         );
 
-        $html = str_replace('{APPLICATION_URL}', APPLICATION_URL, $html);
+        $html = str_replace('{ASSETS_URL}', ASSETS_URL, $html);
         $html = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $html);
         $html = str_replace('{URL}', URL, $html);
 

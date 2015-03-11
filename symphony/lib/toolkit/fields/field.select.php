@@ -4,14 +4,11 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
-
 /**
  * A simple Select field that essentially maps to HTML's `<select/>`. The
  * options for this field can be static, or feed from another field.
  */
-class FieldSelect extends Field implements ExportableField, ImportableField
+class FieldSelect extends FieldTagList implements ExportableField, ImportableField
 {
     public function __construct()
     {
@@ -32,7 +29,7 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
     public function canToggle()
     {
-        return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
+        return ($this->get('allow_multiple_selection') === 'yes' ? false : true);
     }
 
     public function getToggleStates()
@@ -51,7 +48,7 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
         $states = array_combine($values, $values);
 
-        if ($this->get('sort_options') == 'yes') {
+        if ($this->get('sort_options') === 'yes') {
             natsort($states);
         }
 
@@ -98,6 +95,11 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         return !$this->canToggle();
     }
 
+    public function fetchSuggestionTypes()
+    {
+        return array('association', 'static');
+    }
+
     /*-------------------------------------------------------------------------
         Setup:
     -------------------------------------------------------------------------*/
@@ -121,25 +123,6 @@ class FieldSelect extends Field implements ExportableField, ImportableField
     /*-------------------------------------------------------------------------
         Utilities:
     -------------------------------------------------------------------------*/
-
-    public function fetchAssociatedEntryCount($value)
-    {
-        return Symphony::Database()->fetchVar('count', 0, "SELECT count(*) AS `count` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
-    }
-
-    public function fetchAssociatedEntryIDs($value)
-    {
-        return Symphony::Database()->fetchCol('entry_id', "SELECT `entry_id` FROM `tbl_entries_data_".$this->get('id')."` WHERE `value` = '".Symphony::Database()->cleanValue($value)."'");
-    }
-
-    public function fetchAssociatedEntrySearchValue($data, $field_id = null, $parent_entry_id = null)
-    {
-        if (!is_array($data)) {
-            return $data;
-        }
-
-        return $data['value'];
-    }
 
     public function findAndAddDynamicOptions(&$values)
     {
@@ -212,7 +195,7 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
     public function displaySettingsPanel(XMLElement &$wrapper, $errors = null)
     {
-        parent::displaySettingsPanel($wrapper, $errors);
+        Field::displaySettingsPanel($wrapper, $errors);
 
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
@@ -256,10 +239,10 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
         // Allow selection of multiple items
-        $this->createCheckboxSetting($div, 'allow_multiple_selection', 'Allow selection of multiple options');
+        $this->createCheckboxSetting($div, 'allow_multiple_selection', __('Allow selection of multiple options'));
 
         // Sort options?
-        $this->createCheckboxSetting($div, 'sort_options', 'Sort all options alphabetically');
+        $this->createCheckboxSetting($div, 'sort_options', __('Sort all options alphabetically'));
 
         $wrapper->appendChild($div);
 
@@ -283,12 +266,12 @@ class FieldSelect extends Field implements ExportableField, ImportableField
             $errors['dynamic_options'] = __('At least one source must be specified, dynamic or static.');
         }
 
-        parent::checkFields($errors, $checkForDuplicates);
+        Field::checkFields($errors, $checkForDuplicates);
     }
 
     public function commit()
     {
-        if (!parent::commit()) {
+        if (!Field::commit()) {
             return false;
         }
 
@@ -309,7 +292,7 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         }
 
         $fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
-        $fields['sort_options'] = $this->get('sort_options') == 'yes' ? 'yes' : 'no';
+        $fields['sort_options'] = $this->get('sort_options') === 'yes' ? 'yes' : 'no';
 
         if (!FieldManager::saveSettings($id, $fields)) {
             return false;
@@ -321,7 +304,7 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         $field_id = $this->get('dynamic_options');
 
         if (!is_null($field_id) && is_numeric($field_id)) {
-            SectionManager::createSectionAssociation(null, $id, (int)$field_id, $this->get('show_association') == 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
+            SectionManager::createSectionAssociation(null, $id, (int)$field_id, $this->get('show_association') === 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
         }
 
         return true;
@@ -350,23 +333,28 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
         $fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
 
-        if ($this->get('allow_multiple_selection') == 'yes') {
+        if ($this->get('allow_multiple_selection') === 'yes') {
             $fieldname .= '[]';
         }
 
         $label = Widget::Label($this->get('label'));
 
-        if ($this->get('required') != 'yes') {
+        if ($this->get('required') !== 'yes') {
             $label->appendChild(new XMLElement('i', __('Optional')));
         }
 
-        $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple', 'size' => count($options)) : null)));
+        $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') === 'yes' ? array('multiple' => 'multiple', 'size' => count($options)) : null)));
 
         if ($flagWithError != null) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
         } else {
             $wrapper->appendChild($label);
         }
+    }
+
+    public function checkPostFieldData($data, &$message, $entry_id = null)
+    {
+        return Field::checkPostFieldData($data, $message, $entry_id);
     }
 
     public function processRawFieldData($data, &$status, &$message = null, $simulate = false, $entry_id = null)
@@ -401,34 +389,6 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         Output:
     -------------------------------------------------------------------------*/
 
-    public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null)
-    {
-        if (!is_array($data) || is_null($data['value'])) {
-            return;
-        }
-
-        $list = new XMLElement($this->get('element_name'));
-
-        if (!is_array($data['handle']) and !is_array($data['value'])) {
-            $data = array(
-                'handle'    => array($data['handle']),
-                'value'     => array($data['value'])
-            );
-        }
-
-        foreach ($data['value'] as $index => $value) {
-            $list->appendChild(new XMLElement(
-                'item',
-                General::sanitize($value),
-                array(
-                    'handle'    => $data['handle'][$index]
-                )
-            ));
-        }
-
-        $wrapper->appendChild($list);
-    }
-
     public function prepareTextValue($data, $entry_id = null)
     {
         $value = $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::VALUE, $entry_id);
@@ -436,22 +396,9 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         return implode(', ', $value);
     }
 
-    public function getParameterPoolValue(array $data, $entry_id = null)
-    {
-        return $this->prepareExportValue($data, ExportableField::LIST_OF + ExportableField::HANDLE, $entry_id);
-    }
-
     /*-------------------------------------------------------------------------
         Import:
     -------------------------------------------------------------------------*/
-
-    public function getImportModes()
-    {
-        return array(
-            'getValue' =>       ImportableField::STRING_VALUE,
-            'getPostdata' =>    ImportableField::ARRAY_VALUE
-        );
-    }
 
     public function prepareImportValue($data, $mode, $entry_id = null)
     {
@@ -547,10 +494,8 @@ class FieldSelect extends Field implements ExportableField, ImportableField
         Filtering:
     -------------------------------------------------------------------------*/
 
-    public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null)
+    public function displayFilteringOptions(XMLElement &$wrapper)
     {
-        parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
-
         $existing_options = $this->getToggleStates();
 
         if (is_array($existing_options) && !empty($existing_options)) {
@@ -566,53 +511,6 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
             $wrapper->appendChild($optionlist);
         }
-    }
-
-    public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false)
-    {
-        $field_id = $this->get('id');
-
-        if (self::isFilterRegex($data[0])) {
-            $this->buildRegexSQL($data[0], array('value', 'handle'), $joins, $where);
-        } elseif ($andOperation) {
-            foreach ($data as $value) {
-                $this->_key++;
-                $value = $this->cleanValue($value);
-                $joins .= "
-                    LEFT JOIN
-                        `tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-                        ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-                ";
-                $where .= "
-                    AND (
-                        t{$field_id}_{$this->_key}.value = '{$value}'
-                        OR t{$field_id}_{$this->_key}.handle = '{$value}'
-                    )
-                ";
-            }
-        } else {
-            if (!is_array($data)) {
-                $data = array($data);
-            }
-
-            foreach ($data as &$value) {
-                $value = $this->cleanValue($value);
-            }
-
-            $this->_key++;
-            $data = implode("', '", $data);
-            $joins .= "
-                LEFT JOIN
-                    `tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-                    ON (e.id = t{$field_id}_{$this->_key}.entry_id)";
-            $where .= "
-                AND (
-                    t{$field_id}_{$this->_key}.value IN ('{$data}')
-                    OR t{$field_id}_{$this->_key}.handle IN ('{$data}')
-                )";
-        }
-
-        return true;
     }
 
     /*-------------------------------------------------------------------------
@@ -661,12 +559,12 @@ class FieldSelect extends Field implements ExportableField, ImportableField
 
         $fieldname = 'fields['.$this->get('element_name').']';
 
-        if ($this->get('allow_multiple_selection') == 'yes') {
+        if ($this->get('allow_multiple_selection') === 'yes') {
             $fieldname .= '[]';
         }
 
         $label = Widget::Label($this->get('label'));
-        $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : null)));
+        $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') === 'yes' ? array('multiple' => 'multiple') : null)));
 
         return $label;
     }

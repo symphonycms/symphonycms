@@ -23,27 +23,29 @@ div.drawer.horizontal .contents {
 
 div.drawer.horizontal .contents:after {
 	content: ' ';
-	visibility: hidden;
 	display: block;
-	font-size: 0;
 	clear: both;
 	height: 0;
+	font-size: 0;
+	visibility: hidden;
 }
 
 /*-----------------------------------------------------------------------------
 	Vertical drawers
 -----------------------------------------------------------------------------*/
 
+/**
+ * Height is set implicitly via `top` and `bottom` to allow for dynamic height.
+ */
 div.drawer.vertical-left,
 div.drawer.vertical-right {
 	position: absolute;
+	top: 0;
+	bottom: 0;
 	overflow: scroll;
 	-webkit-overflow-scrolling: touch;
 	width: 30rem;
-	top: 0;
-	bottom: 0;
-	/* height is set implicitly via `top` and `bottom` to allow for dynamic height */
-	background: #F4F4F4;
+	background: #f4f4f4;
 }
 
 div.drawer.vertical-left {

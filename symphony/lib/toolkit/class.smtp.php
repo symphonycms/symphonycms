@@ -60,7 +60,6 @@ class SMTP
      *    $options['password'] the password used to login to the server. Leave empty for no authentication.
      *    $options['local_ip'] the ip address used in the ehlo/helo commands. Only ip's are accepted.
      * @throws SMTPException
-     * @return \SMTP
      */
     public function __construct($host = '127.0.0.1', $port = null, $options = array())
     {
@@ -134,7 +133,7 @@ class SMTP
      * @throws Exception
      * @return boolean
      */
-    public function sendMail($from, $to, $subject, $message)
+    public function sendMail($from, $to, $message)
     {
         $this->_connect($this->_host, $this->_port);
         $this->mail($from);

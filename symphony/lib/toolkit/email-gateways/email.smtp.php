@@ -3,10 +3,6 @@
  * @package email-gateways
  */
 
-require_once TOOLKIT . '/class.emailgateway.php';
-require_once TOOLKIT . '/class.emailhelper.php';
-require_once TOOLKIT . '/class.smtp.php';
-
 /**
  * One of the two core email gateways.
  * Provides simple SMTP functionalities.
@@ -20,7 +16,7 @@ class SMTPGateway extends EmailGateway
     protected $_host;
     protected $_port;
     protected $_protocol = 'tcp';
-    protected $_secure = false;
+    protected $_secure = 'no';
     protected $_auth = false;
     protected $_user;
     protected $_pass;
@@ -75,6 +71,7 @@ class SMTPGateway extends EmailGateway
             }
 
             // Encode recipient names (but not any numeric array indexes)
+            $recipients = array();
             foreach ($this->_recipients as $name => $email) {
                 // Support Bcc header
                 if (isset($this->_header_fields['Bcc']) && $this->_header_fields['Bcc'] == $email) {
@@ -135,7 +132,7 @@ class SMTPGateway extends EmailGateway
             }
 
             // Send the email command. If the envelope from variable is set, use that for the MAIL command. This improves bounce handling.
-            $this->_SMTP->sendMail(is_null($this->_envelope_from)?$this->_sender_email_address:$this->_envelope_from, $this->_recipients, $this->_subject, $this->_body);
+            $this->_SMTP->sendMail(is_null($this->_envelope_from)?$this->_sender_email_address:$this->_envelope_from, $this->_recipients, $this->_body);
 
             if ($this->_keepalive == false) {
                 $this->closeConnection();

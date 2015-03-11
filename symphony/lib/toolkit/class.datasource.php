@@ -18,7 +18,7 @@
  * `TEMPLATE . /datasource.tpl`.
  */
 
-class DataSource
+class Datasource
 {
     /**
      * A constant that represents if this filter is an AND filter in which
@@ -156,7 +156,7 @@ class DataSource
     /**
      * @deprecated This function has been renamed to `execute` as of
      *  Symphony 2.3.1, please use `execute()` instead. This function will
-     *  be removed in Symphony 3.0.0
+     *  be removed in Symphony 3.0
      * @see execute()
      */
     public function grab(array &$param_pool = null)
@@ -212,11 +212,11 @@ class DataSource
      * @param string $value
      *  The filter string for a field.
      * @return integer
-     *  DataSource::FILTER_OR or DataSource::FILTER_AND
+     *  Datasource::FILTER_OR or Datasource::FILTER_AND
      */
-    public function __determineFilterType($value)
+    public static function determineFilterType($value)
     {
-        return (preg_match('/\s+\+\s+/', $value) ? DataSource::FILTER_AND : DataSource::FILTER_OR);
+        return (preg_match('/\s+\+\s+/', $value) ? Datasource::FILTER_AND : Datasource::FILTER_OR);
     }
 
     /**
@@ -307,8 +307,8 @@ class DataSource
                 $new_value = $this->__processParametersInString($value, $this->_env);
 
                 // If a filter gets evaluated to nothing, eg. ` + ` or ``, then remove
-                // the filter. RE: #1759
-                if (strlen(trim($new_value)) == 0 || !preg_match('/\w+/u', $new_value)) {
+                // the filter. Respects / as this may be real from current-path. RE: #1759
+                if (strlen(trim($new_value)) === 0 || !preg_match('/[\w|\/]+/u', $new_value)) {
                     unset($this->dsParamFILTERS[$key]);
                 } else {
                     $this->dsParamFILTERS[$key] = $new_value;
@@ -326,7 +326,7 @@ class DataSource
 
         if (isset($this->dsParamSTARTPAGE)) {
             $this->dsParamSTARTPAGE = $this->__processParametersInString($this->dsParamSTARTPAGE, $this->_env);
-            if ($this->dsParamSTARTPAGE == '') {
+            if ($this->dsParamSTARTPAGE === '') {
                 $this->dsParamSTARTPAGE = '1';
             }
         }
@@ -338,7 +338,7 @@ class DataSource
         if (
             isset($this->dsParamREQUIREDPARAM)
             && strlen(trim($this->dsParamREQUIREDPARAM)) > 0
-            && $this->__processParametersInString(trim($this->dsParamREQUIREDPARAM), $this->_env, false) == ''
+            && $this->__processParametersInString(trim($this->dsParamREQUIREDPARAM), $this->_env, false) === ''
         ) {
             $this->_force_empty_result = true; // don't output any XML
             $this->dsParamPARAMOUTPUT = null; // don't output any parameters
@@ -349,7 +349,7 @@ class DataSource
         if (
             isset($this->dsParamNEGATEPARAM)
             && strlen(trim($this->dsParamNEGATEPARAM)) > 0
-            && $this->__processParametersInString(trim($this->dsParamNEGATEPARAM), $this->_env, false) != ''
+            && $this->__processParametersInString(trim($this->dsParamNEGATEPARAM), $this->_env, false) !== ''
         ) {
             $this->_negate_result = true; // don't output any XML
             $this->dsParamPARAMOUTPUT = null; // don't output any parameters
@@ -359,7 +359,7 @@ class DataSource
 
         $this->_param_output_only = ((!isset($this->dsParamINCLUDEDELEMENTS) || !is_array($this->dsParamINCLUDEDELEMENTS) || empty($this->dsParamINCLUDEDELEMENTS)) && !isset($this->dsParamGROUP));
 
-        if (isset($this->dsParamREDIRECTONEMPTY) && $this->dsParamREDIRECTONEMPTY == 'yes' && $this->_force_empty_result) {
+        if (isset($this->dsParamREDIRECTONEMPTY) && $this->dsParamREDIRECTONEMPTY === 'yes' && $this->_force_empty_result) {
             throw new FrontendPageNotFoundException;
         }
     }
@@ -446,7 +446,7 @@ class DataSource
                 $bits = preg_split('/:/', $cleaned, -1, PREG_SPLIT_NO_EMPTY);
 
                 foreach ($bits as $param) {
-                    if ($param{0} != '$') {
+                    if ($param{0} !== '$') {
                         $replacement = $param;
                         break;
                     }
@@ -536,10 +536,24 @@ class DataSource
 
         return null;
     }
-}
 
-require_once TOOLKIT . '/data-sources/class.datasource.author.php';
-require_once TOOLKIT . '/data-sources/class.datasource.section.php';
-require_once TOOLKIT . '/data-sources/class.datasource.static.php';
-require_once TOOLKIT . '/data-sources/class.datasource.dynamic_xml.php';
-require_once TOOLKIT . '/data-sources/class.datasource.navigation.php';
+    /**
+     * By default, all Symphony filters are considering to be AND filters, that is
+     * they are all used and Entries must match each filter to be included. It is
+     * possible to use OR filtering in a field by using an + to separate the values.
+     * eg. If the filter is test1 + test2, this will match any entries where this field
+     * is test1 OR test2. This function is run on each filter (ie. each field) in a
+     * datasource
+     *
+     * @deprecated Since Symphony 2.6.0 it is recommended to use the static version,
+     *  `Datasource::determineFilterType`
+     * @param string $value
+     *  The filter string for a field.
+     * @return integer
+     *  Datasource::FILTER_OR or Datasource::FILTER_AND
+     */
+    public function __determineFilterType($value)
+    {
+        return self::determineFilterType($value);
+    }
+}

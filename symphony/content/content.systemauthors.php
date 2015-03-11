@@ -9,9 +9,6 @@
  * including making new Authors, editing Authors or deleting
  * Authors from Symphony
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once CONTENT . '/class.sortable.php';
 
 class contentSystemAuthors extends AdministrationPage
 {
@@ -222,9 +219,6 @@ class contentSystemAuthors extends AdministrationPage
 
     public function __form()
     {
-
-        require_once TOOLKIT . '/class.field.php';
-
         // Handle unknown context
         if (!in_array($this->_context[0], array('new', 'edit'))) {
             Administration::instance()->errorPageNotFound();
@@ -393,7 +387,6 @@ class contentSystemAuthors extends AdministrationPage
         }
 
         // New password
-        $callback = Administration::instance()->getPageCallback();
         $placeholder = ($isEditing ? __('New Password') : __('Password'));
         $label = Widget::Label(null, null, 'column');
         $label->appendChild(Widget::Input('fields[password]', null, 'password', array('placeholder' => $placeholder, 'autocomplete' => 'off')));
@@ -429,7 +422,7 @@ class contentSystemAuthors extends AdministrationPage
 
         // If the Author is the Developer, allow them to set the Default Area to
         // be the Sections Index.
-        if ($author->isDeveloper() || $author->isManager()) {
+        if ($author->isDeveloper()) {
             $options[] = array('/blueprints/sections/', $author->get('default_area') == '/blueprints/sections/', __('Sections Index'));
         }
 
@@ -497,7 +490,8 @@ class contentSystemAuthors extends AdministrationPage
         // Administration password double check
         if ($isEditing && !$isOwner) {
             $group = new XMLElement('fieldset');
-            $group->setAttribute('class', 'settings highlight');
+            $group->setAttribute('class', 'settings');
+            $group->setAttribute('id', 'confirmation');
             $group->appendChild(new XMLElement('legend', __('Confirmation')));
             $group->appendChild(new XMLELement('p', __('Please confirm changes to this author with your password.'), array('class' => 'help')));
 
@@ -698,7 +692,7 @@ class contentSystemAuthors extends AdministrationPage
                 // All good, let's save the Author
                 if (is_array($this->_errors) && empty($this->_errors) && $this->_Author->commit()) {
                     Symphony::Database()->delete('tbl_forgotpass', sprintf("
-                        `expiry` < %d OR `author_id` = %d", 
+                        `expiry` < %d OR `author_id` = %d",
                         DateTimeObj::getGMT('c'),
                         $author_id
                     ));

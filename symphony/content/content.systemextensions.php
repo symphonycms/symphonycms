@@ -7,8 +7,6 @@
  * This page generates the Extensions index which shows all Extensions
  * that are available in this Symphony installation.
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once CONTENT . '/class.sortable.php';
 
 class contentSystemExtensions extends AdministrationPage
 {
@@ -86,9 +84,9 @@ class contentSystemExtensions extends AdministrationPage
                 // Version
                 $installed_version = Symphony::ExtensionManager()->fetchInstalledVersion($name);
 
-                if (in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
+                if (in_array(Extension::EXTENSION_NOT_INSTALLED, $about['status'])) {
                     $td2 = Widget::TableData($about['version']);
-                } elseif (in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+                } elseif (in_array(Extension::EXTENSION_REQUIRES_UPDATE, $about['status'])) {
                     $td2 = Widget::TableData($installed_version . '<i> → ' . $about['version'] . '</i>');
                 } else {
                     $td2 = Widget::TableData($installed_version);
@@ -99,28 +97,28 @@ class contentSystemExtensions extends AdministrationPage
                 $trStatus = '';
                 $tdMessage = __('Status unavailable');
 
-                if (in_array(EXTENSION_NOT_INSTALLED, $about['status'])) {
+                if (in_array(Extension::EXTENSION_NOT_INSTALLED, $about['status'])) {
                     $tdMessage = __('Not installed');
                     $trClasses[] = 'inactive';
                     $trClasses[] = 'extension-can-install';
                 }
 
-                if (in_array(EXTENSION_DISABLED, $about['status'])) {
+                if (in_array(Extension::EXTENSION_DISABLED, $about['status'])) {
                     $tdMessage = __('Disabled');
                     $trStatus = 'status-notice';
                 }
 
-                if (in_array(EXTENSION_ENABLED, $about['status'])) {
+                if (in_array(Extension::EXTENSION_ENABLED, $about['status'])) {
                     $tdMessage = __('Enabled');
                 }
 
-                if (in_array(EXTENSION_REQUIRES_UPDATE, $about['status'])) {
+                if (in_array(Extension::EXTENSION_REQUIRES_UPDATE, $about['status'])) {
                     $tdMessage = __('Update available');
                     $trClasses[] = 'extension-can-update';
                     $trStatus = 'status-ok';
                 }
 
-                if (in_array(EXTENSION_NOT_COMPATIBLE, $about['status'])) {
+                if (in_array(Extension::EXTENSION_NOT_COMPATIBLE, $about['status'])) {
                     $tdMessage .= ', ' . __('requires Symphony %s', array($about['required_version']));
                     $trStatus = 'status-error';
                 }
@@ -132,25 +130,25 @@ class contentSystemExtensions extends AdministrationPage
                 $tdLinks = array();
 
                 if ($about['github'] != '') {
-                    $tdLinks['github'] = Widget::Anchor('GitHub', General::validateURL($about['github']))->generate();
+                    $tdLinks['github'] = Widget::Anchor(__('GitHub'), General::validateURL($about['github']))->generate();
                 }
 
                 if ($about['discuss'] != '') {
-                    $tdLinks['discuss'] = Widget::Anchor('Discuss', General::validateURL($about['discuss']))->generate();
+                    $tdLinks['discuss'] = Widget::Anchor(__('Discuss'), General::validateURL($about['discuss']))->generate();
                     // Update links to point to our 'new' domain, RE: #1995
                     $tdLinks['discuss'] = str_replace('symphony-cms.com', 'getsymphony.com', $tdLinks['discuss']);
                 }
 
                 if ($about['homepage'] != '') {
-                    $tdLinks['homepage'] = Widget::Anchor('Homepage', General::validateURL($about['homepage']))->generate();
+                    $tdLinks['homepage'] = Widget::Anchor(__('Homepage'), General::validateURL($about['homepage']))->generate();
                 }
 
                 if ($about['wiki'] != '') {
-                    $tdLinks['wiki'] = Widget::Anchor('Wiki', General::validateURL($about['wiki']))->generate();
+                    $tdLinks['wiki'] = Widget::Anchor(__('Wiki'), General::validateURL($about['wiki']))->generate();
                 }
 
                 if ($about['issues'] != '') {
-                    $tdLinks['issues'] = Widget::Anchor('Issues', General::validateURL($about['issues']))->generate();
+                    $tdLinks['issues'] = Widget::Anchor(__('Issues'), General::validateURL($about['issues']))->generate();
                 }
 
                 $td4 = Widget::TableData($tdLinks);

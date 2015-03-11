@@ -7,9 +7,6 @@
  * functions that are used throughout Symphony.
  */
 
-define_safe('CDATA_BEGIN', '<![CDATA[');
-define_safe('CDATA_END', ']]>');
-
 class General
 {
     /**
@@ -396,7 +393,7 @@ class General
      * Computes the length of the string.
      * This function will attempt to use PHP's `mbstring` functions if they are available.
      * This function also forces utf-8 encoding.
-     * 
+     *
      * @since Symphony 2.5.0
      * @param string $str
      *  the string to operate on
@@ -415,7 +412,7 @@ class General
      * Creates a sub string.
      * This function will attempt to use PHP's `mbstring` functions if they are available.
      * This function also forces utf-8 encoding.
-     * 
+     *
      * @since Symphony 2.5.0
      * @param string $str
      *  the string to operate on
@@ -780,7 +777,7 @@ class General
      */
     public static function array_remove_duplicates(array $array, $ignore_case = false)
     {
-        return ($ignore_case == true ? self::array_iunique($array) : array_unique($array));
+        return ($ignore_case === true ? self::array_iunique($array) : array_unique($array));
     }
 
     /**
@@ -885,7 +882,7 @@ class General
                 if ($child->getNumberOfChildren() == 0) {
                     continue;
                 }
-            } elseif ($validate == true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)) {
+            } elseif ($validate === true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)) {
                 continue;
             } else {
                 $child->setValue(self::sanitize($value));
@@ -980,7 +977,7 @@ class General
         try {
             return unlink($file);
         } catch (Exception $ex) {
-            if ($silent == false) {
+            if ($silent === false) {
                 throw new Exception(__('Unable to remove file - %s', array($file)));
             }
 
@@ -1057,7 +1054,7 @@ class General
 
                 $extension = substr(strrchr($file, '.'), 1);
 
-                if ($mimetypes[strtolower($extension)] != null) {
+                if ($mimetypes[strtolower($extension)] !== null) {
                     $mime_type = $mimetypes[$extension];
                 } else {
                     $mime_type = 'application/octet-stream';
@@ -1104,11 +1101,11 @@ class General
 
         foreach (scandir($dir) as $file) {
             if (
-                ($file == '.' or $file == '..')
-                or ($ignore_hidden and $file{0} == '.')
-                or !is_dir("$dir/$file")
-                or in_array($file, $exclude)
-                or in_array("$dir/$file", $exclude)
+                ($file == '.' || $file == '..')
+                || ($ignore_hidden && $file{0} == '.')
+                || !is_dir("$dir/$file")
+                || in_array($file, $exclude)
+                || in_array("$dir/$file", $exclude)
             ) {
                 continue;
             }
@@ -1176,7 +1173,7 @@ class General
 
         $prefix = str_replace($strip_root, '', $dir);
 
-        if ($prefix != "" && substr($prefix, -1) != "/") {
+        if ($prefix !== "" && substr($prefix, -1) !== "/") {
             $prefix .= "/";
         }
 
@@ -1185,10 +1182,10 @@ class General
 
         foreach (scandir($dir) as $file) {
             if (
-                ($file == '.' or $file == '..')
-                or ($ignore_hidden and $file{0} == '.')
-                or in_array($file, $exclude)
-                or in_array("$dir/$file", $exclude)
+                ($file == '.' || $file === '..')
+                || ($ignore_hidden && $file{0} === '.')
+                || in_array($file, $exclude)
+                || in_array("$dir/$file", $exclude)
             ) {
                 continue;
             }
@@ -1201,11 +1198,11 @@ class General
                 }
 
                 $files['dirlist'][] = "$prefix$file/";
-            } elseif ($filter_type == 'regex') {
+            } elseif ($filter_type === 'regex') {
                 if (preg_match($filters, $file)) {
                     $files['filelist'][] = "$prefix$file";
                 }
-            } elseif ($filter_type == 'file') {
+            } elseif ($filter_type === 'file') {
                 if (in_array(self::getExtension($file), $filters)) {
                     $files['filelist'][] = "$prefix$file";
                 }

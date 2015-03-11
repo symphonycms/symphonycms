@@ -1,0 +1,94 @@
+/**
+ * Suggestions
+ */
+
+.frame.suggests,
+.suggests {
+	overflow: visible;
+}
+
+.suggestions {
+	position: absolute;
+	overflow: hidden;
+	box-sizing: border-box;
+	width: 100%;
+	max-height: 0;
+	margin: 0.3rem 0 0 0 !important;
+	border: 0.1rem solid #b3b3b3;
+	border-right-color: #a6a6a6;
+	border-bottom-color: #999;
+	border-left-color: #a6a6a6;
+	border-radius: 0.4rem;
+	background: #fff;
+	box-shadow: 0 1rem 1.5rem rgba(0, 0, 0, 0.35);
+	transition: opacity 0s ease-in 0.15s, max-height 0s ease-in 0.25s;
+	opacity: 0;
+	z-index: -1;
+}
+
+@media screen and (min-width: 700px) {
+
+	.column .suggestions {
+		width: calc(100% - 1.5rem);
+	}
+}
+
+input:focus ~ .suggestions:not(:empty),
+textarea:focus ~ .suggestions:not(:empty) {
+	max-height: 35rem;
+	transition: opacity 0s ease-in 0.15s, max-height 0s ease-in 0s;
+	opacity: 1;
+	overflow: auto;
+	z-index: 10000;
+}
+
+input:focus ~ .suggestions[data-search-types='date'] {
+	overflow: visible;
+	z-index: 10000;
+	max-width: 36rem;
+}
+
+.suggestions li:not(.calendar) {
+	box-sizing: border-box;
+	padding: 0.5rem 0.8rem;
+	border-bottom: 0.1rem solid rgba(0, 0, 0, 0.1);
+}
+
+.suggestions .calendar + li {
+	border-top: 0.1rem solid rgba(0, 0, 0, 0.1);
+}
+
+.suggestions li:last-of-type {
+	border-bottom: none;
+}
+
+.suggestions .active {
+	color: #fff;
+	background-color: #668abe;
+	cursor: pointer;
+}
+
+.suggestions .help {
+	display: none;
+}
+
+.suggestions .help.active {
+	display: block;
+	color: #999;
+	border-bottom: none;
+	background-color: #f5f5f5;
+	cursor: default;
+	border-radius: 0 0 0.4rem 0.4rem;
+}
+
+/**
+ * Additional styles for the popdown calendar widget on Date fields
+ */
+.field-date[data-interactive] .suggestions {
+	transition: none;
+}
+
+.field-date[data-interactive] .suggestions li {
+	padding: 0;
+	border-bottom: 0;
+}

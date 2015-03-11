@@ -103,7 +103,12 @@ class SectionManager
         ));
 
         // Update the sort orders
-        Symphony::Database()->query("UPDATE tbl_sections SET `sortorder` = (`sortorder` - 1) WHERE `sortorder` > '".$details['sortorder']."'");
+        Symphony::Database()->query(sprintf("
+            UPDATE tbl_sections
+            SET `sortorder` = (`sortorder` - 1)
+            WHERE `sortorder` > %d",
+            $details['sortorder']
+        ));
 
         // Delete the section associations
         Symphony::Database()->delete('tbl_sections_association', sprintf("
@@ -140,7 +145,7 @@ class SectionManager
         if (!is_null($section_id)) {
             if (!is_array($section_id)) {
                 $returnSingle = true;
-                $section_ids = array((int)$section_id);
+                $section_ids = array($section_id);
             } else {
                 $section_ids = $section_id;
             }
@@ -150,6 +155,8 @@ class SectionManager
             return self::$_pool[$section_id];
         }
 
+        // Ensure they are always an ID
+        $section_ids = array_map('intval', $section_ids);
         $sql = sprintf(
             "SELECT `s`.*
             FROM `tbl_sections` AS `s`
@@ -286,6 +293,29 @@ class SectionManager
             '`child_section_field_id` = %1$d OR `parent_section_field_id` = %1$d',
             $field_id
         ));
+    }
+
+    /**
+     * Returns the association settings for the given field id. This is to be used
+     * when configuring the field so we can correctly show the association setting
+     * the UI.
+     *
+     * @since Symphony 2.6.0
+     * @param integer $field_id
+     * @return string
+     */
+    public static function getSectionAssociationSetting($field_id)
+    {
+        // We must inverse the setting. The database stores 'hide', whereas the UI
+        // refers to 'show'. Hence if the database says 'yes', it really means, hide
+        // the association. In the UI, this needs to be flipped to 'no' so the checkbox
+        // won't be checked.
+        return Symphony::Database()->fetchVar('show_association', 0, sprintf('
+            SELECT
+            CASE hide_association WHEN "no" THEN "yes" ELSE "no" END as show_association
+            FROM `tbl_sections_association`
+            WHERE `child_section_field_id` = %d
+        ', $field_id));
     }
 
     /**

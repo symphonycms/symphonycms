@@ -11,8 +11,6 @@
  * string and returns it.
  */
 
-require_once TOOLKIT . '/class.textformatter.php';
-
 class TextformatterManager implements FileResource
 {
     /**

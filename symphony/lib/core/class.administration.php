@@ -10,8 +10,6 @@
  * using XMLElement before being rendered as HTML. These pages do not
  * use XSLT. The Administration is only accessible by logged in Authors
  */
-require_once CORE . '/class.symphony.php';
-require_once TOOLKIT . '/class.htmlpage.php';
 
 class Administration extends Symphony
 {
@@ -186,12 +184,17 @@ class Administration extends Symphony
         include_once($this->_callback['driver_location']);
         $this->Page = new $this->_callback['classname'];
 
-        if (!$is_logged_in && $this->_callback['driver'] != 'login') {
+        if (!$is_logged_in && $this->_callback['driver'] !== 'login') {
             if (is_callable(array($this->Page, 'handleFailedAuthorisation'))) {
                 $this->Page->handleFailedAuthorisation();
             } else {
                 include_once(CONTENT . '/content.login.php');
                 $this->Page = new contentLogin;
+
+                // Include the query string for the login, RE: #2324
+                if ($queryString = $this->Page->__buildQueryString(array('symphony-page', 'mode'), FILTER_SANITIZE_STRING)) {
+                    $page .= '?' . $queryString;
+                }
                 $this->Page->build(array('redirect' => $page));
             }
         } else {
@@ -455,6 +458,7 @@ class Administration extends Symphony
      * AdminPagePostGenerate. This function runs the Profiler for the page build
      * process.
      *
+     * @uses AdminPagePreBuild
      * @uses AdminPagePreGenerate
      * @uses AdminPagePostGenerate
      * @see core.Symphony#__buildPage()
@@ -470,6 +474,19 @@ class Administration extends Symphony
     public function display($page)
     {
         Symphony::Profiler()->sample('Page build process started');
+
+        /**
+         * Immediately before building the admin page. Provided with the page parameter
+         * @delegate AdminPagePreBuild
+         * @since Symphony 2.6.0
+         * @param string $context
+         *  '/backend/'
+         * @param string $page
+         *  The result of getCurrentPage, which returns the $_GET['symphony-page']
+         *  variable.
+         */
+        Symphony::ExtensionManager()->notifyMembers('AdminPagePreBuild', '/backend/', array('page' => $page));
+
         $this->__buildPage($page);
 
         // Add XSRF token to form's in the backend

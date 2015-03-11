@@ -7,8 +7,6 @@
  * of a Symphony backend XML/AJAX page.
  */
 
-require_once TOOLKIT . '/class.textpage.php';
-
 abstract class XMLPage extends TextPage
 {
     /**

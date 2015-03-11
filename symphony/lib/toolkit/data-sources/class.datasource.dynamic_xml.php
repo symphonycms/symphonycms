@@ -86,7 +86,7 @@ class DynamicXMLDatasource extends Datasource
                 $writeToCache = true;
 
                 // Handle any response that is not a 200, or the content type does not include XML, plain or text
-                if ((int)$info['http_code'] != 200 || !preg_match('/(xml|plain|text)/i', $info['content_type'])) {
+                if ((int)$info['http_code'] !== 200 || !preg_match('/(xml|plain|text)/i', $info['content_type'])) {
                     $writeToCache = false;
 
                     $result->setAttribute('valid', 'false');

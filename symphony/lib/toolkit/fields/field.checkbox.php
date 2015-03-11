@@ -4,9 +4,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
-
 /**
  * Checkbox field simulates a HTML checkbox field, in that it represents a
  * simple yes/no field.
@@ -63,6 +60,22 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
     public function allowDatasourceParamOutput()
     {
         return true;
+    }
+
+    public function fetchFilterableOperators()
+    {
+        return array(
+            array(
+                'title' => 'is',
+                'filter' => ' ',
+                'help' => __('Find values that are an exact match for the given string.')
+            )
+        );
+    }
+
+    public function fetchSuggestionTypes()
+    {
+        return array('static');
     }
 
     /*-------------------------------------------------------------------------
@@ -149,16 +162,16 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
                 $value = 'no';
             }
         } else {
-            $value = ($data['value'] == 'yes' ? 'yes' : 'no');
+            $value = ($data['value'] === 'yes' ? 'yes' : 'no');
         }
 
         $label = Widget::Label();
 
-        if ($this->get('required') != 'yes') {
+        if ($this->get('required') !== 'yes') {
             $label->appendChild(new XMLElement('i', __('Optional')));
         }
 
-        $input = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 'yes', 'checkbox', ($value == 'yes' ? array('checked' => 'checked') : null));
+        $input = Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, 'yes', 'checkbox', ($value === 'yes' ? array('checked' => 'checked') : null));
 
         $label->setValue($input->generate(false) . ' ' . $this->get('label'));
 
@@ -179,7 +192,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         // then the field has 'no value' in the context of being required. RE: #1569
         $has_no_value = ($has_no_value === false) ? !in_array(strtolower($data), array('on', 'yes')) : true;
 
-        if ($this->get('required') == 'yes' && $has_no_value) {
+        if ($this->get('required') === 'yes' && $has_no_value) {
             $message = __('‘%s’ is a required field.', array($this->get('label')));
 
             return self::__MISSING_FIELDS__;
@@ -193,7 +206,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         $status = self::__OK__;
 
         return array(
-            'value' => (strtolower($data) == 'yes' || strtolower($data) == 'on' ? 'yes' : 'no')
+            'value' => (strtolower($data) === 'yes' || strtolower($data) == 'on' || $data === true ? 'yes' : 'no')
         );
     }
 
@@ -203,7 +216,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
 
     public function appendFormattedElement(XMLElement &$wrapper, $data, $encode = false, $mode = null, $entry_id = null)
     {
-        $value = ($data['value'] == 'yes' ? 'Yes' : 'No');
+        $value = ($data['value'] === 'yes' ? 'Yes' : 'No');
 
         $wrapper->appendChild(new XMLElement($this->get('element_name'), ($encode ? General::sanitize($value) : $value)));
     }
@@ -280,7 +293,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         if ($mode === $modes->getPostdata) {
             return (
                 isset($data['value'])
-                && $data['value'] == 'yes'
+                && $data['value'] === 'yes'
                     ? 'yes'
                     : 'no'
             );
@@ -289,7 +302,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         } elseif ($mode === $modes->getValue) {
             return (
                 isset($data['value'])
-                && $data['value'] == 'yes'
+                && $data['value'] === 'yes'
                     ? __('Yes')
                     : __('No')
             );
@@ -298,7 +311,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         } elseif ($mode === $modes->getBoolean) {
             return (
                 isset($data['value'])
-                && $data['value'] == 'yes'
+                && $data['value'] === 'yes'
             );
         }
 
@@ -309,10 +322,8 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         Filtering:
     -------------------------------------------------------------------------*/
 
-    public function displayDatasourceFilterPanel(XMLElement &$wrapper, $data = null, $errors = null, $fieldnamePrefix = null, $fieldnamePostfix = null)
+    public function displayFilteringOptions(XMLElement &$wrapper)
     {
-        parent::displayDatasourceFilterPanel($wrapper, $data, $errors, $fieldnamePrefix, $fieldnamePostfix);
-
         $existing_options = array('yes', 'no');
 
         if (is_array($existing_options) && !empty($existing_options)) {

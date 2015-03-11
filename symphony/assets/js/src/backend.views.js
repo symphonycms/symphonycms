@@ -13,11 +13,11 @@
 Symphony.View.add('/:context*:', function() {
 
 	// Initialise core plugins
-	Symphony.Elements.contents.find('.filters-duplicator[data-interactive]').symphonyDuplicator();
-	Symphony.Elements.contents.find('.tags[data-interactive]').symphonyTags();
 	Symphony.Elements.contents.find('select.picker[data-interactive]').symphonyPickable();
 	Symphony.Elements.contents.find('ul.orderable[data-interactive]').symphonyOrderable();
 	Symphony.Elements.contents.find('table.selectable[data-interactive]').symphonySelectable();
+	Symphony.Elements.wrapper.find('.filters-duplicator[data-interactive]').symphonyDuplicator();
+	Symphony.Elements.wrapper.find('.tags[data-interactive]').symphonyTags();
 	Symphony.Elements.wrapper.find('div.drawer').symphonyDrawer();
 	Symphony.Elements.header.symphonyNotify();
 
@@ -73,6 +73,12 @@ Symphony.View.add('/:context*:', function() {
 	var oldSorting = null,
 		orderable = Symphony.Elements.contents.find('table.orderable[data-interactive]');
 
+	// Ignore tables with less than two rows
+	orderable = orderable.filter(function() {
+		return ($(this).find('tbody tr').length > 1);
+	});
+
+	// Initalise ordering
 	orderable.symphonyOrderable({
 			items: 'tr',
 			handles: 'td'
@@ -188,28 +194,9 @@ Symphony.View.add('/:context*:', function() {
 });
 
 Symphony.View.add('/publish/:context*:', function() {
-	var filters = Symphony.Elements.context.find('.filtering');
-
-	// Add filters
-	$('<a />', {
-		class: 'button filtering-add',
-		text: Symphony.Language.get('Add filter'),
-		on: {
-			click: function() {
-				var filtering = new Symphony.Extensions.Filtering(),
-					template = filters.find('.template').clone().removeClass('template');
-
-				template.insertBefore(this).css('display', 'block');
-				filtering.init(template);
-			}
-		}
-	}).appendTo(filters);
 
 	// Filtering
-	filters.find('.filtering-row:not(.template)').each(function(index, filter) {
-		var filtering = new Symphony.Extensions.Filtering();
-		filtering.init(filter);
-	});
+	Symphony.Interface.Filtering.init();
 
 	// Pagination
 	Symphony.Elements.contents.find('.page').each(function() {
@@ -289,6 +276,24 @@ Symphony.View.add('/publish/:context*:', function() {
 			}
 		}
 	}).appendTo('label.file:has(a) span.frame');
+
+	// Calendars
+	$('.field-date').each(function() {
+		var field = $(this),
+			datetime = Symphony.Context.get('datetime'),
+			calendar;
+
+		// Add calendar widget
+		if(field.attr('data-interactive')) {
+			calendar = new Symphony.Interface.Calendar();
+			calendar.init(this);
+		}
+
+		// Add timezone offset information
+		if(moment().utcOffset() !== datetime['timezone-offset']) {
+			field.addClass('show-timezone');
+		}
+	});
 });
 
 Symphony.View.add('/:context*:/new', function() {
@@ -672,17 +677,40 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 	});
 
 	// Enable parameter suggestions
-	pagination.symphonySuggestions();
-	Symphony.Elements.contents.find('.filters-duplicator').symphonySuggestions();
-	Symphony.Elements.contents.find('.ds-order').symphonySuggestions();
-	Symphony.Elements.contents.find('.ds-param').symphonySuggestions({
-		trigger: '$',
-		source: Symphony.Context.get('path') + '/ajax/parameters/?filter=page&template=$%s'
+	Symphony.Elements.contents.find('.filters-duplicator, .ds-param').each(function() {
+		Symphony.Interface.Suggestions.init(this, 'input[type="text"]');
 	});
 
-	// Make sure autocomplete is off for newly added filters
-	Symphony.Elements.contents.find('.filters-duplicator').on('constructshow.duplicator', '.instance', function() {
-		$(this).find('input').attr('autocomplete', 'off');
+	// Toggle filter help
+	Symphony.Elements.contents.find('.filters-duplicator').on('input.admin change.admin', 'input', function toggleFilterHelp(event) {
+		var item = $(event.target).parents('.instance'),
+			value = event.target.value,
+			filters = item.data('filters'),
+			help = item.find('.help');
+
+		// Handle values that don't contain predicates
+		var filter = value.search(/:/)
+			? $.trim(value.split(':')[0])
+			: $.trim(value);
+
+		// Store filters
+		if(!filters) {
+			filters = {};
+			item.find('.tags li').each(function() {
+				var val = $.trim(this.getAttribute('data-value'));
+				if (val.search(/:/)) {
+					val = val.slice(0, -1);
+				}
+				filters[val] = this.getAttribute('data-help');
+			});
+
+			item.data('filters', filters);
+		}
+
+		// Filter help
+		if(filters[filter]) {
+			help.html(filters[filter]);
+		}
 	});
 });
 
@@ -784,6 +812,11 @@ Symphony.View.add('/system/authors/:action:/:id:/:status:', function(action, id,
 			text: Symphony.Language.get('Please reset your password')
 		}).insertAfter(legend);
 	}
+
+	// Highlight confirmation promt
+	Symphony.Elements.contents.find('input, select').on('change.admin input.admin', function() {
+		$('#confirmation').addClass('highlight');
+	});
 });
 
 /*--------------------------------------------------------------------------

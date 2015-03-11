@@ -7,9 +7,6 @@
  * backend through Javascript. At the moment this is only supported for
  * Pages and Sections.
  */
-require_once TOOLKIT . '/class.pagemanager.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once TOOLKIT . '/class.xmlpage.php';
 
 class contentAjaxReorder extends XMLPage
 {

@@ -7,8 +7,6 @@
  * The Event Editor allows a developer to create events that typically
  * allow Frontend forms to populate Sections or edit Entries.
  */
-require_once TOOLKIT . '/class.resourcespage.php';
-require_once FACE . '/interface.provider.php';
 
 class contentBlueprintsEvents extends ResourcesPage
 {
@@ -16,7 +14,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
     public function __viewIndex($resource_type)
     {
-        parent::__viewIndex(RESOURCE_TYPE_EVENT);
+        parent::__viewIndex(ResourceManager::RESOURCE_TYPE_EVENT);
 
         $this->setTitle(__('%1$s &ndash; %2$s', array(__('Events'), __('Symphony'))));
         $this->appendSubheading(__('Events'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a new event'), 'create button', null, array('accesskey' => 'c')));
@@ -244,7 +242,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
             $pages = PageManager::fetch();
             $event_handle = str_replace('-', '_', Lang::createHandle($fields['name']));
-            $connections = ResourceManager::getAttachedPages(RESOURCE_TYPE_EVENT, $event_handle);
+            $connections = ResourceManager::getAttachedPages(ResourceManager::RESOURCE_TYPE_EVENT, $event_handle);
             $selected = array();
 
             foreach ($connections as $connection) {
@@ -378,10 +376,10 @@ class contentBlueprintsEvents extends ResourcesPage
                     Alert::ERROR
                 );
             } else {
-                $pages = ResourceManager::getAttachedPages(RESOURCE_TYPE_EVENT, $this->_context[1]);
+                $pages = ResourceManager::getAttachedPages(ResourceManager::RESOURCE_TYPE_EVENT, $this->_context[1]);
 
                 foreach ($pages as $page) {
-                    ResourceManager::detach(RESOURCE_TYPE_EVENT, $this->_context[1], $page['id']);
+                    ResourceManager::detach(ResourceManager::RESOURCE_TYPE_EVENT, $this->_context[1], $page['id']);
                 }
 
                 redirect(SYMPHONY_URL . '/blueprints/events/');
@@ -391,7 +389,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
     public function __actionIndex($resource_type)
     {
-        return parent::__actionIndex(RESOURCE_TYPE_EVENT);
+        return parent::__actionIndex(ResourceManager::RESOURCE_TYPE_EVENT);
     }
 
     public function __formAction()
@@ -488,7 +486,6 @@ class contentBlueprintsEvents extends ResourcesPage
                 $this->__injectFilters($eventShell, $filters);
 
                 // Add Documentation
-                require_once(CONTENT . '/content.ajaxeventdocumentation.php');
                 $ajaxEventDoc = new contentAjaxEventDocumentation();
                 $doc_parts = array();
 
@@ -513,10 +510,13 @@ class contentBlueprintsEvents extends ResourcesPage
                  *  An array of all the selected filters for this Event
                  * @param array $documentation
                  *  An array of all the documentation XMLElements, passed by reference
+                 * @param string $rootelment
+                 *  The name of this event, as a handle.
                  */
-                Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/' . $rootelement . '/', array(
+                Symphony::ExtensionManager()->notifyMembers('AppendEventFilterDocumentation', '/blueprints/events/', array(
                     'selected' => $filters,
-                    'documentation' => &$doc_parts
+                    'documentation' => &$doc_parts,
+                    'rootelement' => $rootelement
                 ));
 
                 $documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $doc_parts));
@@ -578,7 +578,7 @@ class contentBlueprintsEvents extends ResourcesPage
             }
 
             // Write the file
-            if (!is_writable(dirname($file)) || !$write = General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file'))) {
+            if (!is_writable(dirname($file)) || !General::writeFile($file, $eventShell, Symphony::Configuration()->get('write_mode', 'file'))) {
                 $this->pageAlert(
                     __('Failed to write Event to disk.')
                     . ' ' . __('Please check permissions on %s.', array('<code>/workspace/events</code>')),
@@ -593,7 +593,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
                 // Attach this event to pages
                 $connections = $fields['connections'];
-                ResourceManager::setPages(RESOURCE_TYPE_EVENT, is_null($existing_handle) ? $classname : $existing_handle, $connections);
+                ResourceManager::setPages(ResourceManager::RESOURCE_TYPE_EVENT, is_null($existing_handle) ? $classname : $existing_handle, $connections);
 
                 if ($queueForDeletion) {
                     General::deleteFile($queueForDeletion);

@@ -1,14 +1,17 @@
 <?php
 
-	// Find out where we are:
-	define('DOCROOT', rtrim(dirname(__FILE__), '\\/'));
+    // Find out where we are:
+    define('DOCROOT', __DIR__);
 
-	// Include the boot script:
-	include DOCROOT . '/symphony/lib/boot/bundle.php';
+    // Include autoloader:
+    require_once DOCROOT . '/vendor/autoload.php';
 
-	// Begin Symphony proper:
-	symphony(
-		isset($_GET['mode'])
-			? $_GET['mode']
-			: null
-	);
+    // Include the boot script:
+    require_once DOCROOT . '/symphony/lib/boot/bundle.php';
+
+    // Begin Symphony proper:
+    symphony(
+        isset($_GET['mode'])
+            ? $_GET['mode']
+            : null
+    );

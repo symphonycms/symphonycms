@@ -4,9 +4,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-require_once FACE . '/interface.importablefield.php';
-
 /**
  * A simple Upload field that essentially maps to HTML's `<input type='file '/>`.
  */
@@ -49,6 +46,41 @@ class FieldUpload extends Field implements ExportableField, ImportableField
     public function isSortable()
     {
         return true;
+    }
+
+    public function fetchFilterableOperators()
+    {
+        return array(
+            array(
+                'title' => 'is',
+                'filter' => ' ',
+                'help' => __('Find files that are an exact match for the given string.')
+            ),
+            array(
+                'title' => 'contains',
+                'filter' => 'regexp: ',
+                'help' => __('Find files that match the given <a href="%s">MySQL regular expressions</a>.', array(
+                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+                ))
+            ),
+            array(
+                'title' => 'does not contain',
+                'filter' => 'not-regexp: ',
+                'help' => __('Find files that do not match the given <a href="%s">MySQL regular expressions</a>.', array(
+                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+                ))
+            ),
+            array(
+                'title' => 'file type is',
+                'filter' => 'mimetype: ',
+                'help' => __('Find files that match the given mimetype.')
+            ),
+            array(
+                'title' => 'size is',
+                'filter' => 'size: ',
+                'help' => __('Find files that match the given size.')
+            )
+        );
     }
 
     /*-------------------------------------------------------------------------
@@ -225,7 +257,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         $label = Widget::Label($this->get('label'));
         $label->setAttribute('class', 'file');
 
-        if ($this->get('required') != 'yes') {
+        if ($this->get('required') !== 'yes') {
             $label->appendChild(new XMLElement('i', __('Optional')));
         }
 
@@ -270,7 +302,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
                 && $data['error'] == UPLOAD_ERR_NO_FILE
             )
         ) {
-            if ($this->get('required') == 'yes') {
+            if ($this->get('required') === 'yes') {
                 $message = __('‘%s’ is a required field.', array($this->get('label')));
 
                 return self::__MISSING_FIELDS__;
@@ -490,7 +522,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
         if ($uploaded === false) {
             $message = __(
-                'There was an error while trying to upload the file %1$s to the target directory %2$s.',
+                __('There was an error while trying to upload the file %1$s to the target directory %2$s.'),
                 array(
                     '<code>' . $data['name'] . '</code>',
                     '<code>workspace/' . ltrim($rel_path, '/') . '</code>'

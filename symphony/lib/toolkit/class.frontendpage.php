@@ -15,8 +15,6 @@
  * instead.
  */
 
-require_once TOOLKIT . '/class.xsltpage.php';
-
 class FrontendPage extends XSLTPage
 {
     /**
@@ -303,7 +301,7 @@ class FrontendPage extends XSLTPage
         // Display the Event Results in the page source if the user is logged
         // into Symphony, the page is not JSON and if it is enabled in the
         // configuration.
-        if ($this->is_logged_in && !General::in_iarray('JSON', $this->_pageData['type']) && Symphony::Configuration()->get('display_event_xml_in_source', 'public') == 'yes') {
+        if ($this->is_logged_in && !General::in_iarray('JSON', $this->_pageData['type']) && Symphony::Configuration()->get('display_event_xml_in_source', 'public') === 'yes') {
             $output .= PHP_EOL . '<!-- ' . PHP_EOL . $this->_events_xml->generate(true) . ' -->';
         }
 
@@ -424,7 +422,7 @@ class FrontendPage extends XSLTPage
 
         if (is_array($_COOKIE[__SYM_COOKIE_PREFIX__]) && !empty($_COOKIE[__SYM_COOKIE_PREFIX__])) {
             foreach ($_COOKIE[__SYM_COOKIE_PREFIX__] as $key => $val) {
-                if ($key === 'xsrf-token') {
+                if ($key === 'xsrf-token' && is_array($val)) {
                     $val = key($val);
                 }
 
@@ -540,7 +538,7 @@ class FrontendPage extends XSLTPage
         $this->setXML($xml);
         $xsl = '<?xml version="1.0" encoding="UTF-8"?>
         <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-            <xsl:import href="./workspace/pages/' . basename($page['filelocation']).'"/>
+            <xsl:import href="' . str_replace('\\', '/', $page['filelocation']) . '"/>
         </xsl:stylesheet>';
 
         $this->setXSL($xsl, false);
@@ -608,7 +606,7 @@ class FrontendPage extends XSLTPage
                 } else {
                     $page_extra_bits[] = $handle;
                 }
-            } while ($handle = array_pop($pathArr));
+            } while (($handle = array_pop($pathArr)) !== null);
 
             // If the `$pathArr` is empty, that means a page hasn't resolved for
             // the given `$page`, however in some cases the index page may allow

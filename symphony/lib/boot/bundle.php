@@ -4,16 +4,8 @@
      * @package boot
      */
 
-    require_once DOCROOT . '/symphony/lib/boot/func.utilities.php';
-    require_once DOCROOT . '/symphony/lib/boot/defines.php';
-    require_once CORE . '/class.symphony.php';
-
     // Set appropriate error reporting:
-    error_reporting(
-        PHP_VERSION_ID >= 50300
-            ? E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT
-            : E_ALL & ~E_NOTICE
-    );
+    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 
     // Turn off old-style magic:
     ini_set('magic_quotes_runtime', false);
@@ -36,6 +28,7 @@
         // Load configuration file:
         include CONFIG;
         Symphony::initialiseConfiguration($settings);
+        Symphony::initialiseErrorHandler();
         Symphony::initialiseDatabase();
         Symphony::initialiseExtensionManager();
 
@@ -43,7 +36,7 @@
         $adminPath = Symphony::Configuration()->get('admin-path', 'symphony');
         $adminPath = (is_null($adminPath)) ? 'symphony' :  $adminPath;
         if (isset($_GET['symphony-page']) && strpos($_GET['symphony-page'], $adminPath, 0) === 0) {
-            $_GET['symphony-page'] = str_replace($adminPath . '/', '', $_GET['symphony-page']);
+            $_GET['symphony-page'] = preg_replace('%^' . preg_quote($adminPath) . '\/%', '', $_GET['symphony-page'], 1);
 
             if ($_GET['symphony-page'] == '') {
                 unset($_GET['symphony-page']);

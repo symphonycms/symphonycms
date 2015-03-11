@@ -2,41 +2,6 @@
 /**
 * @package toolkit
 */
-/**
-* The translation function accepts an English string and returns its translation
-* to the active system language. If the given string is not available in the
-* current dictionary the original English string will be returned. Given an optional
-* `$inserts` array, the function will replace translation placeholders using `vsprintf()`.
-* Since Symphony 2.3, it is also possible to have multiple translation of the same string
-* according to the page namespace (i.e. the value returned by Symphony's `getPageNamespace()`
-* method). In your lang file, use the `$dictionary` key as namespace and its value as an array
-* of context-aware translations, as shown below:
-*
-* $dictionary = array(
-*        [...]
-*
-*        'Create new' => 'Translation for Create New',
-*
-*        '/blueprints/datasources' => array(
-*            'Create new' =>
-*            'If we are inside a /blueprints/datasources/* page, this translation will be returned for the string'
-*        ),
-*
-*        [...]
-*  );
-*
-* @see core.Symphony#getPageNamespace()
-* @param string $string
-*  The string that should be translated
-* @param array $inserts (optional)
-*  Optional array used to replace translation placeholders, defaults to NULL
-* @return string
-*  Returns the translated string
-*/
-function __($string, $inserts=NULL)
-{
-    return Lang::translate($string, $inserts);
-}
 
 /**
  * The Lang class loads and manages languages
@@ -293,7 +258,7 @@ class Lang
         self::$_dictionary = array();
 
         // Language file available
-        if ($code != 'en' && (self::isLanguageEnabled($code) || $checkStatus == false)) {
+        if ($code !== 'en' && (self::isLanguageEnabled($code) || $checkStatus === false)) {
             // Load core translations
             self::load(vsprintf('%s/lang_%s/lang/lang.%s.php', array(
                 EXTENSIONS, self::$_languages[$code]['handle'], $code
@@ -316,7 +281,7 @@ class Lang
             self::$_transliterations = $transliterations;
 
             // Log error, if possible
-            if ($code != 'en' && class_exists('Symphony') && Symphony::Log() instanceof Log) {
+            if ($code !== 'en' && class_exists('Symphony', false) && Symphony::Log() instanceof Log) {
                 Symphony::Log()->pushToLog(
                     __('The selected language, %s, could not be found. Using default English dictionary instead.', array($code)),
                     E_ERROR,
@@ -342,7 +307,7 @@ class Lang
         $enabled_extensions = array();
 
         // Fetch list of active extensions
-        if(class_exists('Symphony') && (!is_null(Symphony::ExtensionManager()))){
+        if(class_exists('Symphony', false) && (!is_null(Symphony::ExtensionManager()))){
             $enabled_extensions = Symphony::ExtensionManager()->listInstalledHandles();
         }
 
@@ -397,7 +362,7 @@ class Lang
      *  Returns the translated string
      */
     public static function translate($string, array $inserts = null, $namespace = null) {
-        if(is_null($namespace) && class_exists('Symphony')){
+        if(is_null($namespace) && class_exists('Symphony', false)){
             $namespace = Symphony::getPageNamespace();
         }
 
@@ -437,7 +402,7 @@ class Lang
 
         // Get available languages
         foreach(self::$_languages as $key => $language) {
-            if(self::isLanguageEnabled($key) || ($checkStatus == false && isset($language['handle']))){
+            if(self::isLanguageEnabled($key) || ($checkStatus === false && isset($language['handle']))){
                 $languages[$key] = $language['name'];
             }
         }
@@ -453,7 +418,7 @@ class Lang
      *  Returns true for localized system, false for English system
      */
     public static function isLocalized() {
-        return (self::get() != 'en');
+        return (self::get() !== 'en');
     }
 
     /**
@@ -489,7 +454,7 @@ class Lang
 
             // Translate names to English
             foreach(self::$_datetime_dictionary as $values) {
-                $string = preg_replace('/\b' . self::translate($values) . '\b/i' . (self::isUnicodeCompiled() == true ? 'u' : null), $values, $string);
+                $string = preg_replace('/\b' . self::translate($values) . '\b/i' . (self::isUnicodeCompiled() === true ? 'u' : null), $values, $string);
             }
 
             // Replace custom date and time separator with space:
@@ -497,7 +462,7 @@ class Lang
             // @todo Test if this separator is still required. It's a hidden setting
             // and users are only aware of it if they go digging/pointed in the right direction
             $separator = Symphony::Configuration()->get('datetime_separator', 'region');
-            if($separator != ' ') {
+            if($separator !== ' ') {
                 $string = str_replace($separator, ' ', $string);
             }
         }
@@ -526,7 +491,7 @@ class Lang
      */
     public static function createHandle($string, $max_length = 255, $delim = '-', $uriencode = false, $apply_transliteration = true, $additional_rule_set = NULL) {
         // Use the transliteration table if provided
-        if($apply_transliteration == true){
+        if($apply_transliteration === true){
             $string = self::applyTransliterations($string);
         }
 
@@ -547,7 +512,7 @@ class Lang
      */
     public static function createFilename($string, $delim='-', $apply_transliteration = true) {
         // Use the transliteration table if provided
-        if($apply_transliteration == true){
+        if($apply_transliteration === true){
             $file = pathinfo($string);
             $string = self::applyTransliterations($file['filename']) . '.' . $file['extension'];
         }

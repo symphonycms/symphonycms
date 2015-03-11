@@ -9,15 +9,10 @@
  * from Sections. This Page controls the entries table as well as
  * the Entry creation screens.
  */
-require_once TOOLKIT . '/class.administrationpage.php';
-require_once TOOLKIT . '/class.entrymanager.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once CONTENT . '/class.sortable.php';
 
 class contentPublish extends AdministrationPage
 {
     public $_errors = array();
-    private $_filteringFields = array();
 
     public function sort(&$sort, &$order, $params)
     {
@@ -63,7 +58,6 @@ class contentPublish extends AdministrationPage
             // If the sort order or direction remains the same, reload the page
             if ($sort == $section->getSortingField() && $order == $section->getSortingOrder()) {
                 if ($params['filters']) {
-
                     $params['filters'] = '?' . trim($params['filters'], '&amp;');
                 }
 
@@ -79,118 +73,237 @@ class contentPublish extends AdministrationPage
     public function createFilteringInterface()
     {
         //Check if section has filtering enabled
-        $context = Administration::instance()->Page->_context;
+        $context = $this->getContext();
         $handle = $context['section_handle'];
         $section_id = SectionManager::fetchIDFromHandle($handle);
         $section = SectionManager::fetch($section_id);
         $filter = $section->get('filter');
+        $count = EntryManager::fetchCount($section_id);
 
-        if (isset($filter) && $filter !='no') {
-            // Get filtering fields
-            $this->getFilteringFields();
-
-            // Append drawer
-            $this->insertDrawer(
-                Widget::Drawer('filtering', __('Filter Entries'), $this->createFilteringDrawer())
-            );
+        if ($filter !== 'no' && $count > 1) {
+            $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), $this->createFilteringDrawer($section));
+            $drawer->addClass('drawer-filtering');
+            $this->insertDrawer($drawer);
         }
     }
 
     /**
      * Create filtering drawer
      */
-    public function createFilteringDrawer()
+    public function createFilteringDrawer($section)
     {
-        $filters = $_GET['filter'];
         $this->filteringForm = Widget::Form(null, 'get', 'filtering');
-
-        // Create existing filters
-        if (is_array($filters) && !empty($filters)) {
-            foreach ($filters as $field => $search) {
-                $this->createFilter($field, $search);
-            }
-
-            // Create empty filter
-        } else {
-            $this->createFilter();
-        }
-
-        // Create template
-        $this->createFilter(null, null, 'template');
+        $this->createFilteringDuplicator($section);
 
         return $this->filteringForm;
     }
 
-    public function createFilter($field = null, $search = null, $class = null)
+    public function createFilteringDuplicator($section)
     {
-        $row = new XMLElement('div');
+        $div = new XMLElement('div');
+        $div->setAttribute('class', 'frame filters-duplicator');
+        $div->setAttribute('data-interactive', 'data-interactive');
 
-        if ($class) {
-            $row->setAttribute('class', 'filtering-row ' . $class);
-        } else {
-            $row->setAttribute('class', 'filtering-row');
-        }
+        $ol = new XMLElement('ol');
+        $ol->setAttribute('data-add', __('Add filter'));
+        $ol->setAttribute('data-remove', __('Clear filter'));
+        $ol->setAttribute('data-empty', __('No filters applied yet.'));
 
-        // Fields
-        $fields = $this->_filteringFields;
+        $this->createFieldFilters($ol, $section);
+        $this->createSystemDateFilters($ol);
 
-        for ($i = 1; $i < count($fields); $i++) {
-            if ($fields[$i][0] === $field) {
-                $fields[$i][1] = true;
-            }
-        }
-
-        $div = new XMLElement('div', null, array('class' => 'filtering-controls'));
-        $div->appendChild(
-            Widget::Select('fields', $fields, array(
-                'class' => 'filtering-fields'
-            ))
-        );
-
-        // Comparison
-        $needle = str_replace('regexp:', '', $search);
-        $div->appendChild(
-            Widget::Select('comparison', array(
-                array('contains', (strpos($search, 'regexp:') !== false), __('contains')),
-                array('is', (strpos($search, 'regexp:') === false), __('is'))
-            ), array(
-                'class' => 'filtering-comparison'
-            ))
-        );
-        $row->appendChild($div);
-
-        // Search
-        $row->appendChild(
-            Widget::Input('search', $needle, 'text', array(
-                'class' => 'filtering-search',
-                'placeholder' => __('Type to search') . ' …')
-            )
-        );
-
-        $this->filteringForm->appendChild($row);
+        $div->appendChild($ol);
+        $this->filteringForm->appendChild($div);
     }
 
-    /**
-     * Get filter field names
-     */
-    public function getFilteringFields()
+    private function createFieldFilters(&$wrapper, $section)
     {
-        $context = $this->getContext();
-        $section_id = SectionManager::fetchIDFromHandle($context['section_handle']);
+        $filters = $_GET['filter'];
 
-        if (!$section_id) {
-            return;
-        }
-
-        // Filterable sections
-        $section = SectionManager::fetch($section_id);
         foreach ($section->fetchFilterableFields() as $field) {
             if (!$field->canPublishFilter()) {
                 continue;
             }
 
-            $this->_filteringFields[] = array($field->get('element_name'), false, $field->get('label'));
+            $filter = $filters[$field->get('element_name')];
+
+            // Filter data
+            $data = array();
+            $data['type'] = $field->get('element_name');
+            $data['name'] = $field->get('label');
+            $data['filter'] = $filter;
+            $data['instance'] = 'unique';
+            $data['search'] = $field->fetchSuggestionTypes();
+            $data['operators'] = $field->fetchFilterableOperators();
+            $data['comparisons'] = $this->createFilterComparisons($data);
+            $data['query'] = $this->getFilterQuery($data);
+            $data['field-id'] = $field->get('id');
+
+            // Add existing filter
+            if (isset($filter)) {
+                $this->createFilter($wrapper, $data);
+            }
+
+            // Add filter template
+            $data['instance'] = 'unique template';
+            $data['query'] = '';
+            $this->createFilter($wrapper, $data);
         }
+    }
+
+    private function createSystemDateFilters(&$wrapper)
+    {
+        $filters = $_GET['filter'];
+        $dateField = new FieldDate;
+
+        $fields = array(
+            array(
+                'type' => 'system:creation-date',
+                'label' => __('System Creation Date')
+            ),
+            array(
+                'type' => 'system:modification-date',
+                'label' => __('System Modification Date')
+            )
+        );
+
+        foreach ($fields as $field) {
+            $filter = $filters[$field['type']];
+
+            // Filter data
+            $data = array();
+            $data['type'] = $field['type'];
+            $data['name'] = $field['label'];
+            $data['filter'] = $filter;
+            $data['instance'] = 'unique';
+            $data['search'] = $dateField->fetchSuggestionTypes();
+            $data['operators'] = $dateField->fetchFilterableOperators();
+            $data['comparisons'] = $this->createFilterComparisons($data);
+            $data['query'] = $this->getFilterQuery($data);
+
+            // Add existing filter
+            if (isset($filter)) {
+                $this->createFilter($wrapper, $data);
+            }
+
+            // Add filter template
+            $data['instance'] = 'unique template';
+            $data['query'] = '';
+            $this->createFilter($wrapper, $data);
+        }
+    }
+
+    private function createFilter(&$wrapper, $data)
+    {
+        $li = new XMLElement('li');
+        $li->setAttribute('class', $data['instance']);
+        $li->setAttribute('data-type', $data['type']);
+
+        // Header
+        $li->appendChild(new XMLElement('header', $data['name'], array(
+            'data-name' => $data['name']
+        )));
+
+        // Settings
+        $div = new XMLElement('div', null, array('class' => 'two columns'));
+
+        // Comparisons
+        $label = Widget::Label();
+        $label->setAttribute('class', 'column secondary');
+
+        $select = Widget::Select($data['type'] . '-comparison', $data['comparisons'], array(
+            'class' => 'comparison'
+        ));
+
+        $label->appendChild($select);
+        $div->appendChild($label);
+
+        // Query
+        $label = Widget::Label();
+        $label->setAttribute('class', 'column primary');
+
+        $input = Widget::Input($data['type'], $data['query'], 'text', array(
+            'placeholder' => __('Type and hit enter to apply filter…'),
+            'autocomplete' => 'off'
+        ));
+        $input->setAttribute('class', 'filter');
+        $label->appendChild($input);
+
+        $this->createFilterSuggestions($label, $data);
+
+        $div->appendChild($label);
+        $li->appendChild($div);
+        $wrapper->appendChild($li);
+    }
+
+    private function createFilterComparisons($data)
+    {
+        // Default comparison
+        $comparisons = array();
+
+        // Custom field comparisons
+        foreach ($data['operators'] as $operator) {
+            $filter = trim($operator['filter']);
+
+            $comparisons[] = array(
+                $filter,
+                (!empty($filter) && strpos($data['filter'], $filter) === 0),
+                __($operator['title'])
+            );
+        }
+
+        return $comparisons;
+    }
+
+    private function createFilterSuggestions(&$wrapper, $data)
+    {
+        $ul = new XMLElement('ul');
+        $ul->setAttribute('class', 'suggestions');
+        $ul->setAttribute('data-field-id', $data['field-id']);
+        $ul->setAttribute('data-associated-ids', '0');
+        $ul->setAttribute('data-search-types', implode($data['search'], ','));
+
+        // Add default filter help
+        $operator = array(
+            'filter' => 'is',
+            'help' => __('Find values that are an exact match for the given string.')
+        );
+        $this->createFilterHelp($ul, $operator);
+
+        // Add custom filter help
+        foreach ($data['operators'] as $operator) {
+            $this->createFilterHelp($ul, $operator);
+        }
+
+        $wrapper->appendChild($ul);
+    }
+
+    private function createFilterHelp(&$wrapper, $operator) {
+        if(empty($operator['help'])) {
+            return;
+        }
+
+        $li = new XMLElement('li', __('Comparison mode') . ': ' . $operator['help'], array(
+            'class' => 'help',
+            'data-comparison' => trim($operator['filter'])
+        ));
+
+        $wrapper->appendChild($li);
+    }
+
+    private function getFilterQuery($data)
+    {
+        $query = $data['filter'];
+
+        foreach ($data['operators'] as $operator) {
+            $filter = trim($operator['filter']);
+
+            if (!empty($filter) && strpos($data['filter'], $filter) === 0) {
+                $query = substr($data['filter'], strlen($filter));
+            }
+        }
+
+        return (string)$query;
     }
 
     public function build(array $context = array())
@@ -274,21 +387,53 @@ class contentPublish extends AdministrationPage
             }
 
             foreach ($filters as $handle => $value) {
-                $field_id = FieldManager::fetchFieldIDFromElementName(
-                    Symphony::Database()->cleanValue($handle),
-                    $section->get('id')
-                );
+                // Handle multiple values through filtering. RE: #2290
+                if ((is_array($value) && empty($value)) || trim($value) == '') {
+                    continue;
+                }
 
-                $field = FieldManager::fetch($field_id);
+                if (!is_array($value)) {
+                    $filter_type = Datasource::determineFilterType($value);
+                    $value = preg_split('/'.($filter_type == Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
+                    $value = array_map('trim', $value);
+                    $value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
+                }
 
-                if ($field instanceof Field) {
-                    // For deprecated reasons, call the old, typo'd function name until the switch to the
-                    // properly named buildDSRetrievalSQL function.
-                    $field->buildDSRetrievalSQL(array($value), $joins, $where, false);
-                    $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, rawurlencode($value));
-                    $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, rawurlencode($value));
+                // Handle date meta data #2003
+                $handle = Symphony::Database()->cleanValue($handle);
+                if (in_array($handle, array('system:creation-date', 'system:modification-date'))) {
+                    $date_joins = '';
+                    $date_where = '';
+                    $date = new FieldDate();
+                    $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == Datasource::FILTER_AND ? true : false));
+
+                    // Replace the date field where with the `creation_date` or `modification_date`.
+                    $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
+                    $where .= $date_where;
+
                 } else {
-                    unset($filters[$handle]);
+                    // Handle normal fields
+                    $field_id = FieldManager::fetchFieldIDFromElementName(
+                        $handle,
+                        $section->get('id')
+                    );
+
+                    $field = FieldManager::fetch($field_id);
+                    if ($field instanceof Field) {
+                        $field->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false));
+
+                        $value = implode(',' , $value);
+                        $encoded_value = rawurlencode($value);
+                        $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, $encoded_value);
+
+                        // Some fields require that prepopulation be done via ID. RE: #2331
+                        if (method_exists($field, 'fetchIDfromValue')) {
+                            $encoded_value = $field->fetchIDfromValue($value);
+                        }
+                        $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, $encoded_value);
+                    } else {
+                        unset($filters[$handle]);
+                    }
                 }
             }
 
@@ -354,6 +499,16 @@ class contentPublish extends AdministrationPage
             $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'));
         }
 
+        // Flag filtering
+        $filter_stats = null;
+        if (isset($_REQUEST['filter'])) {
+            $filter_stats = new XMLElement('p', '<span>– ' . __('%d of %d entries (filtered)', array($entries['total-entries'], EntryManager::fetchCount($section_id))) . '</span>', array('class' => 'inactive'));
+        } else {
+            $filter_stats = new XMLElement('p', '<span>– ' . __('%d entries', array($entries['total-entries'])) . '</span>', array('class' => 'inactive'));
+        }
+        $this->Breadcrumbs->appendChild($filter_stats);
+
+        // Build table
         $visible_columns = $section->fetchVisibleColumns();
         $columns = array();
 
@@ -948,11 +1103,11 @@ class contentPublish extends AdministrationPage
             }
 
             // Initial checks to see if the Entry is ok
-            if (__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
+            if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
                 $this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
                 // Secondary checks, this will actually process the data and attempt to save
-            } elseif (__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
+            } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
                 foreach ($errors as $field_id => $message) {
                     $this->pageAlert($message, Alert::ERROR);
                 }
@@ -1101,7 +1256,13 @@ class contentPublish extends AdministrationPage
         }
 
         // Determine the page title
-        $field_id = Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '".$section->get('id')."' ORDER BY `sortorder` LIMIT 1");
+        $field_id = Symphony::Database()->fetchVar('id', 0, sprintf("
+            SELECT `id`
+            FROM `tbl_fields`
+            WHERE `parent_section` = %d
+            ORDER BY `sortorder` LIMIT 1",
+            $section->get('id')
+        ));
         if (!is_null($field_id)) {
             $field = FieldManager::fetch($field_id);
         }
@@ -1263,13 +1424,12 @@ class contentPublish extends AdministrationPage
                      */
                     Symphony::ExtensionManager()->notifyMembers('EntryPostEdit', '/publish/edit/', array('section' => $section, 'entry' => $entry, 'fields' => $fields));
 
-                    $prepopulate_querystring = $this->getPrepopulateString();
                     redirect(sprintf(
                         '%s/publish/%s/edit/%d/saved/%s',
                         SYMPHONY_URL,
                         $this->_context['section_handle'],
                         $entry->get('id'),
-                        (!empty($prepopulate_querystring) ? $prepopulate_querystring : null)
+                        $this->getPrepopulateString()
                     ));
                 }
             }
@@ -1558,9 +1718,6 @@ class contentPublish extends AdministrationPage
 
                         // If we are only showing 'some' of the entries, then show this on the UI
                         if ($entries['total-entries'] > $show_entries) {
-                            $total_entries = new XMLElement('a', __('%d entries', array($entries['total-entries'])), array(
-                                'href' => $link,
-                            ));
                             $pagination = new XMLElement('li', null, array(
                                 'class' => 'association-more',
                                 'data-current-page' => '1',

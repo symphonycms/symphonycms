@@ -14,8 +14,6 @@
  * @link http://getsymphony.com/learn/concepts/view/data-sources/
  */
 
-require_once TOOLKIT . '/class.entrymanager.php';
-
 class SectionDatasource extends Datasource
 {
     /**
@@ -268,7 +266,7 @@ class SectionDatasource extends Datasource
                 if ($singleParam) {
                     $this->_param_pool[$key][] = $entry->get('author_id');
                 }
-            } elseif ($param === 'system:creation-date' or $param === 'system:date') {
+            } elseif ($param === 'system:creation-date' || $param === 'system:date') {
                 $this->_param_pool[$param_key][] = $entry->get('creation_date');
 
                 if ($singleParam) {
@@ -368,8 +366,8 @@ class SectionDatasource extends Datasource
             }
 
             if (!is_array($filter)) {
-                $filter_type = $this->__determineFilterType($filter);
-                $value = preg_split('/'.($filter_type == DataSource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
+                $filter_type = Datasource::determineFilterType($filter);
+                $value = preg_split('/'.($filter_type == Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
                 $value = array_map('trim', $value);
                 $value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
             } else {
@@ -412,18 +410,16 @@ class SectionDatasource extends Datasource
                     $where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
                 }
             } elseif ($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
-                require_once TOOLKIT . '/fields/field.date.php';
-
                 $date_joins = '';
                 $date_where = '';
-                $date = new fieldDate();
-                $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == DataSource::FILTER_AND ? true : false));
+                $date = new FieldDate();
+                $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == Datasource::FILTER_AND ? true : false));
 
                 // Replace the date field where with the `creation_date` or `modification_date`.
                 $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
                 $where .= $date_where;
             } else {
-                if (!self::$_fieldPool[$field_id]->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == DataSource::FILTER_AND ? true : false))) {
+                if (!self::$_fieldPool[$field_id]->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false))) {
                     $this->_force_empty_result = true;
                     return;
                 }
@@ -454,7 +450,7 @@ class SectionDatasource extends Datasource
         ));
 
         if ($this->_force_empty_result == true) {
-            if ($this->dsParamREDIRECTONREQUIRED == 'yes') {
+            if ($this->dsParamREDIRECTONREQUIRED === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
 
@@ -469,7 +465,7 @@ class SectionDatasource extends Datasource
         }
 
         if ($this->_negate_result == true) {
-            if ($this->dsParamREDIRECTONFORBIDDEN == 'yes') {
+            if ($this->dsParamREDIRECTONFORBIDDEN === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
 
@@ -526,9 +522,9 @@ class SectionDatasource extends Datasource
         }
 
         $entries = EntryManager::fetchByPage(
-            ($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1),
+            ($this->dsParamPAGINATERESULTS === 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1),
             $this->getSource(),
-            ($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : null),
+            ($this->dsParamPAGINATERESULTS === 'yes' && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : null),
             $where,
             $joins,
             $group,
@@ -554,7 +550,7 @@ class SectionDatasource extends Datasource
         ));
 
         if (($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || $this->dsParamSTARTPAGE == '0') {
-            if ($this->dsParamREDIRECTONEMPTY == 'yes') {
+            if ($this->dsParamREDIRECTONEMPTY === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
 
@@ -574,13 +570,13 @@ class SectionDatasource extends Datasource
                 $result->appendChild($sectioninfo);
 
                 if ($include_pagination_element) {
-                    $t = ($this->dsParamPAGINATERESULTS == 'yes' && isset($this->dsParamLIMIT) && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']);
+                    $t = ($this->dsParamPAGINATERESULTS === 'yes' && isset($this->dsParamLIMIT) && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']);
 
                     $pagination_element = General::buildPaginationElement(
                         $entries['total-entries'],
                         $entries['total-pages'],
                         $t,
-                        ($this->dsParamPAGINATERESULTS == 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1)
+                        ($this->dsParamPAGINATERESULTS === 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1)
                     );
 
                     if ($pagination_element instanceof XMLElement && $result instanceof XMLElement) {
@@ -591,7 +587,7 @@ class SectionDatasource extends Datasource
 
             // If this datasource has a Limit greater than 0 or the Limit is not set
             if (!isset($this->dsParamLIMIT) || $this->dsParamLIMIT > 0) {
-                if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS == 'yes') {
+                if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS === 'yes') {
                     $this->_associated_sections = $section->fetchAssociatedSections();
                 }
 

@@ -4,30 +4,30 @@
 
 
 table {
-	border-collapse: collapse;
 	width: 100%;
 	margin-top: 0.8rem;
+	border-collapse: collapse;
 }
 
 table.fixed {
-	table-layout: fixed;
-	word-wrap: break-word;
 	overflow-wrap: break-word;
+	word-wrap: break-word;
+	table-layout: fixed;
 }
 
 th {
 	padding-right: 1.9rem;
 	color: rgba(0, 0, 0, 0.6);
-	text-align: left;
 	font-weight: normal;
 	line-height: 2;
+	text-align: left;
 	white-space: nowrap;
 }
 
 td {
+	padding: 0.8rem 1.9rem 0.8rem 0;
 	border: 0.1rem solid #e6e6e5;
 	border-width: 0.1rem 0;
-	padding: 0.8rem 1.9rem 0.8rem 0;
 	background-color: #f5f5f5;
 }
 
@@ -52,9 +52,9 @@ table input {
 th span {
 	float: left;
 	overflow: hidden;
+	max-width: 90%;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	max-width: 90%;
 }
 
 th a {
@@ -80,14 +80,14 @@ th a.active:after {
 th a:after,
 th a.active:hover:after,
 th a.active[href$=asc]:after {
+	content: '\2193';
 	margin-left: 0.3rem;
-	content: "\2193"
 }
 
 th a.active:after,
 th a[href$=asc]:after,
 th a.active[href$=asc]:hover:after {
-	content: "\2191";
+	content: '\2191';
 }
 
 table.busy td {
@@ -123,9 +123,9 @@ table.selectable input {
 }
 
 tr.selected td {
-	background-color: #668abe;
+	border-top: 0.1rem solid #4d78b4;
 	border-bottom: 0.1rem solid #7492bc;
-	border-top: 0.1rem solid #4D78B4;
+	background-color: #668abe;
 }
 
 tr:nth-child(odd).selected td {
@@ -164,9 +164,9 @@ tr.ordering {
 
 tr.ordering td,
 tr:nth-child(odd).ordering td {
-	background-color: #4870a9;
-	border-bottom: 0.1rem solid #3c5e8e;
 	border-top: 0.1rem solid #2d466a;
+	border-bottom: 0.1rem solid #3c5e8e;
+	background-color: #4870a9;
 	text-shadow: 0.1rem 0.1rem rgba(0, 0, 0, 0.2);
 }
 

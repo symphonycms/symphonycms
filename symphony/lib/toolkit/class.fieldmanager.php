@@ -9,8 +9,6 @@
  * in a `fields` folder in an extension directory.
  */
 
-require_once TOOLKIT . '/class.field.php';
-
 class FieldManager implements FileResource
 {
     /**
@@ -95,6 +93,8 @@ class FieldManager implements FileResource
 
     /**
      * This function is not implemented by the `FieldManager` class
+     *
+     * @return boolean
      */
     public static function about($name)
     {
@@ -108,9 +108,9 @@ class FieldManager implements FileResource
      * made to determine the sort order of this field to be current sort order
      * +1.
      *
+     * @throws DatabaseException
      * @param array $fields
      *  Associative array of field names => values for the Field object
-     * @throws DatabaseException
      * @return integer|boolean
      *  Returns a Field ID of the created Field on success, false otherwise.
      */
@@ -124,22 +124,20 @@ class FieldManager implements FileResource
             return false;
         }
 
-        $field_id = Symphony::Database()->getInsertID();
-
-        return $field_id;
+        return Symphony::Database()->getInsertID();
     }
 
     /**
      * Save the settings for a Field given it's `$field_id` and an associative
      * array of settings.
      *
+     * @throws DatabaseException
      * @since Symphony 2.3
      * @param integer $field_id
      *  The ID of the field
      * @param array $settings
      *  An associative array of settings, where the key is the column name
      *  and the value is the value.
-     * @throws DatabaseException
      * @return boolean
      *  True on success, false on failure
      */
@@ -163,13 +161,13 @@ class FieldManager implements FileResource
      * Given a Field ID and associative array of fields, update an existing Field
      * row in the `tbl_fields`table. Returns boolean for success/failure
      *
+     * @throws DatabaseException
      * @param integer $id
      *  The ID of the Field that should be updated
      * @param array $fields
      *  Associative array of field names => values for the Field object
      *  This array does need to contain every value for the field object, it
      *  can just be the changed values.
-     * @throws DatabaseException
      * @return boolean
      */
     public static function edit($id, array $fields)
@@ -187,10 +185,10 @@ class FieldManager implements FileResource
      * existing section associations. This function additionally call the Field's `tearDown`
      * method so that it can cleanup any additional settings or entry tables it may of created.
      *
-     * @param integer $id
-     *  The ID of the Field that should be deleted
      * @throws DatabaseException
      * @throws Exception
+     * @param integer $id
+     *  The ID of the Field that should be deleted
      * @return boolean
      */
     public static function delete($id)
@@ -213,6 +211,8 @@ class FieldManager implements FileResource
      * Fields from a Section also. There are several parameters that can be used to fetch
      * fields by their Type, Location, by a Field Constant or with a custom WHERE query.
      *
+     * @throws DatabaseException
+     * @throws Exception
      * @param integer|array $id
      *  The ID of the field to retrieve. Defaults to null which will return multiple field
      *  objects. Since Symphony 2.3, `$id` will accept an array of Field ID's
@@ -237,8 +237,6 @@ class FieldManager implements FileResource
      *  Only return fields if they match one of the Field Constants. Available values are
      *  `__TOGGLEABLE_ONLY__`, `__UNTOGGLEABLE_ONLY__`, `__FILTERABLE_ONLY__`,
      *  `__UNFILTERABLE_ONLY__` or `__FIELD_ALL__`. Defaults to `__FIELD_ALL__`
-     * @throws DatabaseException
-     * @throws Exception
      * @return array
      *  An array of Field objects. If no Field are found, null is returned.
      */
@@ -320,6 +318,12 @@ class FieldManager implements FileResource
                 } else {
                     $field = self::create($f['type']);
                     $field->setArray($f);
+                    // If the field has said that's going to have associations, then go find the
+                    // association setting value. In future this check will be most robust with
+                    // an interface, but for now, this is what we've got. RE: #2082
+                    if ($field->canShowAssociationColumn()) {
+                        $field->set('show_association', SectionManager::getSectionAssociationSetting($f['id']));
+                    }
 
                     // Get the context for this field from our previous queries.
                     $context = $field_contexts[$f['type']][$f['id']];
@@ -392,17 +396,16 @@ class FieldManager implements FileResource
      * which section should be searched. If `$element_name` is null, this function will
      * return all the Field ID's from the given `$section_id`.
      *
+     * @throws DatabaseException
      * @since Symphony 2.3 This function can now accept $element_name as an array
      *  of handles. These handles can now also include the handle's mode, eg. `title: formatted`
-     *
      * @param string|array $element_name
      *  The handle of the Field label, or an array of handles. These handles may contain
      *  a mode as well, eg. `title: formatted`.
      * @param integer $section_id
      *  The section that this field belongs too
-     * @throws DatabaseException
-     * @return mixed
      *  The field ID, or an array of field ID's
+     * @return mixed
      */
     public static function fetchFieldIDFromElementName($element_name, $section_id = null)
     {
@@ -492,9 +495,9 @@ class FieldManager implements FileResource
      * fields schema. This includes the `id`, `element_name`, `type`
      * and `location`.
      *
+     * @throws DatabaseException
      * @since Symphony 2.3
      * @param integer $section_id
-     * @throws DatabaseException
      * @return array
      *  An associative array that contains four keys, `id`, `element_name`,
      * `type` and `location`
@@ -512,7 +515,7 @@ class FieldManager implements FileResource
 
     /**
      * Returns an array of all available field handles discovered in the
-     * `TOOLKIT . /fields` or `EXTENSIONS . /{}/fields`.
+     * `TOOLKIT . /fields` or `EXTENSIONS . /extension_handle/fields`.
      *
      * @return array
      *  A single dimensional array of field handles.
@@ -520,13 +523,14 @@ class FieldManager implements FileResource
     public static function listAll()
     {
         $structure = General::listStructure(TOOLKIT . '/fields', '/field.[a-z0-9_-]+.php/i', false, 'asc', TOOLKIT . '/fields');
-
         $extensions = Symphony::ExtensionManager()->listInstalledHandles();
+        $types = array();
 
         if (is_array($extensions) && !empty($extensions)) {
             foreach ($extensions as $handle) {
-                if (is_dir(EXTENSIONS . '/' . $handle . '/fields')) {
-                    $tmp = General::listStructure(EXTENSIONS . '/' . $handle . '/fields', '/field.[a-z0-9_-]+.php/i', false, 'asc', EXTENSIONS . '/' . $handle . '/fields');
+                $path = EXTENSIONS . '/' . $handle . '/fields';
+                if (is_dir($path)) {
+                    $tmp = General::listStructure($path, '/field.[a-z0-9_-]+.php/i', false, 'asc', $path);
 
                     if (is_array($tmp['filelist']) && !empty($tmp['filelist'])) {
                         $structure['filelist'] = array_merge($structure['filelist'], $tmp['filelist']);
@@ -536,8 +540,6 @@ class FieldManager implements FileResource
 
             $structure['filelist'] = General::array_remove_duplicates($structure['filelist']);
         }
-
-        $types = array();
 
         foreach ($structure['filelist'] as $filename) {
             $types[] = self::__getHandleFromFilename($filename);
@@ -550,9 +552,9 @@ class FieldManager implements FileResource
      * Creates an instance of a given class and returns it. Adds the instance
      * to the `$_pool` array with the key being the handle.
      *
+     * @throws Exception
      * @param string $type
      *  The handle of the Field to create (which is it's handle)
-     * @throws Exception
      * @return Field
      */
     public static function create($type)
@@ -602,7 +604,7 @@ class FieldManager implements FileResource
      * Check if a specific text formatter is used by a Field
      *
      * @since Symphony 2.3
-     * @param $text_formatter_handle
+     * @param string $text_formatter_handle
      *  The handle of the `TextFormatter`
      * @return boolean
      *  true if used, false if not

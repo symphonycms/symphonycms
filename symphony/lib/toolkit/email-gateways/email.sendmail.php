@@ -3,9 +3,6 @@
  * @package email-gateways
  */
 
-require_once TOOLKIT . '/class.emailgateway.php';
-require_once TOOLKIT . '/class.emailhelper.php';
-
 /**
  * The basic gateway sending emails using Sendmail, php's mail function.
  *
@@ -59,13 +56,15 @@ class SendmailGateway extends EmailGateway
 
         try {
             // Encode recipient names (but not any numeric array indexes)
+            $recipients = array();
             foreach ($this->_recipients as $name => $email) {
                 // Support Bcc header
                 if (isset($this->_header_fields['Bcc']) && $this->_header_fields['Bcc'] == $email) {
                     continue;
                 }
 
-                $name = empty($name) ? $name : EmailHelper::qEncode($name);
+                // if the key is not numeric, qEncode the key.
+                $name = General::intval($name) > -1 ? General::intval($name) : EmailHelper::qEncode($name);
                 $recipients[$name] = $email;
             }
 
@@ -112,6 +111,7 @@ class SendmailGateway extends EmailGateway
             );
 
             // Format header fields
+            $header_fields = array();
             foreach ($this->_header_fields as $name => $body) {
                 $header_fields[] = sprintf('%s: %s', $name, $body);
             }

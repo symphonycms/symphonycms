@@ -9,32 +9,6 @@
  * CMS and initialises the toolkit classes. Symphony is extended by
  * the Frontend and Administration classes
  */
-require_once CORE . '/class.errorhandler.php';
-require_once CORE . '/class.configuration.php';
-require_once CORE . '/class.log.php';
-require_once CORE . '/class.cookie.php';
-require_once FACE . '/interface.singleton.php';
-require_once TOOLKIT . '/class.page.php';
-require_once TOOLKIT . '/class.ajaxpage.php';
-require_once TOOLKIT . '/class.xmlelement.php';
-require_once TOOLKIT . '/class.widget.php';
-require_once TOOLKIT . '/class.general.php';
-require_once TOOLKIT . '/class.cryptography.php';
-require_once TOOLKIT . '/class.xsrf.php';
-require_once TOOLKIT . '/class.profiler.php';
-require_once TOOLKIT . '/class.author.php';
-require_once TOOLKIT . '/class.email.php';
-require_once TOOLKIT . '/class.mysql.php';
-require_once TOOLKIT . '/class.extensionmanager.php';
-require_once TOOLKIT . '/class.pagemanager.php';
-require_once TOOLKIT . '/class.authormanager.php';
-require_once TOOLKIT . '/class.emailgatewaymanager.php';
-require_once TOOLKIT . '/class.entrymanager.php';
-require_once TOOLKIT . '/class.fieldmanager.php';
-require_once TOOLKIT . '/class.sectionmanager.php';
-require_once TOOLKIT . '/class.textformattermanager.php';
-require_once TOOLKIT . '/class.datasourcemanager.php';
-require_once TOOLKIT . '/class.eventmanager.php';
 
 abstract class Symphony implements Singleton
 {
@@ -125,10 +99,7 @@ abstract class Symphony implements Singleton
         define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
         DateTimeObj::setSettings(self::Configuration()->get('region'));
 
-        // Initialise logging
-        self::initialiseLog();
-        GenericExceptionHandler::initialise(self::Log());
-        GenericErrorHandler::initialise(self::Log());
+        self::initialiseErrorHandler();
 
         // Initialize language management
         Lang::initialize();
@@ -146,6 +117,19 @@ abstract class Symphony implements Singleton
     }
 
     /**
+     * Setter for the Symphony Log and Error Handling system
+     *
+     * @since Symphony 2.6.0
+     */
+    public static function initialiseErrorHandler()
+    {
+        // Initialise logging
+        self::initialiseLog();
+        GenericExceptionHandler::initialise(self::Log());
+        GenericErrorHandler::initialise(self::Log());
+    }
+
+    /**
      * Accessor for the Symphony instance, whether it be Frontend
      * or Administration
      *
@@ -155,9 +139,9 @@ abstract class Symphony implements Singleton
      */
     public static function Engine()
     {
-        if (class_exists('Administration')) {
+        if (class_exists('Administration', false)) {
             return Administration::instance();
-        } elseif (class_exists('Frontend')) {
+        } elseif (class_exists('Frontend', false)) {
             return Frontend::instance();
         } else {
             throw new Exception(__('No suitable engine object found'));
@@ -272,7 +256,7 @@ abstract class Symphony implements Singleton
      * @deprecated Prior to Symphony 2.3.2, the constant `__SYM_COOKIE_PREFIX_`
      *  had a typo where it was missing the second underscore. Symphony will
      *  support both constants, `__SYM_COOKIE_PREFIX_` and `__SYM_COOKIE_PREFIX__`
-     *  until Symphony 2.6.0.
+     *  until Symphony 3.0
      */
     public static function initialiseCookie()
     {
@@ -374,7 +358,6 @@ abstract class Symphony implements Singleton
     public static function initialiseDatabase()
     {
         self::setDatabase();
-
         $details = self::Configuration()->get('database');
 
         try {
@@ -389,20 +372,7 @@ abstract class Symphony implements Singleton
             self::Database()->setPrefix($details['tbl_prefix']);
             self::Database()->setCharacterEncoding();
             self::Database()->setCharacterSet();
-
-            // Set Timezone, need to convert human readable, ie. Australia/Brisbane to be +10:00
-            // @see https://github.com/symphonycms/symphony-2/issues/1726
-            $timezone = self::Configuration()->get('timezone', 'region');
-            $symphony_date = new DateTime('now', new DateTimeZone($timezone));
-
-            // MySQL wants the offset to be in the format +/-H:I, getOffset returns offset in seconds
-            $utc = new DateTime('now ' . $symphony_date->getOffset() . ' seconds', new DateTimeZone("UTC"));
-
-            // On PHP5.3+ we can use DateInterval to format the difference
-            // in way that MySQL will be happy
-            $offset = $symphony_date->diff($utc)->format('%R%H:%I');
-
-            self::Database()->setTimeZone($offset);
+            self::Database()->setTimeZone(self::Configuration()->get('timezone', 'region'));
 
             if (self::Configuration()->get('query_caching', 'database') == 'off') {
                 self::Database()->disableCaching();
@@ -443,7 +413,8 @@ abstract class Symphony implements Singleton
      * will be logged in and the sanitized username and password (also hashed)
      * will be saved as values in the `$Cookie`.
      *
-     * @see toolkit.General#hash()
+     * @see toolkit.Cryptography#hash()
+     * @throws DatabaseException
      * @param string $username
      *  The Author's username. This will be sanitized before use.
      * @param string $password
@@ -451,16 +422,15 @@ abstract class Symphony implements Singleton
      * @param boolean $isHash
      *  If the password provided is already hashed, setting this parameter to
      *  true will stop it becoming rehashed. By default it is false.
-     * @throws DatabaseException
      * @return boolean
      *  True if the Author was logged in, false otherwise
      */
     public static function login($username, $password, $isHash = false)
     {
-        $username = self::Database()->cleanValue($username);
-        $password = self::Database()->cleanValue($password);
+        $username = trim(self::Database()->cleanValue($username));
+        $password = trim(self::Database()->cleanValue($password));
 
-        if (strlen(trim($username)) > 0 && strlen(trim($password)) > 0) {
+        if (strlen($username) > 0 && strlen($password) > 0) {
             $author = AuthorManager::fetch('id', 'ASC', 1, null, sprintf(
                 "`username` = '%s'",
                 $username
@@ -486,6 +456,11 @@ abstract class Symphony implements Singleton
                     'tbl_authors',
                     sprintf(" `id` = %d", self::$Author->get('id'))
                 );
+
+                // Only set custom author language in the backend
+                if (class_exists('Administration', false)) {
+                    Lang::set(self::$Author->get('language'));
+                }
 
                 return true;
             }
@@ -570,52 +545,21 @@ abstract class Symphony implements Singleton
     /**
      * This function determines whether an there is a currently logged in
      * Author for Symphony by using the `$Cookie`'s username
-     * and password. If an Author is found, they will be logged in, otherwise
-     * the `$Cookie` will be destroyed.
+     * and password. If the instance is not found, they will be logged
+     * in using the cookied credentials.
      *
-     * @see core.Cookie#expire()
+     * @see login()
+     * @return boolean
      */
     public static function isLoggedIn()
     {
-        // Ensures that we're in the real world.. Also reduces three queries from database
-        // We must return true otherwise exceptions are not shown
-        if (is_null(self::$_instance)) {
+        // Check to see if Symphony exists, or if we already have an Author instance.
+        if (is_null(self::$_instance) || self::$Author) {
             return true;
         }
 
-        if (self::$Author) {
-            return true;
-        } else {
-            $username = self::Database()->cleanValue(self::$Cookie->get('username'));
-            $password = self::Database()->cleanValue(self::$Cookie->get('pass'));
-
-            if (strlen(trim($username)) > 0 && strlen(trim($password)) > 0) {
-
-                $author = AuthorManager::fetch('id', 'ASC', 1, null, sprintf(
-                    "`username` = '%s'",
-                    $username
-                ));
-
-                if (!empty($author) && Cryptography::compare($password, current($author)->get('password'), true)) {
-                    self::$Author = current($author);
-
-                    self::Database()->update(array(
-                        'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
-                        'tbl_authors',
-                        sprintf(" `id` = %d", self::$Author->get('id'))
-                    );
-
-                    // Only set custom author language in the backend
-                    if (class_exists('Administration')) {
-                        Lang::set(self::$Author->get('language'));
-                    }
-
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        // No author instance found, attempt to log in with the cookied credentials
+        return self::login(self::$Cookie->get('username'), self::$Cookie->get('pass'), true);
     }
 
     /**
@@ -624,7 +568,7 @@ abstract class Symphony implements Singleton
      * has been found. Returns `FALSE` otherwise.
      *
      * @since Symphony 2.3.1
-     * @return mixed
+     * @return string|boolean
      */
     public static function getMigrationVersion()
     {
@@ -1020,7 +964,7 @@ Class DatabaseExceptionHandler extends GenericExceptionHandler
             $queries
         );
 
-        $html = str_replace('{APPLICATION_URL}', APPLICATION_URL, $html);
+        $html = str_replace('{ASSETS_URL}', ASSETS_URL, $html);
         $html = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $html);
         $html = str_replace('{URL}', URL, $html);
 

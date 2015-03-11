@@ -4,8 +4,6 @@
  * @package toolkit
  */
 
-require_once FACE . '/interface.exportablefield.php';
-
 /**
  * The Author field allows Symphony Authors to be selected in your entries.
  * It is a read only field, new Authors cannot be added from the Frontend using
@@ -31,7 +29,7 @@ class FieldAuthor extends Field implements ExportableField
 
     public function canToggle()
     {
-        return ($this->get('allow_multiple_selection') == 'yes' ? false : true);
+        return ($this->get('allow_multiple_selection') === 'yes' ? false : true);
     }
 
     public function getToggleStates()
@@ -71,6 +69,11 @@ class FieldAuthor extends Field implements ExportableField
     public function allowDatasourceParamOutput()
     {
         return true;
+    }
+
+    public function fetchSuggestionTypes()
+    {
+        return array('static');
     }
 
     /*-------------------------------------------------------------------------
@@ -161,10 +164,10 @@ class FieldAuthor extends Field implements ExportableField
         $div = new XMLElement('div', null, array('class' => 'two columns'));
 
         // Allow multiple selection
-        $this->createCheckboxSetting($div, 'allow_multiple_selection', 'Allow selection of multiple authors');
+        $this->createCheckboxSetting($div, 'allow_multiple_selection', __('Allow selection of multiple authors'));
 
         // Default to current logged in user
-        $this->createCheckboxSetting($div, 'default_to_current_user', 'Select current user by default');
+        $this->createCheckboxSetting($div, 'default_to_current_user', __('Select current user by default'));
 
         // Requirements and table display
         $wrapper->appendChild($div);
@@ -216,7 +219,7 @@ class FieldAuthor extends Field implements ExportableField
     {
         $value = isset($data['author_id']) ? $data['author_id'] : null;
 
-        if ($this->get('default_to_current_user') == 'yes' && empty($data) && empty($_POST)) {
+        if ($this->get('default_to_current_user') === 'yes' && empty($data) && empty($_POST)) {
             $value = array(Symphony::Author()->get('id'));
         }
 
@@ -226,7 +229,7 @@ class FieldAuthor extends Field implements ExportableField
 
         $options = array();
 
-        if ($this->get('required') != 'yes') {
+        if ($this->get('required') !== 'yes') {
             $options[] = array(null, false, null);
         }
 
@@ -261,17 +264,17 @@ class FieldAuthor extends Field implements ExportableField
 
         $fieldname = 'fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix;
 
-        if ($this->get('allow_multiple_selection') == 'yes') {
+        if ($this->get('allow_multiple_selection') === 'yes') {
             $fieldname .= '[]';
         }
 
         $label = Widget::Label($this->get('label'));
 
-        if ($this->get('required') != 'yes') {
+        if ($this->get('required') !== 'yes') {
             $label->appendChild(new XMLElement('i', __('Optional')));
         }
 
-        $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') == 'yes' ? array('multiple' => 'multiple') : null)));
+        $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') === 'yes' ? array('multiple' => 'multiple') : null)));
 
         if ($flagWithError != null) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
@@ -455,6 +458,10 @@ class FieldAuthor extends Field implements ExportableField
                 AND (
                     t{$field_id}_{$this->_key}.author_id {$regex} '{$pattern}'
                     OR t{$field_id}_{$this->_key}_authors.username {$regex} '{$pattern}'
+                    OR CONCAT_WS(' ',
+                        t{$field_id}_{$this->_key}_authors.first_name,
+                        t{$field_id}_{$this->_key}_authors.last_name
+                    ) {$regex} '{$pattern}'
                 )
             ";
 
@@ -463,7 +470,7 @@ class FieldAuthor extends Field implements ExportableField
                 $this->_key++;
                 $value = $this->cleanValue($value);
 
-                if (fieldAuthor::__parseFilter($value) == "author_id") {
+                if (self::__parseFilter($value) == "author_id") {
                     $where .= "
                         AND t{$field_id}_{$this->_key}.author_id = '{$value}'
                     ";
@@ -482,7 +489,13 @@ class FieldAuthor extends Field implements ExportableField
                             ON (t{$field_id}_{$this->_key}.author_id = t{$field_id}_{$this->_key}_authors.id)
                     ";
                     $where .= "
-                        AND t{$field_id}_{$this->_key}_authors.username = '{$value}'
+                        AND (
+                            t{$field_id}_{$this->_key}_authors.username = '{$value}'
+                            OR CONCAT_WS(' ',
+                                t{$field_id}_{$this->_key}_authors.first_name,
+                                t{$field_id}_{$this->_key}_authors.last_name
+                            ) = '{$value}'
+                        )
                     ";
                 }
             }
@@ -511,7 +524,11 @@ class FieldAuthor extends Field implements ExportableField
                     t{$field_id}_{$this->_key}.author_id IN ('{$data}')
                     OR
                     t{$field_id}_{$this->_key}_authors.username IN ('{$data}')
-                    )
+                    OR CONCAT_WS(' ',
+                        t{$field_id}_{$this->_key}_authors.first_name,
+                        t{$field_id}_{$this->_key}_authors.last_name
+                    ) IN ('{$data}')
+                )
             ";
         }
 
@@ -529,9 +546,9 @@ class FieldAuthor extends Field implements ExportableField
         } else {
             $joins .= "
                 LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`)
-                JOIN `tbl_authors` AS `a` ON (ed.author_id = a.id)
+                LEFT OUTER JOIN `tbl_authors` AS `a` ON (ed.author_id = a.id)
             ";
-            $sort = "ORDER BY `a`.`first_name` " . $order . ", `a`.`last_name` " . $order;
+            $sort = sprintf('ORDER BY `a`.`first_name` %1$s, `a`.`last_name` %1$s', $order);
         }
     }
 
@@ -550,13 +567,13 @@ class FieldAuthor extends Field implements ExportableField
 
         $fieldname = 'fields['.$this->get('element_name').']';
 
-        if ($this->get('allow_multiple_selection') == 'yes') {
+        if ($this->get('allow_multiple_selection') === 'yes') {
             $fieldname .= '[]';
         }
 
         $attr = array();
 
-        if ($this->get('allow_multiple_selection') == 'yes') {
+        if ($this->get('allow_multiple_selection') === 'yes') {
             $attr['multiple'] = 'multiple';
         }
 

@@ -1,7 +1,5 @@
 <?php
 
-require_once TOOLKIT . '/class.event.php';
-
 class event<!-- CLASS NAME --> extends <!-- CLASS EXTENDS -->
 {
     public $ROOTELEMENT = '<!-- ROOT ELEMENT -->';

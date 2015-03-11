@@ -200,7 +200,7 @@ class MySQL
      */
     public static function enableCaching()
     {
-        MySQL::$_cache = true;
+        self::$_cache = true;
     }
 
     /**
@@ -209,7 +209,7 @@ class MySQL
      */
     public static function disableCaching()
     {
-        MySQL::$_cache = false;
+        self::$_cache = false;
     }
 
     /**
@@ -219,7 +219,7 @@ class MySQL
      */
     public static function isCachingEnabled()
     {
-        return MySQL::$_cache;
+        return self::$_cache;
     }
 
     /**
@@ -232,7 +232,7 @@ class MySQL
      */
     public function setPrefix($prefix)
     {
-        MySQL::$_connection['tbl_prefix'] = $prefix;
+        self::$_connection['tbl_prefix'] = $prefix;
     }
 
     /**
@@ -243,7 +243,7 @@ class MySQL
      */
     public function getPrefix()
     {
-        return MySQL::$_connection['tbl_prefix'];
+        return self::$_connection['tbl_prefix'];
     }
 
     /**
@@ -255,9 +255,9 @@ class MySQL
     {
         try {
             $connected = (
-                isset(MySQL::$_connection['id'])
-                && !is_null(MySQL::$_connection['id'])
-                && mysqli_ping(MySQL::$_connection['id'])
+                isset(self::$_connection['id'])
+                && !is_null(self::$_connection['id'])
+                && mysqli_ping(self::$_connection['id'])
             );
         } catch (Exception $ex) {
             return false;
@@ -275,7 +275,7 @@ class MySQL
     public function close()
     {
         if ($this->isConnected()) {
-            return mysqli_close(MySQL::$_connection['id']);
+            return mysqli_close(self::$_connection['id']);
         }
     }
 
@@ -297,7 +297,7 @@ class MySQL
      */
     public function connect($host = null, $user = null, $password = null, $port = '3306', $database = null)
     {
-        MySQL::$_connection = array(
+        self::$_connection = array(
             'host' => $host,
             'user' => $user,
             'pass' => $password,
@@ -306,12 +306,12 @@ class MySQL
         );
 
         try {
-            MySQL::$_connection['id'] = mysqli_connect(
-                MySQL::$_connection['host'],
-                MySQL::$_connection['user'],
-                MySQL::$_connection['pass'],
-                MySQL::$_connection['database'],
-                MySQL::$_connection['port']
+            self::$_connection['id'] = mysqli_connect(
+                self::$_connection['host'],
+                self::$_connection['user'],
+                self::$_connection['pass'],
+                self::$_connection['database'],
+                self::$_connection['port']
             );
 
             if (!$this->isConnected()) {
@@ -334,7 +334,7 @@ class MySQL
      */
     public static function getConnectionResource()
     {
-        return MySQL::$_connection['id'];
+        return self::$_connection['id'];
     }
 
     /**
@@ -349,7 +349,7 @@ class MySQL
      */
     public function setCharacterEncoding($set = 'utf8')
     {
-        mysqli_set_charset(MySQL::$_connection['id'], $set);
+        mysqli_set_charset(self::$_connection['id'], $set);
     }
 
     /**
@@ -371,12 +371,12 @@ class MySQL
      * Sets the MySQL connection to use this timezone instead of the default
      * MySQL server timezone.
      *
+     * @throws DatabaseException
      * @link https://dev.mysql.com/doc/refman/5.6/en/time-zone-support.html
+     * @link https://github.com/symphonycms/symphony-2/issues/1726
      * @since Symphony 2.3.3
      * @param string $timezone
-     *  Timezone will be a offset, `+10:00`, as not all MySQL installations will
-     *  have the humanreadable timezone database available
-     * @throws DatabaseException
+     *  Timezone will human readable, such as Australia/Brisbane.
      */
     public function setTimeZone($timezone = null)
     {
@@ -384,7 +384,16 @@ class MySQL
             return;
         }
 
-        $this->query("SET time_zone = '$timezone'");
+        // What is the time now in the install timezone
+        $symphony_date = new DateTime('now', new DateTimeZone($timezone));
+
+        // MySQL wants the offset to be in the format +/-H:I, getOffset returns offset in seconds
+        $utc = new DateTime('now ' . $symphony_date->getOffset() . ' seconds', new DateTimeZone("UTC"));
+
+        // Get the difference between the symphony install timezone and UTC
+        $offset = $symphony_date->diff($utc)->format('%R%H:%I');
+
+        $this->query("SET time_zone = '$offset'");
     }
 
     /**
@@ -401,7 +410,7 @@ class MySQL
     public static function cleanValue($value)
     {
         if (function_exists('mysqli_real_escape_string') && self::isConnected()) {
-            return mysqli_real_escape_string(MySQL::$_connection['id'], $value);
+            return mysqli_real_escape_string(self::$_connection['id'], $value);
         } else {
             return addslashes($value);
         }
@@ -442,11 +451,11 @@ class MySQL
      *
      * @param string $query
      * @return integer
-     *  `MySQL::__WRITE_OPERATION__` or `MySQL::__READ_OPERATION__`
+     *  `self::__WRITE_OPERATION__` or `self::__READ_OPERATION__`
      */
     public function determineQueryType($query)
     {
-        return (preg_match('/^(create|insert|replace|alter|delete|update|optimize|truncate|drop)/i', $query) ? MySQL::__WRITE_OPERATION__ : MySQL::__READ_OPERATION__);
+        return (preg_match('/^(create|insert|replace|alter|delete|update|optimize|truncate|drop)/i', $query) ? self::__WRITE_OPERATION__ : self::__READ_OPERATION__);
     }
 
     /**
@@ -479,15 +488,15 @@ class MySQL
         $query_type = $this->determineQueryType($query);
         $query_hash = md5($query.$start);
 
-        if (MySQL::$_connection['tbl_prefix'] != 'tbl_') {
-            $query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', MySQL::$_connection['tbl_prefix'].'\\1\\2', $query);
+        if (self::$_connection['tbl_prefix'] !== 'tbl_') {
+            $query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', self::$_connection['tbl_prefix'].'\\1\\2', $query);
         }
 
         // TYPE is deprecated since MySQL 4.0.18, ENGINE is preferred
-        if ($query_type == MySQL::__WRITE_OPERATION__) {
+        if ($query_type == self::__WRITE_OPERATION__) {
             $query = preg_replace('/TYPE=(MyISAM|InnoDB)/i', 'ENGINE=$1', $query);
 
-        } elseif ($query_type == MySQL::__READ_OPERATION__ && !preg_match('/^SELECT\s+SQL(_NO)?_CACHE/i', $query)) {
+        } elseif ($query_type == self::__READ_OPERATION__ && !preg_match('/^SELECT\s+SQL(_NO)?_CACHE/i', $query)) {
             if ($this->isCachingEnabled()) {
                 $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
             } else {
@@ -498,11 +507,11 @@ class MySQL
         $this->flush();
         $this->_lastQuery = $query;
         $this->_lastQueryHash = $query_hash;
-        $this->_result = mysqli_query(MySQL::$_connection['id'], $query);
-        $this->_lastInsertID = mysqli_insert_id(MySQL::$_connection['id']);
+        $this->_result = mysqli_query(self::$_connection['id'], $query);
+        $this->_lastInsertID = mysqli_insert_id(self::$_connection['id']);
         self::$_query_count++;
 
-        if (mysqli_error(MySQL::$_connection['id'])) {
+        if (mysqli_error(self::$_connection['id'])) {
             $this->__error();
         } elseif (($this->_result instanceof mysqli_result)) {
             if ($type == "ASSOC") {
@@ -541,7 +550,7 @@ class MySQL
          *  The time that it took to run `$query`
          */
         if (Symphony::ExtensionManager() instanceof ExtensionManager) {
-            Symphony::ExtensionManager()->notifyMembers('PostQueryExecution', class_exists('Administration') ? '/backend/' : '/frontend/', array(
+            Symphony::ExtensionManager()->notifyMembers('PostQueryExecution', class_exists('Administration', false) ? '/backend/' : '/frontend/', array(
                 'query' => $query,
                 'query_hash' => $query_hash,
                 'execution_time' => $stop
@@ -607,6 +616,7 @@ class MySQL
         // Multiple Insert
         if (is_array(current($fields))) {
             $sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys(current($fields))).'`) VALUES ';
+            $rows = array();
 
             foreach ($fields as $key => $array) {
                 // Sanity check: Make sure we dont end up with ',()' in the SQL.
@@ -661,6 +671,7 @@ class MySQL
     {
         self::cleanFields($fields);
         $sql = "UPDATE $table SET ";
+        $rows = array();
 
         foreach ($fields as $key => $val) {
             $rows[] = " `$key` = $val";
@@ -782,11 +793,12 @@ class MySQL
             return array();
         }
 
+        $rows = array();
         foreach ($result as $row) {
-            $return[] = $row[$column];
+            $rows[] = $row[$column];
         }
 
-        return $return;
+        return $rows;
     }
 
     /**
@@ -869,8 +881,8 @@ class MySQL
             $msg = mysqli_connect_error();
             $errornum = mysqli_connect_errno();
         } else {
-            $msg = mysqli_error(MySQL::$_connection['id']);
-            $errornum = mysqli_errno(MySQL::$_connection['id']);
+            $msg = mysqli_error(self::$_connection['id']);
+            $errornum = mysqli_errno(self::$_connection['id']);
         }
 
         /**
@@ -895,7 +907,7 @@ class MySQL
          *  The error number that corresponds with the MySQL error message
          */
         if (Symphony::ExtensionManager() instanceof ExtensionManager) {
-            Symphony::ExtensionManager()->notifyMembers('QueryExecutionError', class_exists('Administration') ? '/backend/' : '/frontend/', array(
+            Symphony::ExtensionManager()->notifyMembers('QueryExecutionError', class_exists('Administration', false) ? '/backend/' : '/frontend/', array(
                 'query' => $this->_lastQuery,
                 'query_hash' => $this->_lastQueryHash,
                 'msg' => $msg,
@@ -955,7 +967,7 @@ class MySQL
         }
 
         return array(
-            'queries' => MySQL::queryCount(),
+            'queries' => self::queryCount(),
             'slow-queries' => $slow_queries,
             'total-query-time' => number_format($query_timer, 4, '.', '')
         );
@@ -991,7 +1003,7 @@ class MySQL
         }
 
         foreach ($queries as $sql) {
-            if (trim($sql) != '') {
+            if (trim($sql) !== '') {
                 $result = $this->query($sql);
             }
 
