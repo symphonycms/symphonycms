@@ -572,8 +572,6 @@ class EntryManager
                 $obj->set('modification_date', $obj->get('creation_date'));
             }
 
-            $obj->creationDate = $obj->get('creation_date');
-
             if (isset($entry['fields']) && is_array($entry['fields'])) {
                 foreach ($entry['fields'] as $field_id => $data) {
                     $obj->setData($field_id, $data);

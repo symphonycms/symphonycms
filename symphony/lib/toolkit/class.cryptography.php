@@ -6,10 +6,9 @@
  * Cryptography is a utility class that offers a number of general purpose cryptography-
  * related functions for message digestation as well as (backwards-)compatibility
  * checking. The message digestation algorithms are placed in the subclasses
- * `MD5`, `SHA1` and `PBKDF2`.
+ * `SHA1` and `PBKDF2`.
  *
  * @since Symphony 2.3.1
- * @see cryptography.MD5
  * @see cryptography.SHA1
  * @see cryptography.PBKDF2
  */
@@ -38,7 +37,6 @@ class Cryptography
      * Compares a given hash with a clean text password by figuring out the
      * algorithm that has been used and then calling the appropriate sub-class
      *
-     * @see cryptography.MD5#compare()
      * @see cryptography.SHA1#compare()
      * @see cryptography.PBKDF2#compare()
      *
@@ -60,8 +58,6 @@ class Cryptography
             return PBKDF2::compare($input, $hash);
         } elseif (strlen($hash) == 40) { // legacy, unsalted SHA1
             return SHA1::compare($input, $hash);
-        } elseif (strlen($hash) == 32) { // legacy, unsalted MD5
-            return MD5::compare($input, $hash);
         } else { // the hash provided doesn't make any sense
             return false;
         }

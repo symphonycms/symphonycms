@@ -251,11 +251,6 @@ abstract class Symphony implements Singleton
      *
      * This function also defines two constants, `__SYM_COOKIE_PATH__`
      * and `__SYM_COOKIE_PREFIX__`.
-     *
-     * @deprecated Prior to Symphony 2.3.2, the constant `__SYM_COOKIE_PREFIX_`
-     *  had a typo where it was missing the second underscore. Symphony will
-     *  support both constants, `__SYM_COOKIE_PREFIX_` and `__SYM_COOKIE_PREFIX__`
-     *  until Symphony 3.0
      */
     public static function initialiseCookie()
     {
@@ -263,7 +258,6 @@ abstract class Symphony implements Singleton
         $cookie_path = '/' . trim($cookie_path, '/');
 
         define_safe('__SYM_COOKIE_PATH__', $cookie_path);
-        define_safe('__SYM_COOKIE_PREFIX_', self::Configuration()->get('cookie_prefix', 'symphony'));
         define_safe('__SYM_COOKIE_PREFIX__', self::Configuration()->get('cookie_prefix', 'symphony'));
 
         self::$Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);
