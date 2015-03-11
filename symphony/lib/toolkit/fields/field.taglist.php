@@ -189,17 +189,6 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         $this->_settings[$field] = $value;
     }
 
-    /**
-     * @deprecated Will be removed in Symphony 3.0, use `getToggleStates()` instead
-     */
-    public function findAllTags()
-    {
-        if (Symphony::Log()) {
-            Symphony::Log()->pushDeprecateWarningToLog('FieldTagList::findAllTags()', 'FieldTagList::getToggleStates()');
-        }
-        $this->getToggleStates();
-    }
-
     public function getToggleStates()
     {
         if (!is_array($this->get('pre_populate_source'))) {
