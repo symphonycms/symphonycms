@@ -42,15 +42,6 @@ class Entry implements ArrayAccess
     protected $_data = array();
 
     /**
-     * An ISO 8601 representation of when this Entry was created
-     * eg. `2004-02-12T15:19:21+00:00`
-     * @deprecated Since Symphony 2.3.1, use $entry->get('creation_date') instead. This
-     *  variable will be removed in Symphony 3.0
-     * @var string
-     */
-    public $creationDate = null;
-
-    /**
      * Entries have some basic metadata settings such as the Entry ID, the Author ID
      * who created it and the Section that the Entry sits in. This function will set a
      * setting to a value overwriting any existing value for this setting

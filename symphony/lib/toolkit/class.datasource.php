@@ -154,20 +154,6 @@ class Datasource
     }
 
     /**
-     * @deprecated This function has been renamed to `execute` as of
-     *  Symphony 2.3.1, please use `execute()` instead. This function will
-     *  be removed in Symphony 3.0
-     * @see execute()
-     */
-    public function grab(array &$param_pool = null)
-    {
-        if (Symphony::Log()) {
-            Symphony::Log()->pushDeprecateWarningToLog('Datasource::grab()', 'Datasource::execute()');
-        }
-        return $this->execute($param_pool);
-    }
-
-    /**
      * The meat of the Datasource, this function includes the datasource
      * type's file that will preform the logic to return the data for this datasource
      * It is passed the current parameters.
@@ -565,29 +551,5 @@ class Datasource
         }
 
         return null;
-    }
-
-    /**
-     * By default, all Symphony filters are considering to be OR and "+" filters
-     * are used for AND. They are all used and Entries must match each filter to be included.
-     * It is possible to use OR filtering in a field by using an "," to separate the values.
-     * eg. If the filter is "test1, test2", this will match any entries where this field
-     * is test1 OR test2. If the filter is "test1 + test2", this will match entries
-     * where this field is test1 AND test2. Not all fields supports this feature.
-     * This function is run on each filter (ie. each field) in a datasource.
-     *
-     * @deprecated Since Symphony 2.6.0 it is recommended to use the static version,
-     *  `Datasource::determineFilterType`
-     * @param string $value
-     *  The filter string for a field.
-     * @return integer
-     *  Datasource::FILTER_OR or Datasource::FILTER_AND
-     */
-    public function __determineFilterType($value)
-    {
-        if (Symphony::Log()) {
-            Symphony::Log()->pushDeprecateWarningToLog('Datasource::__determineFilterType()', 'Datasource::determineFilterType()');
-        }
-        return self::determineFilterType($value);
     }
 }

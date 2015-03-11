@@ -1646,7 +1646,7 @@ class General
      * @param string $input
      *  the string to be hashed
      * @param string $algorithm
-     *  This function supports 'md5', 'sha1' and 'pbkdf2'. Any
+     *  This function supports 'sha1' and 'pbkdf2'. Any
      *  other algorithm will default to 'pbkdf2'.
      * @return string
      *  the hashed string
@@ -1656,13 +1656,10 @@ class General
         switch ($algorithm) {
             case 'sha1':
                 return SHA1::hash($input);
-
-            case 'md5':
-                return MD5::hash($input);
-
             case 'pbkdf2':
+                return PBKDF2::hash($input);
             default:
-                return Crytography::hash($input, $algorithm);
+                return Cryptography::hash($input);
         }
     }
 

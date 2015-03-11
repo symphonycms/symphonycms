@@ -208,19 +208,4 @@ class XSRF
             __('Please go back and try again.');
         throw new SymphonyErrorPage($msg, __('Access Denied'), 'generic', array(), Page::HTTP_STATUS_FORBIDDEN);
     }
-
-    /**
-     * Return's the location of the XSRF tokens in the Session
-     *
-     * @deprecated This function will be removed in Symphony 3.0. Use
-     *  `getSessionToken()` instead.
-     * @return string|null
-     */
-    public static function getSession()
-    {
-        if (Symphony::Log()) {
-            Symphony::Log()->pushDeprecateWarningToLog('XSRF::getSession()', 'XSRF::getSessionToken()');
-        }
-        return self::getSessionToken();
-    }
 }

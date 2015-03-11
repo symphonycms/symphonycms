@@ -471,33 +471,4 @@
 		};
 	}();
 
-	/**
-	 * Symphony suggestion plugin for jQuery.
-	 *
-	 * @deprecated As of Symphony 2.6.0 this plugin is deprecated,
-	 *  use `Symphony.Interface.Suggestions` instead. This will be
-	 *  removed in Symphony 3.0
-	 */
-	$.fn.symphonySuggestions = function(options) {
-		var objects = this,
-			settings = {
-				trigger: '{$',
-				source: Symphony.Context.get('path') + '/ajax/parameters/'
-			};
-
-		$.extend(settings, options);
-
-		objects.each(function() {
-			var input = $(this).find('input[type="text"]');
-
-			input.attr('data-trigger', settings.trigger);
-			input.attr('data-url', settings.source);
-			input.attr('data-search-types', 'parameters');
-
-			Symphony.Interface.Suggestions.init(this, 'input[type="text"]');
-		});
-
-		return objects;
-	};
-
 })(window.jQuery, window.Symphony);

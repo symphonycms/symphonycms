@@ -1591,7 +1591,6 @@ class Field implements ArrayAccess
      *
      * @deprecated @since Symphony 3.0.0
      *  Use EntryQueryFieldAdapter::filter() instead
-     * @see toolkit.Datasource#__determineFilterType
      * @param array $data
      *  An array of the data that contains the values for the filter as specified
      *  in the datasource editor. The value that is entered in the datasource editor
