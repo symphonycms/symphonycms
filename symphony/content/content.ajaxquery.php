@@ -116,14 +116,14 @@ Class contentAjaxQuery extends JSONPage
 
             // Build query
             $query = sprintf(
-                "SELECT * from sym_entries_data_%d WHERE %s%s;",
+                "SELECT * from tbl_entries_data_%d WHERE %s%s;",
                 $field_id,
                 implode($where, " OR "),
                 $max
             );
         } else {
             $query = sprintf(
-                "SELECT * from sym_entries_data_%d%s;",
+                "SELECT * from tbl_entries_data_%d%s;",
                 $field_id,
                 $max
             );
