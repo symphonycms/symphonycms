@@ -537,7 +537,7 @@ class FrontendPage extends XSLTPage
 
         $this->setXML($xml);
         $xsl = '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">' .
-               '    <xsl:import href="' . str_replace('\\', '/', str_replace(' ', '%20', $page['filelocation'])) . '"/>' .
+               '    <xsl:import href="' . str_replace(array('\\', ' '), array('/', '%20'), $page['filelocation']) . '"/>' .
                '</xsl:stylesheet>';
 
         $this->setXSL($xsl, false);
