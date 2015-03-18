@@ -88,10 +88,11 @@ Before installation, see the [notes on file permissions](#file-permissions).
 1. This step assumes you downloaded a zip archive from the [Symphony website](http://getsymphony.com). Upload the following files and directories to the root directory of your website:
 
 	- `index.php`
+	- `/extensions`
 	- `/install`
 	- `/symphony`
 	- `/workspace` (leave out if you don’t require the example workspace)
-	- `/extensions`
+	- `/vendor`
 
 1. Point your web browser at the `install` subdirectory (e.g., `http://example.com/install/`) and provide details on establishing a database connection and your server environment.
 
@@ -178,7 +179,7 @@ Follow the instructions below if you are updating from Symphony 2.0 (not from Gi
 
 **Note:** As of 2.0.6, there is no longer a need to backup `/symphony/.htaccess`.
 
-1. Upload `/symphony`, `/install` & `index.php`, replacing what is already on your server.
+1. Upload `/symphony`, `/install`, `/vendor` & `index.php`, replacing what is already on your server.
 
 1. If updating from a version older than `2.0.5`, enable the [Debug DevKit](https://github.com/symphonycms/debugdevkit) and [Profile DevKit](https://github.com/symphonycms/profiledevkit) extensions.
 
