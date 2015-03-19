@@ -536,10 +536,9 @@ class FrontendPage extends XSLTPage
         $xml->prependChild($params);
 
         $this->setXML($xml);
-        $xsl = '<?xml version="1.0" encoding="UTF-8"?>
-        <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-            <xsl:import href="' . str_replace('\\', '/', $page['filelocation']) . '"/>
-        </xsl:stylesheet>';
+        $xsl = '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">' .
+               '    <xsl:import href="file:///' . str_replace(array('\\', ' '), array('/', '%20'), $page['filelocation']) . '"/>' .
+               '</xsl:stylesheet>';
 
         $this->setXSL($xsl, false);
         $this->setRuntimeParam($this->_param);
