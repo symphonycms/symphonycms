@@ -1263,65 +1263,6 @@ class General
     }
 
     /**
-     * Truncate a string to a given length. Newlines are replaced with `<br />`
-     * html elements and html tags are removed from the string. If the resulting
-     * string contains only spaces then null is returned. If the resulting string
-     * is less than the input length then it is returned. If the option to
-     * truncate the string to a space character is provided then the string is
-     * truncated to the character prior to the last space in the string. Words
-     * (contiguous non-' ' characters) are then removed from the end of the string
-     * until the length of resulting string is within the input bound. Initial
-     * and trailing spaces are removed. Provided the user requested an
-     * ellipsis suffix and the resulting string is shorter than the input string
-     * then the ellipses are appended to the result which is then returned.
-     *
-     * @param string $string
-     *  the string to truncate.
-     * @param integer maxChars (optional)
-     *  the maximum length of the string to truncate the input string to. this
-     *  defaults to 200 characters.
-     * @param boolean $appendHellip (optional)
-     *  true if the ellipses should be appended to the result in circumstances
-     *  where the result is shorter than the input string. false otherwise. this
-     *  defaults to false.
-     * @return null|string
-     *  if the resulting string contains only spaces then null is returned. otherwise
-     *  a string that satisfies the input constraints.
-     */
-    public static function limitWords($string, $maxChars = 200, $appendHellip = false)
-    {
-        if ($appendHellip) {
-            $maxChars -= 1;
-        }
-
-        $string = trim(strip_tags(nl2br($string)));
-        $original_length = strlen($string);
-
-        if ($original_length == 0) {
-            return null;
-        } elseif ($original_length < $maxChars) {
-            return $string;
-        }
-
-        $string = trim(substr($string, 0, $maxChars));
-
-        $array = explode(' ', $string);
-        $length = 0;
-
-        while (!empty($array) && $length > $maxChars) {
-            $length += strlen(array_pop($array)) + 1;
-        }
-
-        $result = implode(' ', $array);
-
-        if ($appendHellip && strlen($result) < $original_length) {
-            $result .= "&#8230;";
-        }
-
-        return($result);
-    }
-
-    /**
      * Move a file from the source path to the destination path and name and
      * set its permissions to the input permissions. This will ignore errors
      * in the `is_uploaded_file()`, `move_uploaded_file()` and `chmod()` functions.
