@@ -312,43 +312,53 @@ class General
     {
         $max_length = intval($max_length);
 
-        // Strip out any tag
+        // make it lowercase
+
+        $string = strtolower($string);
+
+        // strip out tags
+
         $string = strip_tags($string);
 
-        // Remove punctuation
-        $string = preg_replace('/[\\.\'"]+/', null, $string);
+        // remove unwanted characters
 
-        // Trim it
-        if ($max_length > 0) {
-            $string = General::limitWords($string, $max_length);
+        $string = preg_replace('/[^\w- ]+/', null, $string);
+
+        // consolidate whitespace
+
+        $string = preg_replace('/[\s]+/', ' ', $string);
+        $string = trim($string);
+
+        // truncate if too long
+
+        if (strlen($string) > $max_length) {
+
+            $string = wordwrap($string, $max_length, '|');
+            $string = substr($string, 0, strpos($string, '|'));
         }
 
-        // Replace spaces (tab, newline etc) with the delimiter
-        $string = preg_replace('/[\s]+/', $delim, $string);
+        // replace whitespace with delimiter
 
-        // Remove weird characters
-        $string = preg_replace('/[^\w-]+/u', null, $string);
+        $string = str_replace(' ', $delim, $string);
 
-        // Allow for custom rules
+        // apply additional rules
+
         if (is_array($additional_rule_set) && !empty($additional_rule_set)) {
+
             foreach ($additional_rule_set as $rule => $replacement) {
+
                 $string = preg_replace($rule, $replacement, $string);
             }
         }
 
-        // Remove leading or trailing delim characters
-        $string = trim($string, $delim);
+        // encode for URI use
 
-        // Encode it for URI use
         if ($uriencode) {
+
             $string = urlencode($string);
         }
 
-        // Make it lowercase
-        $string = strtolower($string);
-
         return $string;
-
     }
 
     /**
