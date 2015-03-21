@@ -190,12 +190,15 @@ function cleanup_session_cookies()
 function is_session_empty()
 {
     $session_is_empty = true;
-    foreach ($_SESSION as $contents) {
-        if (!empty($contents)) {
-            $session_is_empty = false;
+    // #2386
+    if(is_array($_SESSION)) {
+        foreach ($_SESSION as $contents) {
+            if (!empty($contents)) {
+                $session_is_empty = false;
+                break;
+            }
         }
     }
-
     return $session_is_empty;
 }
 
