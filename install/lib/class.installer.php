@@ -297,18 +297,15 @@
                             'msg' => 'MySQL Version is not correct. '. $version . ' detected.',
                             'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.', array('<code>MySQL 5.5</code>', '<code>' . $version . '</code>'))
                         );
-                    } else {
-                        // Existing table prefix
-                        $tables = Symphony::Database()->fetch(sprintf(
-                            "SHOW TABLES FROM `%s` LIKE '%s'",
-                            mysqli_real_escape_string(Symphony::Database()->getConnectionResource(), $fields['database']['db']),
-                            mysqli_real_escape_string(Symphony::Database()->getConnectionResource(), $fields['database']['tbl_prefix']) . '%'
-                        ));
+                    }
+                    else {
+                        if (Symphony::Database()->tableExists($fields['database']['tbl_prefix'] . '%')) {
+                            $errors['database-table-prefix'] = array(
+                                'msg'     => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
+                                'details' => __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array(
 
-                        if (is_array($tables) && !empty($tables)) {
-                            $errors['database-table-prefix']  = array(
-                                'msg' => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
-                                'details' =>  __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
+                                    '<code>' . $fields['database']['tbl_prefix'] . '</code>'
+                                ))
                             );
                         }
                     }
