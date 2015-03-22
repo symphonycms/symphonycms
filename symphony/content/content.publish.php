@@ -1256,13 +1256,13 @@ class contentPublish extends AdministrationPage
         }
 
         // Determine the page title
-        $field_id = Symphony::Database()->fetchVar('id', 0, sprintf("
+        $field_id = Symphony::Database()->fetchVar('id', 0, "
             SELECT `id`
             FROM `tbl_fields`
-            WHERE `parent_section` = %d
+            WHERE `parent_section` = ?
             ORDER BY `sortorder` LIMIT 1",
-            $section->get('id')
-        ));
+            array($section->get('id'))
+        );
         if (!is_null($field_id)) {
             $field = FieldManager::fetch($field_id);
         }
@@ -1384,11 +1384,11 @@ class contentPublish extends AdministrationPage
             $fields = $post['fields'];
 
             // Initial checks to see if the Entry is ok
-            if (__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
+            if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
                 $this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
                 // Secondary checks, this will actually process the data and attempt to save
-            } elseif (__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
+            } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
                 foreach ($errors as $field_id => $message) {
                     $this->pageAlert($message, Alert::ERROR);
                 }

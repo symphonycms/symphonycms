@@ -252,11 +252,6 @@ abstract class Symphony implements Singleton
      *
      * This function also defines two constants, `__SYM_COOKIE_PATH__`
      * and `__SYM_COOKIE_PREFIX__`.
-     *
-     * @deprecated Prior to Symphony 2.3.2, the constant `__SYM_COOKIE_PREFIX_`
-     *  had a typo where it was missing the second underscore. Symphony will
-     *  support both constants, `__SYM_COOKIE_PREFIX_` and `__SYM_COOKIE_PREFIX__`
-     *  until Symphony 3.0
      */
     public static function initialiseCookie()
     {
@@ -264,7 +259,6 @@ abstract class Symphony implements Singleton
         $cookie_path = '/' . trim($cookie_path, '/');
 
         define_safe('__SYM_COOKIE_PATH__', $cookie_path);
-        define_safe('__SYM_COOKIE_PREFIX_', self::Configuration()->get('cookie_prefix', 'symphony'));
         define_safe('__SYM_COOKIE_PREFIX__', self::Configuration()->get('cookie_prefix', 'symphony'));
 
         self::$Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);
@@ -370,8 +364,6 @@ abstract class Symphony implements Singleton
             }
 
             self::Database()->setPrefix($details['tbl_prefix']);
-            self::Database()->setCharacterEncoding();
-            self::Database()->setCharacterSet();
             self::Database()->setTimeZone(self::Configuration()->get('timezone', 'region'));
 
             if (self::Configuration()->get('query_caching', 'database') == 'off') {
@@ -443,18 +435,20 @@ abstract class Symphony implements Singleton
                 if (self::isUpgradeAvailable() === false && Cryptography::requiresMigration(self::$Author->get('password'))) {
                     self::$Author->set('password', Cryptography::hash($password));
 
-                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors', sprintf(
-                        " `id` = %d", self::$Author->get('id')
-                    ));
+                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors', 
+                        " `id` = ?", array(self::$Author->get('id'))
+                    );
                 }
 
                 self::$Cookie->set('username', $username);
                 self::$Cookie->set('pass', self::$Author->get('password'));
 
                 self::Database()->update(array(
-                    'last_seen' => DateTimeObj::get('Y-m-d H:i:s')),
+                    'last_seen' => DateTimeObj::get('Y-m-d H:i:s')
+                    ),
                     'tbl_authors',
-                    sprintf(" `id` = %d", self::$Author->get('id'))
+                    " `id` = ?", 
+                    array(self::$Author->get('id'))
                 );
 
                 // Only set custom author language in the backend
@@ -493,36 +487,39 @@ abstract class Symphony implements Singleton
         }
 
         if (strlen($token) == 6 || strlen($token) == 16) {
-            $row = self::Database()->fetchRow(0, sprintf(
-                "SELECT `a`.`id`, `a`.`username`, `a`.`password`
+            $row = self::Database()->fetchRow(0, "
+                SELECT `a`.`id`, `a`.`username`, `a`.`password`
                 FROM `tbl_authors` AS `a`, `tbl_forgotpass` AS `f`
                 WHERE `a`.`id` = `f`.`author_id`
-                AND `f`.`expiry` > '%s'
-                AND `f`.`token` = '%s'
+                AND `f`.`expiry` > ?
+                AND `f`.`token` = ?
                 LIMIT 1",
-                DateTimeObj::getGMT('c'),
-                $token
-            ));
+                array(
+                    DateTimeObj::getGMT('c'),
+                    $token
+                )
+            );
 
-            self::Database()->delete('tbl_forgotpass', sprintf(" `token` = '%s' ", $token));
+            self::Database()->delete('tbl_forgotpass', " `token` = ? ", array($token));
         } else {
             $row = self::Database()->fetchRow(0, sprintf(
                 "SELECT `id`, `username`, `password`
                 FROM `tbl_authors`
-                WHERE SUBSTR(%s(CONCAT(`username`, `password`)), 1, 8) = '%s'
+                WHERE SUBSTR(%s(CONCAT(`username`, `password`)), 1, 8) = ?
                 AND `auth_token_active` = 'yes'
                 LIMIT 1",
-                'SHA1',
-                $token
-            ));
+                'SHA1'
+                ), 
+                array($token)
+            );
         }
 
         if ($row) {
             self::$Author = AuthorManager::fetchByID($row['id']);
             self::$Cookie->set('username', $row['username']);
             self::$Cookie->set('pass', $row['password']);
-            self::Database()->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', sprintf("
-                `id` = %d", $row['id']
+            self::Database()->update(array('last_seen' => DateTimeObj::getGMT('Y-m-d H:i:s')), 'tbl_authors', "`id` = ?", array(
+                $row['id']
             ));
 
             return true;

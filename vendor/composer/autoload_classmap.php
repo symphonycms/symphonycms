@@ -8,7 +8,6 @@ $baseDir = dirname($vendorDir);
 return array(
     'Administration' => $baseDir . '/symphony/lib/core/class.administration.php',
     'AdministrationPage' => $baseDir . '/symphony/lib/toolkit/class.administrationpage.php',
-    'AjaxPage' => $baseDir . '/symphony/lib/toolkit/class.ajaxpage.php',
     'Alert' => $baseDir . '/symphony/lib/toolkit/class.alert.php',
     'Author' => $baseDir . '/symphony/lib/toolkit/class.author.php',
     'AuthorDatasource' => $baseDir . '/symphony/lib/toolkit/data-sources/class.datasource.author.php',
@@ -18,7 +17,8 @@ return array(
     'Configuration' => $baseDir . '/symphony/lib/core/class.configuration.php',
     'Cookie' => $baseDir . '/symphony/lib/core/class.cookie.php',
     'Cryptography' => $baseDir . '/symphony/lib/toolkit/class.cryptography.php',
-    'DatabaseException' => $baseDir . '/symphony/lib/toolkit/class.mysql.php',
+    'Database' => $baseDir . '/symphony/lib/toolkit/class.database.php',
+    'DatabaseException' => $baseDir . '/symphony/lib/toolkit/class.database.php',
     'DatabaseExceptionHandler' => $baseDir . '/symphony/lib/core/class.symphony.php',
     'Datasource' => $baseDir . '/symphony/lib/toolkit/class.datasource.php',
     'DatasourceManager' => $baseDir . '/symphony/lib/toolkit/class.datasourcemanager.php',
@@ -67,7 +67,6 @@ return array(
     'JSONPage' => $baseDir . '/symphony/lib/toolkit/class.jsonpage.php',
     'Lang' => $baseDir . '/symphony/lib/toolkit/class.lang.php',
     'Log' => $baseDir . '/symphony/lib/core/class.log.php',
-    'MD5' => $baseDir . '/symphony/lib/toolkit/cryptography/class.md5.php',
     'Migration' => $baseDir . '/install/lib/class.migration.php',
     'Mutex' => $baseDir . '/symphony/lib/toolkit/class.mutex.php',
     'MySQL' => $baseDir . '/symphony/lib/toolkit/class.mysql.php',
@@ -152,4 +151,5 @@ return array(
     'migration_253' => $baseDir . '/install/migrations/2.5.3.php',
     'migration_260' => $baseDir . '/install/migrations/2.6.0.php',
     'migration_261' => $baseDir . '/install/migrations/2.6.1.php',
+    'migration_300' => $baseDir . '/install/migrations/3.0.0.php',
 );

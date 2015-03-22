@@ -79,10 +79,11 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         return Symphony::Database()->fetchVar('count', 0, sprintf("
             SELECT count(*) AS `count`
             FROM `tbl_entries_data_%d`
-            WHERE `value` = '%s'",
-            $this->get('id'),
-            Symphony::Database()->cleanValue($value)
-        ));
+            WHERE `value` = ?",
+            $this->get('id')
+            ),
+            array(Symphony::Database()->cleanValue($value))
+        );
     }
 
     public function fetchAssociatedEntryIDs($value)
@@ -90,10 +91,11 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         return Symphony::Database()->fetchCol('entry_id', sprintf("
             SELECT `entry_id`
             FROM `tbl_entries_data_%d`
-            WHERE `value` = '%s'",
-            $this->get('id'),
-            Symphony::Database()->cleanValue($value)
-        ));
+            WHERE `value` = ?",
+            $this->get('id')
+            ),
+            array(Symphony::Database()->cleanValue($value))
+        );
     }
 
     public function fetchAssociatedEntrySearchValue($data, $field_id = null, $parent_entry_id = null)
@@ -112,14 +114,6 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         }
 
         $this->_settings[$field] = $value;
-    }
-
-    /**
-     * @deprecated Will be removed in Symphony 3.0, use `getToggleStates()` instead
-     */
-    public function findAllTags()
-    {
-        $this->getToggleStates();
     }
 
     public function getToggleStates()
