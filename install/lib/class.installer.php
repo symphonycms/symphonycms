@@ -299,6 +299,7 @@
                         );
                     }
                     else {
+                        // Existing table prefix
                         if (Symphony::Database()->tableExists($fields['database']['tbl_prefix'] . '%')) {
                             $errors['database-table-prefix'] = array(
                                 'msg'     => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
