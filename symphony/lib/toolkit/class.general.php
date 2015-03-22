@@ -320,7 +320,7 @@ class General
 
         // remove unwanted characters
 
-        $string = preg_replace('/[^\w- ]+/', null, $string);
+        $string = preg_replace('/[^\w- ]+/', ' ', $string);
 
         // consolidate whitespace
 
