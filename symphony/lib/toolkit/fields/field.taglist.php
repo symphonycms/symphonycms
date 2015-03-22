@@ -45,6 +45,11 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         return true;
     }
 
+    public function fetchSuggestionTypes()
+    {
+        return array('association', 'static');
+    }
+
     /*-------------------------------------------------------------------------
         Setup:
     -------------------------------------------------------------------------*/
@@ -163,6 +168,10 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         if (!isset($settings['pre_populate_source'])) {
             $settings['pre_populate_source'] = array('existing');
         }
+
+        if (!isset($settings['show_association'])) {
+            $settings['show_association'] = 'no';
+        }
     }
 
     public function displaySettingsPanel(XMLElement &$wrapper, $errors = null)
@@ -244,7 +253,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         SectionManager::removeSectionAssociation($id);
 
         foreach ($this->get('pre_populate_source') as $field_id) {
-            if($field_id === 'none') continue;
+            if($field_id === 'none' || $field_id === 'existing') continue;
 
             if (!is_null($field_id) && is_numeric($field_id)) {
                 SectionManager::createSectionAssociation(null, $id, (int) $field_id, $this->get('show_association') === 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
