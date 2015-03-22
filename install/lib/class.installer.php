@@ -303,6 +303,8 @@
 
                     else {
 
+                        // Existing table prefix
+
                         if (Symphony::Database()->tableExists($fields['database']['tbl_prefix'] . '%')) {
 
                             $errors['database-table-prefix'] = array(
