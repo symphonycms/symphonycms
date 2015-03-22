@@ -611,7 +611,10 @@ class MySQL
      */
     public function tableExists($table)
     {
-        $results = $this->fetch(sprintf("SHOW TABLES LIKE '%s'", $table));
+        $results = $this->fetch('SHOW TABLES LIKE ?', null, array(), array(
+
+            $table
+        ));
 
         return (is_array($results) && !empty($results));
     }
