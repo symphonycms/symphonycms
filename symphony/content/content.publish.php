@@ -244,12 +244,12 @@ class contentPublish extends AdministrationPage
 
         // Custom field comparisons
         foreach ($data['operators'] as $operator) {
-            
+
             $filter = trim($operator['filter']);
-            
+
             // Check selected state
             $selected = false;
-            
+
             // Selected state : Comparison mode "between" (x to y)
             if ($operator['title'] === 'between' && preg_match('/^(-?(?:\d+(?:\.\d+)?|\.\d+)) to (-?(?:\d+(?:\.\d+)?|\.\d+))$/i', $data['filter'] )) {
                 $selected = true;
@@ -257,7 +257,7 @@ class contentPublish extends AdministrationPage
             } else if ((!empty($filter) && strpos($data['filter'], $filter) === 0)) {
                 $selected = true;
             }
-	        
+
             $comparisons[] = array(
                 $operator['filter'],
                 $selected,
@@ -1801,6 +1801,16 @@ class contentPublish extends AdministrationPage
                 // Properly decode and re-encode value for output
                 $value = rawurlencode(rawurldecode($value));
                 $filter_querystring .= sprintf('filter[%s]=%s&', $handle, $value);
+
+                //This is in case it is an Association so the filter reads the text value instead of the ID
+                $field = FieldManager::fetch($field_id);
+                if ($field instanceof Field) {
+                    if (method_exists($field, 'fetchValueFromID')) {
+                        $value = $field->fetchValueFromID($value);
+                    }
+                }
+
+                $filter_querystring .= sprintf("filter[%s]=%s&", $handle, rawurldecode($value));
             }
             $filter_querystring = trim($filter_querystring, '&');
         }
