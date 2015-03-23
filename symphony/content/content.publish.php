@@ -93,217 +93,9 @@ class contentPublish extends AdministrationPage
     public function createFilteringDrawer($section)
     {
         $this->filteringForm = Widget::Form(null, 'get', 'filtering');
-        $this->createFilteringDuplicator($section);
+        $this->filteringForm->appendChild(FilteringWidget::FilteringDuplicator($section,null,$_GET['filter']));
 
         return $this->filteringForm;
-    }
-
-    public function createFilteringDuplicator($section)
-    {
-        $div = new XMLElement('div');
-        $div->setAttribute('class', 'frame filters-duplicator');
-        $div->setAttribute('data-interactive', 'data-interactive');
-
-        $ol = new XMLElement('ol');
-        $ol->setAttribute('data-add', __('Add filter'));
-        $ol->setAttribute('data-remove', __('Clear filter'));
-        $ol->setAttribute('data-empty', __('No filters applied yet.'));
-
-        $this->createFieldFilters($ol, $section);
-        $this->createSystemDateFilters($ol);
-
-        $div->appendChild($ol);
-        $this->filteringForm->appendChild($div);
-    }
-
-    private function createFieldFilters(&$wrapper, $section)
-    {
-        $filters = $_GET['filter'];
-
-        foreach ($section->fetchFilterableFields() as $field) {
-            if (!$field->canPublishFilter()) {
-                continue;
-            }
-
-            $filter = $filters[$field->get('element_name')];
-
-            // Filter data
-            $data = array();
-            $data['type'] = $field->get('element_name');
-            $data['name'] = $field->get('label');
-            $data['filter'] = $filter;
-            $data['instance'] = 'unique';
-            $data['search'] = $field->fetchSuggestionTypes();
-            $data['operators'] = $field->fetchFilterableOperators();
-            $data['comparisons'] = $this->createFilterComparisons($data);
-            $data['query'] = $this->getFilterQuery($data);
-            $data['field-id'] = $field->get('id');
-
-            // Add existing filter
-            if (isset($filter)) {
-                $this->createFilter($wrapper, $data);
-            }
-
-            // Add filter template
-            $data['instance'] = 'unique template';
-            $data['query'] = '';
-            $this->createFilter($wrapper, $data);
-        }
-    }
-
-    private function createSystemDateFilters(&$wrapper)
-    {
-        $filters = $_GET['filter'];
-        $dateField = new FieldDate;
-
-        $fields = array(
-            array(
-                'type' => 'system:creation-date',
-                'label' => __('System Creation Date')
-            ),
-            array(
-                'type' => 'system:modification-date',
-                'label' => __('System Modification Date')
-            )
-        );
-
-        foreach ($fields as $field) {
-            $filter = $filters[$field['type']];
-
-            // Filter data
-            $data = array();
-            $data['type'] = $field['type'];
-            $data['name'] = $field['label'];
-            $data['filter'] = $filter;
-            $data['instance'] = 'unique';
-            $data['search'] = $dateField->fetchSuggestionTypes();
-            $data['operators'] = $dateField->fetchFilterableOperators();
-            $data['comparisons'] = $this->createFilterComparisons($data);
-            $data['query'] = $this->getFilterQuery($data);
-
-            // Add existing filter
-            if (isset($filter)) {
-                $this->createFilter($wrapper, $data);
-            }
-
-            // Add filter template
-            $data['instance'] = 'unique template';
-            $data['query'] = '';
-            $this->createFilter($wrapper, $data);
-        }
-    }
-
-    private function createFilter(&$wrapper, $data)
-    {
-        $li = new XMLElement('li');
-        $li->setAttribute('class', $data['instance']);
-        $li->setAttribute('data-type', $data['type']);
-
-        // Header
-        $li->appendChild(new XMLElement('header', $data['name'], array(
-            'data-name' => $data['name']
-        )));
-
-        // Settings
-        $div = new XMLElement('div', null, array('class' => 'two columns'));
-
-        // Comparisons
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column secondary');
-
-        $select = Widget::Select($data['type'] . '-comparison', $data['comparisons'], array(
-            'class' => 'comparison'
-        ));
-
-        $label->appendChild($select);
-        $div->appendChild($label);
-
-        // Query
-        $label = Widget::Label();
-        $label->setAttribute('class', 'column primary');
-
-        $input = Widget::Input($data['type'], $data['query'], 'text', array(
-            'placeholder' => __('Type and hit enter to apply filter…'),
-            'autocomplete' => 'off'
-        ));
-        $input->setAttribute('class', 'filter');
-        $label->appendChild($input);
-
-        $this->createFilterSuggestions($label, $data);
-
-        $div->appendChild($label);
-        $li->appendChild($div);
-        $wrapper->appendChild($li);
-    }
-
-    private function createFilterComparisons($data)
-    {
-        // Default comparison
-        $comparisons = array();
-
-        // Custom field comparisons
-        foreach ($data['operators'] as $operator) {
-            $filter = trim($operator['filter']);
-
-            $comparisons[] = array(
-                $filter,
-                (!empty($filter) && strpos($data['filter'], $filter) === 0),
-                __($operator['title'])
-            );
-        }
-
-        return $comparisons;
-    }
-
-    private function createFilterSuggestions(&$wrapper, $data)
-    {
-        $ul = new XMLElement('ul');
-        $ul->setAttribute('class', 'suggestions');
-        $ul->setAttribute('data-field-id', $data['field-id']);
-        $ul->setAttribute('data-associated-ids', '0');
-        $ul->setAttribute('data-search-types', implode($data['search'], ','));
-
-        // Add default filter help
-        $operator = array(
-            'filter' => 'is',
-            'help' => __('Find values that are an exact match for the given string.')
-        );
-        $this->createFilterHelp($ul, $operator);
-
-        // Add custom filter help
-        foreach ($data['operators'] as $operator) {
-            $this->createFilterHelp($ul, $operator);
-        }
-
-        $wrapper->appendChild($ul);
-    }
-
-    private function createFilterHelp(&$wrapper, $operator) {
-        if(empty($operator['help'])) {
-            return;
-        }
-
-        $li = new XMLElement('li', __('Comparison mode') . ': ' . $operator['help'], array(
-            'class' => 'help',
-            'data-comparison' => trim($operator['filter'])
-        ));
-
-        $wrapper->appendChild($li);
-    }
-
-    private function getFilterQuery($data)
-    {
-        $query = $data['filter'];
-
-        foreach ($data['operators'] as $operator) {
-            $filter = trim($operator['filter']);
-
-            if (!empty($filter) && strpos($data['filter'], $filter) === 0) {
-                $query = substr($data['filter'], strlen($filter));
-            }
-        }
-
-        return (string)$query;
     }
 
     public function build(array $context = array())
@@ -315,6 +107,15 @@ class contentPublish extends AdministrationPage
                 'parent' => SectionManager::fetchParentAssociations($section_id),
                 'child' => SectionManager::fetchChildAssociations($section_id)
             );
+
+            $filters = $_REQUEST['filter'];
+            if (is_array($filters)){
+                $context['filters'] = array();
+                foreach ($filters as $field => $value) {
+                    // $field_id = FieldManager::fetchFieldIDFromElementName($field,$section_id);
+                    $context['filters'][$field] = $value;
+                }
+            }
         }
 
         return parent::build($context);
