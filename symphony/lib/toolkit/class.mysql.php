@@ -216,7 +216,7 @@ class MySQL
      *
      * @return PDO
      */
-    public static function getConnectionResource() 
+    public static function getConnectionResource()
     {
         return MySQL::$_conn_pdo->conn;
     }
@@ -422,7 +422,7 @@ class MySQL
      * @throws DatabaseException
      * @return boolean
      */
-    public function update($fields, $table, $where = null, $params = array()) 
+    public function update($fields, $table, $where = null, $params = array())
     {
         $sql = "UPDATE `$table` SET ";
 
@@ -448,7 +448,7 @@ class MySQL
      * @throws DatabaseException
      * @return boolean
      */
-    public function delete($table, $where = null, array $params = array()) 
+    public function delete($table, $where = null, array $params = array())
     {
         $sql = "DELETE FROM `$table`";
 
@@ -630,7 +630,7 @@ class MySQL
      *  Accepts one parameter, 'connect', which will return the correct
      *  error codes when the connection sequence fails
      */
-    private function __error() 
+    private function __error()
     {
         return MySQL::$_conn_pdo->error();
     }
@@ -663,7 +663,7 @@ class MySQL
      *  An associative array with the number of queries, an array of slow
      *  queries and the total query time.
      */
-    public function getStatistics() 
+    public function getStatistics()
     {
         return MySQL::$_conn_pdo->getStatistics();
     }
@@ -687,26 +687,18 @@ class MySQL
     public function import($sql, $force_engine = false)
     {
         if ($force_engine) {
+
             // Silently attempt to change the storage engine. This prevents INNOdb errors.
             $this->query('SET default_storage_engine = MYISAM');
         }
 
-        $queries = preg_split('/;[\\r\\n]+/', $sql, -1, PREG_SPLIT_NO_EMPTY);
+        if (empty($sql)) {
 
-        if (!is_array($queries) || empty($queries) || count($queries) <= 0) {
             throw new Exception('The SQL string contains no queries.');
         }
 
-        foreach ($queries as $sql) {
-            if (trim($sql) !== '') {
-                $result = $this->query($sql);
-            }
+        $sql = self::$_conn_pdo->replaceTablePrefix($sql);
 
-            if (!$result) {
-                return false;
-            }
-        }
-
-        return true;
+        $this->getConnectionResource()->exec($sql);
     }
 }
