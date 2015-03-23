@@ -1788,6 +1788,15 @@ class contentPublish extends AdministrationPage
         if (isset($_REQUEST['prepopulate'])) {
             foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
                 $handle = FieldManager::fetchHandleFromID($field_id);
+                
+                //This is in case it is an Association so the filter reads the text value instead of the ID
+                $field = FieldManager::fetch($field_id);
+                if ($field instanceof Field) {
+                    if (method_exists($field, 'fetchValueFromID')) {
+                        $value = $field->fetchValueFromID($value);
+                    }
+                }
+
                 $filter_querystring .= sprintf("filter[%s]=%s&", $handle, rawurldecode($value));
             }
             $filter_querystring = trim($filter_querystring, '&');
