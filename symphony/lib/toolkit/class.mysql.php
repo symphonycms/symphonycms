@@ -634,26 +634,19 @@ class MySQL
     public function import($sql, $force_engine = false)
     {
         if ($force_engine) {
+
             // Silently attempt to change the storage engine. This prevents INNOdb errors.
+
             $this->query('SET storage_engine=MYISAM');
         }
 
-        $queries = preg_split('/;[\\r\\n]+/', $sql, -1, PREG_SPLIT_NO_EMPTY);
+        if (empty($sql)) {
 
-        if (!is_array($queries) || empty($queries) || count($queries) <= 0) {
             throw new Exception('The SQL string contains no queries.');
         }
 
-        foreach ($queries as $sql) {
-            if (trim($sql) !== '') {
-                $result = $this->query($sql);
-            }
+        $sql = self::$_conn_pdo->replaceTablePrefix($sql);
 
-            if (!$result) {
-                return false;
-            }
-        }
-
-        return true;
+        $this->getConnectionResource()->exec($sql);
     }
 }
