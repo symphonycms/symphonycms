@@ -559,6 +559,18 @@ class contentBlueprintsSections extends AdministrationPage
                     SectionManager::delete($section_id);
                 }
 
+                /**
+                 * Just after calling the Section Manager's delete function
+                 *
+                 * @delegate SectionPostDelete
+                 * @since Symphony 3.0.0
+                 * @param string $context
+                 * '/blueprints/sections/'
+                 * @param array $section_ids
+                 *  An array of Section ID's that were deleted
+                 */
+                Symphony::ExtensionManager()->notifyMembers('SectionPostDelete', '/blueprints/sections/', array('section_ids' => $checked));
+
                 redirect(SYMPHONY_URL . '/blueprints/sections/');
             } elseif ($_POST['with-selected'] == 'delete-entries') {
                 foreach ($checked as $section_id) {
