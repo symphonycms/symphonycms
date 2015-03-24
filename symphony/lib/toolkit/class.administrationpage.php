@@ -121,7 +121,7 @@ class AdministrationPage extends HTMLPage
      */
     public function setPageType($type = 'form')
     {
-        $this->setBodyClass($type == 'form' || $type == 'single' ? 'single' : 'index');
+        $this->setBodyClass($type == 'form' || $type == 'page-single' ? 'page-single' : 'page-index');
     }
 
     /**
@@ -135,10 +135,12 @@ class AdministrationPage extends HTMLPage
      */
     public function setBodyClass($class)
     {
-        // Prevents duplicate "index" classes
-        if (!isset($this->_context['page']) || $this->_context['page'] !== 'index' || $class !== 'index') {
+        // Prevents duplicate "page-index" classes
+        if (!isset($this->_context['page']) || !in_array('page-index', [$this->_context['page'], $class])) {
             $this->_body_class .= $class;
         }
+
+        $this->Body->setAttribute('class', $this->_body_class);
     }
 
     /**
@@ -667,8 +669,8 @@ class AdministrationPage extends HTMLPage
 
         $this->Body->appendChild($this->Wrapper);
 
-        $this->__appendBodyId();
-        $this->__appendBodyClass($this->_context);
+        $this->appendBodyId();
+        $this->appendBodyAttributes($this->_context);
 
         /**
          * This is just prior to the page headers being rendered, and is suitable for changing them
@@ -688,7 +690,7 @@ class AdministrationPage extends HTMLPage
      * and converts all uppercase letters to lowercase and prefixes them
      * with a hyphen.
      */
-    private function __appendBodyId()
+    private function appendBodyId()
     {
         // trim "content" from beginning of class name
         $body_id = preg_replace("/^content/", '', get_class($this));
@@ -706,47 +708,38 @@ class AdministrationPage extends HTMLPage
         );
 
         if (!empty($body_id)) {
-            $this->Body->setAttribute('id', trim($body_id));
+            $this->Body->setAttribute('id', $body_id);
         }
     }
 
     /**
      * Given the context of the current page, which is an associative
      * array, this function will append the values to the page's body as
-     * classes. If an context value is numeric it will be prepended by 'id-',
-     * otherwise all classes will be prefixed by the context key.
+     * data attributes. If an context value is numeric it will be given
+     * the key 'id' otherwise all attributes will be prefixed by the context key.
+     *
+     * If the context value is an array, it will be JSON encoded.
      *
      * @param array $context
      */
-    private function __appendBodyClass(array $context = array())
+    private function appendBodyAttributes(array $context = array())
     {
-        $body_class = '';
-
         foreach ($context as $key => $value) {
             if (is_numeric($value)) {
-                $value = 'id-' . $value;
+                $key = 'id';
 
                 // Add prefixes to all context values by making the
-                // class be {key}-{value}. #1397 ^BA
+                // data-attribute be a handle of {key}. #1397 ^BA
             } elseif (!is_numeric($key) && isset($value)) {
-                // Skip arrays
-                if (is_array($value)) {
-                    $value = null;
-                } else {
-                    $value = str_replace('_', '-', $key) . '-'. $value;
-                }
+                $key = str_replace('_', '-', General::createHandle($key));
             }
 
-            if ($value !== null) {
-                $body_class .= trim($value) . ' ';
+            // JSON encode any array values
+            if (is_array($value)) {
+                $value = json_encode($value);
             }
-        }
 
-        $classes = array_merge(explode(' ', trim($body_class)), explode(' ', trim($this->_body_class)));
-        $body_class = trim(implode(' ', $classes));
-
-        if (!empty($body_class)) {
-            $this->Body->setAttribute('class', $body_class);
+            $this->Body->setAttribute('data-' . $key, $value);
         }
     }
 
