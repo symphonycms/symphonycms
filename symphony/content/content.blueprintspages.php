@@ -28,7 +28,7 @@ class contentBlueprintsPages extends AdministrationPage
         foreach ($pages as &$page) {
             // If we are viewing the Page Editor, the Breadcrumbs should link
             // to the parent's Page Editor.
-            if ($this->_context[0] == 'edit') {
+            if ($this->_context['action'] == 'edit') {
                 $page = Widget::Anchor(
                     PageManager::fetchTitleFromHandle($page),
                     SYMPHONY_URL . '/blueprints/pages/edit/' . PageManager::fetchIDFromHandle($page) . '/'
@@ -223,8 +223,8 @@ class contentBlueprintsPages extends AdministrationPage
         $nesting = (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes');
 
         // Verify page exists:
-        if ($this->_context[0] === 'edit') {
-            if (!$page_id = (int)$this->_context[1]) {
+        if ($this->_context['action'] === 'edit') {
+            if (!$page_id = (int)$this->_context['id']) {
                 redirect(SYMPHONY_URL . '/blueprints/pages/');
             }
 
@@ -238,8 +238,8 @@ class contentBlueprintsPages extends AdministrationPage
         }
 
         // Status message:
-        if (isset($this->_context[2])) {
-            $flag = $this->_context[2];
+        if (isset($this->_context['flag'])) {
+            $flag = $this->_context['flag'];
             $parent_link_suffix = $message = '';
             $time = Widget::Time();
 
@@ -271,7 +271,7 @@ class contentBlueprintsPages extends AdministrationPage
         // Find values:
         if (isset($_POST['fields'])) {
             $fields = $_POST['fields'];
-        } elseif ($this->_context[0] == 'edit') {
+        } elseif ($this->_context['action'] == 'edit') {
             $fields = $existing;
 
             if (!is_null($fields['type'])) {
@@ -501,11 +501,11 @@ class contentBlueprintsPages extends AdministrationPage
         $div = new XMLElement('div');
         $div->setAttribute('class', 'actions');
         $div->appendChild(Widget::Input(
-            'action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Page')),
+            'action[save]', ($this->_context['action'] == 'edit' ? __('Save Changes') : __('Create Page')),
             'submit', array('accesskey' => 's')
         ));
 
-        if ($this->_context[0] == 'edit') {
+        if ($this->_context['action'] == 'edit') {
             $button = new XMLElement('button', __('Delete'));
             $button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this page'), 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this page?')));
             $div->appendChild($button);
@@ -553,58 +553,6 @@ class contentBlueprintsPages extends AdministrationPage
         }
     }
 
-    public function __actionTemplate()
-    {
-        $filename = $this->_context[1] . '.xsl';
-        $file_abs = PAGES . '/' . $filename;
-        $fields = $_POST['fields'];
-        $this->_errors = array();
-
-        if (!isset($fields['body']) || trim($fields['body']) == '') {
-            $this->_errors['body'] = __('This is a required field.');
-        } elseif (!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) {
-            $this->_errors['body'] = __('This document is not well formed.') . ' ' . __('The following error was returned:') . ' <code>' . $errors[0]['message'] . '</code>';
-        }
-
-        if (empty($this->_errors)) {
-            /**
-             * Just before a Page Template is about to written to disk
-             *
-             * @delegate PageTemplatePreEdit
-             * @since Symphony 2.2.2
-             * @param string $context
-             * '/blueprints/pages/template/'
-             * @param string $file
-             *  The path to the Page Template file
-             * @param string $contents
-             *  The contents of the `$fields['body']`, passed by reference
-             */
-            Symphony::ExtensionManager()->notifyMembers('PageTemplatePreEdit', '/blueprints/pages/template/', array('file' => $file_abs, 'contents' => &$fields['body']));
-
-            if (!PageManager::writePageFiles($file_abs, $fields['body'])) {
-                $this->pageAlert(
-                    __('Page Template could not be written to disk.')
-                    . ' ' . __('Please check permissions on %s.', array('<code>/workspace/pages</code>')),
-                    Alert::ERROR
-                );
-            } else {
-                /**
-                 * Just after a Page Template has been edited and written to disk
-                 *
-                 * @delegate PageTemplatePostEdit
-                 * @since Symphony 2.2.2
-                 * @param string $context
-                 * '/blueprints/pages/template/'
-                 * @param string $file
-                 *  The path to the Page Template file
-                 */
-                Symphony::ExtensionManager()->notifyMembers('PageTemplatePostEdit', '/blueprints/pages/template/', array('file' => $file_abs));
-
-                redirect(SYMPHONY_URL . '/blueprints/pages/template/' . $this->_context[1] . '/saved/');
-            }
-        }
-    }
-
     public function __actionNew()
     {
         $this->__actionEdit();
@@ -612,7 +560,7 @@ class contentBlueprintsPages extends AdministrationPage
 
     public function __actionEdit()
     {
-        if ($this->_context[0] != 'new' && !$page_id = (integer)$this->_context[1]) {
+        if ($this->_context['action'] != 'new' && !$page_id = (int)$this->_context['id']) {
             redirect(SYMPHONY_URL . '/blueprints/pages/');
         }
 
@@ -866,7 +814,7 @@ class contentBlueprintsPages extends AdministrationPage
                     PageManager::addPageTypesToPage($page_id, $types);
 
                     // Find and update children:
-                    if ($this->_context[0] == 'edit') {
+                    if ($this->_context['action'] == 'edit') {
                         PageManager::editPageChildren($page_id, $fields['path'] . '/' . $fields['handle']);
                     }
 

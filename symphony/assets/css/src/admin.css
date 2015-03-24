@@ -387,7 +387,7 @@ fieldset.settings.highlight {
 	transition: background 0.25s ease-in;
 }
 
-.single #contents fieldset.highlight + .actions {
+.page-single #contents fieldset.highlight + .actions {
 	border-top: 0;
 }
 
@@ -489,26 +489,22 @@ fieldset.settings.highlight {
 	Index page
 --------------------------------------------------------------------------*/
 
-.page-index h2,
-.index h2 {
+.page-index h2 {
 	border: none;
 }
 
-.page-index form,
-.index form {
+.page-index form {
 	margin: 0;
 	padding: 0;
 }
 
-.page-index .actions,
-.index .actions {
+.page-index .actions {
 	height: 3.8rem;
 	padding: 3rem 1.8rem 0;
 	text-align: right;
 }
 
-.page-index .actions + ul.page,
-.index .actions + ul.page {
+.page-index .actions + ul.page {
 	margin-top: -5.8rem;
 }
 
@@ -664,27 +660,23 @@ ul.page form span {
 
 /* Actions */
 
-.page-single #contents .actions,
-.single #contents .actions {
+.page-single #contents .actions {
 	clear: both;
 	margin: 0 1.8rem;
 	padding: 1.75rem 0 0;
 	border-top: 0.1rem solid rgba(0, 0, 0, 0.1);
 }
 
-.page-single #contents .columns .actions,
-.single #contents .columns .actions {
+.page-single #contents .columns .actions {
 	margin: 0;
 }
 
-.page-single #contents .actions input,
-.single #contents .actions input {
+.page-single #contents .actions input {
 	float: right;
 	margin-left: 1rem;
 }
 
-.page-single #contents .actions button,
-.single #contents .actions button {
+.page-single #contents .actions button {
 	float: left;
 	margin-left: 0;
 }

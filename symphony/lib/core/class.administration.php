@@ -397,14 +397,40 @@ class Administration extends Symphony
         } else {
             $callback['driver'] = ucfirst($bits[0]);
             $callback['pageroot'] = '/' . $bits[0] . '/';
+            $knownBlueprint = false;
 
             if (isset($bits[1])) {
                 $callback['driver'] = $callback['driver'] . ucfirst($bits[1]);
                 $callback['pageroot'] .= $bits[1] . '/';
+
+                // We known about some blueprint pages and can give them more context
+                if (
+                    $bits[0] === 'blueprints' && 
+                    in_array($bits[1], array('pages', 'datasources', 'events', 'sections'))
+                ) {
+                    $knownBlueprint = true;
+                }
             }
 
             if (isset($bits[2])) {
-                $callback['context'] = preg_split('/\//', $bits[2], -1, PREG_SPLIT_NO_EMPTY);
+                $extras = preg_split('/\//', $bits[2], -1, PREG_SPLIT_NO_EMPTY);
+
+                if ($knownBlueprint) {
+                    if(isset($extras[0])) {
+                        $callback['context']['action'] = $extras[0];
+                    }
+
+                    if(isset($extras[1])) {
+                        $key = is_numeric($extras[1]) ? 'id' : 'handle';
+                        $callback['context'][$key] = $extras[1];
+                    }
+
+                    if(isset($extras[2])) {
+                        $callback['context']['flag'] = $extras[2];
+                    }
+                } else {
+                    $callback['context'] = $extras;
+                }
             }
 
             $callback['classname'] = 'content' . $callback['driver'];
