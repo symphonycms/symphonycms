@@ -397,7 +397,7 @@ class SMTPGateway extends EmailGateway
 
         $label = Widget::Label(__('Password'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][password]', $this->_pass, 'password', array('autocomplete' => 'off')));
+        $label->appendChild(Widget::Input('settings[email_smtp][password]', $this->_pass, 'password', array('autocomplete' => 'new-password')));
         $div->appendChild($label);
         $group->appendChild($div);
 
