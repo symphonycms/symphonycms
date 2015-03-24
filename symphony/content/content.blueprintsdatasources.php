@@ -42,10 +42,10 @@ class contentBlueprintsDatasources extends ResourcesPage
             );
 
             // These alerts are only valid if the form doesn't have errors
-        } elseif (isset($this->_context[2])) {
+        } elseif (isset($this->_context['flag'])) {
             $time = Widget::Time();
 
-            switch ($this->_context[2]) {
+            switch ($this->_context['flag']) {
                 case 'saved':
                     $message = __('Data Source updated at %s.', array($time->generate()));
                     break;
@@ -65,7 +65,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         }
 
         $providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::DATASOURCE);
-        $isEditing = false;
+        $isEditing = $this->_context['action'] == 'edit';
         $about = $handle = null;
         $fields = array('name'=>null, 'source'=>null, 'filter'=>null, 'required_url_param'=>null, 'negate_url_param'=>null, 'param'=>null);
 
@@ -89,13 +89,8 @@ class contentBlueprintsDatasources extends ResourcesPage
             if (!isset($fields['xml_elements']) || !is_array($fields['xml_elements'])) {
                 $fields['xml_elements'] = array();
             }
-
-            if ($this->_context[0] == 'edit') {
-                $isEditing = true;
-            }
-        } elseif ($this->_context[0] == 'edit') {
-            $isEditing = true;
-            $handle = $this->_context[1];
+        } elseif ($isEditing) {
+            $handle = $this->_context['handle'];
             $existing = DatasourceManager::create($handle, array(), false);
             $order = isset($existing->dsParamORDER) ? $existing->dsParamORDER : 'asc';
 
@@ -821,7 +816,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $label = Widget::Label(__('Parameters'));
         $label->setAttribute('class', 'column');
-        $prefix = '$ds-' . (isset($this->_context[1]) ? Lang::createHandle($fields['name']) : __('untitled')) . '.';
+        $prefix = '$ds-' . (isset($this->_context['handle']) ? Lang::createHandle($fields['name']) : __('untitled')) . '.';
 
         $options = array(
             array('label' => __('Authors'), 'data-label' => 'authors', 'options' => array())
@@ -987,11 +982,11 @@ class contentBlueprintsDatasources extends ResourcesPage
     {
         $this->setPageType('form');
 
-        $datasource = DatasourceManager::create($this->_context[1], array(), false);
+        $datasource = DatasourceManager::create($this->_context['handle'], array(), false);
         $about = $datasource->about();
 
         $this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($about['name'], __('Data Source'), __('Symphony'))));
-        $this->appendSubheading((($this->_context[0] == 'info') ? $about['name'] : __('Untitled')));
+        $this->appendSubheading((($this->_context['action'] == 'info') ? $about['name'] : __('Untitled')));
         $this->insertBreadcrumbs(array(
             Widget::Anchor(__('Data Sources'), SYMPHONY_URL . '/blueprints/datasources/'),
         ));
@@ -1019,7 +1014,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                 case 'version':
                     $fieldset = new XMLElement('fieldset');
                     $fieldset->appendChild(new XMLElement('legend', __('Version')));
-                    $release_date = array_key_exists('release-date', $about) ? $about['release-date'] : filemtime(DatasourceManager::__getDriverPath($this->_context[1]));
+                    $release_date = array_key_exists('release-date', $about) ? $about['release-date'] : filemtime(DatasourceManager::__getDriverPath($this->_context['handle']));
 
                     if (preg_match('/^\d+(\.\d+)*$/', $value)) {
                         $fieldset->appendChild(new XMLElement('p', __('%1$s released on %2$s', array($value, DateTimeObj::format($release_date, __SYM_DATE_FORMAT__)))));
@@ -1057,7 +1052,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         }
 
         // Display source
-        $file = DatasourceManager::__getClassPath($this->_context[1]) . '/data.' . $this->_context[1] . '.php';
+        $file = DatasourceManager::__getClassPath($this->_context['handle']) . '/data.' . $this->_context['handle'] . '.php';
 
         if (file_exists($file)) {
             $fieldset = new XMLElement('fieldset');
@@ -1094,19 +1089,19 @@ class contentBlueprintsDatasources extends ResourcesPage
              * @param string $file
              *  The path to the Datasource file
              */
-            Symphony::ExtensionManager()->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array('file' => DATASOURCES . "/data." . $this->_context[1] . ".php"));
+            Symphony::ExtensionManager()->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array('file' => DATASOURCES . "/data." . $this->_context['handle'] . ".php"));
 
-            if (!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php')) {
+            if (!General::deleteFile(DATASOURCES . '/data.' . $this->_context['handle'] . '.php')) {
                 $this->pageAlert(
-                    __('Failed to delete %s.', array('<code>' . $this->_context[1] . '</code>'))
+                    __('Failed to delete %s.', array('<code>' . $this->_context['handle'] . '</code>'))
                     . ' ' . __('Please check permissions on %s.', array('<code>/workspace/data-sources</code>')),
                     Alert::ERROR
                 );
             } else {
-                $pages = ResourceManager::getAttachedPages(ResourceManager::RESOURCE_TYPE_DS, $this->_context[1]);
+                $pages = ResourceManager::getAttachedPages(ResourceManager::RESOURCE_TYPE_DS, $this->_context['handle']);
 
                 foreach ($pages as $page) {
-                    ResourceManager::detach(ResourceManager::RESOURCE_TYPE_DS, $this->_context[1], $page['id']);
+                    ResourceManager::detach(ResourceManager::RESOURCE_TYPE_DS, $this->_context['handle'], $page['id']);
                 }
 
                 redirect(SYMPHONY_URL . '/blueprints/datasources/');
@@ -1188,10 +1183,10 @@ class contentBlueprintsDatasources extends ResourcesPage
         $isDuplicate = false;
         $queueForDeletion = null;
 
-        if ($this->_context[0] == 'new' && is_file($file)) {
+        if ($this->_context['action'] == 'new' && is_file($file)) {
             $isDuplicate = true;
-        } elseif ($this->_context[0] == 'edit') {
-            $existing_handle = $this->_context[1];
+        } elseif ($this->_context['action'] == 'edit') {
+            $existing_handle = $this->_context['handle'];
 
             if ($classname != $existing_handle && is_file($file)) {
                 $isDuplicate = true;
@@ -1331,7 +1326,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                 $dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
             }
 
-            if ($this->_context[0] == 'new') {
+            if ($this->_context['action'] == 'new') {
                 /**
                  * Prior to creating the Datasource, the file path where it will be written to
                  * is provided and well as the contents of that file.
@@ -1434,7 +1429,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                     }
                 }
 
-                if ($this->_context[0] == 'new') {
+                if ($this->_context['action'] == 'new') {
                     /**
                      * After creating the Datasource, the path to the Datasource file is provided
                      *
@@ -1469,7 +1464,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                     ));
                 }
 
-                redirect(SYMPHONY_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
+                redirect(SYMPHONY_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context['action'] == 'new' ? 'created' : 'saved') . '/');
             }
         }
     }
