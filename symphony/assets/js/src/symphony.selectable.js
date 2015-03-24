@@ -21,7 +21,7 @@
 	 * @param {String} [options.items='tbody tr:has(input)'] Selector to find items that are selectable
 	 * item. Needed to properly handle item highlighting when used in connection with the orderable plugin
 	 * @param {String} [options.ignore='a'] Selector to find elements that should not propagate to the handle
-	 * @param {String} [optinos.mode='single'] Either 'default' (click removes other selections) or 'additive' (click adds to exisiting selection)
+	 * @param {String} [options.mode='single'] Either 'default' (click removes other selections) or 'additive' (click adds to exisiting selection)
 	 *
 	 * @example
 
