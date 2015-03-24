@@ -4,7 +4,7 @@
  * @package assets
  */
 
-(function($, Symphony) {
+(function($, Symphony, moment) {
 
 /*--------------------------------------------------------------------------
 	General backend view
@@ -860,4 +860,4 @@ Symphony.View.add('/system/extensions/:context*:', function() {
 	});
 });
 
-})(window.jQuery, window.Symphony);
+})(window.jQuery, window.Symphony, window.moment);
