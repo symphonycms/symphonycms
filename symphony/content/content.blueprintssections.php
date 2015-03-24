@@ -14,7 +14,7 @@ class contentBlueprintsSections extends AdministrationPage
 
     public function build(array $context = array())
     {
-        $section_id = $context[1];
+        $section_id = $context['id'];
 
         if(isset($section_id)) {
             $context['associations'] = array(
@@ -311,7 +311,7 @@ class contentBlueprintsSections extends AdministrationPage
 
     public function __viewEdit()
     {
-        $section_id = $this->_context[1];
+        $section_id = $this->_context['id'];
 
         if (!$section = SectionManager::fetch($section_id)) {
             Administration::instance()->throwCustomError(
@@ -334,10 +334,10 @@ class contentBlueprintsSections extends AdministrationPage
             );
 
             // These alerts are only valid if the form doesn't have errors
-        } elseif (isset($this->_context[2])) {
+        } elseif (isset($this->_context['flag'])) {
             $time = Widget::Time();
 
-            switch ($this->_context[2]) {
+            switch ($this->_context['flag']) {
                 case 'saved':
                     $message = __('Section updated at %s.', array($time->generate()));
                     break;
@@ -612,14 +612,14 @@ class contentBlueprintsSections extends AdministrationPage
     {
         if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
             $canProceed = true;
-            $edit = ($this->_context[0] == "edit");
+            $edit = ($this->_context['action'] == "edit");
             $this->_errors = array();
 
             $fields = isset($_POST['fields']) ? $_POST['fields'] : array();
             $meta = $_POST['meta'];
 
             if ($edit) {
-                $section_id = $this->_context[1];
+                $section_id = $this->_context['id'];
                 $existing_section = SectionManager::fetch($section_id);
             }
 
@@ -874,7 +874,7 @@ class contentBlueprintsSections extends AdministrationPage
         }
 
         if (@array_key_exists("delete", $_POST['action'])) {
-            $section_id = array($this->_context[1]);
+            $section_id = array($this->_context['id']);
 
             /**
              * Just prior to calling the Section Manager's delete function
