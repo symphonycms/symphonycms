@@ -8,33 +8,26 @@
  * Redirects the browser to a specified location. Safer than using a
  * direct header() call
  *
- *  @param string $url
+ *  @param string $location
+ *  @param string $status (optional)
  */
-function redirect($url)
+function redirect($location, $status = '302 Found')
 {
-    // Just make sure.
-    $url = str_replace('Location:', null, $url);
-
     if (headers_sent($filename, $line)) {
-        echo "<h1>Error: Cannot redirect to <a href=\"$url\">$url</a></h1><p>Output has already started in $filename on line $line</p>";
-        exit;
+        // throw exception if headers already sent
+        throw new SymphonyErrorPage(sprintf(
+            'Cannot redirect to <a href="%s">%s</a>. Output has already started in %s on line %s.',
+            $location, $location, $filename, $line
+        ));
     }
-
-    // convert idn back to ascii for redirect
 
     if (function_exists('idn_to_ascii')) {
-        $root = parse_url(URL);
-        $host = $root['host'];
-        $url  = str_replace($host, idn_to_ascii($host), $url);
+        // convert idn back to ascii for redirect
+        $location = str_replace(HTTP_HOST, idn_to_ascii(HTTP_HOST), $location);
     }
 
-    cleanup_session_cookies();
-    header('Status: 302 Found');
-    header('Expires: Mon, 12 Dec 1982 06:00:00 GMT');
-    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-    header('Cache-Control: no-cache, must-revalidate, max-age=0');
-    header('Pragma: no-cache');
-    header("Location: $url");
+    header('Status: '   . $status);
+    header('Location: ' . $location);
 
     exit;
 }
