@@ -15,6 +15,28 @@ class contentSystemAuthors extends AdministrationPage
     public $_Author;
     public $_errors = array();
 
+    /**
+     * The Authors page has /action/id/flag/ context.
+     * eg. /edit/1/saved/
+     *
+     * @param array $context
+     * @param array $parts
+     * @return array
+     */
+    public function parseContext(array &$context, array $parts)
+    {
+        // Order is important!
+        $params = array_fill_keys(array('action', 'id', 'flag'), null);
+
+        if (isset($parts[2])) {
+            $extras = preg_split('/\//', $parts[2], -1, PREG_SPLIT_NO_EMPTY);
+            list($params['action'], $params['id'], $params['flag']) = $extras;
+            $params['id'] = (int)$params['id'];
+        }
+
+        $context = array_filter($params);
+    }
+
     public function sort(&$sort, &$order, $params)
     {
         if (is_null($sort) || $sort == 'name') {
@@ -171,11 +193,11 @@ class contentSystemAuthors extends AdministrationPage
     public function __form()
     {
         // Handle unknown context
-        if (!in_array($this->_context[0], array('new', 'edit'))) {
+        if (!in_array($this->_context['action'], array('new', 'edit'))) {
             Administration::instance()->errorPageNotFound();
         }
 
-        if ($this->_context[0] == 'new' && !Symphony::Author()->isDeveloper() && !Symphony::Author()->isManager()) {
+        if ($this->_context['action'] == 'new' && !Symphony::Author()->isDeveloper() && !Symphony::Author()->isManager()) {
             Administration::instance()->throwCustomError(
                 __('You are not authorised to access this page.'),
                 __('Access Denied'),
@@ -183,10 +205,10 @@ class contentSystemAuthors extends AdministrationPage
             );
         }
 
-        if (isset($this->_context[2])) {
+        if (isset($this->_context['flag'])) {
             $time = Widget::Time();
 
-            switch ($this->_context[2]) {
+            switch ($this->_context['flag']) {
                 case 'saved':
                     $message = __('Author updated at %s.', array($time->generate()));
                     break;
@@ -207,12 +229,12 @@ class contentSystemAuthors extends AdministrationPage
 
         $this->setPageType('form');
         $isOwner = false;
-        $isEditing = ($this->_context[0] == 'edit');
+        $isEditing = ($this->_context['action'] == 'edit');
 
         if (isset($_POST['fields'])) {
             $author = $this->_Author;
-        } elseif ($this->_context[0] == 'edit') {
-            if (!$author_id = (int)$this->_context[1]) {
+        } elseif ($isEditing) {
+            if (!$author_id = $this->_context['id']) {
                 redirect(SYMPHONY_URL . '/system/authors/');
             }
 
@@ -239,8 +261,8 @@ class contentSystemAuthors extends AdministrationPage
             );
         }
 
-        $this->setTitle(__(($this->_context[0] == 'new' ? '%2$s &ndash; %3$s' : '%1$s &ndash; %2$s &ndash; %3$s'), array($author->getFullName(), __('Authors'), __('Symphony'))));
-        $this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));
+        $this->setTitle(__(($this->_context['action'] == 'new' ? '%2$s &ndash; %3$s' : '%1$s &ndash; %2$s &ndash; %3$s'), array($author->getFullName(), __('Authors'), __('Symphony'))));
+        $this->appendSubheading(($this->_context['action'] == 'new' ? __('Untitled') : $author->getFullName()));
         $this->insertBreadcrumbs(array(
             Widget::Anchor(__('Authors'), SYMPHONY_URL . '/system/authors/'),
         ));
@@ -462,7 +484,7 @@ class contentSystemAuthors extends AdministrationPage
         $div = new XMLElement('div');
         $div->setAttribute('class', 'actions');
 
-        $div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Author')), 'submit', array('accesskey' => 's')));
+        $div->appendChild(Widget::Input('action[save]', ($this->_context['action'] == 'edit' ? __('Save Changes') : __('Create Author')), 'submit', array('accesskey' => 's')));
 
         if ($isEditing && !$isOwner && !$author->isPrimaryAccount()) {
             $button = new XMLElement('button', __('Delete'));
@@ -547,7 +569,7 @@ class contentSystemAuthors extends AdministrationPage
 
     public function __actionEdit()
     {
-        if (!$author_id = (int)$this->_context[1]) {
+        if (!$author_id = $this->_context['id']) {
             redirect(SYMPHONY_URL . '/system/authors/');
         }
 

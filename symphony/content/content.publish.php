@@ -14,6 +14,31 @@ class contentPublish extends AdministrationPage
 {
     public $_errors = array();
 
+    /**
+     * The Pages page has /action/id/flag/ context.
+     * eg. /edit/1/saved/
+     *
+     * @param array $context
+     * @param array $parts
+     * @return array
+     */
+    public function parseContext(array &$context, array $parts)
+    {
+        // Order is important!
+        $params = array_fill_keys(array('section_handle', 'page', 'entry_id', 'flag'), null);
+        $params['section_handle'] = $parts[1];
+
+        if (isset($parts[2])) {
+            $extras = preg_split('/\//', $parts[2], -1, PREG_SPLIT_NO_EMPTY);
+            list($params['page'], $params['entry_id'], $params['flag']) = $extras;
+            $params['entry_id'] = (int)$params['entry_id'];
+        } else {
+            $params['page'] = 'index';
+        }
+
+        $context = array_filter($params);
+    }
+
     public function sort(&$sort, &$order, $params)
     {
         $section = $params['current-section'];

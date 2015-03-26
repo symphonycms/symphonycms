@@ -12,6 +12,28 @@ class contentBlueprintsSections extends AdministrationPage
 {
     public $_errors = array();
 
+    /**
+     * The Sections page has /action/id/flag/ context.
+     * eg. /edit/1/saved/
+     *
+     * @param array $context
+     * @param array $parts
+     * @return array
+     */
+    public function parseContext(array &$context, array $parts)
+    {
+        // Order is important!
+        $params = array_fill_keys(array('action', 'id', 'flag'), null);
+
+        if (isset($parts[2])) {
+            $extras = preg_split('/\//', $parts[2], -1, PREG_SPLIT_NO_EMPTY);
+            list($params['action'], $params['id'], $params['flag']) = $extras;
+            $params['id'] = (int)$params['id'];
+        }
+
+        $context = array_filter($params);
+    }
+
     public function build(array $context = array())
     {
         $section_id = $context['id'];
