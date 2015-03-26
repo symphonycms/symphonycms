@@ -8,7 +8,7 @@
  * Redirects the browser to a specified location. Safer than using a
  * direct header() call
  *
- *  @param string $url
+ *  @param string $location
  *  @param string $status (optional)
  */
 function redirect($location, $status = '302 Found')
