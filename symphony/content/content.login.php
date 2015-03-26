@@ -46,6 +46,32 @@ class contentLogin extends HTMLPage
         // Prevent stylesheet injection by extensions
     }
 
+    /**
+     * The Sections page has /action/id/flag/ context.
+     * eg. /edit/1/saved/
+     *
+     * @param array $context
+     * @param array $parts
+     * @return array
+     */
+    public function parseContext(array &$context, array $parts)
+    {
+        if (isset($parts[1])) {
+            if ($parts[1] === 'retrieve-password') {
+                $context['action'] = $parts[1];
+            } else {
+                $context['token'] = $parts[1];
+            }
+        }
+        if (empty($context['action'])) {
+            if (isset($parts[0])) {
+                $context['action'] = $parts[0];
+            } else {
+                $context['action'] = 'login';
+            }
+        }
+    }
+
     public function build($context = null)
     {
         if ($context) {
@@ -61,15 +87,15 @@ class contentLogin extends HTMLPage
 
     public function view()
     {
-        if (isset($this->_context[1]) && $this->_context[0] === 'reset-password') {
-            if (Administration::instance()->loginFromToken($this->_context[1])) {
+        if (isset($this->_context['token']) && $this->_context['action'] === 'reset-password') {
+            if (Administration::instance()->loginFromToken($this->_context['token'])) {
                 if (Administration::instance()->isLoggedIn()) {
                     // Redirect to the Author's profile. RE: #1801
                     redirect(SYMPHONY_URL . '/system/authors/edit/' . Symphony::Author()->get('id') . '/reset-password/');
                 }
             }
-        } elseif (isset($this->_context[0])) {
-            if (Administration::instance()->loginFromToken($this->_context[0])) {
+        } elseif (isset($this->_context['token']) && $this->_context['action'] === 'login') {
+            if (Administration::instance()->loginFromToken($this->_context['token'])) {
                 if (Administration::instance()->isLoggedIn()) {
                     // Regular token-based login
                     redirect(SYMPHONY_URL . '/');
@@ -84,7 +110,7 @@ class contentLogin extends HTMLPage
         $fieldset = new XMLElement('fieldset');
 
         // Display retrieve password UI
-        if (isset($this->_context[0]) && $this->_context[0] == 'retrieve-password') {
+        if ($this->_context['action'] == 'retrieve-password') {
             $this->Form->setAttribute('action', SYMPHONY_URL.'/login/retrieve-password/');
 
             // Successful reset
