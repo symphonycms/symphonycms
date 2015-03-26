@@ -366,83 +366,47 @@ class Administration extends Symphony
 
             $callback['driver_location'] = EXTENSIONS . '/' . $extension_name . '/content/content.' . $callback['driver'] . '.php';
 
-            // Publish page, /symphony/publish/{section_handle}/
+        // Publish page, /symphony/publish/{section_handle}/
         } elseif ($bits[0] == 'publish') {
             if (!isset($bits[1])) {
                 return false;
             }
 
-            $callback = array(
-                'driver' => 'publish',
-                'driver_location' => $callback['driver_location'] = CONTENT . '/content.publish.php',
-                'context' => array(
-                    'section_handle' => $bits[1],
-                    'page' => null,
-                    'entry_id' => null,
-                    'flag' => null
-                ),
-                'pageroot' => '/' . $bits[0] . '/' . $bits[1] . '/',
-                'classname' => 'contentPublish'
-            );
+            $callback['driver'] = 'publish';
+            $callback['driver_location'] = CONTENT . '/content.publish.php';
+            $callback['pageroot'] = '/' . $bits[0] . '/' . $bits[1] . '/';
+            $callback['classname'] = 'contentPublish';
 
-            if (isset($bits[2])) {
-                $extras = preg_split('/\//', $bits[2], -1, PREG_SPLIT_NO_EMPTY);
-                $callback['context']['page'] = $extras[0];
-
-                if (isset($extras[1])) {
-                    $callback['context']['entry_id'] = intval($extras[1]);
-                }
-
-                if (isset($extras[2])) {
-                    $callback['context']['flag'] = $extras[2];
-                }
-            } else {
-                $callback['context']['page'] = 'index';
-            }
-
-            // Everything else
+        // Everything else
         } else {
             $callback['driver'] = ucfirst($bits[0]);
             $callback['pageroot'] = '/' . $bits[0] . '/';
-            $knownBlueprint = false;
 
             if (isset($bits[1])) {
                 $callback['driver'] = $callback['driver'] . ucfirst($bits[1]);
                 $callback['pageroot'] .= $bits[1] . '/';
-
-                // We known about some blueprint pages and can give them more context
-                if (
-                    $bits[0] === 'blueprints' && 
-                    in_array($bits[1], array('pages', 'datasources', 'events', 'sections'))
-                ) {
-                    $knownBlueprint = true;
-                }
-            }
-
-            if (isset($bits[2])) {
-                $extras = preg_split('/\//', $bits[2], -1, PREG_SPLIT_NO_EMPTY);
-
-                if ($knownBlueprint) {
-                    if(isset($extras[0])) {
-                        $callback['context']['action'] = $extras[0];
-                    }
-
-                    if(isset($extras[1])) {
-                        $key = is_numeric($extras[1]) ? 'id' : 'handle';
-                        $callback['context'][$key] = $extras[1];
-                    }
-
-                    if(isset($extras[2])) {
-                        $callback['context']['flag'] = $extras[2];
-                    }
-                } else {
-                    $callback['context'] = $extras;
-                }
             }
 
             $callback['classname'] = 'content' . $callback['driver'];
             $callback['driver'] = strtolower($callback['driver']);
             $callback['driver_location'] = CONTENT . '/content.' . $callback['driver'] . '.php';
+        }
+
+        // Parse the context
+        if (isset($callback['classname'])) {
+            $page = new $callback['classname'];
+            if (!is_array($callback['context'])) {
+                $callback['context'] = array();
+            }
+
+            // Named context
+            if (method_exists($page, 'parseContext')) {
+                $page->parseContext($callback['context'], $bits);
+
+            // Default context
+            } elseif (isset($bits[2])) {
+                $callback['context'] = preg_split('/\//', $bits[2], -1, PREG_SPLIT_NO_EMPTY);
+            }
         }
 
         /**
