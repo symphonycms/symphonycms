@@ -15,6 +15,27 @@
 abstract class ResourcesPage extends AdministrationPage
 {
     /**
+     * The Resources page has /action/handle/flag/ context.
+     * eg. /edit/1/saved/
+     *
+     * @param array $context
+     * @param array $parts
+     * @return array
+     */
+    public function parseContext(array &$context, array $parts)
+    {
+        // Order is important!
+        $params = array_fill_keys(array('action', 'handle', 'flag'), null);
+
+        if (isset($parts[2])) {
+            $extras = preg_split('/\//', $parts[2], -1, PREG_SPLIT_NO_EMPTY);
+            list($params['action'], $params['handle'], $params['flag']) = $extras;
+        }
+
+        $context = array_filter($params);
+    }
+
+    /**
      * This method is invoked from the `Sortable` class and it contains the
      * logic for sorting (or unsorting) the resource index. It provides a basic
      * wrapper to the `ResourceManager`'s `fetch()` method.
