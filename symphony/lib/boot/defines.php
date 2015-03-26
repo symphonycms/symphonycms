@@ -214,7 +214,7 @@ define_safe('HTTPS', getenv('HTTPS'));
  * Returns the current host, ie. google.com
  * @var string
  */
-define_safe('HTTP_HOST', getenv('HTTP_HOST'));
+define_safe('HTTP_HOST', function_exists('idn_to_utf8') ? idn_to_utf8(getenv('HTTP_HOST')) : getenv('HTTP_HOST'));
 
 /**
  * Returns the IP address of the machine that is viewing the current page.
