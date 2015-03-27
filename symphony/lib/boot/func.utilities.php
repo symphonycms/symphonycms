@@ -13,22 +13,16 @@
  */
 function redirect($location, $status = '302 Found')
 {
+    // throw exception if headers already sent
     if (headers_sent($filename, $line)) {
-
-        // throw exception if headers already sent
-
         throw new SymphonyErrorPage(sprintf(
-
             'Cannot redirect to <a href="%s">%s</a>. Output has already started in %s on line %s.',
-
             $location, $location, $filename, $line
         ));
     }
 
+    // convert idn back to ascii for redirect
     if (function_exists('idn_to_ascii')) {
-
-        // convert idn back to ascii for redirect
-
         $location = str_replace(HTTP_HOST, idn_to_ascii(HTTP_HOST), $location);
     }
 
