@@ -25,7 +25,8 @@ function redirect($location, $status = '302 Found')
     // convert idn back to ascii for redirect
     if (function_exists('idn_to_ascii')) {
         // convert idn back to ascii for redirect
-        $location = str_replace(HTTP_HOST, idn_to_ascii(HTTP_HOST), $location);
+        $host     = parse_url($location, PHP_URL_HOST);
+        $location = str_replace($host, idn_to_ascii($host), $location);
     }
 
     header('Status: '   . $status);
