@@ -312,46 +312,53 @@ class General
     {
         $max_length = intval($max_length);
 
-        // Strip out any tag
+        // make it lowercase
+
+        $string = strtolower($string);
+
+        // strip out tags
+
         $string = strip_tags($string);
 
-        // Remove punctuation
-        $string = preg_replace('/[\\.\'"]+/', null, $string);
+        // remove unwanted characters
 
-        // Trim it
-        if ($max_length > 0) {
-            $string = General::limitWords($string, $max_length);
+        $string = preg_replace('/[^\w- ]+/', ' ', $string);
+
+        // consolidate whitespace
+
+        $string = preg_replace('/[\s]+/', ' ', $string);
+        $string = trim($string);
+
+        // truncate if too long
+
+        if (strlen($string) > $max_length) {
+
+            $string = wordwrap($string, $max_length, '|');
+            $string = substr($string, 0, strpos($string, '|'));
         }
 
-        // Replace spaces (tab, newline etc) with the delimiter
-        $string = preg_replace('/[\s]+/', $delim, $string);
+        // replace whitespace with delimiter
 
-        // Find all legal characters
-        preg_match_all('/[^<>?@:!-\/\[-`;‘’…]+/u', $string, $matches);
+        $string = str_replace(' ', $delim, $string);
 
-        // Join only legal character with the $delim
-        $string = implode($delim, $matches[0]);
+        // apply additional rules
 
-        // Allow for custom rules
         if (is_array($additional_rule_set) && !empty($additional_rule_set)) {
+
             foreach ($additional_rule_set as $rule => $replacement) {
+
                 $string = preg_replace($rule, $replacement, $string);
             }
         }
 
-        // Remove leading or trailing delim characters
-        $string = trim($string, $delim);
+        // encode for URI use
 
-        // Encode it for URI use
         if ($uriencode) {
+
             $string = urlencode($string);
         }
 
-        // Make it lowercase
-        $string = strtolower($string);
-
         return $string;
-
     }
 
     /**
@@ -1253,65 +1260,6 @@ class General
         $string = preg_replace('/[^\w\s]/i', '', $string);
 
         return str_word_count($string);
-    }
-
-    /**
-     * Truncate a string to a given length. Newlines are replaced with `<br />`
-     * html elements and html tags are removed from the string. If the resulting
-     * string contains only spaces then null is returned. If the resulting string
-     * is less than the input length then it is returned. If the option to
-     * truncate the string to a space character is provided then the string is
-     * truncated to the character prior to the last space in the string. Words
-     * (contiguous non-' ' characters) are then removed from the end of the string
-     * until the length of resulting string is within the input bound. Initial
-     * and trailing spaces are removed. Provided the user requested an
-     * ellipsis suffix and the resulting string is shorter than the input string
-     * then the ellipses are appended to the result which is then returned.
-     *
-     * @param string $string
-     *  the string to truncate.
-     * @param integer maxChars (optional)
-     *  the maximum length of the string to truncate the input string to. this
-     *  defaults to 200 characters.
-     * @param boolean $appendHellip (optional)
-     *  true if the ellipses should be appended to the result in circumstances
-     *  where the result is shorter than the input string. false otherwise. this
-     *  defaults to false.
-     * @return null|string
-     *  if the resulting string contains only spaces then null is returned. otherwise
-     *  a string that satisfies the input constraints.
-     */
-    public static function limitWords($string, $maxChars = 200, $appendHellip = false)
-    {
-        if ($appendHellip) {
-            $maxChars -= 1;
-        }
-
-        $string = trim(strip_tags(nl2br($string)));
-        $original_length = strlen($string);
-
-        if ($original_length == 0) {
-            return null;
-        } elseif ($original_length < $maxChars) {
-            return $string;
-        }
-
-        $string = trim(substr($string, 0, $maxChars));
-
-        $array = explode(' ', $string);
-        $length = 0;
-
-        while (!empty($array) && $length > $maxChars) {
-            $length += strlen(array_pop($array)) + 1;
-        }
-
-        $result = implode(' ', $array);
-
-        if ($appendHellip && strlen($result) < $original_length) {
-            $result .= "&#8230;";
-        }
-
-        return($result);
     }
 
     /**
