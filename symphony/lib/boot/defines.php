@@ -214,7 +214,7 @@ define_safe('HTTPS', getenv('HTTPS'));
  * Returns the current host, ie. google.com
  * @var string
  */
-define_safe('HTTP_HOST', getenv('HTTP_HOST'));
+define_safe('HTTP_HOST', function_exists('idn_to_utf8') ? idn_to_utf8(getenv('HTTP_HOST')) : getenv('HTTP_HOST'));
 
 /**
  * Returns the IP address of the machine that is viewing the current page.
@@ -244,7 +244,8 @@ define_safe('__SECURE__',
  * The current domain name.
  * @var string
  */
-define_safe('DOMAIN', rtrim(rtrim($_SERVER['HTTP_HOST'], '\\/') . dirname($_SERVER['PHP_SELF']), '\\/'));
+define_safe('DOMAIN', HTTP_HOST . rtrim(dirname($_SERVER['PHP_SELF']), '\/'));
+
 
 /**
  * The base URL of this Symphony install, minus the symphony path.
