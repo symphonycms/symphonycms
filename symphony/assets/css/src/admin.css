@@ -87,10 +87,13 @@
 	padding: 0;
 }
 
-#nav.wide ul.structure {
-	float: right;
+#nav ul.structure {
 	position: relative;
 	z-index: 1;
+}
+
+#nav.wide ul.structure {
+	float: right;
 }
 
 #nav > ul > li {
