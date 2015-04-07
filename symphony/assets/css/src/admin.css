@@ -89,6 +89,8 @@
 
 #nav.wide ul.structure {
 	float: right;
+	position: relative;
+	z-index: 1;
 }
 
 #nav > ul > li {
