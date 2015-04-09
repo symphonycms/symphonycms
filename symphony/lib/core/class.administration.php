@@ -322,30 +322,19 @@ class Administration extends Symphony
         $callback = array(
             'driver' => null,
             'driver_location' => null,
-            'context' => null,
+            'context' => array(),
             'classname' => null,
             'pageroot' => null
         );
 
         // Login page, /symphony/login/
         if ($bits[0] == 'login') {
-            if (isset($bits[1], $bits[2])) {
-                $context = preg_split('/\//', $bits[1] . '/' . $bits[2], -1, PREG_SPLIT_NO_EMPTY);
-            } elseif (isset($bits[1])) {
-                $context = preg_split('/\//', $bits[1], -1, PREG_SPLIT_NO_EMPTY);
-            } else {
-                $context = array();
-            }
+            $callback['driver'] = 'login';
+            $callback['driver_location'] = CONTENT . '/content.login.php';
+            $callback['classname'] = 'contentLogin';
+            $callback['pageroot'] = '/login/';
 
-            $callback = array(
-                'driver' => 'login',
-                'driver_location' => CONTENT . '/content.login.php',
-                'context' => $context,
-                'classname' => 'contentLogin',
-                'pageroot' => '/login/'
-            );
-
-            // Extension page, /symphony/extension/{extension_name}/
+        // Extension page, /symphony/extension/{extension_name}/
         } elseif ($bits[0] == 'extension' && isset($bits[1])) {
             $extension_name = $bits[1];
             $bits = preg_split('/\//', trim($bits[2], '/'), 2, PREG_SPLIT_NO_EMPTY);
@@ -395,9 +384,6 @@ class Administration extends Symphony
         // Parse the context
         if (isset($callback['classname'])) {
             $page = new $callback['classname'];
-            if (!is_array($callback['context'])) {
-                $callback['context'] = array();
-            }
 
             // Named context
             if (method_exists($page, 'parseContext')) {
