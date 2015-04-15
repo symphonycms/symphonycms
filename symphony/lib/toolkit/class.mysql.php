@@ -687,13 +687,11 @@ class MySQL
     public function import($sql, $force_engine = false)
     {
         if ($force_engine) {
-
             // Silently attempt to change the storage engine. This prevents INNOdb errors.
             $this->query('SET default_storage_engine = MYISAM');
         }
 
         if (empty($sql)) {
-
             throw new Exception('The SQL string contains no queries.');
         }
 
