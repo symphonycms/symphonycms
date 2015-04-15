@@ -738,7 +738,7 @@ class MySQL
      */
     public function delete($table, $where = null)
     {
-        $sql = "DELETE FROM $table";
+        $sql = "DELETE FROM `$table`";
 
         if (!is_null($where)) {
             $sql .= " WHERE $where";
