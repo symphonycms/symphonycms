@@ -691,8 +691,7 @@ class contentSystemAuthors extends AdministrationPage
 
                 // All good, let's save the Author
                 if (is_array($this->_errors) && empty($this->_errors) && $this->_Author->commit()) {
-                    Symphony::Database()->delete('tbl_forgotpass', sprintf("
-                        `expiry` < ? OR `author_id` = ?",
+                    Symphony::Database()->delete('tbl_forgotpass', "`expiry` < ? OR `author_id` = ?", array(
                         DateTimeObj::getGMT('c'),
                         $author_id
                     ));

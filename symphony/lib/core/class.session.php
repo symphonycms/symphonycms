@@ -246,7 +246,7 @@ class Session
             return true;
         }
 
-        return Symphony::Database()->delete("`tbl_sessions`", "`session` = ?", array($id));
+        return Symphony::Database()->delete("tbl_sessions", "`session` = ?", array($id));
     }
 
     /**
@@ -262,6 +262,6 @@ class Session
      */
     public static function gc($max)
     {
-        return Symphony::Database()->delete("`tbl_sessions`", "`session_expires` <= ?", array(time() - $max));
+        return Symphony::Database()->delete("tbl_sessions", "`session_expires` <= ?", array(time() - $max));
     }
 }
