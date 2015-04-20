@@ -227,8 +227,8 @@ class Author
         if (is_null($this->get('username'))) {
             $errors['username'] = __('Username is required');
 
-            // Check that if it's an existing Author that the username is not already
-            // in use by another Author if they are trying to change it.
+        // Check that if it's an existing Author that the username is not already
+        // in use by another Author if they are trying to change it.
         } elseif ($this->get('id')) {
             if (
                 $current_author['username'] !== $this->get('username') &&
@@ -237,7 +237,7 @@ class Author
                     FROM `tbl_authors`
                     WHERE `username` = '%s'",
                     General::sanitize($this->get('username'))
-                )) !== 0
+                )) != 0
             ) {
                 $errors['username'] = __('Username is already taken');
             }
