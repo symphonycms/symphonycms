@@ -223,9 +223,7 @@ class contentLogin extends HTMLPage
 
                 if (!empty($author)) {
                     // Delete all expired tokens
-                    Symphony::Database()->delete('tbl_forgotpass', "
-                        `expiry` < ?", DateTimeObj::getGMT('U')
-                    );
+                    Symphony::Database()->delete('tbl_forgotpass', "`expiry` < ?", array(DateTimeObj::getGMT('U')));
 
                     // Attempt to retrieve the token that is not expired for this Author ID,
                     // otherwise generate one.
@@ -234,8 +232,10 @@ class contentLogin extends HTMLPage
                             FROM `tbl_forgotpass`
                             WHERE `expiry` > ? AND `author_id` = ?
                         ",
-                        DateTimeObj::getGMT('U'),
-                        $author['id']
+                        array(
+                            DateTimeObj::getGMT('U'),
+                            $author['id']
+                        )
                     )) {
                         // More secure password token generation
                         if (function_exists('openssl_random_pseudo_bytes')) {
