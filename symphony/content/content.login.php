@@ -233,8 +233,10 @@ class contentLogin extends HTMLPage
                             FROM `tbl_forgotpass`
                             WHERE `expiry` > ? AND `author_id` = ?
                         ",
-                        DateTimeObj::getGMT('c'),
-                        $author['id']
+                        array(
+                            DateTimeObj::getGMT('c'),
+                            $author['id']
+                        )
                     )) {
                         // More secure password token generation
                         if (function_exists('openssl_random_pseudo_bytes')) {
