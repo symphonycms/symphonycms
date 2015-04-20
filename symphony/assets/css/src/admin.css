@@ -121,7 +121,7 @@
 	color: #555;
 	background: #fff;
 	text-shadow: none;
-	z-index: 10000;
+	z-index: 12000;
 }
 
 #nav > ul > li:hover:after {
