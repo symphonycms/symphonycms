@@ -369,7 +369,6 @@ class EntryManager
         }
 
         $section = SectionManager::fetch($section_id);
-
         if (!is_object($section)) {
             return false;
         }
@@ -379,33 +378,41 @@ class EntryManager
         if ((!is_array($entry_id) && !is_null($entry_id) && is_int($entry_id)) || !$enable_sort) {
             $sort = null;
 
-            // Check for RAND first, since this works independently of any specific field
+        // Check for RAND first, since this works independently of any specific field
         } elseif (self::$_fetchSortDirection == 'RAND') {
             $sort = 'ORDER BY RAND() ';
+
+        // Handle Creation Date or the old Date sorting
         } elseif (self::$_fetchSortField === 'system:creation-date' || self::$_fetchSortField === 'date') {
             $sort = sprintf('ORDER BY `e`.`creation_date_gmt` %s', self::$_fetchSortDirection);
+
+        // Handle Modification Date sorting
         } elseif (self::$_fetchSortField === 'system:modification-date') {
             $sort = sprintf('ORDER BY `e`.`modification_date_gmt` %s', self::$_fetchSortDirection);
+
+        // Handle sorting for System ID
         } elseif (self::$_fetchSortField == 'system:id' || self::$_fetchSortField == 'id') {
             $sort = sprintf('ORDER BY `e`.`id` %s', self::$_fetchSortDirection);
+
+        // Handle when the sort field is an actual Field
         } elseif (self::$_fetchSortField && $field = FieldManager::fetch(self::$_fetchSortField)) {
             if ($field->isSortable()) {
                 $field->buildSortingSQL($joins, $where, $sort, self::$_fetchSortDirection);
             }
 
-            if (!$group) {
-                $group = $field->requiresSQLGrouping();
-            }
+        // Handle if the section has a default sorting field
         } elseif ($section->getSortingField() && $field = FieldManager::fetch($section->getSortingField())) {
             if ($field->isSortable()) {
                 $field->buildSortingSQL($joins, $where, $sort, $section->getSortingOrder());
             }
 
-            if (!$group) {
-                $group = $field->requiresSQLGrouping();
-            }
+        // No sort specified, so just sort on system id
         } else {
             $sort = sprintf('ORDER BY `e`.`id` %s', self::$_fetchSortDirection);
+        }
+
+        if ($field && !$group) {
+            $group = $field->requiresSQLGrouping();
         }
 
         if ($entry_id && !is_array($entry_id)) {
@@ -413,7 +420,7 @@ class EntryManager
         }
 
         $sql = sprintf("
-            SELECT  %s`e`.id, `e`.section_id, e.`author_id`,
+            SELECT %s`e`.id, `e`.section_id, e.`author_id`,
                 UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`,
                 UNIX_TIMESTAMP(e.`modification_date`) AS `modification_date`
             FROM `tbl_entries` AS `e`

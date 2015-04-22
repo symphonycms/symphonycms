@@ -76,13 +76,22 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
     public function fetchAssociatedEntryCount($value)
     {
-        return Symphony::Database()->fetchVar('count', 0, sprintf("
-            SELECT count(*) AS `count`
+        if (function_exists('cleanValue') === false) {
+            function cleanValue($val) {
+                return Symphony::Database()->cleanValue($val);
+            }
+        }
+
+        $value = array_map("cleanValue", explode(',', $value));
+        $count = (int)Symphony::Database()->fetchVar('count', 0, sprintf("
+            SELECT COUNT(DISTINCT handle) AS `count`
             FROM `tbl_entries_data_%d`
-            WHERE `value` = '%s'",
+            WHERE `handle` IN ('%s')",
             $this->get('id'),
-            Symphony::Database()->cleanValue($value)
+            implode("','", $value)
         ));
+
+        return $count;
     }
 
     public function fetchAssociatedEntryIDs($value)
@@ -102,7 +111,12 @@ class FieldTagList extends Field implements ExportableField, ImportableField
             return $data;
         }
 
-        return $data['value'];
+        if (!is_array($data['handle'])) {
+            $data['handle'] = array($data['handle']);
+            $data['value'] = array($data['value']);
+        }
+
+        return implode(',', $data['handle']);
     }
 
     public function set($field, $value)

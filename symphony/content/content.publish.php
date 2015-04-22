@@ -482,7 +482,7 @@ class contentPublish extends AdministrationPage
         // Check that the filtered query fails that the filter is dropped and an
         // error is logged. #841 ^BA
         try {
-            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins);
+            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins, true);
         } catch (DatabaseException $ex) {
             $this->pageAlert(__('An error occurred while retrieving filtered entries. Showing all entries instead.'), Alert::ERROR);
             $filter_querystring = null;
@@ -619,9 +619,7 @@ class contentPublish extends AdministrationPage
 
                 if (is_array($child_sections) && !empty($child_sections)) {
                     foreach ($child_sections as $key => $as) {
-
                         $field = FieldManager::fetch((int)$associated_sections[$key]['child_section_field_id']);
-
                         $parent_section_field_id = (int)$associated_sections[$key]['parent_section_field_id'];
 
                         if (!is_null($parent_section_field_id)) {
