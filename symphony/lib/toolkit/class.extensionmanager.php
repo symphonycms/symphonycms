@@ -547,7 +547,7 @@ class ExtensionManager implements FileResource
             LEFT JOIN `tbl_extensions`
             ON (`tbl_extensions`.id = `tbl_extensions_delegates`.extension_id)
             WHERE `tbl_extensions`.name = ?",
-            $name
+            array($name)
         );
 
         if (!empty($delegates)) {
@@ -731,27 +731,16 @@ class ExtensionManager implements FileResource
     }
 
     /**
-     * Returns true if extension $handle is installed
+     * Returns true if extension is installed
+     *
+     * @since Symphony 3.0.0
      *
      * @param string $handle
      *  The name of the extension
-     *
-     * @since Symphony 2.6.0
-     *
      * @return boolean
      */
     public static function isInstalled($handle)
     {
-        /*if (Symphony::Database()->isConnected()) {
-            $handle = MySQL::cleanValue($handle);
-            $count = Symphony::Database()->fetchCol(
-                'c',
-                "SELECT count(`id`) as `c` FROM `tbl_extensions` WHERE `status` = 'enabled'
-                 AND `name` = '$handle'"
-            );
-            return intval($count) == 1;
-        }
-        return false;*/
         return in_array($handle, self::listInstalledHandles());
     }
 
