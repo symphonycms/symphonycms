@@ -119,6 +119,60 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         return implode(',', $data['handle']);
     }
 
+    /**
+     * Find all the entries that reference this entry's tags.
+     *
+     * @param integer $entry_id
+     * @param integer $parent_field_id
+     * @return array
+     */
+    public function findRelatedEntries($entry_id, $parent_field_id) {
+        // We have the entry_id of the entry that has the referenced tag values
+        // Lets find out what those handles are so we can then referenced the
+        // child section looking for them.
+        $handles = Symphony::Database()->fetchCol('handle', sprintf("
+            SELECT `handle`
+            FROM `tbl_entries_data_%d`
+            WHERE `entry_id` = %d
+        ", $parent_field_id, $entry_id));
+
+        $ids = Symphony::Database()->fetchCol('entry_id', sprintf("
+            SELECT `entry_id`
+            FROM `tbl_entries_data_%d`
+            WHERE `handle` IN ('%s')
+        ", $this->get('id'), implode("','", $handles)));
+
+        return $ids;
+    }
+
+    /**
+     * Find all the entries that contain the tags that have been referenced
+     * from this field own entry.
+     *
+     * @param integer $field_id
+     * @param integer $entry_id
+     * @return array
+     */
+    public function findParentRelatedEntries($field_id, $entry_id) {
+        // Get all the `handles` that have been referenced from the
+        // child association.
+        $handles = Symphony::Database()->fetchCol('handle', sprintf("
+            SELECT `handle`
+            FROM `tbl_entries_data_%d`
+            WHERE `entry_id` = %d
+        ", $field_id, $entry_id));
+
+        // Now find the associated entry ids for those `handles` in
+        // the parent section.
+        $ids = Symphony::Database()->fetchCol('entry_id', sprintf("
+            SELECT `entry_id`
+            FROM `tbl_entries_data_%d`
+            WHERE `handle` IN ('%s')
+        ", $this->get('id'), implode("','", $handles)));
+
+        return $ids;
+    }
+
     public function set($field, $value)
     {
         if ($field == 'pre_populate_source' && !is_array($value)) {

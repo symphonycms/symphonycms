@@ -1662,7 +1662,7 @@ class contentPublish extends AdministrationPage
                     $relation_field  = FieldManager::fetch($as['child_section_field_id']);
 
                     // Get entries, using $schema for performance reasons.
-                    $entry_ids = $relation_field->findRelatedEntries($entry_id);
+                    $entry_ids = $relation_field->findRelatedEntries($entry_id, $as['parent_section_field_id']);
                     $schema = $visible_field ? array($visible_field->get('element_name')) : array();
                     $where = sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids));
 
