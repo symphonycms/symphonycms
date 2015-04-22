@@ -285,11 +285,26 @@ abstract class Page
     }
 
     /**
-     * Iterates over the `$_headers` for this page
-     * and outputs them using PHP's header() function.
+     * Iterates over the `$_headers` for this page and outputs them using PHP's
+     * header() function. Since Symphony 3.0.0, this will add additional Pragma
+     * and Expires headers when the request is made over HTTP 1.0 and we are
+     * sending a Cache-Control header
      */
     protected function renderHeaders()
     {
+        // When the request was made using HTTP 1.0 and the Cache Control header
+        // was set to 'no-cache', add the Pragma and Expires headers. RE: #2205.
+        // Thanks to Symfony HttpFoundation for the idea as well.
+        if (strpos(server_safe('SERVER_PROTOCOL'), 'HTTP/1.0') !== false) {
+            if (
+                isset($this->_headers['cache-control']['header'])
+                && strpos($this->_headers['cache-control']['header'], 'no-cache') !== false
+            ) {
+                $this->addHeaderToPage('Pragma', 'no-cache');
+                $this->addHeaderToPage('Expires', 'Mon, 12 Dec 1982 06:14:00 GMT');
+            }
+        }
+
         if (!is_array($this->_headers) || empty($this->_headers)) {
             return;
         }
