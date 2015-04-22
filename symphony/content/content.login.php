@@ -69,8 +69,8 @@ class contentLogin extends HTMLPage
 
     public function view()
     {
-        if (isset($context['token'])) {
-            if (!$this->__loginFromToken($context['token'])) {
+        if (isset($this->_context['token'])) {
+            if (!$this->__loginFromToken($this->_context['token'])) {
                 if (Administration::instance()->isLoggedIn()) {
                     // Redirect to the Author's profile. RE: #1801
                     redirect(SYMPHONY_URL . '/system/authors/edit/' . Symphony::Author()->get('id') . '/reset-password/');
