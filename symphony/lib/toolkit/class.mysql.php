@@ -200,8 +200,8 @@ class MySQL
 
     /**
      * Sets query caching to true, this will prepend all READ_OPERATION
-     * queries with SQL_CACHE. Symphony be default enables caching. It
-     * can be turned off by setting the query_cache parameter to 'off' in the
+     * queries with SQL_CACHE. Symphony by default enables caching. It
+     * can be turned off by setting the `query_cache` parameter to `off` in the
      * Symphony config file.
      *
      * @link http://dev.mysql.com/doc/refman/5.1/en/query-cache.html
@@ -231,7 +231,21 @@ class MySQL
     }
 
     /**
-     * Sets query logging to false.
+     * Enables query logging and profiling.
+     *
+     * @since Symphony 2.6.2
+     */
+    public static function enableLogging()
+    {
+        self::$_logging = true;
+    }
+
+    /**
+     * Disables query logging and profiling. Use this in low memory environments
+     * to reduce memory usage.
+     *
+     * @since Symphony 2.6.2
+     * @link https://github.com/symphonycms/symphony-2/issues/2398
      */
     public static function disableLogging()
     {
@@ -239,12 +253,23 @@ class MySQL
     }
 
     /**
+     * Returns boolean if logging is enabled or not
+     *
+     * @since Symphony 2.6.2
+     * @return boolean
+     */
+    public static function isLoggingEnabled()
+    {
+        return self::$_logging;
+    }
+
+    /**
      * Symphony uses a prefix for all it's database tables so it can live peacefully
-     * on the same database as other applications. By default this is sym_, but it
+     * on the same database as other applications. By default this is `sym_`, but it
      * can be changed when Symphony is installed.
      *
      * @param string $prefix
-     *  The table prefix for Symphony, by default this is sym_
+     *  The table prefix for Symphony, by default this is `sym_`
      */
     public function setPrefix($prefix)
     {

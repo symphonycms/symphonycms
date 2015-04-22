@@ -41,6 +41,8 @@
 			'password' => null,
 			'db' => null,
 			'tbl_prefix' => 'sym_',
+			'query_caching' => 'on',
+			'query_logging' => 'on'
 		),
 		########
 

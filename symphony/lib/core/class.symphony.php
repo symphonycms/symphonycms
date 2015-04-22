@@ -374,11 +374,22 @@ abstract class Symphony implements Singleton
             self::Database()->setCharacterSet();
             self::Database()->setTimeZone(self::Configuration()->get('timezone', 'region'));
 
-            if (self::Configuration()->get('query_caching', 'database') == 'off') {
-                self::Database()->disableCaching();
-            } elseif (self::Configuration()->get('query_caching', 'database') == 'on') {
-                self::Database()->enableCaching();
+            if (isset($details['query_caching'])) {
+                if ($details['query_caching'] == 'off') {
+                    self::Database()->disableCaching();
+                } elseif ($details['query_caching'] == 'on') {
+                    self::Database()->enableCaching();
+                }
             }
+
+            if (isset($details['query_logging'])) {
+                if ($details['query_logging'] == 'off') {
+                    self::Database()->disableLogging();
+                } elseif ($details['query_logging'] == 'on') {
+                    self::Database()->enableLogging();
+                }
+            }
+
         } catch (DatabaseException $e) {
             self::throwCustomError(
                 $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
