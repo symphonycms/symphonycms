@@ -103,12 +103,20 @@ class MySQL
     private static $_query_count = 0;
 
     /**
-     * Whether query caching is enabled or not. By default this set
+     * Whether query caching is enabled or not. By default this is set
      * to true which will use SQL_CACHE to cache the results of queries
      *
      * @var boolean
      */
     private static $_cache = true;
+
+    /**
+     * Whether query logging is enabled or not. By default this is set
+     * to true, which allows profiling of queries
+     *
+     * @var boolean
+     */
+    private static $_logging = true;
 
     /**
      * An associative array of connection properties for this MySQL
@@ -220,6 +228,14 @@ class MySQL
     public static function isCachingEnabled()
     {
         return self::$_cache;
+    }
+
+    /**
+     * Sets query logging to false.
+     */
+    public static function disableLogging()
+    {
+        self::$_logging = false;
     }
 
     /**
@@ -549,30 +565,32 @@ class MySQL
          * @param float $execution_time
          *  The time that it took to run `$query`
          */
-        if (Symphony::ExtensionManager() instanceof ExtensionManager) {
-            Symphony::ExtensionManager()->notifyMembers('PostQueryExecution', class_exists('Administration', false) ? '/backend/' : '/frontend/', array(
-                'query' => $query,
-                'query_hash' => $query_hash,
-                'execution_time' => $stop
-            ));
+        if (self::$_logging === true) {
+            if (Symphony::ExtensionManager() instanceof ExtensionManager) {
+                Symphony::ExtensionManager()->notifyMembers('PostQueryExecution', class_exists('Administration', false) ? '/backend/' : '/frontend/', array(
+                    'query' => $query,
+                    'query_hash' => $query_hash,
+                    'execution_time' => $stop
+                ));
 
-            // If the ExceptionHandler is enabled, then the user is authenticated
-            // or we have a serious issue, so log the query.
-            if (GenericExceptionHandler::$enabled) {
+                // If the ExceptionHandler is enabled, then the user is authenticated
+                // or we have a serious issue, so log the query.
+                if (GenericExceptionHandler::$enabled) {
+                    self::$_log[$query_hash] = array(
+                        'query' => $query,
+                        'query_hash' => $query_hash,
+                        'execution_time' => $stop
+                    );
+                }
+
+                // Symphony isn't ready yet. Log internally
+            } else {
                 self::$_log[$query_hash] = array(
                     'query' => $query,
                     'query_hash' => $query_hash,
                     'execution_time' => $stop
                 );
             }
-
-            // Symphony isn't ready yet. Log internally
-        } else {
-            self::$_log[$query_hash] = array(
-                'query' => $query,
-                'query_hash' => $query_hash,
-                'execution_time' => $stop
-            );
         }
 
         return true;
@@ -906,13 +924,15 @@ class MySQL
          * @param integer $num
          *  The error number that corresponds with the MySQL error message
          */
-        if (Symphony::ExtensionManager() instanceof ExtensionManager) {
-            Symphony::ExtensionManager()->notifyMembers('QueryExecutionError', class_exists('Administration', false) ? '/backend/' : '/frontend/', array(
-                'query' => $this->_lastQuery,
-                'query_hash' => $this->_lastQueryHash,
-                'msg' => $msg,
-                'num' => $errornum
-            ));
+        if (self::$_logging === true) {
+            if (Symphony::ExtensionManager() instanceof ExtensionManager) {
+                Symphony::ExtensionManager()->notifyMembers('QueryExecutionError', class_exists('Administration', false) ? '/backend/' : '/frontend/', array(
+                    'query' => $this->_lastQuery,
+                    'query_hash' => $this->_lastQueryHash,
+                    'msg' => $msg,
+                    'num' => $errornum
+                ));
+            }
         }
 
         throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query: %3$s', array($errornum, $msg, $this->_lastQuery)), array(
