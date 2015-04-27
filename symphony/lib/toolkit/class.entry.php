@@ -289,8 +289,13 @@ class Entry
             $this->setData($field->get('field_id'), $result);
         }
 
-        $this->set('modification_date', DateTimeObj::get('Y-m-d H:i:s'));
-        $this->set('modification_date_gmt', DateTimeObj::getGMT('Y-m-d H:i:s'));
+        if (!$this->get('modification_date')) {
+            $this->set('modification_date', DateTimeObj::get('Y-m-d H:i:s'));
+        }
+
+        if (!$this->get('modification_date_gmt')) {
+            $this->set('modification_date_gmt', DateTimeObj::getGMT('Y-m-d H:i:s'));
+        }
 
         if (!$this->get('creation_date')) {
             $this->set('creation_date', $this->get('modification_date'));
