@@ -647,7 +647,7 @@ class PageManager
      */
     public static function fetchAvailablePageTypes()
     {
-        $system_types = array('index', 'XML', 'JSON', 'admin', '404', '403');
+        $system_types = array('index', 'XML', 'JSON', 'XHTML', 'admin', '404', '403');
 
         $types = PageManager::fetchPageTypes();
 
