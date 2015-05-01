@@ -636,7 +636,7 @@ class PageManager
 
     /**
      * Returns all the page types that exist in this Symphony install.
-     * There are 6 default system page types, and new types can be added
+     * There are 5 default system page types, and new types can be added
      * by Developers via the Page Editor.
      *
      * @since Symphony 2.3 introduced the JSON type.
@@ -647,11 +647,23 @@ class PageManager
      */
     public static function fetchAvailablePageTypes()
     {
-        $system_types = array('index', 'XML', 'JSON', 'admin', '404', '403');
+        $system_types  = array('index', 'admin', 'attachment', '404', '403');
+        $content_types = Symphony::Configuration()->get('content_types');
+        $custom_types  = PageManager::fetchPageTypes();
 
-        $types = PageManager::fetchPageTypes();
+        if (empty($content_types) && empty($custom_types)) {
+            return $system_types;
+        }
 
-        return (!empty($types) ? General::array_remove_duplicates(array_merge($system_types, $types)) : $system_types);
+        if (!empty($content_types)) {
+           $system_types = array_merge($system_types, array_keys($content_types));
+        }
+
+        if (!empty($custom_types)) {
+            $system_types = array_merge($system_types, $custom_types);
+        }
+
+        return General::array_remove_duplicates($system_types, true);
     }
 
     /**

@@ -91,4 +91,15 @@
 			'default' => 'database',
 		),
 		########
+
+
+		###### CONTENT TYPES ######
+		'content_types' => array(
+			'html'  => 'text/html; charset=utf-8',
+			'json'  => 'application/json; charset=utf-8',
+			'text'  => 'text/plain; charset=utf-8',
+			'xhtml' => 'application/xhtml+xml; charset=utf-8',
+			'xml'   => 'text/xml; charset=utf-8',
+		),
+		########
 	);
