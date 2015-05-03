@@ -882,16 +882,17 @@ class PageManager
             $next_parent = $page['parent'];
 
             while (
-                $parent = Symphony::Database()->fetchRow(0, "
-                    SELECT
-                        p.%s,
-                        p.parent
-                    FROM
-                        `tbl_pages` AS p
-                    WHERE
-                        p.id = ?
-                    ",
-                    $column,
+                $parent = Symphony::Database()->fetchRow(0, sprintf("
+                        SELECT
+                            p.%s,
+                            p.parent
+                        FROM
+                            `tbl_pages` AS p
+                        WHERE
+                            p.id = ?
+                        ",
+                        $column
+                    ),
                     array($next_parent)
                 )
             ) {
