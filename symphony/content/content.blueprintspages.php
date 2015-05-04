@@ -99,7 +99,7 @@ class contentBlueprintsPages extends AdministrationPage
 
         $pages = PageManager::fetch(true, array('*'), $where);
 
-        if (!is_array($pages) or empty($pages)) {
+        if (!is_array($pages) || empty($pages)) {
             $aTableBody = array(Widget::TableRow(array(
                 Widget::TableData(__('None found.'), 'inactive', null, count($aTableHead))
             ), 'odd'));

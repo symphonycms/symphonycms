@@ -3,17 +3,17 @@
     Class migration_233 extends Migration
     {
 
-        static function getVersion()
+        public static function getVersion()
         {
             return '2.3.3';
         }
 
-        static function getReleaseNotes()
+        public static function getReleaseNotes()
         {
             return 'http://getsymphony.com/download/releases/version/2.3.3/';
         }
 
-        static function upgrade()
+        public static function upgrade()
         {
             if(version_compare(self::$existing_version, '2.3.3beta1', '<=')) {
                 // Update DB for the new author role #1692
@@ -43,7 +43,7 @@
             return parent::upgrade();
         }
 
-        static function preUpdateNotes()
+        public static function preUpdateNotes()
         {
             return array(
                 __("On update, all files paths will be removed from the core Upload field entry tables. If you are using an Upload field extension, ensure that the extension is compatible with this release before continuing.")

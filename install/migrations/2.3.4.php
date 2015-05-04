@@ -3,17 +3,17 @@
     Class migration_234 extends Migration
     {
 
-        static function getVersion()
+        public static function getVersion()
         {
             return '2.3.4';
         }
 
-        static function getReleaseNotes()
+        public static function getReleaseNotes()
         {
             return 'http://getsymphony.com/download/releases/version/2.3.4/';
         }
 
-        static function upgrade()
+        public static function upgrade()
         {
             if(version_compare(self::$existing_version, '2.3.4beta1', '<=')) {
                 // Detect mod_rewrite #1808

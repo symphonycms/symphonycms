@@ -3,17 +3,17 @@
     Class migration_220 extends Migration
     {
 
-        static function getVersion()
+        public static function getVersion()
         {
             return '2.2';
         }
 
-        static function getReleaseNotes()
+        public static function getReleaseNotes()
         {
             return 'http://getsymphony.com/download/releases/version/2.2/';
         }
 
-        static function upgrade()
+        public static function upgrade()
         {
             // 2.2.0dev
             if(version_compare(self::$existing_version, '2.2.0dev', '<=')) {

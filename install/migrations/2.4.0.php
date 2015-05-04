@@ -3,19 +3,19 @@
     Class migration_240 extends Migration
     {
 
-        static $publish_filtering_disabled = false;
+        public static $publish_filtering_disabled = false;
 
-        static function getVersion()
+        public static function getVersion()
         {
             return '2.4';
         }
 
-        static function getReleaseNotes()
+        public static function getReleaseNotes()
         {
             return 'http://getsymphony.com/download/releases/version/2.4/';
         }
 
-        static function upgrade()
+        public static function upgrade()
         {
             // [#702] Update to include Admin Path configuration
             if(version_compare(self::$existing_version, '2.4beta2', '<=')) {
@@ -87,7 +87,7 @@
             return parent::upgrade();
         }
 
-        static function preUpdateNotes()
+        public static function preUpdateNotes()
         {
             return array(
                 __("Symphony 2.4 is a major release that contains breaking changes from previous versions. It is highly recommended to review the releases notes and make a complete backup of your installation before updating as these changes may affect the functionality of your site."),
@@ -96,7 +96,7 @@
             );
         }
 
-        static function postUpdateNotes()
+        public static function postUpdateNotes()
         {
             $notes = array();
 

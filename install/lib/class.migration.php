@@ -29,7 +29,7 @@
          * @return boolean
          *  True if successful, false otherwise
          */
-        static function run($function, $existing_version = null)
+        public static function run($function, $existing_version = null)
         {
             static::$existing_version = $existing_version;
 
@@ -57,7 +57,7 @@
          *
          * @return string
          */
-        static function getVersion()
+        public static function getVersion()
         {
             return null;
         }
@@ -69,7 +69,7 @@
          *
          * @return string
          */
-        static function getReleaseNotes()
+        public static function getReleaseNotes()
         {
             return null;
         }
@@ -80,7 +80,7 @@
          *
          * @return boolean
          */
-        static function upgrade()
+        public static function upgrade()
         {
             Symphony::Configuration()->set('version', static::getVersion(), 'symphony');
             Symphony::Configuration()->set('useragent', 'Symphony/' . static::getVersion(), 'general');
@@ -99,7 +99,7 @@
          *
          * @return boolean
          */
-        static function downgrade()
+        public static function downgrade()
         {
             return true;
         }
@@ -112,7 +112,7 @@
          * @return
          *  An array of strings, where each string will become a list item.
          */
-        static function preUpdateNotes()
+        public static function preUpdateNotes()
         {
             return array();
         }
@@ -125,7 +125,7 @@
          * @return
          *  An array of strings, where each string will become a list item.
          */
-        static function postUpdateNotes()
+        public static function postUpdateNotes()
         {
             return array();
         }

@@ -3,17 +3,17 @@
     Class migration_231 extends Migration
     {
 
-        static function getVersion()
+        public static function getVersion()
         {
             return '2.3.1';
         }
 
-        static function getReleaseNotes()
+        public static function getReleaseNotes()
         {
             return 'http://getsymphony.com/download/releases/version/2.3.1/';
         }
 
-        static function upgrade()
+        public static function upgrade()
         {
             // 2.3.1dev
             if(version_compare(self::$existing_version, '2.3.1dev', '<=')) {
