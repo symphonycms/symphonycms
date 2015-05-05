@@ -1051,27 +1051,25 @@ class FrontendPage extends XSLTPage
         $content_types = Symphony::Configuration()->get('content_types');
         $default_type  = 'text/html';
 
-        if (empty($page_types)) {
-            return $default_type;
-        }
-
         if (empty($content_types)) {
             return $default_type;
         }
 
-        // get available content types based on page types
-        $page_types    = array_map('strtolower', $page_types);
-        $content_types = array_filter($content_types, function ($key) use ($page_types) {
+        $page_types = array_map('strtolower', $page_types);
+        $page_types = array_filter($content_types, function ($key) use ($page_types) {
 
             return in_array($key, $page_types);
 
         }, ARRAY_FILTER_USE_KEY);
 
-        // negotiate content type based on accept header
-        $accept       = new Aura\Accept\AcceptFactory($_SERVER);
-        $content_type = $accept->newInstance()->negotiateMedia($content_types)->getValue();
+        if (empty($page_types)) {
+            return $default_type;
+        }
 
-        return $content_type ? $content_type : $default_type;
+        $accept_factory = new Aura\Accept\AcceptFactory($_SERVER);
+        $accept_type    = $accept_factory->newInstance()->negotiateMedia($page_types);
+
+        return $accept_type ? $accept_type->getValue() : $default_type;
     }
 
     /**
