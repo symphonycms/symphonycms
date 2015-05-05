@@ -6,4 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Aura\\Accept\\_Config\\' => array($vendorDir . '/aura/accept/config'),
+    'Aura\\Accept\\' => array($vendorDir . '/aura/accept/src'),
 );

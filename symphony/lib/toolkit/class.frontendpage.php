@@ -213,20 +213,20 @@ class FrontendPage extends XSLTPage
             ));
 
             if (is_null($devkit)) {
-                if(General::in_iarray('XML', $this->_pageData['type'])) {
-                    $this->addHeaderToPage('Content-Type', 'text/xml; charset=utf-8');
-                }
-                else if(General::in_iarray('JSON', $this->_pageData['type'])) {
-                    $this->addHeaderToPage('Content-Type', 'application/json; charset=utf-8');
-                }
-                else{
-                    $this->addHeaderToPage('Content-Type', 'text/html; charset=utf-8');
+                $page_types   = $this->_pageData['type'];
+                $content_type = $this->getContentType($page_types);
+
+                $this->addHeaderToPage('Content-Type', $content_type . '; charset=utf-8');
+
+                if (in_array('attachment', $page_types)) {
+                    $this->addHeaderToPage('Content-Disposition', 'attachment; filename=' . $this->getFilename($content_type));
                 }
 
-                if(in_array('404', $this->_pageData['type'])){
+                if (in_array('404', $page_types)) {
                     $this->setHttpStatus(self::HTTP_STATUS_NOT_FOUND);
                 }
-                else if(in_array('403', $this->_pageData['type'])){
+
+                if (in_array('403', $page_types)) {
                     $this->setHttpStatus(self::HTTP_STATUS_FORBIDDEN);
                 }
             }
@@ -1033,5 +1033,75 @@ class FrontendPage extends XSLTPage
     public static function sanitizeParameter($parameter)
     {
         return XMLElement::stripInvalidXMLCharacters($parameter);
+    }
+
+    /**
+     * Given an array of page types, this function will determine the
+     * appropriate content type for the page based on supported content
+     * types from the configuration file.
+     *
+     * @since Symphony 2.7.0
+     * @param array $page_types
+     *  This pages page types
+     * @return string
+     *  This pages content type
+     */
+    private function getContentType(array $page_types)
+    {
+        $content_types = Symphony::Configuration()->get('content_types');
+        $default_type  = 'text/html';
+
+        if (empty($content_types)) {
+            return $default_type;
+        }
+
+        $page_types = array_map('strtolower', $page_types);
+        $page_types = array_filter($content_types, function ($key) use ($page_types) {
+
+            return in_array($key, $page_types);
+
+        }, ARRAY_FILTER_USE_KEY);
+
+        if (empty($page_types)) {
+            return $default_type;
+        }
+
+        $accept_factory = new Aura\Accept\AcceptFactory($_SERVER);
+        $accept_type    = $accept_factory->newInstance()->negotiateMedia($page_types);
+
+        return $accept_type ? $accept_type->getValue() : $default_type;
+    }
+
+    /**
+     * Given a pages content type, this function will return
+     * a filename for the page based on the pages path and
+     * content type.
+     *
+     * @since Symphony 2.7.0
+     * @param string $content_type
+     *  This pages content type
+     * @return string
+     *  This pages filename
+     */
+    private function getFilename($content_type)
+    {
+        $content_types = Symphony::Configuration()->get('content_types');
+
+        if (empty($content_types)) {
+            return;
+        }
+
+        $file_type = array_search($content_type, $content_types);
+        $file_name = trim(str_replace('/', '_', $this->_param['current-path']), '_');
+
+        if (empty($file_type)) {
+            $file_type = 'html';
+        }
+
+        if (empty($file_name)) {
+            $file_name = $this->_param['current-page'];
+        }
+
+        return $file_name . '.' . $file_type;
     }
 }
