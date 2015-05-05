@@ -1060,7 +1060,6 @@ class FrontendPage extends XSLTPage
         }
 
         // get available content types based on page types
-
         $page_types    = array_map('strtolower', $page_types);
         $content_types = array_filter($content_types, function ($key) use ($page_types) {
 
@@ -1069,7 +1068,6 @@ class FrontendPage extends XSLTPage
         }, ARRAY_FILTER_USE_KEY);
 
         // negotiate content type based on accept header
-
         $accept       = new Aura\Accept\AcceptFactory($_SERVER);
         $content_type = $accept->newInstance()->negotiateMedia($content_types)->getValue();
 
