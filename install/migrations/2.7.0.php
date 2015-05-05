@@ -20,11 +20,11 @@ Class migration_270 extends Migration
 
             'content_types' => array(
 
-                'html'  => 'text/html; charset=utf-8',
-                'json'  => 'application/json; charset=utf-8',
-                'text'  => 'text/plain; charset=utf-8',
-                'xhtml' => 'application/xhtml+xml; charset=utf-8',
-                'xml'   => 'text/xml; charset=utf-8'
+                'html'  => 'text/html',
+                'json'  => 'application/json',
+                'text'  => 'text/plain',
+                'xhtml' => 'application/xhtml+xml',
+                'xml'   => 'text/xml'
             )
         ));
 
