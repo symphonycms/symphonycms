@@ -216,8 +216,6 @@ class FrontendPage extends XSLTPage
                 $page_types   = $this->_pageData['type'];
                 $content_type = $this->getContentType($page_types);
 
-                var_dump($content_type); exit;
-
                 $this->addHeaderToPage('Content-Type', $content_type . '; charset=utf-8');
 
                 if (in_array('attachment', $page_types)) {
