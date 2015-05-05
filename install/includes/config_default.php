@@ -99,7 +99,7 @@
 			'json'  => 'application/json',
 			'txt'   => 'text/plain',
 			'xhtml' => 'application/xhtml+xml',
-			'xml'   => 'text/xml',
+			'xml'   => 'application/xml',
 		),
 		########
 	);

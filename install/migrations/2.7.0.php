@@ -24,7 +24,7 @@ Class migration_270 extends Migration
                 'json'  => 'application/json',
                 'txt'   => 'text/plain',
                 'xhtml' => 'application/xhtml+xml',
-                'xml'   => 'text/xml'
+                'xml'   => 'application/xml'
             )
         ));
 
