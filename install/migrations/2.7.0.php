@@ -22,7 +22,7 @@ Class migration_270 extends Migration
 
                 'html'  => 'text/html',
                 'json'  => 'application/json',
-                'text'  => 'text/plain',
+                'txt'   => 'text/plain',
                 'xhtml' => 'application/xhtml+xml',
                 'xml'   => 'text/xml'
             )

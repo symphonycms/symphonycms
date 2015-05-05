@@ -97,7 +97,7 @@
 		'content_types' => array(
 			'html'  => 'text/html',
 			'json'  => 'application/json',
-			'text'  => 'text/plain',
+			'txt'   => 'text/plain',
 			'xhtml' => 'application/xhtml+xml',
 			'xml'   => 'text/xml',
 		),
