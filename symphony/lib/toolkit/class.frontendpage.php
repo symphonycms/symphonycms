@@ -216,6 +216,8 @@ class FrontendPage extends XSLTPage
                 $page_types   = $this->_pageData['type'];
                 $content_type = $this->getContentType($page_types);
 
+                var_dump($content_type); exit;
+
                 $this->addHeaderToPage('Content-Type', $content_type . '; charset=utf-8');
 
                 if (in_array('attachment', $page_types)) {
@@ -1049,24 +1051,31 @@ class FrontendPage extends XSLTPage
     private function getContentType(array $page_types)
     {
         $content_types = Symphony::Configuration()->get('content_types');
-        $content_type  = 'text/html; charset=utf-8';
+        $default_type  = 'text/html';
 
         if (empty($page_types)) {
-            return $content_type;
+            return $default_type;
         }
 
         if (empty($content_types)) {
-            return $content_type;
+            return $default_type;
         }
 
-        foreach ($page_types as $page_type) {
-            $page_type = strtolower($page_type);
-            if (array_key_exists($page_type, $content_types)) {
-                $content_type = $content_types[$page_type];
-            }
-        }
+        // get available content types based on page types
 
-        return $content_type;
+        $page_types    = array_map('strtolower', $page_types);
+        $content_types = array_filter($content_types, function ($key) use ($page_types) {
+
+            return in_array($key, $page_types);
+
+        }, ARRAY_FILTER_USE_KEY);
+
+        // negotiate content type based on accept header
+
+        $accept       = new Aura\Accept\AcceptFactory($_SERVER);
+        $content_type = $accept->newInstance()->negotiateMedia($content_types)->getValue();
+
+        return $content_type ? $content_type : $default_type;
     }
 
     /**
