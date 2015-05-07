@@ -207,7 +207,7 @@ class Author
                     FROM `tbl_authors`
                     WHERE `email` = '%s'",
                     General::sanitize($this->get('email'))
-                )) !== 0
+                )) != 0
             ) {
                 $errors['email'] = __('E-mail address is already taken');
             }
