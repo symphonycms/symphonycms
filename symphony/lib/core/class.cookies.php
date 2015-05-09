@@ -22,6 +22,7 @@ class Cookies extends Container
         'domain' => null,
         'path' => null,
         'expires' => null,
+        'max-age' => null,
         'secure' => false,
         'httponly' => false
     ];
@@ -75,13 +76,14 @@ class Cookies extends Container
                     $header = str_replace('Set-Cookie: ', '', $header);
                     $pieces = preg_split(self::COOKIE_PIECE_REGEX, $header);
                     $parsed = $this->processPieces($pieces, $this->store);
+                    // var_dump($parsed);die;
 
                     // Um, guessing here a little bit
                     $keys = array_keys($parsed);
                     $key = '';
 
                     foreach ($keys as $k) {
-                        if (!in_array($k, array('domain', 'path', 'secure', 'expires', 'httpOnly', 'HttpOnly', 'httponly'))) {
+                        if (!in_array($k, array('domain', 'path', 'secure', 'expires', 'max-age', 'Max-Age', 'httpOnly', 'HttpOnly', 'httponly'))) {
                             $key = $k;
                         }
                     }
