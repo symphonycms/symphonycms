@@ -559,6 +559,18 @@ class contentBlueprintsSections extends AdministrationPage
                     SectionManager::delete($section_id);
                 }
 
+                /**
+                 * Just after calling the Section Manager's delete function
+                 *
+                 * @delegate SectionPostDelete
+                 * @since Symphony 3.0.0
+                 * @param string $context
+                 * '/blueprints/sections/'
+                 * @param array $section_ids
+                 *  An array of Section ID's that were deleted
+                 */
+                Symphony::ExtensionManager()->notifyMembers('SectionPostDelete', '/blueprints/sections/', array('section_ids' => $checked));
+
                 redirect(SYMPHONY_URL . '/blueprints/sections/');
             } elseif ($_POST['with-selected'] == 'delete-entries') {
                 foreach ($checked as $section_id) {
@@ -760,12 +772,18 @@ class contentBlueprintsSections extends AdministrationPage
                         if (is_array($fields) && !empty($fields)) {
                             foreach ($fields as $position => $data) {
                                 if (isset($data['id'])) {
-                                    $id_list[] = $data['id'];
+                                    $id_list[] = (int)$data['id'];
                                 }
                             }
                         }
 
-                        $missing_cfs = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_fields` WHERE `parent_section` = '$section_id' AND `id` NOT IN ('".@implode("', '", $id_list)."')");
+                        $q = Database::addPlaceholders($id_list);
+                        $missing_cfs = Symphony::Database()->fetchCol('id', "
+                            SELECT `id` 
+                            FROM `tbl_fields` 
+                            WHERE `parent_section` = ? AND `id` NOT IN (".$q.")", 
+                            array_merge(array($section_id), $id_list)
+                        );
 
                         if (is_array($missing_cfs) && !empty($missing_cfs)) {
                             foreach ($missing_cfs as $id) {

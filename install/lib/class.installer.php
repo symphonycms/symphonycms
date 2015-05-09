@@ -302,17 +302,18 @@
                     }
 
                     else {
-                        // Existing table prefix
-                        $tables = Symphony::Database()->fetch(sprintf(
-                            "SHOW TABLES FROM `%s` LIKE '%s'",
-                            mysqli_real_escape_string(Symphony::Database()->getConnectionResource(), $fields['database']['db']),
-                            mysqli_real_escape_string(Symphony::Database()->getConnectionResource(), $fields['database']['tbl_prefix']) . '%'
-                        ));
 
-                        if(is_array($tables) && !empty($tables)) {
-                            $errors['database-table-prefix']  = array(
-                                'msg' => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
-                                'details' =>  __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
+                        // Existing table prefix
+
+                        if (Symphony::Database()->tableExists($fields['database']['tbl_prefix'] . '%')) {
+
+                            $errors['database-table-prefix'] = array(
+
+                                'msg'     => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
+                                'details' =>  __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array(
+
+                                    '<code>' . $fields['database']['tbl_prefix'] . '</code>'
+                                ))
                             );
                         }
                     }
@@ -434,8 +435,6 @@
 
             // MySQL: Setting prefix & character encoding
             Symphony::Database()->setPrefix($fields['database']['tbl_prefix']);
-            Symphony::Database()->setCharacterEncoding();
-            Symphony::Database()->setCharacterSet();
 
             // MySQL: Importing schema
             Symphony::Log()->pushToLog('MYSQL: Importing Table Schema', E_NOTICE, true, true);

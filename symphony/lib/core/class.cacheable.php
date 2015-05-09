@@ -163,42 +163,4 @@ class Cacheable
 
         return $data;
     }
-
-/*-------------------------------------------------------------------------
-    Deprecated:
--------------------------------------------------------------------------*/
-
-    /**
-     * @deprecated This function will be removed in Symphony 3.0. Use `read()` instead.
-     *
-     * @param string $hash
-     *  The hash of the Cached object, as defined by the user
-     * @return mixed
-     */
-    public function check($hash)
-    {
-        return $this->read($hash);
-    }
-
-    /**
-     * @deprecated This function will be removed in Symphony 3.0. Use `delete()` instead.
-     *
-     * @param string $hash
-     *  The user defined hash of the data
-     * @return boolean
-     */
-    public function forceExpiry($hash)
-    {
-        return $this->delete($hash);
-    }
-
-    /**
-     * @deprecated This function will be removed in Symphony 3.0. Use `delete()` instead.
-     *
-     * @return boolean
-     */
-    public function clean()
-    {
-        return $this->delete();
-    }
 }

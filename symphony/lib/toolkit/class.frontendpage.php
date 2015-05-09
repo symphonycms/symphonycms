@@ -165,9 +165,7 @@ class FrontendPage extends XSLTPage
         $output = null;
 
         $this->addHeaderToPage('Cache-Control', 'no-cache, must-revalidate, max-age=0');
-        $this->addHeaderToPage('Expires', 'Mon, 12 Dec 1982 06:14:00 GMT');
         $this->addHeaderToPage('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
-        $this->addHeaderToPage('Pragma', 'no-cache');
 
         if ($this->is_logged_in) {
             /**
@@ -520,7 +518,6 @@ class FrontendPage extends XSLTPage
             if (is_array($value) && !(count($value) == 1 && empty($value[0]))) {
                 foreach ($value as $key => $value) {
                     $item = new XMLElement('item', General::sanitize($value));
-                    $item->setAttribute('handle', Lang::createHandle($value));
                     $param->appendChild($item);
                 }
             } elseif (is_array($value)) {
@@ -894,7 +891,7 @@ class FrontendPage extends XSLTPage
 
             // if the XML is still null, an extension has not run the data source, so run normally
             if (is_null($xml)) {
-                $xml = $ds->grab($this->_env['pool']);
+                $xml = $ds->execute($this->_env['pool']);
             }
 
             if ($xml) {

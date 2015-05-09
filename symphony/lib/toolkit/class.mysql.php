@@ -5,62 +5,6 @@
  */
 
 /**
- * The DatabaseException class extends a normal Exception to add in
- * debugging information when a SQL query fails such as the internal
- * database error code and message in additional to the usual
- * Exception information. It allows a DatabaseException to contain a human
- * readable error, as well more technical information for debugging.
- */
-class DatabaseException extends Exception
-{
-    /**
-     * An associative array with three keys, 'query', 'msg' and 'num'
-     * @var array
-     */
-    private $_error = array();
-
-    /**
-     * Constructor takes a message and an associative array to set to
-     * `$_error`. The message is passed to the default Exception constructor
-     */
-    public function __construct($message, array $error = null)
-    {
-        parent::__construct($message);
-        $this->_error = $error;
-    }
-
-    /**
-     * Accessor function for the original query that caused this Exception
-     *
-     * @return string
-     */
-    public function getQuery()
-    {
-        return $this->_error['query'];
-    }
-
-    /**
-     * Accessor function for the Database error code for this type of error
-     *
-     * @return string
-     */
-    public function getDatabaseErrorCode()
-    {
-        return $this->_error['num'];
-    }
-
-    /**
-     * Accessor function for the Database message from this Exception
-     *
-     * @return string
-     */
-    public function getDatabaseErrorMessage()
-    {
-        return $this->_error['msg'];
-    }
-}
-
-/**
  * The MySQL class acts as a wrapper for connecting to the Database
  * in Symphony. It utilises mysqli_* functions in PHP to complete the usual
  * querying. As well as the normal set of insert, update, delete and query
@@ -89,95 +33,19 @@ class MySQL
     const __READ_OPERATION__ = 1;
 
     /**
-     * Sets the current `$_log` to be an empty array
-     *
-     * @var array
-     */
-    private static $_log = array();
-
-    /**
-     * The number of queries this class has executed, defaults to 0.
-     *
-     * @var integer
-     */
-    private static $_query_count = 0;
-
-    /**
-     * Whether query caching is enabled or not. By default this set
-     * to true which will use SQL_CACHE to cache the results of queries
-     *
-     * @var boolean
-     */
-    private static $_cache = true;
-
-    /**
      * An associative array of connection properties for this MySQL
      * database including the host, port, username, password and
      * selected database.
      *
-     * @var array
+     * @var PDO
      */
-    private static $_connection = array();
-
-    /**
-     * The resource of the last result returned from mysqli_query
-     *
-     * @var resource
-     */
-    private $_result = null;
-
-    /**
-     * The last query that was executed by the class
-     */
-    private $_lastQuery = null;
-
-    /**
-     * The hash value of the last query that was executed by the class
-     */
-    private $_lastQueryHash = null;
-
-    /**
-     * The auto increment value returned by the last query that was executed
-     * by the class
-     */
-    private $_lastInsertID = null;
-
-    /**
-     * By default, an array of arrays or objects representing the result set
-     * from the `$this->_lastQuery`
-     */
-    private $_lastResult = array();
-
-    /**
-     * Magic function that will flush the MySQL log and close the MySQL
-     * connection when the MySQL class is removed or destroyed.
-     *
-     * @link http://php.net/manual/en/language.oop5.decon.php
-     */
-    public function __destruct()
-    {
-        $this->flush();
-        $this->close();
-    }
-
-    /**
-     * Resets the result, `$this->_lastResult` and `$this->_lastQuery` to their empty
-     * values. Called on each query and when the class is destroyed.
-     */
-    public function flush()
-    {
-        $this->_result = null;
-        $this->_lastResult = array();
-        $this->_lastQuery = null;
-        $this->_lastQueryHash = null;
-    }
+    private static $_conn_pdo = null;
 
     /**
      * Sets the current `$_log` to be an empty array
      */
-    public static function flushLog()
-    {
-        self::$_log = array();
+    public static function flushLog(){
+        MySQL::$_conn_pdo->log = array();
     }
 
     /**
@@ -185,41 +53,8 @@ class MySQL
      *
      * @return integer
      */
-    public static function queryCount()
-    {
-        return self::$_query_count;
-    }
-
-    /**
-     * Sets query caching to true, this will prepend all READ_OPERATION
-     * queries with SQL_CACHE. Symphony be default enables caching. It
-     * can be turned off by setting the query_cache parameter to 'off' in the
-     * Symphony config file.
-     *
-     * @link http://dev.mysql.com/doc/refman/5.1/en/query-cache.html
-     */
-    public static function enableCaching()
-    {
-        self::$_cache = true;
-    }
-
-    /**
-     * Sets query caching to false, this will prepend all READ_OPERATION
-     * queries will SQL_NO_CACHE.
-     */
-    public static function disableCaching()
-    {
-        self::$_cache = false;
-    }
-
-    /**
-     * Returns boolean if query caching is enabled or not
-     *
-     * @return boolean
-     */
-    public static function isCachingEnabled()
-    {
-        return self::$_cache;
+    public static function queryCount(){
+        return MySQL::$_conn_pdo->queryCount();
     }
 
     /**
@@ -230,9 +65,9 @@ class MySQL
      * @param string $prefix
      *  The table prefix for Symphony, by default this is sym_
      */
-    public function setPrefix($prefix)
-    {
-        self::$_connection['tbl_prefix'] = $prefix;
+    public function setPrefix($prefix){
+        $this->_prefix = $prefix;
+        MySQL::$_conn_pdo->setPrefix($prefix);
     }
 
     /**
@@ -243,7 +78,7 @@ class MySQL
      */
     public function getPrefix()
     {
-        return self::$_connection['tbl_prefix'];
+        return MySQL::$_conn_pdo->getPrefix();
     }
 
     /**
@@ -255,9 +90,7 @@ class MySQL
     {
         try {
             $connected = (
-                isset(self::$_connection['id'])
-                && !is_null(self::$_connection['id'])
-                && mysqli_ping(self::$_connection['id'])
+                isset(MySQL::$_conn_pdo)
             );
         } catch (Exception $ex) {
             return false;
@@ -267,16 +100,32 @@ class MySQL
     }
 
     /**
-     * Called when the script has finished executing, this closes the MySQL
-     * connection
+     * Sets query caching to true, this will prepend all READ_OPERATION
+     * queries with SQL_CACHE. Symphony be default enables caching. It
+     * can be turned off by setting the query_cache parameter to 'off' in the
+     * Symphony config file.
+     *
+     * @link http://dev.mysql.com/doc/refman/5.1/en/query-cache.html
+     */
+    public function enableCaching(){
+        MySQL::$_conn_pdo->enableCaching();
+    }
+
+    /**
+     * Sets query caching to false, this will prepend all READ_OPERATION
+     * queries will SQL_NO_CACHE.
+     */
+    public function disableCaching(){
+        MySQL::$_conn_pdo->disableCaching();
+    }
+
+    /**
+     * Returns boolean if query caching is enabled or not
      *
      * @return boolean
      */
-    public function close()
-    {
-        if ($this->isConnected()) {
-            return mysqli_close(self::$_connection['id']);
-        }
+    public function isCachingEnabled(){
+        return MySQL::$_conn_pdo->isCachingEnabled();
     }
 
     /**
@@ -297,29 +146,25 @@ class MySQL
      */
     public function connect($host = null, $user = null, $password = null, $port = '3306', $database = null)
     {
-        self::$_connection = array(
+        $options = array(
+            //PDO::ATTR_ORACLE_NULLS => PDO::NULL_EMPTY_STRING
+        );
+        $config = array(
+            'driver' => 'mysql',
+            'db' => $database,
             'host' => $host,
-            'user' => $user,
-            'pass' => $password,
             'port' => $port,
-            'database' => $database
+            'user' => $user,
+            'password' => $password,
+            'charset' => 'utf8'
         );
 
-        try {
-            self::$_connection['id'] = mysqli_connect(
-                self::$_connection['host'],
-                self::$_connection['user'],
-                self::$_connection['pass'],
-                self::$_connection['database'],
-                self::$_connection['port']
-            );
-
-            if (!$this->isConnected()) {
-                $this->__error('connect');
-            }
-        } catch (Exception $ex) {
-            $this->__error('connect');
+        if(PHP_VERSION_ID <= 50306 && $config['driver'] == 'mysql') {
+            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '" . $config['charset'] . "'";
         }
+
+        $config['options'] = $options;
+        MySQL::$_conn_pdo = new Database($config);
 
         return true;
     }
@@ -330,41 +175,10 @@ class MySQL
      * database queries and don't want anything abstract by the MySQL
      * class.
      *
-     * @return resource
+     * @return PDO
      */
-    public static function getConnectionResource()
-    {
-        return self::$_connection['id'];
-    }
-
-    /**
-     * This will set the character encoding of the connection for sending and
-     * receiving data. This function will run every time the database class
-     * is being initialized. If no character encoding is provided, UTF-8
-     * is assumed.
-     *
-     * @link http://au2.php.net/manual/en/function.mysql-set-charset.php
-     * @param string $set
-     *  The character encoding to use, by default this 'utf8'
-     */
-    public function setCharacterEncoding($set = 'utf8')
-    {
-        mysqli_set_charset(self::$_connection['id'], $set);
-    }
-
-    /**
-     * This function will set the character encoding of the database so that any
-     * new tables that are created by Symphony use this character encoding
-     *
-     * @link http://dev.mysql.com/doc/refman/5.0/en/charset-connection.html
-     * @param string $set
-     *  The character encoding to use, by default this 'utf8'
-     * @throws DatabaseException
-     */
-    public function setCharacterSet($set = 'utf8')
-    {
-        $this->query("SET character_set_connection = '$set', character_set_database = '$set', character_set_server = '$set'");
-        $this->query("SET CHARACTER SET '$set'");
+    public static function getConnectionResource() {
+        return MySQL::$_conn_pdo->conn;
     }
 
     /**
@@ -393,7 +207,7 @@ class MySQL
         // Get the difference between the symphony install timezone and UTC
         $offset = $symphony_date->diff($utc)->format('%R%H:%I');
 
-        $this->query("SET time_zone = '$offset'");
+        self::getConnectionResource()->exec("SET time_zone = '$offset'");
     }
 
     /**
@@ -407,13 +221,8 @@ class MySQL
      * @return string
      *  The escaped SQL string
      */
-    public static function cleanValue($value)
-    {
-        if (function_exists('mysqli_real_escape_string') && self::isConnected()) {
-            return mysqli_real_escape_string(self::$_connection['id'], $value);
-        } else {
-            return addslashes($value);
-        }
+    public static function cleanValue($value) {
+        return addslashes($value);
     }
 
     /**
@@ -444,24 +253,11 @@ class MySQL
     }
 
     /**
-     * Determines whether this query is a read operation, or if it is a write operation.
-     * A write operation is determined as any query that starts with CREATE, INSERT,
-     * REPLACE, ALTER, DELETE, UPDATE, OPTIMIZE, TRUNCATE or DROP. Anything else is
-     * considered to be a read operation which are subject to query caching.
-     *
-     * @param string $query
-     * @return integer
-     *  `self::__WRITE_OPERATION__` or `self::__READ_OPERATION__`
-     */
-    public function determineQueryType($query)
-    {
-        return (preg_match('/^(create|insert|replace|alter|delete|update|optimize|truncate|drop)/i', $query) ? self::__WRITE_OPERATION__ : self::__READ_OPERATION__);
-    }
-
-    /**
      * Takes an SQL string and executes it. This function will apply query
      * caching if it is a read operation and if query caching is set. Symphony
      * will convert the `tbl_` prefix of tables to be the one set during installation.
+         * To automatically sanitize variables being used the query has to be sprintf-formatted
+         * and all variables passed on separately using the second parameter.
      * A type parameter is provided to specify whether `$this->_lastResult` will be an array
      * of objects or an array of associative arrays. The default is objects. This
      * function will return boolean, but set `$this->_lastResult` to the result.
@@ -477,103 +273,12 @@ class MySQL
      * @return boolean
      *  True if the query executed without errors, false otherwise
      */
-    public function query($query, $type = "OBJECT")
-    {
-        if (empty($query) || self::isConnected() === false) {
-            return false;
-        }
+    public function query($query, $type = "OBJECT", $params = array()){
+        if(empty($query)) return false;
 
-        $start = precision_timer();
-        $query = trim($query);
-        $query_type = $this->determineQueryType($query);
-        $query_hash = md5($query.$start);
-
-        if (self::$_connection['tbl_prefix'] !== 'tbl_') {
-            $query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', self::$_connection['tbl_prefix'].'\\1\\2', $query);
-        }
-
-        // TYPE is deprecated since MySQL 4.0.18, ENGINE is preferred
-        if ($query_type == self::__WRITE_OPERATION__) {
-            $query = preg_replace('/TYPE=(MyISAM|InnoDB)/i', 'ENGINE=$1', $query);
-
-        } elseif ($query_type == self::__READ_OPERATION__ && !preg_match('/^SELECT\s+SQL(_NO)?_CACHE/i', $query)) {
-            if ($this->isCachingEnabled()) {
-                $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
-            } else {
-                $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_NO_CACHE ', $query);
-            }
-        }
-
-        $this->flush();
-        $this->_lastQuery = $query;
-        $this->_lastQueryHash = $query_hash;
-        $this->_result = mysqli_query(self::$_connection['id'], $query);
-        $this->_lastInsertID = mysqli_insert_id(self::$_connection['id']);
-        self::$_query_count++;
-
-        if (mysqli_error(self::$_connection['id'])) {
-            $this->__error();
-        } elseif (($this->_result instanceof mysqli_result)) {
-            if ($type == "ASSOC") {
-                while ($row = mysqli_fetch_assoc($this->_result)) {
-                    $this->_lastResult[] = $row;
-                }
-            } else {
-                while ($row = mysqli_fetch_object($this->_result)) {
-                    $this->_lastResult[] = $row;
-                }
-            }
-
-            mysqli_free_result($this->_result);
-        }
-
-        $stop = precision_timer('stop', $start);
-
-        /**
-         * After a query has successfully executed, that is it was considered
-         * valid SQL, this delegate will provide the query, the query_hash and
-         * the execution time of the query.
-         *
-         * Note that this function only starts logging once the ExtensionManager
-         * is available, which means it will not fire for the first couple of
-         * queries that set the character set.
-         *
-         * @since Symphony 2.3
-         * @delegate PostQueryExecution
-         * @param string $context
-         * '/frontend/' or '/backend/'
-         * @param string $query
-         *  The query that has just been executed
-         * @param string $query_hash
-         *  The hash used by Symphony to uniquely identify this query
-         * @param float $execution_time
-         *  The time that it took to run `$query`
-         */
-        if (Symphony::ExtensionManager() instanceof ExtensionManager) {
-            Symphony::ExtensionManager()->notifyMembers('PostQueryExecution', class_exists('Administration', false) ? '/backend/' : '/frontend/', array(
-                'query' => $query,
-                'query_hash' => $query_hash,
-                'execution_time' => $stop
-            ));
-
-            // If the ExceptionHandler is enabled, then the user is authenticated
-            // or we have a serious issue, so log the query.
-            if (GenericExceptionHandler::$enabled) {
-                self::$_log[$query_hash] = array(
-                    'query' => $query,
-                    'query_hash' => $query_hash,
-                    'execution_time' => $stop
-                );
-            }
-
-            // Symphony isn't ready yet. Log internally
-        } else {
-            self::$_log[$query_hash] = array(
-                'query' => $query,
-                'query_hash' => $query_hash,
-                'execution_time' => $stop
-            );
-        }
+        $result = MySQL::$_conn_pdo->query($query, array(
+            'fetch-type' => $type
+        ), $params);
 
         return true;
     }
@@ -585,9 +290,8 @@ class MySQL
      * @return integer
      *  The last interested row's ID
      */
-    public function getInsertID()
-    {
-        return $this->_lastInsertID;
+    public function getInsertID(){
+        return MySQL::$_conn_pdo->getInsertID();
     }
 
     /**
@@ -611,10 +315,12 @@ class MySQL
      * @throws DatabaseException
      * @return boolean
      */
-    public function insert(array $fields, $table, $updateOnDuplicate = false)
-    {
+    public function insert(array $fields, $table, $updateOnDuplicate=false){
         // Multiple Insert
-        if (is_array(current($fields))) {
+        if(is_array(current($fields))) {
+            $rows = array();
+            $values = array();
+
             $sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys(current($fields))).'`) VALUES ';
             $rows = array();
 
@@ -624,29 +330,34 @@ class MySQL
                     continue;
                 }
 
-                self::cleanFields($array);
-                $rows[] = '('.implode(', ', $array).')';
-            }
+                    $rows[] = "(" . trim(str_repeat('?,', count($array)), ',') . ")";
 
+                    // Increase our data pool
+                    $values = array_merge($values, array_values($array));
+                }
             $sql .= implode(", ", $rows);
 
-            // Single Insert
+        // Single Insert
         } else {
-            self::cleanFields($fields);
-            $sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys($fields)).'`) VALUES ('.implode(', ', $fields).')';
+            $values = $fields;
+            $sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys($fields)).'`) VALUES ';
+            $sql .= "(" . trim(str_repeat('?,', count($fields)),',') . ")";
 
-            if ($updateOnDuplicate) {
+            // Update duplicate keys
+            if($updateOnDuplicate){
                 $sql .= ' ON DUPLICATE KEY UPDATE ';
 
-                foreach ($fields as $key => $value) {
-                    $sql .= " `$key` = $value,";
+                foreach($fields as $key => $value) {
+                    $sql .= " `$key` = ?,";
                 }
 
                 $sql = trim($sql, ',');
+                // Double our data pool
+                $values = array_merge(array_values($values), array_values($values));
             }
         }
 
-        return $this->query($sql);
+        return MySQL::$_conn_pdo->insert($sql, array_values($values));
     }
 
     /**
@@ -667,19 +378,16 @@ class MySQL
      * @throws DatabaseException
      * @return boolean
      */
-    public function update($fields, $table, $where = null)
-    {
-        self::cleanFields($fields);
-        $sql = "UPDATE $table SET ";
-        $rows = array();
+    public function update($fields, $table, $where = null, $params = array()) {
+        $sql = "UPDATE `$table` SET ";
 
-        foreach ($fields as $key => $val) {
-            $rows[] = " `$key` = $val";
+        foreach($fields as $key => $val) {
+            $sql .= " `$key` = ?,";
         }
 
-        $sql .= implode(', ', $rows) . (!is_null($where) ? ' WHERE ' . $where : null);
+        $sql = trim($sql, ',') . (!is_null($where) ? ' WHERE ' . $where : null);
 
-        return $this->query($sql);
+        return MySQL::$_conn_pdo->update($sql, array_merge(array_values($fields), $params));
     }
 
     /**
@@ -695,15 +403,14 @@ class MySQL
      * @throws DatabaseException
      * @return boolean
      */
-    public function delete($table, $where = null)
-    {
-        $sql = "DELETE FROM $table";
+    public function delete($table, $where = null, array $params = array()) {
+        $sql = "DELETE FROM `$table`";
 
         if (!is_null($where)) {
             $sql .= " WHERE $where";
         }
 
-        return $this->query($sql);
+        return MySQL::$_conn_pdo->delete($sql, $params);
     }
 
     /**
@@ -714,6 +421,11 @@ class MySQL
      * @param string $query
      *  The full SQL query to execute. Defaults to null, which will
      *  use the _lastResult
+     * @param array $params
+     *  An array containing parameters to be used in the query. The query has to be
+     *  sprintf-formatted. All values will be sanitized before being used in the query.
+     *  For sake of backwards-compatibility, the query will only be sprintf-processed
+     *  if $params is not empty.
      * @param string $index_by_column
      *  The name of a column in the table to use it's value to index
      *  the result by. If this is omitted (and it is by default), an
@@ -723,27 +435,12 @@ class MySQL
      * @return array
      *  An associative array with the column names as the keys
      */
-    public function fetch($query = null, $index_by_column = null)
-    {
-        if (!is_null($query)) {
-            $this->query($query, "ASSOC");
-        } elseif (is_null($this->_lastResult)) {
-            return array();
+    public function fetch($query = null, $index_by_column = null, array $params = array(), array $values = array()){
+        if(!is_null($index_by_column)) {
+            $params['index'] = $index_by_column;
         }
 
-        $result = $this->_lastResult;
-
-        if (!is_null($index_by_column) && isset($result[0][$index_by_column])) {
-            $n = array();
-
-            foreach ($result as $ii) {
-                $n[$ii[$index_by_column]] = $ii;
-            }
-
-            $result = $n;
-        }
-
-        return $result;
+        return MySQL::$_conn_pdo->fetch($query, $params, $values);
     }
 
     /**
@@ -765,10 +462,12 @@ class MySQL
      *  If there is no row at the specified `$offset`, an empty array will be returned
      *  otherwise an associative array of that row will be returned.
      */
-    public function fetchRow($offset = 0, $query = null)
-    {
-        $result = $this->fetch($query);
-        return (empty($result) ? array() : $result[$offset]);
+    public function fetchRow($offset = 0, $query = null, array $values = array()){
+        $result = $this->fetch($query, null, array(
+            'offset' => $offset
+        ), $values);
+
+        return $result;
     }
 
     /**
@@ -785,9 +484,8 @@ class MySQL
      *  If there is no results for the `$query`, an empty array will be returned
      *  otherwise an array of values for that given `$column` will be returned
      */
-    public function fetchCol($column, $query = null)
-    {
-        $result = $this->fetch($query);
+    public function fetchCol($column, $query = null, array $values = array()){
+        $result = $this->fetch($query, $column, array(), $values);
 
         if (empty($result)) {
             return array();
@@ -815,15 +513,19 @@ class MySQL
      * @param string $query
      *  The full SQL query to execute. Defaults to null, which will
      *  use the `$this->_lastResult`
-     * @throws DatabaseException
-     * @return string|null
+     * @param array $params
+     *  An array containing parameters to be used in the query. The query has to be
+     *  sprintf-formatted. All values will be sanitized before being used in the query.
+     *  For sake of backwards-compatibility, the query will only be sprintf-processed
+     *  if $params is not empty.
+     * @return string
      *  Returns the value of the given column, if it doesn't exist, null will be
      *  returned
      */
-    public function fetchVar($column, $offset = 0, $query = null)
-    {
-        $result = $this->fetch($query);
-        return (empty($result) ? null : $result[$offset][$column]);
+    public function fetchVar($column, $offset = 0, $query = null, array $values = array()){
+        $result = $this->fetchRow($offset, $query, $values);
+
+        return (empty($result) ? null : $result[$column]);
     }
 
     /**
@@ -859,7 +561,10 @@ class MySQL
      */
     public function tableExists($table)
     {
-        $results = $this->fetch(sprintf("SHOW TABLES LIKE '%s'", $table));
+        $results = $this->fetch('SHOW TABLES LIKE ?', null, array(), array(
+
+            $table
+        ));
 
         return (is_array($results) && !empty($results));
     }
@@ -875,51 +580,8 @@ class MySQL
      *  Accepts one parameter, 'connect', which will return the correct
      *  error codes when the connection sequence fails
      */
-    private function __error($type = null)
-    {
-        if ($type == 'connect') {
-            $msg = mysqli_connect_error();
-            $errornum = mysqli_connect_errno();
-        } else {
-            $msg = mysqli_error(self::$_connection['id']);
-            $errornum = mysqli_errno(self::$_connection['id']);
-        }
-
-        /**
-         * After a query execution has failed this delegate will provide the query,
-         * query hash, error message and the error number.
-         *
-         * Note that this function only starts logging once the `ExtensionManager`
-         * is available, which means it will not fire for the first couple of
-         * queries that set the character set.
-         *
-         * @since Symphony 2.3
-         * @delegate QueryExecutionError
-         * @param string $context
-         * '/frontend/' or '/backend/'
-         * @param string $query
-         *  The query that has just been executed
-         * @param string $query_hash
-         *  The hash used by Symphony to uniquely identify this query
-         * @param string $msg
-         *  The error message provided by MySQL which includes information on why the execution failed
-         * @param integer $num
-         *  The error number that corresponds with the MySQL error message
-         */
-        if (Symphony::ExtensionManager() instanceof ExtensionManager) {
-            Symphony::ExtensionManager()->notifyMembers('QueryExecutionError', class_exists('Administration', false) ? '/backend/' : '/frontend/', array(
-                'query' => $this->_lastQuery,
-                'query_hash' => $this->_lastQueryHash,
-                'msg' => $msg,
-                'num' => $errornum
-            ));
-        }
-
-        throw new DatabaseException(__('MySQL Error (%1$s): %2$s in query: %3$s', array($errornum, $msg, $this->_lastQuery)), array(
-            'msg' => $msg,
-            'num' => $errornum,
-            'query' => $this->_lastQuery
-        ));
+    private function __error() {
+        return MySQL::$_conn_pdo->error();
     }
 
     /**
@@ -935,13 +597,8 @@ class MySQL
      *  the query and the start/stop time to indicate how long it took
      *  to run
      */
-    public function debug($type = null)
-    {
-        if (!$type) {
-            return self::$_log;
-        }
-
-        return ($type == 'error' ? self::$_log['error'] : self::$_log['query']);
+    public function debug($type = null){
+        return MySQL::$_conn_pdo->debug();
     }
 
     /**
@@ -954,23 +611,8 @@ class MySQL
      *  An associative array with the number of queries, an array of slow
      *  queries and the total query time.
      */
-    public function getStatistics()
-    {
-        $query_timer = 0.0;
-        $slow_queries = array();
-
-        foreach (self::$_log as $key => $val) {
-            $query_timer += $val['execution_time'];
-            if ($val['execution_time'] > 0.0999) {
-                $slow_queries[] = $val;
-            }
-        }
-
-        return array(
-            'queries' => self::queryCount(),
-            'slow-queries' => $slow_queries,
-            'total-query-time' => number_format($query_timer, 4, '.', '')
-        );
+    public function getStatistics() {
+        return MySQL::$_conn_pdo->getStatistics();
     }
 
     /**
@@ -992,26 +634,19 @@ class MySQL
     public function import($sql, $force_engine = false)
     {
         if ($force_engine) {
+
             // Silently attempt to change the storage engine. This prevents INNOdb errors.
+
             $this->query('SET storage_engine=MYISAM');
         }
 
-        $queries = preg_split('/;[\\r\\n]+/', $sql, -1, PREG_SPLIT_NO_EMPTY);
+        if (empty($sql)) {
 
-        if (!is_array($queries) || empty($queries) || count($queries) <= 0) {
             throw new Exception('The SQL string contains no queries.');
         }
 
-        foreach ($queries as $sql) {
-            if (trim($sql) !== '') {
-                $result = $this->query($sql);
-            }
+        $sql = self::$_conn_pdo->replaceTablePrefix($sql);
 
-            if (!$result) {
-                return false;
-            }
-        }
-
-        return true;
+        $this->getConnectionResource()->exec($sql);
     }
 }

@@ -1628,11 +1628,7 @@ class Field
      */
     public function entryDataCleanup($entry_id, $data = null)
     {
-        $where = is_array($entry_id)
-            ? " `entry_id` IN (" . implode(',', $entry_id) . ") "
-            : " `entry_id` = '$entry_id' ";
-
-        Symphony::Database()->delete('tbl_entries_data_' . $this->get('id'), $where);
+        Symphony::Database()->delete('tbl_entries_data_' . $this->get('id'), "`entry_id` IN (?)", array($entry_id));
 
         return true;
     }
@@ -1669,25 +1665,6 @@ class Field
      *  return an integer.
      */
     public function fetchAssociatedEntryCount($value)
-    {
-
-    }
-
-    /**
-     * Fetch the Entry ID's associated with this field instance given a `$value`,
-     * where the `$value` can be anything. This function is unused by Symphony core
-     * but should be implemented by Fields that maintain relationships.
-     *
-     * @param mixed $value
-     *  the value to find the associated entry ID's for.
-     * @return void|array
-     *  this default implementation returns void. overriding implementations should
-     *  return an array of the associated entry ids.
-     * @deprecated Since Symphony 2.5.0 this method is not called anymore in the core. Please use
-     *  `Field::findRelatedEntries` and `Field::findParentRelatedEntries` instead. This method
-	 *  will be removed in Symphony 3.0
-     */
-    public function fetchAssociatedEntryIDs($value)
     {
 
     }
