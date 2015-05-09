@@ -82,14 +82,17 @@ class DatabaseSessionHandler implements SessionHandlerInterface
      */
     public function destroy($session_id)
     {
+        if (is_null($session_id)) {
+            return true;
+        }
+
         $key = $this->key($session_id);
 
-        return $this->database->query(sprintf(
-            "DELETE
-            FROM `tbl_sessions`
-            WHERE `session` = '%s'",
-            $this->database->cleanValue($key)
-        ));
+        return $this->database->delete(
+            "`tbl_sessions`",
+            "`session` = ?",
+            array($key)
+        );
     }
 
     /**
@@ -105,12 +108,11 @@ class DatabaseSessionHandler implements SessionHandlerInterface
      */
     public function gc($maxlifetime)
     {
-        return $this->database->query(sprintf(
-            "DELETE
-            FROM `tbl_sessions`
-            WHERE `session_expires` <= '%s'",
-            $this->database->cleanValue(time() - $maxlifetime)
-        ));
+        return $this->database->delete(
+            "`tbl_sessions`",
+            "`session_expires` <= ?",
+            array(time() - $max)
+        );
     }
 
     /**
@@ -134,18 +136,18 @@ class DatabaseSessionHandler implements SessionHandlerInterface
      */
     public function read($session_id)
     {
+        if (is_null($session_id)) {
+            return null;
+        }
+
         $key = $this->key($session_id);
 
-        $session_data = $this->database->fetchVar(
-            'session_data',
-            0,
-            sprintf(
-                "SELECT `session_data`
-                FROM `tbl_sessions`
-                WHERE `session` = '%s'
-                LIMIT 1",
-                $this->database->cleanValue($key)
-            )
+        $session_data = $this->database->fetchVar('session_data', 0, "
+            SELECT `session_data`
+            FROM `tbl_sessions`
+            WHERE `session` = ?
+            LIMIT 1",
+            array($key)
         );
 
         if (is_null($session_data)) {
