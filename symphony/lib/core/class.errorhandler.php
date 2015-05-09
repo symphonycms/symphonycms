@@ -96,7 +96,7 @@ class GenericExceptionHandler
                 self::$_Log->pushExceptionToLog($e, true);
             }
 
-            cleanup_session_cookies();
+            cleanup_session_cookies(APP_MODE);
 
             $output = call_user_func(array($class, 'render'), $e);
 
