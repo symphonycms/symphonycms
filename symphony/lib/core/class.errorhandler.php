@@ -116,7 +116,7 @@ class GenericExceptionHandler
 
         // Pending nothing disasterous, we should have `$e` and `$output` values here.
         if (!headers_sent()) {
-            cleanup_session_cookies();
+            cleanup_session_cookies(APP_MODE);
 
             // Inspect the exception to determine the best status code
             $httpStatus = null;

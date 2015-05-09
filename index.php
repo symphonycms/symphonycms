@@ -2,6 +2,11 @@
 
     // Find out where we are:
     define('DOCROOT', __DIR__);
+    define('APP_MODE', (
+        isset($_GET['mode'])
+        ? $_GET['mode']
+        : 'frontend'
+    ));
 
     // Propagate this change to all executables:
     chdir(DOCROOT);
@@ -13,8 +18,4 @@
     require_once DOCROOT . '/symphony/lib/boot/bundle.php';
 
     // Begin Symphony proper:
-    symphony(
-        isset($_GET['mode'])
-            ? $_GET['mode']
-            : null
-    );
+    symphony(APP_MODE);
