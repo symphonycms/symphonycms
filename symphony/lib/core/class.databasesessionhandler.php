@@ -136,7 +136,7 @@ class DatabaseSessionHandler implements SessionHandlerInterface
      */
     public function read($session_id)
     {
-        if (is_null($id)) {
+        if (is_null($session_id)) {
             return null;
         }
 
