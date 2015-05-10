@@ -89,7 +89,7 @@ class DatabaseSessionHandler implements SessionHandlerInterface
         $key = $this->key($session_id);
 
         return $this->database->delete(
-            "`tbl_sessions`",
+            "tbl_sessions",
             "`session` = ?",
             array($key)
         );
@@ -109,9 +109,9 @@ class DatabaseSessionHandler implements SessionHandlerInterface
     public function gc($maxlifetime)
     {
         return $this->database->delete(
-            "`tbl_sessions`",
+            "tbl_sessions",
             "`session_expires` <= ?",
-            array(time() - $max)
+            array(time() - $maxlifetime)
         );
     }
 
