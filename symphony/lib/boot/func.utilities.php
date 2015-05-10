@@ -130,14 +130,14 @@ function ini_size_to_bytes($val)
  */
 function cleanup_session_cookies($mode)
 {
-    // if (strtolower($mode) != 'administration') {
-    //     $session_is_empty = is_session_empty();
+    if (strtolower($mode) != 'administration') {
+        $session_is_empty = is_session_empty();
 
 
-    //     if ($session_is_empty && Symphony::Cookies()->exists(session_name())) {
-    //         Symphony::Cookies()->remove(session_name());
-    //     }
-    // }
+        if ($session_is_empty && Symphony::Cookies()->exists(session_name())) {
+            Symphony::Cookies()->remove(session_name());
+        }
+    }
 }
 
 /**
@@ -199,9 +199,9 @@ function symphony_launcher($mode)
         exit;
     }
 
-    Symphony::Cookies()->save();
-
     cleanup_session_cookies($mode);
+
+    Symphony::Cookies()->save();
 
     echo $output;
 
