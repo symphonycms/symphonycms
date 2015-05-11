@@ -17,6 +17,13 @@ class Cookies extends Container
     const COOKIE_PIECE_REGEX = '@\s*[;]\s*@';
 
     /**
+     * @var array
+     */
+    public static $reserved = array(
+        'domain', 'path', 'secure', 'expires', 'max-age', 'httponly'
+    );
+
+    /**
      * Default cookie settings
      * @var array
      */
@@ -79,14 +86,13 @@ class Cookies extends Container
                     $header = str_replace('Set-Cookie: ', '', $header);
                     $pieces = preg_split(self::COOKIE_PIECE_REGEX, $header);
                     $parsed = $this->processPieces($pieces, $this->store);
-                    // var_dump($parsed);die;
 
                     // Um, guessing here a little bit
                     $keys = array_keys($parsed);
                     $key = '';
 
                     foreach ($keys as $k) {
-                        if (!in_array($k, array('domain', 'path', 'secure', 'expires', 'max-age', 'Max-Age', 'httpOnly', 'HttpOnly', 'httponly'))) {
+                        if (!in_array(strtolower($k), self::$reserved)) {
                             $key = $k;
                         }
                     }
@@ -208,6 +214,7 @@ class Cookies extends Container
             urlencode($name),
             urlencode((string) $value) . implode('', $values)
         );
+        var_dump($cookie);
 
         return $cookie;
     }
@@ -216,8 +223,6 @@ class Cookies extends Container
      * Process the pieces of a parsed cookie header
      * @param  array  $pieces
      *  Array of parsed pieces
-     * @param  array  $target
-     *  The target array within this class
      * @return void
      */
     protected function processPieces(array $pieces)
