@@ -61,6 +61,15 @@ class Session extends Container
     }
 
     /**
+     * Get the current session save key
+     * @return string
+     */
+    public function key()
+    {
+        return $this->key;
+    }
+
+    /**
      * Start the session if it is not already started.
      */
     public function start()
@@ -100,8 +109,6 @@ class Session extends Container
                 $this->settings['session_cookie_httponly']
             );
 
-            session_cache_limiter('');
-
             if (session_id() == '') {
                 if (headers_sent()) {
                     throw new Exception('Headers already sent. Cannot start session.');
@@ -139,15 +146,6 @@ class Session extends Container
         }
 
         return null;
-    }
-
-    /**
-     * Get the current session save key
-     * @return string
-     */
-    public function key()
-    {
-        return $this->key;
     }
 
     /**
@@ -195,7 +193,6 @@ class Session extends Container
     public function offsetSet($key, $value)
     {
         $this->store[$this->key][$key] = $value;
-        $this->keys[$key] = true;
     }
 
     /**
@@ -209,11 +206,24 @@ class Session extends Container
     }
 
     /**
+     * Check if the container contains the given key
+     *
+     * @param  string $key
+     *  String key to check
+     * @return boolean
+     *  Whether the key is in the container
+     */
+    public function offsetExists($key)
+    {
+        return array_key_exists($key, $this->store[$this->key]);
+    }
+
+    /**
      * Unset a value from the container
      * @param  string $key
      */
     public function offsetUnset($key)
     {
-        unset($this->store[$this->key][$key], $this->keys[$key]);
+        unset($this->store[$this->key][$key]);
     }
 }
