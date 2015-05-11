@@ -22,7 +22,21 @@
                     ADD `order` int(11) SIGNED NOT NULL DEFAULT '0',
                 ");
             }
-            catch (Exception $ex) {}
+            catch (Exception $ex) {
+
+            }
+
+            // Add in new Session configuration options, RE: #2135
+            Symphony::Configuration()->setArray(array(
+                'session' => array(
+                    'admin_session_name' => 'symphony_admin',
+                    'public_session_name' => 'symphony_public',
+                    'admin_session_expires' => '2 weeks',
+                    'public_session_expires' => '2 weeks',
+                    'session_gc_probability' => '1',
+                    'session_gc_divisor' => Symphony::Configuration()->get('session_gc_divisor', 'symphony')
+                )
+            ));
 
             // Update the version information
             return parent::upgrade();

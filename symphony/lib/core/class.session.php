@@ -3,8 +3,6 @@
  * @package core
  */
 
-require_once CORE . '/class.container.php';
-
 /**
  * Session
  */

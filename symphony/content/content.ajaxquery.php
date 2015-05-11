@@ -6,7 +6,6 @@
  * The AjaxQuery returns an JSON array of entries, associations and other
  * static values, depending on the parameters received.
  */
-
 class contentAjaxQuery extends JSONPage
 {
     public function view()

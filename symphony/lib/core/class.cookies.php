@@ -3,8 +3,6 @@
  * @package core
  */
 
-require_once CORE . '/class.container.php';
-
 /**
  * Cookies is a collection of currently set cookies, and user set cookies for
  * this request.
