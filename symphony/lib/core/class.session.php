@@ -91,8 +91,6 @@ class Session extends Container
             }
 
             if (!is_null($this->handler)) {
-                // In PHP 5.4 we can move this to
-                // session_set_save_handler($handler, true);
                 session_set_save_handler(
                     array($this->handler, 'open'),
                     array($this->handler, 'close'),

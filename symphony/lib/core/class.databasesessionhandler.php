@@ -74,7 +74,7 @@ class DatabaseSessionHandler implements SessionHandlerInterface
     /**
      * Given a session's ID, remove it's row from `tbl_sessions`
      *
-     * @param string $id
+     * @param string $session_id
      *  The identifier for the Session to destroy
      * @throws DatabaseException
      * @return boolean
@@ -162,12 +162,12 @@ class DatabaseSessionHandler implements SessionHandlerInterface
     /**
      * Given an ID, and some data, save it into `tbl_sessions`. This uses
      * the ID as a unique key, and will override any existing data. If the
-     * `$data` is deemed to be empty, no row will be saved in the database
+     * `$session_data` is deemed to be empty, no row will be saved in the database
      * unless there is an existing row.
      *
-     * @param string $id
+     * @param string $session_id
      *  The ID of the Session, usually a hash
-     * @param string $data
+     * @param string $session_data
      *  The Session information, usually a serialized object of data.
      * @throws DatabaseException
      * @return boolean
@@ -192,7 +192,7 @@ class DatabaseSessionHandler implements SessionHandlerInterface
     }
 
     /**
-     * Generate a Redis storage key
+     * Generate a storage key
      * @param  string $session_id
      * @return string
      */
