@@ -69,7 +69,7 @@ class SessionFlash
      */
     public function keep()
     {
-        foreach ($this->messages['prev'] as $key => $val) {
+        foreach ($this->flash['prev'] as $key => $val) {
             $this->next($key, $val);
         }
     }
