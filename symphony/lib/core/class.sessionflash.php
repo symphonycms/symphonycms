@@ -31,7 +31,7 @@ class SessionFlash
      * @param Session $session
      * @param string  $key
      */
-    public function __construct(Session $session, $key = 'flash')
+    public function __construct(Session $session, $key = 'symphony_flash')
     {
         $this->session = $session;
         $this->key = $key;

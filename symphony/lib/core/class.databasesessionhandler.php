@@ -43,12 +43,12 @@ class DatabaseSessionHandler implements SessionHandlerInterface
      * Constructor
      * @param array $settings
      */
-    public function __construct($database, array $settings = array())
+    public function __construct($database, array $settings = array(), $key = 'symphony')
     {
         $this->database = $database;
 
         $this->settings = array_merge([
-            'session_name' => 'symphony_session',
+            'session_name' => $key,
             'session_lifetime' => ini_get('session.gc_maxlifetime'),
         ], $settings);
 
