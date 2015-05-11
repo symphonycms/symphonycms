@@ -214,7 +214,6 @@ class Cookies extends Container
             urlencode($name),
             urlencode((string) $value) . implode('', $values)
         );
-        var_dump($cookie);
 
         return $cookie;
     }
