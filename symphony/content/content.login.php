@@ -35,6 +35,25 @@ class contentLogin extends HTMLPage
         Symphony::Profiler()->sample('Page template created', PROFILE_LAP);
     }
 
+    /**
+     * The Sections page has /action/id/flag/ context.
+     * eg. /edit/1/saved/
+     *
+     * @param array $context
+     * @param array $parts
+     * @return array
+     */
+    public function parseContext(array &$context, array $parts)
+    {
+        if (isset($parts[1])) {
+            if (in_array(strlen($parts[1]), array(6, 8, 16))) {
+                $context['token'] = $parts[1];
+            } else {
+                $context['action'] = $parts[1];
+            }
+        }
+    }
+
     public function build($context = null)
     {
         if ($context) {
@@ -50,8 +69,8 @@ class contentLogin extends HTMLPage
 
     public function view()
     {
-        if (isset($this->_context[0]) && in_array(strlen($this->_context[0]), array(6, 8, 16))) {
-            if (!$this->__loginFromToken($this->_context[0])) {
+        if (isset($this->_context['token'])) {
+            if (!$this->__loginFromToken($this->_context['token'])) {
                 if (Administration::instance()->isLoggedIn()) {
                     // Redirect to the Author's profile. RE: #1801
                     redirect(SYMPHONY_URL . '/system/authors/edit/' . Symphony::Author()->get('id') . '/reset-password/');
@@ -66,7 +85,7 @@ class contentLogin extends HTMLPage
         $fieldset = new XMLElement('fieldset');
 
         // Display retrieve password UI
-        if (isset($this->_context[0]) && $this->_context[0] == 'retrieve-password') {
+        if (isset($this->_context['action']) && $this->_context['action'] == 'retrieve-password') {
             $this->Form->setAttribute('action', SYMPHONY_URL.'/login/retrieve-password/');
 
             // Successful reset

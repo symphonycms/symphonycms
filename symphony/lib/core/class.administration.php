@@ -181,7 +181,7 @@ class Administration extends Symphony
             }
         }
 
-        include_once($this->_callback['driver_location']);
+        require_once($this->_callback['driver_location']);
         $this->Page = new $this->_callback['classname'];
 
         if (!$is_logged_in && $this->_callback['driver'] !== 'login') {
@@ -322,37 +322,33 @@ class Administration extends Symphony
         $callback = array(
             'driver' => null,
             'driver_location' => null,
-            'context' => null,
+            'context' => array(),
             'classname' => null,
             'pageroot' => null
         );
 
         // Login page, /symphony/login/
         if ($bits[0] == 'login') {
-            if (isset($bits[1], $bits[2])) {
-                $context = preg_split('/\//', $bits[1] . '/' . $bits[2], -1, PREG_SPLIT_NO_EMPTY);
-            } elseif (isset($bits[1])) {
-                $context = preg_split('/\//', $bits[1], -1, PREG_SPLIT_NO_EMPTY);
-            } else {
-                $context = array();
-            }
+            $callback['driver'] = 'login';
+            $callback['driver_location'] = CONTENT . '/content.login.php';
+            $callback['classname'] = 'contentLogin';
+            $callback['pageroot'] = '/login/';
 
-            $callback = array(
-                'driver' => 'login',
-                'driver_location' => CONTENT . '/content.login.php',
-                'context' => $context,
-                'classname' => 'contentLogin',
-                'pageroot' => '/login/'
-            );
-
-            // Extension page, /symphony/extension/{extension_name}/
+        // Extension page, /symphony/extension/{extension_name}/
         } elseif ($bits[0] == 'extension' && isset($bits[1])) {
             $extension_name = $bits[1];
             $bits = preg_split('/\//', trim($bits[2], '/'), 2, PREG_SPLIT_NO_EMPTY);
 
+            // check if extension is enabled, if it's not, pretend the extension doesn't
+            // even exist. #2367
+            if (!ExtensionManager::isInstalled($extension_name)) {
+                return false;
+            }
+
             $callback['driver'] = 'index';
             $callback['classname'] = 'contentExtension' . ucfirst($extension_name) . 'Index';
             $callback['pageroot'] = '/extension/' . $extension_name. '/';
+            $callback['extension'] = $extension_name;
 
             if (isset($bits[0])) {
                 $callback['driver'] = $bits[0];
@@ -365,42 +361,25 @@ class Administration extends Symphony
             }
 
             $callback['driver_location'] = EXTENSIONS . '/' . $extension_name . '/content/content.' . $callback['driver'] . '.php';
+            // Extensions won't be part of the autoloader chain, so first try to require them if they are available.
+            if (!is_file($callback['driver_location'])) {
+                return false;
+            } else {
+                require_once $callback['driver_location'];
+            }
 
-            // Publish page, /symphony/publish/{section_handle}/
+        // Publish page, /symphony/publish/{section_handle}/
         } elseif ($bits[0] == 'publish') {
             if (!isset($bits[1])) {
                 return false;
             }
 
-            $callback = array(
-                'driver' => 'publish',
-                'driver_location' => $callback['driver_location'] = CONTENT . '/content.publish.php',
-                'context' => array(
-                    'section_handle' => $bits[1],
-                    'page' => null,
-                    'entry_id' => null,
-                    'flag' => null
-                ),
-                'pageroot' => '/' . $bits[0] . '/' . $bits[1] . '/',
-                'classname' => 'contentPublish'
-            );
+            $callback['driver'] = 'publish';
+            $callback['driver_location'] = CONTENT . '/content.publish.php';
+            $callback['pageroot'] = '/' . $bits[0] . '/' . $bits[1] . '/';
+            $callback['classname'] = 'contentPublish';
 
-            if (isset($bits[2])) {
-                $extras = preg_split('/\//', $bits[2], -1, PREG_SPLIT_NO_EMPTY);
-                $callback['context']['page'] = $extras[0];
-
-                if (isset($extras[1])) {
-                    $callback['context']['entry_id'] = intval($extras[1]);
-                }
-
-                if (isset($extras[2])) {
-                    $callback['context']['flag'] = $extras[2];
-                }
-            } else {
-                $callback['context']['page'] = 'index';
-            }
-
-            // Everything else
+        // Everything else
         } else {
             $callback['driver'] = ucfirst($bits[0]);
             $callback['pageroot'] = '/' . $bits[0] . '/';
@@ -410,13 +389,23 @@ class Administration extends Symphony
                 $callback['pageroot'] .= $bits[1] . '/';
             }
 
-            if (isset($bits[2])) {
-                $callback['context'] = preg_split('/\//', $bits[2], -1, PREG_SPLIT_NO_EMPTY);
-            }
-
             $callback['classname'] = 'content' . $callback['driver'];
             $callback['driver'] = strtolower($callback['driver']);
             $callback['driver_location'] = CONTENT . '/content.' . $callback['driver'] . '.php';
+        }
+
+        // Parse the context
+        if (isset($callback['classname'])) {
+            $page = new $callback['classname'];
+
+            // Named context
+            if (method_exists($page, 'parseContext')) {
+                $page->parseContext($callback['context'], $bits);
+
+            // Default context
+            } elseif (isset($bits[2])) {
+                $callback['context'] = preg_split('/\//', $bits[2], -1, PREG_SPLIT_NO_EMPTY);
+            }
         }
 
         /**
@@ -445,7 +434,7 @@ class Administration extends Symphony
             'callback' => &$callback
         ));
 
-        if (isset($callback['driver_location']) && !is_file($callback['driver_location'])) {
+        if (!isset($callback['driver_location']) || !is_file($callback['driver_location'])) {
             return false;
         }
 
