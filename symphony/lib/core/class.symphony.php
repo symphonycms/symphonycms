@@ -734,8 +734,8 @@ Class SymphonyErrorPageHandler extends GenericExceptionHandler
      */
     public static function render(Exception $e)
     {
+        Page::renderStatusCode($e->getHttpStatusCode());
         if ($e->getTemplate() === false) {
-            Page::renderStatusCode($e->getHttpStatusCode());
 
             if (isset($e->getAdditional()->header)) {
                 header($e->getAdditional()->header);
