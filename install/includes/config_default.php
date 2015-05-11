@@ -45,7 +45,7 @@
 		########
 
 
-		###### SESSION (NEW) ######
+		###### SESSION ######
 		'session' => array(
 			'admin_session_name' => 'symphony_admin',
 			'public_session_name' => 'symphony_public',

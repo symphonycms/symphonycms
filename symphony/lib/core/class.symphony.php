@@ -56,23 +56,16 @@ abstract class Symphony implements Singleton
     private static $namespace = false;
 
     /**
-     * A previous exception that has been fired. Defaults to null.
-     * @since Symphony 2.3.2
-     * @var Exception
-     */
-    private $exception = null;
-
-    /**
      * An instance of the Cookies class
      * @var Cookies
      */
-    public $Cookies = null;
+    public static $Cookies = null;
 
     /**
      * An instance of the Session class
      * @var Session
      */
-    public $Session = null;
+    public static $Session = null;
 
     /**
      * An instance of the SessionFlash class
@@ -272,12 +265,9 @@ abstract class Symphony implements Singleton
 
     /**
      * Setter for `$Session`. This will use PHP's parse_url
-     * function on the current URL to set a session using the *_session_name
-     * defined in the Symphony configuration. The * is either admin or public.
+     * function on the current URL to set a session using the `session_name`
+     * defined in the Symphony configuration. The is either admin or public.
      * The session will last for the time defined in configuration.
-     *
-     * This function also defines two constants, `__SYM_COOKIE_PATH__`
-     * and `__SYM_COOKIE_PREFIX__`.
      *
      * @since Symphony 3.0
      */
@@ -286,24 +276,27 @@ abstract class Symphony implements Singleton
         $cookie_path = @parse_url(URL, PHP_URL_PATH);
         $cookie_path = '/' . trim($cookie_path, '/');
 
-        $name = '';
         $timeout = $this->getSessionTimeout();
 
+        // Set the session name, defaulting to Symphony if it's not set
+        $name = null;
         if (class_exists('Administration')) {
             $name = self::Configuration()->get('admin_session_name', 'session');
         } else {
             $name = self::Configuration()->get('public_session_name', 'session');
         }
 
+        if (is_null($name)) {
+            $name = 'symphony';
+        }
+
         // The handler accepts a database in a move towards dependency injection
         $handler = new DatabaseSessionHandler(self::Database(), array(
-            'session_name' => $name,
             'session_lifetime' => $timeout
-        ));
+        ), $name);
 
         // The session accepts a handler in a move towards dependency injection
         self::$Session = new Session($handler, array(
-            'session_name' => $name,
             'session_gc_probability' => self::Configuration()->get('session_gc_probability', 'session'),
             'session_gc_divisor' => self::Configuration()->get('session_gc_divisor', 'session'),
             'session_gc_maxlifetime' => $timeout,
@@ -312,8 +305,7 @@ abstract class Symphony implements Singleton
             'session_cookie_domain' => null,
             'session_cookie_secure' => (defined(__SECURE__) ? true : false),
             'session_cookie_httponly' => true
-
-        ));
+        ), $name);
 
         // Initialise the cookie handler
         self::$Cookies = new Cookies(array(
