@@ -135,7 +135,7 @@ function cleanup_session_cookies($mode)
     if (strtolower($mode) != 'administration') {
         $session_is_empty = is_session_empty();
 
-        if ($session_is_empty && Symphony::Cookies()->exists(session_name())) {
+        if ($session_is_empty && Symphony::Cookies()->has(session_name())) {
             Symphony::Cookies()->remove(session_name());
         }
     }

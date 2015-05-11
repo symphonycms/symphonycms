@@ -6,9 +6,14 @@
 /**
  * Cookies is a collection of currently set cookies, and user set cookies for
  * this request.
+ *
+ * @since Symphony 3.0
  */
 class Cookies extends Container
 {
+    /**
+     * @var string
+     */
     const COOKIE_PIECE_REGEX = '@\s*[;]\s*@';
 
     /**

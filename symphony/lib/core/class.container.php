@@ -6,7 +6,7 @@
 /**
  * The Symphony Container allows for simple dependency injection. It uses many
  * access methods to allow a developer freedom to choose.
- * @since  2.5.0
+ * @since  3.0.0
  */
 class Container implements \ArrayAccess, \IteratorAggregate, \Countable
 {
@@ -142,7 +142,8 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Check a key exists in this container
+     * Check if the container contains the given key
+     *
      * @param  string $key
      *  String key to check
      * @return boolean
@@ -154,7 +155,8 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Check a key exists in this container
+     * Check if the container contains the given key
+     *
      * @param  string $key
      *  String key to check
      * @return boolean
@@ -166,13 +168,14 @@ class Container implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * Check a key exists in this container
+     * Check if the container contains the given key
+     *
      * @param  string $key
      *  String key to check
      * @return boolean
      *  Whether the key is in the container
      */
-    public function exists($key)
+    public function has($key)
     {
         return $this->offsetExists($key);
     }
