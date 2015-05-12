@@ -31,6 +31,20 @@
         Symphony::initialiseDatabase();
         Symphony::initialiseExtensionManager();
 
+        /**
+         * When the composer autoloader has been loaded.
+         * @delegate ComposerReady
+         * @param string $context
+         * '/all/'
+         * @param Composer\Autoload\ClassLoader $autoloader
+         *  The Composer autoloader.
+         */
+        Symphony::ExtensionManager()->notifyMembers(
+            'ComposerReady', '/all/', array(
+                'autoloader' => $autoloader
+            )
+        );
+
         // Handle custom admin paths, #702
         $adminPath = Symphony::Configuration()->get('admin-path', 'symphony');
         $adminPath = (is_null($adminPath)) ? 'symphony' :  $adminPath;
