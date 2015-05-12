@@ -9,7 +9,7 @@
     ));
 
     // Include autoloader:
-    require_once DOCROOT . '/vendor/autoload.php';
+    $autoloader = require_once DOCROOT . '/vendor/autoload.php';
 
     // Include the boot script:
     require_once DOCROOT . '/symphony/lib/boot/bundle.php';
