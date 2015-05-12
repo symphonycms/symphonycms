@@ -147,7 +147,7 @@ class FieldManager implements FileResource
         $type = self::fetchFieldTypeFromID($field_id);
 
         // Delete the original settings:
-        Symphony::Database()->delete("`tbl_fields_".$type."`", "`field_id` = ? LIMIT 1", array($field_id));
+        Symphony::Database()->delete("tbl_fields_".$type, "`field_id` = ? LIMIT 1", array($field_id));
 
         // Insert the new settings into the type table:
         if (!isset($settings['field_id'])) {
