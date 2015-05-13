@@ -216,7 +216,7 @@ class MySQL
      *
      * @return PDO
      */
-    public static function getConnectionResource() 
+    public static function getConnectionResource()
     {
         return MySQL::$_conn_pdo->conn;
     }
@@ -291,6 +291,21 @@ class MySQL
                 $array[$key] = "'" . self::cleanValue($val) . "'";
             }
         }
+    }
+
+    /**
+     * Takes an SQL string and creates a prepared statement.
+     *
+     * @link http://php.net/manual/en/pdo.prepare.php
+     * @param string $query
+     * @param array $driver_options
+     *  This array holds one or more key=>value pairs to set attribute values
+     *  for the DatabaseStatement object that this method returns.
+     * @return DatabaseStatement
+     */
+    public function prepare($query, array $driver_options = array())
+    {
+        return MySQL::$_conn_pdo->prepare($query, $driver_options);
     }
 
     /**
@@ -422,7 +437,7 @@ class MySQL
      * @throws DatabaseException
      * @return boolean
      */
-    public function update($fields, $table, $where = null, $params = array()) 
+    public function update($fields, $table, $where = null, $params = array())
     {
         $sql = "UPDATE `$table` SET ";
 
@@ -448,7 +463,7 @@ class MySQL
      * @throws DatabaseException
      * @return boolean
      */
-    public function delete($table, $where = null, array $params = array()) 
+    public function delete($table, $where = null, array $params = array())
     {
         $sql = "DELETE FROM `$table`";
 
@@ -630,7 +645,7 @@ class MySQL
      *  Accepts one parameter, 'connect', which will return the correct
      *  error codes when the connection sequence fails
      */
-    private function __error() 
+    private function __error()
     {
         return MySQL::$_conn_pdo->error();
     }
@@ -663,7 +678,7 @@ class MySQL
      *  An associative array with the number of queries, an array of slow
      *  queries and the total query time.
      */
-    public function getStatistics() 
+    public function getStatistics()
     {
         return MySQL::$_conn_pdo->getStatistics();
     }
