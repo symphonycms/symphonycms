@@ -697,7 +697,7 @@ Class Database {
     public function throwError(Exception $error, $query, $query_hash)
     {
         $this->_lastQuery = $query;
-        $this->_lastQueryHash = $hash;
+        $this->_lastQueryHash = $query_hash;
 
         $this->error($error);
     }
