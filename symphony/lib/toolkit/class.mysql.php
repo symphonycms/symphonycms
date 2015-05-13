@@ -294,6 +294,21 @@ class MySQL
     }
 
     /**
+     * Takes an SQL string and creates a prepared statement.
+     *
+     * @link http://php.net/manual/en/pdo.prepare.php
+     * @param string $query
+     * @param array $driver_options
+     *  This array holds one or more key=>value pairs to set attribute values
+     *  for the DatabaseStatement object that this method returns.
+     * @return DatabaseStatement
+     */
+    public function prepare($query, array $driver_options = array())
+    {
+        return MySQL::$_conn_pdo->prepare($query, $driver_options);
+    }
+
+    /**
      * Takes an SQL string and executes it. This function will apply query
      * caching if it is a read operation and if query caching is set. Symphony
      * will convert the `tbl_` prefix of tables to be the one set during installation.

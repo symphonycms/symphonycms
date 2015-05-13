@@ -23,7 +23,7 @@ Class DatabaseException extends Exception{
      * Constructor takes a message and an associative array to set to
      * `$_error`. The message is passed to the default Exception constructor
      */
-    public function __construct($message, array $error=NULL, Exception $ex = null) 
+    public function __construct($message, array $error=NULL, Exception $ex = null)
     {
         parent::__construct($message, (int)$error['num'], $ex);
 
@@ -62,6 +62,58 @@ Class DatabaseException extends Exception{
 
 }
 
+class DatabaseStatement
+{
+    public $database;
+    public $statement;
+
+    public function __construct(Database $database, PDOStatement $statement)
+    {
+        $this->database = $database;
+        $this->statement = $statement;
+    }
+
+    public function __call($name, $arguments)
+    {
+        return $this->statement->{$name}(...$arguments);
+    }
+
+    public function __get($name)
+    {
+        return (
+            isset($this->statement->{$name})
+                ? $this->statement->{$name}
+                : null
+        );
+    }
+
+    public function __set($name, $value)
+    {
+        $this->statement->{$name} = $value;
+    }
+
+    public function execute(...$arguments)
+    {
+        $start = precision_timer();
+
+        $this->database->flush();
+
+        $query = $this->statement->queryString;
+        $hash = md5($query . $start);
+
+        try {
+            $result = $this->statement->execute(...$arguments);
+        }
+
+        catch (PDOException $error) {
+            $this->database->throwError($error, $query, $hash);
+        }
+
+        $this->database->logQuery($query, $hash, precision_timer('stop', $start));
+
+        return $result;
+    }
+}
 
 Class Database {
 
@@ -128,7 +180,7 @@ Class Database {
      * Resets the result, `$this->_lastResult` and `$this->_lastQuery` to their empty
      * values. Called on each query and when the class is destroyed.
      */
-    public function flush() 
+    public function flush()
     {
         $this->_result = null;
         $this->_lastResult = array();
@@ -146,7 +198,7 @@ Class Database {
      * @param array $config
      * @return PDO
      */
-    public function __construct(array $config = array()) 
+    public function __construct(array $config = array())
     {
         // If we have an existing PDO object
         if(isset($config['pdo'])) {
@@ -187,7 +239,7 @@ Class Database {
      * @param array $options
      * @return boolean
      */
-    public function connect($dsn = null, $username = null, $password = null, array $options = array()) 
+    public function connect($dsn = null, $username = null, $password = null, array $options = array())
     {
         try {
             $this->conn = new PDO($dsn, $username, $password, $options);
@@ -301,7 +353,7 @@ Class Database {
      * @param string $query
      * @return string
      */
-    public function replaceTablePrefix($query) 
+    public function replaceTablePrefix($query)
     {
         if($this->_prefix != 'tbl_'){
             $query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', $this->_prefix .'\\1\\2', $query);
@@ -330,7 +382,7 @@ Class Database {
      * @param array $values
      * @return string
      */
-    public static function addPlaceholders(array $values = array()) 
+    public static function addPlaceholders(array $values = array())
     {
         $placeholders = null;
         if(!empty($values)) {
@@ -348,7 +400,7 @@ Class Database {
      * @param array $values
      * @return PDOStatement
      */
-    public function insert($query, array $values) 
+    public function insert($query, array $values)
     {
         $result = $this->q($query, $values);
 
@@ -375,7 +427,7 @@ Class Database {
      * @param array $values
      * @return PDOStatement
      */
-    public function update($query, array $values) 
+    public function update($query, array $values)
     {
         $result = $this->q($query, $values);
 
@@ -390,7 +442,7 @@ Class Database {
      * @param array $values
      * @return PDOStatement
      */
-    public function delete($query, array $values) 
+    public function delete($query, array $values)
     {
         $result = $this->q($query, $values);
 
@@ -415,7 +467,7 @@ Class Database {
      *          An integer representing the row to return
      * @return array
      */
-    public function fetch($query = null, array $params = array(), array $values = array()) 
+    public function fetch($query = null, array $params = array(), array $values = array())
     {
         if(!is_null($query)) {
             $params['fetch-type'] = 'ASSOC';
@@ -441,6 +493,23 @@ Class Database {
     }
 
     /**
+     * Takes an SQL string and creates a prepared statement.
+     *
+     * @link http://php.net/manual/en/pdo.prepare.php
+     * @param string $query
+     * @param array $driver_options
+     *  This array holds one or more key=>value pairs to set attribute values
+     *  for the DatabaseStatement object that this method returns.
+     * @return DatabaseStatement
+     */
+    public function prepare($query, array $driver_options = array())
+    {
+        $query = $this->replaceTablePrefix($query);
+
+        return new DatabaseStatement($this, $this->conn->prepare($query, $driver_options));
+    }
+
+    /**
      * Given a query that has been prepared and an array of values to subsitute
      * into the query, the function will return the result. Unlike `insert` and
      * `update`, this function is a bit of a catch all and will be able to populate
@@ -456,7 +525,7 @@ Class Database {
      *  to subsitute into the placeholders
      * @return boolean
      */
-    public function query($query, array $params = array(), array $values = array()) 
+    public function query($query, array $params = array(), array $values = array())
     {
         if(empty($query)) return false;
 
@@ -513,7 +582,7 @@ Class Database {
      *  `query()`). Defaults to `true`
      * @return PDOStatement
      */
-    private function q($query, $values, $close = true) 
+    private function q($query, $values, $close = true)
     {
         if(empty($query)) return false;
 
@@ -569,7 +638,7 @@ Class Database {
      *  The exception thrown while doing something with the Database
      * @return void
      */
-    private function error(Exception $ex = null) 
+    private function error(Exception $ex = null)
     {
         if(isset($ex)) {
             $msg = $ex->getMessage();
@@ -619,6 +688,21 @@ Class Database {
     }
 
     /**
+     * Throw a new DatabaseException when given an original exception and a query.
+     *
+     * @param Exception $error
+     * @param string $query
+     * @param string $query_hash
+     */
+    public function throwError(Exception $error, $query, $query_hash)
+    {
+        $this->_lastQuery = $query;
+        $this->_lastQueryHash = $hash;
+
+        $this->error($error);
+    }
+
+    /**
      * Function is called everytime a query is executed to log it for
      * basic profiling/debugging purposes
      *
@@ -627,7 +711,7 @@ Class Database {
      * @param string $query_hash
      * @param integer $stop
      */
-    private function logQuery($query, $query_hash, $stop) 
+    public function logQuery($query, $query_hash, $stop)
     {
         /**
          * After a query has successfully executed, that is it was considered
@@ -706,7 +790,7 @@ Class Database {
      *  An associative array with the number of queries, an array of slow
      *  queries and the total query time.
      */
-    public function getStatistics() 
+    public function getStatistics()
     {
         $stats = array();
         $query_timer = 0.0;
