@@ -158,9 +158,9 @@ abstract class Symphony implements Singleton
      */
     public static function Engine()
     {
-        if (class_exists('Administration', false)) {
+        if (APP_MODE === 'administration') {
             return Administration::instance();
-        } elseif (class_exists('Frontend', false)) {
+        } elseif (APP_MODE === 'frontend') {
             return Frontend::instance();
         } else {
             throw new Exception(__('No suitable engine object found'));
@@ -551,7 +551,7 @@ abstract class Symphony implements Singleton
                 if (self::isUpgradeAvailable() === false && Cryptography::requiresMigration(self::$Author->get('password'))) {
                     self::$Author->set('password', Cryptography::hash($password));
 
-                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors', 
+                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors',
                         " `id` = ?", array(self::$Author->get('id'))
                     );
                 }
@@ -563,7 +563,7 @@ abstract class Symphony implements Singleton
                     'last_seen' => DateTimeObj::get('Y-m-d H:i:s')
                     ),
                     'tbl_authors',
-                    " `id` = ?", 
+                    " `id` = ?",
                     array(self::$Author->get('id'))
                 );
 
@@ -625,7 +625,7 @@ abstract class Symphony implements Singleton
                 AND `auth_token_active` = 'yes'
                 LIMIT 1",
                 'SHA1'
-                ), 
+                ),
                 array($token)
             );
         }
