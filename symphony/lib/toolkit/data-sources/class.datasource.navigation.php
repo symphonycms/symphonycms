@@ -14,8 +14,12 @@ class NavigationDatasource extends Datasource
 {
     public function __processNavigationParentFilter($parent)
     {
+        $trimmer = function($a) {
+            return trim($a, " /");
+        };
+
         $parent_paths = preg_split('/,\s*/', $parent, -1, PREG_SPLIT_NO_EMPTY);
-        $parent_paths = array_map(create_function('$a', 'return trim($a, " /");'), $parent_paths);
+        $parent_paths = array_map($trimmer, $parent_paths);
 
         return (is_array($parent_paths) && !empty($parent_paths) ? " AND p.`path` IN ('".implode("', '", $parent_paths)."')" : null);
     }

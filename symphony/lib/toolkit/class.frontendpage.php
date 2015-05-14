@@ -976,9 +976,12 @@ class FrontendPage extends XSLTPage
         //    of the while loop)
         do {
             $last_count = count($dependenciesList);
+            $replacer = function($a) {
+                return str_replace('$ds-', '', $a);
+            };
 
             foreach ($dependenciesList as $handle => $dependencies) {
-                if (General::in_array_all(array_map(create_function('$a', "return str_replace('\$ds-', '', \$a);"), $dependencies), $orderedList)) {
+                if (General::in_array_all(array_map($replacer, $dependencies), $orderedList)) {
                     $orderedList[] = str_replace('_', '-', $handle);
                     unset($dependenciesList[$handle]);
                 }
@@ -989,7 +992,11 @@ class FrontendPage extends XSLTPage
             $orderedList = array_merge($orderedList, array_keys($dependenciesList));
         }
 
-        return array_map(create_function('$a', "return str_replace('-', '_', \$a);"), $orderedList);
+        $translate = function($a) {
+            return str_replace('-', '_', $a);
+        };
+
+        return array_map($translate, $orderedList);
     }
 
     /**

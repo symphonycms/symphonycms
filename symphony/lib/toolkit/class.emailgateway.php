@@ -208,8 +208,14 @@ abstract Class EmailGateway
     {
         if (!is_array($email)) {
             $email = explode(',', $email);
+
             // trim all values
-            array_walk($email, create_function('&$val', '$val = trim($val);'));
+            $trim = function(&$val) {
+                $val = trim($val);
+            };
+
+            array_walk($email, $trim);
+
             // remove empty elements
             $email = array_filter($email);
         }
@@ -721,7 +727,7 @@ abstract Class EmailGateway
         if (empty($type)){
             //assume that the attachment mimetime is appended
             $type = General::getMimeType($file);
-        } 
+        }
         // Return binary description
         return array(
             'Content-Type'              => $type.';'.$charset.' name="'.$filename.'"',
@@ -876,8 +882,10 @@ abstract Class EmailGateway
     private function __fromCamel($string)
     {
         $string[0] = strtolower($string[0]);
-        $func = create_function('$c', 'return "_" . strtolower($c[1]);');
+        $replacer = function($c) {
+            return "_" . strtolower($c[1]);
+        };
 
-        return preg_replace_callback('/([A-Z])/', $func, $string);
+        return preg_replace_callback('/([A-Z])/', $replacer, $string);
     }
 }

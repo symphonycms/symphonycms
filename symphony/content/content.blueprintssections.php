@@ -90,8 +90,8 @@ class contentBlueprintsSections extends AdministrationPage
                 if ($s->get('hidden') === 'yes') {
                     $tr->setAttribute('class', 'inactive');
                 }
-                
-                $aTableBody[] = $tr; 
+
+                $aTableBody[] = $tr;
             }
         }
 
@@ -300,7 +300,9 @@ class contentBlueprintsSections extends AdministrationPage
             }
         }
 
-        uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->_name, $b->_name);'));
+        uasort($types, function($a, $b) {
+            return strnatcasecmp($a->_name, $b->_name);
+        });
 
         foreach ($types as $type) {
             $defaults = array();
@@ -507,7 +509,9 @@ class contentBlueprintsSections extends AdministrationPage
             }
         }
 
-        uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->_name, $b->_name);'));
+        uasort($types, function($a, $b) {
+            return strnatcasecmp($a->_name, $b->_name);
+        });
 
         foreach ($types as $type) {
             $defaults = array();
@@ -801,9 +805,9 @@ class contentBlueprintsSections extends AdministrationPage
 
                         $q = Database::addPlaceholders($id_list);
                         $missing_cfs = Symphony::Database()->fetchCol('id', "
-                            SELECT `id` 
-                            FROM `tbl_fields` 
-                            WHERE `parent_section` = ? AND `id` NOT IN (".$q.")", 
+                            SELECT `id`
+                            FROM `tbl_fields`
+                            WHERE `parent_section` = ? AND `id` NOT IN (".$q.")",
                             array_merge(array($section_id), $id_list)
                         );
 
