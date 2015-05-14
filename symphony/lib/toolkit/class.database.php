@@ -167,6 +167,83 @@ class DatabaseStatement
     }
 }
 
+class DatabaseTransaction
+{
+    /**
+     * The number of currently open transactions.
+     *
+     * @var integer
+     */
+    protected static $transactions = 0;
+
+    /**
+     * The database connection.
+     *
+     * @var PDO
+     */
+    protected $connection;
+
+    /**
+     * Has this transaction completed.
+     *
+     * @var boolean
+     */
+    protected $completed;
+
+    /**
+     * A nested database transaction manager.
+     *
+     * @param PDO   $connection
+     */
+    public function __construct(PDO $connection)
+    {
+        $this->completed = false;
+        $this->connection = $connection;
+
+        if (0 === self::$transactions) {
+            $this->connection->beginTransaction();
+        }
+
+        else {
+            $this->connection->exec("savepoint trans{$this->transactions}");
+        }
+
+        self::$transactions++;
+    }
+
+    public function commit()
+    {
+        if ($this->completed) return false;
+
+        self::$transactions--;
+        $this->completed = true;
+
+        if (0 === self::$transactions) {
+            return $this->connection->commit();
+        }
+
+        else {
+            return $this->connection->exec("release savepoint trans{$this->transactions}");
+        }
+    }
+
+    public function rollBack()
+    {
+        if ($this->completed) return false;
+
+        self::$transactions--;
+        $this->completed = true;
+
+        if (0 === self::$transactions) {
+            return $this->connection->rollBack();
+        }
+
+        else {
+            return $this->connection->exec("rollback to savepoint trans{$this->transactions}");
+        }
+    }
+}
+
 Class Database {
 
     /**
@@ -559,6 +636,16 @@ Class Database {
         $query = $this->replaceTablePrefix($query);
 
         return new DatabaseStatement($this, $this->conn->prepare($query, $driver_options));
+    }
+
+    /**
+     * Create a transaction.
+     *
+     * @return DatabaseTransaction
+     */
+    public function transaction($query, array $driver_options = array())
+    {
+        return new DatabaseTransaction($this->conn);
     }
 
     /**

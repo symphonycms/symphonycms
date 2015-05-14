@@ -309,6 +309,16 @@ class MySQL
     }
 
     /**
+     * Create a transaction.
+     *
+     * @return DatabaseTransaction
+     */
+    public function transaction()
+    {
+        return MySQL::$_conn_pdo->transaction($query);
+    }
+
+    /**
      * Takes an SQL string and executes it. This function will apply query
      * caching if it is a read operation and if query caching is set. Symphony
      * will convert the `tbl_` prefix of tables to be the one set during installation.
