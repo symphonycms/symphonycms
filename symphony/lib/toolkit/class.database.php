@@ -643,7 +643,7 @@ Class Database {
      *
      * @return DatabaseTransaction
      */
-    public function transaction($query, array $driver_options = array())
+    public function transaction()
     {
         return new DatabaseTransaction($this->conn);
     }
