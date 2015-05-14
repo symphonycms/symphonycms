@@ -37,7 +37,7 @@ class MySQL
      * database including the host, port, username, password and
      * selected database.
      *
-     * @var PDO
+     * @var Database
      */
     private static $_conn_pdo = null;
 
@@ -315,7 +315,7 @@ class MySQL
      */
     public function transaction()
     {
-        return MySQL::$_conn_pdo->transaction($query);
+        return MySQL::$_conn_pdo->transaction();
     }
 
     /**
