@@ -584,11 +584,7 @@ Class Database {
         $query_type = $this->determineQueryType(trim($query));
         $query_hash = md5($query.$start);
 
-        // TYPE is deprecated since MySQL 4.0.18, ENGINE is preferred
-        if($query_type == self::__WRITE_OPERATION__) {
-            $query = preg_replace('/TYPE=(MyISAM|InnoDB)/i', 'ENGINE=$1', $query);
-        }
-        else if($query_type == self::__READ_OPERATION__ && !preg_match('/^\s*SELECT\s+SQL(_NO)?_CACHE/i', $query)){
+        if($query_type == self::__READ_OPERATION__ && !preg_match('/^\s*SELECT\s+SQL(_NO)?_CACHE/i', $query)){
             if($this->isCachingEnabled()) {
                 $query = preg_replace('/^\s*SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
             }

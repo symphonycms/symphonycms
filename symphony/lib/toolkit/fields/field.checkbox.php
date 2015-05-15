@@ -92,7 +92,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
               PRIMARY KEY  (`id`),
               UNIQUE KEY `entry_id` (`entry_id`),
               KEY `value` (`value`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
+            )"
         );
     }
 

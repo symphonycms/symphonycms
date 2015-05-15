@@ -185,25 +185,23 @@ class MySQL
      */
     public function connect($host = null, $user = null, $password = null, $port = '3306', $database = null)
     {
-        $options = array(
-            //PDO::ATTR_ORACLE_NULLS => PDO::NULL_EMPTY_STRING
-        );
-        $config = array(
-            'driver' => 'mysql',
-            'db' => $database,
-            'host' => $host,
-            'port' => $port,
-            'user' => $user,
-            'password' => $password,
-            'charset' => 'utf8'
-        );
+        $config = [
+            'driver' =>     'mysql',
+            'db' =>         $database,
+            'host' =>       $host,
+            'port' =>       $port,
+            'user' =>       $user,
+            'password' =>   $password,
+            'charset' =>    'utf8',
+            'options' => [
+                // PDO::ATTR_ORACLE_NULLS => PDO::NULL_EMPTY_STRING
+            ]
+        ];
 
-        if(PHP_VERSION_ID <= 50306 && $config['driver'] == 'mysql') {
-            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '" . $config['charset'] . "'";
-        }
-
-        $config['options'] = $options;
         MySQL::$_conn_pdo = new Database($config);
+
+        // Ensure that the default storage engine is InnoDB:
+        MySQL::$_conn_pdo->conn->exec('SET storage_engine = "InnoDB"');
 
         return true;
     }
@@ -691,21 +689,12 @@ class MySQL
      * @throws Exception
      * @param string $sql
      *  A string containing SQL queries delimited by `;`
-     * @param boolean $force_engine
-     *  If set to true, this will set MySQL's default storage engine to MyISAM.
-     *  Defaults to false, which will use MySQL's default storage engine when
-     *  tables don't explicitly define which engine they should be created with
      * @return boolean
      *  If one of the queries fails, false will be returned and no further queries
      *  will be executed, otherwise true will be returned.
      */
-    public function import($sql, $force_engine = false)
+    public function import($sql)
     {
-        if ($force_engine) {
-            // Silently attempt to change the storage engine. This prevents INNOdb errors.
-            $this->query('SET default_storage_engine = MYISAM');
-        }
-
         if (empty($sql)) {
             throw new Exception('The SQL string contains no queries.');
         }
