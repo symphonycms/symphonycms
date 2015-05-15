@@ -102,7 +102,7 @@ class DatabaseStatement
      */
     public function __call($name, $arguments)
     {
-        return $this->statement->{$name}(...$arguments);
+        return call_user_func_array([$this->statement, $name], $arguments);
     }
 
     /**
@@ -144,8 +144,9 @@ class DatabaseStatement
      * @throws  DatabaseException
      * @return  boolean
      */
-    public function execute(...$arguments)
+    public function execute()
     {
+        $arguments = func_get_args();
         $start = precision_timer();
 
         $this->database->flush();
@@ -154,7 +155,7 @@ class DatabaseStatement
         $hash = md5($query . $start);
 
         try {
-            $result = $this->statement->execute(...$arguments);
+            $result = call_user_func_array([$this->statement, 'execute'], $arguments);
         }
 
         catch (PDOException $error) {
