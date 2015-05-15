@@ -101,7 +101,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
               UNIQUE KEY `entry_id` (`entry_id`),
               KEY `file` (`file`),
               KEY `mimetype` (`mimetype`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
+            )"
         );
     }
 
@@ -613,7 +613,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
             return $link->generate();
         }
     }
-    
+
     public function prepareTextValue($data, $entry_id = null)
     {
         if (isset($data['file'])) {

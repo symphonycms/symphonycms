@@ -90,7 +90,7 @@ class FieldAuthor extends Field implements ExportableField
               PRIMARY KEY  (`id`),
               UNIQUE KEY `author` (`entry_id`, `author_id`),
               KEY `author_id` (`author_id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
+            )"
         );
     }
 
