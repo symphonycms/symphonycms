@@ -1208,7 +1208,7 @@ class Field
     }
 
     /**
-     * Returns the types of filter suggestion this field supports. 
+     * Returns the types of filter suggestion this field supports.
      * The array may contain the following values:
      *
      * - `entry` for searching entries in the current section
@@ -1610,7 +1610,7 @@ class Field
               PRIMARY KEY  (`id`),
               KEY `entry_id` (`entry_id`),
               KEY `value` (`value`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
+            );"
         );
     }
 

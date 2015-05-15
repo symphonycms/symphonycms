@@ -126,7 +126,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
               UNIQUE KEY `entry_id` (`entry_id`),
               KEY `value` (`value`),
               KEY `date` (`date`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
+            )"
         );
     }
 
