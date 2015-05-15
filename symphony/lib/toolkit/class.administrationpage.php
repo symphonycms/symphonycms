@@ -609,12 +609,11 @@ Class AdministrationPage extends HTMLPage
         $body_id = preg_replace("/^content/", '', get_class($this));
 
         // lowercase any uppercase letters and prefix with a hyphen
+        $replacer = function($id) {
+            return "-" . strtolower($id[0]);
+        };
         $body_id = trim(
-            preg_replace_callback(
-                "/([A-Z])/",
-                create_function('$id', 'return "-" . strtolower($id[0]);'),
-                $body_id
-            ),
+            preg_replace_callback("/([A-Z])/", $replacer, $body_id),
             '-'
         );
 
