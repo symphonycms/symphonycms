@@ -3,17 +3,17 @@
     Class migration_230 extends Migration
     {
 
-        static function getVersion()
+        public static function getVersion()
         {
             return '2.3';
         }
 
-        static function getReleaseNotes()
+        public static function getReleaseNotes()
         {
             return 'http://getsymphony.com/download/releases/version/2.3/';
         }
 
-        static function upgrade()
+        public static function upgrade()
         {
             // 2.3dev
             if(version_compare(self::$existing_version, '2.3dev', '<=')) {
@@ -189,7 +189,7 @@
             return parent::upgrade();
         }
 
-        static function preUpdateNotes(){
+        public static function preUpdateNotes(){
             return array(
                 __("Symphony 2.3 is a major release that contains breaking changes from previous versions. It is highly recommended to review the releases notes and make a complete backup of your installation before updating as these changes may affect the functionality of your site."),
                 __("This release enforces that Authors must have unique email addresses. If multiple Authors have the same email address, this update will fail.")

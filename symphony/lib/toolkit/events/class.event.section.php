@@ -257,10 +257,13 @@ abstract class SectionEvent extends Event
                 // Reset errors for each entry execution
                 $this->filter_results = $this->filter_errors = array();
 
-                // Execute the event for this entry
-                $ret = $this->__doit($fields, $entry, $position, $entry_id);
+                // Ensure that we are always dealing with an array.
+                if (!is_array($fields)) {
+                    $fields = array();
+                }
 
-                if (!$ret) {
+                // Execute the event for this entry
+                if (!$this->__doit($fields, $entry, $position, $entry_id)) {
                     $success = false;
                 }
 

@@ -145,7 +145,7 @@ abstract class Page
      * @return array|string
      *  Returns string if the $status_code is not null. Array otherwise
      */
-    public static final function getHttpStatusValue($status_code = null)
+    final public static function getHttpStatusValue($status_code = null)
     {
         if (!$status_code) {
             return self::$HTTP_STATUSES;
@@ -165,7 +165,7 @@ abstract class Page
      * @return string
      *  The formatted HTTP Status string
      */
-    public static final function getHeaderStatusString($status_code)
+    final public static function getHeaderStatusString($status_code)
     {
         return sprintf("Status: %d %s", $status_code, self::getHttpStatusValue($status_code));
     }

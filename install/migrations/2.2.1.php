@@ -3,17 +3,17 @@
     Class migration_221 extends Migration
     {
 
-        static function getVersion()
+        public static function getVersion()
         {
             return '2.2.1';
         }
 
-        static function getReleaseNotes()
+        public static function getReleaseNotes()
         {
             return 'http://getsymphony.com/download/releases/version/2.2.1/';
         }
 
-        static function upgrade()
+        public static function upgrade()
         {
             // 2.2.1 Beta 1
             if(version_compare(self::$existing_version, '2.2.1 Beta 1', '<=')) {
@@ -100,7 +100,7 @@
             return parent::upgrade();
         }
 
-        static function postUpdateNotes(){
+        public static function postUpdateNotes(){
             return array(
                 __('Version %s introduces some improvements and fixes to Static XML Datasources. If you have any Static XML Datasources in your installation, please be sure to re-save them through the Data Source Editor to prevent unexpected results.', array('<code>2.2.1</code>'))
             );

@@ -1699,9 +1699,10 @@ class Field
      * @since Symphony 2.5.0
      *
      * @param  integer $entry_id
+     * @param  integer $parent_field_id
      * @return array
      */
-    public function findRelatedEntries($entry_id) {
+    public function findRelatedEntries($entry_id, $parent_field_id) {
         try {
             $ids = Symphony::Database()->fetchCol('entry_id', sprintf("
                 SELECT `entry_id`

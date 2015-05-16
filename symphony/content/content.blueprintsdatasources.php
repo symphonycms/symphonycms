@@ -333,8 +333,9 @@ class contentBlueprintsDatasources extends ResourcesPage
         $this->setContext($fieldset, array('sections', 'system'));
         $fieldset->appendChild(new XMLElement('legend', __('Filters')));
         $p = new XMLElement('p',
-            __('Use %s syntax to filter by page parameters.', array(
-                '<code>{' . __('$param') . '}</code>'
+            __('Use %s syntax to filter by page parameters. A default value can be set using %s.', array(
+                '<code>{' . __('$param') . '}</code>',
+                '<code>{' . __('$param:default') . '}</code>'
             ))
         );
         $p->setAttribute('class', 'help');
