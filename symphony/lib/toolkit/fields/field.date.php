@@ -120,11 +120,9 @@ class FieldDate extends Field implements ExportableField, ImportableField
               `id` int(11) unsigned NOT null auto_increment,
               `entry_id` int(11) unsigned NOT null,
               `value` varchar(80) default null,
-              `date` DATETIME default null,
               PRIMARY KEY  (`id`),
               UNIQUE KEY `entry_id` (`entry_id`),
-              KEY `value` (`value`),
-              KEY `date` (`date`)
+              KEY `value` (`value`)
             )"
         );
     }
@@ -540,15 +538,13 @@ class FieldDate extends Field implements ExportableField, ImportableField
         // Valid date
         if (!is_null($timestamp)) {
             return array(
-                'value' => DateTimeObj::get('c', $timestamp),
-                'date' => DateTimeObj::getGMT('Y-m-d H:i:s', $timestamp)
+                'value' => DateTimeObj::get('c', $timestamp)
             );
 
             // Invalid date
         } else {
             return array(
-                'value' => null,
-                'date' => null
+                'value' => null
             );
         }
     }
