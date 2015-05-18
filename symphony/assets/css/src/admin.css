@@ -488,22 +488,22 @@ div.password {
 	Index page
 --------------------------------------------------------------------------*/
 
-[data-page="index"] h2 {
+[data-page="index"] h2, .page-index h2 {
 	border: none;
 }
 
-[data-page="index"] form {
+[data-page="index"] form, .page-index form {
 	margin: 0;
 	padding: 0;
 }
 
-[data-page="index"] .actions {
+[data-page="index"] .actions, .page-index .actions {
 	height: 3.8rem;
 	padding: 3rem 1.8rem 0;
 	text-align: right;
 }
 
-[data-page="index"] .actions + ul.page {
+[data-page="index"] .actions + ul.page, .page-index .actions + ul.page {
 	margin-top: -5.8rem;
 }
 
