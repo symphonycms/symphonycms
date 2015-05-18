@@ -646,7 +646,7 @@ Class AdministrationPage extends HTMLPage
 
             // JSON encode any array values
             if (is_array($value)) {
-                $value = json_encode($value);
+                $value = htmlentities(json_encode($value));
             }
 
             $this->Body->setAttribute('data-' . $key, $value);
