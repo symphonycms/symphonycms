@@ -624,7 +624,7 @@ class XMLElement implements IteratorAggregate
         if (!is_numeric($index)) {
             return false;
         }
-        
+
         $this->validateChild($child);
 
         if ($index >= $this->getNumberOfChildren()) {
@@ -779,7 +779,7 @@ class XMLElement implements IteratorAggregate
             foreach ($attributes as $attribute => $value) {
                 $length = strlen($value);
                 if ($length !== 0 || $length === 0 && $this->_allowEmptyAttributes) {
-                    $result .= sprintf(" %s='%s'", $attribute, $value);
+                    $result .= sprintf(' %s="%s"', $attribute, $value);
                 }
             }
         }
