@@ -427,7 +427,7 @@ class contentPublish extends AdministrationPage
                         $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, $encoded_value);
 
                         // Some fields require that prepopulation be done via ID. RE: #2331
-                        if (method_exists($field, 'fetchIDfromValue')) {
+                        if (!is_numeric($value) && method_exists($field, 'fetchIDfromValue')) {
                             $encoded_value = $field->fetchIDfromValue($value);
                         }
                         $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, $encoded_value);
