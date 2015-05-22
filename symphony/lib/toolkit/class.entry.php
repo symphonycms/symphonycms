@@ -281,12 +281,13 @@ class Entry
         $schema = $section->fetchFields();
 
         foreach ($schema as $field) {
-            if (isset($this->_data[$field->get('field_id')])) {
+            $field_id = $field->get('field_id');
+            if (empty($field_id) || isset($this->_data[$field_id])) {
                 continue;
             }
 
             $result = $field->processRawFieldData(null, $status, $message, false, $this->get('id'));
-            $this->setData($field->get('field_id'), $result);
+            $this->setData($field_id, $result);
         }
 
         $this->set('modification_date', DateTimeObj::get('Y-m-d H:i:s'));
