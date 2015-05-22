@@ -311,7 +311,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
         $fields = array();
 
-        $fields['pre_populate_source'] = (is_null($this->get('pre_populate_source')) ? null : implode(',', $this->get('pre_populate_source')));
+        $fields['pre_populate_source'] = (is_null($this->get('pre_populate_source')) ? 'none' : implode(',', $this->get('pre_populate_source')));
         $fields['validator'] = ($fields['validator'] == 'custom' ? null : $this->get('validator'));
 
         if (!FieldManager::saveSettings($id, $fields)) {
@@ -320,11 +320,13 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
         SectionManager::removeSectionAssociation($id);
 
-        foreach ($this->get('pre_populate_source') as $field_id) {
-            if($field_id === 'none' || $field_id === 'existing') continue;
+        if (is_array($this->get('pre_populate_source'))) {
+            foreach ($this->get('pre_populate_source') as $field_id) {
+                if($field_id === 'none' || $field_id === 'existing') continue;
 
-            if (!is_null($field_id) && is_numeric($field_id)) {
-                SectionManager::createSectionAssociation(null, $id, (int) $field_id, $this->get('show_association') === 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
+                if (!is_null($field_id) && is_numeric($field_id)) {
+                    SectionManager::createSectionAssociation(null, $id, (int) $field_id, $this->get('show_association') === 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
+                }
             }
         }
 
