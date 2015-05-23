@@ -441,7 +441,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
                 }
 
                 if (empty($result['meta'])) {
-                    $result['meta'] = serialize(self::getMetaInfo($file, $result['mimetype']));
+                    $result['meta'] = serialize(static::getMetaInfo($file, $result['mimetype']));
                 }
 
                 // The file was not found, or is unreadable:
@@ -549,7 +549,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
             'file' =>       basename($file),
             'size' =>       $data['size'],
             'mimetype' =>   $data['type'],
-            'meta' =>       serialize(self::getMetaInfo($file, $data['type']))
+            'meta' =>       serialize(static::getMetaInfo($file, $data['type']))
         );
     }
 
