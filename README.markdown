@@ -6,6 +6,8 @@
 - Date: 11th May 2015
 - [Release notes](http://getsymphony.com/download/releases/version/2.6.2/)
 - [Github repository](https://github.com/symphonycms/symphony-2/tree/2.6.2)
+- 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/symphonycms/symphony-2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## Contents
 
