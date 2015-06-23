@@ -255,7 +255,7 @@ Symphony.View.add('/publish/:context*:', function() {
 
 		// Validate page number
 		form.on('submit.admin', function() {
-			if(jump.val() > jump.attr('data-max')) {
+			if(parseInt(jump.val(), 10) > parseInt(jump.attr('data-max'), 10)) {
 				form.addClass('invalid');
 				return false;
 			}
