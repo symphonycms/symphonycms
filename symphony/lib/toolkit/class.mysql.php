@@ -37,7 +37,7 @@ class MySQL
      * database including the host, port, username, password and
      * selected database.
      *
-     * @var PDO
+     * @var Database
      */
     private static $_conn_pdo = null;
 
@@ -306,6 +306,16 @@ class MySQL
     public function prepare($query, array $driver_options = array())
     {
         return MySQL::$_conn_pdo->prepare($query, $driver_options);
+    }
+
+    /**
+     * Create a transaction.
+     *
+     * @return DatabaseTransaction
+     */
+    public function transaction()
+    {
+        return MySQL::$_conn_pdo->transaction();
     }
 
     /**
