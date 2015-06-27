@@ -205,7 +205,7 @@ class DatabaseTransaction
         }
 
         else {
-            $this->connection->exec("savepoint trans{$this->transactions}");
+            $this->connection->exec('savepoint trans' . self::$transactions);
         }
 
         self::$transactions++;
@@ -223,7 +223,7 @@ class DatabaseTransaction
         }
 
         else {
-            return $this->connection->exec("release savepoint trans{$this->transactions}");
+            return $this->connection->exec('release savepoint trans' . self::$transactions);
         }
     }
 
@@ -239,7 +239,7 @@ class DatabaseTransaction
         }
 
         else {
-            return $this->connection->exec("rollback to savepoint trans{$this->transactions}");
+            return $this->connection->exec('rollback to savepoint trans' . self::$transactions);
         }
     }
 }
