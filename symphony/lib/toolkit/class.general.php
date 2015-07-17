@@ -897,6 +897,8 @@ class General
      * with the input content. This function will ignore errors in opening,
      * writing, closing and changing the permissions of the resulting file.
      * If opening or writing the file fail then this will return false.
+     * This method calls `clearstatcache()` in order to make sure we do not
+     * hit the cache when checking for permissions.
      *
      * @param string $file
      *  the path of the file to write.
@@ -916,6 +918,8 @@ class General
      */
     public static function writeFile($file, $data, $perm = 0644, $mode = 'w', $trim = false)
     {
+        clearstatcache();
+
         if (
             (!is_writable(dirname($file)) || !is_readable(dirname($file))) // Folder
             || (file_exists($file) && (!is_readable($file) || !is_writable($file))) // File
