@@ -298,7 +298,6 @@ class MySQL
             $connected = (
                 isset(self::$_connection['id'])
                 && !is_null(self::$_connection['id'])
-                && mysqli_ping(self::$_connection['id'])
             );
         } catch (Exception $ex) {
             return false;
