@@ -393,7 +393,16 @@ class SectionDatasource extends Datasource
                 }
 
                 // Cast all ID's to integers. (RE: #2191)
-                $value = array_map('General::intval', $value);
+                $value = array_map(function ($val) {
+                    $val = General::intval($val);
+
+                    // General::intval can return -1, so reset that to 0
+                    // so there are no side effects for the following
+                    // array_sum and array_filter calls. RE: #2475
+                    if ($val === -1) {
+                        $val = 0;
+                    }
+                }, $value);
                 $count = array_sum($value);
                 $value = array_filter($value);
 
