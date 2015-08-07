@@ -166,10 +166,10 @@
             $errors = array();
 
             // Check for PHP 5.2+
-            if(version_compare(phpversion(), '5.2', '<=')){
+            if(version_compare(phpversion(), '5.3', '<=')){
                 $errors[] = array(
                     'msg' => __('PHP Version is not correct'),
-                    'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.', array('<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.2</code>', '<code>' . phpversion() . '</code>'))
+                    'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.', array('<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.3</code>', '<code>' . phpversion() . '</code>'))
                 );
             }
 
@@ -182,10 +182,10 @@
             }
 
             // Is MySQL available?
-            if(!function_exists('mysql_connect')){
+            if(!function_exists('mysqli_connect')){
                 $errors[] = array(
-                    'msg' => __('MySQL extension not present'),
-                    'details'  => __('Symphony requires MySQL to work.')
+                    'msg' => __('MySQLi extension not present'),
+                    'details'  => __('Symphony requires PHP to be configured with MySQLi to work.')
                 );
             }
 
@@ -294,10 +294,10 @@
                 else if(Symphony::Database()->isConnected()) {
                     // Incorrect MySQL version
                     $version = Symphony::Database()->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
-                    if(version_compare($version, '5.0', '<')){
+                    if(version_compare($version, '5.5', '<')){
                         $errors['database-incorrect-version']  = array(
                             'msg' => 'MySQL Version is not correct. '. $version . ' detected.',
-                            'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.', array('<code>MySQL 5.0</code>', '<code>' . $version . '</code>'))
+                            'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.', array('<code>MySQL 5.5</code>', '<code>' . $version . '</code>'))
                         );
                     }
 
