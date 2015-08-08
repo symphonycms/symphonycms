@@ -402,6 +402,8 @@ class SectionDatasource extends Datasource
                     if ($val === -1) {
                         $val = 0;
                     }
+
+                    return $val;
                 }, $value);
                 $count = array_sum($value);
                 $value = array_filter($value);
@@ -418,6 +420,7 @@ class SectionDatasource extends Datasource
                 if (!empty($value)) {
                     $where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
                 }
+
             } elseif ($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
                 $date_joins = '';
                 $date_where = '';
