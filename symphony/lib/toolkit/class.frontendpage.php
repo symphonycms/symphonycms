@@ -750,7 +750,7 @@ class FrontendPage extends XSLTPage
             uasort($pool, array($this, '__findEventOrder'));
 
             foreach ($pool as $handle => $event) {
-                Symphony::Profiler()->seed();
+                $startTime = precision_timer();
                 $queries = Symphony::Database()->queryCount();
 
                 if ($xml = $event->load()) {
@@ -764,6 +764,7 @@ class FrontendPage extends XSLTPage
                 }
 
                 $queries = Symphony::Database()->queryCount() - $queries;
+                Symphony::Profiler()->seed($startTime);
                 Symphony::Profiler()->sample($handle, PROFILE_LAP, 'Event', $queries);
             }
         }
@@ -852,7 +853,7 @@ class FrontendPage extends XSLTPage
         $dsOrder = $this->__findDatasourceOrder($dependencies);
 
         foreach ($dsOrder as $handle) {
-            Symphony::Profiler()->seed();
+            $startTime = precision_timer();
             $queries = Symphony::Database()->queryCount();
 
             // default to no XML
@@ -927,6 +928,7 @@ class FrontendPage extends XSLTPage
             }
 
             $queries = Symphony::Database()->queryCount() - $queries;
+            Symphony::Profiler()->seed($startTime);
             Symphony::Profiler()->sample($handle, PROFILE_LAP, 'Datasource', $queries);
             unset($ds);
         }
