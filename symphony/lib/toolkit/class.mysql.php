@@ -42,7 +42,7 @@ class DatabaseException extends Exception
     /**
      * Accessor function for the Database error code for this type of error
      *
-     * @return string
+     * @return integer
      */
     public function getDatabaseErrorCode()
     {
