@@ -12,9 +12,7 @@ class contentSystemExtensions extends AdministrationPage
 {
     public function sort(&$sort, &$order, $params)
     {
-        if (is_null($sort)) {
-            $sort = 'name';
-        }
+        $sort = is_null($sort) ? 'name' : General::sanitize($sort);
 
         return ExtensionManager::fetch(array(), array(), $sort . ' ' . $order);
     }

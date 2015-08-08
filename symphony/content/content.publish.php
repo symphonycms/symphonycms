@@ -35,7 +35,10 @@ class contentPublish extends AdministrationPage
 
             // Set the sorting in the `EntryManager` for subsequent use
             EntryManager::setFetchSorting($sort, $order);
+
         } else {
+            $sort = General::sanitize($sort);
+
             // Ensure that this field is infact sortable, otherwise
             // fallback to IDs
             if (($field = FieldManager::fetch($sort)) instanceof Field && !$field->isSortable()) {
