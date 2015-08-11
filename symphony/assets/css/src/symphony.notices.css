@@ -38,21 +38,6 @@
 	opacity: 0.5;
 }
 
-@keyframes success {
-	to {
-		background-color: #383838;
-		border-color: #575757;
-		color: #9b9b9b;
-	}
-}
-
-@keyframes successlink {
-	to {
-		color: #bdc3c3;
-		border-color: #7c7c7c;
-	}
-}
-
 /*-----------------------------------------------------------------------------
 	Message types
 -----------------------------------------------------------------------------*/
@@ -87,18 +72,34 @@
 	background-color: #bfdc96;
 	border-color: #90c349;
 	color: #6d7841;
-	animation: success 0.5s ease-out 10s 1 forwards;
+	transition: color 0.5s ease-out, border-color 0.5s ease-out, background-color 0.5s ease-out;
 }
 
 .notice.success a {
 	color: #4e5b39;
 	border-color: #a1bf7e;
-	animation: successlink 0.5s ease-out 10s 1 forwards;
+	transition: color 0.5s ease-out, border-color 0.5s ease-out;
 }
 
+.notice.success.dimmed {
+	color: #9b9b9b;
+	border-color: #575757;
+	background-color: #383838;
+}
+
+.notice.success.dimmed a {
+	color: #bdc3c3;
+	border-color: #7c7c7c;
+}
+ 
 .notice.success a:hover {
 	color: #333c25;
 	border-color: #4e5b39;
+}
+
+.notice.success.dimmed a:hover {
+        color: #dbdede;
+        border-color: #bdc3c3;
 }
 
 /* Errors messages */
