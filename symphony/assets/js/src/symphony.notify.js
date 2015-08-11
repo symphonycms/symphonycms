@@ -3,6 +3,7 @@
  */
 
 (function($, Symphony) {
+	'use strict';
 
 	/**
 	 * Notify combines multiple system messages to an interface that focusses
@@ -67,6 +68,13 @@
 			// Load exclusion rules
 			if(Symphony.Support.localStorage === true) {
 				storage = (window.localStorage[settings.storage]) ? $.parseJSON(window.localStorage[settings.storage]) : [];
+			}
+
+			// Dimmed success transition
+			if (!!type && !!~type.indexOf('success')) {
+				setTimeout(function () {
+					item.addClass('dimmed');
+				}, 500);
 			}
 
 			// Prepend item
