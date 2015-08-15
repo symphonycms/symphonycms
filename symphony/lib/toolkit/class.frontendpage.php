@@ -231,6 +231,11 @@ class FrontendPage extends XSLTPage
                 }
             }
 
+            // Lock down the frontend first so that extensions can easily remove these
+            // headers if desired. RE: #2480
+            $this->addHeaderToPage('X-Frame-Options', 'SAMEORIGIN');
+            $this->addHeaderToPage('Access-Control-Allow-Origin', URL);
+
             /**
              * This is just prior to the page headers being rendered, and is suitable for changing them
              * @delegate FrontendPreRenderHeaders
@@ -238,14 +243,6 @@ class FrontendPage extends XSLTPage
              * '/frontend/'
              */
             Symphony::ExtensionManager()->notifyMembers('FrontendPreRenderHeaders', '/frontend/');
-
-            // If not set by another extension, lock down the frontend
-            if(!array_key_exists('x-frame-options', $this->headers())) {
-                $this->addHeaderToPage('X-Frame-Options', 'SAMEORIGIN');
-            }
-            if(!array_key_exists('access-control-allow-origin', $this->headers())) {
-                $this->addHeaderToPage('Access-Control-Allow-Origin', URL);
-            }
 
             $backup_param = $this->_param;
             $this->_param['current-query-string'] = General::wrapInCDATA($this->_param['current-query-string']);
