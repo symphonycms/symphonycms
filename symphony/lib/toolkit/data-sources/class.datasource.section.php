@@ -600,7 +600,7 @@ class SectionDatasource extends Datasource
             // If this datasource has a Limit greater than 0 or the Limit is not set
             if (!isset($this->dsParamLIMIT) || $this->dsParamLIMIT > 0) {
                 if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS === 'yes') {
-                    $this->_associated_sections = $section->fetchAssociatedSections();
+                    $this->_associated_sections = $section->fetchChildAssociations();
                 }
 
                 // If the datasource require's GROUPING

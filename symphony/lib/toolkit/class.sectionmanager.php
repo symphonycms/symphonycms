@@ -326,6 +326,7 @@ class SectionManager
      * section, but the field that links these sections has hidden this association
      * so an Articles column will not appear on the Author's Publish Index
      *
+     * @deprecated This function will be removed in Symphony 3.0. Use `fetchChildAssociations` instead.
      * @since Symphony 2.3
      * @param integer $section_id
      *  The ID of the section

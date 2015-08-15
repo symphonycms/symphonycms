@@ -538,7 +538,7 @@ class contentPublish extends AdministrationPage
         $aTableHead = Sortable::buildTableHeaders($columns, $sort, $order, ($filter_querystring) ? "&amp;" . $filter_querystring : '');
 
         $child_sections = array();
-        $associated_sections = $section->fetchAssociatedSections(true);
+        $associated_sections = $section->fetchChildAssociations(true);
 
         if (is_array($associated_sections) && !empty($associated_sections)) {
             foreach ($associated_sections as $key => $as) {

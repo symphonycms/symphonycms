@@ -342,7 +342,7 @@ class Entry
 
         if (is_null($associated_sections)) {
             $section = SectionManager::fetch($this->get('section_id'));
-            $associated_sections = $section->fetchAssociatedSections();
+            $associated_sections = $section->fetchChildAssociations();
         }
 
         if (!is_array($associated_sections) || empty($associated_sections)) {
