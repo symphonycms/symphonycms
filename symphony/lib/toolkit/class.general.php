@@ -920,10 +920,7 @@ class General
     {
         clearstatcache();
 
-        if (
-            (!is_writable(dirname($file)) || !is_readable(dirname($file))) // Folder
-            || (file_exists($file) && (!is_readable($file) || !is_writable($file))) // File
-        ) {
+        if (static::checkFile($file) === false) {
             return false;
         }
 
@@ -956,6 +953,27 @@ class General
             // if your extension require this logic, it uses it's own function rather
             // than this 'General' one.
             return true;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks that the file and it's folder are readable and writable.
+     *
+     * @since Symphony 2.6.3
+     * @return boolean
+     */
+    public static function checkFile($file)
+    {
+        clearstatcache();
+        $dir = dirname($file);
+
+        if (
+            (!is_writable($dir) || !is_readable($dir)) // Folder
+            || (file_exists($file) && (!is_readable($file) || !is_writable($file))) // File
+        ) {
+            return false;
         }
 
         return true;
