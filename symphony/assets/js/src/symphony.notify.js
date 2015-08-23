@@ -74,7 +74,7 @@
 			if (!!type && !!~type.indexOf('success')) {
 				setTimeout(function () {
 					item.addClass('dimmed');
-				}, 500);
+				}, 10000);
 			}
 
 			// Prepend item

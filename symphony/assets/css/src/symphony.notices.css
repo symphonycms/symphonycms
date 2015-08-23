@@ -72,13 +72,13 @@
 	color: #6d7841;
 	border-color: #90c349;
 	background-color: #bfdc96;
-	transition: color 0.5s ease-out 10s, border-color 0.5s ease-out 10s, background-color 0.5s ease-out 10s;
+	transition: color 0.5s ease-out, border-color 0.5s ease-out, background-color 0.5s ease-out;
 }
 
 .notice.success a {
 	color: #4e5b39;
 	border-color: #a1bf7e;
-	transition: color 0.5s ease-out 10s, border-color 0.5s ease-out 10s;
+	transition: color 0.5s ease-out, border-color 0.5s ease-out;
 }
 
 .notice.success.dimmed {
@@ -91,10 +91,15 @@
 	color: #bdc3c3;
 	border-color: #7c7c7c;
 }
-
+ 
 .notice.success a:hover {
 	color: #333c25;
 	border-color: #4e5b39;
+}
+
+.notice.success.dimmed a:hover {
+    color: #dbdede;
+    border-color: #bdc3c3;
 }
 
 /* Errors messages */
