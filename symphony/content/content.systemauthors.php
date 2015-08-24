@@ -19,8 +19,9 @@ class contentSystemAuthors extends AdministrationPage
     public function sort(&$sort, &$order, $params)
     {
         if (is_null($sort) || $sort == 'name') {
-            $sort = 'name';
             return AuthorManager::fetch("first_name $order,  last_name", $order);
+        } else {
+            $sort = General::sanitize($sort);
         }
 
         return AuthorManager::fetch($sort, $order);

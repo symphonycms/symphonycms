@@ -325,7 +325,8 @@
 				insert(value, input);
 			}
 			else {
-				input.val(value.split(',').join('\\,'));
+				value = value.replace(/,/g, '\\,').replace(/&/g, '%26');
+				input.val(value);
 				input.addClass('updated');
 				input.change();
 			}

@@ -393,7 +393,18 @@ class SectionDatasource extends Datasource
                 }
 
                 // Cast all ID's to integers. (RE: #2191)
-                $value = array_map('General::intval', $value);
+                $value = array_map(function ($val) {
+                    $val = General::intval($val);
+
+                    // General::intval can return -1, so reset that to 0
+                    // so there are no side effects for the following
+                    // array_sum and array_filter calls. RE: #2475
+                    if ($val === -1) {
+                        $val = 0;
+                    }
+
+                    return $val;
+                }, $value);
                 $count = array_sum($value);
                 $value = array_filter($value);
 
@@ -409,6 +420,7 @@ class SectionDatasource extends Datasource
                 if (!empty($value)) {
                     $where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
                 }
+
             } elseif ($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
                 $date_joins = '';
                 $date_where = '';
@@ -588,7 +600,7 @@ class SectionDatasource extends Datasource
             // If this datasource has a Limit greater than 0 or the Limit is not set
             if (!isset($this->dsParamLIMIT) || $this->dsParamLIMIT > 0) {
                 if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS === 'yes') {
-                    $this->_associated_sections = $section->fetchAssociatedSections();
+                    $this->_associated_sections = $section->fetchChildAssociations();
                 }
 
                 // If the datasource require's GROUPING

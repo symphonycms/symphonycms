@@ -41,6 +41,11 @@ abstract class ResourcesPage extends AdministrationPage
     {
         $type = $params['type'];
 
+        if (!is_null($sort)) {
+
+            General::sanitize($sort);
+        }
+
         // If `?unsort` is appended to the URL, then sorting information are reverted
         // to their defaults
         if (isset($params['unsort'])) {

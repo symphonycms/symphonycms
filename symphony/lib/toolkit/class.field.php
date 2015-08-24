@@ -998,7 +998,7 @@ class Field
             $value = (General::strlen($value) <= $max_length ? $value : General::substr($value, 0, $max_length) . '…');
         }
 
-        if (empty($value) && $defaultValue != null) {
+        if (General::strlen($value) == 0 && $defaultValue != null) {
             $value = $defaultValue;
         }
 

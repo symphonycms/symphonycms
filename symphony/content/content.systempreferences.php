@@ -26,14 +26,16 @@ class contentSystemPreferences extends AdministrationPage {
         $bIsWritable = true;
         $formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
-        if (!is_writable(CONFIG)) {
-            $this->pageAlert(__('The Symphony configuration file, %s, is not writable. You will not be able to save changes to preferences.', array('<code>/manifest/config.php</code>')), Alert::ERROR);
+        if (General::checkFile(CONFIG) === false) {
+            $this->pageAlert(__('The Symphony configuration file, %s, or folder is not writable. You will not be able to save changes to preferences.', array('<code>/manifest/config.php</code>')), Alert::ERROR);
             $bIsWritable = false;
+
         } elseif ($formHasErrors) {
             $this->pageAlert(
                 __('An error occurred while processing this form. See below for details.')
                 , Alert::ERROR
             );
+
         } elseif (isset($this->_context[0]) && $this->_context[0] == 'success') {
             $this->pageAlert(__('Preferences saved.'), Alert::SUCCESS);
         }
@@ -180,8 +182,8 @@ class contentSystemPreferences extends AdministrationPage {
 
     public function action()
     {
-        // Do not proceed if the config file is read only
-        if (!is_writable(CONFIG)) {
+        // Do not proceed if the config file cannot be changed
+        if (General::checkFile(CONFIG) === false) {
             redirect(SYMPHONY_URL . '/system/preferences/');
         }
 
@@ -214,18 +216,17 @@ class contentSystemPreferences extends AdministrationPage {
             Symphony::ExtensionManager()->notifyMembers('Save', '/system/preferences/', array('settings' => &$settings, 'errors' => &$this->_errors));
 
             if (!is_array($this->_errors) || empty($this->_errors)) {
-
                 if (is_array($settings) && !empty($settings)) {
                     Symphony::Configuration()->setArray($settings, false);
                 }
 
-                Symphony::Configuration()->write();
+                if (Symphony::Configuration()->write()) {
+                    if (function_exists('opcache_invalidate')) {
+                        opcache_invalidate(CONFIG, true);
+                    }
 
-                if (function_exists('opcache_invalidate')) {
-                    opcache_invalidate(CONFIG, true);
+                    redirect(SYMPHONY_URL . '/system/preferences/success/');
                 }
-
-                redirect(SYMPHONY_URL . '/system/preferences/success/');
             }
         }
     }

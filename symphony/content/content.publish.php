@@ -35,7 +35,10 @@ class contentPublish extends AdministrationPage
 
             // Set the sorting in the `EntryManager` for subsequent use
             EntryManager::setFetchSorting($sort, $order);
+
         } else {
+            $sort = General::sanitize($sort);
+
             // Ensure that this field is infact sortable, otherwise
             // fallback to IDs
             if (($field = FieldManager::fetch($sort)) instanceof Field && !$field->isSortable()) {
@@ -427,7 +430,7 @@ class contentPublish extends AdministrationPage
                         $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, $encoded_value);
 
                         // Some fields require that prepopulation be done via ID. RE: #2331
-                        if (method_exists($field, 'fetchIDfromValue')) {
+                        if (!is_numeric($value) && method_exists($field, 'fetchIDfromValue')) {
                             $encoded_value = $field->fetchIDfromValue($value);
                         }
                         $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, $encoded_value);
@@ -500,7 +503,6 @@ class contentPublish extends AdministrationPage
         }
 
         // Flag filtering
-        $filter_stats = null;
         if (isset($_REQUEST['filter'])) {
             $filter_stats = new XMLElement('p', '<span>– ' . __('%d of %d entries (filtered)', array($entries['total-entries'], EntryManager::fetchCount($section_id))) . '</span>', array('class' => 'inactive'));
         } else {
@@ -536,7 +538,7 @@ class contentPublish extends AdministrationPage
         $aTableHead = Sortable::buildTableHeaders($columns, $sort, $order, ($filter_querystring) ? "&amp;" . $filter_querystring : '');
 
         $child_sections = array();
-        $associated_sections = $section->fetchAssociatedSections(true);
+        $associated_sections = $section->fetchChildAssociations(true);
 
         if (is_array($associated_sections) && !empty($associated_sections)) {
             foreach ($associated_sections as $key => $as) {
@@ -881,6 +883,7 @@ class contentPublish extends AdministrationPage
                     Symphony::ExtensionManager()->notifyMembers('EntryPostDelete', '/publish/', array('entry_id' => $checked));
 
                     redirect($_SERVER['REQUEST_URI']);
+                    break;
                 default:
                     list($option, $field_id, $value) = explode('-', $_POST['with-selected'], 3);
 
@@ -932,7 +935,6 @@ class contentPublish extends AdministrationPage
 
                         redirect($_SERVER['REQUEST_URI']);
                     }
-                    break;
             }
         }
     }
@@ -1478,7 +1480,7 @@ class contentPublish extends AdministrationPage
     private function __wrapFieldWithDiv(Field $field, Entry $entry)
     {
         $is_hidden = $this->isFieldHidden($field);
-        $div = new XMLElement('div', null, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '').($is_hidden == true ? ' irrelevant' : '')));
+        $div = new XMLElement('div', null, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '').($is_hidden === true ? ' irrelevant' : '')));
 
         $field->setAssociationContext($div);
 
@@ -1514,10 +1516,11 @@ class contentPublish extends AdministrationPage
     }
 
     /**
-     * Check whether a field is a Select Box Link and is hidden
+     * Check whether the given `$field` will be hidden because it's been
+     * prepopulated.
      *
      * @param  Field  $field
-     * @return String
+     * @return boolean
      */
     public function isFieldHidden(Field $field)
     {

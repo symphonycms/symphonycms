@@ -492,7 +492,7 @@ Class AdministrationPage extends HTMLPage
                 General::in_array_multi($page, $item['children'])
                 // If the page namespace matches one of the children (this will usually drop query
                 // string parameters such as /edit/1/)
-                or General::in_array_multi(Symphony::getPageNamespace() . '/', $item['children'])
+                || General::in_array_multi(Symphony::getPageNamespace() . '/', $item['children'])
             ) {
                 if (is_array($item['children'])) {
                     foreach ($item['children'] as $c) {

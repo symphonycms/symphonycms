@@ -96,8 +96,6 @@ class GenericExceptionHandler
                 self::$_Log->pushExceptionToLog($e, true);
             }
 
-            cleanup_session_cookies();
-
             $output = call_user_func(array($class, 'render'), $e);
 
         // If an exception was raised trying to render the exception, fall back
@@ -116,18 +114,22 @@ class GenericExceptionHandler
             }
         }
 
-        // Pending nothing disasterous, we should have `$e` 
-        // and `$output` values here.
+        // Pending nothing disasterous, we should have `$e` and `$output` values here.
         if (!headers_sent()) {
+            cleanup_session_cookies();
+
+            // Inspect the exception to determine the best status code
             $httpStatus = null;
             if ($e instanceof SymphonyErrorPage) {
                 $httpStatus = $e->getHttpStatusCode();
             } else if ($e instanceof FrontendPageNotFoundException) {
                 $httpStatus = Page::HTTP_STATUS_NOT_FOUND;
             }
+
             if (!$httpStatus || $httpStatus == Page::HTTP_STATUS_OK) {
                 $httpStatus = Page::HTTP_STATUS_ERROR;
             }
+
             Page::renderStatusCode($httpStatus);
             header('Content-Type: text/html; charset=utf-8');
         }
@@ -137,10 +139,9 @@ class GenericExceptionHandler
     }
 
     /**
-     * Returns the path to the error-template by looking at the
-     * `WORKSPACE/template/` directory, then at the `TEMPLATES`
-     * directory for the convention `*.tpl`. If the template
-     * is not found, false is returned
+     * Returns the path to the error-template by looking at the `WORKSPACE/template/`
+     * directory, then at the `TEMPLATES`  directory for the convention `*.tpl`. If
+     * the template is not found, `false` is returned
      *
      * @since Symphony 2.3
      * @param string $name
