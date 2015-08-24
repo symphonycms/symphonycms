@@ -648,8 +648,9 @@ class FieldDate extends Field implements ExportableField, ImportableField
     public function getExportModes()
     {
         return array(
-            'getObject' =>      ExportableField::OBJECT,
-            'getPostdata' =>    ExportableField::POSTDATA
+            'getValue'    => ExportableField::VALUE,
+            'getObject'   => ExportableField::OBJECT,
+            'getPostdata' => ExportableField::POSTDATA
         );
     }
 
@@ -665,6 +666,14 @@ class FieldDate extends Field implements ExportableField, ImportableField
     public function prepareExportValue($data, $mode, $entry_id = null)
     {
         $modes = (object)$this->getExportModes();
+
+        if ($mode === $modes->getValue) {
+
+            return $this->formatDate(
+
+                isset($data['value']) ? $data['value'] : null
+            );
+        }
 
         if ($mode === $modes->getObject) {
             $timezone = Symphony::Configuration()->get('timezone', 'region');
