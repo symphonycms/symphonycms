@@ -109,7 +109,6 @@ class contentLogin extends HTMLPage
 
             // Normal login
         } else {
-
             $fieldset->appendChild(new XMLElement('legend', __('Login'), array('role' => 'heading')));
 
             // Display error message

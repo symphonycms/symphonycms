@@ -9,7 +9,6 @@
  */
 class EmailException extends Exception
 {
-
 }
 
 include_once TOOLKIT . '/class.emailgatewaymanager.php';

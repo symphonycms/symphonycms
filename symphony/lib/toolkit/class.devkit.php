@@ -160,7 +160,6 @@ class DevKit extends HTMLPage
             foreach ($root->childNodes as $node) {
                 if ($node->getAttribute('active') === 'yes') {
                     $item = new XMLElement('li', $node->getAttribute('name'));
-
                 } else {
                     $item = new XMLElement('li');
                     $item->appendChild(Widget::Anchor(
@@ -188,7 +187,6 @@ class DevKit extends HTMLPage
      */
     protected function buildJump(XMLElement $wrapper)
     {
-
     }
 
     /**
@@ -227,7 +225,6 @@ class DevKit extends HTMLPage
      */
     protected function buildContent(XMLElement $wrapper)
     {
-
     }
 
     /**

@@ -10,7 +10,7 @@
  *
  *  @param string $url
  */
-function redirect ($url)
+function redirect($url)
 {
     // Just make sure.
     $url = str_replace('Location:', null, $url);
@@ -191,7 +191,7 @@ function cleanup_session_cookies()
 function is_session_empty()
 {
     $session_is_empty = true;
-    if(is_array($_SESSION)) {
+    if (is_array($_SESSION)) {
         foreach ($_SESSION as $contents) {
             if (!empty($contents)) {
                 $session_is_empty = false;
@@ -224,17 +224,14 @@ function symphony_launcher($mode)
 {
     if (strtolower($mode) == 'administration') {
         $renderer = Administration::instance();
-    }
-
-    else {
+    } else {
         $renderer = Frontend::instance();
     }
 
     $output = $renderer->display(getCurrentPage());
 
     // #1808
-    if (isset($_SERVER['HTTP_MOD_REWRITE']))
-    {
+    if (isset($_SERVER['HTTP_MOD_REWRITE'])) {
         $output = file_get_contents(GenericExceptionHandler::getTemplate('fatalerror.rewrite'));
         $output = str_replace('{ASSETS_URL}', ASSETS_URL, $output);
         $output = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $output);

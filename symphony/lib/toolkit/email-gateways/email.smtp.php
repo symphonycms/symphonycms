@@ -172,7 +172,6 @@ class SMTPGateway extends EmailGateway
                 $this->_SMTP->quit();
                 return parent::closeConnection();
             } catch (Exception $e) {
-
             }
         }
 

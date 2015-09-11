@@ -1,8 +1,7 @@
 <?php
 
-    Class migration_252 extends Migration
+    class migration_252 extends Migration
     {
-
         public static function getVersion()
         {
             return '2.5.2';
@@ -12,5 +11,4 @@
         {
             return 'http://getsymphony.com/download/releases/version/2.5.2/';
         }
-
     }

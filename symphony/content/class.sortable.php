@@ -86,7 +86,6 @@ class Sortable
 
         foreach ($columns as $c) {
             if ($c['sortable']) {
-
                 $label = new XMLElement('span', $c['label']);
                 $label = $label->generate();
 
@@ -115,7 +114,6 @@ class Sortable
                         __('Sort by %1$s %2$s', array(__('ascending'), strtolower($c['label'])))
                     );
                 }
-
             } else {
                 $th = $c['label'];
             }

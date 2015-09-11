@@ -12,7 +12,6 @@
 
 class contentSystemAuthors extends AdministrationPage
 {
-
     public $_Author;
     public $_errors = array();
 
@@ -156,7 +155,6 @@ class contentSystemAuthors extends AdministrationPage
         ));
 
         $this->Form->appendChild($version);
-
     }
 
     public function __actionIndex()
@@ -544,7 +542,6 @@ class contentSystemAuthors extends AdministrationPage
 
     public function __actionNew()
     {
-
         if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
             $fields = $_POST['fields'];
 

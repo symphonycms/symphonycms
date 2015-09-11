@@ -647,7 +647,6 @@ class contentBlueprintsEvents extends ResourcesPage
                 }
 
                 redirect(SYMPHONY_URL . '/blueprints/events/edit/'.$classname.'/'.($this->_context[0] == 'new' ? 'created' : 'saved') . '/');
-
             }
         }
     }

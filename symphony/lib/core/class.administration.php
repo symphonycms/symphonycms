@@ -202,7 +202,7 @@ class Administration extends Symphony
                 $this->_callback['context'] = array();
             }
 
-            if($this->__canAccessAlerts()) {
+            if ($this->__canAccessAlerts()) {
                 // Can the core be updated?
                 $this->checkCoreForUpdates();
                 // Do any extensions need updating?

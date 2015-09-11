@@ -37,7 +37,8 @@ class EmailGatewayException extends Exception
  * The validation exception to be thrown by all email gateways.
  * This exception is thrown if data does not pass validation.
  */
-class EmailValidationException extends EmailGatewayException{
+class EmailValidationException extends EmailGatewayException
+{
 }
 
 /**
@@ -46,7 +47,7 @@ class EmailValidationException extends EmailGatewayException{
  *
  * @todo add validation to all set functions.
  */
-abstract Class EmailGateway
+abstract class EmailGateway
 {
     protected $_recipients = array();
     protected $_sender_name;
@@ -101,7 +102,7 @@ abstract Class EmailGateway
      *
      * @return boolean
      */
-    public abstract function send();
+    abstract public function send();
 
     /**
      * Open new connection to the email server.
@@ -718,10 +719,10 @@ abstract Class EmailGateway
             $charset = '';
         }
         // if the mime type is not set, try to obtain using the getMimeType
-        if (empty($type)){
+        if (empty($type)) {
             //assume that the attachment mimetime is appended
             $type = General::getMimeType($file);
-        } 
+        }
         // Return binary description
         return array(
             'Content-Type'              => $type.';'.$charset.' name="'.$filename.'"',

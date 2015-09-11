@@ -200,7 +200,6 @@ class DynamicXMLDatasource extends Datasource
                 $result->setAttribute('status', ($valid === true ? 'fresh' : 'stale'));
                 $result->setAttribute('creation', $creation);
             }
-
         }
 
         return $result;

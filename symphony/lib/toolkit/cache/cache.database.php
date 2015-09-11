@@ -59,7 +59,6 @@ class CacheDatabase implements iNamespacedCache
      */
     public function settings()
     {
-
     }
 
     /**

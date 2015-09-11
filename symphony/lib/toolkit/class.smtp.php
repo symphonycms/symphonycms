@@ -8,7 +8,6 @@
  */
 class SMTPException extends Exception
 {
-
 }
 
 /**
@@ -267,7 +266,6 @@ class SMTP
             foreach ($body as $val) {
                 $this->_send($name . ': ' . $val);
             }
-
         }
         // Send an empty newline. Solves bugs with Apple Mail
         $this->_send('');
@@ -473,7 +471,6 @@ class SMTP
             } elseif ($cmd === null || !in_array($cmd, $code)) {
                 $errMsg = $msg;
             }
-
         } while (strpos($more, '-') === 0); // The '-' message prefix indicates an information string instead of a response string.
 
         if ($errMsg !== '') {

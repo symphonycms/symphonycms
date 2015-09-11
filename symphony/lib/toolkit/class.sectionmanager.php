@@ -406,5 +406,4 @@ class SectionManager
             ($respect_visibility) ? "AND `sa`.`hide_association` = 'no'" : ""
         ));
     }
-
 }

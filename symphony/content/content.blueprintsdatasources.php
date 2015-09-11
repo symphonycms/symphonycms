@@ -150,7 +150,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             }
 
             if ($provided == false) {
-                switch($fields['source']){
+                switch ($fields['source']) {
                     case 'authors':
                         $fields['filter']['author'] = $existing->dsParamFILTERS;
                         break;
@@ -449,7 +449,6 @@ class contentBlueprintsDatasources extends ResourcesPage
 
             if (is_array($section_data['fields']) && !empty($section_data['fields'])) {
                 foreach ($section_data['fields'] as $field) {
-
                     if (!$field->canFilter()) {
                         continue;
                     }
@@ -471,7 +470,6 @@ class contentBlueprintsDatasources extends ResourcesPage
                     $wrapper->setAttribute('data-type', $field->get('element_name'));
                     $field->displayDatasourceFilterPanel($wrapper, null, null, $section_id);
                     $ol->appendChild($wrapper);
-
                 }
             }
 
@@ -638,7 +636,6 @@ class contentBlueprintsDatasources extends ResourcesPage
 
             if (is_array($section_data['fields']) && !empty($section_data['fields'])) {
                 foreach ($section_data['fields'] as $input) {
-
                     if (!$input->isSortable()) {
                         continue;
                     }
@@ -694,7 +691,6 @@ class contentBlueprintsDatasources extends ResourcesPage
 
             if (is_array($section_data['fields']) && !empty($section_data['fields'])) {
                 foreach ($section_data['fields'] as $input) {
-
                     if (!$input->allowDatasourceOutputGrouping()) {
                         continue;
                     }
@@ -871,7 +867,6 @@ class contentBlueprintsDatasources extends ResourcesPage
 
             if (is_array($section_data['fields']) && !empty($section_data['fields'])) {
                 foreach ($section_data['fields'] as $input) {
-
                     if (!$input->allowDatasourceParamOutput()) {
                         continue;
                     }
@@ -986,7 +981,6 @@ class contentBlueprintsDatasources extends ResourcesPage
         }
 
         $this->Form->appendChild($div);
-
     }
 
     public function __viewInfo()
@@ -997,7 +991,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         $about = $datasource->about();
 
         $this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($about['name'], __('Data Source'), __('Symphony'))));
-        $this->appendSubheading(( ($this->_context[0] == 'info') ? $about['name'] : __('Untitled')));
+        $this->appendSubheading((($this->_context[0] == 'info') ? $about['name'] : __('Untitled')));
         $this->insertBreadcrumbs(array(
             Widget::Anchor(__('Data Sources'), SYMPHONY_URL . '/blueprints/datasources/'),
         ));
@@ -1046,7 +1040,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                         $example = $datasource->example();
 
                         if (is_object($example)) {
-                             $fieldset->appendChild($example);
+                            $fieldset->appendChild($example);
                         } else {
                             $p = new XMLElement('p');
                             $p->appendChild(new XMLElement('pre', '<code>' . str_replace('<', '&lt;', $example) . '</code>'));
@@ -1245,7 +1239,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             if ($providerClass) {
                 $dsShell = call_user_func(array($providerClass, 'prepare'), $fields, $params, $dsShell);
             } else {
-                switch($source){
+                switch ($source) {
                     case 'authors':
                         $extends = 'AuthorDatasource';
                         if (isset($fields['filter']['author'])) {
@@ -1555,7 +1549,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             $label->appendChild(Widget::Input('fields[filter][author]['.$name.']', General::sanitize($value)));
             $li->appendChild($label);
 
-             $wrapper->appendChild($li);
+            $wrapper->appendChild($li);
         }
 
         $li = new XMLElement('li');
@@ -1566,8 +1560,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         $label->appendChild(Widget::Input('fields[filter][author]['.$name.']'));
         $li->appendChild($label);
 
-         $wrapper->appendChild($li);
-
+        $wrapper->appendChild($li);
     }
 
     private static function __isValidPageString($string)

@@ -11,20 +11,16 @@
     ini_set('magic_quotes_runtime', false);
 
     // Redirect to installer if it exists
-    if (!file_exists(CONFIG))
-    {
+    if (!file_exists(CONFIG)) {
         $bInsideInstaller = (bool)preg_match('%(/|\\\\)install(/|\\\\)index.php$%', $_SERVER['SCRIPT_FILENAME']);
 
         if (!$bInsideInstaller && Symphony::isInstallerAvailable()) {
             header(sprintf('Location: %s/install/', URL));
             exit;
-        }
-
-        else if(!$bInsideInstaller) {
+        } elseif (!$bInsideInstaller) {
             die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
         }
-    }
-    else {
+    } else {
         // Load configuration file:
         include CONFIG;
         Symphony::initialiseConfiguration($settings);
@@ -65,8 +61,7 @@
         );
 
         // Use default launcher:
-        if (defined('SYMPHONY_LAUNCHER') === false)
-        {
+        if (defined('SYMPHONY_LAUNCHER') === false) {
             define('SYMPHONY_LAUNCHER', 'symphony_launcher');
         }
     }

@@ -77,7 +77,6 @@ class XsltProcess
      */
     public function process($xml = null, $xsl = null, array $parameters = array(), array $register_functions = array())
     {
-
         if ($xml) {
             $this->_xml = $xml;
         }
@@ -228,7 +227,7 @@ class XsltProcess
         $result = $xmlDoc->schemaValidateSource($xsd);
 
         // Restore error handling
-        if(function_exists('ini_set') && isset($ehOLD)){
+        if (function_exists('ini_set') && isset($ehOLD)) {
             ini_set('html_errors', $ehOLD);
         }
 

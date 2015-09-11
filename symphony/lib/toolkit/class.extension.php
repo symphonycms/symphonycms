@@ -71,7 +71,6 @@ abstract class Extension
      */
     public function __construct()
     {
-
     }
 
     /**

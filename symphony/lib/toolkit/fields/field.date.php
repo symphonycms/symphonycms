@@ -32,7 +32,6 @@ class FieldDate extends Field implements ExportableField, ImportableField
         $this->set('pre_populate', 'now');
         $this->set('required', 'no');
         $this->set('location', 'sidebar');
-
     }
 
     /*-------------------------------------------------------------------------
@@ -668,7 +667,6 @@ class FieldDate extends Field implements ExportableField, ImportableField
         $modes = (object)$this->getExportModes();
 
         if ($mode === $modes->getValue) {
-
             return $this->formatDate(
 
                 isset($data['value']) ? $data['value'] : null

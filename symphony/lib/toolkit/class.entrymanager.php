@@ -140,7 +140,6 @@ class EntryManager
             }
 
             Symphony::Database()->insert($fields, 'tbl_entries_data_' . $field_id);
-
         }
 
         $entry->set('id', $entry_id);
@@ -431,7 +430,7 @@ class EntryManager
             %s
             %s
             %s
-            ", 
+            ",
             $group ? 'DISTINCT ' : '',
             $joins,
             $entry_id ? "AND `e`.`id` IN ('".implode("', '", $entry_id)."') " : '',

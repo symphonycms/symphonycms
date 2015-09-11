@@ -1,8 +1,7 @@
 <?php
 
-    Class Updater extends Installer
+    class Updater extends Installer
     {
-
         /**
          * This function returns an instance of the Updater
          * class. It is the only way to create a new Updater, as
@@ -12,7 +11,7 @@
          */
         public static function instance()
         {
-            if(!(self::$_instance instanceof Updater)) {
+            if (!(self::$_instance instanceof Updater)) {
                 self::$_instance = new Updater;
             }
 
@@ -43,7 +42,7 @@
          */
         public static function initialiseLog($filename = null)
         {
-            if(is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS, self::Configuration()->get('write_mode', 'directory'))) {
+            if (is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS, self::Configuration()->get('write_mode', 'directory'))) {
                 parent::initialiseLog(INSTALL_LOGS . '/update');
             }
         }
@@ -58,7 +57,7 @@
 
             $details = Symphony::Configuration()->get('database');
 
-            try{
+            try {
                 Symphony::Database()->connect(
                     $details['host'],
                     $details['user'],
@@ -66,8 +65,7 @@
                     $details['port'],
                     $details['db']
                 );
-            }
-            catch(DatabaseException $e){
+            } catch (DatabaseException $e) {
                 self::__abort(
                     'There was a problem while trying to establish a connection to the MySQL server. Please check your settings.',
                     time()
@@ -83,7 +81,7 @@
         public function run()
         {
             // Initialize log
-            if(is_null(Symphony::Log()) || !file_exists(Symphony::Log()->getLogPath())) {
+            if (is_null(Symphony::Log()) || !file_exists(Symphony::Log()->getLogPath())) {
                 self::__render(new UpdaterPage('missing-log'));
             }
 
@@ -91,8 +89,10 @@
             // that are applicable to the current install.
             $migrations = array();
 
-            foreach(new DirectoryIterator(INSTALL . '/migrations') as $m){
-                if($m->isDot() || $m->isDir() || General::getExtension($m->getFilename()) !== 'php') continue;
+            foreach (new DirectoryIterator(INSTALL . '/migrations') as $m) {
+                if ($m->isDot() || $m->isDir() || General::getExtension($m->getFilename()) !== 'php') {
+                    continue;
+                }
 
                 $version = str_replace('.php', '', $m->getFilename());
 
@@ -102,7 +102,7 @@
 
                 $m = new $classname();
 
-                if(version_compare(Symphony::Configuration()->get('version', 'symphony'), call_user_func(array($m, 'getVersion')), '<')){
+                if (version_compare(Symphony::Configuration()->get('version', 'symphony'), call_user_func(array($m, 'getVersion')), '<')) {
                     $migrations[call_user_func(array($m, 'getVersion'))] = $m;
                 }
             }
@@ -113,7 +113,7 @@
             uksort($migrations, 'version_compare');
 
             // If there are no applicable migrations then this is up to date
-            if(empty($migrations)) {
+            if (empty($migrations)) {
                 Symphony::Log()->pushToLog(
                     sprintf('Updater - Already up-to-date'),
                     E_ERROR, true
@@ -123,14 +123,16 @@
             }
 
             // Show start page
-            else if(!isset($_POST['action']['update'])) {
+            elseif (!isset($_POST['action']['update'])) {
                 $notes = array();
 
                 // Loop over all available migrations showing there
                 // pre update notes.
-                foreach($migrations as $version => $m){
+                foreach ($migrations as $version => $m) {
                     $n = call_user_func(array($m, 'preUpdateNotes'));
-                    if(!empty($n)) $notes[$version] = $n;
+                    if (!empty($n)) {
+                        $notes[$version] = $n;
+                    }
                 }
 
                 // Show the update ready page, which will display the
@@ -150,9 +152,11 @@
                 // Loop over all the available migrations incrementally applying
                 // the upgrades. If any upgrade throws an uncaught exception or
                 // returns false, this will break and the failure page shown
-                foreach($migrations as $version => $m){
+                foreach ($migrations as $version => $m) {
                     $n = call_user_func(array($m, 'postUpdateNotes'));
-                    if(!empty($n)) $notes[$version] = $n;
+                    if (!empty($n)) {
+                        $notes[$version] = $n;
+                    }
 
                     $canProceed = call_user_func(array($m, 'run'), 'upgrade', Symphony::Configuration()->get('version', 'symphony'));
 
@@ -161,13 +165,14 @@
                         E_NOTICE, true
                     );
 
-                    if(!$canProceed) break;
+                    if (!$canProceed) {
+                        break;
+                    }
                 }
 
-                if(!$canProceed){
+                if (!$canProceed) {
                     self::__render(new UpdaterPage('failure'));
-                }
-                else {
+                } else {
                     self::__render(new UpdaterPage('success', array(
                         'post-notes' => $notes,
                         'version' => call_user_func(array($m, 'getVersion')),
@@ -175,8 +180,5 @@
                     )));
                 }
             }
-
         }
-
     }
-

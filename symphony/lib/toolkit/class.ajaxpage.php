@@ -14,5 +14,4 @@
  */
 abstract class AjaxPage extends XMLPage
 {
-
 }

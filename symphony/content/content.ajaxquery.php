@@ -2,9 +2,8 @@
 
 require_once(TOOLKIT . '/class.jsonpage.php');
 
-Class contentAjaxQuery extends JSONPage
+class contentAjaxQuery extends JSONPage
 {
-
     public function view()
     {
         $database = Symphony::Configuration()->get('db', 'database');
@@ -23,26 +22,26 @@ Class contentAjaxQuery extends JSONPage
         }
 
         // Entries
-        if(in_array('entry', $types)) {
-            foreach($field_ids as $field_id) {
+        if (in_array('entry', $types)) {
+            foreach ($field_ids as $field_id) {
                 $this->get($database, intval($field_id), $search, $max);
             }
         }
 
         // Associations
-        if(in_array('association', $types)) {
-            foreach($field_ids as $field_id) {
+        if (in_array('association', $types)) {
+            foreach ($field_ids as $field_id) {
                 $association_id = $this->getAssociationId($field_id);
 
-                if($association_id) {
+                if ($association_id) {
                     $this->get($database, $association_id, $search, $max);
                 }
             }
         }
 
         // Static values
-        if(in_array('static', $types)) {
-            foreach($field_ids as $field_id) {
+        if (in_array('static', $types)) {
+            foreach ($field_ids as $field_id) {
                 $this->getStatic($field_id, $search);
             }
         }
@@ -160,5 +159,4 @@ Class contentAjaxQuery extends JSONPage
             }
         }
     }
-
 }

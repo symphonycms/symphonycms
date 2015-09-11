@@ -213,20 +213,17 @@ class FrontendPage extends XSLTPage
             ));
 
             if (is_null($devkit)) {
-                if(General::in_iarray('XML', $this->_pageData['type'])) {
+                if (General::in_iarray('XML', $this->_pageData['type'])) {
                     $this->addHeaderToPage('Content-Type', 'text/xml; charset=utf-8');
-                }
-                else if(General::in_iarray('JSON', $this->_pageData['type'])) {
+                } elseif (General::in_iarray('JSON', $this->_pageData['type'])) {
                     $this->addHeaderToPage('Content-Type', 'application/json; charset=utf-8');
-                }
-                else{
+                } else {
                     $this->addHeaderToPage('Content-Type', 'text/html; charset=utf-8');
                 }
 
-                if(in_array('404', $this->_pageData['type'])){
+                if (in_array('404', $this->_pageData['type'])) {
                     $this->setHttpStatus(self::HTTP_STATUS_NOT_FOUND);
-                }
-                else if(in_array('403', $this->_pageData['type'])){
+                } elseif (in_array('403', $this->_pageData['type'])) {
                     $this->setHttpStatus(self::HTTP_STATUS_FORBIDDEN);
                 }
             }
@@ -250,7 +247,7 @@ class FrontendPage extends XSLTPage
             // In Symphony 2.4, the XML structure stays as an object until
             // the very last moment.
             Symphony::Profiler()->seed(precision_timer());
-            if($this->_xml instanceof XMLElement) {
+            if ($this->_xml instanceof XMLElement) {
                 $this->setXML($this->_xml->generate(true, 0));
             }
             Symphony::Profiler()->sample('XML Generation', PROFILE_LAP);
@@ -522,7 +519,7 @@ class FrontendPage extends XSLTPage
                 }
             } elseif (is_array($value)) {
                 $param->setValue(General::sanitize($value[0]));
-            } elseif (in_array($key, array('xsrf-token','current-query-string'))) {
+            } elseif (in_array($key, array('xsrf-token', 'current-query-string'))) {
                 $param->setValue(General::wrapInCDATA($value));
             } else {
                 $param->setValue(General::sanitize($value));
@@ -780,7 +777,6 @@ class FrontendPage extends XSLTPage
          *  their name.
          */
         Symphony::ExtensionManager()->notifyMembers('FrontendEventPostProcess', '/frontend/', array('xml' => &$wrapper));
-
     }
 
     /**

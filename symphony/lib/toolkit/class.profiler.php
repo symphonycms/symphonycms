@@ -96,7 +96,6 @@ class Profiler implements Singleton
      */
     public function sample($msg, $type = PROFILE_RUNNING_TOTAL, $group = 'General', $queries = null)
     {
-
         if ($type == PROFILE_RUNNING_TOTAL) {
             Profiler::$_samples[] = array($msg, precision_timer('stop', Profiler::$_starttime), precision_timer(), $group, $queries, memory_get_usage());
         } else {

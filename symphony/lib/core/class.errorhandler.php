@@ -122,7 +122,7 @@ class GenericExceptionHandler
             $httpStatus = null;
             if ($e instanceof SymphonyErrorPage) {
                 $httpStatus = $e->getHttpStatusCode();
-            } else if ($e instanceof FrontendPageNotFoundException) {
+            } elseif ($e instanceof FrontendPageNotFoundException) {
                 $httpStatus = Page::HTTP_STATUS_NOT_FOUND;
             }
 
@@ -352,7 +352,7 @@ class GenericErrorHandler
      * a string describing that constant as the value
      * @var array
      */
-    public static $errorTypeStrings = array (
+    public static $errorTypeStrings = array(
         E_ERROR                 => 'Fatal Error',
         E_WARNING               => 'Warning',
         E_PARSE                 => 'Parsing Error',

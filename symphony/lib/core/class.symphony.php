@@ -276,7 +276,8 @@ abstract class Symphony implements Singleton
      * @since Symphony 2.5.0
      * @return Cookie
      */
-    public static function Cookie() {
+    public static function Cookie()
+    {
         return self::$Cookie;
     }
 
@@ -389,7 +390,6 @@ abstract class Symphony implements Singleton
                     self::Database()->enableLogging();
                 }
             }
-
         } catch (DatabaseException $e) {
             self::throwCustomError(
                 $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
@@ -412,7 +412,8 @@ abstract class Symphony implements Singleton
      * @since Symphony 2.5.0
      * @return Author
      */
-    public static function Author() {
+    public static function Author()
+    {
         return self::$Author;
     }
 
@@ -733,7 +734,7 @@ abstract class Symphony implements Singleton
  * to allow the template for the exception to be provided from the `TEMPLATES`
  * directory
  */
-Class SymphonyErrorPageHandler extends GenericExceptionHandler
+class SymphonyErrorPageHandler extends GenericExceptionHandler
 {
     /**
      * The render function will take a `SymphonyErrorPage` exception and
@@ -770,9 +771,8 @@ Class SymphonyErrorPageHandler extends GenericExceptionHandler
  * from the `TEMPLATES` directory.
  */
 
-Class SymphonyErrorPage extends Exception
+class SymphonyErrorPage extends Exception
 {
-
     /**
      * A heading for the error page, this will be prepended to
      * "Symphony Fatal Error".
@@ -830,7 +830,6 @@ Class SymphonyErrorPage extends Exception
      */
     public function __construct($message, $heading = 'Symphony Fatal Error', $template = 'generic', array $additional = array(), $status = Page::HTTP_STATUS_ERROR)
     {
-
         if ($message instanceof XMLElement) {
             $this->_messageObject = $message;
             $message = $this->_messageObject->generate();
@@ -927,7 +926,7 @@ Class SymphonyErrorPage extends Exception
  * customised output for database exceptions. It displays the exception
  * message as provided by the Database.
  */
-Class DatabaseExceptionHandler extends GenericExceptionHandler
+class DatabaseExceptionHandler extends GenericExceptionHandler
 {
     /**
      * The render function will take a `DatabaseException` and output a

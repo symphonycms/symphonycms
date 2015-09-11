@@ -77,7 +77,8 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     public function fetchAssociatedEntryCount($value)
     {
         if (function_exists('cleanValue') === false) {
-            function cleanValue($val) {
+            function cleanValue($val)
+            {
                 return Symphony::Database()->cleanValue($val);
             }
         }
@@ -126,7 +127,8 @@ class FieldTagList extends Field implements ExportableField, ImportableField
      * @param integer $parent_field_id
      * @return array
      */
-    public function findRelatedEntries($entry_id, $parent_field_id) {
+    public function findRelatedEntries($entry_id, $parent_field_id)
+    {
         // We have the entry_id of the entry that has the referenced tag values
         // Lets find out what those handles are so we can then referenced the
         // child section looking for them.
@@ -153,7 +155,8 @@ class FieldTagList extends Field implements ExportableField, ImportableField
      * @param integer $entry_id
      * @return array
      */
-    public function findParentRelatedEntries($field_id, $entry_id) {
+    public function findParentRelatedEntries($field_id, $entry_id)
+    {
         // Get all the `handles` that have been referenced from the
         // child association.
         $handles = Symphony::Database()->fetchCol('handle', sprintf("
@@ -199,7 +202,9 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         $values = array();
 
         foreach ($this->get('pre_populate_source') as $item) {
-            if($item === 'none') break;
+            if ($item === 'none') {
+                break;
+            }
 
             $result = Symphony::Database()->fetchCol('value', sprintf(
                 "SELECT DISTINCT `value` FROM tbl_entries_data_%d ORDER BY `value` ASC",
@@ -322,7 +327,9 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
         if (is_array($this->get('pre_populate_source'))) {
             foreach ($this->get('pre_populate_source') as $field_id) {
-                if($field_id === 'none' || $field_id === 'existing') continue;
+                if ($field_id === 'none' || $field_id === 'existing') {
+                    continue;
+                }
 
                 if (!is_null($field_id) && is_numeric($field_id)) {
                     SectionManager::createSectionAssociation(null, $id, (int) $field_id, $this->get('show_association') === 'yes' ? true : false, $this->get('association_ui'), $this->get('association_editor'));
@@ -589,7 +596,6 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     public function displayFilteringOptions(XMLElement &$wrapper)
     {
         if ($this->get('pre_populate_source') != null) {
-
             $existing_tags = $this->getToggleStates();
 
             if (is_array($existing_tags) && !empty($existing_tags)) {

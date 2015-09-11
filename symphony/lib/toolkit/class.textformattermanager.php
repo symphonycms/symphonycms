@@ -187,5 +187,4 @@ class TextformatterManager implements FileResource
 
         return self::$_pool[$handle];
     }
-
 }

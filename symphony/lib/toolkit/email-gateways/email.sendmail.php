@@ -51,7 +51,6 @@ class SendmailGateway extends EmailGateway
      */
     public function send()
     {
-
         $this->validate();
 
         try {

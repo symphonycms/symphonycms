@@ -116,5 +116,5 @@ interface iDatasource
      * @return XMLElement
      *  This Datasource should return an `XMLElement` object.
      */
-    public function execute(array &$param_pool = NULL);
+    public function execute(array &$param_pool = null);
 }

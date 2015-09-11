@@ -40,7 +40,6 @@ do {
         $val['parts'] = explode(' ', $val['message'], 3);
         $errors_grouped['general'][] = $val;
     }
-
 } while (list($key, $val) = $e->getAdditional()->proc->getError());
 
 $query_string = General::sanitize($Page->__buildQueryString());
