@@ -90,10 +90,10 @@ class Log
      *  A PHP error constant for this message, defaults to E_NOTICE
      * @param array $context
      */
-    public function pushToLog($message, $type = E_NOTICE, $context = [])
+    public function pushToLog($message, $type = E_NOTICE, array $context = null)
     {
         $level = isset($this->errorLevelMap[$type]) ? $this->errorLevelMap[$type] : LogLevel::CRITICAL;
-        $this->log->log($level, $message, is_array($context) ? $context : []);
+        $this->log->log($level, $message, is_array($context) ? $context : array());
     }
 
     /**
@@ -114,6 +114,6 @@ class Log
             $exception->getFile()
         );
 
-        return $this->pushToLog($message, $exception->getCode(), ['exception' => $exception]);
+        return $this->pushToLog($message, $exception->getCode(), array('exception' => $exception));
     }
 }
