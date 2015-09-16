@@ -37,11 +37,11 @@
 
                 return ($canProceed === false) ? false : true;
             } catch (DatabaseException $e) {
-                Symphony::Log()->pushToLog('Could not complete upgrading. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getMessage(), E_ERROR, true);
+                Symphony::Log()->error('Could not complete upgrading. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getMessage());
 
                 return false;
             } catch (Exception $e) {
-                Symphony::Log()->pushToLog('Could not complete upgrading because of the following error: ' . $e->getMessage(), E_ERROR, true);
+                Symphony::Log()->error('Could not complete upgrading because of the following error: ' . $e->getMessage());
 
                 return false;
             }

@@ -79,7 +79,7 @@
         public function run()
         {
             // Initialize log
-            if (is_null(Symphony::Log()) || !file_exists(Symphony::Log()->getLogPath())) {
+            if (is_null(Symphony::Log())) {
                 self::__render(new UpdaterPage('missing-log'));
             }
 
@@ -112,10 +112,7 @@
 
             // If there are no applicable migrations then this is up to date
             if (empty($migrations)) {
-                Symphony::Log()->pushToLog(
-                    sprintf('Updater - Already up-to-date'),
-                    E_ERROR, true
-                );
+                Symphony::Log()->info('Updater - Already up-to-date');
 
                 self::__render(new UpdaterPage('uptodate'));
             }
@@ -158,9 +155,8 @@
 
                     $canProceed = call_user_func(array($m, 'run'), 'upgrade', Symphony::Configuration()->get('version', 'symphony'));
 
-                    Symphony::Log()->pushToLog(
-                        sprintf('Updater - Migration to %s was %s', $version, $canProceed ? 'successful' : 'unsuccessful'),
-                        E_NOTICE, true
+                    Symphony::Log()->info(
+                        sprintf('Updater - Migration to %s was %s', $version, $canProceed ? 'successful' : 'unsuccessful')
                     );
 
                     if (!$canProceed) {

@@ -98,7 +98,7 @@
                         Symphony::Database()->query("ALTER TABLE `tbl_fields` DROP `publish_label`");
                     }
                 } catch (Exception $ex) {
-                    Symphony::Log()->pushToLog($ex->getMessage(), E_NOTICE, true);
+                    Symphony::Log()->notice($ex->getMessage());
                 }
 
                 // Add uniqueness constraint for the Authors table. #937
@@ -109,10 +109,8 @@
                     // 1062 means the key failed to apply, which is bad.
                     // @see http://dev.mysql.com/doc/refman/5.5/en/error-messages-server.html
                     if ($ex->getDatabaseErrorCode() === 1062) {
-                        Symphony::Log()->pushToLog(
-                            __("You have multiple Authors with the same email address, which can cause issues with password retrieval. Please ensure all Authors have unique email addresses before updating. " . $ex->getMessage()),
-                            E_USER_ERROR,
-                            true
+                        Symphony::Log()->error(
+                            __("You have multiple Authors with the same email address, which can cause issues with password retrieval. Please ensure all Authors have unique email addresses before updating. " . $ex->getMessage())
                         );
 
                         return false;
