@@ -21,7 +21,8 @@
       "ext-json": "*",
       "ext-libxml": "*",
       "ext-pdo_mysql": "*",
-      "ext-xsl": "*"
+      "ext-xsl": "*",
+      "monolog/monolog": "1.*"
     },
     "minimum-stability": "stable",
     "autoload": {

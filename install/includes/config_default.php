@@ -26,8 +26,25 @@
 
         ###### LOG ######
         'log' => array(
-            'archive' => '1',
-            'maxsize' => '102400',
+            'handler' => array(
+                'class' => '\Monolog\Handler\StreamHandler',
+                'args' => array(
+                    '{vars.filename}',
+                    100,
+                    true,
+                    '{file.write_mode}',
+                    false
+                )
+            ),
+            'formatter' => array(
+                'class' => '\Monolog\Formatter\LineFormatter',
+                'args' => array(
+                    '%datetime% > %level_name%: %message% %context% %extra%' . PHP_EOL,
+                    '{region.date_format}{region.datetime_separator}{region.time_format}',
+                    false,
+                    true
+                )
+            )
         ),
         ########
 

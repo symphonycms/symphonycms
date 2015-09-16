@@ -526,17 +526,14 @@ class contentPublish extends AdministrationPage
         } catch (DatabaseException $ex) {
             $this->pageAlert(__('An error occurred while retrieving filtered entries. Showing all entries instead.'), Alert::ERROR);
             $filter_querystring = null;
-            Symphony::Log()->pushToLog(sprintf(
-                    '%s - %s%s%s',
-                    $section->get('name') . ' Publish Index',
-                    $ex->getMessage(),
-                    ($ex->getFile() ? " in file " .  $ex->getFile() : null),
-                    ($ex->getLine() ? " on line " . $ex->getLine() : null)
-                ),
-                E_NOTICE,
-                true
-            );
-            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), null, null, true, false, true, $element_names);
+            Symphony::Log()->warning(sprintf(
+                '%s - %s%s%s',
+                $section->get('name') . ' Publish Index',
+                $ex->getMessage(),
+                ($ex->getFile() ? " in file " .  $ex->getFile() : null),
+                ($ex->getLine() ? " on line " . $ex->getLine() : null)
+            ));
+            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'));
         }
 
         // Flag filtering
