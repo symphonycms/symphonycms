@@ -9,6 +9,7 @@
  * CMS and initialises the toolkit classes. Symphony is extended by
  * the Frontend and Administration classes
  */
+use Monolog\Logger;
 
 abstract class Symphony implements Singleton
 {
@@ -215,7 +216,7 @@ abstract class Symphony implements Singleton
      */
     public static function initialiseLog($filename = null)
     {
-        if (self::$Log instanceof Log && self::$Log->getLogPath() == $filename) {
+        if (self::$Log instanceof Log) {
             return true;
         }
 
@@ -223,14 +224,34 @@ abstract class Symphony implements Singleton
             $filename = ACTIVITY_LOG;
         }
 
-        self::$Log = new Log($filename);
-        self::$Log->setArchive((self::Configuration()->get('archive', 'log') == '1' ? true : false));
-        self::$Log->setMaxSize(intval(self::Configuration()->get('maxsize', 'log')));
-        self::$Log->setDateTimeFormat(self::Configuration()->get('date_format', 'region') . ' ' . self::Configuration()->get('time_format', 'region'));
+        // Get the Handler from the Configuration
+        $handler = self::Configuration()->get('handler', 'log');
+        $context = array_merge(array(
+                'vars' => array(
+                    'filename' => $filename
+                )
+            ),
+            self::Configuration()->get()
+        );
 
-        if (self::$Log->open(Log::APPEND, self::Configuration()->get('write_mode', 'file')) == '1') {
-            self::$Log->initialise('Symphony Log');
+        // Create the base handler
+        array_walk($handler['args'], 'General::replacePlaceholdersWithContext', $context);
+        $reflection = new ReflectionClass($handler['class']);
+        $handler = $reflection->newInstanceArgs($handler['args']);
+
+        // Create the base formatter
+        if ($format = self::Configuration()->get('formatter', 'log')) {
+            array_walk($format['args'], 'General::replacePlaceholdersWithContext', $context);
+            $reflection = new ReflectionClass($format['class']);
+            $formatter = $reflection->newInstanceArgs($format['args']);
+            $handler->setFormatter($formatter);
         }
+
+        // Create the log object
+        $logger = new Logger(basename($filename));
+        $logger->pushHandler($handler);
+
+        self::$Log = new Log($logger);
     }
 
     /**

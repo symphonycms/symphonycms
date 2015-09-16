@@ -16,6 +16,9 @@
       "wiki": "https://github.com/symphonycms/symphony-2/wiki"
     },
     "minimum-stability": "stable",
+    "require": {
+      "monolog/monolog": "1.*"
+    },
     "autoload": {
       "classmap": ["symphony/content", "symphony/lib", "symphony/template", "install"],
       "files": [

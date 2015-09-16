@@ -23,7 +23,7 @@ class MD5 extends Cryptography
      */
     public static function hash($input)
     {
-        Symphony::Log()->pushToLog('The use of MD5::hash() is discouraged due to severe security flaws.', E_DEPRECATED, true);
+        Symphony::Log()->notice('The use of MD5::hash() is discouraged due to severe security flaws.');
         return md5($input);
     }
 

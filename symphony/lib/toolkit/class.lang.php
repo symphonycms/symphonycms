@@ -282,10 +282,8 @@ class Lang
 
             // Log error, if possible
             if ($code !== 'en' && class_exists('Symphony', false) && Symphony::Log() instanceof Log) {
-                Symphony::Log()->pushToLog(
-                    __('The selected language, %s, could not be found. Using default English dictionary instead.', array($code)),
-                    E_ERROR,
-                    true
+                Symphony::Log()->warning(
+                    __('The selected language, %s, could not be found. Using default English dictionary instead.', array($code))
                 );
             }
         }

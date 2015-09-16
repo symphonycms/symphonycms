@@ -289,6 +289,53 @@ class General
     }
 
     /**
+     * This method allows an array of variables with placeholders to replaced against
+     * a given context. Any placeholders that don't exist in the context will be
+     * left alone.
+     *
+     * @since Symphony 3.0
+     * @param string $value (by reference)
+     *  Placeholders will be replaced by inspecting the context eg. `{text}` will look
+     *  for a `text` key in the `$context`. Dot notation supported, eg. `{date.format}`
+     *  with this context `['date' => ['format' => 'value']]` will return `value`.
+     * @param string $key
+     * @param array $context
+     */
+    public static function replacePlaceholdersWithContext(&$value, $key, array $context)
+    {
+        // Check to see if there is replacement to occur
+        if (preg_match_all('/{([^}]+)}/', $value, $matches, PREG_SET_ORDER)) {
+            // Backup the original value and context so each match can use the
+            // original set.
+            $base_value = $value;
+            $base_context = $context;
+
+            // For each match, reset the context to the full stack
+            foreach ($matches as $match) {
+                $context = $base_context;
+
+                // The '.' syntax is support for resolving arrays where each dot represents
+                // another level. Each time we go down a level, we narrow the context accordingly.
+                foreach (explode('.', $match[1]) as $segment) {
+                    // If the segment exists in the context, narrow the context to the next level
+                    // and allow the loop to continue.
+                    if (is_array($context) && array_key_exists($segment, $context)) {
+                        $context = $context[$segment];
+                    }
+
+                    // If the context has fully resolved to a string, replace the relevant
+                    // match in the base value.
+                    if (!is_array($context)) {
+                        $base_value = str_replace('{'. $match[1] . '}', $context, $base_value);
+                    }
+                }
+            }
+
+            $value = $base_value;
+        }
+    }
+
+    /**
      * Given a string, this will clean it for use as a Symphony handle. Preserves multi-byte characters.
      *
      * @since Symphony 2.2.1

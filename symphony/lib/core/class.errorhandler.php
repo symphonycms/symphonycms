@@ -251,7 +251,7 @@ class GenericExceptionHandler
                         $message,
                         ($line ? " on line $line" : null),
                         ($file ? " of file $file" : null)
-                    ), $code, true);
+                    ), $code);
                 }
 
                 ob_clean();
@@ -419,8 +419,8 @@ class GenericErrorHandler
      */
     public static function handler($code, $message, $file = null, $line = null)
     {
-        // Only log if the error won't be raised to an exception and the error is not `E_STRICT`
-        if (!self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$_Log instanceof Log) {
+        // Only log if the error won't be raised to an exception and the error is not `E_NOTICE` or `E_STRICT`
+        if (!self::$logDisabled && !in_array($code, array(E_NOTICE, E_STRICT)) && self::$_Log instanceof Log) {
             self::$_Log->pushToLog(sprintf(
                 '%s %s: %s%s%s',
                 __CLASS__,
@@ -428,7 +428,7 @@ class GenericErrorHandler
                 $message,
                 ($line ? " on line $line" : null),
                 ($file ? " of file $file" : null)
-            ), $code, true);
+            ), $code);
         }
 
         if (self::isEnabled()) {
