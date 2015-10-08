@@ -419,9 +419,9 @@ class EntryManager
         }
 
         $sql = sprintf("
-            SELECT %s`e`.id, `e`.section_id, e.`author_id`,
-                e.`creation_date` AS `creation_date`,
-                e.`modification_date` AS `modification_date`
+            SELECT %s`e`.`id`, `e`.section_id, `e`.`author_id`,
+                `e`.`creation_date` AS `creation_date`,
+                `e`.`modification_date` AS `modification_date`
             FROM `tbl_entries` AS `e`
             %s
             WHERE 1
