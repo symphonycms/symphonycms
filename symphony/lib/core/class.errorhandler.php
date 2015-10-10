@@ -347,7 +347,7 @@ class GenericExceptionHandler
  * raise the errors to Exceptions so they can be dealt with by the
  * `GenericExceptionHandler`. The type of errors that are raised to Exceptions
  * depends on the `error_reporting` level. All errors raised, except
- * `E_NOTICE` and `E_STRICT` are written to the Symphony log.
+ * `E_STRICT` are written to the Symphony log.
  */
 class GenericErrorHandler
 {
@@ -431,8 +431,8 @@ class GenericErrorHandler
     }
 
     /**
-     * The handler function will write the error to the `$Log` if it is not `E_NOTICE`
-     * or `E_STRICT` before raising the error as an Exception. This allows all `E_WARNING`
+     * The handler function will write the error to the `$Log` if it is not
+     * `E_STRICT` before raising the error as an Exception. This allows all `E_WARNING`
      * to actually be captured by an Exception handler.
      *
      * @param integer $code
