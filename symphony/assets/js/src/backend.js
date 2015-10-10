@@ -57,10 +57,14 @@
 		Symphony.Elements.contents = $('#contents');
 
 		// Create context id
-		var contextId = (Symphony.Context.get('path') + Symphony.Context.get('route')).split('/').filter(function(part) {
-			return (part != 'edit' && part != 'new' && part != 'created' && part != 'saved' && part != '');
-		}).join('.');
-		Symphony.Context.add('context-id', contextId);
+		var path = Symphony.Context.get('path');
+		var route = Symphony.Context.get('route');
+		if (path && route) {
+			var contextId = (path + route).split('/').filter(function(part) {
+				return (part != 'edit' && part != 'new' && part != 'created' && part != 'saved' && part != '');
+			}).join('.');
+			Symphony.Context.add('context-id', contextId);
+		}
 
 		// Render view
 		Symphony.View.render();
