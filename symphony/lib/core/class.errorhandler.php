@@ -304,6 +304,7 @@ class GenericExceptionHandler
      * Throwable in a user friendly way.
      *
      * @since Symphony 2.4
+     * @since Symphony 2.6.4 the method is protected
      * @param string $template
      *  The template name, which should correspond to something in the TEMPLATE
      *  directory, eg `fatalerror.fatal`.
@@ -321,7 +322,7 @@ class GenericExceptionHandler
      * @return string
      *  The HTML of the formatted error message.
      */
-    public static function renderHtml($template, $heading, $message, $file = null, $line = null, $lines = null, $trace = null, $queries = null)
+    protected static function renderHtml($template, $heading, $message, $file = null, $line = null, $lines = null, $trace = null, $queries = null)
     {
         $html = sprintf(
             file_get_contents(self::getTemplate($template)),
