@@ -74,7 +74,7 @@ function define_safe($name, $value)
  */
 function getCurrentPage()
 {
-    if (!isset($_GET['symphony-page'])) {
+    if (!isset($_GET['symphony-page']) || !is_string($_GET['symphony-page'])) {
         return null;
     }
 
@@ -217,7 +217,7 @@ function symphony($mode)
  */
 function symphony_launcher($mode)
 {
-    if (strtolower($mode) == 'administration') {
+    if (is_string($mode) && strtolower($mode) == 'administration') {
         require_once CORE . "/class.administration.php";
 
         $renderer = Administration::instance();
