@@ -37,7 +37,11 @@ var Symphony = (function($, crossroads) {
 	// Get localised strings
 	function translate(strings) {
 		var env = Symphony.Context.get('env');
-		var namespace = evn && $.trim(env['page-namespace']),
+		if (!env) {
+			// no env, can't continue
+			return;
+		}
+		var namespace = $.trim(env['page-namespace']),
 			data = {
 				'strings': strings
 			};
