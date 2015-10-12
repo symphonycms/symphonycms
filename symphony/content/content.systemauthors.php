@@ -541,7 +541,7 @@ class contentSystemAuthors extends AdministrationPage
         if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
             $fields = $_POST['fields'];
 
-            $this->_Author = new Author;
+            $this->_Author = new Author();
             $this->_Author->set('user_type', $fields['user_type']);
             $this->_Author->set('primary', 'no');
             $this->_Author->set('email', $fields['email']);
@@ -554,7 +554,29 @@ class contentSystemAuthors extends AdministrationPage
             $this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
             $this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
 
-            if ($this->_Author->validate($this->_errors)) {
+            /**
+             * Creation of a new Author. The Author object is provided as read
+             * only through this delegate.
+             *
+             * @delegate AuthorPreCreate
+             * @since Symphony 2.7.0
+             * @param string $context
+             * '/system/authors/'
+             * @param Author $author
+             *  The Author object that has just been created, but not yet committed, nor validated
+             * @param array $fields
+             *  The POST fields
+             * @param array $errors
+             *  The error array used to validate the Author, passed by reference.
+             *  Extension should append to this array if they detect validation problems.
+             */
+            Symphony::ExtensionManager()->notifyMembers('AuthorPreCreate', '/system/authors/', array(
+                'author' => $this->_Author,
+                'field' => $fields,
+                'errors' => &$this->_errors
+            ));
+
+            if (empty($this->_errors) && $this->_Author->validate($this->_errors)) {
                 if ($fields['password'] != $fields['password-confirmation']) {
                     $this->_errors['password'] = $this->_errors['password-confirmation'] = __('Passwords did not match');
                 } elseif ($author_id = $this->_Author->commit()) {
@@ -568,10 +590,23 @@ class contentSystemAuthors extends AdministrationPage
                      * '/system/authors/'
                      * @param Author $author
                      *  The Author object that has just been created
+                     * @param array $fields
+                     *  The POST fields
+                     *  This parameter is available @since Symphony 2.7.0
+                     * @param array $errors
+                     *  The error array used to validate the Author, passed by reference.
+                     *  Extension should append to this array if they detect saving problems.
+                     *  This parameter is available @since Symphony 2.7.0
                      */
-                    Symphony::ExtensionManager()->notifyMembers('AuthorPostCreate', '/system/authors/', array('author' => $this->_Author));
+                    Symphony::ExtensionManager()->notifyMembers('AuthorPostCreate', '/system/authors/', array(
+                        'author' => $this->_Author,
+                        'field' => $fields,
+                        'errors' => &$this->_errors,
+                    ));
 
-                    redirect(SYMPHONY_URL . "/system/authors/edit/$author_id/created/");
+                    if (empty($this->_errors)) {
+                        redirect(SYMPHONY_URL . "/system/authors/edit/$author_id/created/");
+                    }
                 }
             }
 
