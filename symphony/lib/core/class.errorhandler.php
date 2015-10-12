@@ -28,6 +28,20 @@ class GenericExceptionHandler
     private static $_Log = null;
 
     /**
+     * Whether to log errors or not.
+     * This one is to be used temporarily, e.g., when PHP function is
+     * supposed throw Exception and log should be kept clean.
+     *
+     * @since Symphony 2.6.4
+     * @var boolean
+     * @example
+     *  GenericExceptionHandler::$logDisabled = true;
+     *  DoSomethingThatEndsWithWarningsYouDoNotWantInLogs();
+     *  GenericExceptionHandler::$logDisabled = false;
+     */
+    public static $logDisabled = false;
+
+    /**
      * Initialise will set the error handler to be the `__CLASS__::handler` function.
      *
      * @param Log $Log
@@ -115,7 +129,7 @@ class GenericExceptionHandler
             }
 
             // Exceptions should be logged if they are not caught.
-            if (self::$_Log instanceof Log) {
+            if (!self::$logDisabled && self::$_Log instanceof Log) {
                 self::$_Log->pushExceptionToLog($e, true);
             }
 
@@ -279,7 +293,7 @@ class GenericExceptionHandler
 
             try {
                 // Log the error message
-                if (self::$_Log instanceof Log) {
+                if (!self::$logDisabled && self::$_Log instanceof Log) {
                     self::$_Log->pushToLog(sprintf(
                         '%s %s: %s%s%s',
                         __CLASS__,
@@ -475,6 +489,9 @@ class GenericErrorHandler
         }
 
         if (self::isEnabled()) {
+            // prevent double logging
+            GenericExceptionHandler::$logDisabled = true;
+            // throw Error
             throw new ErrorException($message, 0, $code, $file, $line);
         }
 
