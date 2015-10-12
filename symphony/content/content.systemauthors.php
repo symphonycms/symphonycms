@@ -72,6 +72,21 @@ class contentSystemAuthors extends AdministrationPage
             ));
         }
 
+        /**
+         * Allows the creation of custom table columns for each author. Called
+         * after all the table headers columns have been added.
+         *
+         * @delegate AddCustomAuthorColumn
+         * @since Symphony 2.7.0
+         * @param string $context
+         * '/system/authors/'
+         * @param array $columns
+         * An array of the current columns, passed by reference
+         */
+        Symphony::ExtensionManager()->notifyMembers('AddCustomAuthorColumn', '/system/authors/', array(
+            'columns' => &$columns
+        ));
+
         $aTableHead = Sortable::buildTableHeaders($columns, $sort, $order, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : ''));
 
         $aTableBody = array();
@@ -130,12 +145,33 @@ class contentSystemAuthors extends AdministrationPage
 
                 $td5 = Widget::TableData($a->get("language") == null ? __("System Default") : $languages[$a->get("language")]);
 
+                $tableData = array();
                 // Add a row to the body array, assigning each cell to the row
                 if (Symphony::Author()->isDeveloper() || Symphony::Author()->isManager()) {
-                    $aTableBody[] = Widget::TableRow(array($td1, $td2, $td3, $td4, $td5));
+                    $tableData = array($td1, $td2, $td3, $td4, $td5);
                 } else {
-                    $aTableBody[] = Widget::TableRow(array($td1, $td2, $td3));
+                    $tableData = array($td1, $td2, $td3);
                 }
+
+                /**
+                 * Allows Extensions to inject custom table data for each Author
+                 * into the Authors Index
+                 *
+                 * @delegate AddCustomAuthorColumnData
+                 * @since Symphony 2.7.0
+                 * @param string $context
+                 * '/system/authors/'
+                 * @param array $tableData
+                 *  An array of `Widget::TableData`, passed by reference
+                 * @param array $columns
+                 * An array of the current columns
+                 */
+                Symphony::ExtensionManager()->notifyMembers('AddCustomAuthorColumnData', '/system/authors/', array(
+                    'tableData' => &$tableData,
+                    'columns' => $columns,
+                ));
+
+                $aTableBody[] = Widget::TableRow($tableData);
             }
         }
 
