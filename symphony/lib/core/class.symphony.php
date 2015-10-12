@@ -100,9 +100,7 @@ abstract class Symphony implements Singleton
         self::initialiseCookie();
 
         // If the user is not a logged in Author, turn off the verbose error messages.
-        if (!self::isLoggedIn() && is_null(self::$Author)) {
-            GenericExceptionHandler::$enabled = false;
-        }
+        GenericExceptionHandler::$enabled = self::isLoggedIn() && !is_null(self::$Author);
 
         // Engine is ready.
         self::$Profiler->sample('Engine Initialisation');
@@ -564,8 +562,8 @@ abstract class Symphony implements Singleton
      */
     public static function isLoggedIn()
     {
-        // Check to see if Symphony exists, or if we already have an Author instance.
-        if (is_null(self::$_instance) || self::$Author) {
+        // Check to see if we already have an Author instance.
+        if (self::$Author) {
             return true;
         }
 

@@ -13,7 +13,10 @@
 class GenericExceptionHandler
 {
     /**
-     * Whether the `GenericExceptionHandler` should handle exceptions. Defaults to true
+     * Whether the `GenericExceptionHandler` should handle exceptions. Defaults to true.
+     * @since Symphony 2.6.4
+     *  When disabled, exception are now rendered usign the fatalerror.disabled template,
+     *  to prevent leaking debug data.
      * @var boolean
      */
     public static $enabled = true;
@@ -78,11 +81,6 @@ class GenericExceptionHandler
         $output = '';
 
         try {
-            // Instead of just throwing an empty page, return a 404 page.
-            if (self::$enabled !== true) {
-                $e = new FrontendPageNotFoundException();
-            }
-
             $exception_type = get_class($e);
 
             if (class_exists("{$exception_type}Handler") && method_exists("{$exception_type}Handler", 'render')) {
@@ -109,7 +107,9 @@ class GenericExceptionHandler
             } catch (Exception $e) {
                 echo "<pre>";
                 echo 'A severe error occurred whilst trying to handle an exception, check the Symphony log for more details' . PHP_EOL;
-                echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
+                if (self::$enabled === true) {
+                    echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
+                }
                 exit;
             }
         }
@@ -154,11 +154,19 @@ class GenericExceptionHandler
     {
         $format = '%s/%s.tpl';
 
-        if (file_exists($template = sprintf($format, WORKSPACE . '/template', $name))) {
+        if (!self::$enabled) {
+            if (!file_exists($template = sprintf($format, TEMPLATE, 'fatalerror.disabled'))) {
+                return false;
+            }
             return $template;
-        } elseif (file_exists($template = sprintf($format, TEMPLATE, $name))) {
+        }
+        else if (file_exists($template = sprintf($format, WORKSPACE . '/template', $name))) {
             return $template;
-        } else {
+        }
+        else if (file_exists($template = sprintf($format, TEMPLATE, $name))) {
+            return $template;
+        }
+        else {
             return false;
         }
     }
@@ -267,7 +275,9 @@ class GenericExceptionHandler
             } catch (Exception $e) {
                 echo "<pre>";
                 echo 'A severe error occurred whilst trying to handle an exception, check the Symphony log for more details' . PHP_EOL;
-                echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
+                if (self::$enabled === true) {
+                    echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
+                }
             }
         }
     }
@@ -296,12 +306,12 @@ class GenericExceptionHandler
         $html = sprintf(
             file_get_contents(self::getTemplate($template)),
             $heading,
-            General::unwrapCDATA($message),
-            $file,
-            $line,
-            $lines,
-            $trace,
-            $queries
+            !self::$enabled ? 'Something unexpected occurred.' : General::unwrapCDATA($message),
+            !self::$enabled ? '' : $file,
+            !self::$enabled ? '' : $line,
+            !self::$enabled ? null : $lines,
+            !self::$enabled ? null : $trace,
+            !self::$enabled ? null : $queries
         );
 
         $html = str_replace('{ASSETS_URL}', ASSETS_URL, $html);
