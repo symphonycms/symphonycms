@@ -54,7 +54,9 @@ class contentAjaxEventDocumentation extends TextPage
             'rootelement' => $rootelement
         ));
 
-        $documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $doc_parts));
+        $documentation = join(PHP_EOL, array_map(function($part) {
+            return rtrim($part->generate(true, 4));
+        }, $doc_parts));
         $documentation = str_replace('\'', '\\\'', $documentation);
 
         $documentation = '<fieldset id="event-documentation" class="settings"><legend>' . __('Documentation') . '</legend>' . $documentation . '</fieldset>';

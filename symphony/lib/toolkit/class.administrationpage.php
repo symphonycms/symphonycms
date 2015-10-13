@@ -597,7 +597,9 @@ class AdministrationPage extends HTMLPage
         $body_id = trim(
             preg_replace_callback(
                 "/([A-Z])/",
-                create_function('$id', 'return "-" . strtolower($id[0]);'),
+                function($id) {
+                    return "-" . strtolower($id[0]);
+                },
                 $body_id
             ),
             '-'

@@ -519,7 +519,9 @@ class contentBlueprintsEvents extends ResourcesPage
                     'rootelement' => $rootelement
                 ));
 
-                $documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $doc_parts));
+                $documentation = join(PHP_EOL, array_map(function($part) {
+                    return rtrim($part->generate(true, 4));
+                }, $doc_parts));
                 $documentation = str_replace('\'', '\\\'', $documentation);
 
                 $eventShell = str_replace('<!-- CLASS EXTENDS -->', $extends, $eventShell);

@@ -68,7 +68,7 @@ class contentBlueprintsSections extends AdministrationPage
                 if ($s->get('hidden') === 'yes') {
                     $tr->setAttribute('class', 'inactive');
                 }
-                
+
                 $aTableBody[] = $tr;
             }
         }
@@ -278,7 +278,9 @@ class contentBlueprintsSections extends AdministrationPage
             }
         }
 
-        uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->_name, $b->_name);'));
+        uasort($types, function($a, $b) {
+            return strnatcasecmp($a->_name, $b->_name);
+        });
 
         foreach ($types as $type) {
             $defaults = array();
@@ -483,7 +485,9 @@ class contentBlueprintsSections extends AdministrationPage
             }
         }
 
-        uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->_name, $b->_name);'));
+        uasort($types, function($a, $b) {
+            return strnatcasecmp($a->_name, $b->_name);
+        });
 
         foreach ($types as $type) {
             $defaults = array();

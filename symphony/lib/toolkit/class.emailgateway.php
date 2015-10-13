@@ -210,7 +210,9 @@ abstract class EmailGateway
         if (!is_array($email)) {
             $email = explode(',', $email);
             // trim all values
-            array_walk($email, create_function('&$val', '$val = trim($val);'));
+            array_walk($email, function(&$val) {
+                return $val = trim($val);
+            });
             // remove empty elements
             $email = array_filter($email);
         }
@@ -877,8 +879,9 @@ abstract class EmailGateway
     private function __fromCamel($string)
     {
         $string[0] = strtolower($string[0]);
-        $func = create_function('$c', 'return "_" . strtolower($c[1]);');
 
-        return preg_replace_callback('/([A-Z])/', $func, $string);
+        return preg_replace_callback('/([A-Z])/', function($c) {
+            return "_" . strtolower($c[1]);
+        }, $string);
     }
 }

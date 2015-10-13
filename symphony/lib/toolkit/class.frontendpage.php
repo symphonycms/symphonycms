@@ -976,7 +976,7 @@ class FrontendPage extends XSLTPage
             $last_count = count($dependenciesList);
 
             foreach ($dependenciesList as $handle => $dependencies) {
-                if (General::in_array_all(array_map(create_function('$a', "return str_replace('\$ds-', '', \$a);"), $dependencies), $orderedList)) {
+                if (General::in_array_all(array_map(function($a) {return str_replace('\$ds-', '', $a);}, $dependencies), $orderedList)) {
                     $orderedList[] = str_replace('_', '-', $handle);
                     unset($dependenciesList[$handle]);
                 }
@@ -987,7 +987,7 @@ class FrontendPage extends XSLTPage
             $orderedList = array_merge($orderedList, array_keys($dependenciesList));
         }
 
-        return array_map(create_function('$a', "return str_replace('-', '_', \$a);"), $orderedList);
+        return array_map(function($a) {return str_replace('-', '_', $a);}, $orderedList);
     }
 
     /**
