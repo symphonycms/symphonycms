@@ -696,7 +696,28 @@ class contentSystemAuthors extends AdministrationPage
 
             $this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
 
-            if ($this->_Author->validate($this->_errors)) {
+            /**
+             * Before editing an author, provided with the Author object
+             *
+             * @delegate AuthorPreEdit
+             * @since Symphony 2.7.0
+             * @param string $context
+             * '/system/authors/'
+             * @param Author $author
+             * An Author object not yet committed, nor validated
+             * @param array $fields
+             *  The POST fields
+             * @param array $errors
+             *  The error array used to validate the Author, passed by reference.
+             *  Extension should append to this array if they detect validation problems.
+             */
+            Symphony::ExtensionManager()->notifyMembers('AuthorPreEdit', '/system/authors/', array(
+                'author' => $this->_Author,
+                'field' => $fields,
+                'errors' => &$this->_errors,
+            ));
+
+            if (empty($this->_errors) && $this->_Author->validate($this->_errors)) {
                 // Admin changing another profile
                 if (!$isOwner) {
                     $entered_password = Symphony::Database()->cleanValue($fields['confirm-change-password']);
@@ -742,10 +763,23 @@ class contentSystemAuthors extends AdministrationPage
                      * '/system/authors/'
                      * @param Author $author
                      * An Author object
+                     * @param array $fields
+                     *  The POST fields
+                     *  This parameter is available @since Symphony 2.7.0
+                     * @param array $errors
+                     *  The error array used to validate the Author, passed by reference.
+                     *  Extension should append to this array if they detect saving problems.
+                     *  This parameter is available @since Symphony 2.7.0
                      */
-                    Symphony::ExtensionManager()->notifyMembers('AuthorPostEdit', '/system/authors/', array('author' => $this->_Author));
+                    Symphony::ExtensionManager()->notifyMembers('AuthorPostEdit', '/system/authors/', array(
+                        'author' => $this->_Author,
+                        'field' => $fields,
+                        'errors' => &$this->_errors,
+                    ));
 
-                    redirect(SYMPHONY_URL . '/system/authors/edit/' . $author_id . '/saved/');
+                    if (empty($this->_errors)) {
+                        redirect(SYMPHONY_URL . '/system/authors/edit/' . $author_id . '/saved/');
+                    }
 
                     // Problems.
                 } else {
@@ -784,6 +818,8 @@ class contentSystemAuthors extends AdministrationPage
                 return;
             }
 
+            $this->_Author = AuthorManager::fetchByID($author_id);
+
             /**
              * Prior to deleting an author, provided with the Author ID.
              *
@@ -793,8 +829,14 @@ class contentSystemAuthors extends AdministrationPage
              * '/system/authors/'
              * @param integer $author_id
              *  The ID of Author ID that is about to be deleted
+             * @param Author $author
+             *  The Author object.
+             *  This parameter is available @since Symphony 2.7.0
              */
-            Symphony::ExtensionManager()->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_id' => $author_id));
+            Symphony::ExtensionManager()->notifyMembers('AuthorPreDelete', '/system/authors/', array(
+                'author_id' => $author_id,
+                'author' => $this->_Author
+            ));
 
             if (!$isOwner) {
                 AuthorManager::delete($author_id);
