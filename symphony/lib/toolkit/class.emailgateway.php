@@ -20,7 +20,7 @@ class EmailGatewayException extends Exception
      */
     public function __construct($message, $code = 0, $previous = null)
     {
-        $trace = parent::getTrace();
+        $trace = $this->getTrace();
         // Best-guess to retrieve classname of email-gateway.
         // Might fail in non-standard uses, will then return an
         // empty string.
@@ -97,8 +97,6 @@ abstract class EmailGateway
      * Email Gateway itself and should return true or false if the email
      * was successfully sent.
      * See the default gateway for an example.
-     *
-     * @abstract
      *
      * @return boolean
      */

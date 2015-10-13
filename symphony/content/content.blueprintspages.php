@@ -18,7 +18,7 @@ class contentBlueprintsPages extends AdministrationPage
     public function insertBreadcrumbsUsingPageIdentifier($page_id, $preserve_last = true)
     {
         if ($page_id == 0) {
-            return parent::insertBreadcrumbs(
+            return $this->insertBreadcrumbs(
                 array(Widget::Anchor(__('Pages'), SYMPHONY_URL . '/blueprints/pages/'))
             );
         }
@@ -53,7 +53,7 @@ class contentBlueprintsPages extends AdministrationPage
             array_pop($pages);
         }
 
-        parent::insertBreadcrumbs(array_merge(
+        $this->insertBreadcrumbs(array_merge(
             array(Widget::Anchor(__('Pages'), SYMPHONY_URL . '/blueprints/pages/')),
             $pages
         ));

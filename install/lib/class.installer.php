@@ -1,6 +1,7 @@
 <?php
 
     require_once CORE . "/class.administration.php";
+
     class Installer extends Administration
     {
         /**

@@ -247,7 +247,7 @@ class DevKit extends HTMLPage
      *  The resulting Page after it has been transformed, as a string. This is
      *  similar to what you would see if you 'view-sourced' a page.
      */
-    public function prepare(XSLTPage $page, Array $pagedata, $xml, Array $param, $output)
+    public function prepare(XSLTPage $page, array $pagedata, $xml, array $param, $output)
     {
         $this->_page = $page;
         $this->_pagedata = $pagedata;
@@ -293,6 +293,6 @@ class DevKit extends HTMLPage
         $this->buildContent($content);
         $this->Body->appendChild($content);
 
-        return parent::generate();
+        return $this->generate();
     }
 }

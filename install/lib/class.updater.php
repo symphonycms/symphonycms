@@ -53,7 +53,7 @@
          */
         public static function initialiseDatabase()
         {
-            parent::setDatabase();
+            self::setDatabase();
 
             $details = Symphony::Configuration()->get('database');
 
