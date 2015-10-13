@@ -13,7 +13,7 @@
 class GenericExceptionHandler
 {
     /**
-     * Whether the `GenericExceptionHandler` should handle exceptions. Defaults to true.
+     * Whether the `GenericExceptionHandler` should display exceptions. Defaults to true.
      * @since Symphony 2.6.4
      *  When disabled, exception are now rendered usign the fatalerror.disabled template,
      *  to prevent leaking debug data.
@@ -129,6 +129,14 @@ class GenericExceptionHandler
         }
 
         // Pending nothing disasterous, we should have `$e` and `$output` values here.
+        self::sendHeaders($e);
+
+        echo $output;
+        exit;
+    }
+
+    protected static function sendHeaders(Exception $e)
+    {
         if (!headers_sent()) {
             cleanup_session_cookies();
 
@@ -136,6 +144,9 @@ class GenericExceptionHandler
             $httpStatus = null;
             if ($e instanceof SymphonyErrorPage) {
                 $httpStatus = $e->getHttpStatusCode();
+                if (isset($e->getAdditional()->header)) {
+                    header($e->getAdditional()->header);
+                }
             } elseif ($e instanceof FrontendPageNotFoundException) {
                 $httpStatus = Page::HTTP_STATUS_NOT_FOUND;
             }
@@ -147,9 +158,6 @@ class GenericExceptionHandler
             Page::renderStatusCode($httpStatus);
             header('Content-Type: text/html; charset=utf-8');
         }
-
-        echo $output;
-        exit;
     }
 
     /**
