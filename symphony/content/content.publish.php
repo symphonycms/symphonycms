@@ -1122,7 +1122,6 @@ class contentPublish extends AdministrationPage
 
                 // Check to see if the dancing was premature
                 if (!$entry->commit()) {
-                    define_safe('__SYM_DB_INSERT_FAILED__', true);
                     $this->pageAlert(null, Alert::ERROR);
                 } else {
                     /**
@@ -1402,7 +1401,6 @@ class contentPublish extends AdministrationPage
 
                 // Check to see if the dancing was premature
                 if (!$entry->commit()) {
-                    define_safe('__SYM_DB_INSERT_FAILED__', true);
                     $this->pageAlert(null, Alert::ERROR);
                 } else {
                     /**
