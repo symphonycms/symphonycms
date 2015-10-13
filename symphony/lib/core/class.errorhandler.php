@@ -104,12 +104,15 @@ class GenericExceptionHandler
      *  This function works with both Exception and Throwable
      *  Supporting both PHP 5.6 and 7 forces use to not qualify the $e parameter
      *
+     * @since Symphony 3.0.0
+     *  The method is final
+     *
      * @param Throwable $e
      *  The Throwable object
      * @return string
      *  The result of the Throwable's render function
      */
-    public static function handler($e)
+    final public static function handler($e)
     {
         $output = '';
 
@@ -469,6 +472,9 @@ class GenericErrorHandler
      * `E_STRICT` before raising the error as an Exception. This allows all `E_WARNING`
      * to actually be captured by an Exception handler.
      *
+     * @since Symphony 3.0.0
+     *  The method is final
+     *
      * @param integer $code
      *  The error code, one of the PHP error constants
      * @param string $message
@@ -482,7 +488,7 @@ class GenericErrorHandler
      * @return boolean
      *  Usually a string of HTML that will displayed to a user
      */
-    public static function handler($code, $message, $file = null, $line = null)
+    final public static function handler($code, $message, $file = null, $line = null)
     {
         // Only log if the error won't be raised to an exception and the error is not `E_STRICT`
         if (!self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$_Log instanceof Log) {
