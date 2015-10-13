@@ -54,7 +54,7 @@ class Cryptography
     {
         $version = substr($hash, 0, 8);
 
-        if ($isHash == true) {
+        if ($isHash === true) {
             return $input == $hash;
         } elseif ($version == 'PBKDF2v1') { // salted PBKDF2
             return PBKDF2::compare($input, $hash);

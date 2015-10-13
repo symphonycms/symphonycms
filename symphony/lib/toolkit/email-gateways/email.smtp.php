@@ -58,7 +58,7 @@ class SMTPGateway extends EmailGateway
         $this->validate();
 
         $settings = array();
-        if ($this->_auth == true) {
+        if ($this->_auth) {
             $settings['username'] = $this->_user;
             $settings['password'] = $this->_pass;
         }
@@ -134,7 +134,7 @@ class SMTPGateway extends EmailGateway
             // Send the email command. If the envelope from variable is set, use that for the MAIL command. This improves bounce handling.
             $this->_SMTP->sendMail(is_null($this->_envelope_from)?$this->_sender_email_address:$this->_envelope_from, $this->_recipients, $this->_body);
 
-            if ($this->_keepalive == false) {
+            if ($this->_keepalive === false) {
                 $this->closeConnection();
             }
 
@@ -377,7 +377,7 @@ class SMTPGateway extends EmailGateway
         $group->appendChild(Widget::Input('settings[email_smtp][auth]', '0', 'hidden'));
         $input = Widget::Input('settings[email_smtp][auth]', '1', 'checkbox');
 
-        if ($this->_auth == true) {
+        if ($this->_auth === true) {
             $input->setAttribute('checked', 'checked');
         }
 

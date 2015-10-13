@@ -207,7 +207,7 @@ class DevKit extends HTMLPage
         $anchor = Widget::Anchor($name, $link);
         $anchor->setAttribute('class', 'inactive');
 
-        if ($active == true) {
+        if ($active) {
             $anchor->setAttribute('class', 'active');
         }
 

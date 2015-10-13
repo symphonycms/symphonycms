@@ -467,7 +467,7 @@ class Datasource
                     }
                 }
 
-                if ($escape == true) {
+                if ($escape) {
                     $replacement = urlencode($replacement);
                 }
 

@@ -70,7 +70,7 @@ class SMTP
                 case 'ssl':
                     $this->_transport = 'ssl';
                     $this->_secure = 'ssl';
-                    if ($port == null) {
+                    if ($port === null) {
                         $port = 465;
                     }
                     break;
@@ -87,7 +87,7 @@ class SMTP
             $this->_ip = $options['local_ip'];
         }
 
-        if ($port == null) {
+        if ($port === null) {
             $port = 25;
         }
 

@@ -149,7 +149,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                 }
             }
 
-            if ($provided == false) {
+            if ($provided === false) {
                 switch ($fields['source']) {
                     case 'authors':
                         $fields['filter']['author'] = $existing->dsParamFILTERS;
