@@ -154,6 +154,14 @@ class GenericExceptionHandler
         }
 
         // Pending nothing disasterous, we should have `$e` and `$output` values here.
+        self::sendHeaders($e);
+
+        echo $output;
+        exit;
+    }
+
+    protected static function sendHeaders(Exception $e)
+    {
         if (!headers_sent()) {
             cleanup_session_cookies();
 
@@ -161,6 +169,9 @@ class GenericExceptionHandler
             $httpStatus = null;
             if ($e instanceof SymphonyErrorPage) {
                 $httpStatus = $e->getHttpStatusCode();
+                if (isset($e->getAdditional()->header)) {
+                    header($e->getAdditional()->header);
+                }
             } elseif ($e instanceof FrontendPageNotFoundException) {
                 $httpStatus = Page::HTTP_STATUS_NOT_FOUND;
             }
@@ -172,9 +183,6 @@ class GenericExceptionHandler
             Page::renderStatusCode($httpStatus);
             header('Content-Type: text/html; charset=utf-8');
         }
-
-        echo $output;
-        exit;
     }
 
     /**
