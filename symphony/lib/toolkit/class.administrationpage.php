@@ -330,10 +330,12 @@ class AdministrationPage extends HTMLPage
      * backend page such as the default stylesheets and scripts, the navigation and
      * the footer. Any alerts are also appended by this function. `view()` is called to
      * build the actual content of the page. The `InitialiseAdminPageHead` delegate
-     * allows extensions to add elements to the `<head>`.
+     * allows extensions to add elements to the `<head>`. The `CanAccessPage` delegate
+     * allows extensions to restrict access to pages.
      *
      * @see view()
      * @uses InitialiseAdminPageHead
+     * @uses CanAccessPage
      * @param array $context
      *  An associative array describing this pages context. This
      *  can include the section handle, the current entry_id, the page
@@ -474,6 +476,12 @@ class AdministrationPage extends HTMLPage
      * if the current page (or the current page namespace) can be viewed
      * by the currently logged in Author.
      *
+     * @since Symphony 2.7.0
+     * It fires a delegate, CanAccessPage, to allow extensions to restrict access
+     * to the current page
+     *
+     * @uses CanAccessPage
+     *
      * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
      * @return boolean
      *  True if the Author can access the current page, false otherwise
@@ -511,7 +519,37 @@ class AdministrationPage extends HTMLPage
             }
         }
 
-        return $this->doesAuthorHaveAccess($page_limit);
+        $hasAccess = $this->doesAuthorHaveAccess($page_limit);
+
+        if ($hasAccess) {
+            /**
+             * Immediately after the core access rules allowed access to this page
+             * (i.e. not called if the core rules denied it).
+             * Extension developers must only further restrict access to it.
+             * Extension developers must also take care of checking the current value
+             * of the allowed parameter in order to prevent conflicts with other extensions.
+             * `$context['allowed'] = $context['allowed'] && customLogic();`
+             *
+             * @delegate CanAccessPage
+             * @since Symphony 2.7.0
+             * @see doesAuthorHaveAccess()
+             * @param string $context
+             *  '/backend/'
+             * @param bool $allowed
+             *  A flag to further restrict access to the page, passed by reference
+             * @param string $page_limit
+             *  The computed page limit for the current page
+             * @param string $page_url
+             *  The computed page url for the current page
+             */
+            Symphony::ExtensionManager()->notifyMembers('CanAccessPage', '/backend/', array(
+                'allowed' => &$hasAccess,
+                'page_limit' => $page_limit,
+                'page_url' => $page,
+            ));
+        }
+
+        return $hasAccess;
     }
 
     /**
