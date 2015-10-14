@@ -795,7 +795,9 @@ class AdministrationPage extends HTMLPage
          * @param array $nav
          *  An associative array of the current navigation, passed by reference
          */
-        Symphony::ExtensionManager()->notifyMembers('NavigationPreRender', '/backend/', array('navigation' => &$nav));
+        Symphony::ExtensionManager()->notifyMembers('NavigationPreRender', '/backend/', array(
+            'navigation' => &$nav,
+        ));
 
         $navElement = new XMLElement('nav', null, array('id' => 'nav', 'role' => 'navigation'));
         $contentNav = new XMLElement('ul', null, array('class' => 'content', 'role' => 'menubar'));
@@ -1148,7 +1150,7 @@ class AdministrationPage extends HTMLPage
          *  An associative array of the current navigation, passed by reference
          */
         Symphony::ExtensionManager()->notifyMembers('NavigationPostBuild', '/backend/', array(
-            'navigation' => &$this->_navigation
+            'navigation' => &$this->_navigation,
         ));
     }
 
