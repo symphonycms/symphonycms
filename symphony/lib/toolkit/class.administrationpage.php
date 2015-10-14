@@ -1139,6 +1139,25 @@ class AdministrationPage extends HTMLPage
 
         ksort($nav);
         $this->_navigation = $nav;
+
+        /**
+         * Immediately after the navigation array as been built. Provided with the
+         * navigation array. Manipulating it will alter the navigation for all pages.
+         * Developers can also alter the 'limit' property of each page to allow more
+         * or less access to them.
+         * Preventing a user from accessing the page affects both the navigation and the
+         * page access rights: user will get a 403 Forbidden error if not authorized.
+         *
+         * @delegate NavigationPostBuild
+         * @since Symphony 2.7.0
+         * @param string $context
+         *  '/backend/'
+         * @param array $nav
+         *  An associative array of the current navigation, passed by reference
+         */
+        Symphony::ExtensionManager()->notifyMembers('NavigationPostBuild', '/backend/', array(
+            'navigation' => &$this->_navigation
+        ));
     }
 
     /**
