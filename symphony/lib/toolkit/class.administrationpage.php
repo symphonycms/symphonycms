@@ -874,6 +874,10 @@ class AdministrationPage extends HTMLPage
      * Returns the `$_navigation` variable of this Page. If it is empty,
      * it will be built by `__buildNavigation`
      *
+     * When it calls `__buildNavigation`, it fires a delegate, NavigationPostBuild,
+     * to allow extensions to manipulate the navigation.
+     *
+     * @uses NavigationPostBuild
      * @see __buildNavigation()
      * @return array
      */
@@ -1117,6 +1121,10 @@ class AdministrationPage extends HTMLPage
      * navigation. Additionally, this function will set the active group of the navigation
      * by checking the current page against the array of links.
      *
+     * It fires a delegate, NavigationPostBuild, to allow extensions to manipulate
+     * the navigation.
+     *
+     * @uses NavigationPostBuild
      * @link https://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
      * @link https://github.com/symphonycms/symphony-2/blob/master/symphony/lib/toolkit/class.extension.php
      */
