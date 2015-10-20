@@ -101,6 +101,7 @@ module.exports = function (grunt) {
                         'symphony/assets/js/src/symphony.js',
                         'symphony/assets/js/src/symphony.affix.js',
                         'symphony/assets/js/src/symphony.collapsible.js',
+                        'symphony/assets/js/src/symphony.defaultvalue.js',
                         'symphony/assets/js/src/symphony.orderable.js',
                         'symphony/assets/js/src/symphony.selectable.js',
                         'symphony/assets/js/src/symphony.duplicator.js',
