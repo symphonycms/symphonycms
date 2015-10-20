@@ -606,6 +606,10 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 				});
 			}
 		}, 500, nameChangeCount, current, value);
+	})
+	// Enable the default value for Data Source name
+	.symphonyDefaultValue({
+		sourceElement: context
 	});
 
 	// Update output parameters
@@ -735,6 +739,10 @@ Symphony.View.add('/blueprints/events/:action:/:name:/:status:/:*:', function() 
 				Symphony.Elements.contents.trigger('update.admin');
 			}
 		}, 500, nameChangeCount, current);
+	})
+	// Enable the default value for Event name
+	.symphonyDefaultValue({
+		sourceElement: context
 	});
 
 	// Change context
