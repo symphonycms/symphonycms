@@ -976,7 +976,7 @@ class FrontendPage extends XSLTPage
             $last_count = count($dependenciesList);
 
             foreach ($dependenciesList as $handle => $dependencies) {
-                if (General::in_array_all(array_map(function($a) {return str_replace('\$ds-', '', $a);}, $dependencies), $orderedList)) {
+                if (General::in_array_all(array_map(function($a) {return str_replace('$ds-', '', $a);}, $dependencies), $orderedList)) {
                     $orderedList[] = str_replace('_', '-', $handle);
                     unset($dependenciesList[$handle]);
                 }
