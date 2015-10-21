@@ -153,7 +153,7 @@ class Entry
      * @throws DatabaseException
      * @throws Exception
      * @return integer
-     *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
+     *  Either `Entry::__ENTRY_OK__` or `Entry::__ENTRY_FIELD_ERROR__`
      */
     public function setDataFromPost($data, &$errors = null, $simulate = false, $ignore_missing_fields = false)
     {
