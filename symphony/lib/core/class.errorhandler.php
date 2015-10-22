@@ -93,7 +93,7 @@ class GenericExceptionHandler
      * @return string
      *  The result of the Exception's render function
      */
-    public final static function handler(Exception $e)
+    final public static function handler(Exception $e)
     {
         $output = '';
 
@@ -456,7 +456,7 @@ class GenericErrorHandler
      * @return string
      *  Usually a string of HTML that will displayed to a user
      */
-    public final static function handler($code, $message, $file = null, $line = null)
+    final public static function handler($code, $message, $file = null, $line = null)
     {
         // Only log if the error won't be raised to an exception and the error is not `E_STRICT`
         if (!self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$_Log instanceof Log) {
