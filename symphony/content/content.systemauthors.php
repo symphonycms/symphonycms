@@ -165,10 +165,13 @@ class contentSystemAuthors extends AdministrationPage
                  *  An array of `Widget::TableData`, passed by reference
                  * @param array $columns
                  * An array of the current columns
+                 * @param Author $author
+                 *  The Author object.
                  */
                 Symphony::ExtensionManager()->notifyMembers('AddCustomAuthorColumnData', '/system/authors/', array(
                     'tableData' => &$tableData,
                     'columns' => $columns,
+                    'author' => $a,
                 ));
 
                 $aTableBody[] = Widget::TableRow($tableData);
@@ -445,10 +448,14 @@ class contentSystemAuthors extends AdministrationPage
         * constant.
         * @param string $default_area
         * The current `default_area` for this Author.
+        * @param Author $author
+        *  The Author object.
+        *  This parameter is available @since Symphony 2.7.0
         */
         Symphony::ExtensionManager()->notifyMembers('AddDefaultAuthorAreas', '/system/authors/', array(
             'options' => &$options,
             'default_area' => $author->get('default_area'),
+            'author' => $author,
         ));
 
         $label->appendChild(Widget::Select('fields[default_area]', $options));
