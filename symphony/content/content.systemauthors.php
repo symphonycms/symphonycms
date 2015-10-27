@@ -539,11 +539,17 @@ class contentSystemAuthors extends AdministrationPage
         * @param array $fields
         *  The POST fields
         *  This parameter is available @since Symphony 2.7.0
+        * @param array $errors
+        *  The error array used to validate the Author.
+        *  Extension should register their own errors elsewhere and used the value
+        *  to modify the UI accordingly.
+        *  This parameter is available @since Symphony 2.7.0
         */
         Symphony::ExtensionManager()->notifyMembers('AddElementstoAuthorForm', '/system/authors/', array(
             'form' => &$this->Form,
             'author' => $author,
             'fields' => $_POST['fields'],
+            'errors' => $this->_errors,
         ));
     }
 
