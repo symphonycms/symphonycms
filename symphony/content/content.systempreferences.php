@@ -196,7 +196,7 @@ class contentSystemPreferences extends AdministrationPage
         Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/preferences/');
 
         if (isset($_POST['action']['save'])) {
-            $settings = $_POST['settings'];
+            $settings = filter_var_array($_POST['settings'], FILTER_SANITIZE_STRING);
 
             /**
              * Just prior to saving the preferences and writing them to the `CONFIG`
@@ -210,7 +210,10 @@ class contentSystemPreferences extends AdministrationPage
              * @param array $errors
              *  An array of errors passed by reference
              */
-            Symphony::ExtensionManager()->notifyMembers('Save', '/system/preferences/', array('settings' => &$settings, 'errors' => &$this->_errors));
+            Symphony::ExtensionManager()->notifyMembers('Save', '/system/preferences/', array(
+                'settings' => &$settings,
+                'errors' => &$this->_errors
+            ));
 
             if (!is_array($this->_errors) || empty($this->_errors)) {
                 if (is_array($settings) && !empty($settings)) {
