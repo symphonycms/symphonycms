@@ -235,9 +235,13 @@ abstract class Symphony implements Singleton
         );
 
         // Create the base handler
-        array_walk($handler['args'], 'General::replacePlaceholdersWithContext', $context);
-        $reflection = new ReflectionClass($handler['class']);
-        $handler = $reflection->newInstanceArgs($handler['args']);
+        if (is_array($handler['args'])) {
+            array_walk($handler['args'], 'General::replacePlaceholdersWithContext', $context);
+            $reflection = new ReflectionClass($handler['class']);
+            $handler = $reflection->newInstanceArgs($handler['args']);
+        } else {
+            $handler = new \Monolog\Handler\StreamHandler($filename);
+        }
 
         // Create the base formatter
         if ($format = self::Configuration()->get('formatter', 'log')) {
