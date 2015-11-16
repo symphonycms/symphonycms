@@ -114,7 +114,7 @@
 
             // If there are no applicable migrations then this is up to date
             if (empty($migrations)) {
-                Symphony::Log()->info('Updater - Already up-to-date'));
+                Symphony::Log()->info('Updater - Already up-to-date');
 
                 self::__render(new UpdaterPage('uptodate'));
             }
