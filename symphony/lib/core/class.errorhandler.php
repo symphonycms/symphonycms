@@ -93,7 +93,7 @@ class GenericExceptionHandler
 
             // Exceptions should be logged if they are not caught.
             if (self::$_Log instanceof Log) {
-                self::$_Log->pushExceptionToLog($e, true);
+                self::$_Log->pushExceptionToLog($e->getAdditional()->error ? $e->getAdditional()->error : $e, true);
             }
 
             $output = call_user_func(array($class, 'render'), $e);
