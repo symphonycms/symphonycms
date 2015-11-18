@@ -530,6 +530,7 @@ class AdministrationPage extends HTMLPage
         $hasAccess = $this->doesAuthorHaveAccess($page_limit);
 
         if ($hasAccess) {
+            $page_context = $this->getContext();
             /**
              * Immediately after the core access rules allowed access to this page
              * (i.e. not called if the core rules denied it).
@@ -554,6 +555,10 @@ class AdministrationPage extends HTMLPage
                 'allowed' => &$hasAccess,
                 'page_limit' => $page_limit,
                 'page_url' => $page,
+                'section' => array(
+                    'id' => !isset($page_context['section_handle']) ? 0 : SectionManager::fetchIDFromHandle($page_context['section_handle']),
+                    'handle' => $page_context['section_handle']
+                ),
             ));
         }
 
@@ -1018,13 +1023,49 @@ class AdministrationPage extends HTMLPage
                     );
                 }
 
-                $nav[$group_index]['children'][] = array(
-                    'link' => '/publish/' . $s->get('handle') . '/',
-                    'name' => $s->get('name'),
-                    'type' => 'section',
-                    'section' => array('id' => $s->get('id'), 'handle' => $s->get('handle')),
-                    'visible' => ($s->get('hidden') == 'no' ? 'yes' : 'no')
-                );
+                $hasAccess = true;
+                /**
+                 * Immediately after the core access rules allowed access to this page
+                 * (i.e. not called if the core rules denied it).
+                 * Extension developers must only further restrict access to it.
+                 * Extension developers must also take care of checking the current value
+                 * of the allowed parameter in order to prevent conflicts with other extensions.
+                 * `$context['allowed'] = $context['allowed'] && customLogic();`
+                 *
+                 * @delegate CanAccessPage
+                 * @since Symphony 2.7.0
+                 * @see doesAuthorHaveAccess()
+                 * @param string $context
+                 *  '/backend/'
+                 * @param bool $allowed
+                 *  A flag to further restrict access to the page, passed by reference
+                 * @param string $page_limit
+                 *  The computed page limit for the current page
+                 * @param string $page_url
+                 *  The computed page url for the current page
+                 */
+                Symphony::ExtensionManager()->notifyMembers('CanAccessPage', '/backend/', array(
+                    'allowed' => &$hasAccess,
+                    'page_limit' => $c['limit'],
+                    'page_url' => $c['link'],
+                    'section' => array(
+                        'id' => $s->get('id'),
+                        'handle' => $s->get('handle')
+                    ),
+                ));
+
+                if ($hasAccess) {
+                    $nav[$group_index]['children'][] = array(
+                        'link' => '/publish/' . $s->get('handle') . '/',
+                        'name' => $s->get('name'),
+                        'type' => 'section',
+                        'section' => array(
+                            'id' => $s->get('id'),
+                            'handle' => $s->get('handle')
+                        ),
+                        'visible' => ($s->get('hidden') == 'no' ? 'yes' : 'no')
+                    );
+                }
             }
         }
     }
