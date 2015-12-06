@@ -31,8 +31,11 @@
         // Handle custom admin paths, #702
         $adminPath = Symphony::Configuration()->get('admin-path', 'symphony');
         $adminPath = (is_null($adminPath)) ? 'symphony' :  $adminPath;
-        if (strpos(getCurrentPage(), $adminPath, 0) === 0) {
-            $_GET['symphony-page'] = preg_replace('%^' . preg_quote($adminPath) . '\/%', '', getCurrentPage(), 1);
+        // getCurrentPage() always starts with / #2522
+        $adminRegExp = '%^\/' . preg_quote($adminPath) . '\/%';
+
+        if (preg_match($adminRegExp, getCurrentPage()) === 1) {
+            $_GET['symphony-page'] = preg_replace($adminRegExp, '', getCurrentPage(), 1);
 
             if ($_GET['symphony-page'] == '') {
                 unset($_GET['symphony-page']);
