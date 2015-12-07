@@ -39,7 +39,9 @@ class DateTimeObj
         'd.m.Y' => 'DD.MM.YYYY',    // e. g. 02.01.2014
         'd.m.y' => 'DD.MM.YYYY',    // e. g. 02.01.14
         'd F Y' => 'DD MMMM YYYY',  // e. g. 02 January 2014
+        'd. F Y' => 'DD. MMMM YYYY', // e. g. 02. January 2014
         'd M Y' => 'DD MMM YYYY',   // e. g. 02 Jan 2014
+        'd. M Y' => 'DD. MMM. YYYY', // e. g. 02. Jan 2014
         'j. F Y' => 'D. MMMM YYYY', // e. g. 2. January 2014 - no leading zeros
         'j. M. Y' => 'D. MMM. YYYY', // e. g. 2. Jan. 2014 - no leading zeros
     );
