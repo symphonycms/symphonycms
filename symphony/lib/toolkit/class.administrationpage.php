@@ -451,7 +451,7 @@ class AdministrationPage extends HTMLPage
         }
 
         $h1 = new XMLElement('h1');
-        $h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/'));
+        $h1->appendChild(Widget::Anchor(Symphony::Configuration()->get('sitename', 'general'), rtrim(URL, '/') . '/', null, null, null, array('target' => '_blank')));
         $this->Header->appendChild($h1);
 
         $this->appendUserLinks();
