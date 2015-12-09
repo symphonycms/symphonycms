@@ -75,12 +75,12 @@ abstract class Symphony implements Singleton
     private static $exception = null;
 
     /**
-     * The Symphony constructor initialises the class variables of Symphony.
-     * It will set the DateTime settings, define new date constants and initialise
-     * the correct Language for the currently logged in Author. If magic quotes
-     * are enabled, Symphony will sanitize the `$_SERVER`, `$_COOKIE`,
-     * `$_GET` and `$_POST` arrays. The constructor loads in
-     * the initial Configuration values from the `CONFIG` file
+     * The Symphony constructor initialises the class variables of Symphony. At present
+     * constructor has a couple of responsibilities:
+     * - Start a profiler instance
+     * - If magic quotes are enabled, clean `$_SERVER`, `$_COOKIE`, `$_GET` and `$_POST` arrays 
+     * - Initialise the correct Language for the currently logged in Author.
+     * - Start the session and adjust the error handling if the user is logged in
      */
     protected function __construct()
     {
@@ -92,14 +92,6 @@ abstract class Symphony implements Singleton
             General::cleanArray($_GET);
             General::cleanArray($_POST);
         }
-
-        // Set date format throughout the system
-        define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
-        define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
-        define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
-        DateTimeObj::setSettings(self::Configuration()->get('region'));
-
-        self::initialiseErrorHandler();
 
         // Initialize language management
         Lang::initialize();
@@ -150,7 +142,8 @@ abstract class Symphony implements Singleton
 
     /**
      * Setter for `$Configuration`. This function initialise the configuration
-     * object and populate its properties based on the given $array.
+     * object and populate its properties based on the given `$array`. Since
+     * Symphony 2.6.5, it will also set Symphony's date constants.
      *
      * @since Symphony 2.3
      * @param array $data
@@ -168,6 +161,12 @@ abstract class Symphony implements Singleton
 
         self::$Configuration = new Configuration(true);
         self::$Configuration->setArray($data);
+
+        // Set date format throughout the system
+        define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
+        define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
+        define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
+        DateTimeObj::setSettings(self::Configuration()->get('region'));
     }
 
     /**
