@@ -206,7 +206,7 @@ class Author
                     "SELECT COUNT(`id`) as `count`
                     FROM `tbl_authors`
                     WHERE `email` = '%s'",
-                    General::sanitize($this->get('email'))
+                    Symphony::Database()->cleanValue($this->get('email'))
                 )) != 0
             ) {
                 $errors['email'] = __('E-mail address is already taken');
@@ -218,7 +218,7 @@ class Author
             FROM `tbl_authors`
             WHERE `email` = '%s'
             LIMIT 1",
-            General::sanitize($this->get('email'))
+            Symphony::Database()->cleanValue($this->get('email'))
         ))) {
             $errors['email'] = __('E-mail address is already taken');
         }
@@ -236,7 +236,7 @@ class Author
                     "SELECT COUNT(`id`) as `count`
                     FROM `tbl_authors`
                     WHERE `username` = '%s'",
-                    General::sanitize($this->get('username'))
+                    Symphony::Database()->cleanValue($this->get('username'))
                 )) != 0
             ) {
                 $errors['username'] = __('Username is already taken');
@@ -248,7 +248,7 @@ class Author
             FROM `tbl_authors`
             WHERE `username` = '%s'
             LIMIT 1",
-            General::sanitize($this->get('username'))
+            Symphony::Database()->cleanValue($this->get('username'))
         ))) {
             $errors['username'] = __('Username is already taken');
         }

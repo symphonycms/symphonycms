@@ -549,7 +549,7 @@ class contentSystemAuthors extends AdministrationPage
             $this->_Author->set('user_type', $fields['user_type']);
             $this->_Author->set('primary', 'no');
             $this->_Author->set('email', $fields['email']);
-            $this->_Author->set('username', $fields['username']);
+            $this->_Author->set('username', General::sanitize($fields['username']));
             $this->_Author->set('first_name', General::sanitize($fields['first_name']));
             $this->_Author->set('last_name', General::sanitize($fields['last_name']));
             $this->_Author->set('last_seen', null);
@@ -638,7 +638,7 @@ class contentSystemAuthors extends AdministrationPage
             }
 
             $this->_Author->set('email', $fields['email']);
-            $this->_Author->set('username', $fields['username']);
+            $this->_Author->set('username', General::sanitize($fields['username']));
             $this->_Author->set('first_name', General::sanitize($fields['first_name']));
             $this->_Author->set('last_name', General::sanitize($fields['last_name']));
             $this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
