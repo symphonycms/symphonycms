@@ -29,7 +29,7 @@
 	 * @param {String} [options.content='.content'] Selector to find hideable content area
 	 * @param {Boolean} [options.save_state=true] Stores states of instances using local storage
 	 * @param {String} [options.storage='symphony.collapsible.area.page.id'] Namespace used for local storage
-	 * @param {Integer} [options.delay=250'] Time delay for animations
+	 * @param {Integer} [options.delay=250] Time delay for animations
 	 *
 	 * @example
 
@@ -69,7 +69,7 @@
 
 			var collapseItem = function collapse(item, duration) {
 				var heightMin = 0;
-				
+
 				// Customization point
 				item.trigger('collapsebefore.collapsible', settings);
 
@@ -107,7 +107,7 @@
 					scrollTop = $(window).scrollTop(),
 					visibleIndex = visibles.eq(0).index(),
 					visibleCollapsedHeight = 0;
-				
+
 				// Find items that will be visible after collapse
 				while (visibleIndex < items.length && visibleCollapsedHeight < window.innerHeight) {
 					var currentItem = items.eq(visibleIndex);
@@ -135,10 +135,10 @@
 			// Expand item
 			var expandItem = function (item, duration) {
 				var heightMax = 0;
-				
+
 				// Customization point
 				item.trigger('expandbefore.collapsible', settings);
-				
+
 				heightMax = item.data('heightMax');
 
 				// Check duration
@@ -157,7 +157,7 @@
 					}, duration);
 				}
 			};
-			
+
 			object.on('expand.collapsible', settings.items, function expand(event, duration) {
 				var item = $(this);
 				expandItem(item, getDuration(duration));
@@ -169,7 +169,7 @@
 					visibles = Symphony.Utilities.inSight(items).filter('*:lt(4)'),
 					invisibles = items.not(visibles),
 					scrollTop = $(window).scrollTop();
-				
+
 				visibles.addClass('js-animate-all'); // prevent focus
 				visibles.each(function () { expandItem($(this), settings.delay); });
 				setTimeout(function expandAllInvisible() {
@@ -261,17 +261,17 @@
 			object.on('destructstop.duplicator', settings.items, function refreshState() {
 				$(this).trigger('store.collapsible');
 			});
-			
+
 			// Update sizes
 			object.on('updatesize.collapsible', settings.items, function updateSizes() {
 				var item = $(this),
 					min = item.find(settings.handles).outerHeight(true),
 					max = min + item.find(settings.content).outerHeight(true);
-					
+
 				item.data('heightMin', min);
 				item.data('heightMax', max);
 			});
-			
+
 			// Set sizes
 			object.on('setsize.collapsible', settings.items, function setSizes() {
 				var item = $(this);

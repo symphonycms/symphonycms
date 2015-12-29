@@ -13,6 +13,7 @@
 	 * @param {Object} options An object specifying containing the attributes specified below
 	 * @param {String} [options.items='time'] Selector to find the absolute date
 	 * @param {String} [options.timestamp='utc'] Attribute of `object.items` representing the timestamp of the given date
+	 * @param {Integer} [options.max=0] Plugin will disable when the minutes exceed this value. By default this behaviour is off.
 	 *
 	 * @example
 
