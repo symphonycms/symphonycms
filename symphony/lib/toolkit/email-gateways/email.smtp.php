@@ -78,7 +78,8 @@ class SMTPGateway extends EmailGateway
                     continue;
                 }
 
-                $name = empty($name) ? $name : EmailHelper::qEncode($name);
+                // if the key is not numeric, qEncode the key.
+                $name = General::intval($name) > -1 ? General::intval($name) : EmailHelper::qEncode($name);
                 $recipients[$name] = $email;
             }
 
