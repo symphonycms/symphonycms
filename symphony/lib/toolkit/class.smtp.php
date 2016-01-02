@@ -32,8 +32,6 @@ class SMTP
     protected $_header_fields = array();
 
     protected $_from = null;
-    protected $_subject = null;
-    protected $_to = array();
 
     protected $_ip = '127.0.0.1';
     protected $_connection = false;
