@@ -127,15 +127,15 @@
 
 			filtering.find('.instance:not(.template):visible').each(function() {
 				var item = $(this),
-					comparison = $.trim(item.find('.comparison').val()),
+					filterPrefix = item.find('.comparison option:selected').data('filter-prefix'),
 					query = item.find('.filter'),
 					value;
 
-				if (!!comparison) {
-					comparison = comparison + ' ';
+				if (filterPrefix.length === 0 || !filterPrefix.trim()) {
+					filterPrefix = '';
 				}
 
-				value = 'filter[' + query.attr('name') + ']=' + comparison + $.trim(query.val());
+				value = 'filter[' + query.attr('name') + ']=' + filterPrefix + $.trim(query.val());
 				filters.push(value);
 			});
 
