@@ -215,11 +215,11 @@ class contentPublish extends AdministrationPage
         $comparisons = array();
         
         foreach($data['comparisons'] as $key=>$comparison) {
-    		$comparisons[$key][0] = $comparison[2];
-    		$comparisons[$key][1] = $comparison[1];
-			$comparisons[$key][2] = $comparison[2];
-			$comparisons[$key][5] = array('data-filter-prefix' => $comparison[0]);
-		}
+            $comparisons[$key][0] = $comparison[2];
+            $comparisons[$key][1] = $comparison[1];
+            $comparisons[$key][2] = $comparison[2];
+            $comparisons[$key][5] = array('data-filter-prefix' => $comparison[0]);
+        }
         
         $select = Widget::Select($data['type'] . '-comparison', $comparisons, array(
             'class' => 'comparison'
@@ -261,11 +261,11 @@ class contentPublish extends AdministrationPage
             
             // Selected state : Comparison mode "between" (x to y)
             if ($operator['title'] === 'between' && preg_match('/^(-?(?:\d+(?:\.\d+)?|\.\d+)) to (-?(?:\d+(?:\.\d+)?|\.\d+))$/i', $data['filter'] )) {
-	            $selected = true;
-	        // Selected state : Other comparison modes (except "is")
+                $selected = true;
+            // Selected state : Other comparison modes (except "is")
             } else if ((!empty($filter) && strpos($data['filter'], $filter) === 0)) {
-	            $selected = true;
-	        }
+                $selected = true;
+            }
 	        
             $comparisons[] = array(
                 $operator['filter'],
