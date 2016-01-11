@@ -212,16 +212,7 @@ class contentPublish extends AdministrationPage
         $label = Widget::Label();
         $label->setAttribute('class', 'column secondary');
 
-        $comparisons = array();
-        
-        foreach($data['comparisons'] as $key=>$comparison) {
-            $comparisons[$key][0] = $comparison[2];
-            $comparisons[$key][1] = $comparison[1];
-            $comparisons[$key][2] = $comparison[2];
-            $comparisons[$key][5] = array('data-filter-prefix' => $comparison[0]);
-        }
-        
-        $select = Widget::Select($data['type'] . '-comparison', $comparisons, array(
+        $select = Widget::Select($data['type'] . '-comparison', $data['comparisons'], array(
             'class' => 'comparison'
         ));
 
@@ -268,9 +259,12 @@ class contentPublish extends AdministrationPage
             }
 	        
             $comparisons[] = array(
-                $operator['filter'],
+	            __($operator['title']),
                 $selected,
-                __($operator['title'])
+                __($operator['title']),
+                null,
+                null,
+                array('data-filter-prefix' => $operator['filter'])
             );
         }
 
