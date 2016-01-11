@@ -259,7 +259,7 @@ class contentPublish extends AdministrationPage
             }
 	        
             $comparisons[] = array(
-	            __($operator['title']),
+                __($operator['title']),
                 $selected,
                 __($operator['title']),
                 null,
