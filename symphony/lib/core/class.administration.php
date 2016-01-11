@@ -149,14 +149,14 @@ class Administration extends Symphony
                 } elseif (!is_null(Symphony::Author()->get('default_area'))) {
                     $default_area = preg_replace('/^' . preg_quote(SYMPHONY_URL, '/') . '/i', '', Symphony::Author()->get('default_area'));
                 }
-                
+
                 // Fallback: No default area found
                 if (is_null($default_area)) {
                     if (Symphony::Author()->isDeveloper()) {
                         // Redirect to the section index if author is a developer
                         redirect(SYMPHONY_URL . '/blueprints/sections/');
                     } else {
-	                    // Redirect to the author page if author is not a developer
+                        // Redirect to the author page if author is not a developer
                         redirect(SYMPHONY_URL . "/system/authors/edit/".Symphony::Author()->get('id')."/");
                     }
                 } else {
