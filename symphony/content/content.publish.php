@@ -259,12 +259,12 @@ class contentPublish extends AdministrationPage
             }
 	        
             $comparisons[] = array(
-                __($operator['title']),
+                $operator['filter'],
                 $selected,
                 __($operator['title']),
                 null,
                 null,
-                array('data-filter-prefix' => $operator['filter'])
+                array('data-comparison' => $operator['title'])
             );
         }
 
@@ -302,7 +302,7 @@ class contentPublish extends AdministrationPage
 
         $li = new XMLElement('li', __('Comparison mode') . ': ' . $operator['help'], array(
             'class' => 'help',
-            'data-comparison' => trim($operator['filter'])
+            'data-comparison' => $operator['title']
         ));
 
         $wrapper->appendChild($li);
