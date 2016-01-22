@@ -9,6 +9,11 @@
  * caching the result for a number of minutes.
  *
  * @since Symphony 2.3
+ *
+ * @deprecated As of Symphony 2.7.0 this class is deprecated. Please 
+ * use the Remote Datasource extensions since it provides more features and
+ * is more robust. It should be completely removed in Symphony 3.
+ *
  */
 
 require_once TOOLKIT . '/class.gateway.php';
