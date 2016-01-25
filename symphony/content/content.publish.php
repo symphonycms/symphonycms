@@ -264,7 +264,7 @@ class contentPublish extends AdministrationPage
         $ul->setAttribute('data-associated-ids', '0');
         $ul->setAttribute('data-search-types', implode($data['search'], ','));
 
-        // Add help text fo each filter operator
+        // Add help text for each filter operator
         foreach ($data['operators'] as $operator) {
             $this->createFilterHelp($ul, $operator);
         }
