@@ -264,14 +264,7 @@ class contentPublish extends AdministrationPage
         $ul->setAttribute('data-associated-ids', '0');
         $ul->setAttribute('data-search-types', implode($data['search'], ','));
 
-        // Add default filter help
-        $operator = array(
-            'filter' => 'is',
-            'help' => __('Find values that are an exact match for the given string.')
-        );
-        $this->createFilterHelp($ul, $operator);
-
-        // Add custom filter help
+        // Add help text for each filter operator
         foreach ($data['operators'] as $operator) {
             $this->createFilterHelp($ul, $operator);
         }
