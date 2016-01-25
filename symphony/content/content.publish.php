@@ -316,7 +316,7 @@ class contentPublish extends AdministrationPage
             $filter = trim($operator['filter']);
 
             if (!empty($filter) && strpos($data['filter'], $filter) === 0) {
-                $query = substr($data['filter'], strlen($filter));
+                $query = substr($data['filter'], strlen($operator['filter']));
             }
         }
 
