@@ -159,7 +159,7 @@ class Session
         $session_data = Session::read($id);
         if (is_null($session_data)) {
             $empty = true;
-            $unserialized_data = Session::unserialize($session_data);
+            $unserialized_data = Session::unserialize($data);
 
             foreach ($unserialized_data as $d) {
                 if (!empty($d)) {
@@ -188,7 +188,7 @@ class Session
      * @since Symphony 2.3.3
      * @param string $data
      *  The serialized session data
-     * @return string
+     * @return array
      *  The unserialised session data
      */
     private static function unserialize($data)
