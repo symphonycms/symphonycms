@@ -168,7 +168,7 @@ class Session
             }
 
             if ($empty) {
-                return false;
+                return true;
             }
         }
 
@@ -217,7 +217,7 @@ class Session
      */
     public static function read($id)
     {
-        return Symphony::Database()->fetchVar(
+        return (string)Symphony::Database()->fetchVar(
             'session_data',
             0,
             sprintf(
