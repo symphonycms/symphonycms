@@ -286,6 +286,23 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         }
     }
 
+    public function validateFilename($file, &$message)
+    {
+        if ($this->get('validator') != null) {
+            $rule = $this->get('validator');
+
+            if (General::validateString($file, $rule) === false) {
+                $message = __('File chosen in ‘%s’ does not match allowable file types for that field.', array(
+                    $this->get('label')
+                ));
+
+                return self::__INVALID_FIELDS__;
+            }
+        }
+
+        return self::__OK__;
+    }
+
     public function checkPostFieldData($data, &$message, $entry_id = null)
     {
         /**
@@ -322,19 +339,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
             // Ensure that the file still matches the validator and hasn't
             // changed since it was uploaded.
-            if ($this->get('validator') != null) {
-                $rule = $this->get('validator');
-
-                if (General::validateString($file, $rule) === false) {
-                    $message = __('File chosen in ‘%s’ does not match allowable file types for that field.', array(
-                        $this->get('label')
-                    ));
-
-                    return self::__INVALID_FIELDS__;
-                }
-            }
-
-            return self::__OK__;
+            return $this->validateFilename($file, $message);
         }
 
         if (is_dir(DOCROOT . $this->get('destination') . '/') === false) {
@@ -379,17 +384,8 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         // Sanitize the filename
         $data['name'] = Lang::createFilename($data['name']);
 
-        if ($this->get('validator') != null) {
-            $rule = $this->get('validator');
-
-            if (!General::validateString($data['name'], $rule)) {
-                $message = __('File chosen in ‘%s’ does not match allowable file types for that field.', array($this->get('label')));
-
-                return self::__INVALID_FIELDS__;
-            }
-        }
-
-        return self::__OK__;
+        // Validate the filename
+        return $this->validateFilename($data['name'], $message);
     }
 
     public function processRawFieldData($data, &$status, &$message = null, $simulate = false, $entry_id = null)
