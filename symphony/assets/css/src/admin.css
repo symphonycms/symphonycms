@@ -623,6 +623,7 @@ div.field-checkbox + .field:not(.field-checkbox) {
 .file input {
 	margin: -0.3rem 0;
 	font: inherit;
+	color: #222;
 }
 
 .file span.frame {
