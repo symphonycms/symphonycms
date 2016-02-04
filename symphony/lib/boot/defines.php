@@ -107,7 +107,7 @@ define_safe('CACHE', MANIFEST . '/cache');
 
 $dir = @sys_get_temp_dir();
 
-if ($dir == false || !is_writable($dir)) {
+if ($dir == false || !@is_writable($dir)) {
     $dir = @ini_get('upload_tmp_dir');
 }
 
