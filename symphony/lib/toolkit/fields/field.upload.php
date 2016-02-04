@@ -299,6 +299,19 @@ class FieldUpload extends Field implements ExportableField, ImportableField
                 return self::__INVALID_FIELDS__;
             }
         }
+        // If the developer did not specified any validator, check for the
+        // blacklisted file types instead
+        else {
+            $blacklist = Symphony::Configuration()->get('upload_blacklist', 'admin');
+
+            if (!empty($blacklist) && General::validateString($file, $blacklist)) {
+                $message = __('File chosen in ‘%s’ is blacklisted for that field.', array(
+                    $this->get('label')
+                ));
+
+                return self::__INVALID_FIELDS__;
+            }
+        }
 
         return self::__OK__;
     }

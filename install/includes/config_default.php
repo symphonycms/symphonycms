@@ -5,6 +5,7 @@
         ###### ADMIN ######
         'admin' => array(
             'max_upload_size' => '5242880',
+            'upload_blacklist' => '/\.(?:php[34567s]?|phtml)$/i',
         ),
         ########
 
