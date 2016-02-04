@@ -52,11 +52,11 @@ class General
      */
     public static function validateString($string, $rule)
     {
-        if (!is_array($rule) && $rule == '') {
+        if (!is_array($rule) && ($rule == '' || $rule == null)) {
             return true;
         }
 
-        if (!is_array($string) && $string == '') {
+        if (!is_array($string) && ($string == '' || $rule == null)) {
             return true;
         }
 
