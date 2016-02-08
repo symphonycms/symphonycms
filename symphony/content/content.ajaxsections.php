@@ -41,6 +41,7 @@ class contentAjaxSections extends JSONPage
 
                 if (!empty($fields)) {
                     $options[] = array(
+                        'id' => $section->get('id'),
                         'name' => $section->get('name'),
                         'handle' => $section->get('handle'),
                         'fields' => $fields
