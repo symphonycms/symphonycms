@@ -11,7 +11,11 @@ class contentAjaxSections extends JSONPage
 {
     public function view()
     {
-        $sections = SectionManager::fetch(null, 'ASC', 'sortorder');
+        $sort = General::sanitize($_REQUEST['sort']);
+        if (empty($sort)) {
+            $sort = 'sortorder';
+        }
+        $sections = SectionManager::fetch(null, 'ASC', $sort);
         $options = array();
 
         if (is_array($sections) && !empty($sections)) {
