@@ -15,7 +15,7 @@ class contentAjaxQuery extends JSONPage
         // Set limit
         if ($limit === 0) {
             $max = '';
-        } elseif (empty($limit)) {
+        } elseif ($limit < 0) {
             $max = ' LIMIT 100';
         } else {
             $max = sprintf(' LIMIT %d', $limit);
