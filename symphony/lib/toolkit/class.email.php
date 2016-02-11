@@ -11,8 +11,6 @@ class EmailException extends Exception
 {
 }
 
-include_once TOOLKIT . '/class.emailgatewaymanager.php';
-
 /**
  * The Email class is a factory class to make it possible to send emails using different gateways.
  */

@@ -1,7 +1,5 @@
 <?php
 
-include_once TOOLKIT . '/class.htmlpage.php';
-
 // The extension cannot be found, show an error message and
 // let the user remove or rename the extension folder.
 if (isset($_POST['extension-missing'])) {
