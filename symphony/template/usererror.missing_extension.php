@@ -1,7 +1,5 @@
 <?php
 
-include_once TOOLKIT . '/class.htmlpage.php';
-
 $match = "";
 $rename_failed = false;
 
@@ -58,7 +56,7 @@ $Page = new HTMLPage();
 $Page->Html->setElementStyle('html');
 
 $Page->Html->setDTD('<!DOCTYPE html>');
-$Page->Html->setAttribute('xml:lang', 'en');
+$Page->Html->setAttribute('lang', 'en');
 $Page->addElementToHead(new XMLElement('meta', null, array('http-equiv' => 'Content-Type', 'content' => 'text/html; charset=UTF-8')), 0);
 $Page->addStylesheetToHead(ASSETS_URL . '/css/symphony.min.css', 'screen', null, false);
 
