@@ -1,7 +1,5 @@
 <?php
 
-include_once TOOLKIT . '/class.htmlpage.php';
-
 $match = "";
 $rename_failed = false;
 

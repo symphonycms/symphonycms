@@ -586,10 +586,6 @@ abstract class Symphony implements Singleton
         if (self::isInstallerAvailable()) {
             $migrations = scandir(DOCROOT . '/install/migrations');
             $migration_file = end($migrations);
-
-            include_once DOCROOT . '/install/lib/class.migration.php';
-            include_once DOCROOT . '/install/migrations/' . $migration_file;
-
             $migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
             return call_user_func(array($migration_class, 'getVersion'));
         }

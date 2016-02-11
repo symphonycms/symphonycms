@@ -188,7 +188,6 @@ class Administration extends Symphony
             if (is_callable(array($this->Page, 'handleFailedAuthorisation'))) {
                 $this->Page->handleFailedAuthorisation();
             } else {
-                include_once(CONTENT . '/content.login.php');
                 $this->Page = new contentLogin;
 
                 // Include the query string for the login, RE: #2324

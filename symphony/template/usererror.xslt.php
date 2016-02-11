@@ -1,7 +1,5 @@
 <?php
 
-include_once TOOLKIT . '/class.htmlpage.php';
-
 $Page = new HTMLPage();
 
 $Page->Html->setElementStyle('html');

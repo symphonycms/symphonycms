@@ -6,12 +6,9 @@
 /**
  * The ExtensionManager class is responsible for managing all extensions
  * in Symphony. Extensions are stored on the file system in the `EXTENSIONS`
- * folder. They are autodiscovered where the Extension class name is the same
+ * folder. They are auto-discovered where the Extension class name is the same
  * as it's folder name (excluding the extension prefix).
  */
-
-include_once FACE . '/interface.fileresource.php';
-include_once TOOLKIT . '/class.extension.php';
 
 class ExtensionManager implements FileResource
 {
