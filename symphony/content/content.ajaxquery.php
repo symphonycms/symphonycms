@@ -1,7 +1,5 @@
 <?php
 
-require_once(TOOLKIT . '/class.jsonpage.php');
-
 class contentAjaxQuery extends JSONPage
 {
     public function view()
