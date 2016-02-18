@@ -6,7 +6,7 @@
 /**
  * Session Flash
  *
- * @since Symphony 3.0
+ * @since Symphony 3.0.0
  */
 class SessionFlash
 {

@@ -7,7 +7,7 @@
  * Cookies is a collection of currently set cookies, and user set cookies for
  * this request.
  *
- * @since Symphony 3.0
+ * @since Symphony 3.0.0
  */
 class Cookies extends Container
 {
