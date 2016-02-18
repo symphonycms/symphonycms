@@ -1074,7 +1074,7 @@ class Field
 
         // fallback for compatibility since the default
         // `preparePlainTextValue` is not compatible with all fields
-        // this should be removed in Symphony 3.0
+        // this should be removed in Symphony 3.0.0
         if (empty($value)) {
             $value = strip_tags($this->prepareTableValue($e->getData($this->get('id')), null, $e->get('id')));
         }

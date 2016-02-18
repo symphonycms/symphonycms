@@ -268,7 +268,7 @@ abstract class Symphony implements Singleton
      * defined in the Symphony configuration. The is either admin or public.
      * The session will last for the time defined in configuration.
      *
-     * @since Symphony 3.0
+     * @since Symphony 3.0.0
      */
     public function initialiseSessionAndCookies()
     {

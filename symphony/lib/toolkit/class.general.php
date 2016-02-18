@@ -1591,7 +1591,7 @@ class General
     /**
      * Convert a PHP time string like '2 weeks' to seconds
      *
-     * @since Symphony 3.0
+     * @since Symphony 3.0.0
      * @param  string $string
      *  The valid PHP time string
      * @return int
