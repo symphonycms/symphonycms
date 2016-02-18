@@ -127,6 +127,23 @@ module.exports = function (grunt) {
             scripts: {
                 files: 'symphony/assets/js/src/*.js',
                 tasks: ['js']
+            },
+            php: {
+                files: ['symphony/**/*.php', 'install/**/*.php'],
+                tasks: ['php']
+            }
+        },
+
+        phpcs: {
+            application: {
+                src: ['symphony/**/*.php', 'install/**/*.php', 'index.php']
+            },
+            options: {
+                bin: 'vendor/bin/phpcs',
+                standard: 'PSR1',
+                showSniffCodes: true,
+                tabWidth: 4,
+                errorSeverity: 10
             }
         }
 
@@ -138,8 +155,10 @@ module.exports = function (grunt) {
     //grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-phpcs');
 
     grunt.registerTask('default', ['concat', 'autoprefixer', 'csso', 'uglify']);
     grunt.registerTask('css', ['concat', 'autoprefixer', 'csso']);
+    grunt.registerTask('php', ['phpcs']);
     grunt.registerTask('js', ['uglify']);
 };
