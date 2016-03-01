@@ -472,10 +472,17 @@ class contentPublish extends AdministrationPage
          */
         Symphony::ExtensionManager()->notifyMembers('AdjustPublishFiltering', '/publish/', array('section-id' => $section_id, 'where' => &$where, 'joins' => &$joins));
 
+        // get visible columns
+        $visible_columns = $section->fetchVisibleColumns();
+        // extract the needed schema
+        $element_names = array_values(array_map(function ($field) {
+            return $field->get('element_name');
+        }, $visible_columns));
+
         // Check that the filtered query fails that the filter is dropped and an
         // error is logged. #841 ^BA
         try {
-            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins, true);
+            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins, true, false, true, $element_names);
         } catch (DatabaseException $ex) {
             $this->pageAlert(__('An error occurred while retrieving filtered entries. Showing all entries instead.'), Alert::ERROR);
             $filter_querystring = null;
@@ -489,7 +496,7 @@ class contentPublish extends AdministrationPage
                 E_NOTICE,
                 true
             );
-            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'));
+            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), null, null, true, false, true, $element_names);
         }
 
         // Flag filtering
@@ -501,7 +508,6 @@ class contentPublish extends AdministrationPage
         $this->Breadcrumbs->appendChild($filter_stats);
 
         // Build table
-        $visible_columns = $section->fetchVisibleColumns();
         $columns = array();
 
         if (is_array($visible_columns) && !empty($visible_columns)) {
