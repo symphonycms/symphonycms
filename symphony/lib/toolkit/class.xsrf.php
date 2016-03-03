@@ -72,8 +72,18 @@ class XSRF
             throw new Exception('$length must be greater than 0');
         }
 
+        // Use the new PHP 7 random_bytes call, if available
+        if (function_exists('random_bytes')) {
+            $random = random_bytes($length);
+        }
+
+        // Try mcrypt package, if available
+        else if (function_exists('mcrypt_create_iv')) {
+            $random = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
+        }
+
         // Get some random binary data from open ssl, if available
-        if (function_exists('openssl_random_pseudo_bytes')) {
+        else if (function_exists('openssl_random_pseudo_bytes')) {
             $random = openssl_random_pseudo_bytes($length);
         }
 
