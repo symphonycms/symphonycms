@@ -232,18 +232,18 @@ class contentLogin extends HTMLPage
                         SELECT `id`, `email`, `first_name`
                         FROM `tbl_authors`
                         WHERE `email` = ? OR `username` = ?
-                    ", 
+                    ",
                     array(
-                        $_POST['email'], 
+                        $_POST['email'],
                         $_POST['email']
                     )
                 );
 
                 if (!empty($author)) {
                     // Delete all expired tokens
-                    Symphony::Database()->delete('tbl_forgotpass', "
-                        `expiry` < ?", DateTimeObj::getGMT('c')
-                    );
+                    Symphony::Database()->delete('tbl_forgotpass', "`expiry` < ?", array(
+                        DateTimeObj::getGMT('c')
+                    ));
 
                     // Attempt to retrieve the token that is not expired for this Author ID,
                     // otherwise generate one.

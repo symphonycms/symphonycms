@@ -201,7 +201,7 @@ class MySQL
         MySQL::$_conn_pdo = new Database($config);
 
         // Ensure that the default storage engine is InnoDB:
-        MySQL::$_conn_pdo->conn->exec('SET storage_engine = "InnoDB"');
+        MySQL::$_conn_pdo->conn->exec('SET default_storage_engine = "InnoDB"');
 
         return true;
     }

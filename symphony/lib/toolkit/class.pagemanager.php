@@ -630,7 +630,7 @@ class PageManager
             SELECT
                 type
             FROM
-                `tbl_pages_types` AS pt " 
+                `tbl_pages_types` AS pt "
             . $where . "
             GROUP BY
                 pt.type

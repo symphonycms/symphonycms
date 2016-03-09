@@ -15,7 +15,7 @@
       "issues": "https://github.com/symphonycms/symphony-2/issues",
       "wiki": "https://github.com/symphonycms/symphony-2/wiki"
     },
-    "requires": {
+    "require": {
       "php": ">=5.5",
       "ext-curl": "*",
       "ext-json": "*",
