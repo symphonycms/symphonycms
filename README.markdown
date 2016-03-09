@@ -25,7 +25,7 @@
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `3.0.0-alpha` and is considered unstable. Do not use this in production.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `3.0.0-alpha.1` and is considered unstable. Do not use this in production.
 
 Useful places:
 
@@ -38,11 +38,11 @@ Useful places:
 
 - PHP 5.6 or above
 - PHP’s LibXML module, with the XSLT extension enabled (`--with-xsl`)
+- PHP’s built in `json` functions, which are enabled by default in PHP 5.2 and above; if they are missing, ensure PHP wasn’t compiled with `--disable-json`
+- [Composer](https://getcomposer.org/)
 - MySQL 5.5 or above is recommended
 - A webserver (known to be used with Apache, Litespeed, Nginx and Hiawatha)
 - Apache’s `mod_rewrite` module or equivalent
-- PHP’s built in `json` functions, which are enabled by default in PHP 5.2 and above; if they are missing, ensure PHP wasn’t compiled with `--disable-json`
-
 
 ## Installing
 
@@ -77,6 +77,10 @@ Before installation, see the [notes on file permissions](#file-permissions).
 
 		git clone git://github.com/symphonycms/workspace.git
 
+1. Initalise composer which will pull in dependencies and generate the autoloader:
+
+		composer install
+
 1. Point your web browser at the `install` subdirectory (e.g., `http://example.com/install/`) and provide details on establishing a database connection and your server environment.
 
 1. Chuckle villainously and tap your fingertips together (or pet a cat) as your installation completes.
@@ -96,19 +100,23 @@ Before installation, see the [notes on file permissions](#file-permissions).
 	- `/workspace` (leave out if you don’t require the example workspace)
 	- `/vendor`
 
+1. Initalise composer which will pull in dependencies and generate the autoloader:
+
+		composer install
+
 1. Point your web browser at the `install` subdirectory (e.g., `http://example.com/install/`) and provide details on establishing a database connection and your server environment.
 
 1. Pose like you’re being filmed for a dramatic close-up while your installation completes.
 
 1. Remove installer files:
 
-	`rm -rf install/ workspace/install.sql`
+		rm -rf install/ workspace/install.sql
 
 ### File permissions
 
 1. Symphony’s installer will inform you if it needs write access to directories that it doesn’t already have, but you can ensure it has the access it needs by temporarily setting the root to world-writeable.
 
-	`chmod 777 /your/site/root/`
+		chmod 777 /your/site/root/
 
 1. Once Symphony is successfully installed, you should change file/directory permissions to something tighter for security reasons. Symphony recommends `755` for directories and `644` for files as a good default, but this may need to be changed depending on your server’s users and groups configuration. For example, you may need to change directories and files that Symphony needs to subsequently write to to `777` and `666` respectively.
 
@@ -123,42 +131,6 @@ To recursively chmod directories only:
 To recursively chmod files only:
 
 	find /your/site/root -type f -exec chmod 644 {} \;
-
-
-
-## Updating from an older version
-
-### Version-specific notes
-
-#### Versions prior to 2.3
-
-Symphony `2.3` officially only supports updating from a `2.2.x` release. There are various changes between `2.1` and `2.3` that make this update unlikely to be successful. Symphony `2.3` also enforces that all authors have unique email addresses, so please ensure that this constraint is met before updating.
-
-#### Versions prior to 2.2
-
-Symphony `2.2` introduces numerous improvements that may affect extension compatibility. Before updating, be sure to consult the [extension compatibility table](http://getsymphony.com/download/extensions/compatibility/) to verify that the extensions you’re using have all been updated for Symphony `2.2`.
-
-#### Versions prior to 2.1
-
-As of version `2.1`, Symphony stores passwords using the more secure [SHA1](http://php.net/sha1) algorithm (previous versions used MD5). When updating to `2.1`, the primary user’s login password will be reset (the new password will be displayed by the updater—please note it).
-
-Please also note that all other users’ passwords will no longer be valid and will require a manual reset through Symphony’s forgotten password feature. Alternatively, as an administrator, you can also change your users’ passwords on their behalf.
-
-We are now using [GitHub’s organisations feature](https://github.com/blog/674-introducing-organizations). As a result, all submodules—as well as the main Symphony 2 repo—are forks owned by the [Symphony CMS organisation](https://github.com/symphonycms/).
-
-To fully update your Git-based installation, please edit your `.git/config` and the `.git/config` of each core extension (`debugdevkit`, `profiledevkit`, `markdown`, `maintenance_mode`, `selectbox_link_field`, `jit_image_manipulation` and `export_ensemble`) and change the URL of the remote repo from `symphony` or `pointybeard` to be `symphonycms`.
-
-For example:
-
-	[remote "origin"]
-		fetch = +refs/heads/*:refs/remotes/origin/*
-		url = git://github.com/pointybeard/markdown.git
-
-Change `git://github.com/pointybeard/markdown.git` to `git://github.com/symphonycms/markdown.git`
-
-#### Versions prior to 2.0.5
-
-Version `2.0.5` introduced multiple includable elements in the Data Source Editor for a single field. After updating from `2.0.5` or lower, the DS editor will seem to “forget” about any `Textarea` fields selected when you are editing existing Data Sources. After updating, you must ensure you re-select them before saving. Note, this will only effect Data Sources that you edit and were created prior to `2.0.5`. Until that point, the field will still be included in any front-end XML.
 
 ### Updating via Git
 
