@@ -57,11 +57,7 @@ class SectionManager
      */
     public static function edit($section_id, array $settings)
     {
-        if (!Symphony::Database()->update($settings, 'tbl_sections', ' `id` = ?', array($section_id))) {
-            return false;
-        }
-
-        return true;
+        return (boolean) Symphony::Database()->update($settings, 'tbl_sections', ' `id` = ?', array($section_id));
     }
 
     /**

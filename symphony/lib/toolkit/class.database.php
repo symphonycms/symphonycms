@@ -773,7 +773,7 @@ Class Database {
      *  The exception thrown while doing something with the Database
      * @return void
      */
-    private function error(Exception $ex = null)
+    public function error(Exception $ex = null)
     {
         if(isset($ex)) {
             $msg = $ex->getMessage();

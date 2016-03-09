@@ -431,7 +431,7 @@
             Symphony::Log()->pushToLog('MYSQL: Importing Table Schema', E_NOTICE, true, true);
 
             try {
-                Symphony::Database()->import(file_get_contents(INSTALL . '/includes/install.sql'), true);
+                Symphony::Database()->import(file_get_contents(INSTALL . '/includes/install.sql'));
             } catch (DatabaseException $e) {
                 self::__abort(
                     'There was an error while trying to import data to the database. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
@@ -572,10 +572,7 @@
 
                 if (is_file(WORKSPACE . '/install.sql')) {
                     try {
-                        Symphony::Database()->import(
-                            file_get_contents(WORKSPACE . '/install.sql'),
-                            true
-                        );
+                        Symphony::Database()->import(file_get_contents(WORKSPACE . '/install.sql'));
                     } catch (DatabaseException $e) {
                         self::__abort(
                             'There was an error while trying to import data to the database. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),

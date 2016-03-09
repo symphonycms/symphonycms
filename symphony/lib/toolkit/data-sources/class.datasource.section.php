@@ -453,7 +453,7 @@ class SectionDatasource extends Datasource
             'handle' => $section->get('handle')
         ));
 
-        if ($this->_force_empty_result == true) {
+        if ($this->_force_empty_result === true) {
             if ($this->dsParamREDIRECTONREQUIRED === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
@@ -468,7 +468,7 @@ class SectionDatasource extends Datasource
             return $result;
         }
 
-        if ($this->_negate_result == true) {
+        if ($this->_negate_result === true) {
             if ($this->dsParamREDIRECTONFORBIDDEN === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
