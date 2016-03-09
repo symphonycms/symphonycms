@@ -205,7 +205,7 @@ class SMTP
      */
     public function mail($from)
     {
-        if ($this->_helo == false) {
+        if ($this->_helo === false) {
             throw new SMTPException(__('Must call EHLO (or HELO) before calling MAIL'));
         } elseif ($this->_mail !== false) {
             throw new SMTPException(__('Only one call to MAIL may be made at a time.'));
@@ -230,7 +230,7 @@ class SMTP
      */
     public function rcpt($to)
     {
-        if ($this->_mail == false) {
+        if ($this->_mail === false) {
             throw new SMTPException(__('Must call MAIL before calling RCPT'));
         }
 
@@ -250,7 +250,7 @@ class SMTP
      */
     public function data($data)
     {
-        if ($this->_rcpt == false) {
+        if ($this->_rcpt === false) {
             throw new SMTPException(__('Must call RCPT before calling DATA'));
         }
 
@@ -329,7 +329,7 @@ class SMTP
      */
     protected function _auth()
     {
-        if ($this->_helo == false) {
+        if ($this->_helo === false) {
             throw new SMTPException(__('Must call EHLO (or HELO) before calling AUTH'));
         } elseif ($this->_auth !== false) {
             throw new SMTPException(__('Can not call AUTH again.'));
@@ -378,7 +378,7 @@ class SMTP
      */
     protected function _tls()
     {
-        if ($this->_secure == 'tls') {
+        if ($this->_secure === 'tls') {
             $this->_send('STARTTLS');
             $this->_expect(220, 180);
             if (!stream_socket_enable_crypto($this->_connection, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
@@ -515,7 +515,7 @@ class SMTP
 
             $this->helo();
 
-            if ($this->_secure == 'tls') {
+            if ($this->_secure === 'tls') {
                 $this->_tls();
             }
 
