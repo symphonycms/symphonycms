@@ -2,5 +2,6 @@
 workspace/
 manifest/
 node_modules/
+vendor/
 install-log.txt
 install/logs/

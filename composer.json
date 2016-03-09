@@ -15,8 +15,13 @@
       "issues": "https://github.com/symphonycms/symphony-2/issues",
       "wiki": "https://github.com/symphonycms/symphony-2/wiki"
     },
-    "require-dev": {
-        "squizlabs/php_codesniffer": "2.*"
+    "requires": {
+      "php": ">=5.5",
+      "ext-curl": "*",
+      "ext-json": "*",
+      "ext-libxml": "*",
+      "ext-pdo_mysql": "*",
+      "ext-xsl": "*"
     },
     "minimum-stability": "stable",
     "autoload": {
