@@ -172,11 +172,7 @@ class FieldManager implements FileResource
      */
     public static function edit($id, array $fields)
     {
-        if (!Symphony::Database()->update($fields, "tbl_fields", ' `id` = ?', array($id))) {
-            return false;
-        }
-
-        return true;
+        return (boolean) Symphony::Database()->update($fields, "tbl_fields", ' `id` = ?', array($id));
     }
 
     /**

@@ -58,11 +58,7 @@ class SectionManager
      */
     public static function edit($section_id, array $settings)
     {
-        if (!Symphony::Database()->update($settings, 'tbl_sections', ' `id` = ?', array($section_id))) {
-            return false;
-        }
-
-        return true;
+        return (boolean) Symphony::Database()->update($settings, 'tbl_sections', ' `id` = ?', array($section_id));
     }
 
     /**
@@ -282,7 +278,7 @@ class SectionManager
     public static function removeSectionAssociation($field_id)
     {
         return Symphony::Database()->delete(
-            'tbl_sections_association', 
+            'tbl_sections_association',
             '`child_section_field_id` = ? OR `parent_section_field_id` = ?',
             array(
                 $field_id, $field_id
