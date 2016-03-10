@@ -1016,7 +1016,7 @@ class ExtensionManager implements FileResource
             $about['status'] = array_merge($about['status'], self::fetchStatus($about));
             return $about;
         } else {
-            Symphony::Log()->pushToLog(sprintf('%s does not have an extension.meta.xml file', $name), E_DEPRECATED, true);
+            Symphony::Log()->notice(sprintf('%s does not have an extension.meta.xml file', $name));
 
             return array();
         }
