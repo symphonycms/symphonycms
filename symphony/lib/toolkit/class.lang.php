@@ -161,6 +161,10 @@ class Lang
      */
     private static function fetch()
     {
+        if (!@is_readable(EXTENSIONS)) {
+            return;
+        }
+
         // Fetch extensions
         $extensions = new DirectoryIterator(EXTENSIONS);
 
