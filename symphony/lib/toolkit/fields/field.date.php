@@ -75,14 +75,14 @@ class FieldDate extends Field implements ExportableField, ImportableField
                 'title' => 'contains',
                 'filter' => 'regexp: ',
                 'help' => __('Find values that match the given <a href="%s">MySQL regular expressions</a>.', array(
-                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+                    'http://dev.mysql.com/doc/mysql/en/regexp.html'
                 ))
             ),
             array(
                 'title' => 'does not contain',
                 'filter' => 'not-regexp: ',
                 'help' => __('Find values that do not match the given <a href="%s">MySQL regular expressions</a>.', array(
-                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+                    'http://dev.mysql.com/doc/mysql/en/regexp.html'
                 ))
             ),
             array(
