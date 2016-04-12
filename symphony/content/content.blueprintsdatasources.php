@@ -1138,8 +1138,6 @@ class contentBlueprintsDatasources extends ResourcesPage
             } else {
                 $xml_errors = null;
 
-                include_once TOOLKIT . '/class.xsltprocess.php';
-
                 General::validateXML($fields['static_xml'], $xml_errors, false, new XsltProcess());
 
                 if (!empty($xml_errors)) {
