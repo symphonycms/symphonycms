@@ -150,19 +150,13 @@ class Administration extends Symphony
                     $default_area = preg_replace('/^' . preg_quote(SYMPHONY_URL, '/') . '/i', '', Symphony::Author()->get('default_area'));
                 }
 
+                // Fallback: No default area found
                 if (is_null($default_area)) {
                     if (Symphony::Author()->isDeveloper()) {
-                        $all_sections = SectionManager::fetch();
-                        $section_handle = !empty($all_sections) ? $all_sections[0]->get('handle') : null;
-
-                        if (!is_null($section_handle)) {
-                            // If there are sections created, redirect to the first one (sortorder)
-                            redirect(SYMPHONY_URL . "/publish/{$section_handle}/");
-                        } else {
-                            // If there are no sections created, default to the Section page
-                            redirect(SYMPHONY_URL . '/blueprints/sections/');
-                        }
+                        // Redirect to the section index if author is a developer
+                        redirect(SYMPHONY_URL . '/blueprints/sections/');
                     } else {
+                        // Redirect to the author page if author is not a developer
                         redirect(SYMPHONY_URL . "/system/authors/edit/".Symphony::Author()->get('id')."/");
                     }
                 } else {

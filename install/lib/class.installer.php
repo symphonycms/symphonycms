@@ -456,7 +456,7 @@
                     'last_seen'             => null,
                     'user_type'             => 'developer',
                     'primary'               => 'yes',
-                    'default_area'          => null,
+                    'default_area'          => '/blueprints/sections/',
                     'auth_token_active'     => 'no'
                 ), 'tbl_authors');
             } catch (DatabaseException $e) {
