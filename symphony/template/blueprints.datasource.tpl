@@ -41,7 +41,7 @@ class datasource<!-- CLASS NAME --> extends <!-- CLASS EXTENDS -->
     {
         $result = new XMLElement($this->dsParamROOTELEMENT);
 
-        try{
+        try {
             $result = parent::execute($param_pool);
         } catch (FrontendPageNotFoundException $e) {
             // Work around. This ensures the 404 page is displayed and
