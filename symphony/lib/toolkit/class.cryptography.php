@@ -97,7 +97,7 @@ class Cryptography
      */
     public static function generateSalt($length)
     {
-        mt_srand(microtime(true)*100000 + memory_get_usage(true));
+        mt_srand(intval(microtime(true)*100000 + memory_get_usage(true)));
         return substr(sha1(uniqid(mt_rand(), true)), 0, $length);
     }
 }
