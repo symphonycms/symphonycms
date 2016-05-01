@@ -982,11 +982,13 @@ class Field
      *  key of 'value'.
      * @param integer $entry_id (optional)
      *  An option entry ID for more intelligent processing. Defaults to null.
+     * @param bool $truncate
+     *  Defaults to false
      * @param string $defaultValue (optional)
      *  The value to use when no plain text representation of the field's data
      *  can be made. Defaults to null.
      * @return string
-     *  the readable text summary of the values of this field instance.
+     *  The readable text summary of the values of this field instance.
      */
     public function prepareReadableValue($data, $entry_id = null, $truncate = false, $defaultValue = null)
     {
@@ -1321,6 +1323,8 @@ class Field
         if (preg_match('/^regexp:/i', $string) || preg_match('/^not-?regexp:/i', $string)) {
             return true;
         }
+
+        return false;
     }
 
     /**

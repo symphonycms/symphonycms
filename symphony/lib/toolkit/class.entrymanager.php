@@ -263,8 +263,6 @@ class EntryManager
         $chunks = array_chunk($entries, 2500);
 
         foreach ($chunks as $chunk) {
-            $entry_list = implode("', '", $chunk);
-
             // If we weren't given a `section_id` we'll have to process individually
             // If we don't need data for any field, we can process the whole chunk
             // without building Entry objects, otherwise we'll need to build
@@ -595,7 +593,7 @@ class EntryManager
      */
     public static function fetchEntrySectionID($entry_id)
     {
-        return Symphony::Database()->fetchVar('section_id', 0, "SELECT `section_id` FROM `tbl_entries` WHERE `id` = ? LIMIT 1", 
+        return Symphony::Database()->fetchVar('section_id', 0, "SELECT `section_id` FROM `tbl_entries` WHERE `id` = ? LIMIT 1",
             array($entry_id)
         );
     }

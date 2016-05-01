@@ -71,12 +71,18 @@
         /**
          * Overrides the default `initialiseLog()` method and writes
          * logs to manifest/logs/install
+         *
+         * @param null $filename
+         * @return boolean|void
+         * @throws Exception
          */
         public static function initialiseLog($filename = null)
         {
             if (is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS, self::Configuration()->get('write_mode', 'directory'))) {
-                parent::initialiseLog($filename);
+                return parent::initialiseLog($filename);
             }
+
+            return;
         }
 
         /**
@@ -237,8 +243,7 @@
          * folders exist and are writable and that the Database credentials are correct.
          * Once those initial checks pass, the rest of the form values are validated.
          *
-         * @return
-         *  An associative array of errors if something went wrong, otherwise an empty array.
+         * @return array An associative array of errors if something went wrong, otherwise an empty array.
          */
         private static function __checkConfiguration()
         {
@@ -372,7 +377,10 @@
         /**
          * If something went wrong, the `__abort` function will write an entry to the Log
          * file and display the failure page to the user.
+         *
          * @todo: Resume installation after an error has been fixed.
+         * @param string $message
+         * @param integer $start
          */
         protected static function __abort($message, $start)
         {

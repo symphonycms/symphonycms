@@ -22,10 +22,14 @@ Class DatabaseException extends Exception{
     /**
      * Constructor takes a message and an associative array to set to
      * `$_error`. The message is passed to the default Exception constructor
+     *
+     * @param string $message
+     * @param array $error
+     * @param Exception $exception
      */
-    public function __construct($message, array $error=NULL, Exception $ex = null)
+    public function __construct($message, array $error=NULL, Exception $exception = null)
     {
-        parent::__construct($message, (int)$error['num'], $ex);
+        parent::__construct($message, (int)$error['num'], $exception);
 
         $this->_error = $error;
     }
@@ -141,8 +145,8 @@ class DatabaseStatement
      *
      * @link    http://php.net/manual/en/pdostatement.execute.php
      *  For complete documentation.
-     * @throws  DatabaseException
-     * @return  boolean
+     * @param array $arguments
+     * @return bool
      */
     public function execute(...$arguments)
     {
@@ -594,6 +598,7 @@ Class Database {
      *          column names
      *      `offset` = `0`
      *          An integer representing the row to return
+     * @param array $values
      * @return array
      */
     public function fetch($query = null, array $params = array(), array $values = array())
@@ -669,7 +674,6 @@ Class Database {
         if(empty($query)) return false;
 
         $query_type = $this->determineQueryType(trim($query));
-        $query_hash = md5($query.$start);
 
         if($query_type == self::__READ_OPERATION__ && !preg_match('/^\s*SELECT\s+SQL(_NO)?_CACHE/i', $query)){
             if($this->isCachingEnabled()) {
@@ -736,7 +740,7 @@ Class Database {
         // Execute
         try {
             $this->_result = $this->conn->prepare($query);
-            $result = $this->_result->execute($values);
+            $this->_result->execute($values);
             $this->_query_count++;
         }
         catch (PDOException $ex) {
@@ -927,7 +931,6 @@ Class Database {
      */
     public function getStatistics()
     {
-        $stats = array();
         $query_timer = 0.0;
         $slow_queries = array();
 

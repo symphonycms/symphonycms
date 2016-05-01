@@ -152,7 +152,7 @@ class TextformatterManager implements FileResource
             $about = $method->invoke(new $classname);
             return array_merge($about, array('handle' => $handle));
         } catch (ReflectionException $e) {
-            $about = array();
+            return array('handle' => $handle);
         }
     }
 

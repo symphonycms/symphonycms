@@ -65,6 +65,9 @@ class contentAjaxEventDocumentation extends TextPage
 
     /**
      * Utilities
+     *
+     * @param $filters
+     * @return boolean
      */
     public static function hasMultipleFilter($filters)
     {

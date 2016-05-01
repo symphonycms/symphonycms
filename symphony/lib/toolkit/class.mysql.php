@@ -333,6 +333,7 @@ class MySQL
      *  Whether to return the result as objects or associative array. Defaults
      *  to OBJECT which will return objects. The other option is ASSOC. If $type
      *  is not either of these, it will return objects.
+     * @param array $params
      * @throws DatabaseException
      * @return boolean
      *  True if the query executed without errors, false otherwise
@@ -341,7 +342,7 @@ class MySQL
     {
         if(empty($query)) return false;
 
-        $result = MySQL::$_conn_pdo->query($query, array(
+        MySQL::$_conn_pdo->query($query, array(
             'fetch-type' => $type
         ), $params);
 
@@ -389,7 +390,6 @@ class MySQL
             $values = array();
 
             $sql  = "INSERT INTO `$table` (`".implode('`, `', array_keys(current($fields))).'`) VALUES ';
-            $rows = array();
 
             foreach ($fields as $key => $array) {
                 // Sanity check: Make sure we dont end up with ',()' in the SQL.
@@ -397,11 +397,11 @@ class MySQL
                     continue;
                 }
 
-                    $rows[] = "(" . trim(str_repeat('?,', count($array)), ',') . ")";
+                $rows[] = "(" . trim(str_repeat('?,', count($array)), ',') . ")";
 
-                    // Increase our data pool
-                    $values = array_merge($values, array_values($array));
-                }
+                // Increase our data pool
+                $values = array_merge($values, array_values($array));
+            }
             $sql .= implode(", ", $rows);
 
         // Single Insert
@@ -442,8 +442,8 @@ class MySQL
      * @param string $where
      *  A WHERE statement for this UPDATE statement, defaults to null
      *  which will update all rows in the $table
-     * @throws DatabaseException
-     * @return boolean
+     * @param array $params
+     * @return bool
      */
     public function update($fields, $table, $where = null, $params = array())
     {
@@ -490,16 +490,17 @@ class MySQL
      * @param string $query
      *  The full SQL query to execute. Defaults to null, which will
      *  use the _lastResult
-     * @param array $params
-     *  An array containing parameters to be used in the query. The query has to be
-     *  sprintf-formatted. All values will be sanitized before being used in the query.
-     *  For sake of backwards-compatibility, the query will only be sprintf-processed
-     *  if $params is not empty.
      * @param string $index_by_column
      *  The name of a column in the table to use it's value to index
      *  the result by. If this is omitted (and it is by default), an
      *  array of associative arrays is returned, with the key being the
      *  column names
+     * @param array $params
+     *  An array containing parameters to be used in the query. The query has to be
+     *  sprintf-formatted. All values will be sanitized before being used in the query.
+     *  For sake of backwards-compatibility, the query will only be sprintf-processed
+     *  if $params is not empty.
+     * @param array $values
      * @throws DatabaseException
      * @return array
      *  An associative array with the column names as the keys
@@ -545,12 +546,13 @@ class MySQL
      * Returns an array of values for a specified column in a given query.
      * If no query is given, it will use the `$this->_lastResult`.
      *
+     * @throws DatabaseException
      * @param string $column
      *  The column name in the query to return the values for
      * @param string $query
      *  The full SQL query to execute. Defaults to null, which will
      *  use the `$this->_lastResult`
-     * @throws DatabaseException
+     * @param array $values
      * @return array
      *  If there is no results for the `$query`, an empty array will be returned
      *  otherwise an array of values for that given `$column` will be returned
@@ -585,11 +587,7 @@ class MySQL
      * @param string $query
      *  The full SQL query to execute. Defaults to null, which will
      *  use the `$this->_lastResult`
-     * @param array $params
-     *  An array containing parameters to be used in the query. The query has to be
-     *  sprintf-formatted. All values will be sanitized before being used in the query.
-     *  For sake of backwards-compatibility, the query will only be sprintf-processed
-     *  if $params is not empty.
+     * @param array $values
      * @return string
      *  Returns the value of the given column, if it doesn't exist, null will be
      *  returned
@@ -649,9 +647,7 @@ class MySQL
      *
      * @uses QueryExecutionError
      * @throws DatabaseException
-     * @param string $type
-     *  Accepts one parameter, 'connect', which will return the correct
-     *  error codes when the connection sequence fails
+     * @return void
      */
     private function __error()
     {

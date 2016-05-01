@@ -99,7 +99,7 @@ class GenericExceptionHandler
                     $exception = $e;
                 }
 
-                self::$_Log->pushExceptionToLog($exception, true);
+                self::$_Log->pushExceptionToLog($exception);
             }
 
             $output = call_user_func(array($class, 'render'), $e);
@@ -181,7 +181,7 @@ class GenericExceptionHandler
     {
         $lines = null;
 
-        foreach (self::__nearByLines($e->getLine(), $e->getFile()) as $line => $string) {
+        foreach (self::__nearbyLines($e->getLine(), $e->getFile()) as $line => $string) {
             $lines .= sprintf(
                 '<li%s><strong>%d</strong> <code>%s</code></li>',
                 (($line+1) == $e->getLine() ? ' class="error"' : null),

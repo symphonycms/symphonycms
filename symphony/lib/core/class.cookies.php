@@ -84,8 +84,7 @@ class Cookies extends Container
             foreach ($headers as $header) {
                 if (stripos($header, 'Set-Cookie:') !== false) {
                     $header = str_replace('Set-Cookie: ', '', $header);
-                    $pieces = preg_split(self::COOKIE_PIECE_REGEX, $header);
-                    $parsed = $this->processPieces($pieces, $this->store);
+                    $parsed = $this->processPieces(preg_split(self::COOKIE_PIECE_REGEX, $header));
 
                     // Um, guessing here a little bit
                     $keys = array_keys($parsed);
@@ -220,9 +219,10 @@ class Cookies extends Container
 
     /**
      * Process the pieces of a parsed cookie header
+     *
      * @param  array  $pieces
      *  Array of parsed pieces
-     * @return void
+     * @return array
      */
     protected function processPieces(array $pieces)
     {

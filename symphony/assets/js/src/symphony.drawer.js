@@ -49,7 +49,6 @@
 			drawer.trigger('expandstart.drawer');
 
 			speed = (typeof speed === 'undefined' ? settings.speed : speed);
-			stay = (typeof stay === 'undefined' ? false : true);
 
 			// update button state
 			samePositionButtons.removeClass('selected');
@@ -136,7 +135,7 @@
 			drawer.trigger('collapsestart.drawer');
 
 			speed = (typeof speed === 'undefined' ? settings.speed : speed);
-			stay = (typeof stay === 'undefined' ? false : true);
+			stay = typeof stay !== 'undefined';
 
 			// update button state
 			button.removeClass('selected');
@@ -214,9 +213,7 @@
 	-------------------------------------------------------------------------*/
 
 		var getHeight = function() {
-			var height = Math.max(window.innerHeight - contents[0].offsetTop - 1, contents[0].clientHeight);
-
-			return height;
+			return Math.max(window.innerHeight - contents[0].offsetTop - 1, contents[0].clientHeight);
 		};
 
 	/*-------------------------------------------------------------------------

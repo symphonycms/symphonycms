@@ -91,7 +91,7 @@ abstract class Symphony implements Singleton
      * The Symphony constructor initialises the class variables of Symphony. At present
      * constructor has a couple of responsibilities:
      * - Start a profiler instance
-     * - If magic quotes are enabled, clean `$_SERVER`, `$_COOKIE`, `$_GET` and `$_POST` arrays 
+     * - If magic quotes are enabled, clean `$_SERVER`, `$_COOKIE`, `$_GET` and `$_POST` arrays
      * - Initialise the correct Language for the currently logged in Author.
      * - Start the session and adjust the error handling if the user is logged in
      */
@@ -406,9 +406,11 @@ abstract class Symphony implements Singleton
      * Setter for `$ExtensionManager` using the current
      * Symphony instance as the parent. If for some reason this fails,
      * a Symphony Error page will be thrown
+     *
      * @param Boolean $force (optional)
      *  When set to true, this function will always create a new
      *  instance of ExtensionManager, replacing self::$ExtensionManager.
+     * @return void
      */
     public static function initialiseExtensionManager($force=false)
     {
@@ -440,13 +442,13 @@ abstract class Symphony implements Singleton
      * class.
      *
      * @since Symphony 2.3
-     * @param StdClass $database (optional)
+     * @param stdClass $database (optional)
      *  The class to handle all Database operations, if omitted this function
      *  will set `self::$Database` to be an instance of the `MySQL` class.
      * @return boolean
      *  This function will always return true
      */
-    public static function setDatabase(StdClass $database = null)
+    public static function setDatabase(stdClass $database = null)
     {
         if (self::Database()) {
             return true;
@@ -574,7 +576,7 @@ abstract class Symphony implements Singleton
                 if (self::isUpgradeAvailable() === false && Cryptography::requiresMigration(self::$Author->get('password'))) {
                     self::$Author->set('password', Cryptography::hash($password));
 
-                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors', 
+                    self::Database()->update(array('password' => self::$Author->get('password')), 'tbl_authors',
                         " `id` = ?", array(self::$Author->get('id'))
                     );
                 }
@@ -586,7 +588,7 @@ abstract class Symphony implements Singleton
                     'last_seen' => DateTimeObj::get('Y-m-d H:i:s')
                     ),
                     'tbl_authors',
-                    " `id` = ?", 
+                    " `id` = ?",
                     array(self::$Author->get('id'))
                 );
 
@@ -648,7 +650,7 @@ abstract class Symphony implements Singleton
                 AND `auth_token_active` = 'yes'
                 LIMIT 1",
                 'SHA1'
-                ), 
+                ),
                 array($token)
             );
         }

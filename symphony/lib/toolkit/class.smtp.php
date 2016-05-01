@@ -126,8 +126,6 @@ class SMTP
      *  The from string. Should have the following format: email@domain.tld
      * @param string $to
      *  The email address to send the email to.
-     * @param string $subject
-     *  The subject to send the email to.
      * @param string $message
      * @throws SMTPException
      * @throws Exception
@@ -453,9 +451,6 @@ class SMTP
     protected function _expect($code, $timeout = null)
     {
         $this->_response = array();
-        $cmd  = '';
-        $more = '';
-        $msg  = '';
         $errMsg = '';
 
         if (!is_array($code)) {

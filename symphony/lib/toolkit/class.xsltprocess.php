@@ -50,11 +50,11 @@ class XsltProcess
      * Checks if there is an available `XSLTProcessor`
      *
      * @return boolean
-     *  True if there is an existing `XsltProcessor` class, false otherwise
+     *  True if there is an existing `XSLTProcessor` class, false otherwise
      */
     public static function isXSLTProcessorAvailable()
     {
-        return (class_exists('XsltProcessor') || function_exists('xslt_process'));
+        return (class_exists('XSLTProcessor') || function_exists('xslt_process'));
     }
 
     /**
@@ -85,25 +85,25 @@ class XsltProcess
             $this->_xsl = $xsl;
         }
 
-        // dont let process continue if no xsl functionality exists
+        // Don't let process continue if no XSLT functionality exists
         if (!XsltProcess::isXSLTProcessorAvailable()) {
             return false;
         }
 
-        $XSLProc = new XsltProcessor;
+        $XSLTProcessor = new XSLTProcessor;
 
         if (!empty($register_functions)) {
-            $XSLProc->registerPHPFunctions($register_functions);
+            $XSLTProcessor->registerPHPFunctions($register_functions);
         }
 
         $result = @$this->__process(
-            $XSLProc,
+            $XSLTProcessor,
             $this->_xml,
             $this->_xsl,
             $parameters
         );
 
-        unset($XSLProc);
+        unset($XSLTProcessor);
 
         return $result;
     }
@@ -113,8 +113,8 @@ class XsltProcess
      * occur are trapped by custom error handlers, `trapXMLError` or
      * `trapXSLError`.
      *
-     * @param XsltProcessor $XSLProc
-     *  An instance of `XsltProcessor`
+     * @param XSLTProcessor $XSLTProcessor
+     *  An instance of `XSLTProcessor`
      * @param string $xml
      *  The XML for the transformation to be applied to
      * @param string $xsl
@@ -123,7 +123,7 @@ class XsltProcess
      *  An array of available parameters the XSL will have access to
      * @return string
      */
-    private function __process(XsltProcessor $XSLProc, $xml, $xsl, array $parameters = array())
+    private function __process(XSLTProcessor $XSLTProcessor, $xml, $xsl, array $parameters = array())
     {
         // Create instances of the DomDocument class
         $xmlDoc = new DomDocument;
@@ -153,13 +153,13 @@ class XsltProcess
         libxml_disable_entity_loader($elOLD);
 
         // Load the xsl template
-        $XSLProc->importStyleSheet($xslDoc);
+        $XSLTProcessor->importStylesheet($xslDoc);
 
         // Set parameters when defined
         if (!empty($parameters)) {
             General::flattenArray($parameters);
 
-            $XSLProc->setParameter('', $parameters);
+            $XSLTProcessor->setParameter('', $parameters);
         }
 
         // Must restore the error handler to avoid problems
@@ -167,7 +167,7 @@ class XsltProcess
 
         // Start the transformation
         set_error_handler(array($this, 'trapXMLError'));
-        $processed = $XSLProc->transformToXML($xmlDoc);
+        $processed = $XSLTProcessor->transformToXml($xmlDoc);
 
         // Restore error handling
         if (function_exists('ini_set') && isset($ehOLD)) {

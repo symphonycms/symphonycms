@@ -290,7 +290,7 @@ class contentLogin extends HTMLPage
                         $this->_email_sent_to = $author['email']; // Set this so we can display a customised message
                     } catch (Exception $e) {
                         $this->_email_error = General::unwrapCDATA($e->getMessage());
-                        Symphony::Log()->pushExceptionToLog($e, true);
+                        Symphony::Log()->pushExceptionToLog($e);
                     }
 
                     /**

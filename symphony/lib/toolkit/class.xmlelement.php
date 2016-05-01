@@ -454,11 +454,12 @@ class XMLElement implements IteratorAggregate
      * This should prevent generate errors by catching them earlier.
      *
      * @since Symphony 2.5.0
+     * @throws Exception when the element is also the child
      * @param XMLElement $child
      *  The child to validate
      *
      */
-    private function validateChild($child)
+    private function validateChild(XMLElement $child)
     {
         if ($this === $child) {
             throw new Exception(__('Can not add the element itself as one of its child'));
@@ -624,7 +625,7 @@ class XMLElement implements IteratorAggregate
         if (!is_numeric($index)) {
             return false;
         }
-        
+
         $this->validateChild($child);
 
         if ($index >= $this->getNumberOfChildren()) {
@@ -881,11 +882,11 @@ class XMLElement implements IteratorAggregate
 
         self::convertNode($el, $node);
 
-        if (is_null($root)) {
-            return $el;
-        } else {
+        if (!is_null($root)) {
             $root->appendChild($el);
         }
+
+        return $el;
     }
 
     /**

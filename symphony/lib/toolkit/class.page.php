@@ -261,6 +261,7 @@ abstract class Page
      * This function calls `__renderHeaders()`.
      *
      * @see __renderHeaders()
+     * @param string $page
      */
     public function generate($page = null)
     {

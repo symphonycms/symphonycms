@@ -30,6 +30,8 @@
         /**
          * Initialises the configuration object by loading the existing
          * website config file
+         *
+         * @param array $data
          */
         public static function initialiseConfiguration(array $data = array())
         {
@@ -39,6 +41,10 @@
         /**
          * Overrides the `initialiseLog()` method and writes
          * logs to manifest/logs/update
+         *
+         * @param string $filename
+         * @return bool|void
+         * @throws Exception
          */
         public static function initialiseLog($filename = null)
         {

@@ -137,7 +137,7 @@ input[type='file'] > input[type='button']::-moz-focus-inner {
 
 /* Errors */
 
-.invalid input
+.invalid input,
 .invalid select[multiple],
 .invalid textarea {
 	border-color: #c31;

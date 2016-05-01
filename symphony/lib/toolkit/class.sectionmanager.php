@@ -234,10 +234,10 @@ class SectionManager
      * @param boolean $show_association (optional)
      *    Whether of not the link should be shown on the entries table of the
      *    linked section. This defaults to true.
-     * @throws DatabaseException
-     * @throws Exception
+     * @param string $interface (optional)
+     * @param string $editor (optional)
      * @return boolean
-     *    true if the association was successfully made, false otherwise.
+     * @throws Exception
      */
     public static function createSectionAssociation($parent_section_id = null, $child_field_id = null, $parent_field_id = null, $show_association = true, $interface = null, $editor = null)
     {

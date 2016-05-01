@@ -282,7 +282,7 @@ class AdministrationPage extends HTMLPage
             return;
         }
 
-        if ($this->Breadcrumbs instanceof XMLELement && count($this->Breadcrumbs->getChildrenByName('nav')) === 1) {
+        if ($this->Breadcrumbs instanceof XMLElement && count($this->Breadcrumbs->getChildrenByName('nav')) === 1) {
             $nav = $this->Breadcrumbs->getChildrenByName('nav');
             $nav = $nav[0];
 
