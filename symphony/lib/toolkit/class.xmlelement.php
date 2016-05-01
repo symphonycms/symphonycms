@@ -455,11 +455,11 @@ class XMLElement implements IteratorAggregate
      *
      * @since Symphony 2.5.0
      * @throws Exception when the element is also the child
-     * @param XMLElement $child
+     * @param mixed $child
      *  The child to validate
      *
      */
-    private function validateChild(XMLElement $child)
+    private function validateChild($child)
     {
         if ($this === $child) {
             throw new Exception(__('Can not add the element itself as one of its child'));
