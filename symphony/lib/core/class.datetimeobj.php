@@ -33,7 +33,6 @@ class DateTimeObj
         'Y-m-d' => 'YYYY-MM-DD',    // e. g. 2014-01-02
         'm-d-Y' => 'MM-DD-YYYY',    // e. g. 01-02-2014
         'm-d-y' => 'MM-DD-YY',      // e. g. 01-02-14
-        'd.m.Y' => 'DD.MM.YYYY',    // e. g. 02.01.2014
         'j.n.Y' => 'D.M.YYYY',      // e. g. 2.1.2014 - no leading zeros
         'j.n.y' => 'D.M.YY',        // e. g. 2.1.14 - no leading zeros
         'd.m.Y' => 'DD.MM.YYYY',    // e. g. 02.01.2014
@@ -400,7 +399,7 @@ class DateTimeObj
     }
 
     /**
-     * Returns an array of PHP date formats Symphony supports mapped to 
+     * Returns an array of PHP date formats Symphony supports mapped to
      * their Moment equivalent.
      *
      * @since Symphony 2.6

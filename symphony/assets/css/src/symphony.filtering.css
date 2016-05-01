@@ -46,7 +46,7 @@
 
 .drawer-filtering .clear-filters {
 	position: absolute;
-	bottom: 0rem;
+	bottom: 0;
 	left: -1rem;
 	cursor: pointer;
 }

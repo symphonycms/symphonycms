@@ -189,7 +189,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     public function getToggleStates()
     {
         if (!is_array($this->get('pre_populate_source'))) {
-            return;
+            return array();
         }
 
         $values = array();

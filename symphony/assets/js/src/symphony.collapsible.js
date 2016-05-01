@@ -232,7 +232,7 @@
 						var collapsed = object.find(settings.items).map(function(index) {
 							if($(this).is('.collapsed')) {
 								return index;
-							};
+							}
 						}).get().join(',');
 
 						save(storage, collapsed);

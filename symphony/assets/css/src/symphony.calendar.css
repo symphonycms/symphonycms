@@ -78,10 +78,9 @@
 	top: calc(-2.2rem * 6 + 0.3rem);
 	overflow: visible;
 	height: auto;
-	border: 0.1rem solid #b3b3b3;
-	border-right-color: #a6a6a6;
+	border: 0.1rem solid #a6a6a6;
+	border-top-color: #b3b3b3;
 	border-bottom-color: #999;
-	border-left-color: #a6a6a6;
 	border-radius: 0.4rem;
 	background: #fcfcfc;
 	box-shadow: 0 1rem 1.5rem rgba(0, 0, 0, 0.35);
@@ -241,7 +240,7 @@
 
 .calendar .day {
 	display: inline-block;
-	box-sizing: boder-box;
+	box-sizing: border-box;
 	width: 2.5rem;
 	height: 2.5rem;
 	line-height: 2.3rem;

@@ -25,8 +25,10 @@
          * In Symphony 2.4, we will support PHP5.3 only, and we can have this
          * efficiency!
          *
+         * @param callable $function
+         * @param null $existing_version
          * @return boolean
-         *  True if successful, false otherwise
+         * True if successful, false otherwise
          */
         public static function run($function, $existing_version = null)
         {
@@ -75,6 +77,7 @@
          * This function will upgrade Symphony from the `self::$existing_version`
          * to `getVersion()`.
          *
+         * @throws Exception when the configuration is not writable
          * @return boolean
          */
         public static function upgrade()
@@ -105,8 +108,8 @@
          * include notices to display the user. These may be warnings about what is
          * about to happen, or a description of what this upgrade provides.
          *
-         * @return
-         *  An array of strings, where each string will become a list item.
+         * @return array
+         * An array of strings, where each string will become a list item.
          */
         public static function preUpdateNotes()
         {
@@ -118,8 +121,8 @@
          * include notices to display the user. These may be post upgrade steps such
          * as new extensions that are available or required by the current version
          *
-         * @return
-         *  An array of strings, where each string will become a list item.
+         * @return array
+         * An array of strings, where each string will become a list item.
          */
         public static function postUpdateNotes()
         {

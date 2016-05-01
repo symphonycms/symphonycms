@@ -115,8 +115,11 @@ class contentPublish extends AdministrationPage
 
     /**
      * Create filtering drawer
+     *
+     * @param Section $section
+     * @return XMLElement
      */
-    public function createFilteringDrawer($section)
+    public function createFilteringDrawer(Section $section)
     {
         $this->filteringForm = Widget::Form(null, 'get', 'filtering');
         $this->createFilteringDuplicator($section);
@@ -1822,7 +1825,6 @@ class contentPublish extends AdministrationPage
                 $handle = FieldManager::fetchHandleFromID($field_id);
                 // Properly decode and re-encode value for output
                 $value = rawurlencode(rawurldecode($value));
-                $filter_querystring .= sprintf('filter[%s]=%s&', $handle, $value);
 
                 //This is in case it is an Association so the filter reads the text value instead of the ID
                 $field = FieldManager::fetch($field_id);
@@ -1832,7 +1834,7 @@ class contentPublish extends AdministrationPage
                     }
                 }
 
-                $filter_querystring .= sprintf("filter[%s]=%s&", $handle, rawurldecode($value));
+                $filter_querystring .= sprintf("filter[%s]=%s&", $handle, $value);
             }
             $filter_querystring = trim($filter_querystring, '&');
         }

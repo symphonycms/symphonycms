@@ -8,8 +8,9 @@
  * Redirects the browser to a specified location. Safer than using a
  * direct header() call
  *
- *  @param string $location
- *  @param string $status (optional)
+ * @throws SymphonyErrorPage if the headers have already been sent
+ * @param string $location
+ * @param string $status (optional)
  */
 function redirect($location, $status = '302 Found')
 {
@@ -148,7 +149,7 @@ function ini_size_to_bytes($val)
  *
  * @since 2.3.3
  * @author creativedutchmen (Huib Keemink)
- * @return void
+ * @param string $mode
  */
 function cleanup_session_cookies($mode)
 {

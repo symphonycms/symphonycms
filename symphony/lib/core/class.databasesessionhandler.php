@@ -41,7 +41,10 @@ class DatabaseSessionHandler implements SessionHandlerInterface
 
     /**
      * Constructor
+     *
+     * @param $database
      * @param array $settings
+     * @param string $key (defaults to 'symphony')
      */
     public function __construct($database, array $settings = array(), $key = 'symphony')
     {
@@ -118,8 +121,10 @@ class DatabaseSessionHandler implements SessionHandlerInterface
     /**
      * Allows the Session to open without any further logic.
      *
-     * @return boolean
-     *  Always returns true
+     * @param string $save_path
+     * @param string $name
+     * @return bool Always returns true
+     * Always returns true
      */
     public function open($save_path, $name)
     {

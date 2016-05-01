@@ -511,8 +511,8 @@ class FrontendPage extends XSLTPage
             }
 
             if (is_array($value) && !(count($value) == 1 && empty($value[0]))) {
-                foreach ($value as $key => $value) {
-                    $item = new XMLElement('item', General::sanitize($value));
+                foreach ($value as $key => $val) {
+                    $item = new XMLElement('item', General::sanitize($val));
                     $param->appendChild($item);
                 }
             } elseif (is_array($value)) {
@@ -942,7 +942,7 @@ class FrontendPage extends XSLTPage
     private function __findDatasourceOrder($dependenciesList)
     {
         if (!is_array($dependenciesList) || empty($dependenciesList)) {
-            return;
+            return array();
         }
 
         foreach ($dependenciesList as $handle => $dependencies) {

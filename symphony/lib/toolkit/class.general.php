@@ -469,7 +469,7 @@ class General
      *  the string to operate on
      * @param int $start
      *  the starting offset
-     * @param int $start
+     * @param int $length
      *  the length of the substring
      * @return string
      *  the resulting substring

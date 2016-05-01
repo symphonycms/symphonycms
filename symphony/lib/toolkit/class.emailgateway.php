@@ -736,7 +736,11 @@ abstract class EmailGateway
      *
      * @see EmailGateway::contentInfoArray()
      *
-     * @return string|null
+     * @param string $type
+     * @param string $file
+     * @param string $filename
+     * @param string $charset
+     * @return null|string
      */
     protected function contentInfoString($type = null, $file = null, $filename = null, $charset = null)
     {

@@ -94,7 +94,8 @@ class FieldManager implements FileResource
     /**
      * This function is not implemented by the `FieldManager` class
      *
-     * @return boolean
+     * @param string $name
+     * @return bool
      */
     public static function about($name)
     {
