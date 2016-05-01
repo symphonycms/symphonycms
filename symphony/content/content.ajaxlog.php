@@ -12,7 +12,7 @@ class contentAjaxLog extends TextPage
     public function view()
     {
         if ($_REQUEST['error'] && Symphony::Log()) {
-            Symphony::Log()->error(sprintf(
+            Symphony::Log()->   error(sprintf(
                 '%s - %s%s%s',
                 'Javascript',
                 $_REQUEST['error'],

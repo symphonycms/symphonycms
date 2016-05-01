@@ -1013,6 +1013,7 @@ class General
      * Checks that the file and it's folder are readable and writable.
      *
      * @since Symphony 2.6.3
+     * @param string $file
      * @return boolean
      */
     public static function checkFile($file)
