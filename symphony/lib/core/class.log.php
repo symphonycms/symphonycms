@@ -89,6 +89,7 @@ class Log
      * @param integer $type
      *  A PHP error constant for this message, defaults to E_NOTICE
      * @param array $context
+     * @return void
      */
     public function pushToLog($message, $type = E_NOTICE, array $context = null)
     {
@@ -102,6 +103,7 @@ class Log
      *
      * @since Symphony 2.3.2
      * @param Exception $exception
+     * @return void
      */
     public function pushExceptionToLog(Exception $exception)
     {
@@ -114,6 +116,6 @@ class Log
             $exception->getFile()
         );
 
-        return $this->pushToLog($message, $exception->getCode(), array('exception' => $exception));
+        $this->pushToLog($message, $exception->getCode(), array('exception' => $exception));
     }
 }

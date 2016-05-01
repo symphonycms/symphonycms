@@ -905,12 +905,13 @@ Class Database {
      * error and debug. If no type is given, the entire log is returned,
      * otherwise only log messages for that type are returned
      *
+     * @param string $type
      * @return array
-     *  An array of associative array's. Log entries of the error type
-     *  return the query the error occurred on and the error number and
-     *  message from MySQL. Log entries of the debug type return the
-     *  the query and the start/stop time to indicate how long it took
-     *  to run
+     * An array of associative array's. Log entries of the error type
+     * return the query the error occurred on and the error number and
+     * message from MySQL. Log entries of the debug type return the
+     * the query and the start/stop time to indicate how long it took
+     * to run
      */
     public function debug($type = null)
     {

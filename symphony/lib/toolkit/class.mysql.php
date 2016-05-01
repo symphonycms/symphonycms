@@ -468,6 +468,7 @@ class MySQL
      * @param string $where
      *  A WHERE statement for this DELETE statement, defaults to null,
      *  which will delete all rows in the $table
+     * @param array $params
      * @throws DatabaseException
      * @return boolean
      */
@@ -521,6 +522,7 @@ class MySQL
      * LIMIT to the given `$query`, so for the more efficient use, it is recommended
      * that the `$query` have a LIMIT set.
      *
+     * @throws DatabaseException
      * @param integer $offset
      *  The row to return from the SQL query. For instance, if the second
      *  row from the result was required, the offset would be 1, because it
@@ -528,7 +530,7 @@ class MySQL
      * @param string $query
      *  The full SQL query to execute. Defaults to null, which will
      *  use the `$this->_lastResult`
-     * @throws DatabaseException
+     * @param array $values
      * @return array
      *  If there is no row at the specified `$offset`, an empty array will be returned
      *  otherwise an associative array of that row will be returned.
@@ -651,7 +653,7 @@ class MySQL
      */
     private function __error()
     {
-        return MySQL::$_conn_pdo->error();
+        MySQL::$_conn_pdo->error();
     }
 
     /**

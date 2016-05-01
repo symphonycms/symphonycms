@@ -511,7 +511,7 @@ class FrontendPage extends XSLTPage
             }
 
             if (is_array($value) && !(count($value) == 1 && empty($value[0]))) {
-                foreach ($value as $key => $val) {
+                foreach ($value as $val) {
                     $item = new XMLElement('item', General::sanitize($val));
                     $param->appendChild($item);
                 }
