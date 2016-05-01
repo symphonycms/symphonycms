@@ -103,7 +103,7 @@ class Session
     public static function getDomain()
     {
         if (isset($_SERVER['HTTP_HOST'])) {
-            if (preg_match('/(localhost|127\.0\.0\.1)/', $_SERVER['HTTP_HOST']) || $_SERVER['SERVER_ADDR'] == '127.0.0.1') {
+            if (preg_match('/(localhost|127\.0\.0\.1)/', $_SERVER['HTTP_HOST'])) {
                 return null; // prevent problems on local setups
             }
 
