@@ -282,7 +282,7 @@ Class Database {
      *
      * @var integer
      */
-    private $_query_count = 0;
+    protected $_query_count = 0;
 
     /**
      * The table prefix for this connection. Queries to be written using
@@ -291,7 +291,7 @@ Class Database {
      *
      * @var string
      */
-    private $_prefix = 'sym_';
+    protected $_prefix = 'sym_';
 
     /**
      * Whether query caching is enabled or not. By default this set
@@ -299,7 +299,7 @@ Class Database {
      *
      * @var boolean
      */
-    private $_cache = true;
+    protected $_cache = true;
 
     /**
      * Whether to log this query in the internal `$log`.
@@ -307,16 +307,36 @@ Class Database {
      *
      * @var boolean
      */
-    private $_logging = true;
+    protected $_logging = true;
 
     /**
-     * Resets the result, `$this->_lastResult` and `$this->_lastQuery` to their empty
-     * values. Called on each query and when the class is destroyed.
+     * @var null
+     */
+    protected $_result = null;
+
+    /**
+     * @var array|boolean
+     */
+    protected $_lastResult = null;
+
+    /**
+     * @var string
+     */
+    protected $_lastQuery = null;
+
+    /**
+     * @var string
+     */
+    protected $_lastQueryHash = null;
+
+    /**
+     * Resets the `result`, `lastResult`, `lastQuery` and lastQueryHash properties to `null`.
+     * Called on each query and when the class is destroyed.
      */
     public function flush()
     {
         $this->_result = null;
-        $this->_lastResult = array();
+        $this->_lastResult = null;
         $this->_lastQuery = null;
         $this->_lastQueryHash = null;
     }

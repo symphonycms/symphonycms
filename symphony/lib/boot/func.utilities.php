@@ -134,9 +134,11 @@ function ini_size_to_bytes($val)
 function cleanup_session_cookies($mode)
 {
     if (strtolower($mode) != 'administration') {
-        $session_is_empty = is_session_empty();
+        if (null === Symphony::$Cookies) {
+            return;
+        }
 
-        if ($session_is_empty && Symphony::Cookies()->has(session_name())) {
+        if (is_session_empty() && Symphony::Cookies()->has(session_name())) {
             Symphony::Cookies()->remove(session_name());
         }
     }
@@ -151,7 +153,7 @@ function cleanup_session_cookies($mode)
 function is_session_empty()
 {
     $session_is_empty = true;
-    if (is_array($_SESSION)) {
+    if (isset($_SESSION) && is_array($_SESSION)) {
         foreach ($_SESSION as $contents) {
             if (!empty($contents)) {
                 $session_is_empty = false;
