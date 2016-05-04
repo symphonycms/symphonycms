@@ -20,15 +20,15 @@ class contentAjaxParameters extends JSONPage
         }
 
         // Environment parameters
-        if ($filter == 'env') {
+        if ($filter === 'env') {
             $params = array_merge($params, $this->__getEnvParams());
 
             // Page parameters
-        } elseif ($filter == 'page') {
+        } elseif ($filter === 'page') {
             $params = array_merge($params, $this->__getPageParams());
 
             // Data source parameters
-        } elseif ($filter == 'ds') {
+        } elseif ($filter === 'ds') {
             $params = array_merge($params, $this->__getDSParams());
 
             // All parameters

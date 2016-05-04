@@ -37,7 +37,7 @@ class AuthorDatasource extends Datasource
 
         if (is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)) {
             foreach ($this->dsParamFILTERS as $field => $value) {
-                if (!is_array($value) && trim($value) == '') {
+                if (!is_array($value) && trim($value) === '') {
                     continue;
                 }
 

@@ -65,7 +65,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         }
 
         $providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::DATASOURCE);
-        $isEditing = $this->_context['action'] == 'edit';
+        $isEditing = $this->_context['action'] === 'edit';
         $about = $handle = null;
         $fields = array('name'=>null, 'source'=>null, 'filter'=>null, 'required_url_param'=>null, 'negate_url_param'=>null, 'param'=>null);
 
@@ -101,7 +101,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             $about = $existing->about();
             $fields['name'] = $about['name'];
 
-            $fields['order'] = ($order == 'rand') ? 'random' : $order;
+            $fields['order'] = ($order === 'rand') ? 'random' : $order;
             $fields['param'] = isset($existing->dsParamPARAMOUTPUT) ? $existing->dsParamPARAMOUTPUT : null;
             $fields['required_url_param'] = isset($existing->dsParamREQUIREDPARAM) ? trim($existing->dsParamREQUIREDPARAM) : null;
             $fields['negate_url_param'] = isset($existing->dsParamNEGATEPARAM) ? trim($existing->dsParamNEGATEPARAM) : null;
@@ -136,7 +136,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
             if (!empty($providers)) {
                 foreach ($providers as $providerClass => $provider) {
-                    if ($fields['source'] == call_user_func(array($providerClass, 'getClass'))) {
+                    if ($fields['source'] === call_user_func(array($providerClass, 'getClass'))) {
                         $fields = array_merge($fields, $existing->settings());
                         $provided = true;
                         break;
@@ -213,11 +213,11 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $options = array(
             array('label' => __('System'), 'data-label' => 'system', 'options' => array(
-                    array('authors', ($fields['source'] == 'authors'), __('Authors'), null, null, array('data-context' => 'authors')),
-                    array('navigation', ($fields['source'] == 'navigation'), __('Navigation'), null, null, array('data-context' => 'navigation')),
+                    array('authors', ($fields['source'] === 'authors'), __('Authors'), null, null, array('data-context' => 'authors')),
+                    array('navigation', ($fields['source'] === 'navigation'), __('Navigation'), null, null, array('data-context' => 'navigation')),
             )),
             array('label' => __('Custom XML'), 'data-label' => 'custom-xml', 'options' => array(
-                    array('static_xml', ($fields['source'] == 'static_xml'), __('Static XML'), null, null, array('data-context' => 'static-xml')),
+                    array('static_xml', ($fields['source'] === 'static_xml'), __('Static XML'), null, null, array('data-context' => 'static-xml')),
             )),
         );
 
@@ -227,7 +227,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
             foreach ($providers as $providerClass => $provider) {
                 $p['options'][] = array(
-                    $providerClass, ($fields['source'] == $providerClass), $provider, null, null, array('data-context' => Lang::createHandle($provider))
+                    $providerClass, ($fields['source'] === $providerClass), $provider, null, null, array('data-context' => Lang::createHandle($provider))
                 );
             }
 
@@ -239,7 +239,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             array_unshift($options, array('label' => __('Sections'), 'data-label' => 'sections', 'options' => array()));
 
             foreach ($sections as $s) {
-                $options[0]['options'][] = array($s->get('id'), ($fields['source'] == $s->get('id')), General::sanitize($s->get('name')));
+                $options[0]['options'][] = array($s->get('id'), ($fields['source'] === $s->get('id')), General::sanitize($s->get('name')));
             }
         }
 
@@ -605,28 +605,28 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $options = array(
             array('label' => __('Authors'), 'data-label' => 'authors', 'options' => array(
-                    array('id', ($fields['source'] == 'authors' && $fields['sort'] == 'id'), __('Author ID')),
-                    array('username', ($fields['source'] == 'authors' && $fields['sort'] == 'username'), __('Username')),
-                    array('first-name', ($fields['source'] == 'authors' && $fields['sort'] == 'first-name'), __('First Name')),
-                    array('last-name', ($fields['source'] == 'authors' && $fields['sort'] == 'last-name'), __('Last Name')),
-                    array('email', ($fields['source'] == 'authors' && $fields['sort'] == 'email'), __('Email')),
-                    array('status', ($fields['source'] == 'authors' && $fields['sort'] == 'status'), __('Status')),
+                    array('id', ($fields['source'] === 'authors' && $fields['sort'] === 'id'), __('Author ID')),
+                    array('username', ($fields['source'] === 'authors' && $fields['sort'] === 'username'), __('Username')),
+                    array('first-name', ($fields['source'] === 'authors' && $fields['sort'] === 'first-name'), __('First Name')),
+                    array('last-name', ($fields['source'] === 'authors' && $fields['sort'] === 'last-name'), __('Last Name')),
+                    array('email', ($fields['source'] === 'authors' && $fields['sort'] === 'email'), __('Email')),
+                    array('status', ($fields['source'] === 'authors' && $fields['sort'] === 'status'), __('Status')),
                 )
             ),
 
             array('label' => __('Navigation'), 'data-label' => 'navigation', 'options' => array(
-                    array('id', ($fields['source'] == 'navigation' && $fields['sort'] == 'id'), __('Page ID')),
-                    array('handle', ($fields['source'] == 'navigation' && $fields['sort'] == 'handle'), __('Handle')),
-                    array('sortorder', ($fields['source'] == 'navigation' && $fields['sort'] == 'sortorder'), __('Sort Order')),
+                    array('id', ($fields['source'] === 'navigation' && $fields['sort'] === 'id'), __('Page ID')),
+                    array('handle', ($fields['source'] === 'navigation' && $fields['sort'] === 'handle'), __('Handle')),
+                    array('sortorder', ($fields['source'] === 'navigation' && $fields['sort'] === 'sortorder'), __('Sort Order')),
                 )
             ),
         );
 
         foreach ($field_groups as $section_id => $section_data) {
             $optgroup = array('label' => General::sanitize($section_data['section']->get('name')), 'data-label' => 'section-' . $section_data['section']->get('id'), 'options' => array(
-                array('system:id', ($fields['source'] == $section_id && $fields['sort'] == 'system:id'), __('System ID')),
-                array('system:creation-date', ($fields['source'] == $section_id && ($fields['sort'] == 'system:creation-date' || $fields['sort'] == 'system:date')), __('System Creation Date')),
-                array('system:modification-date', ($fields['source'] == $section_id && $fields['sort'] == 'system:modification-date'), __('System Modification Date')),
+                array('system:id', ($fields['source'] === $section_id && $fields['sort'] === 'system:id'), __('System ID')),
+                array('system:creation-date', ($fields['source'] === $section_id && ($fields['sort'] === 'system:creation-date' || $fields['sort'] === 'system:date')), __('System Creation Date')),
+                array('system:modification-date', ($fields['source'] === $section_id && $fields['sort'] === 'system:modification-date'), __('System Modification Date')),
             ));
 
             if (is_array($section_data['fields']) && !empty($section_data['fields'])) {
@@ -637,7 +637,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
                     $optgroup['options'][] = array(
                         $input->get('element_name'),
-                        ($fields['source'] == $section_id && $input->get('element_name') == $fields['sort']),
+                        ($fields['source'] === $section_id && $input->get('element_name') === $fields['sort']),
                         $input->get('label')
                     );
                 }
@@ -690,7 +690,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                         continue;
                     }
 
-                    $optgroup['options'][] = array($input->get('id'), ($fields['source'] == $section_id && $fields['group'] == $input->get('id')), $input->get('label'));
+                    $optgroup['options'][] = array($input->get('id'), ($fields['source'] === $section_id && $fields['group'] === $input->get('id')), $input->get('label'));
                 }
             }
 
@@ -757,11 +757,11 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $options = array(
             array('label' => __('Authors'), 'data-label' => 'authors', 'options' => array(
-                    array('username', ($fields['source'] == 'authors' && in_array('username', $fields['xml_elements'])), 'username'),
-                    array('name', ($fields['source'] == 'authors' && in_array('name', $fields['xml_elements'])), 'name'),
-                    array('email', ($fields['source'] == 'authors' && in_array('email', $fields['xml_elements'])), 'email'),
-                    array('author-token', ($fields['source'] == 'authors' && in_array('author-token', $fields['xml_elements'])), 'author-token'),
-                    array('default-area', ($fields['source'] == 'authors' && in_array('default-area', $fields['xml_elements'])), 'default-area'),
+                    array('username', ($fields['source'] === 'authors' && in_array('username', $fields['xml_elements'])), 'username'),
+                    array('name', ($fields['source'] === 'authors' && in_array('name', $fields['xml_elements'])), 'name'),
+                    array('email', ($fields['source'] === 'authors' && in_array('email', $fields['xml_elements'])), 'email'),
+                    array('author-token', ($fields['source'] === 'authors' && in_array('author-token', $fields['xml_elements'])), 'author-token'),
+                    array('default-area', ($fields['source'] === 'authors' && in_array('default-area', $fields['xml_elements'])), 'default-area'),
             )),
         );
 
@@ -772,12 +772,12 @@ class contentBlueprintsDatasources extends ResourcesPage
                 'options' => array(
                     array(
                         'system:pagination',
-                        ($fields['source'] == $section_id && in_array('system:pagination', $fields['xml_elements'])),
+                        ($fields['source'] === $section_id && in_array('system:pagination', $fields['xml_elements'])),
                         'system: pagination'
                     ),
                     array(
                         'system:date',
-                        ($fields['source'] == $section_id && in_array('system:date', $fields['xml_elements'])),
+                        ($fields['source'] === $section_id && in_array('system:date', $fields['xml_elements'])),
                         'system: date'
                     )
                 )
@@ -791,7 +791,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                         foreach ($elements as $name) {
                             $selected = false;
 
-                            if ($fields['source'] == $section_id && in_array($name, $fields['xml_elements'])) {
+                            if ($fields['source'] === $section_id && in_array($name, $fields['xml_elements'])) {
                                 $selected = true;
                             }
 
@@ -825,7 +825,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         foreach (array('id', 'username', 'name', 'email', 'user_type') as $p) {
             $options[0]['options'][] = array(
                 $p,
-                ($fields['source'] == 'authors' && in_array($p, $fields['param'])),
+                ($fields['source'] === 'authors' && in_array($p, $fields['param'])),
                 $prefix . $p,
                 null,
                 null,
@@ -841,7 +841,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             foreach (array('id', 'creation-date', 'modification-date', 'author') as $p) {
                 $option = array(
                     'system:' . $p,
-                    ($fields['source'] == $section_id && in_array('system:' . $p, $fields['param'])),
+                    ($fields['source'] === $section_id && in_array('system:' . $p, $fields['param'])),
                     $prefix . 'system-' . $p,
                     null,
                     null,
@@ -852,7 +852,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
                 // Handle 'system:date' as an output paramater (backwards compatibility)
                 if ($p === 'creation-date') {
-                    if ($fields['source'] == $section_id && in_array('system:date', $fields['param'])) {
+                    if ($fields['source'] === $section_id && in_array('system:date', $fields['param'])) {
                         $option[1] = true;
                     }
                 }
@@ -868,7 +868,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
                     $optgroup['options'][] = array(
                         $input->get('element_name'),
-                        ($fields['source'] == $section_id && in_array($input->get('element_name'), $fields['param'])),
+                        ($fields['source'] === $section_id && in_array($input->get('element_name'), $fields['param'])),
                         $prefix . $input->get('element_name'),
                         null,
                         null,
@@ -986,7 +986,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         $about = $datasource->about();
 
         $this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($about['name'], __('Data Source'), __('Symphony'))));
-        $this->appendSubheading((($this->_context['action'] == 'info') ? $about['name'] : __('Untitled')));
+        $this->appendSubheading((($this->_context['action'] === 'info') ? $about['name'] : __('Untitled')));
         $this->insertBreadcrumbs(array(
             Widget::Anchor(__('Data Sources'), SYMPHONY_URL . '/blueprints/datasources/'),
         ));
@@ -1123,12 +1123,12 @@ class contentBlueprintsDatasources extends ResourcesPage
         $providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::DATASOURCE);
         $providerClass = null;
 
-        if (trim($fields['name']) == '') {
+        if (trim($fields['name']) === '') {
             $this->_errors['name'] = __('This is a required field');
         }
 
-        if ($fields['source'] == 'static_xml') {
-            if (trim($fields['static_xml']) == '') {
+        if ($fields['source'] === 'static_xml') {
+            if (trim($fields['static_xml']) === '') {
                 $this->_errors['static_xml'] = __('This is a required field');
             } else {
                 $xml_errors = null;
@@ -1140,7 +1140,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                 }
             }
         } elseif (is_numeric($fields['source'])) {
-            if (strlen(trim($fields['max_records'])) == 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)) {
+            if (strlen(trim($fields['max_records'])) === 0 || (is_numeric($fields['max_records']) && $fields['max_records'] < 1)) {
                 if ($fields['paginate_results'] === 'yes') {
                     $this->_errors['max_records'] = __('A result limit must be set');
                 }
@@ -1148,7 +1148,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                 $this->_errors['max_records'] = __('Must be a valid number or parameter');
             }
 
-            if (strlen(trim($fields['page_number'])) == 0 || (is_numeric($fields['page_number']) && $fields['page_number'] < 1)) {
+            if (strlen(trim($fields['page_number'])) === 0 || (is_numeric($fields['page_number']) && $fields['page_number'] < 1)) {
                 if ($fields['paginate_results'] === 'yes') {
                     $this->_errors['page_number'] = __('A page number must be set');
                 }
@@ -1159,7 +1159,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             // See if a Provided Datasource is saved
         } elseif (!empty($providers)) {
             foreach ($providers as $providerClass => $provider) {
-                if ($fields['source'] == call_user_func(array($providerClass, 'getSource'))) {
+                if ($fields['source'] === call_user_func(array($providerClass, 'getSource'))) {
                     call_user_func_array(array($providerClass, 'validate'), array(&$fields, &$this->_errors));
                     break;
                 }
@@ -1181,14 +1181,14 @@ class contentBlueprintsDatasources extends ResourcesPage
         $isDuplicate = false;
         $queueForDeletion = null;
 
-        if ($this->_context['action'] == 'new' && is_file($file)) {
+        if ($this->_context['action'] === 'new' && is_file($file)) {
             $isDuplicate = true;
-        } elseif ($this->_context['action'] == 'edit') {
+        } elseif ($this->_context['action'] === 'edit') {
             $existing_handle = $this->_context['handle'];
 
-            if ($classname != $existing_handle && is_file($file)) {
+            if ($classname !== $existing_handle && is_file($file)) {
                 $isDuplicate = true;
-            } elseif ($classname != $existing_handle) {
+            } elseif ($classname !== $existing_handle) {
                 $queueForDeletion = DATASOURCES . '/data.' . $existing_handle . '.php';
             }
         }
@@ -1269,7 +1269,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                         $extends = 'StaticXMLDatasource';
                         $fields['static_xml'] = trim($fields['static_xml']);
 
-                        if (preg_match('/^<\?xml/i', $fields['static_xml']) == true) {
+                        if (preg_match('/^<\?xml/i', $fields['static_xml']) === true) {
                             // Need to remove any XML declaration
                             $fields['static_xml'] = preg_replace('/^<\?xml[^>]+>/i', null, $fields['static_xml']);
                         }
@@ -1324,7 +1324,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                 $dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
             }
 
-            if ($this->_context['action'] == 'new') {
+            if ($this->_context['action'] === 'new') {
                 /**
                  * Prior to creating the Datasource, the file path where it will be written to
                  * is provided and well as the contents of that file.
@@ -1427,7 +1427,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                     }
                 }
 
-                if ($this->_context['action'] == 'new') {
+                if ($this->_context['action'] === 'new') {
                     /**
                      * After creating the Datasource, the path to the Datasource file is provided
                      *
@@ -1462,7 +1462,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                     ));
                 }
 
-                redirect(SYMPHONY_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context['action'] == 'new' ? 'created' : 'saved') . '/');
+                redirect(SYMPHONY_URL . '/blueprints/datasources/edit/'.$classname.'/'.($this->_context['action'] === 'new' ? 'created' : 'saved') . '/');
             }
         }
     }
@@ -1477,7 +1477,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         $string = 'public $dsParamFILTERS = array(' . PHP_EOL;
 
         foreach ($filters as $key => $val) {
-            if (trim($val) == '') {
+            if (trim($val) === '') {
                 continue;
             }
 
@@ -1594,10 +1594,10 @@ class contentBlueprintsDatasources extends ResourcesPage
         $info = $gateway->getInfoLast();
 
         // 28 is CURLE_OPERATION_TIMEDOUT
-        if ($info['curl_error'] == 28) {
+        if ($info['curl_error'] === 28) {
             $error = __('Request timed out. %d second limit reached.', array($timeout));
             return false;
-        } elseif ($data === false || $info['http_code'] != 200) {
+        } elseif ($data === false || $info['http_code'] !== 200) {
             $error = __('Failed to load URL, status code %d was returned.', array($info['http_code']));
             return false;
         }

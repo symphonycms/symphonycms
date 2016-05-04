@@ -209,31 +209,31 @@ class ResourceManager
         if (!is_null($order_by) && !empty($resources)) {
             $author = $label = $source = $name = array();
             $order_by = array_map('strtolower', explode(' ', $order_by));
-            $order = ($order_by[1] == 'desc') ? SORT_DESC : SORT_ASC;
+            $order = ($order_by[1] === 'desc') ? SORT_DESC : SORT_ASC;
             $sort = $order_by[0];
 
-            if ($sort == 'author') {
+            if ($sort === 'author') {
                 foreach ($resources as $key => $about) {
                     $author[$key] = $about['author']['name'];
                     $label[$key] = $key;
                 }
 
                 array_multisort($author, $order, $label, SORT_ASC, $resources);
-            } elseif ($sort == 'release-date') {
+            } elseif ($sort === 'release-date') {
                 foreach ($resources as $key => $about) {
                     $author[$key] = $about['release-date'];
                     $label[$key] = $key;
                 }
 
                 array_multisort($author, $order, $label, SORT_ASC, $resources);
-            } elseif ($sort == 'source') {
+            } elseif ($sort === 'source') {
                 foreach ($resources as $key => $about) {
                     $source[$key] = $about['source']['handle'];
                     $label[$key] = $key;
                 }
 
                 array_multisort($source, $order, $label, SORT_ASC, $resources);
-            } elseif ($sort == 'name') {
+            } elseif ($sort === 'name') {
                 foreach ($resources as $key => $about) {
                     $name[$key] = strtolower($about['name']);
                     $label[$key] = $key;
@@ -346,7 +346,7 @@ class ResourceManager
             $page_id
         )));
 
-        if (is_array($pages) && count($pages) == 1) {
+        if (is_array($pages) && count($pages) === 1) {
             $result = $pages[0][$col];
 
             if (!in_array($r_handle, explode(',', $result))) {
@@ -386,7 +386,7 @@ class ResourceManager
             $page_id
         )));
 
-        if (is_array($pages) && count($pages) == 1) {
+        if (is_array($pages) && count($pages) === 1) {
             $result = $pages[0][$col];
 
             $values = explode(',', $result);

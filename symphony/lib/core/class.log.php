@@ -1,5 +1,8 @@
 <?php
 
+use Psr\Log\LogLevel;
+use Monolog\Logger;
+
 /**
  * @package core
  */
@@ -7,10 +10,17 @@
  * The Log class acts a simple wrapper to write errors to a file so that it can
  * be read at a later date. There is one Log file in Symphony, stored in the main
  * `LOGS` directory.
+ *
+ * @method emergency($message, array $context = array())
+ * @method alert($message, array $context = array())
+ * @method critical($message, array $context = array())
+ * @method error($message, array $context = array())
+ * @method warning($message, array $context = array())
+ * @method notice($message, array $context = array())
+ * @method info($message, array $context = array())
+ * @method debug($message, array $context = array())
+ * @method log($message, array $context = array())
  */
-use Psr\Log\LogLevel;
-use Monolog\Logger;
-
 class Log
 {
     /**

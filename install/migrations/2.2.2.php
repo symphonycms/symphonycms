@@ -20,7 +20,7 @@
 
                 // Rename old variations of the query_caching configuration setting
                 if (Symphony::Configuration()->get('disable_query_caching', 'database')) {
-                    $value = (Symphony::Configuration()->get('disable_query_caching', 'database') == "no") ? "on" : "off";
+                    $value = (Symphony::Configuration()->get('disable_query_caching', 'database') === "no") ? "on" : "off";
 
                     Symphony::Configuration()->set('query_caching', $value, 'database');
                     Symphony::Configuration()->remove('disable_query_caching', 'database');

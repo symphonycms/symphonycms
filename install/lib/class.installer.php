@@ -316,7 +316,7 @@
             }
 
             // Website name not entered
-            if (trim($fields['general']['sitename']) == '') {
+            if (trim($fields['general']['sitename']) === '') {
                 $errors['general-no-sitename']  = array(
                     'msg' => 'No sitename entered.',
                     'details' => __('You must enter a Site name. This will be shown at the top of your backend.')
@@ -324,7 +324,7 @@
             }
 
             // Username Not Entered
-            if (trim($fields['user']['username']) == '') {
+            if (trim($fields['user']['username']) === '') {
                 $errors['user-no-username']  = array(
                     'msg' => 'No username entered.',
                     'details' => __('You must enter a Username. This will be your Symphony login information.')
@@ -332,7 +332,7 @@
             }
 
             // Password Not Entered
-            if (trim($fields['user']['password']) == '') {
+            if (trim($fields['user']['password']) === '') {
                 $errors['user-no-password']  = array(
                     'msg' => 'No password entered.',
                     'details' => __('You must enter a Password. This will be your Symphony login information.')
@@ -340,7 +340,7 @@
             }
 
             // Password mismatch
-            elseif ($fields['user']['password'] != $fields['user']['confirm-password']) {
+            elseif ($fields['user']['password'] !== $fields['user']['confirm-password']) {
                 $errors['user-password-mismatch']  = array(
                     'msg' => 'Passwords did not match.',
                     'details' => __('The password and confirmation did not match. Please retype your password.')
@@ -348,7 +348,7 @@
             }
 
             // No Name entered
-            if (trim($fields['user']['firstname']) == '' || trim($fields['user']['lastname']) == '') {
+            if (trim($fields['user']['firstname']) === '' || trim($fields['user']['lastname']) === '') {
                 $errors['user-no-name']  = array(
                     'msg' => 'Did not enter First and Last names.',
                     'details' =>  __('You must enter your name.')
@@ -364,7 +364,7 @@
             }
 
             // Admin path not entered
-            if (trim($fields['symphony']['admin-path']) == '') {
+            if (trim($fields['symphony']['admin-path']) === '') {
                 $errors['no-symphony-path']  = array(
                     'msg' => 'No Symphony path entered.',
                     'details' => __('You must enter a path for accessing Symphony, or leave the default. This will be used to access Symphony\'s backend.')
@@ -606,7 +606,7 @@
             }
 
             // Loading default language
-            if (isset($_REQUEST['lang']) && $_REQUEST['lang'] != 'en') {
+            if (isset($_REQUEST['lang']) && $_REQUEST['lang'] !== 'en') {
                 Symphony::Log()->info('CONFIGURING: Default language');
 
                 $language = Lang::Languages();

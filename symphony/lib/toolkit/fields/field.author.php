@@ -204,7 +204,7 @@ class FieldAuthor extends Field implements ExportableField
         $fields['allow_multiple_selection'] = ($this->get('allow_multiple_selection') ? $this->get('allow_multiple_selection') : 'no');
         $fields['default_to_current_user'] = ($this->get('default_to_current_user') ? $this->get('default_to_current_user') : 'no');
 
-        if ($this->get('author_types') != '') {
+        if ($this->get('author_types') !== '') {
             $fields['author_types'] = implode(',', $this->get('author_types'));
         }
 
@@ -276,7 +276,7 @@ class FieldAuthor extends Field implements ExportableField
 
         $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') === 'yes' ? array('multiple' => 'multiple') : null)));
 
-        if ($flagWithError != null) {
+        if ($flagWithError !== null) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
         } else {
             $wrapper->appendChild($label);
@@ -442,7 +442,7 @@ class FieldAuthor extends Field implements ExportableField
                 $regex = 'NOT REGEXP';
             }
 
-            if (strlen($pattern) == 0) {
+            if (strlen($pattern) === 0) {
                 return;
             }
 
@@ -469,7 +469,7 @@ class FieldAuthor extends Field implements ExportableField
                 $this->_key++;
                 $value = $this->cleanValue($value);
 
-                if (self::__parseFilter($value) == "author_id") {
+                if (self::__parseFilter($value) === "author_id") {
                     $where .= "
                         AND t{$field_id}_{$this->_key}.author_id = '{$value}'
                     ";

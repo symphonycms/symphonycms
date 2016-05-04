@@ -369,7 +369,7 @@ class FrontendPage extends XSLTPage
             'root-page' => ($root_page ? $root_page : $page['handle']),
             'current-page' => $page['handle'],
             'current-page-id' => $page['id'],
-            'current-path' => ($current_path == '') ? '/' : $current_path,
+            'current-path' => ($current_path === '') ? '/' : $current_path,
             'parent-path' => '/' . $page['path'],
             'current-query-string' => self::sanitizeParameter($querystring),
             'current-url' => URL . $current_path,
@@ -510,7 +510,7 @@ class FrontendPage extends XSLTPage
                 $value = $this->_env['pool'][$key];
             }
 
-            if (is_array($value) && !(count($value) == 1 && empty($value[0]))) {
+            if (is_array($value) && !(count($value) === 1 && empty($value[0]))) {
                 foreach ($value as $val) {
                     $item = new XMLElement('item', General::sanitize($val));
                     $param->appendChild($item);
@@ -579,7 +579,7 @@ class FrontendPage extends XSLTPage
         Symphony::ExtensionManager()->notifyMembers('FrontendPrePageResolve', '/frontend/', array('row' => &$row, 'page' => &$this->_page));
 
         // Default to the index page if no page has been specified
-        if ((!$this->_page || $this->_page == '//') && is_null($row)) {
+        if ((!$this->_page || $this->_page === '//') && is_null($row)) {
             $row = PageManager::fetchPageByType('index');
 
             // Not the index page (or at least not on first impression)
@@ -791,14 +791,14 @@ class FrontendPage extends XSLTPage
      */
     private function __findEventOrder($a, $b)
     {
-        if ($a->priority() == $b->priority()) {
+        if ($a->priority() === $b->priority()) {
             $a = $a->about();
             $b = $b->about();
 
             $handles = array($a['name'], $b['name']);
             asort($handles);
 
-            return (key($handles) == 0) ? -1 : 1;
+            return (key($handles) === 0) ? -1 : 1;
         }
         return(($a->priority() > $b->priority()) ? -1 : 1);
     }
@@ -824,7 +824,7 @@ class FrontendPage extends XSLTPage
      */
     public function processDatasources($datasources, XMLElement &$wrapper, array $params = array())
     {
-        if (trim($datasources) == '') {
+        if (trim($datasources) === '') {
             return;
         }
 

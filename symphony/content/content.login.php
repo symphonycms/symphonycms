@@ -85,7 +85,7 @@ class contentLogin extends HTMLPage
         $fieldset = new XMLElement('fieldset');
 
         // Display retrieve password UI
-        if (isset($this->_context['action']) && $this->_context['action'] == 'retrieve-password') {
+        if (isset($this->_context['action']) && $this->_context['action'] === 'retrieve-password') {
             $this->Form->setAttribute('action', SYMPHONY_URL.'/login/retrieve-password/');
 
             // Successful reset
@@ -196,7 +196,7 @@ class contentLogin extends HTMLPage
             $action = end($actionParts);
 
             // Login Attempted
-            if ($action == 'login') {
+            if ($action === 'login') {
                 if (empty($_POST['username']) || empty($_POST['password']) || !Administration::instance()->login($_POST['username'], $_POST['password'])) {
                     /**
                      * A failed login attempt into the Symphony backend
@@ -227,7 +227,7 @@ class contentLogin extends HTMLPage
                 }
 
                 // Reset of password requested
-            } elseif ($action == 'reset') {
+            } elseif ($action === 'reset') {
                 $author = Symphony::Database()->fetchRow(0, "
                         SELECT `id`, `email`, `first_name`
                         FROM `tbl_authors`

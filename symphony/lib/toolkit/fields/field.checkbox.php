@@ -88,7 +88,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
             "CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
               `id` int(11) unsigned NOT null auto_increment,
               `entry_id` int(11) unsigned NOT null,
-              `value` enum('yes','no') NOT null default '".($this->get('default_state') == 'on' ? 'yes' : 'no')."',
+              `value` enum('yes','no') NOT null default '".($this->get('default_state') === 'on' ? 'yes' : 'no')."',
               PRIMARY KEY  (`id`),
               UNIQUE KEY `entry_id` (`entry_id`),
               KEY `value` (`value`)
@@ -116,7 +116,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         $label->setAttribute('class', 'column');
         $input = Widget::Input('fields['.$this->get('sortorder').'][default_state]', 'on', 'checkbox');
 
-        if ($this->get('default_state') == 'on') {
+        if ($this->get('default_state') === 'on') {
             $input->setAttribute('checked', 'checked');
         }
 
@@ -156,7 +156,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
             // TODO: Don't rely on $_POST
             if (isset($_POST) && !empty($_POST)) {
                 $value = 'no';
-            } elseif ($this->get('default_state') == 'on') {
+            } elseif ($this->get('default_state') === 'on') {
                 $value = 'yes';
             } else {
                 $value = 'no';
@@ -175,7 +175,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
 
         $label->setValue($input->generate(false) . ' ' . $this->get('label'));
 
-        if ($flagWithError != null) {
+        if ($flagWithError !== null) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
         } else {
             $wrapper->appendChild($label);
@@ -187,7 +187,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         $message = null;
 
         // Check if any value was passed
-        $has_no_value = is_array($data) ? empty($data) : strlen(trim($data)) == 0;
+        $has_no_value = is_array($data) ? empty($data) : strlen(trim($data)) === 0;
         // Check that the value passed was 'on' or 'yes', if it's not
         // then the field has 'no value' in the context of being required. RE: #1569
         $has_no_value = ($has_no_value === false) ? !in_array(strtolower($data), array('on', 'yes')) : true;
@@ -206,7 +206,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         $status = self::__OK__;
 
         return array(
-            'value' => (strtolower($data) === 'yes' || strtolower($data) == 'on' || $data === true ? 'yes' : 'no')
+            'value' => (strtolower($data) === 'yes' || strtolower($data) === 'on' || $data === true ? 'yes' : 'no')
         );
     }
 
@@ -342,7 +342,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
     public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false)
     {
         $field_id = $this->get('id');
-        $default_state = ($this->get('default_state') == "on") ? 'yes' : 'no';
+        $default_state = ($this->get('default_state') === "on") ? 'yes' : 'no';
 
         if ($andOperation) {
             foreach ($data as $value) {
@@ -354,7 +354,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
                         ON (e.id = t{$field_id}_{$this->_key}.entry_id)
                 ";
 
-                if ($default_state == $value) {
+                if ($default_state === $value) {
                     $where .= "
                         AND (
                             t{$field_id}_{$this->_key}.value = '{$value}'
@@ -463,7 +463,7 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
     public function getExampleFormMarkup()
     {
         $label = Widget::Label($this->get('label'));
-        $label->appendChild(Widget::Input('fields['.$this->get('element_name').']', 'yes', 'checkbox', ($this->get('default_state') == 'on' ? array('checked' => 'checked') : null)));
+        $label->appendChild(Widget::Input('fields['.$this->get('element_name').']', 'yes', 'checkbox', ($this->get('default_state') === 'on' ? array('checked' => 'checked') : null)));
 
         return $label;
     }

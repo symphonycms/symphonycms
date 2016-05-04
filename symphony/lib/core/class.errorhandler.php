@@ -132,7 +132,7 @@ class GenericExceptionHandler
                 $httpStatus = Page::HTTP_STATUS_NOT_FOUND;
             }
 
-            if (!$httpStatus || $httpStatus == Page::HTTP_STATUS_OK) {
+            if (!$httpStatus || $httpStatus === Page::HTTP_STATUS_OK) {
                 $httpStatus = Page::HTTP_STATUS_ERROR;
             }
 
@@ -184,7 +184,7 @@ class GenericExceptionHandler
         foreach (self::__nearbyLines($e->getLine(), $e->getFile()) as $line => $string) {
             $lines .= sprintf(
                 '<li%s><strong>%d</strong> <code>%s</code></li>',
-                (($line+1) == $e->getLine() ? ' class="error"' : null),
+                (($line+1) === $e->getLine() ? ' class="error"' : null),
                 ++$line,
                 str_replace("\t", '&nbsp;&nbsp;&nbsp;&nbsp;', htmlspecialchars($string))
             );

@@ -46,7 +46,7 @@ class Sortable
         }
 
         if (isset($_REQUEST['order'])) {
-            $order = ($_REQUEST['order'] == 'desc' ? 'desc' : 'asc');
+            $order = ($_REQUEST['order'] === 'desc' ? 'desc' : 'asc');
         } else {
             $order = null;
         }
@@ -89,17 +89,17 @@ class Sortable
                 $label = new XMLElement('span', $c['label']);
                 $label = $label->generate();
 
-                if ($c['handle'] == $sort) {
+                if ($c['handle'] === $sort) {
                     $link = sprintf(
                         '?sort=%s&amp;order=%s%s',
                         $c['handle'],
-                        ($order == 'desc' ? 'asc' : 'desc'),
+                        ($order === 'desc' ? 'asc' : 'desc'),
                         $extra_url_params
                     );
                     $th = Widget::Anchor(
                         $label,
                         $link,
-                        __('Sort by %1$s %2$s', array(($order == 'desc' ? __('ascending') : __('descending')), strtolower($c['label']))),
+                        __('Sort by %1$s %2$s', array(($order === 'desc' ? __('ascending') : __('descending')), strtolower($c['label']))),
                         'active'
                     );
                 } else {

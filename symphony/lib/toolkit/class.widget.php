@@ -399,7 +399,7 @@ class Widget
                     $th->setValue($col[0]);
                 }
 
-                if ($col[1] && $col[1] != '') {
+                if ($col[1] && $col[1] !== '') {
                     $th->setAttribute('scope', $col[1]);
                 }
 

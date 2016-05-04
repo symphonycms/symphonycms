@@ -497,7 +497,7 @@ class SMTP
             $this->_connection = @stream_socket_client($remoteAddr, $errorNum, $errorStr, self::TIMEOUT);
 
             if ($this->_connection === false) {
-                if ($errorNum == 0) {
+                if ($errorNum === 0) {
                     throw new SMTPException(__('Unable to open socket. Unknown error'));
                 } else {
                     throw new SMTPException(__('Unable to open socket. %s', array($errorStr)));

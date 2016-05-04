@@ -397,7 +397,7 @@ class contentBlueprintsSections extends AdministrationPage
 
         if (isset($_POST['meta'])) {
             $meta = $_POST['meta'];
-            if ($meta['name'] == '') {
+            if ($meta['name'] === '') {
                 $meta['name'] = $section->get('name');
             }
         }
@@ -566,7 +566,7 @@ class contentBlueprintsSections extends AdministrationPage
                 'checked' => $checked
             ));
 
-            if ($_POST['with-selected'] == 'delete') {
+            if ($_POST['with-selected'] === 'delete') {
                 /**
                  * Just prior to calling the Section Manager's delete function
                  *
@@ -596,7 +596,7 @@ class contentBlueprintsSections extends AdministrationPage
                 Symphony::ExtensionManager()->notifyMembers('SectionPostDelete', '/blueprints/sections/', array('section_ids' => $checked));
 
                 redirect(SYMPHONY_URL . '/blueprints/sections/');
-            } elseif ($_POST['with-selected'] == 'delete-entries') {
+            } elseif ($_POST['with-selected'] === 'delete-entries') {
                 foreach ($checked as $section_id) {
                     $entries = EntryManager::fetch(null, $section_id, null, null, null, null, false, false, null, false);
                     $entry_ids = array();
@@ -636,7 +636,7 @@ class contentBlueprintsSections extends AdministrationPage
     {
         if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
             $canProceed = true;
-            $edit = ($this->_context['action'] == "edit");
+            $edit = ($this->_context['action'] === "edit");
             $this->_errors = array();
 
             $fields = isset($_POST['fields']) ? $_POST['fields'] : array();
@@ -653,7 +653,7 @@ class contentBlueprintsSections extends AdministrationPage
                 : $meta['name']);
 
             // Check to ensure all the required section fields are filled
-            if (!isset($meta['name']) || strlen(trim($meta['name'])) == 0) {
+            if (!isset($meta['name']) || strlen(trim($meta['name'])) === 0) {
                 $this->_errors['name'] = __('This is a required field.');
                 $canProceed = false;
 
@@ -676,7 +676,7 @@ class contentBlueprintsSections extends AdministrationPage
             }
 
             // Check to ensure all the required section fields are filled
-            if (!isset($meta['navigation_group']) || strlen(trim($meta['navigation_group'])) == 0) {
+            if (!isset($meta['navigation_group']) || strlen(trim($meta['navigation_group'])) === 0) {
                 $this->_errors['navigation_group'] = __('This is a required field.');
                 $canProceed = false;
             }
@@ -688,11 +688,11 @@ class contentBlueprintsSections extends AdministrationPage
                     $name_list = array();
 
                     foreach ($fields as $position => $data) {
-                        if (trim($data['element_name']) == '') {
+                        if (trim($data['element_name']) === '') {
                             $data['element_name'] = $fields[$position]['element_name'] = $_POST['fields'][$position]['element_name'] = Lang::createHandle($data['label'], 255, '-', false, true, array('@^[\d-]+@i' => ''));
                         }
 
-                        if (trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)) {
+                        if (trim($data['element_name']) !== '' && in_array($data['element_name'], $name_list)) {
                             $this->_errors[$position] = array('element_name' => __('A field with this handle already exists. All handle must be unique.'));
                             $canProceed = false;
                             break;
@@ -723,7 +723,7 @@ class contentBlueprintsSections extends AdministrationPage
 
                         $errors = array();
 
-                        if (Field::__OK__ != $field->checkFields($errors, false) && !empty($errors)) {
+                        if (Field::__OK__ !== $field->checkFields($errors, false) && !empty($errors)) {
                             $this->_errors[$position] = $errors;
                             $canProceed = false;
                         }
@@ -804,7 +804,7 @@ class contentBlueprintsSections extends AdministrationPage
                         $missing_cfs = Symphony::Database()->fetchCol('id', "
                             SELECT `id` 
                             FROM `tbl_fields` 
-                            WHERE `parent_section` = ? AND `id` NOT IN (".$q.")", 
+                            WHERE `parent_section` = ? AND `id` NOT IN (".$q.")",
                             array_merge(array($section_id), $id_list)
                         );
 

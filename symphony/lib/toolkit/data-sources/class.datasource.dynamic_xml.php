@@ -97,7 +97,7 @@ class DynamicXMLDatasource extends Datasource
                     $result->setAttribute('valid', 'false');
 
                     // 28 is CURLE_OPERATION_TIMEOUTED
-                    if ($info['curl_error'] == 28) {
+                    if ($info['curl_error'] === 28) {
                         $result->appendChild(
                             new XMLElement('error',
                                 sprintf('Request timed out. %d second limit reached.', $timeout)
@@ -129,7 +129,7 @@ class DynamicXMLDatasource extends Datasource
                         $result->appendChild(new XMLElement('error', __('Data returned is invalid.')));
 
                         foreach ($errors as $e) {
-                            if (strlen(trim($e['message'])) == 0) {
+                            if (strlen(trim($e['message'])) === 0) {
                                 continue;
                             }
 
@@ -142,7 +142,7 @@ class DynamicXMLDatasource extends Datasource
                     }
 
                     // If `$data` is empty, set the `force_empty_result` to true.
-                } elseif (strlen($data) == 0) {
+                } elseif (strlen($data) === 0) {
                     $this->_force_empty_result = true;
                 }
 
@@ -186,7 +186,7 @@ class DynamicXMLDatasource extends Datasource
                 $element = new XMLElement('errors');
 
                 foreach ($proc->getError() as $e) {
-                    if (strlen(trim($e['message'])) == 0) {
+                    if (strlen(trim($e['message'])) === 0) {
                         continue;
                     }
 
@@ -194,7 +194,7 @@ class DynamicXMLDatasource extends Datasource
                 }
 
                 $result->appendChild($element);
-            } elseif (strlen(trim($ret)) == 0) {
+            } elseif (strlen(trim($ret)) === 0) {
                 $this->_force_empty_result = true;
             } else {
                 if ($writeToCache) {

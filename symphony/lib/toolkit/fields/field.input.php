@@ -91,7 +91,7 @@ class FieldInput extends Field implements ExportableField, ImportableField
     {
         parent::setFromPOST($settings);
 
-        if ($this->get('validator') == '') {
+        if ($this->get('validator') === '') {
             $this->remove('validator');
         }
     }
@@ -121,7 +121,7 @@ class FieldInput extends Field implements ExportableField, ImportableField
 
         $fields = array('validator'=>null);
 
-        $fields['validator'] = ($fields['validator'] == 'custom' ? null : $this->get('validator'));
+        $fields['validator'] = ($fields['validator'] === 'custom' ? null : $this->get('validator'));
 
         return FieldManager::saveSettings($id, $fields);
     }
@@ -139,9 +139,9 @@ class FieldInput extends Field implements ExportableField, ImportableField
             $label->appendChild(new XMLElement('i', __('Optional')));
         }
 
-        $label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? $value : null)));
+        $label->appendChild(Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) !== 0 ? $value : null)));
 
-        if ($flagWithError != null) {
+        if ($flagWithError !== null) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
         } else {
             $wrapper->appendChild($label);
@@ -158,7 +158,7 @@ class FieldInput extends Field implements ExportableField, ImportableField
 
         $data = trim($data);
 
-        if ($this->get('required') === 'yes' && strlen($data) == 0) {
+        if ($this->get('required') === 'yes' && strlen($data) === 0) {
             $message = __('‘%s’ is a required field.', array($this->get('label')));
             return self::__MISSING_FIELDS__;
         }
@@ -176,7 +176,7 @@ class FieldInput extends Field implements ExportableField, ImportableField
         $status = self::__OK__;
         $data = trim($data);
 
-        if (strlen($data) == 0) {
+        if (strlen($data) === 0) {
             return array();
         }
 

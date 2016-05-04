@@ -124,7 +124,7 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
 
         $fields = array();
 
-        if ($this->get('formatter') != 'none') {
+        if ($this->get('formatter') !== 'none') {
             $fields['formatter'] = $this->get('formatter');
         }
 
@@ -146,9 +146,9 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
         }
 
         $value = isset($data['value']) ? $data['value'] : null;
-        $textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (int)$this->get('size'), 50, (strlen($value) != 0 ? General::sanitize($value) : null));
+        $textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (int)$this->get('size'), 50, (strlen($value) !== 0 ? General::sanitize($value) : null));
 
-        if ($this->get('formatter') != 'none') {
+        if ($this->get('formatter') !== 'none') {
             $textarea->setAttribute('class', $this->get('formatter'));
         }
 
@@ -170,7 +170,7 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
 
         $label->appendChild($textarea);
 
-        if ($flagWithError != null) {
+        if ($flagWithError !== null) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
         } else {
             $wrapper->appendChild($label);
@@ -181,7 +181,7 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
     {
         $message = null;
 
-        if ($this->get('required') === 'yes' && strlen(trim($data)) == 0) {
+        if ($this->get('required') === 'yes' && strlen(trim($data)) === 0) {
             $message = __('‘%s’ is a required field.', array($this->get('label')));
             return self::__MISSING_FIELDS__;
         }
@@ -198,7 +198,7 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
     {
         $status = self::__OK__;
 
-        if (strlen(trim($data)) == 0) {
+        if (strlen(trim($data)) === 0) {
             return array();
         }
 
@@ -242,7 +242,7 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
             $attributes['mode'] = $mode;
         }
 
-        if ($mode == 'formatted') {
+        if ($mode === 'formatted') {
             if ($this->get('formatter') && isset($data['value_formatted'])) {
                 $value = $data['value_formatted'];
             } else {
@@ -256,7 +256,7 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
                     $attributes
                 )
             );
-        } elseif ($mode == null || $mode == 'unformatted') {
+        } elseif ($mode === null || $mode === 'unformatted') {
             $value = !empty($data['value'])
                 ? sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $data['value']))
                 : $data['value'];

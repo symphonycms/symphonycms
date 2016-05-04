@@ -121,7 +121,7 @@ class AdministrationPage extends HTMLPage
      */
     public function setPageType($type = 'form')
     {
-        $this->setBodyClass($type == 'form' || $type == 'page-single' ? 'page-single' : 'page-index');
+        $this->setBodyClass($type === 'form' || $type === 'page-single' ? 'page-single' : 'page-index');
     }
 
     /**
@@ -189,13 +189,13 @@ class AdministrationPage extends HTMLPage
      */
     public function pageAlert($message = null, $type = Alert::NOTICE)
     {
-        if (is_null($message) && $type == Alert::ERROR) {
+        if (is_null($message) && $type === Alert::ERROR) {
             $message = __('There was a problem rendering this page. Please check the activity log for more details.');
         } else {
             $message = __($message);
         }
 
-        if (strlen(trim($message)) == 0) {
+        if (strlen(trim($message)) === 0) {
             throw new Exception(__('A message must be supplied unless the alert is of type Alert::ERROR'));
         }
 
@@ -704,11 +704,11 @@ class AdministrationPage extends HTMLPage
             $context = current($this->_context);
         }
 
-        $function = ($type == 'action' ? '__action' : '__view') . ucfirst($context);
+        $function = ($type === 'action' ? '__action' : '__view') . ucfirst($context);
 
         if (!method_exists($this, $function)) {
             // If there is no action function, just return without doing anything
-            if ($type == 'action') {
+            if ($type === 'action') {
                 return;
             }
 
@@ -923,7 +923,7 @@ class AdministrationPage extends HTMLPage
                     $item = array(
                         'link' => (string)$child->attributes()->link,
                         'name' => __(strval($child->attributes()->name)),
-                        'visible' => ((string)$child->attributes()->visible == 'no' ? 'no' : 'yes'),
+                        'visible' => ((string)$child->attributes()->visible === 'no' ? 'no' : 'yes'),
                     );
 
                     $limit = (string)$child->attributes()->limit;
@@ -972,7 +972,7 @@ class AdministrationPage extends HTMLPage
                     'name' => $s->get('name'),
                     'type' => 'section',
                     'section' => array('id' => $s->get('id'), 'handle' => $s->get('handle')),
-                    'visible' => ($s->get('hidden') == 'no' ? 'yes' : 'no')
+                    'visible' => ($s->get('hidden') === 'no' ? 'yes' : 'no')
                 );
             }
         }
@@ -1091,7 +1091,7 @@ class AdministrationPage extends HTMLPage
         $nav_item = array(
             'link' => $link,
             'name' => $item['name'],
-            'visible' => (isset($item['visible']) && $item['visible'] == 'no') ? 'no' : 'yes',
+            'visible' => (isset($item['visible']) && $item['visible'] === 'no') ? 'no' : 'yes',
             'limit' => isset($item['limit']) ? $item['limit'] : null,
             'target' => isset($item['target']) ? $item['target'] : null
         );
@@ -1196,7 +1196,7 @@ class AdministrationPage extends HTMLPage
                     if ($pattern && preg_match($pageroot, $item['link'])) {
                         $nav[$index]['class'] = 'active';
                         return true;
-                    } elseif ($item['link'] == $pageroot) {
+                    } elseif ($item['link'] === $pageroot) {
                         $nav[$index]['class'] = 'active';
                         return true;
                     }

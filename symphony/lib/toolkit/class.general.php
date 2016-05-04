@@ -52,11 +52,11 @@ class General
      */
     public static function validateString($string, $rule)
     {
-        if (!is_array($rule) && ($rule == '' || $rule == null)) {
+        if (!is_array($rule) && ($rule === '' || $rule === null)) {
             return true;
         }
 
-        if (!is_array($string) && ($string == '' || $rule == null)) {
+        if (!is_array($string) && ($string === '' || $rule === null)) {
             return true;
         }
 
@@ -99,8 +99,8 @@ class General
      *
      * @param string $data
      *  filename, xml document as a string, or arbitrary string
-     * @param pointer &$errors
-     *  pointer to an array which will contain any validation errors
+     * @param array &$errors
+     *  An array which will contain any validation errors (by reference)
      * @param boolean $isFile (optional)
      *  if this is true, the method will attempt to read from a file, `$data`
      *  instead.
@@ -165,7 +165,7 @@ class General
     {
         $url = trim($url);
 
-        if (is_null($url) || $url == '') {
+        if (is_null($url) || $url === '') {
             return $url;
         }
 
@@ -424,7 +424,7 @@ class General
 
         // Find all legal characters
         $count = preg_match_all('/[\p{L}\w:;.,+=~]+/u', $string, $matches);
-        if ($count <= 0 || $count == false) {
+        if ($count <= 0 || $count === false) {
             preg_match_all('/[\w:;.,+=~]+/', $string, $matches);
         }
 
@@ -612,7 +612,7 @@ class General
             }
 
             foreach (scandir($dir) as $item) {
-                if ($item == '.' || $item == '..') {
+                if ($item === '.' || $item === '..') {
                     continue;
                 }
 
@@ -640,13 +640,13 @@ class General
      *  the multi-dimensional array to search.
      * @return boolean
      *  true if `$needle` is found in `$haystack`.
-     *  true if `$needle` == `$haystack`.
+     *  true if `$needle` === `$haystack`.
      *  true if `$needle` is found in any of the arrays contained within `$haystack`.
      *  false otherwise.
      */
     public static function in_array_multi($needle, $haystack)
     {
-        if ($needle == $haystack) {
+        if ($needle === $haystack) {
             return true;
         }
 
@@ -845,7 +845,7 @@ class General
     public static function in_iarray($needle, array $haystack)
     {
         foreach ($haystack as $key => $value) {
-            if (strcasecmp($value, $needle) == 0) {
+            if (strcasecmp($value, $needle) === 0) {
                 return true;
             }
         }
@@ -930,7 +930,7 @@ class General
             if (is_array($value) || is_object($value)) {
                 self::array_to_xml($child, (array)$value);
 
-                if ($child->getNumberOfChildren() == 0) {
+                if ($child->getNumberOfChildren() === 0) {
                     continue;
                 }
             } elseif ($validate === true && !self::validateXML(self::sanitize($value), $errors, false, new XSLTProcess)) {
@@ -1175,8 +1175,8 @@ class General
 
         foreach (scandir($dir) as $file) {
             if (
-                ($file == '.' || $file == '..')
-                || ($ignore_hidden && $file{0} == '.')
+                ($file === '.' || $file === '..')
+                || ($ignore_hidden && $file{0} === '.')
                 || !is_dir("$dir/$file")
                 || in_array($file, $exclude)
                 || in_array("$dir/$file", $exclude)
@@ -1256,7 +1256,7 @@ class General
 
         foreach (scandir($dir) as $file) {
             if (
-                ($file == '.' || $file === '..')
+                ($file === '.' || $file === '..')
                 || ($ignore_hidden && $file{0} === '.')
                 || in_array($file, $exclude)
                 || in_array("$dir/$file", $exclude)
@@ -1286,7 +1286,7 @@ class General
         }
 
         if (is_array($files['filelist'])) {
-            ($sort == 'desc') ? rsort($files['filelist']) : sort($files['filelist']);
+            ($sort === 'desc') ? rsort($files['filelist']) : sort($files['filelist']);
         }
 
         return $files;
@@ -1336,7 +1336,7 @@ class General
      *
      * @param string $dest_path
      *  the file path to which the source file is to be moved.
-     * @param string #dest_name
+     * @param string $dest_name
      *  the file name within the file path to which the source file is to be moved.
      * @param string $tmp_name
      *  the full path name of the source file to move.

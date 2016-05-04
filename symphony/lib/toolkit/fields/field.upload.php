@@ -179,7 +179,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
                 $d = '/' . trim($d, '/');
 
                 if (!in_array($d, $ignore)) {
-                    $options[] = array($d, ($this->get('destination') == $d), $d);
+                    $options[] = array($d, ($this->get('destination') === $d), $d);
                 }
             }
         }
@@ -231,7 +231,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         $fields = array();
 
         $fields['destination'] = $this->get('destination');
-        $fields['validator'] = ($fields['validator'] == 'custom' ? null : $this->get('validator'));
+        $fields['validator'] = ($fields['validator'] === 'custom' ? null : $this->get('validator'));
 
         return FieldManager::saveSettings($id, $fields);
     }
@@ -279,7 +279,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
         $label->appendChild($span);
 
-        if ($flagWithError != null) {
+        if ($flagWithError !== null) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
         } else {
             $wrapper->appendChild($label);
@@ -288,7 +288,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
     public function validateFilename($file, &$message)
     {
-        if ($this->get('validator') != null) {
+        if ($this->get('validator') !== null) {
             $rule = $this->get('validator');
 
             if (General::validateString($file, $rule) === false) {
@@ -329,7 +329,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
             || (
                 is_array($data)
                 && isset($data['error'])
-                && $data['error'] == UPLOAD_ERR_NO_FILE
+                && $data['error'] === UPLOAD_ERR_NO_FILE
             )
         ) {
             if ($this->get('required') === 'yes') {
@@ -371,7 +371,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
             return self::__ERROR__;
         }
 
-        if ($data['error'] != UPLOAD_ERR_NO_FILE && $data['error'] != UPLOAD_ERR_OK) {
+        if ($data['error'] !== UPLOAD_ERR_NO_FILE && $data['error'] !== UPLOAD_ERR_OK) {
             switch ($data['error']) {
                 case UPLOAD_ERR_INI_SIZE:
                     $message = __('File chosen in ‘%1$s’ exceeds the maximum allowed upload size of %2$s specified by your host.', array($this->get('label'), (is_numeric(ini_get('upload_max_filesize')) ? General::formatFilesize(ini_get('upload_max_filesize')) : ini_get('upload_max_filesize'))));
@@ -469,7 +469,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
             // File was removed:
             if (
-                $data['error'] == UPLOAD_ERR_NO_FILE
+                $data['error'] === UPLOAD_ERR_NO_FILE
                 && !is_null($existing_file)
                 && is_file($existing_file)
             ) {
@@ -478,7 +478,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         }
 
         // Do not continue on upload error:
-        if ($data['error'] == UPLOAD_ERR_NO_FILE || $data['error'] != UPLOAD_ERR_OK) {
+        if ($data['error'] === UPLOAD_ERR_NO_FILE || $data['error'] !== UPLOAD_ERR_OK) {
             return false;
         }
 

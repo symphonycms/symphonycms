@@ -134,7 +134,7 @@ class DevKit extends HTMLPage
         // Translate navigation names:
         if ($root->hasChildNodes()) {
             foreach ($root->childNodes as $item) {
-                if ($item->tagName == 'item') {
+                if ($item->tagName === 'item') {
                     $item->setAttribute('name', __($item->getAttribute('name')));
                 }
             }

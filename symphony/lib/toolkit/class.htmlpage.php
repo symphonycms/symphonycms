@@ -218,7 +218,7 @@ class HTMLPage extends Page
     public function checkElementsInHead($path, $attribute)
     {
         foreach ($this->_head as $element) {
-            if (basename($element->getAttribute($attribute)) == basename($path)) {
+            if (basename($element->getAttribute($attribute)) === basename($path)) {
                 return true;
             }
         }

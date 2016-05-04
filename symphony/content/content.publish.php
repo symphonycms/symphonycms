@@ -71,7 +71,7 @@ class contentPublish extends AdministrationPage
 
             // If the sort order or direction differs from what is saved,
             // update the config file and reload the page
-            if ($sort != $section->getSortingField() || $order != $section->getSortingOrder()) {
+            if ($sort !== $section->getSortingField() || $order !== $section->getSortingOrder()) {
                 $section->setSortingField($sort, false);
                 $section->setSortingOrder($order);
 
@@ -83,7 +83,7 @@ class contentPublish extends AdministrationPage
             }
 
             // If the sort order or direction remains the same, reload the page
-            if ($sort == $section->getSortingField() && $order == $section->getSortingOrder()) {
+            if ($sort === $section->getSortingField() && $order === $section->getSortingOrder()) {
                 if ($params['filters']) {
                     $params['filters'] = '?' . trim($params['filters'], '&amp;');
                 }
@@ -365,11 +365,11 @@ class contentPublish extends AdministrationPage
 
     public function __switchboard($type = 'view')
     {
-        $function = ($type == 'action' ? '__action' : '__view') . ucfirst($this->_context['page']);
+        $function = ($type === 'action' ? '__action' : '__view') . ucfirst($this->_context['page']);
 
         if (!method_exists($this, $function)) {
             // If there is no action function, just return without doing anything
-            if ($type == 'action') {
+            if ($type === 'action') {
                 return;
             }
 
@@ -425,13 +425,13 @@ class contentPublish extends AdministrationPage
 
             foreach ($filters as $handle => $value) {
                 // Handle multiple values through filtering. RE: #2290
-                if ((is_array($value) && empty($value)) || trim($value) == '') {
+                if ((is_array($value) && empty($value)) || trim($value) === '') {
                     continue;
                 }
 
                 if (!is_array($value)) {
                     $filter_type = Datasource::determineFilterType($value);
-                    $value = preg_split('/'.($filter_type == Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
+                    $value = preg_split('/'.($filter_type === Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
                     $value = array_map('trim', $value);
                     $value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
                 }
@@ -442,7 +442,7 @@ class contentPublish extends AdministrationPage
                     $date_joins = '';
                     $date_where = '';
                     $date = new FieldDate();
-                    $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == Datasource::FILTER_AND ? true : false));
+                    $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type === Datasource::FILTER_AND ? true : false));
 
                     // Replace the date field where with the `creation_date` or `modification_date`.
                     $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
@@ -456,7 +456,7 @@ class contentPublish extends AdministrationPage
 
                     $field = FieldManager::fetch($field_id);
                     if ($field instanceof Field) {
-                        $field->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false));
+                        $field->buildDSRetrievalSQL($value, $joins, $where, ($filter_type === Datasource::FILTER_AND ? true : false));
 
                         $value = implode(',', $value);
                         $encoded_value = rawurlencode($value);
@@ -636,13 +636,13 @@ class contentPublish extends AdministrationPage
                         $data = $entry->getData($column->get('id'));
                         $field = $field_pool[$column->get('id')];
 
-                        $value = $field->prepareTableValue($data, ($column == $link_column) ? $link : null, $entry->get('id'));
+                        $value = $field->prepareTableValue($data, ($column === $link_column) ? $link : null, $entry->get('id'));
 
-                        if (!is_object($value) && (strlen(trim($value)) == 0 || $value == __('None'))) {
-                            $value = ($position == 0 ? $link->generate() : __('None'));
+                        if (!is_object($value) && (strlen(trim($value)) === 0 || $value === __('None'))) {
+                            $value = ($position === 0 ? $link->generate() : __('None'));
                         }
 
-                        if ($value == __('None')) {
+                        if ($value === __('None')) {
                             $tableData[] = Widget::TableData($value, 'inactive field-' . $column->get('type') . ' field-' . $column->get('id'));
                         } else {
                             $tableData[] = Widget::TableData($value, 'field-' . $column->get('type') . ' field-' . $column->get('id'));
@@ -821,7 +821,7 @@ class contentPublish extends AdministrationPage
 
             $li->setAttribute('title', __('Viewing %1$s - %2$s of %3$s entries', array(
                 $entries['start'],
-                ($current_page != $entries['total-pages']) ? $current_page * Symphony::Configuration()->get('pagination_maximum_rows', 'symphony') : $entries['total-entries'],
+                ($current_page !== $entries['total-pages']) ? $current_page * Symphony::Configuration()->get('pagination_maximum_rows', 'symphony') : $entries['total-entries'],
                 $entries['total-entries']
             )));
 
@@ -920,7 +920,7 @@ class contentPublish extends AdministrationPage
                 default:
                     list($option, $field_id, $value) = explode('-', $_POST['with-selected'], 3);
 
-                    if ($option == 'toggle') {
+                    if ($option === 'toggle') {
                         $field = FieldManager::fetch($field_id);
                         $fields = array($field->get('element_name') => $value);
 
@@ -1119,11 +1119,11 @@ class contentPublish extends AdministrationPage
                 foreach ($filedata as $handle => $data) {
                     if (!isset($fields[$handle])) {
                         $fields[$handle] = $data;
-                    } elseif (isset($data['error']) && $data['error'] == UPLOAD_ERR_NO_FILE) {
+                    } elseif (isset($data['error']) && $data['error'] === UPLOAD_ERR_NO_FILE) {
                         $fields[$handle] = null;
                     } else {
                         foreach ($data as $ii => $d) {
-                            if (isset($d['error']) && $d['error'] == UPLOAD_ERR_NO_FILE) {
+                            if (isset($d['error']) && $d['error'] === UPLOAD_ERR_NO_FILE) {
                                 $fields[$handle][$ii] = null;
                             } elseif (is_array($d) && !empty($d)) {
                                 foreach ($d as $key => $val) {
@@ -1136,11 +1136,11 @@ class contentPublish extends AdministrationPage
             }
 
             // Initial checks to see if the Entry is ok
-            if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
+            if (Entry::__ENTRY_FIELD_ERROR__ === $entry->checkPostData($fields, $this->_errors)) {
                 $this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
                 // Secondary checks, this will actually process the data and attempt to save
-            } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
+            } elseif (Entry::__ENTRY_OK__ !== $entry->setDataFromPost($fields, $errors)) {
                 foreach ($errors as $field_id => $message) {
                     $this->pageAlert($message, Alert::ERROR);
                 }
@@ -1305,7 +1305,7 @@ class contentPublish extends AdministrationPage
             $title = '';
         }
 
-        if (trim($title) == '') {
+        if (trim($title) === '') {
             $title = __('Untitled');
         }
 
@@ -1415,11 +1415,11 @@ class contentPublish extends AdministrationPage
             $fields = $post['fields'];
 
             // Initial checks to see if the Entry is ok
-            if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
+            if (Entry::__ENTRY_FIELD_ERROR__ === $entry->checkPostData($fields, $this->_errors)) {
                 $this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
                 // Secondary checks, this will actually process the data and attempt to save
-            } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
+            } elseif (Entry::__ENTRY_OK__ !== $entry->setDataFromPost($fields, $errors)) {
                 foreach ($errors as $field_id => $message) {
                     $this->pageAlert($message, Alert::ERROR);
                 }
@@ -1510,7 +1510,7 @@ class contentPublish extends AdministrationPage
     private function __wrapFieldWithDiv(Field $field, Entry $entry)
     {
         $is_hidden = $this->isFieldHidden($field);
-        $div = new XMLElement('div', null, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') == 'yes' ? ' required' : '').($is_hidden === true ? ' irrelevant' : '')));
+        $div = new XMLElement('div', null, array('id' => 'field-' . $field->get('id'), 'class' => 'field field-'.$field->handle().($field->get('required') === 'yes' ? ' required' : '').($is_hidden === true ? ' irrelevant' : '')));
 
         $field->setAssociationContext($div);
 
@@ -1554,10 +1554,10 @@ class contentPublish extends AdministrationPage
      */
     public function isFieldHidden(Field $field)
     {
-        if ($field->get('hide_when_prepopulated') == 'yes') {
+        if ($field->get('hide_when_prepopulated') === 'yes') {
             if (isset($_REQUEST['prepopulate'])) {
                 foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
-                    if ($field_id == $field->get('id')) {
+                    if ($field_id === $field->get('id')) {
                         return true;
                     }
                 }
@@ -1579,7 +1579,7 @@ class contentPublish extends AdministrationPage
         $entry_id = (!is_null($this->_context['entry_id'])) ? $this->_context['entry_id'] : null;
         $show_entries = Symphony::Configuration()->get('association_maximum_rows', 'symphony');
 
-        if (is_null($entry_id) && !isset($_GET['prepopulate']) || is_null($show_entries) || $show_entries == 0) {
+        if (is_null($entry_id) && !isset($_GET['prepopulate']) || is_null($show_entries) || $show_entries === 0) {
             return;
         }
 
@@ -1651,7 +1651,7 @@ class contentPublish extends AdministrationPage
                         $entries = (!empty($entry_ids) || isset($_GET['prepopulate']) && $field->get('id') === $prepopulate_field)
                             ? EntryManager::fetchByPage(1, $as['parent_section_id'], $show_entries, $where, null, false, false, true, $schema)
                             : array();
-                        $has_entries = !empty($entries) && $entries['total-entries'] != 0;
+                        $has_entries = !empty($entries) && $entries['total-entries'] !== 0;
 
                         if ($has_entries) {
                             $element = new XMLElement('section', null, array('class' => 'association parent'));
@@ -1700,7 +1700,7 @@ class contentPublish extends AdministrationPage
                     $where = sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids));
 
                     $entries = (!empty($entry_ids)) ? EntryManager::fetchByPage(1, $as['child_section_id'], $show_entries, $where, null, false, false, true, $schema) : array();
-                    $has_entries = !empty($entries) && $entries['total-entries'] != 0;
+                    $has_entries = !empty($entries) && $entries['total-entries'] !== 0;
 
                     // Build the HTML of the relationship
                     $element = new XMLElement('section', null, array('class' => 'association child'));

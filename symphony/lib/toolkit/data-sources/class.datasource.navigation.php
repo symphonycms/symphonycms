@@ -22,12 +22,12 @@ class NavigationDatasource extends Datasource
 
     public function __processNavigationTypeFilter($filter, $filter_type = Datasource::FILTER_OR)
     {
-        $types = preg_split('/'.($filter_type == Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
+        $types = preg_split('/'.($filter_type === Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
         $types = array_map('trim', $types);
 
         $types = array_map(array('Datasource', 'removeEscapedCommas'), $types);
 
-        if ($filter_type == Datasource::FILTER_OR) {
+        if ($filter_type === Datasource::FILTER_OR) {
             $type_sql = " AND pt.type IN ('" . implode("', '", $types) . "')";
         } else {
             foreach ($types as $type) {
@@ -55,7 +55,7 @@ class NavigationDatasource extends Datasource
             $oPage->appendChild($xTypes);
         }
 
-        if ($page['children'] != '0') {
+        if ($page['children'] !== '0') {
             if ($children = PageManager::fetch(false, array('id, handle, title'), array(sprintf('`parent` = %d', $page['id'])))) {
                 foreach ($children as $c) {
                     $oPage->appendChild($this->__buildPageXML($c, $page_types));
@@ -71,11 +71,11 @@ class NavigationDatasource extends Datasource
         $result = new XMLElement($this->dsParamROOTELEMENT);
         $type_sql = $parent_sql = null;
 
-        if (trim($this->dsParamFILTERS['type']) != '') {
+        if (trim($this->dsParamFILTERS['type']) !== '') {
             $type_sql = $this->__processNavigationTypeFilter($this->dsParamFILTERS['type'], Datasource::determineFilterType($this->dsParamFILTERS['type']));
         }
 
-        if (trim($this->dsParamFILTERS['parent']) != '') {
+        if (trim($this->dsParamFILTERS['parent']) !== '') {
             $parent_sql = $this->__processNavigationParentFilter($this->dsParamFILTERS['parent']);
         }
 

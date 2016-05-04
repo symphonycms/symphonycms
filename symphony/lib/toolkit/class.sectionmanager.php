@@ -170,7 +170,7 @@ class SectionManager
             $ret[] = $obj;
         }
 
-        return (count($ret) == 1 && $returnSingle ? $ret[0] : $ret);
+        return (count($ret) === 1 && $returnSingle ? $ret[0] : $ret);
     }
 
     /**

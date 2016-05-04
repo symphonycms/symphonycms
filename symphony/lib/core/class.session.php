@@ -10,7 +10,7 @@ class Session extends Container
 {
     /**
      * Session handler
-     * @var DatabaseSessionHandler
+     * @var SessionHandlerInterface
      */
     protected $handler;
 
@@ -33,11 +33,11 @@ class Session extends Container
     protected $key;
 
     /**
-     * @param DatabaseSessionHandler $handler
+     * @param SessionHandlerInterface $handler
      * @param array $settings
      * @param string $key
      */
-    public function __construct($handler = null, array $settings = array(), $key = 'symphony')
+    public function __construct(SessionHandlerInterface $handler = null, array $settings = array(), $key = 'symphony')
     {
         $this->handler = $handler;
 
@@ -71,24 +71,25 @@ class Session extends Container
 
     /**
      * Start the session if it is not already started.
+     *
+     * @throws Exception when headers have already been sent
+     * @return string
      */
     public function start()
     {
-        if (!$this->isStarted()) {
+        if (false === $this->isStarted()) {
             // Disable PHP cache headers
             session_cache_limiter('');
 
-            if (session_id() == '') {
-                ini_set('session.save_handler', 'user');
-                ini_set('session.use_trans_sid', '0');
-                ini_set('session.use_strict_mode', '1');
-                ini_set('session.use_only_cookies', '1');
-                ini_set('session.gc_probability', $this->settings['session_gc_probability']);
-                ini_set('session.gc_maxlifetime', $this->settings['session_gc_maxlifetime']);
-                ini_set('session.gc_divisor', $this->settings['session_gc_divisor']);
-                ini_set('session.use_cookies', '1');
-                ini_set('session.hash_bits_per_character', 5);
-            }
+            ini_set('session.save_handler', 'user');
+            ini_set('session.use_trans_sid', '0');
+            ini_set('session.use_strict_mode', '1');
+            ini_set('session.use_only_cookies', '1');
+            ini_set('session.gc_probability', $this->settings['session_gc_probability']);
+            ini_set('session.gc_maxlifetime', $this->settings['session_gc_maxlifetime']);
+            ini_set('session.gc_divisor', $this->settings['session_gc_divisor']);
+            ini_set('session.use_cookies', '1');
+            ini_set('session.hash_bits_per_character', 5);
 
             if (!is_null($this->handler)) {
                 session_set_save_handler(
@@ -111,14 +112,12 @@ class Session extends Container
                 $this->settings['session_cookie_httponly']
             );
 
-            if (session_id() == '') {
-                if (headers_sent()) {
-                    throw new Exception('Headers already sent. Cannot start session.');
-                }
-
-                register_shutdown_function('session_write_close');
-                session_start();
+            if (headers_sent()) {
+                throw new Exception('Headers already sent. Cannot start session.');
             }
+
+            register_shutdown_function('session_write_close');
+            session_start();
         }
 
         $this->store =& $_SESSION;
@@ -156,7 +155,7 @@ class Session extends Container
      */
     public function getDomain()
     {
-        if (HTTP_HOST != null) {
+        if (HTTP_HOST !== null) {
             if (preg_match('/(localhost|127\.0\.0\.1)/', HTTP_HOST)) {
                 return null; // prevent problems on local setups
             }

@@ -25,7 +25,7 @@ class StaticXMLDatasource extends Datasource
             $element = new XMLElement('errors');
 
             foreach ($errors as $e) {
-                if (strlen(trim($e['message'])) == 0) {
+                if (strlen(trim($e['message'])) === 0) {
                     continue;
                 }
 

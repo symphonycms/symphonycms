@@ -154,7 +154,7 @@ class DateTimeObj
     public static function validate($string)
     {
         try {
-            if (is_numeric($string) && (int)$string == $string) {
+            if (is_numeric($string) && (int)$string !== 0) {
                 $date = new DateTime('@' . $string);
             } else {
                 $date = self::parse($string);
@@ -262,7 +262,7 @@ class DateTimeObj
     {
 
         // Current date and time
-        if ($string == 'now' || empty($string)) {
+        if ($string === 'now' || empty($string)) {
             $date = new DateTime();
 
             // Timestamp
@@ -385,7 +385,7 @@ class DateTimeObj
             foreach ($timezones as $timezone) {
                 $tz = new DateTime('now', new DateTimeZone($timezone));
 
-                $options[] = array($timezone, ($timezone == $selected), sprintf(
+                $options[] = array($timezone, ($timezone === $selected), sprintf(
                     "%s %s",
                     str_replace('_', ' ', substr(strrchr($timezone, '/'), 1)),
                     $tz->format('P')
@@ -487,7 +487,7 @@ class DateTimeObj
                 $leadingZero = ' (' . __('no leading zeros') . ')';
             }
 
-            $options[] = array($option, $option == $selected, self::format('now', $option) . $leadingZero);
+            $options[] = array($option, $option === $selected, self::format('now', $option) . $leadingZero);
         }
 
         return $options;
@@ -563,7 +563,7 @@ class DateTimeObj
         $options = array();
 
         foreach ($formats as $option) {
-            $options[] = array($option, $option == $selected, self::get($option));
+            $options[] = array($option, $option === $selected, self::get($option));
         }
 
         return $options;

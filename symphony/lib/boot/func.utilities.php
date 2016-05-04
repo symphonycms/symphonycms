@@ -112,7 +112,7 @@ function precision_timer($action = 'start', $start_time = null)
 {
     $currtime = microtime(true);
 
-    if ($action == 'stop') {
+    if ($action === 'stop') {
         return $currtime - $start_time;
     }
 
@@ -153,7 +153,7 @@ function ini_size_to_bytes($val)
  */
 function cleanup_session_cookies($mode)
 {
-    if (strtolower($mode) != 'administration') {
+    if (strtolower($mode) !== 'administration') {
         if (null === Symphony::$Cookies) {
             return;
         }
@@ -199,17 +199,15 @@ function symphony($mode)
  * sending output to the browser.
  *
  *  @param string $mode (optional)
- *  @return integer
+ *  @return mixed
  */
 function symphony_launcher($mode)
 {
-    if (is_string($mode) && strtolower($mode) == 'administration') {
+    if (is_string($mode) && strtolower($mode) === 'administration') {
         $renderer = Administration::instance();
     } else {
         $renderer = Frontend::instance();
     }
-
-    $output = $renderer->display(getCurrentPage());
 
     // #1808
     if (server_safe('HTTP_MOD_REWRITE') != null) {
@@ -218,8 +216,10 @@ function symphony_launcher($mode)
         $output = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $output);
         $output = str_replace('{URL}', URL, $output);
         echo $output;
-        exit;
+        return;
     }
+
+    $output = $renderer->display(getCurrentPage());
 
     cleanup_session_cookies($mode);
 

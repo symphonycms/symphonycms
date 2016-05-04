@@ -53,10 +53,10 @@ class Cryptography
         $version = substr($hash, 0, 8);
 
         if ($isHash === true) {
-            return $input == $hash;
-        } elseif ($version == 'PBKDF2v1') { // salted PBKDF2
+            return $input === $hash;
+        } elseif ($version === 'PBKDF2v1') { // salted PBKDF2
             return PBKDF2::compare($input, $hash);
-        } elseif (strlen($hash) == 40) { // legacy, unsalted SHA1
+        } elseif (strlen($hash) === 40) { // legacy, unsalted SHA1
             return SHA1::compare($input, $hash);
         } else { // the hash provided doesn't make any sense
             return false;
@@ -76,7 +76,7 @@ class Cryptography
     {
         $version = substr($hash, 0, 8);
 
-        if ($version == PBKDF2::PREFIX) { // salted PBKDF2, let the responsible class decide
+        if ($version === PBKDF2::PREFIX) { // salted PBKDF2, let the responsible class decide
             return PBKDF2::requiresMigration($hash);
         } else { // everything else
             return true;

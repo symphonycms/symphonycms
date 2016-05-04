@@ -259,7 +259,7 @@ class XMLElement implements IteratorAggregate
         $result = array();
 
         foreach ($this as $i => $child) {
-            if ($child->getName() != $name) {
+            if ($child->getName() !== $name) {
                 continue;
             }
 
@@ -718,9 +718,9 @@ class XMLElement implements IteratorAggregate
 
             for ($i=0; $i < $length; $i++) {
                 $current = ord($value{$i});
-                if (($current == 0x9) ||
-                    ($current == 0xA) ||
-                    ($current == 0xD) ||
+                if (($current === 0x9) ||
+                    ($current === 0xA) ||
+                    ($current === 0xD) ||
                     (($current >= 0x20) && ($current <= 0xD7FF)) ||
                     (($current >= 0xE000) && ($current <= 0xFFFD)) ||
                     (($current >= 0x10000) && ($current <= 0x10FFFF))) {

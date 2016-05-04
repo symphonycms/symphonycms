@@ -308,7 +308,7 @@ abstract class Page
 
         foreach ($this->_headers as $key => $value) {
             // If this is the http status
-            if ($key == 'status' && isset($value['response_code'])) {
+            if ($key === 'status' && isset($value['response_code'])) {
                 $res_code = intval($value['response_code']);
                 self::renderStatusCode($res_code);
             } else {

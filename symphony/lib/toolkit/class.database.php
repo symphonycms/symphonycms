@@ -197,7 +197,7 @@ class DatabaseTransaction
     /**
      * A nested database transaction manager.
      *
-     * @param PDO   $connection
+     * @param PDO $connection
      */
     public function __construct(PDO $connection)
     {
@@ -215,6 +215,11 @@ class DatabaseTransaction
         self::$transactions++;
     }
 
+    /**
+     * Commit the transaction
+     *
+     * @return boolean
+     */
     public function commit()
     {
         if ($this->completed) return false;
@@ -224,13 +229,17 @@ class DatabaseTransaction
 
         if (0 === self::$transactions) {
             return $this->connection->commit();
-        }
 
-        else {
-            return $this->connection->exec('release savepoint trans' . self::$transactions);
+        } else {
+            return (boolean)$this->connection->exec('release savepoint trans' . self::$transactions);
         }
     }
 
+    /**
+     * Rollback this transaction
+     *
+     * @return boolean
+     */
     public function rollBack()
     {
         if ($this->completed) return false;
@@ -243,7 +252,7 @@ class DatabaseTransaction
         }
 
         else {
-            return $this->connection->exec('rollback to savepoint trans' . self::$transactions);
+            return (boolean)$this->connection->exec('rollback to savepoint trans' . self::$transactions);
         }
     }
 }
@@ -310,7 +319,7 @@ Class Database {
     protected $_logging = true;
 
     /**
-     * @var null
+     * @var PDOStatement
      */
     protected $_result = null;
 
@@ -330,18 +339,6 @@ Class Database {
     protected $_lastQueryHash = null;
 
     /**
-     * Resets the `result`, `lastResult`, `lastQuery` and lastQueryHash properties to `null`.
-     * Called on each query and when the class is destroyed.
-     */
-    public function flush()
-    {
-        $this->_result = null;
-        $this->_lastResult = null;
-        $this->_lastQuery = null;
-        $this->_lastQueryHash = null;
-    }
-
-    /**
      * Creates a new Database object given an associative array of configuration
      * parameters in `$config`. If `$config` contains a key, `pdo` then this
      * `Database` instance will use that PDO connection. Otherwise, `$config`
@@ -349,7 +346,6 @@ Class Database {
      * array of PDO options in `options`.
      *
      * @param array $config
-     * @return PDO
      */
     public function __construct(array $config = array())
     {
@@ -365,8 +361,6 @@ Class Database {
                 $config['options']
             );
         }
-
-        return $this->conn;
     }
 
     /**
@@ -379,6 +373,18 @@ Class Database {
     {
         unset($this->conn);
         $this->flush();
+    }
+
+    /**
+     * Resets the `result`, `lastResult`, `lastQuery` and lastQueryHash properties to `null`.
+     * Called on each query and when the class is destroyed.
+     */
+    public function flush()
+    {
+        $this->_result = null;
+        $this->_lastResult = null;
+        $this->_lastQuery = null;
+        $this->_lastQueryHash = null;
     }
 
     /**
@@ -508,7 +514,7 @@ Class Database {
      */
     public function replaceTablePrefix($query)
     {
-        if($this->_prefix != 'tbl_'){
+        if($this->_prefix !== 'tbl_'){
             $query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', $this->_prefix .'\\1\\2', $query);
         }
 
@@ -695,7 +701,7 @@ Class Database {
 
         $query_type = $this->determineQueryType(trim($query));
 
-        if($query_type == self::__READ_OPERATION__ && !preg_match('/^\s*SELECT\s+SQL(_NO)?_CACHE/i', $query)){
+        if($query_type === self::__READ_OPERATION__ && !preg_match('/^\s*SELECT\s+SQL(_NO)?_CACHE/i', $query)){
             if($this->isCachingEnabled()) {
                 $query = preg_replace('/^\s*SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
             }
@@ -706,8 +712,8 @@ Class Database {
 
         $this->q($query, $values, false);
 
-        if($this->_result instanceof PDOStatement && $query_type == self::__READ_OPERATION__) {
-            if($params['fetch-type'] == "ASSOC") {
+        if($this->_result instanceof PDOStatement && $query_type === self::__READ_OPERATION__) {
+            if($params['fetch-type'] === "ASSOC") {
                 if(isset($params['offset'])) {
                     while ($row = $this->_result->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_ABS, $params['offset'])) {
                         $this->_lastResult = $row;
@@ -719,7 +725,7 @@ Class Database {
                     }
                 }
             }
-            else if($params['fetch-type'] == 'OBJECT') {
+            else if($params['fetch-type'] === 'OBJECT') {
                 while ($row = $this->_result->fetchObject()) {
                     $this->_lastResult[] = $row;
                 }
@@ -937,7 +943,7 @@ Class Database {
     {
         if(!$type) return $this->_log;
 
-        return ($type == 'error' ? $this->_log['error'] : $this->_log['query']);
+        return ($type === 'error' ? $this->_log['error'] : $this->_log['query']);
     }
 
     /**

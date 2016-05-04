@@ -251,7 +251,7 @@ class Lang
      */
     public static function set($code, $checkStatus = true)
     {
-        if (!$code || $code == self::get()) {
+        if (!$code || $code === self::get()) {
             return;
         }
 
@@ -304,7 +304,7 @@ class Lang
      */
     public static function isLanguageEnabled($code)
     {
-        if ($code == 'en') {
+        if ($code === 'en') {
             return true;
         }
 
@@ -565,6 +565,6 @@ class Lang
      */
     public static function isUnicodeCompiled()
     {
-        return (@preg_match('/\pL/u', 'a') == 1 ? true : false);
+        return (@preg_match('/\pL/u', 'a') === 1 ? true : false);
     }
 }

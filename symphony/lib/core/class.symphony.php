@@ -409,15 +409,15 @@ abstract class Symphony implements Singleton
      * Symphony instance as the parent. If for some reason this fails,
      * a Symphony Error page will be thrown
      *
-     * @param Boolean $force (optional)
+     * @param boolean $force (optional)
      *  When set to true, this function will always create a new
      *  instance of ExtensionManager, replacing self::$ExtensionManager.
      * @return void
      */
-    public static function initialiseExtensionManager($force=false)
+    public static function initialiseExtensionManager($force = false)
     {
         if (!$force && self::$ExtensionManager instanceof ExtensionManager) {
-            return true;
+            return;
         }
 
         self::$ExtensionManager = new ExtensionManager;
@@ -499,17 +499,17 @@ abstract class Symphony implements Singleton
             self::Database()->setTimeZone(self::Configuration()->get('timezone', 'region'));
 
             if (isset($details['query_caching'])) {
-                if ($details['query_caching'] == 'off') {
+                if ($details['query_caching'] === 'off') {
                     self::Database()->disableCaching();
-                } elseif ($details['query_caching'] == 'on') {
+                } elseif ($details['query_caching'] === 'on') {
                     self::Database()->enableCaching();
                 }
             }
 
             if (isset($details['query_logging'])) {
-                if ($details['query_logging'] == 'off') {
+                if ($details['query_logging'] === 'off') {
                     self::Database()->disableLogging();
-                } elseif ($details['query_logging'] == 'on') {
+                } elseif ($details['query_logging'] === 'on') {
                     self::Database()->enableLogging();
                 }
             }
@@ -624,12 +624,13 @@ abstract class Symphony implements Singleton
     public static function loginFromToken($token)
     {
         $token = self::Database()->cleanValue($token);
+        $tokenLength = strlen(trim($token));
 
-        if (strlen(trim($token)) == 0) {
+        if ($tokenLength === 0) {
             return false;
         }
 
-        if (strlen($token) == 6 || strlen($token) == 16) {
+        if ($tokenLength === 6 || $tokenLength === 16) {
             $row = self::Database()->fetchRow(0, "
                 SELECT `a`.`id`, `a`.`username`, `a`.`password`
                 FROM `tbl_authors` AS `a`, `tbl_forgotpass` AS `f`
@@ -833,7 +834,7 @@ abstract class Symphony implements Singleton
             $page = trim($page, '/');
         }
 
-        if (substr($page, 0, 7) == 'publish') {
+        if (substr($page, 0, 7) === 'publish') {
             self::$namespace = '/publish';
         } elseif (empty($page) && isset($_REQUEST['mode'])) {
             self::$namespace = '/login';
@@ -842,7 +843,7 @@ abstract class Symphony implements Singleton
         } else {
             $bits = explode('/', $page);
 
-            if ($bits[0] == 'extension') {
+            if ($bits[0] === 'extension') {
                 self::$namespace = sprintf('/%s/%s/%s', $bits[0], $bits[1], $bits[2]);
             } else {
                 self::$namespace =  sprintf('/%s/%s', $bits[0], isset($bits[1]) ? $bits[1] : '');

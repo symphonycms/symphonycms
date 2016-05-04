@@ -16,8 +16,6 @@ class EmailException extends Exception
  */
 abstract class Email
 {
-    private $gateway;
-
     /**
      * Returns the EmailGateway to send emails with.
      * Calling this function multiple times will return unique objects.

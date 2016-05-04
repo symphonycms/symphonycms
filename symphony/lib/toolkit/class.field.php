@@ -129,7 +129,7 @@ class Field
      */
     public function __construct()
     {
-        $this->_handle = (strtolower(get_class($this)) == 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
+        $this->_handle = (strtolower(get_class($this)) === 'field' ? 'field' : strtolower(substr(get_class($this), 5)));
     }
 
     /**
@@ -567,8 +567,8 @@ class Field
         $label->setAttribute('class', 'column');
 
         $options = array(
-            array('main', $selected == 'main', __('Main content')),
-            array('sidebar', $selected == 'sidebar', __('Sidebar'))
+            array('main', $selected === 'main', __('Main content')),
+            array('sidebar', $selected === 'sidebar', __('Sidebar'))
         );
         $label->appendChild(Widget::Select($name, $options));
 
@@ -608,7 +608,7 @@ class Field
 
         if (!empty($formatters) && is_array($formatters)) {
             foreach ($formatters as $handle => $about) {
-                $options[] = array($handle, ($selected == $handle), $about['name']);
+                $options[] = array($handle, ($selected === $handle), $about['name']);
             }
         }
 
@@ -642,7 +642,7 @@ class Field
     {
         include TOOLKIT . '/util.validators.php';
 
-        $rules = ($type == 'upload' ? $upload : $validators);
+        $rules = ($type === 'upload' ? $upload : $validators);
 
         $label = Widget::Label(__('Validation Rule'));
         $label->setAttribute('class', 'column');
@@ -744,7 +744,7 @@ class Field
         if (!empty($associations)) {
             $associationsCount = count($associations);
             for ($i = 0; $i < $associationsCount; $i++) {
-                if ($associations[$i]['child_section_field_id'] == $this->get('id')) {
+                if ($associations[$i]['child_section_field_id'] === $this->get('id')) {
                     if ($count === 0) {
                         $field_association = $associations[$i];
                         $count++;
@@ -1001,7 +1001,7 @@ class Field
             $value = (General::strlen($value) <= $max_length ? $value : General::substr($value, 0, $max_length) . '…');
         }
 
-        if (General::strlen($value) == 0 && $defaultValue != null) {
+        if (General::strlen($value) === 0 && $defaultValue !== null) {
             $value = $defaultValue;
         }
 
@@ -1137,7 +1137,7 @@ class Field
     {
         $message = null;
 
-        $has_no_value = is_array($data) ? empty($data) : strlen(trim($data)) == 0;
+        $has_no_value = is_array($data) ? empty($data) : strlen(trim($data)) === 0;
 
         if ($this->get('required') === 'yes' && $has_no_value) {
             $message = __('‘%s’ is a required field.', array($this->get('label')));
@@ -1363,7 +1363,7 @@ class Field
             $regex = 'NOT REGEXP';
         }
 
-        if (strlen($pattern) == 0) {
+        if (strlen($pattern) === 0) {
             return;
         }
 

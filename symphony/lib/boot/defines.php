@@ -107,11 +107,11 @@ define_safe('CACHE', MANIFEST . '/cache');
 
 $dir = @sys_get_temp_dir();
 
-if ($dir == false || !@is_writable($dir)) {
+if ($dir === false || !@is_writable($dir)) {
     $dir = @ini_get('upload_tmp_dir');
 }
 
-if ($dir == false || !is_writable($dir)) {
+if ($dir === false || !is_writable($dir)) {
     $dir = MANIFEST . '/tmp';
 }
 /**
@@ -236,9 +236,7 @@ define_safe('HTTP_USER_AGENT', server_safe('HTTP_USER_AGENT'));
  * downstream proxies to inform the webserver of secured downstream connections
  * @var string|boolean
  */
-define_safe('__SECURE__',
-    (HTTPS == 'on' || server_safe('HTTP_X_FORWARDED_PROTO') == 'https')
-);
+define_safe('__SECURE__', (HTTPS == 'on' || server_safe('HTTP_X_FORWARDED_PROTO') == 'https'));
 
 /**
  * Returns the protocol used to this request.
