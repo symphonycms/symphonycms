@@ -71,7 +71,7 @@ foreach ($errors_grouped as $group => $data) {
 
                     // Function
                     preg_match('/(.*)\:(\d+)\:/', $e['parts'][1], $current);
-                    if ($data[$index - 1]['parts'][0] != $e['parts'][0] || (strpos($data[$index - 1]['message'], '^') !== false && $data[$index - 2]['message'] != $data[$index + 1]['message'])) {
+                    if ($data[$index - 1]['parts'][0] !== $e['parts'][0] || (strpos($data[$index - 1]['message'], '^') !== false && $data[$index - 2]['message'] !== $data[$index + 1]['message'])) {
                         $list->appendChild(
                             new XMLElement(
                                 'li',

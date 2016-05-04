@@ -25,11 +25,11 @@ class contentAjaxReorder extends XMLPage
 
         $destination = self::kREORDER_UNKNOWN;
 
-        if ($this->_context[0] == 'blueprints' && $this->_context[1] == 'pages') {
+        if ($this->_context[0] === 'blueprints' && $this->_context[1] === 'pages') {
             $destination = self::kREORDER_PAGES;
-        } elseif ($this->_context[0] == 'blueprints' && $this->_context[1] == 'sections') {
+        } elseif ($this->_context[0] === 'blueprints' && $this->_context[1] === 'sections') {
             $destination = self::kREORDER_SECTIONS;
-        } elseif ($this->_context[0] == 'extensions') {
+        } elseif ($this->_context[0] === 'extensions') {
             $destination = self::kREORDER_EXTENSION;
         }
 

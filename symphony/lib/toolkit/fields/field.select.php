@@ -36,7 +36,7 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
     {
         $values = preg_split('/,\s*/i', $this->get('static_options'), -1, PREG_SPLIT_NO_EMPTY);
 
-        if ($this->get('dynamic_options') != '') {
+        if ($this->get('dynamic_options') !== '') {
             $this->findAndAddDynamicOptions($values);
         }
 
@@ -152,7 +152,7 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
         }
 
         // In the case of a Upload field, use 'file' instead of 'value'
-        if (($results == false) && (boolean)Symphony::Database()->fetchVar('Field', 0, sprintf(
+        if (($results === false) && (boolean)Symphony::Database()->fetchVar('Field', 0, sprintf(
             "SHOW COLUMNS FROM `tbl_entries_data_%d` LIKE '%s'",
             $this->get('dynamic_options'),
             'file'
@@ -166,7 +166,7 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
         }
 
         if ($results) {
-            if ($this->get('sort_options') == 'no') {
+            if ($this->get('sort_options') === 'no') {
                 natsort($results);
             }
 
@@ -262,7 +262,7 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
             $errors = array();
         }
 
-        if ($this->get('static_options') == '' && ($this->get('dynamic_options') == '' || $this->get('dynamic_options') == 'none')) {
+        if ($this->get('static_options') === '' && ($this->get('dynamic_options') === '' || $this->get('dynamic_options') === 'none')) {
             $errors['dynamic_options'] = __('At least one source must be specified, dynamic or static.');
         }
 
@@ -283,11 +283,11 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
 
         $fields = array();
 
-        if ($this->get('static_options') != '') {
+        if ($this->get('static_options') !== '') {
             $fields['static_options'] = $this->get('static_options');
         }
 
-        if ($this->get('dynamic_options') != '') {
+        if ($this->get('dynamic_options') !== '') {
             $fields['dynamic_options'] = $this->get('dynamic_options');
         }
 
@@ -345,7 +345,7 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
 
         $label->appendChild(Widget::Select($fieldname, $options, ($this->get('allow_multiple_selection') === 'yes' ? array('multiple' => 'multiple', 'size' => count($options)) : null)));
 
-        if ($flagWithError != null) {
+        if ($flagWithError !== null) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
         } else {
             $wrapper->appendChild($label);

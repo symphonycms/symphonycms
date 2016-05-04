@@ -328,14 +328,14 @@ class Administration extends Symphony
         );
 
         // Login page, /symphony/login/
-        if ($bits[0] == 'login') {
+        if ($bits[0] === 'login') {
             $callback['driver'] = 'login';
             $callback['driver_location'] = CONTENT . '/content.login.php';
             $callback['classname'] = 'contentLogin';
             $callback['pageroot'] = '/login/';
 
         // Extension page, /symphony/extension/{extension_name}/
-        } elseif ($bits[0] == 'extension' && isset($bits[1])) {
+        } elseif ($bits[0] === 'extension' && isset($bits[1])) {
             $extension_name = $bits[1];
             $bits = preg_split('/\//', trim($bits[2], '/'), 2, PREG_SPLIT_NO_EMPTY);
 
@@ -369,7 +369,7 @@ class Administration extends Symphony
             }
 
         // Publish page, /symphony/publish/{section_handle}/
-        } elseif ($bits[0] == 'publish') {
+        } elseif ($bits[0] === 'publish') {
             if (!isset($bits[1])) {
                 return false;
             }

@@ -82,7 +82,7 @@ abstract class EmailHelper
                 $replace_char = $char;
 
                 // Encode space as underscore (means better readability for humans)
-            } elseif ($ascii == 32) {
+            } elseif ($ascii === 32) {
                 $replace_length = 1;
                 $replace_char = '_';
 
@@ -158,16 +158,16 @@ abstract class EmailHelper
             $ascii = ord($char);
 
             // No encoding for spaces and tabs
-            if ($ascii == 9 || $ascii == 32) {
+            if ($ascii === 9 || $ascii === 32) {
                 $blank = true;
                 $replace_length = 1;
                 $replace_char = $char;
 
                 // CR and LF
-            } elseif ($ascii == 13 || $ascii == 10) {
+            } elseif ($ascii === 13 || $ascii === 10) {
                 // Use existing offset only.
                 if ($i+1 < $input_length) {
-                    if (($ascii == 13 && ord($input[$i+1]) == 10) || ($ascii == 10 && ord($input[$i+1]) == 13)) {
+                    if (($ascii === 13 && ord($input[$i+1]) === 10) || ($ascii === 10 && ord($input[$i+1]) === 13)) {
                         $i++;
                     }
                 }

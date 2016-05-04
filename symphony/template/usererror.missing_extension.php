@@ -97,7 +97,7 @@ foreach ($extensions as $extension) {
 }
 
 // If we've found a similar folder
-if ($match != "" && $e->getAdditional()->rename_failed !== true) {
+if ($match !== "" && $e->getAdditional()->rename_failed !== true) {
     $div->appendChild(
         new XMLElement('p', __('Often the cause of this error is a misnamed extension folder. You can try renaming %s to %s, or you can uninstall the extension to continue.', array(
             '<code>extensions/' . $match . '</code>',

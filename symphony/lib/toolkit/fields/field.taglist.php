@@ -179,7 +179,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
     public function set($field, $value)
     {
-        if ($field == 'pre_populate_source' && !is_array($value)) {
+        if ($field === 'pre_populate_source' && !is_array($value)) {
             $value = preg_split('/\s*,\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
         }
 
@@ -201,7 +201,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
             $result = Symphony::Database()->fetchCol('value', sprintf(
                 "SELECT DISTINCT `value` FROM tbl_entries_data_%d ORDER BY `value` ASC",
-                ($item == 'existing' ? $this->get('id') : $item)
+                ($item === 'existing' ? $this->get('id') : $item)
             ));
 
             if (!is_array($result) || empty($result)) {
@@ -269,7 +269,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
             $fields = array();
 
             foreach ($group['fields'] as $f) {
-                if ($f->get('id') != $this->get('id') && $f->canPrePopulate()) {
+                if ($f->get('id') !== $this->get('id') && $f->canPrePopulate()) {
                     $fields[] = array($f->get('id'), (in_array($f->get('id'), $this->get('pre_populate_source'))), $f->get('label'));
                 }
             }
@@ -310,7 +310,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         $fields = array();
 
         $fields['pre_populate_source'] = (is_null($this->get('pre_populate_source')) ? 'none' : implode(',', $this->get('pre_populate_source')));
-        $fields['validator'] = ($fields['validator'] == 'custom' ? null : $this->get('validator'));
+        $fields['validator'] = ($fields['validator'] === 'custom' ? null : $this->get('validator'));
 
         if (!FieldManager::saveSettings($id, $fields)) {
             return false;
@@ -352,16 +352,16 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         }
 
         $label->appendChild(
-            Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) != 0 ? General::sanitize($value) : null))
+            Widget::Input('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (strlen($value) !== 0 ? General::sanitize($value) : null))
         );
 
-        if ($flagWithError != null) {
+        if ($flagWithError !== null) {
             $wrapper->appendChild(Widget::Error($label, $flagWithError));
         } else {
             $wrapper->appendChild($label);
         }
 
-        if ($this->get('pre_populate_source') != null) {
+        if ($this->get('pre_populate_source') !== null) {
             $existing_tags = $this->getToggleStates();
 
             if (is_array($existing_tags) && !empty($existing_tags)) {
@@ -384,7 +384,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     {
         $message = null;
 
-        if ($this->get('required') === 'yes' && strlen(trim($data)) == 0) {
+        if ($this->get('required') === 'yes' && strlen(trim($data)) === 0) {
             $message = __('‘%s’ is a required field.', array($this->get('label')));
             return self::__MISSING_FIELDS__;
         }
@@ -588,7 +588,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
     public function displayFilteringOptions(XMLElement &$wrapper)
     {
-        if ($this->get('pre_populate_source') != null) {
+        if ($this->get('pre_populate_source') !== null) {
             $existing_tags = $this->getToggleStates();
 
             if (is_array($existing_tags) && !empty($existing_tags)) {

@@ -296,11 +296,11 @@ class XsltProcess
     {
         $context = null;
 
-        if ($type == 'xml' || $type == 'xsd') {
+        if ($type === 'xml' || $type === 'xsd') {
             $context = $this->_xml;
         }
 
-        if ($type == 'xsl') {
+        if ($type === 'xsl') {
             $context = $this->_xsl;
         }
 

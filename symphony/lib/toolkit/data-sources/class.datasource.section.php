@@ -159,7 +159,7 @@ class SectionDatasource extends Datasource
                 foreach ($this->dsParamINCLUDEDELEMENTS as $handle) {
                     list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
 
-                    if (self::$_fieldPool[$field_id]->get('element_name') == $handle) {
+                    if (self::$_fieldPool[$field_id]->get('element_name') === $handle) {
                         self::$_fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE === 'yes' ? true : false), $mode, $entry->get('id'));
                     }
                 }
@@ -210,7 +210,7 @@ class SectionDatasource extends Datasource
         if (!empty($associated_entry_counts)) {
             foreach ($associated_entry_counts as $section_id => $fields) {
                 foreach ($this->_associated_sections as $section) {
-                    if ($section['id'] != $section_id) {
+                    if ($section['id'] !== $section_id) {
                         continue;
                     }
 
@@ -250,7 +250,7 @@ class SectionDatasource extends Datasource
 
         // Support the legacy parameter `ds-datasource-handle`
         $key = 'ds-' . $this->dsParamROOTELEMENT;
-        $singleParam = count($this->dsParamPARAMOUTPUT) == 1;
+        $singleParam = count($this->dsParamPARAMOUTPUT) === 1;
 
         foreach ($this->dsParamPARAMOUTPUT as $param) {
             // The new style of paramater is `ds-datasource-handle.field-handle`
@@ -354,20 +354,20 @@ class SectionDatasource extends Datasource
         }
 
         foreach ($this->dsParamFILTERS as $field_id => $filter) {
-            if ((is_array($filter) && empty($filter)) || trim($filter) == '') {
+            if ((is_array($filter) && empty($filter)) || trim($filter) === '') {
                 continue;
             }
 
             if (!is_array($filter)) {
                 $filter_type = Datasource::determineFilterType($filter);
-                $value = preg_split('/'.($filter_type == Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
+                $value = preg_split('/'.($filter_type === Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
                 $value = array_map('trim', $value);
                 $value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
             } else {
                 $value = $filter;
             }
 
-            if (!in_array($field_id, self::$_system_parameters) && $field_id != 'id' && !(self::$_fieldPool[$field_id] instanceof Field)) {
+            if (!in_array($field_id, self::$_system_parameters) && $field_id !== 'id' && !(self::$_fieldPool[$field_id] instanceof Field)) {
                 throw new Exception(
                     __(
                         'Error creating field object with id %1$d, for filtering in data source %2$s. Check this field exists.',
@@ -417,13 +417,13 @@ class SectionDatasource extends Datasource
                 $date_joins = '';
                 $date_where = '';
                 $date = new FieldDate();
-                $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == Datasource::FILTER_AND ? true : false));
+                $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type === Datasource::FILTER_AND ? true : false));
 
                 // Replace the date field where with the `creation_date` or `modification_date`.
                 $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
                 $where .= $date_where;
             } else {
-                if (!self::$_fieldPool[$field_id]->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false))) {
+                if (!self::$_fieldPool[$field_id]->buildDSRetrievalSQL($value, $joins, $where, ($filter_type === Datasource::FILTER_AND ? true : false))) {
                     $this->_force_empty_result = true;
                     return;
                 }
@@ -500,11 +500,11 @@ class SectionDatasource extends Datasource
         $this->processFilters($where, $joins, $group);
 
         // Process Sorting
-        if ($this->dsParamSORT == 'system:id') {
+        if ($this->dsParamSORT === 'system:id') {
             EntryManager::setFetchSorting('system:id', $this->dsParamORDER);
-        } elseif ($this->dsParamSORT == 'system:date' || $this->dsParamSORT == 'system:creation-date') {
+        } elseif ($this->dsParamSORT === 'system:date' || $this->dsParamSORT === 'system:creation-date') {
             EntryManager::setFetchSorting('system:creation-date', $this->dsParamORDER);
-        } elseif ($this->dsParamSORT == 'system:modification-date') {
+        } elseif ($this->dsParamSORT === 'system:modification-date') {
             EntryManager::setFetchSorting('system:modification-date', $this->dsParamORDER);
         } else {
             EntryManager::setFetchSorting(
@@ -553,7 +553,7 @@ class SectionDatasource extends Datasource
             'filters' => $this->dsParamFILTERS
         ));
 
-        if (($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || $this->dsParamSTARTPAGE == '0') {
+        if (($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || (int)$this->dsParamSTARTPAGE === 0) {
             if ($this->dsParamREDIRECTONEMPTY === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
@@ -599,7 +599,7 @@ class SectionDatasource extends Datasource
                 if (isset($this->dsParamGROUP)) {
                     self::$_fieldPool[$this->dsParamGROUP] = FieldManager::fetch($this->dsParamGROUP);
 
-                    if (self::$_fieldPool[$this->dsParamGROUP] == null) {
+                    if (self::$_fieldPool[$this->dsParamGROUP] === null) {
                         throw new SymphonyErrorPage(vsprintf("The field used for grouping '%s' cannot be found.", $this->dsParamGROUP));
                     }
 

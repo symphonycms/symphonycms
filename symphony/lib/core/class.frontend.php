@@ -68,7 +68,7 @@ class Frontend extends Symphony
      */
     public static function isLoggedIn()
     {
-        if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && strlen($_REQUEST['auth-token']) == 8) {
+        if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && strlen($_REQUEST['auth-token']) === 8) {
             return self::loginFromToken($_REQUEST['auth-token']);
         }
 

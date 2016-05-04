@@ -508,7 +508,7 @@ Class Database {
      */
     public function replaceTablePrefix($query)
     {
-        if($this->_prefix != 'tbl_'){
+        if($this->_prefix !== 'tbl_'){
             $query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', $this->_prefix .'\\1\\2', $query);
         }
 
@@ -695,7 +695,7 @@ Class Database {
 
         $query_type = $this->determineQueryType(trim($query));
 
-        if($query_type == self::__READ_OPERATION__ && !preg_match('/^\s*SELECT\s+SQL(_NO)?_CACHE/i', $query)){
+        if($query_type === self::__READ_OPERATION__ && !preg_match('/^\s*SELECT\s+SQL(_NO)?_CACHE/i', $query)){
             if($this->isCachingEnabled()) {
                 $query = preg_replace('/^\s*SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
             }
@@ -706,8 +706,8 @@ Class Database {
 
         $this->q($query, $values, false);
 
-        if($this->_result instanceof PDOStatement && $query_type == self::__READ_OPERATION__) {
-            if($params['fetch-type'] == "ASSOC") {
+        if($this->_result instanceof PDOStatement && $query_type === self::__READ_OPERATION__) {
+            if($params['fetch-type'] === "ASSOC") {
                 if(isset($params['offset'])) {
                     while ($row = $this->_result->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_ABS, $params['offset'])) {
                         $this->_lastResult = $row;
@@ -719,7 +719,7 @@ Class Database {
                     }
                 }
             }
-            else if($params['fetch-type'] == 'OBJECT') {
+            else if($params['fetch-type'] === 'OBJECT') {
                 while ($row = $this->_result->fetchObject()) {
                     $this->_lastResult[] = $row;
                 }
@@ -937,7 +937,7 @@ Class Database {
     {
         if(!$type) return $this->_log;
 
-        return ($type == 'error' ? $this->_log['error'] : $this->_log['query']);
+        return ($type === 'error' ? $this->_log['error'] : $this->_log['query']);
     }
 
     /**

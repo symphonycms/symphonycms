@@ -65,7 +65,7 @@
                             $lang,
                             '?lang=' . $code
                         ),
-                        ($_REQUEST['lang'] == $code || ($_REQUEST['lang'] == null && $code == 'en')) ? array('class' => 'selected') : array()
+                        ($_REQUEST['lang'] === $code || ($_REQUEST['lang'] === null && $code === 'en')) ? array('class' => 'selected') : array()
                     ));
                 }
 

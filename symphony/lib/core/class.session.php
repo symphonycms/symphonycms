@@ -78,7 +78,7 @@ class Session extends Container
             // Disable PHP cache headers
             session_cache_limiter('');
 
-            if (session_id() == '') {
+            if (session_id() === '') {
                 ini_set('session.gc_probability', $this->settings['session_gc_probability']);
                 ini_set('session.gc_maxlifetime', $this->settings['session_gc_maxlifetime']);
                 ini_set('session.gc_divisor', $this->settings['session_gc_divisor']);
@@ -107,7 +107,7 @@ class Session extends Container
                 $this->settings['session_cookie_httponly']
             );
 
-            if (session_id() == '') {
+            if (session_id() === '') {
                 if (headers_sent()) {
                     throw new Exception('Headers already sent. Cannot start session.');
                 }
@@ -132,10 +132,10 @@ class Session extends Container
      *  Null if on localhost, or HTTP_HOST is not set, a string of the domain name sans
      *  www otherwise
      */
-    public function getDomain() 
+    public function getDomain()
     {
         if (isset($_SERVER['HTTP_HOST'])) {
-            if (preg_match('/(localhost|127\.0\.0\.1)/', $_SERVER['HTTP_HOST']) || $_SERVER['SERVER_ADDR'] == '127.0.0.1') {
+            if (preg_match('/(localhost|127\.0\.0\.1)/', $_SERVER['HTTP_HOST']) || $_SERVER['SERVER_ADDR'] === '127.0.0.1') {
                 return null; // prevent problems on local setups
             }
 

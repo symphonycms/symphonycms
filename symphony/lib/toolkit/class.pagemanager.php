@@ -165,7 +165,7 @@ class PageManager
         $old = PageManager::resolvePageFileLocation($old_path, $old_handle);
 
         // Nothing to do:
-        if (file_exists($new) && $new == $old) {
+        if (file_exists($new) && $new === $old) {
             return true;
         }
 
@@ -497,7 +497,7 @@ class PageManager
         }
 
         foreach ($pages as $page) {
-            if ($page['parent'] == $parent_id) {
+            if ($page['parent'] === $parent_id) {
                 $results[] = $page;
 
                 self::__buildTreeView($page['id'], $pages, $results[count($results) - 1]['children']);
@@ -541,7 +541,7 @@ class PageManager
             sprintf("id IN (%s)", implode(',', $page_id))
         ));
 
-        return count($page) == 1 ? array_pop($page) : $page;
+        return count($page) === 1 ? array_pop($page) : $page;
     }
 
     /**
@@ -574,7 +574,7 @@ class PageManager
             Symphony::Database()->cleanValue($type)
         ));
 
-        return count($pages) == 1 ? array_pop($pages) : $pages;
+        return count($pages) === 1 ? array_pop($pages) : $pages;
     }
 
     /**

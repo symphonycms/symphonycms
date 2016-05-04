@@ -342,11 +342,11 @@ class FieldManager implements FileResource
 
                 // Check to see if there was any restricts imposed on the fields
                 if (
-                    $restrict == Field::__FIELD_ALL__
-                    || ($restrict == Field::__TOGGLEABLE_ONLY__ && $field->canToggle())
-                    || ($restrict == Field::__UNTOGGLEABLE_ONLY__ && !$field->canToggle())
-                    || ($restrict == Field::__FILTERABLE_ONLY__ && $field->canFilter())
-                    || ($restrict == Field::__UNFILTERABLE_ONLY__ && !$field->canFilter())
+                    $restrict === Field::__FIELD_ALL__
+                    || ($restrict === Field::__TOGGLEABLE_ONLY__ && $field->canToggle())
+                    || ($restrict === Field::__UNTOGGLEABLE_ONLY__ && !$field->canToggle())
+                    || ($restrict === Field::__FILTERABLE_ONLY__ && $field->canFilter())
+                    || ($restrict === Field::__UNFILTERABLE_ONLY__ && !$field->canFilter())
                 ) {
                     $fields[$f['id']] = $field;
                 }
@@ -415,7 +415,7 @@ class FieldManager implements FileResource
             foreach ($element_names as $index => $name) {
                 $parts = explode(':', $name, 2);
 
-                if (count($parts) == 1) {
+                if (count($parts) === 1) {
                     continue;
                 }
 
@@ -423,7 +423,7 @@ class FieldManager implements FileResource
 
                 // Prevent attempting to look up 'system', which will arise
                 // from `system:pagination`, `system:id` etc.
-                if ($parts[0] == 'system') {
+                if ($parts[0] === 'system') {
                     continue;
                 }
 
@@ -448,7 +448,7 @@ class FieldManager implements FileResource
 
         $result = Symphony::Database()->fetch($schema_sql);
 
-        if (count($result) == 1) {
+        if (count($result) === 1) {
             return (int)$result[0]['id'];
         } elseif (empty($result)) {
             return false;

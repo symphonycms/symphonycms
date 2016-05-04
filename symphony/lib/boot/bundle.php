@@ -50,7 +50,7 @@
         if (preg_match($adminRegExp, getCurrentPage()) === 1) {
             $_GET['symphony-page'] = preg_replace($adminRegExp, '', getCurrentPage(), 1);
 
-            if ($_GET['symphony-page'] == '') {
+            if ($_GET['symphony-page'] === '') {
                 unset($_GET['symphony-page']);
             }
 

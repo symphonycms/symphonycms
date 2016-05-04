@@ -127,25 +127,25 @@ class contentSystemExtensions extends AdministrationPage
                 // Links
                 $tdLinks = array();
 
-                if ($about['github'] != '') {
+                if ($about['github'] !== '') {
                     $tdLinks['github'] = Widget::Anchor(__('GitHub'), General::validateURL($about['github']))->generate();
                 }
 
-                if ($about['discuss'] != '') {
+                if ($about['discuss'] !== '') {
                     $tdLinks['discuss'] = Widget::Anchor(__('Discuss'), General::validateURL($about['discuss']))->generate();
                     // Update links to point to our 'new' domain, RE: #1995
                     $tdLinks['discuss'] = str_replace('symphony-cms.com', 'getsymphony.com', $tdLinks['discuss']);
                 }
 
-                if ($about['homepage'] != '') {
+                if ($about['homepage'] !== '') {
                     $tdLinks['homepage'] = Widget::Anchor(__('Homepage'), General::validateURL($about['homepage']))->generate();
                 }
 
-                if ($about['wiki'] != '') {
+                if ($about['wiki'] !== '') {
                     $tdLinks['wiki'] = Widget::Anchor(__('Wiki'), General::validateURL($about['wiki']))->generate();
                 }
 
-                if ($about['issues'] != '') {
+                if ($about['issues'] !== '') {
                     $tdLinks['issues'] = Widget::Anchor(__('Issues'), General::validateURL($about['issues']))->generate();
                 }
 

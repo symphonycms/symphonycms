@@ -278,7 +278,7 @@ abstract class EmailGateway
         $this->_attachments = array();
 
         // check if we have an input value
-        if ($files == null) {
+        if ($files === null) {
             return;
         }
 
@@ -356,9 +356,9 @@ abstract class EmailGateway
      */
     public function setTextEncoding($encoding = null)
     {
-        if ($encoding == 'quoted-printable') {
+        if ($encoding === 'quoted-printable') {
             $this->_text_encoding = 'quoted-printable';
-        } elseif ($encoding == 'base64') {
+        } elseif ($encoding === 'base64') {
             $this->_text_encoding = 'base64';
         } elseif (!$encoding) {
             $this->_text_encoding = false;
@@ -635,9 +635,9 @@ abstract class EmailGateway
      */
     protected function getSectionTextPlain()
     {
-        if ($this->_text_encoding == 'quoted-printable') {
+        if ($this->_text_encoding === 'quoted-printable') {
             return EmailHelper::qpContentTransferEncode($this->_text_plain)."\r\n";
-        } elseif ($this->_text_encoding == 'base64') {
+        } elseif ($this->_text_encoding === 'base64') {
             // don't add CRLF if using base64 - spam filters don't
             // like this
             return EmailHelper::base64ContentTransferEncode($this->_text_plain);
@@ -655,9 +655,9 @@ abstract class EmailGateway
      */
     protected function getSectionTextHtml()
     {
-        if ($this->_text_encoding == 'quoted-printable') {
+        if ($this->_text_encoding === 'quoted-printable') {
             return EmailHelper::qpContentTransferEncode($this->_text_html)."\r\n";
-        } elseif ($this->_text_encoding == 'base64') {
+        } elseif ($this->_text_encoding === 'base64') {
             // don't add CRLF if using base64 - spam filters don't
             // like this
             return EmailHelper::base64ContentTransferEncode($this->_text_html);

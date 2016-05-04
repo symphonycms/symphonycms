@@ -52,7 +52,7 @@ class Author
             return $this->_fields;
         }
 
-        if (!isset($this->_fields[$field]) || $this->_fields[$field] == '') {
+        if (!isset($this->_fields[$field]) || $this->_fields[$field] === '') {
             return null;
         }
 
@@ -94,7 +94,7 @@ class Author
      */
     public function isDeveloper()
     {
-        return ($this->get('user_type') == 'developer');
+        return ($this->get('user_type') === 'developer');
     }
 
     /**
@@ -106,7 +106,7 @@ class Author
      */
     public function isManager()
     {
-        return ($this->get('user_type') == 'manager');
+        return ($this->get('user_type') === 'manager');
     }
 
     /**
@@ -118,7 +118,7 @@ class Author
      */
     public function isAuthor()
     {
-        return ($this->get('user_type') == 'author');
+        return ($this->get('user_type') === 'author');
     }
 
     /**
@@ -209,7 +209,7 @@ class Author
                         LIMIT 1
                     ",
                     array($this->get('email'))
-                ) != 0
+                ) !== 0
             ) {
                 $errors['email'] = __('E-mail address is already taken');
             }
@@ -234,14 +234,14 @@ class Author
         // in use by another Author if they are trying to change it.
         } else if ($this->get('id')) {
             if (
-                $current_author['username'] != $this->get('username') &&
+                $current_author['username'] !== $this->get('username') &&
                 Symphony::Database()->fetchVar('count', 0, "
                         SELECT COUNT(`id`) as `count`
                         FROM `tbl_authors`
                         WHERE `username` = ?
                     ",
                     array($this->get('username'))
-                ) != 0
+                ) !== 0
             ) {
                 $errors['username'] = __('Username is already taken');
             }

@@ -75,7 +75,7 @@ class SMTPGateway extends EmailGateway
             $recipients = array();
             foreach ($this->_recipients as $name => $email) {
                 // Support Bcc header
-                if (isset($this->_header_fields['Bcc']) && $this->_header_fields['Bcc'] == $email) {
+                if (isset($this->_header_fields['Bcc']) && $this->_header_fields['Bcc'] === $email) {
                     continue;
                 }
 
@@ -204,7 +204,7 @@ class SMTPGateway extends EmailGateway
             $host = '127.0.0.1';
         }
 
-        if (substr($host, 0, 6) == 'ssl://') {
+        if (substr($host, 0, 6) === 'ssl://') {
             $this->_protocol = 'ssl';
             $this->_secure = 'ssl';
             $host = substr($host, 6);
@@ -221,7 +221,7 @@ class SMTPGateway extends EmailGateway
     public function setPort($port = null)
     {
         if (is_null($port)) {
-            $port = ($this->_protocol == 'ssl') ? 465 : 25;
+            $port = ($this->_protocol === 'ssl') ? 465 : 25;
         }
 
         $this->_port = $port;
@@ -270,10 +270,10 @@ class SMTPGateway extends EmailGateway
      */
     public function setSecure($secure = null)
     {
-        if ($secure == 'tls') {
+        if ($secure === 'tls') {
             $this->_protocol = 'tcp';
             $this->_secure = 'tls';
-        } elseif ($secure == 'ssl') {
+        } elseif ($secure === 'ssl') {
             $this->_protocol = 'ssl';
             $this->_secure = 'ssl';
         } else {
@@ -317,7 +317,7 @@ class SMTPGateway extends EmailGateway
         $this->setPort($config['port']);
         $this->setSecure($config['secure']);
 
-        if ($config['auth'] == 1) {
+        if ($config['auth'] === 1) {
             $this->setAuth(true);
             $this->setUser($config['username']);
             $this->setPass($config['password']);
@@ -384,9 +384,9 @@ class SMTPGateway extends EmailGateway
         $label->setAttribute('class', 'column');
         // To fix the issue with checkboxes that do not send a value when unchecked.
         $options = array(
-            array('no',$this->_secure == 'no', __('No encryption')),
-            array('ssl',$this->_secure == 'ssl', __('SSL encryption')),
-            array('tls',$this->_secure == 'tls', __('TLS encryption')),
+            array('no',$this->_secure === 'no', __('No encryption')),
+            array('ssl',$this->_secure === 'ssl', __('SSL encryption')),
+            array('tls',$this->_secure === 'tls', __('TLS encryption')),
         );
         $select = Widget::Select('settings[email_smtp][secure]', $options);
         $label->appendChild($select);

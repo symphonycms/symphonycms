@@ -40,7 +40,7 @@ class EntryManager
     {
         $direction = strtoupper($direction);
 
-        if ($direction == 'RANDOM') {
+        if ($direction === 'RANDOM') {
             $direction = 'RAND';
         }
 
@@ -247,7 +247,7 @@ class EntryManager
                 foreach ($fields as $field) {
                     $reflection = new ReflectionClass($field);
                     // This field overrides the default implementation, so pass it data.
-                    $data[$field->get('element_name')] = $reflection->getMethod('entryDataCleanup')->class == 'Field' ? false : true;
+                    $data[$field->get('element_name')] = $reflection->getMethod('entryDataCleanup')->class === 'Field' ? false : true;
                 }
 
                 $data = array_filter($data);
@@ -376,7 +376,7 @@ class EntryManager
             $sort = null;
 
         // Check for RAND first, since this works independently of any specific field
-        } elseif (self::$_fetchSortDirection == 'RAND') {
+        } elseif (self::$_fetchSortDirection === 'RAND') {
             $sort = 'ORDER BY RAND() ';
 
         // Handle Creation Date or the old Date sorting
@@ -388,7 +388,7 @@ class EntryManager
             $sort = sprintf('ORDER BY `e`.`modification_date_gmt` %s', self::$_fetchSortDirection);
 
         // Handle sorting for System ID
-        } elseif (self::$_fetchSortField == 'system:id' || self::$_fetchSortField == 'id') {
+        } elseif (self::$_fetchSortField === 'system:id' || self::$_fetchSortField === 'id') {
             $sort = sprintf('ORDER BY `e`.`id` %s', self::$_fetchSortDirection);
 
         // Handle when the sort field is an actual Field
@@ -406,7 +406,7 @@ class EntryManager
             if (!$group) {
                 $group = $field->requiresSQLGrouping();
             }
-        } else if (self::$_fetchSortField == 'system:id' || self::$_fetchSortField == 'id') {
+        } else if (self::$_fetchSortField === 'system:id' || self::$_fetchSortField === 'id') {
             $sort = 'ORDER BY `e`.`id` ' . self::$_fetchSortDirection;
 
         } else {
@@ -675,9 +675,9 @@ class EntryManager
      */
     public static function fetchByPage($page = 1, $section_id, $entriesPerPage, $where = null, $joins = null, $group = false, $records_only = false, $buildentries = true, array $element_names = null)
     {
-        if ($entriesPerPage != null && !is_string($entriesPerPage) && !is_numeric($entriesPerPage)) {
+        if ($entriesPerPage !== null && !is_string($entriesPerPage) && !is_numeric($entriesPerPage)) {
             throw new Exception(__('Entry limit specified was not a valid type. String or Integer expected.'));
-        } elseif ($entriesPerPage == null) {
+        } elseif ($entriesPerPage === null) {
             $records = self::fetch(null, $section_id, null, null, $where, $joins, $group, $buildentries, $element_names);
 
             $count = self::fetchCount($section_id, $where, $joins, $group);
@@ -696,7 +696,7 @@ class EntryManager
         } else {
             $start = (max(1, $page) - 1) * $entriesPerPage;
 
-            $records = ($entriesPerPage == '0' ? null : self::fetch(null, $section_id, $entriesPerPage, $start, $where, $joins, $group, $buildentries, $element_names));
+            $records = ($entriesPerPage === '0' ? null : self::fetch(null, $section_id, $entriesPerPage, $start, $where, $joins, $group, $buildentries, $element_names));
 
             if ($records_only) {
                 return array('records' => $records);

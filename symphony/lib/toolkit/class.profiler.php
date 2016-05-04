@@ -96,7 +96,7 @@ class Profiler implements Singleton
      */
     public function sample($msg, $type = PROFILE_RUNNING_TOTAL, $group = 'General', $queries = null)
     {
-        if ($type == PROFILE_RUNNING_TOTAL) {
+        if ($type === PROFILE_RUNNING_TOTAL) {
             Profiler::$_samples[] = array($msg, precision_timer('stop', Profiler::$_starttime), precision_timer(), $group, $queries, memory_get_usage());
         } else {
             if (!is_null(Profiler::$_seed)) {
@@ -137,7 +137,7 @@ class Profiler implements Singleton
     public function retrieveByMessage($msg)
     {
         foreach (Profiler::$_samples as $record) {
-            if ($record[0] == $msg) {
+            if ($record[0] === $msg) {
                 return $record;
             }
         }
@@ -156,7 +156,7 @@ class Profiler implements Singleton
         $result = array();
 
         foreach (Profiler::$_samples as $record) {
-            if ($record[3] == $group) {
+            if ($record[3] === $group) {
                 $result[] = $record;
             }
         }

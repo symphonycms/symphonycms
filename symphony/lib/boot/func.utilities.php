@@ -92,7 +92,7 @@ function precision_timer($action = 'start', $start_time = null)
 {
     $currtime = microtime(true);
 
-    if ($action == 'stop') {
+    if ($action === 'stop') {
         return $currtime - $start_time;
     }
 
@@ -133,7 +133,7 @@ function ini_size_to_bytes($val)
  */
 function cleanup_session_cookies($mode)
 {
-    if (strtolower($mode) != 'administration') {
+    if (strtolower($mode) !== 'administration') {
         if (null === Symphony::$Cookies) {
             return;
         }
@@ -183,7 +183,7 @@ function symphony($mode)
  */
 function symphony_launcher($mode)
 {
-    if (is_string($mode) && strtolower($mode) == 'administration') {
+    if (is_string($mode) && strtolower($mode) === 'administration') {
         $renderer = Administration::instance();
     } else {
         $renderer = Frontend::instance();

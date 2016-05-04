@@ -107,11 +107,11 @@ define_safe('CACHE', MANIFEST . '/cache');
 
 $dir = @sys_get_temp_dir();
 
-if ($dir == false || !@is_writable($dir)) {
+if ($dir === false || !@is_writable($dir)) {
     $dir = @ini_get('upload_tmp_dir');
 }
 
-if ($dir == false || !is_writable($dir)) {
+if ($dir === false || !is_writable($dir)) {
     $dir = MANIFEST . '/tmp';
 }
 /**
@@ -235,9 +235,9 @@ define_safe('HTTP_USER_AGENT', getenv('HTTP_USER_AGENT'));
  * @var string|boolean
  */
 define_safe('__SECURE__',
-    (HTTPS == 'on' ||
+    (HTTPS === 'on' ||
         isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
-        $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')
+        $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
 );
 
 /**

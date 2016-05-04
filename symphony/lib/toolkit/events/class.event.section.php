@@ -95,7 +95,7 @@ abstract class SectionEvent extends Event
             if (is_array($fields[$field->get('element_name')])) {
                 $type = array_reduce($fields[$field->get('element_name')], array('SectionEvent', '__reduceType'));
             } else {
-                $type = ($fields[$field->get('element_name')] == '') ? 'missing' : 'invalid';
+                $type = ($fields[$field->get('element_name')] === '') ? 'missing' : 'invalid';
             }
 
             $error = self::createError($field, $type, $message);
@@ -360,13 +360,13 @@ abstract class SectionEvent extends Event
         // their `checkPostFieldData` function. If the return of the function is
         // `Entry::__ENTRY_FIELD_ERROR__` then abort the event and add the error
         // messages to the `$result`.
-        if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))) {
+        if (Entry::__ENTRY_FIELD_ERROR__ === $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))) {
             $result = self::appendErrors($result, $fields, $errors, $post_values);
             return false;
 
             // If the data is good, process the data, almost ready to save it to the
             // Database. If processing fails, abort the event and display the errors
-        } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors, false, ($entry->get('id') ? true : false))) {
+        } elseif (Entry::__ENTRY_OK__ !== $entry->setDataFromPost($fields, $errors, false, ($entry->get('id') ? true : false))) {
             $result = self::appendErrors($result, $fields, $errors, $post_values);
             return false;
 
@@ -678,19 +678,19 @@ abstract class SectionEvent extends Event
                     $author->get('first_name') => $author->get('email')
                 );
 
-                if ($fields['sender-name'] != null) {
+                if ($fields['sender-name'] !== null) {
                     $email->sender_name = $fields['sender-name'];
                 }
 
-                if ($fields['sender-email'] != null) {
+                if ($fields['sender-email'] !== null) {
                     $email->sender_email_address = $fields['sender-email'];
                 }
 
-                if ($fields['reply-to-name'] != null) {
+                if ($fields['reply-to-name'] !== null) {
                     $email->reply_to_name = $fields['reply-to-name'];
                 }
 
-                if ($fields['reply-to-email'] != null) {
+                if ($fields['reply-to-email'] !== null) {
                     $email->reply_to_email_address = $fields['reply-to-email'];
                 }
 

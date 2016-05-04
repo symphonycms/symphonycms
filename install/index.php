@@ -41,7 +41,7 @@
 
     // If prompt to remove, delete the entire `/install` directory
     // and then redirect to Symphony
-    if (isset($_GET['action']) && $_GET['action'] == 'remove') {
+    if (isset($_GET['action']) && $_GET['action'] === 'remove') {
         General::deleteDirectory(INSTALL);
         redirect(SYMPHONY_URL);
     }

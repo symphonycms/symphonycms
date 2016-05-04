@@ -227,7 +227,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
             return $parts;
         }
 
-        if ($direction == 'later') {
+        if ($direction === 'later') {
             $parts['end'] = $parts['start'];
         } else {
             $parts['start'] = $parts['end'];
@@ -251,7 +251,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
 
             // Date is equal to or earlier/later than
             // Date is earlier/later than
-            $parts = self::parseDate($string, $match[2], $match[1] == "equal to or ");
+            $parts = self::parseDate($string, $match[2], $match[1] === "equal to or ");
 
             $earlier = $parts['start'];
             $later = $parts['end'];
@@ -501,7 +501,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
         $message = null;
 
         // If this field is required
-        if ($this->get('required') === 'yes' && strlen(trim($data)) == 0) {
+        if ($this->get('required') === 'yes' && strlen(trim($data)) === 0) {
             $message = __('‘%s’ is a required field.', array($this->get('label')));
             return self::__MISSING_FIELDS__;
         } elseif (empty($data)) {
@@ -523,7 +523,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
         $timestamp = null;
 
         // Prepopulate date
-        if (is_null($data) || $data == '') {
+        if (is_null($data) || $data === '') {
             if ($this->get('pre_populate') !='') {
                 $date = self::parseDate($this->get('pre_populate'));
                 $date = $date['start'];
@@ -531,7 +531,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
             }
 
             // Convert given date to timestamp
-        } elseif ($status == self::__OK__ && DateTimeObj::validate($data)) {
+        } elseif ($status === self::__OK__ && DateTimeObj::validate($data)) {
             $timestamp = DateTimeObj::get('U', $data);
         }
 
@@ -703,7 +703,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
             foreach ($data as $string) {
                 $type = self::parseFilter($string);
 
-                if ($type == self::ERROR) {
+                if ($type === self::ERROR) {
                     return false;
                 }
 

@@ -33,7 +33,7 @@ class contentSystemPreferences extends AdministrationPage
             $this->pageAlert(
                 __('An error occurred while processing this form. See below for details.'), Alert::ERROR
             );
-        } elseif (isset($this->_context[0]) && $this->_context[0] == 'success') {
+        } elseif (isset($this->_context[0]) && $this->_context[0] === 'success') {
             $this->pageAlert(__('Preferences saved.'), Alert::SUCCESS);
         }
 
@@ -52,7 +52,7 @@ class contentSystemPreferences extends AdministrationPage
 
             $options = array();
             foreach ($languages as $code => $name) {
-                $options[] = array($code, $code == Symphony::Configuration()->get('lang', 'symphony'), $name);
+                $options[] = array($code, $code === Symphony::Configuration()->get('lang', 'symphony'), $name);
             }
 
             $select = Widget::Select('settings[symphony][lang]', $options);
@@ -81,7 +81,7 @@ class contentSystemPreferences extends AdministrationPage
             $options = array();
 
             foreach ($email_gateways as $handle => $details) {
-                $options[] = array($handle, (($handle == $default_gateway) || (($selected_is_installed == false) && $handle == 'sendmail')), $details['name']);
+                $options[] = array($handle, (($handle === $default_gateway) || (($selected_is_installed === false) && $handle === 'sendmail')), $details['name']);
             }
 
             $select = Widget::Select('settings[Email][default_gateway]', $options, array('class' => 'picker', 'data-interactive' => 'data-interactive'));

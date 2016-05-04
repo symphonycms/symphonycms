@@ -76,16 +76,16 @@ class contentBlueprintsEvents extends ResourcesPage
         if (isset($_POST['fields'])) {
             $fields = $_POST['fields'];
 
-            if ($this->_context['action'] == 'edit') {
+            if ($this->_context['action'] === 'edit') {
                 $isEditing = true;
             }
-        } elseif ($this->_context['action'] == 'edit' || $this->_context['action'] == 'info') {
+        } elseif ($this->_context['action'] === 'edit' || $this->_context['action'] === 'info') {
             $isEditing = true;
             $handle = $this->_context['handle'];
             $existing = EventManager::create($handle);
             $about = $existing->about();
 
-            if ($this->_context['action'] == 'edit' && !$existing->allowEditorToParse()) {
+            if ($this->_context['action'] === 'edit' && !$existing->allowEditorToParse()) {
                 redirect(SYMPHONY_URL . '/blueprints/events/info/' . $handle . '/');
             }
 
@@ -95,7 +95,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
             if (!empty($providers)) {
                 foreach ($providers as $providerClass => $provider) {
-                    if ($fields['source'] == call_user_func(array($providerClass, 'getClass'))) {
+                    if ($fields['source'] === call_user_func(array($providerClass, 'getClass'))) {
                         $fields = array_merge($fields, $existing->settings());
                         $provided = true;
                         break;
@@ -145,7 +145,7 @@ class contentBlueprintsEvents extends ResourcesPage
                 $section_options = array('label' => __('Sections'), 'options' => array());
 
                 foreach ($sections as $s) {
-                    $section_options['options'][] = array($s->get('id'), $source == $s->get('id'), General::sanitize($s->get('name')));
+                    $section_options['options'][] = array($s->get('id'), $source === $s->get('id'), General::sanitize($s->get('name')));
                 }
             }
 
@@ -157,7 +157,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
                 foreach ($providers as $providerClass => $provider) {
                     $p['options'][] = array(
-                        $providerClass, ($fields['source'] == $providerClass), $provider
+                        $providerClass, ($fields['source'] === $providerClass), $provider
                     );
                 }
 
@@ -399,11 +399,11 @@ class contentBlueprintsEvents extends ResourcesPage
         $providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::EVENT);
         $providerClass = null;
 
-        if (trim($fields['name']) == '') {
+        if (trim($fields['name']) === '') {
             $this->_errors['name'] = __('This is a required field');
         }
 
-        if (trim($fields['source']) == '') {
+        if (trim($fields['source']) === '') {
             $this->_errors['source'] = __('This is a required field');
         }
 
@@ -412,7 +412,7 @@ class contentBlueprintsEvents extends ResourcesPage
         // See if a Provided Datasource is saved
         if (!empty($providers)) {
             foreach ($providers as $providerClass => $provider) {
-                if ($fields['source'] == call_user_func(array($providerClass, 'getSource'))) {
+                if ($fields['source'] === call_user_func(array($providerClass, 'getSource'))) {
                     call_user_func_array(array($providerClass, 'validate'), array(&$fields, &$this->_errors));
                     break;
                 }
@@ -434,14 +434,14 @@ class contentBlueprintsEvents extends ResourcesPage
         $isDuplicate = false;
         $queueForDeletion = null;
 
-        if ($this->_context['action'] == 'new' && is_file($file)) {
+        if ($this->_context['action'] === 'new' && is_file($file)) {
             $isDuplicate = true;
-        } elseif ($this->_context['action'] == 'edit') {
+        } elseif ($this->_context['action'] === 'edit') {
             $existing_handle = $this->_context['handle'];
 
-            if ($classname != $existing_handle && is_file($file)) {
+            if ($classname !== $existing_handle && is_file($file)) {
                 $isDuplicate = true;
-            } elseif ($classname != $existing_handle) {
+            } elseif ($classname !== $existing_handle) {
                 $queueForDeletion = EVENTS . '/event.' . $existing_handle . '.php';
             }
         }
@@ -535,7 +535,7 @@ class contentBlueprintsEvents extends ResourcesPage
             // Remove left over placeholders
             $eventShell = preg_replace(array('/<!--[\w ]++-->/'), '', $eventShell);
 
-            if ($this->_context['action'] == 'new') {
+            if ($this->_context['action'] === 'new') {
                 /**
                  * Prior to creating an Event, the file path where it will be written to
                  * is provided and well as the contents of that file.
@@ -613,7 +613,7 @@ class contentBlueprintsEvents extends ResourcesPage
                     }
                 }
 
-                if ($this->_context['action'] == 'new') {
+                if ($this->_context['action'] === 'new') {
                     /**
                      * After creating the Event, the path to the Event file is provided
                      *
@@ -648,7 +648,7 @@ class contentBlueprintsEvents extends ResourcesPage
                     ));
                 }
 
-                redirect(SYMPHONY_URL . '/blueprints/events/edit/'. $classname . '/' . ($this->_context['action'] == 'new' ? 'created' : 'saved') . '/');
+                redirect(SYMPHONY_URL . '/blueprints/events/edit/'. $classname . '/' . ($this->_context['action'] === 'new' ? 'created' : 'saved') . '/');
             }
         }
     }

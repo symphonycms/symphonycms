@@ -96,7 +96,7 @@ class Datasource
         // The new signature is array/boolean
         $arguments = func_get_args();
 
-        if (count($arguments) == 3 && is_bool($arguments[1]) && is_bool($arguments[2])) {
+        if (count($arguments) === 3 && is_bool($arguments[1]) && is_bool($arguments[2])) {
             $env = $arguments[0];
             $process_params = $arguments[1];
         }
@@ -381,7 +381,7 @@ class Datasource
 
         foreach ($params as $key => $info) {
             $replacement = $this->__processParametersInString($info['param'], $this->_env, false);
-            if ($info['encode'] == true) {
+            if ($info['encode'] === true) {
                 $replacement = urlencode($replacement);
             }
             $url = str_replace("{{$key}}", $replacement, $url);
@@ -416,7 +416,7 @@ class Datasource
      */
     public function __processParametersInString($value, array $env, $includeParenthesis = true, $escape = false)
     {
-        if (trim($value) == '') {
+        if (trim($value) === '') {
             return null;
         }
 

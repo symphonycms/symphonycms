@@ -229,12 +229,12 @@ abstract class ResourcesPage extends AdministrationPage
                     $pagelinks[] = Widget::Anchor(
                         $p['title'],
                         SYMPHONY_URL . '/blueprints/pages/edit/' . $p['id'] . '/'
-                    )->generate() . (count($pages) > $i ? (($i % 10) == 0 ? '<br />' : ', ') : '');
+                    )->generate() . (count($pages) > $i ? (($i % 10) === 0 ? '<br />' : ', ') : '');
                 }
 
                 $pages = implode('', $pagelinks);
 
-                if ($pages == '') {
+                if ($pages === '') {
                     $pagelinks = Widget::TableData(__('None'), 'inactive');
                 } else {
                     $pagelinks = Widget::TableData($pages, 'pages');
@@ -359,7 +359,7 @@ abstract class ResourcesPage extends AdministrationPage
             ));
 
             if (is_array($checked) && !empty($checked)) {
-                if ($_POST['with-selected'] == 'delete') {
+                if ($_POST['with-selected'] === 'delete') {
                     $canProceed = true;
 
                     foreach ($checked as $handle) {
@@ -391,7 +391,7 @@ abstract class ResourcesPage extends AdministrationPage
                         redirect(Administration::instance()->getCurrentPageURL());
                     }
                 } elseif (preg_match('/^(at|de)?tach-(to|from)-page-/', $_POST['with-selected'])) {
-                    if (substr($_POST['with-selected'], 0, 6) == 'detach') {
+                    if (substr($_POST['with-selected'], 0, 6) === 'detach') {
                         $page = str_replace('detach-from-page-', '', $_POST['with-selected']);
 
                         foreach ($checked as $handle) {
@@ -411,7 +411,7 @@ abstract class ResourcesPage extends AdministrationPage
                 } elseif (preg_match('/^(at|de)?tach-all-pages$/', $_POST['with-selected'])) {
                     $pages = PageManager::fetch(false, array('id'));
 
-                    if (substr($_POST['with-selected'], 0, 6) == 'detach') {
+                    if (substr($_POST['with-selected'], 0, 6) === 'detach') {
                         foreach ($checked as $handle) {
                             foreach ($pages as $page) {
                                 ResourceManager::detach($resource_type, $handle, $page['id']);

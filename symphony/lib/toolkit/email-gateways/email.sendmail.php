@@ -58,7 +58,7 @@ class SendmailGateway extends EmailGateway
             $recipients = array();
             foreach ($this->_recipients as $name => $email) {
                 // Support Bcc header
-                if (isset($this->_header_fields['Bcc']) && $this->_header_fields['Bcc'] == $email) {
+                if (isset($this->_header_fields['Bcc']) && $this->_header_fields['Bcc'] === $email) {
                     continue;
                 }
 

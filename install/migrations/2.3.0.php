@@ -55,7 +55,7 @@
                 Symphony::Configuration()->remove('character_encoding', 'database');
                 Symphony::Configuration()->remove('runtime_character_set_alter', 'database');
 
-                if (Symphony::Configuration()->get('pagination_maximum_rows', 'symphony') == '17') {
+                if (Symphony::Configuration()->get('pagination_maximum_rows', 'symphony') === '17') {
                     Symphony::Configuration()->set('pagination_maximum_rows', '20', 'symphony');
                 }
 

@@ -283,7 +283,7 @@ class MySQL
             if (is_array($val)) {
                 self::cleanFields($val);
                 continue;
-            } elseif (strlen($val) == 0) {
+            } elseif (strlen($val) === 0) {
                 $array[$key] = 'null';
             } else {
                 $array[$key] = "'" . self::cleanValue($val) . "'";

@@ -225,7 +225,7 @@ class Gateway
                 }
 
                 // Better support for HTTPS requests
-                if ($url_parsed['scheme'] == 'https') {
+                if ($url_parsed['scheme'] === 'https') {
                     $this->setopt(CURLOPT_SSL_VERIFYPEER, false);
                 }
                 break;
@@ -233,7 +233,7 @@ class Gateway
             case 'GET':
             case 'PUT':
             case 'DELETE':
-                $this->_method = ($value == 1 ? $opt : 'GET');
+                $this->_method = ($value === 1 ? $opt : 'GET');
                 break;
             case 'POSTFIELDS':
                 if (is_array($value) && !empty($value)) {
@@ -254,7 +254,7 @@ class Gateway
                 }
                 break;
             case 'RETURNHEADERS':
-                $this->_returnHeaders = (intval($value) == 1 ? true : false);
+                $this->_returnHeaders = (intval($value) === 1 ? true : false);
                 break;
             case 'CONTENTTYPE':
                 $this->_content_type = $value;
@@ -302,7 +302,7 @@ class Gateway
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_TIMEOUT, $this->_timeout);
 
-            if (ini_get('safe_mode') == 0 && ini_get('open_basedir') == '') {
+            if (ini_get('safe_mode') === 0 && ini_get('open_basedir') === '') {
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
             }
 
@@ -413,7 +413,7 @@ class Gateway
 
                 $chunk_size = hexdec($chunk_size); // convert to real number
 
-                if ($chunk_size == 0) {
+                if ($chunk_size === 0) {
                     break(1);
                 }
 

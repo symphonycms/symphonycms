@@ -52,6 +52,6 @@ class SHA1 extends Cryptography
      */
     public static function compare($input, $hash, $isHash = false)
     {
-        return ($hash == self::hash($input));
+        return ($hash === self::hash($input));
     }
 }

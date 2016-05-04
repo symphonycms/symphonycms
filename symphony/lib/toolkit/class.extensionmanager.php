@@ -169,7 +169,7 @@ class ExtensionManager implements FileResource
         self::__buildExtensionList();
 
         if (isset($about['handle']) && array_key_exists($about['handle'], self::$_extensions)) {
-            if (self::$_extensions[$about['handle']]['status'] == 'enabled') {
+            if (self::$_extensions[$about['handle']]['status'] === 'enabled') {
                 $return[] = Extension::EXTENSION_ENABLED;
             } else {
                 $return[] = Extension::EXTENSION_DISABLED;
@@ -796,9 +796,9 @@ class ExtensionManager implements FileResource
             $second = $b[$i];
         }
 
-        if ($first == $a && $second == $b && $first['name'] == $second['name']) {
+        if ($first === $a && $second === $b && $first['name'] === $second['name']) {
             return 1;
-        } elseif ($first['name'] == $second['name']) {
+        } elseif ($first['name'] === $second['name']) {
             return self::sortByAuthor($a, $b, $i + 1);
         } else {
             return ($first['name'] < $second['name']) ? -1 : 1;
@@ -842,17 +842,17 @@ class ExtensionManager implements FileResource
         if (!is_null($order_by)) {
             $author = $name = $label = array();
             $order_by = array_map('strtolower', explode(' ', $order_by));
-            $order = ($order_by[1] == 'desc') ? SORT_DESC : SORT_ASC;
+            $order = ($order_by[1] === 'desc') ? SORT_DESC : SORT_ASC;
             $sort = $order_by[0];
 
-            if ($sort == 'author') {
+            if ($sort === 'author') {
                 foreach ($extensions as $key => $about) {
                     $author[$key] = $about['author'];
                 }
 
                 uasort($author, array('self', 'sortByAuthor'));
 
-                if ($order == SORT_DESC) {
+                if ($order === SORT_DESC) {
                     $author = array_reverse($author);
                 }
 
@@ -861,7 +861,7 @@ class ExtensionManager implements FileResource
                 }
 
                 $extensions = $data;
-            } elseif ($sort == 'name') {
+            } elseif ($sort === 'name') {
                 foreach ($extensions as $key => $about) {
                     $name[$key] = strtolower($about['name']);
                     $label[$key] = $key;
@@ -1088,7 +1088,7 @@ class ExtensionManager implements FileResource
                 if (!@is_dir($path)) {
                     Symphony::Database()->delete("tbl_extensions_delegates", " `extension_id` = ?", array($existing_id));
                     Symphony::Database()->delete('tbl_extensions', " `id` = ? LIMIT 1", array($existing_id));
-                } elseif ($status == 'disabled') {
+                } elseif ($status === 'disabled') {
                     Symphony::Database()->delete("tbl_extensions_delegates", " `extension_id` = ?", array($existing_id));
                 }
             }
