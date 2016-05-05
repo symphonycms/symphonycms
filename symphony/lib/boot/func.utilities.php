@@ -179,7 +179,7 @@ function symphony($mode)
  * sending output to the browser.
  *
  *  @param string $mode (optional)
- *  @return integer
+ *  @return mixed
  */
 function symphony_launcher($mode)
 {
@@ -189,8 +189,6 @@ function symphony_launcher($mode)
         $renderer = Frontend::instance();
     }
 
-    $output = $renderer->display(getCurrentPage());
-
     // #1808
     if (isset($_SERVER['HTTP_MOD_REWRITE'])) {
         $output = file_get_contents(GenericExceptionHandler::getTemplate('fatalerror.rewrite'));
@@ -198,8 +196,10 @@ function symphony_launcher($mode)
         $output = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $output);
         $output = str_replace('{URL}', URL, $output);
         echo $output;
-        exit;
+        return;
     }
+
+    $output = $renderer->display(getCurrentPage());
 
     cleanup_session_cookies($mode);
 

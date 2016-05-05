@@ -658,7 +658,7 @@ class ExtensionManager implements FileResource
      *    );
      * @throws Exception
      * @throws SymphonyErrorPage
-     * @return null|void
+     * @return void
      */
     public static function notifyMembers($delegate, $page, array $context = array())
     {
@@ -685,7 +685,7 @@ class ExtensionManager implements FileResource
         }
 
         if (empty($services)) {
-            return null;
+            return;
         }
 
         $context += array('page' => $page, 'delegate' => $delegate);

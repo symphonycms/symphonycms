@@ -319,7 +319,7 @@ Class Database {
     protected $_logging = true;
 
     /**
-     * @var null
+     * @var PDOStatement
      */
     protected $_result = null;
 

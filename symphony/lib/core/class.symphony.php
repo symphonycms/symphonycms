@@ -340,7 +340,7 @@ abstract class Symphony implements Singleton
         ));
 
         // Start the session
-        self::Session()->start();
+        self::Session()->start($_SESSION);
 
         // The flash accepts a session in a move towards dependency injection
         self::$Flash = new SessionFlash(self::Session());
