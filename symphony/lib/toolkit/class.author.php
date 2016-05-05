@@ -209,7 +209,7 @@ class Author
                         LIMIT 1
                     ",
                     array($this->get('email'))
-                ) !== 0
+                ) != 0
             ) {
                 $errors['email'] = __('E-mail address is already taken');
             }
@@ -241,7 +241,7 @@ class Author
                         WHERE `username` = ?
                     ",
                     array($this->get('username'))
-                ) !== 0
+                ) != 0
             ) {
                 $errors['username'] = __('Username is already taken');
             }

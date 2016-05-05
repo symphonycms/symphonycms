@@ -81,8 +81,8 @@ abstract class ResourcesPage extends AdministrationPage
             $sort = ResourceManager::getSortingField($type);
             $order = ResourceManager::getSortingOrder($type);
 
-            // If the sorting field or order differs from what is saved,
-            // update the config file and reload the page
+        // If the sorting field or order differs from what is saved,
+        // update the config file and reload the page
         } elseif ($sort !== ResourceManager::getSortingField($type) || $order !== ResourceManager::getSortingOrder($type)) {
             ResourceManager::setSortingField($type, $sort, false);
             ResourceManager::setSortingOrder($type, $order);

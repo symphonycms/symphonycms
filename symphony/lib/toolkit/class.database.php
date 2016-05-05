@@ -197,7 +197,7 @@ class DatabaseTransaction
     /**
      * A nested database transaction manager.
      *
-     * @param PDO   $connection
+     * @param PDO $connection
      */
     public function __construct(PDO $connection)
     {
@@ -215,6 +215,11 @@ class DatabaseTransaction
         self::$transactions++;
     }
 
+    /**
+     * Commit the transaction
+     *
+     * @return boolean
+     */
     public function commit()
     {
         if ($this->completed) return false;
@@ -224,13 +229,17 @@ class DatabaseTransaction
 
         if (0 === self::$transactions) {
             return $this->connection->commit();
-        }
 
-        else {
-            return $this->connection->exec('release savepoint trans' . self::$transactions);
+        } else {
+            return (boolean)$this->connection->exec('release savepoint trans' . self::$transactions);
         }
     }
 
+    /**
+     * Rollback this transaction
+     *
+     * @return boolean
+     */
     public function rollBack()
     {
         if ($this->completed) return false;
@@ -243,7 +252,7 @@ class DatabaseTransaction
         }
 
         else {
-            return $this->connection->exec('rollback to savepoint trans' . self::$transactions);
+            return (boolean)$this->connection->exec('rollback to savepoint trans' . self::$transactions);
         }
     }
 }
@@ -330,18 +339,6 @@ Class Database {
     protected $_lastQueryHash = null;
 
     /**
-     * Resets the `result`, `lastResult`, `lastQuery` and lastQueryHash properties to `null`.
-     * Called on each query and when the class is destroyed.
-     */
-    public function flush()
-    {
-        $this->_result = null;
-        $this->_lastResult = null;
-        $this->_lastQuery = null;
-        $this->_lastQueryHash = null;
-    }
-
-    /**
      * Creates a new Database object given an associative array of configuration
      * parameters in `$config`. If `$config` contains a key, `pdo` then this
      * `Database` instance will use that PDO connection. Otherwise, `$config`
@@ -349,7 +346,6 @@ Class Database {
      * array of PDO options in `options`.
      *
      * @param array $config
-     * @return PDO
      */
     public function __construct(array $config = array())
     {
@@ -365,8 +361,6 @@ Class Database {
                 $config['options']
             );
         }
-
-        return $this->conn;
     }
 
     /**
@@ -379,6 +373,18 @@ Class Database {
     {
         unset($this->conn);
         $this->flush();
+    }
+
+    /**
+     * Resets the `result`, `lastResult`, `lastQuery` and lastQueryHash properties to `null`.
+     * Called on each query and when the class is destroyed.
+     */
+    public function flush()
+    {
+        $this->_result = null;
+        $this->_lastResult = null;
+        $this->_lastQuery = null;
+        $this->_lastQueryHash = null;
     }
 
     /**
