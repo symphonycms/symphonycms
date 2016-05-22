@@ -303,10 +303,6 @@ class SectionDatasource extends Datasource
         // Support the legacy parameter `ds-datasource-handle`
         $key = 'ds-' . $this->dsParamROOTELEMENT;
 
-        if ($singleParam && (!isset($this->_param_pool[$key]) || !is_array($this->_param_pool[$key]))) {
-            $this->_param_pool[$key] = array();
-        }
-
         foreach ($this->dsParamPARAMOUTPUT as $param) {
             if (self::$_fieldPool[$field_id]->get('element_name') !== $param) {
                 continue;

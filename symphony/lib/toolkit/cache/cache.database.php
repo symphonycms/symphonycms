@@ -84,7 +84,7 @@ class CacheDatabase implements iNamespacedCache
             $data = $this->Database->fetch("
                 SELECT SQL_NO_CACHE *
                 FROM `tbl_cache`
-                WHERE `namespace` = '$namepspace'
+                WHERE `namespace` = '$namespace'
                 AND (`expiry` IS NULL OR UNIX_TIMESTAMP() <= `expiry`)
             ");
         }

@@ -99,8 +99,8 @@ class General
      *
      * @param string $data
      *  filename, xml document as a string, or arbitrary string
-     * @param pointer &$errors
-     *  pointer to an array which will contain any validation errors
+     * @param array &$errors
+     *  An array which will contain any validation errors (by reference)
      * @param boolean $isFile (optional)
      *  if this is true, the method will attempt to read from a file, `$data`
      *  instead.
@@ -1336,7 +1336,7 @@ class General
      *
      * @param string $dest_path
      *  the file path to which the source file is to be moved.
-     * @param string #dest_name
+     * @param string $dest_name
      *  the file name within the file path to which the source file is to be moved.
      * @param string $tmp_name
      *  the full path name of the source file to move.

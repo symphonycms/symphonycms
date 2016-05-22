@@ -78,7 +78,7 @@ interface FileResource
     /**
      * Creates a new instance of an object by name and returns it by reference.
      *
-     * @param string name
+     * @param string $name
      *  The name of the Object to be created. Can be used in conjunction
      *  with the auto discovery methods to find a class.
      * @return object

@@ -375,7 +375,7 @@ abstract class SectionEvent extends Event
         } elseif ($entry->commit() === false) {
             $result->setAttribute('result', 'error');
             $result->appendChild(new XMLElement('message', __('Unknown errors where encountered when saving.'), array(
-                'message-id' => EventMessages::ENTRY_UNKNOWN
+                'message-id' => EventMessages::UNKNOWN_ERROR
             )));
 
             if (isset($post_values) && is_object($post_values)) {
