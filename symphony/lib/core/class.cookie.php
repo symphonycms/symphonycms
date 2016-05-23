@@ -135,6 +135,7 @@ class Cookie
         }
 
         // Class FrontendPage uses $_COOKIE directly (inside it's __buildPage() function), so try to emulate it.
+        // @deprecated will be removed in Symphony 3.0.0
         $_COOKIE[$this->_index] = &$_SESSION[$this->_index];
 
         return $this->_session;
