@@ -58,6 +58,9 @@ class Session
 
             if (session_id() == '') {
                 ini_set('session.save_handler', 'user');
+                ini_set('session.use_trans_sid', '0');
+                ini_set('session.use_strict_mode', '1');
+                ini_set('session.use_only_cookies', '1');
                 ini_set('session.gc_maxlifetime', $lifetime);
                 ini_set('session.gc_probability', '1');
                 ini_set('session.gc_divisor', Symphony::Configuration()->get('session_gc_divisor', 'symphony'));
