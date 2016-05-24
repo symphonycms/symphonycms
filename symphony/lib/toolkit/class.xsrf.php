@@ -7,7 +7,6 @@ if (!defined("__IN_SYMPHONY__")) {
 /**
  * @package toolkit
  */
-
 /**
  * The `XSRF` class provides protection for mitigating XRSF/CSRF attacks.
  *
