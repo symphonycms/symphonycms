@@ -9,11 +9,11 @@
      * logic to update the current installation to the migration version. In the
      * future it is hoped Migrations will support downgrading as well.
      */
-
     abstract class Migration
     {
         /**
          * The current installed version of Symphony, before updating
+         *
          * @var string
          */
         public static $existing_version = null;
@@ -50,18 +50,6 @@
         }
 
         /**
-         * Return's the most current version that this migration provides.
-         * Note that just because the migration file is 2.3, the migration
-         * might only cater for 2.3 Beta 1 at this stage, hence the function.
-         *
-         * @return string
-         */
-        public static function getVersion()
-        {
-            return null;
-        }
-
-        /**
          * Return's the string to this migration's release notes. Like `getVersion()`,
          * this may not be the complete version, but rather the release notes for
          * the Beta/RC.
@@ -90,6 +78,18 @@
             } else {
                 return true;
             }
+        }
+
+        /**
+         * Return's the most current version that this migration provides.
+         * Note that just because the migration file is 2.3, the migration
+         * might only cater for 2.3 Beta 1 at this stage, hence the function.
+         *
+         * @return string
+         */
+        public static function getVersion()
+        {
+            return null;
         }
 
         /**

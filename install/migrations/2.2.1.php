@@ -43,7 +43,8 @@
 
             ### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"';
 
-                        $htaccess = str_replace('### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"', $security, $htaccess);
+                        $htaccess = str_replace('### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"', $security,
+                            $htaccess);
                         file_put_contents(DOCROOT . '/.htaccess', $htaccess);
                     }
                 } catch (Exception $ex) {
@@ -58,15 +59,18 @@
                 }
 
                 // Remove Hide Association field from Select Data tables
-                $select_tables = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_select`");
+                $select_tables = Symphony::Database()->fetchCol("field_id",
+                    "SELECT `field_id` FROM `tbl_fields_select`");
 
                 if (is_array($select_tables) && !empty($select_tables)) {
                     foreach ($select_tables as $field) {
-                        if (Symphony::Database()->tableContainsField('tbl_entries_data_' . $field, 'show_association')) {
+                        if (Symphony::Database()->tableContainsField('tbl_entries_data_' . $field,
+                            'show_association')
+                        ) {
                             Symphony::Database()->query(sprintf(
-                            "ALTER TABLE `tbl_entries_data_%d` DROP `show_association`",
-                            $field
-                        ));
+                                "ALTER TABLE `tbl_entries_data_%d` DROP `show_association`",
+                                $field
+                            ));
                         }
                     }
                 }
@@ -88,7 +92,7 @@
                         $table = '`tbl_entries_data_' . $id . '`';
 
                         Symphony::Database()->query(
-                            'ALTER TABLE ' . $table . ' CHANGE `author_id` `author_id` int(11) unsigned NULL'
+                            'ALTER TABLE ' . $table . ' CHANGE `author_id` `author_id` INT(11) UNSIGNED NULL'
                         );
                     }
                 } catch (Exception $ex) {
@@ -104,7 +108,8 @@
         public static function postUpdateNotes()
         {
             return array(
-                __('Version %s introduces some improvements and fixes to Static XML Datasources. If you have any Static XML Datasources in your installation, please be sure to re-save them through the Data Source Editor to prevent unexpected results.', array('<code>2.2.1</code>'))
+                __('Version %s introduces some improvements and fixes to Static XML Datasources. If you have any Static XML Datasources in your installation, please be sure to re-save them through the Data Source Editor to prevent unexpected results.',
+                    array('<code>2.2.1</code>'))
             );
         }
     }

@@ -29,6 +29,7 @@
 
         /**
          * When the composer autoloader has been loaded.
+         *
          * @delegate ComposerReady
          * @param string $context
          * '/all/'
@@ -43,7 +44,7 @@
 
         // Handle custom admin paths, #702
         $adminPath = Symphony::Configuration()->get('admin-path', 'symphony');
-        $adminPath = (is_null($adminPath)) ? 'symphony' :  $adminPath;
+        $adminPath = (is_null($adminPath)) ? 'symphony' : $adminPath;
         // getCurrentPage() always starts with / #2522
         $adminRegExp = '%^\/' . preg_quote($adminPath) . '\/%';
 
@@ -60,6 +61,7 @@
         /**
          * Returns the URL + /symphony. This should be used whenever the a developer
          * wants to link to the Symphony root
+         *
          * @since Symphony 2.2
          * @var string
          */
@@ -67,6 +69,7 @@
 
         /**
          * Overload the default Symphony launcher logic.
+         *
          * @delegate ModifySymphonyLauncher
          * @since Symphony 2.5.0
          * @param string $context

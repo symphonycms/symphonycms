@@ -127,7 +127,8 @@
             // 2.3 Beta 3
             if (version_compare(self::$existing_version, '2.3beta3', '<=')) {
                 // Refresh indexes on existing Author field tables
-                $author_fields = Symphony::Database()->fetchCol("field_id", "SELECT `field_id` FROM `tbl_fields_author`");
+                $author_fields = Symphony::Database()->fetchCol("field_id",
+                    "SELECT `field_id` FROM `tbl_fields_author`");
 
                 foreach ($author_fields as $id) {
                     $table = 'tbl_entries_data_' . $id;
@@ -149,8 +150,10 @@
                 if (Symphony::Database()->tableContainsField('tbl_sections', 'entry_order')) {
                     $sections = Symphony::Database()->fetch("SELECT `handle`, `entry_order`, `entry_order_direction` FROM `tbl_sections`");
                     foreach ($sections as $s) {
-                        Symphony::Configuration()->set('section_' . $s['handle'] . '_sortby', $s['entry_order'], 'sorting');
-                        Symphony::Configuration()->set('section_' . $s['handle'] . '_order', $s['entry_order_direction'], 'sorting');
+                        Symphony::Configuration()->set('section_' . $s['handle'] . '_sortby', $s['entry_order'],
+                            'sorting');
+                        Symphony::Configuration()->set('section_' . $s['handle'] . '_order',
+                            $s['entry_order_direction'], 'sorting');
                     }
                 }
 

@@ -66,7 +66,8 @@
 
             ### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"';
 
-                        $htaccess = str_replace('### SECURITY - Protect crucial files.*### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"', $security, $htaccess);
+                        $htaccess = str_replace('### SECURITY - Protect crucial files.*### DO NOT APPLY RULES WHEN REQUESTING "favicon.ico"',
+                            $security, $htaccess);
                         file_put_contents(DOCROOT . '/.htaccess', $htaccess);
                     }
                 } catch (Exception $ex) {

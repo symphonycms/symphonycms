@@ -19,10 +19,9 @@
             try {
                 Symphony::Database()->query("
                     ALTER TABLE `tbl_extensions_delegates`
-                    ADD `order` int(11) SIGNED NOT NULL DEFAULT '0',
+                    ADD `order` INT(11) SIGNED NOT NULL DEFAULT '0',
                 ");
-            }
-            catch (Exception $ex) {
+            } catch (Exception $ex) {
 
             }
 

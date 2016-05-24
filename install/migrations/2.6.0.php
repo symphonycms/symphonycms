@@ -18,8 +18,8 @@
             try {
                 Symphony::Database()->query('
                     ALTER TABLE `tbl_fields_date`
-                    ADD `calendar` enum("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "no",
-                    ADD `time` enum("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "yes";
+                    ADD `calendar` ENUM("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "no",
+                    ADD `time` ENUM("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "yes";
                 ');
             } catch (Exception $ex) {
             }

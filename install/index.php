@@ -50,8 +50,7 @@
     if (file_exists(CONFIG)) {
         // System updater
         $script = Updater::instance();
-    }
-    // If there's no config file, run the installer
+    } // If there's no config file, run the installer
     else {
         // System installer
         $script = Installer::instance();

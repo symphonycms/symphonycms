@@ -51,7 +51,7 @@
             try {
                 Symphony::Database()->query('
                     ALTER TABLE `tbl_fields_date`
-                    CHANGE `pre_populate` `pre_populate` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL;
+                    CHANGE `pre_populate` `pre_populate` VARCHAR(80) COLLATE utf8_unicode_ci DEFAULT NULL;
                 ');
             } catch (Exception $ex) {
             }
@@ -60,7 +60,7 @@
             if (!Symphony::Database()->tableContainsField('tbl_sections', 'filter')) {
                 Symphony::Database()->query("
                     ALTER TABLE `tbl_sections`
-                    ADD `filter` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes';
+                    ADD `filter` ENUM('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes';
                 ");
             }
 
@@ -92,8 +92,10 @@
         {
             return array(
                 __("Symphony 2.4 is a major release that contains breaking changes from previous versions. It is highly recommended to review the releases notes and make a complete backup of your installation before updating as these changes may affect the functionality of your site."),
-                __("This release will automatically convert all existing Symphony database tables to %s.", array("<code>utf8_unicode_ci</code>")),
-                __("CRSF has been implemented in this release and is turned off by default. To enable for the backend, change %s from %s to %s in your configuration. To enable for the frontend, update the XSS Filter extension and follow the README.", array('<code>enable_xsrf</code>', '<code>no</code>', '<code>yes</code>'))
+                __("This release will automatically convert all existing Symphony database tables to %s.",
+                    array("<code>utf8_unicode_ci</code>")),
+                __("CRSF has been implemented in this release and is turned off by default. To enable for the backend, change %s from %s to %s in your configuration. To enable for the frontend, update the XSS Filter extension and follow the README.",
+                    array('<code>enable_xsrf</code>', '<code>no</code>', '<code>yes</code>'))
             );
         }
 
@@ -105,9 +107,10 @@
                 $notes[] = __("As Symphony 2.4 adds the Publish Filtering extension into the core, the standalone extension has been uninstalled. You can remove it from your installation at any time.");
             }
 
-            $notes[] = __("The Dynamic XML Datasource has been deprecated from the core in favour of the %s extension. You will no longer be able to create new Dynamic XML Data Sources from the Symphony Data Source editor. Existing Dynamic XML Data Sources can be edited and will continue to function until Symphony 2.7.0.", array(
-                "<a href='http://symphonyextensions.com/extensions/remote_datasource/'>Remote Datasource</a>"
-            ));
+            $notes[] = __("The Dynamic XML Datasource has been deprecated from the core in favour of the %s extension. You will no longer be able to create new Dynamic XML Data Sources from the Symphony Data Source editor. Existing Dynamic XML Data Sources can be edited and will continue to function until Symphony 2.7.0.",
+                array(
+                    "<a href='http://symphonyextensions.com/extensions/remote_datasource/'>Remote Datasource</a>"
+                ));
 
             return $notes;
         }

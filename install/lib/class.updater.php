@@ -48,7 +48,9 @@
          */
         public static function initialiseLog($filename = null)
         {
-            if (is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS, self::Configuration()->get('write_mode', 'directory'))) {
+            if (is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS,
+                    self::Configuration()->get('write_mode', 'directory'))
+            ) {
                 parent::initialiseLog(INSTALL_LOGS . '/update');
             }
         }
@@ -106,7 +108,8 @@
 
                 $m = new $classname();
 
-                if (version_compare(Symphony::Configuration()->get('version', 'symphony'), call_user_func(array($m, 'getVersion')), '<')) {
+                if (version_compare(Symphony::Configuration()->get('version', 'symphony'),
+                    call_user_func(array($m, 'getVersion')), '<')) {
                     $migrations[call_user_func(array($m, 'getVersion'))] = $m;
                 }
             }
@@ -121,9 +124,7 @@
                 Symphony::Log()->info('Updater - Already up-to-date');
 
                 self::__render(new UpdaterPage('uptodate'));
-            }
-
-            // Show start page
+            } // Show start page
             elseif (!isset($_POST['action']['update'])) {
                 $notes = array();
 
@@ -143,9 +144,7 @@
                     'version' => call_user_func(array($m, 'getVersion')),
                     'release-notes' => call_user_func(array($m, 'getReleaseNotes'))
                 )));
-            }
-
-            // Upgrade Symphony
+            } // Upgrade Symphony
             else {
                 $notes = array();
                 $canProceed = true;
@@ -159,10 +158,12 @@
                         $notes[$version] = $n;
                     }
 
-                    $canProceed = call_user_func(array($m, 'run'), 'upgrade', Symphony::Configuration()->get('version', 'symphony'));
+                    $canProceed = call_user_func(array($m, 'run'), 'upgrade',
+                        Symphony::Configuration()->get('version', 'symphony'));
 
                     Symphony::Log()->info(
-                        sprintf('Updater - Migration to %s was %s', $version, $canProceed ? 'successful' : 'unsuccessful')
+                        sprintf('Updater - Migration to %s was %s', $version,
+                            $canProceed ? 'successful' : 'unsuccessful')
                     );
 
                     if (!$canProceed) {

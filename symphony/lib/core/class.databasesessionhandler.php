@@ -1,212 +1,221 @@
 <?php
-/**
- * @package  core
- */
+    /**
+     * @package  core
+     */
 
-if (!interface_exists('SessionHandlerInterface')) {
-    interface SessionHandlerInterface
-    {
-        public function close();
-        public function destroy($session_id);
-        public function gc($maxlifetime);
-        public function open($save_path, $name);
-        public function read($session_id);
-        public function write($session_id, $session_data);
+    if (!interface_exists('SessionHandlerInterface')) {
+        interface SessionHandlerInterface
+        {
+            public function close();
+
+            public function destroy($session_id);
+
+            public function gc($maxlifetime);
+
+            public function open($save_path, $name);
+
+            public function read($session_id);
+
+            public function write($session_id, $session_data);
+        }
     }
-}
-
-/**
- * Database Session Handler
- * Expects the database to be wrapped by Respect\Relational
- */
-class DatabaseSessionHandler implements SessionHandlerInterface
-{
-    /**
-     * Instance of Database
-     * @var Redis
-     */
-    protected $database;
 
     /**
-     * Stored settings
-     * @var array
+     * Database Session Handler
+     * Expects the database to be wrapped by Respect\Relational
      */
-    protected $settings;
-
-    /**
-     * Array of data statuses
-     * @var array
-     */
-    protected $statuses;
-
-    /**
-     * Constructor
-     *
-     * @param $database
-     * @param array $settings
-     * @param string $key (defaults to 'symphony')
-     */
-    public function __construct($database, array $settings = array(), $key = 'symphony')
+    class DatabaseSessionHandler implements SessionHandlerInterface
     {
-        $this->database = $database;
+        /**
+         * Instance of Database
+         *
+         * @var Redis
+         */
+        protected $database;
 
-        $this->settings = array_merge([
-            'session_name' => $key,
-            'session_lifetime' => ini_get('session.gc_maxlifetime'),
-        ], $settings);
+        /**
+         * Stored settings
+         *
+         * @var array
+         */
+        protected $settings;
 
-        if (is_string($this->settings['session_lifetime'])) {
-            $this->settings['session_lifetime'] = intval($this->settings['session_lifetime']);
+        /**
+         * Array of data statuses
+         *
+         * @var array
+         */
+        protected $statuses;
+
+        /**
+         * Constructor
+         *
+         * @param $database
+         * @param array $settings
+         * @param string $key (defaults to 'symphony')
+         */
+        public function __construct($database, array $settings = array(), $key = 'symphony')
+        {
+            $this->database = $database;
+
+            $this->settings = array_merge([
+                'session_name' => $key,
+                'session_lifetime' => ini_get('session.gc_maxlifetime'),
+            ], $settings);
+
+            if (is_string($this->settings['session_lifetime'])) {
+                $this->settings['session_lifetime'] = intval($this->settings['session_lifetime']);
+            }
+
+            $this->statuses = array();
         }
 
-        $this->statuses = array();
-    }
-
-    /**
-     * Allows the Session to close without any further logic. Acts as a
-     * destructor function for the Session.
-     *
-     * @return boolean
-     *  Always returns true
-     */
-    public function close()
-    {
-        return true;
-    }
-
-    /**
-     * Given a session's ID, remove it's row from `tbl_sessions`
-     *
-     * @param string $session_id
-     *  The identifier for the Session to destroy
-     * @throws DatabaseException
-     * @return boolean
-     *  True if the Session was deleted successfully, false otherwise
-     */
-    public function destroy($session_id)
-    {
-        if (is_null($session_id)) {
+        /**
+         * Allows the Session to close without any further logic. Acts as a
+         * destructor function for the Session.
+         *
+         * @return boolean
+         *  Always returns true
+         */
+        public function close()
+        {
             return true;
         }
 
-        $key = $this->key($session_id);
+        /**
+         * Given a session's ID, remove it's row from `tbl_sessions`
+         *
+         * @param string $session_id
+         *  The identifier for the Session to destroy
+         * @throws DatabaseException
+         * @return boolean
+         *  True if the Session was deleted successfully, false otherwise
+         */
+        public function destroy($session_id)
+        {
+            if (is_null($session_id)) {
+                return true;
+            }
 
-        return $this->database->delete(
-            "tbl_sessions",
-            "`session` = ?",
-            array($key)
-        );
-    }
+            $key = $this->key($session_id);
 
-    /**
-     * The garbage collector, which removes all empty Sessions, or any
-     * Sessions that have expired. This has a chance of firing based
-     * on the `gc_probability`/`gc_divisor` which is set in the Symphony configuration.
-     *
-     * @param integer $maxlifetime
-     *  The max session lifetime.
-     * @throws DatabaseException
-     * @return boolean
-     *  True on Session deletion, false if an error occurs
-     */
-    public function gc($maxlifetime)
-    {
-        return $this->database->delete(
-            "tbl_sessions",
-            "`session_expires` <= ?",
-            array(time() - $maxlifetime)
-        );
-    }
-
-    /**
-     * Allows the Session to open without any further logic.
-     *
-     * @param string $save_path
-     * @param string $name
-     * @return bool Always returns true
-     * Always returns true
-     */
-    public function open($save_path, $name)
-    {
-        return true;
-    }
-
-    /**
-     * Given a session's ID, return it's row from `tbl_sessions`
-     *
-     * @param string $session_id
-     *  The identifier for the Session to fetch
-     * @return string
-     *  The serialised session data
-     */
-    public function read($session_id)
-    {
-        if (is_null($session_id)) {
-            return null;
+            return $this->database->delete(
+                "tbl_sessions",
+                "`session` = ?",
+                array($key)
+            );
         }
 
-        $key = $this->key($session_id);
+        /**
+         * Generate a storage key
+         *
+         * @param  string $session_id
+         * @return string
+         */
+        protected function key($session_id)
+        {
+            return sprintf(
+                "%s:%s",
+                $this->settings['session_name'],
+                $session_id
+            );
+        }
 
-        $session_data = $this->database->fetchVar('session_data', 0, "
+        /**
+         * The garbage collector, which removes all empty Sessions, or any
+         * Sessions that have expired. This has a chance of firing based
+         * on the `gc_probability`/`gc_divisor` which is set in the Symphony configuration.
+         *
+         * @param integer $maxlifetime
+         *  The max session lifetime.
+         * @throws DatabaseException
+         * @return boolean
+         *  True on Session deletion, false if an error occurs
+         */
+        public function gc($maxlifetime)
+        {
+            return $this->database->delete(
+                "tbl_sessions",
+                "`session_expires` <= ?",
+                array(time() - $maxlifetime)
+            );
+        }
+
+        /**
+         * Allows the Session to open without any further logic.
+         *
+         * @param string $save_path
+         * @param string $name
+         * @return bool Always returns true
+         * Always returns true
+         */
+        public function open($save_path, $name)
+        {
+            return true;
+        }
+
+        /**
+         * Given an ID, and some data, save it into `tbl_sessions`. This uses
+         * the ID as a unique key, and will override any existing data. If the
+         * `$session_data` is deemed to be empty, no row will be saved in the database
+         * unless there is an existing row.
+         *
+         * @param string $session_id
+         *  The ID of the Session, usually a hash
+         * @param string $session_data
+         *  The Session information, usually a serialized object of data.
+         * @throws DatabaseException
+         * @return boolean
+         *  True if the Session information was saved successfully, false otherwise
+         */
+        public function write($session_id, $session_data)
+        {
+            $key = $this->key($session_id);
+            $data = $this->read($session_id);
+
+            if (!is_null($data) || $this->statuses[$key] !== md5($session_data)) {
+                $data = array(
+                    'session' => $key,
+                    'session_expires' => time(),
+                    'session_data' => $session_data
+                );
+
+                return $this->database->insert($data, 'tbl_sessions', true);
+            }
+
+            return false;
+        }
+
+        /**
+         * Given a session's ID, return it's row from `tbl_sessions`
+         *
+         * @param string $session_id
+         *  The identifier for the Session to fetch
+         * @return string
+         *  The serialised session data
+         */
+        public function read($session_id)
+        {
+            if (is_null($session_id)) {
+                return null;
+            }
+
+            $key = $this->key($session_id);
+
+            $session_data = $this->database->fetchVar('session_data', 0, "
             SELECT `session_data`
             FROM `tbl_sessions`
             WHERE `session` = ?
             LIMIT 1",
-            array($key)
-        );
-
-        if (is_null($session_data)) {
-            return null;
-        }
-
-        $this->statuses[$key] = md5($session_data);
-
-        return $session_data;
-    }
-
-    /**
-     * Given an ID, and some data, save it into `tbl_sessions`. This uses
-     * the ID as a unique key, and will override any existing data. If the
-     * `$session_data` is deemed to be empty, no row will be saved in the database
-     * unless there is an existing row.
-     *
-     * @param string $session_id
-     *  The ID of the Session, usually a hash
-     * @param string $session_data
-     *  The Session information, usually a serialized object of data.
-     * @throws DatabaseException
-     * @return boolean
-     *  True if the Session information was saved successfully, false otherwise
-     */
-    public function write($session_id, $session_data)
-    {
-        $key = $this->key($session_id);
-        $data = $this->read($session_id);
-
-        if(!is_null($data) || $this->statuses[$key] !== md5($session_data)) {
-            $data = array(
-                'session' => $key,
-                'session_expires' => time(),
-                'session_data' => $session_data
+                array($key)
             );
 
-            return $this->database->insert($data, 'tbl_sessions', true);
+            if (is_null($session_data) || "" === $session_data) {
+                return null;
+            }
+
+            $this->statuses[$key] = md5($session_data);
+
+            return $session_data;
         }
-
-        return false;
     }
-
-    /**
-     * Generate a storage key
-     * @param  string $session_id
-     * @return string
-     */
-    protected function key($session_id)
-    {
-        return sprintf(
-            "%s:%s",
-            $this->settings['session_name'],
-            $session_id
-        );
-    }
-}

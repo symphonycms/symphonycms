@@ -3,7 +3,6 @@
     /**
      * @package content
      */
-
     class UpdaterPage extends InstallerPage
     {
         public function __construct($template, $params = array())
@@ -17,7 +16,7 @@
         protected function __build($version = VERSION, XMLElement $extra = null)
         {
             parent::__build(
-                // Replace the installed version with the updated version
+            // Replace the installed version with the updated version
                 isset($this->_params['version'])
                     ? $this->_params['version']
                     : Symphony::Configuration()->get('version', 'symphony')
@@ -41,7 +40,8 @@
         protected function viewUptodate()
         {
             $h2 = new XMLElement('h2', __('Symphony is already up-to-date'));
-            $p = new XMLElement('p', __('It appears that Symphony has already been installed at this location and is up to date.'));
+            $p = new XMLElement('p',
+                __('It appears that Symphony has already been installed at this location and is up to date.'));
 
             $this->Form->appendChild($h2);
             $this->Form->appendChild($p);
@@ -50,14 +50,16 @@
         protected function viewReady()
         {
             $h2 = new XMLElement('h2', __('Updating Symphony'));
-            $p = new XMLElement('p', __('This script will update your existing Symphony installation to version %s.', array('<code>' . $this->_params['version'] . '</code>')));
+            $p = new XMLElement('p', __('This script will update your existing Symphony installation to version %s.',
+                array('<code>' . $this->_params['version'] . '</code>')));
 
             $this->Form->appendChild($h2);
             $this->Form->appendChild($p);
 
             if (!is_writable(CONFIG)) {
                 $this->Form->appendChild(
-                    new XMLElement('p', __('Please check that your configuration file is writable before proceeding'), array('class' => 'warning'))
+                    new XMLElement('p', __('Please check that your configuration file is writable before proceeding'),
+                        array('class' => 'warning'))
                 );
             }
 
@@ -132,12 +134,14 @@
 
             $this->Form->appendChild(
                 new XMLElement('p',
-                    __('And the crowd goes wild! A victory dance is in order; and look, your mum is watching. She\'s proud.', array(Symphony::Configuration()->get('sitename', 'general')))
+                    __('And the crowd goes wild! A victory dance is in order; and look, your mum is watching. She\'s proud.',
+                        array(Symphony::Configuration()->get('sitename', 'general')))
                 )
             );
             $this->Form->appendChild(
                 new XMLElement('p',
-                    __('Your mum is also nagging you about removing that %s directory before you log in.', array('<code>' . basename(INSTALL_URL) . '</code>'))
+                    __('Your mum is also nagging you about removing that %s directory before you log in.',
+                        array('<code>' . basename(INSTALL_URL) . '</code>'))
                 )
             );
 

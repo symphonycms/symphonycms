@@ -1,225 +1,243 @@
 <?php
-/**
- * @package core
- */
-
-/**
- * Session
- */
-class Session extends Container
-{
     /**
-     * Session handler
-     * @var SessionHandlerInterface
+     * @package core
      */
-    protected $handler;
 
     /**
-     * Session array
-     * @var array
+     * Session
      */
-    protected $session = array();
-
-    /**
-     * Array of settings
-     * @var array
-     */
-    protected $settings = array();
-
-    /**
-     * Session key
-     * @var string
-     */
-    protected $key;
-
-    /**
-     * @param SessionHandlerInterface $handler
-     * @param array $settings
-     * @param string $key
-     */
-    public function __construct(SessionHandlerInterface $handler = null, array $settings = array(), $key = 'symphony')
+    class Session extends Container
     {
-        $this->handler = $handler;
+        /**
+         * Session handler
+         *
+         * @var SessionHandlerInterface
+         */
+        protected $handler;
 
-        $this->settings = array_merge([
-            'session_name' => $key,
-            'session_gc_probability' => '1',
-            'session_gc_divisor' => '10',
-            'session_gc_maxlifetime' => '1440',
-            'session_cookie_lifetime' => '1440',
-            'session_cookie_path' => '/',
-            'session_cookie_domain' => '',
-            'session_cookie_secure' => false,
-            'session_cookie_httponly' => false
-        ], $settings);
+        /**
+         * Session array
+         *
+         * @var array
+         */
+        protected $session = array();
 
-        if (empty($this->settings['session_cookie_domain'])) {
-            $this->settings['session_cookie_domain'] = $this->getDomain();
+        /**
+         * Array of settings
+         *
+         * @var array
+         */
+        protected $settings = array();
+
+        /**
+         * Session key
+         *
+         * @var string
+         */
+        protected $key;
+
+        /**
+         * @param SessionHandlerInterface $handler
+         * @param array $settings
+         * @param string $key
+         */
+        public function __construct(
+            SessionHandlerInterface $handler = null,
+            array $settings = array(),
+            $key = 'symphony'
+        ) {
+            parent::__construct();
+
+            $this->handler = $handler;
+
+            $this->settings = array_merge([
+                'session_name' => $key,
+                'session_gc_probability' => '1',
+                'session_gc_divisor' => '10',
+                'session_gc_maxlifetime' => '1440',
+                'session_cookie_lifetime' => '1440',
+                'session_cookie_path' => '/',
+                'session_cookie_domain' => '',
+                'session_cookie_secure' => false,
+                'session_cookie_httponly' => false
+            ], $settings);
+
+            if (empty($this->settings['session_cookie_domain'])) {
+                $this->settings['session_cookie_domain'] = $this->getDomain();
+            }
+
+            $this->key = $this->settings['session_name'];
+            $this->store[$this->key()] = [];
         }
 
-        $this->key = $this->settings['session_name'];
-    }
+        /**
+         * Returns the current domain for the Session to be saved to, if the installation
+         * is on localhost, this returns null and just allows PHP to take care of setting
+         * the valid domain for the Session, otherwise it will return the non-www version
+         * of the domain host.
+         *
+         * @return string|null
+         *  Null if on localhost, or HTTP_HOST is not set, a string of the domain name sans
+         *  www otherwise
+         */
+        public function getDomain()
+        {
+            if (isset($_SERVER['HTTP_HOST'])) {
+                if (preg_match('/(localhost|127\.0\.0\.1)/',
+                        $_SERVER['HTTP_HOST']) || $_SERVER['SERVER_ADDR'] === '127.0.0.1'
+                ) {
+                    return null; // prevent problems on local setups
+                }
 
-    /**
-     * Get the current session save key
-     * @return string
-     */
-    public function key()
-    {
-        return $this->key;
-    }
+                return preg_replace('/(^www\.|:\d+$)/i', null, $_SERVER['HTTP_HOST']);
+            }
 
-    /**
-     * Start the session if it is not already started.
-     *
-     * @throws Exception when headers have already been sent
-     * @return string
-     */
-    public function start()
-    {
-        if (false === $this->isStarted()) {
-            // Disable PHP cache headers
-            session_cache_limiter('');
+            return null;
+        }
 
-            ini_set('session.gc_probability', $this->settings['session_gc_probability']);
-            ini_set('session.gc_maxlifetime', $this->settings['session_gc_maxlifetime']);
-            ini_set('session.gc_divisor', $this->settings['session_gc_divisor']);
-            ini_set('session.use_cookies', '1');
-            ini_set('session.hash_bits_per_character', 5);
+        /**
+         * Get the current session save key
+         *
+         * @return string
+         */
+        public function key()
+        {
+            return $this->key;
+        }
 
-            if (!is_null($this->handler)) {
-                session_set_save_handler(
-                    array($this->handler, 'open'),
-                    array($this->handler, 'close'),
-                    array($this->handler, 'read'),
-                    array($this->handler, 'write'),
-                    array($this->handler, 'destroy'),
-                    array($this->handler, 'gc')
+        /**
+         * Start the session if it is not already started.
+         *
+         * @throws Exception when headers have already been sent
+         * @return string
+         */
+        public function start()
+        {
+            if (false === $this->isStarted()) {
+                // Disable PHP cache headers
+                session_cache_limiter('');
+
+                ini_set('session.gc_probability', $this->settings['session_gc_probability']);
+                ini_set('session.gc_maxlifetime', $this->settings['session_gc_maxlifetime']);
+                ini_set('session.gc_divisor', $this->settings['session_gc_divisor']);
+                ini_set('session.use_cookies', '1');
+                ini_set('session.hash_bits_per_character', 5);
+
+                if (!is_null($this->handler)) {
+                    session_set_save_handler(
+                        array($this->handler, 'open'),
+                        array($this->handler, 'close'),
+                        array($this->handler, 'read'),
+                        array($this->handler, 'write'),
+                        array($this->handler, 'destroy'),
+                        array($this->handler, 'gc')
+                    );
+                }
+
+                session_name($this->settings['session_name']);
+
+                session_set_cookie_params(
+                    $this->settings['session_cookie_lifetime'],
+                    $this->settings['session_cookie_path'],
+                    $this->settings['session_cookie_domain'],
+                    $this->settings['session_cookie_secure'],
+                    $this->settings['session_cookie_httponly']
                 );
+
+                if (headers_sent()) {
+                    throw new Exception('Headers already sent. Cannot start session.');
+                }
+
+                register_shutdown_function('session_write_close');
+                session_start();
             }
 
-            session_name($this->settings['session_name']);
+            $this->store =& $_SESSION;
 
-            session_set_cookie_params(
-                $this->settings['session_cookie_lifetime'],
-                $this->settings['session_cookie_path'],
-                $this->settings['session_cookie_domain'],
-                $this->settings['session_cookie_secure'],
-                $this->settings['session_cookie_httponly']
-            );
+            return session_id();
+        }
 
-            if (headers_sent()) {
-                throw new Exception('Headers already sent. Cannot start session.');
+        /**
+         * Is the session started
+         *
+         * @return boolean
+         */
+        protected function isStarted()
+        {
+            if (php_sapi_name() !== 'cli') {
+                if (version_compare(phpversion(), '5.4.0', '>=')) {
+                    return session_status() === PHP_SESSION_ACTIVE ? true : false;
+                } else {
+                    return session_id() === '' ? false : true;
+                }
             }
 
-            register_shutdown_function('session_write_close');
-            session_start();
+            return false;
         }
 
-        $this->store =& $_SESSION;
-
-        return session_id();
-    }
-
-    /**
-     * Returns the current domain for the Session to be saved to, if the installation
-     * is on localhost, this returns null and just allows PHP to take care of setting
-     * the valid domain for the Session, otherwise it will return the non-www version
-     * of the domain host.
-     *
-     * @return string|null
-     *  Null if on localhost, or HTTP_HOST is not set, a string of the domain name sans
-     *  www otherwise
-     */
-    public function getDomain()
-    {
-        if (isset($_SERVER['HTTP_HOST'])) {
-            if (preg_match('/(localhost|127\.0\.0\.1)/', $_SERVER['HTTP_HOST']) || $_SERVER['SERVER_ADDR'] === '127.0.0.1') {
-                return null; // prevent problems on local setups
+        /**
+         * Expires the current session by unsetting the Symphony
+         * namespace (`$this->key`). If `$this->store`
+         * is empty, the function will destroy the entire `$this->store`
+         *
+         * @link http://au2.php.net/manual/en/function.session-destroy.php
+         */
+        public function expire()
+        {
+            if (isset($this->store[$this->key]) && !empty($this->store[$this->key])) {
+                unset($this->store[$this->key]);
             }
 
-            return preg_replace('/(^www\.|:\d+$)/i', null, $_SERVER['HTTP_HOST']);
-        }
-
-        return null;
-    }
-
-    /**
-     * Is the session started
-     * @return boolean
-     */
-    protected function isStarted()
-    {
-       if (php_sapi_name() !== 'cli') {
-            if (version_compare(phpversion(), '5.4.0', '>=')) {
-                return session_status() === PHP_SESSION_ACTIVE ? true : false;
-            } else {
-                return session_id() === '' ? false : true;
+            // Calling session_destroy triggers the Session::destroy function which removes the entire session
+            // from the database. To prevent logout issues between functionality that relies on $this->store, such
+            // as Symphony authentication or the Members extension, only delete the $this->store if it empty!
+            if (empty($this->store)) {
+                session_destroy();
             }
         }
-        return false;
-    }
 
-    /**
-     * Expires the current session by unsetting the Symphony
-     * namespace (`$this->key`). If `$this->store`
-     * is empty, the function will destroy the entire `$this->store`
-     *
-     * @link http://au2.php.net/manual/en/function.session-destroy.php
-     */
-    public function expire()
-    {
-        if (isset($this->store[$this->key]) && !empty($this->store[$this->key])) {
-            unset($this->store[$this->key]);
+        /**
+         * Set a service or value in this container
+         *
+         * @param  string $key
+         * @param  mixed $value
+         */
+        public function offsetSet($key, $value)
+        {
+            $this->store[$this->key][$key] = $value;
         }
 
-        // Calling session_destroy triggers the Session::destroy function which removes the entire session
-        // from the database. To prevent logout issues between functionality that relies on $this->store, such
-        // as Symphony authentication or the Members extension, only delete the $this->store if it empty!
-        if (empty($this->store)) {
-            session_destroy();
+        /**
+         * Get a service or value from this container
+         *
+         * @param  string $key
+         * @return mixed
+         */
+        public function offsetGet($key)
+        {
+            return $this->store[$this->key][$key];
+        }
+
+        /**
+         * Check if the container contains the given key
+         *
+         * @param  string $key
+         *  String key to check
+         * @return boolean
+         *  Whether the key is in the container
+         */
+        public function offsetExists($key)
+        {
+            return array_key_exists($key, $this->store[$this->key]);
+        }
+
+        /**
+         * Unset a value from the container
+         *
+         * @param  string $key
+         */
+        public function offsetUnset($key)
+        {
+            unset($this->store[$this->key][$key]);
         }
     }
-
-    /**
-     * Set a service or value in this container
-     * @param  string $key
-     * @param  mixed $value
-     */
-    public function offsetSet($key, $value)
-    {
-        $this->store[$this->key][$key] = $value;
-    }
-
-    /**
-     * Get a service or value from this container
-     * @param  string $key
-     * @return mixed
-     */
-    public function offsetGet($key)
-    {
-        return $this->store[$this->key][$key];
-    }
-
-    /**
-     * Check if the container contains the given key
-     *
-     * @param  string $key
-     *  String key to check
-     * @return boolean
-     *  Whether the key is in the container
-     */
-    public function offsetExists($key)
-    {
-        return array_key_exists($key, $this->store[$this->key]);
-    }
-
-    /**
-     * Unset a value from the container
-     * @param  string $key
-     */
-    public function offsetUnset($key)
-    {
-        unset($this->store[$this->key][$key]);
-    }
-}

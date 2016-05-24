@@ -28,7 +28,8 @@
             // Initialize date/time
             define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
             define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
-            define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
+            define_safe('__SYM_DATETIME_FORMAT__',
+                __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
             DateTimeObj::setSettings(self::Configuration()->get('region'));
 
             // Initialize Language, Logs and Database
@@ -39,22 +40,6 @@
             // Initialize error handlers
             GenericExceptionHandler::initialise(Symphony::Log());
             GenericErrorHandler::initialise(Symphony::Log());
-        }
-
-        /**
-         * This function returns an instance of the Installer
-         * class. It is the only way to create a new Installer, as
-         * it implements the Singleton interface
-         *
-         * @return Installer
-         */
-        public static function instance()
-        {
-            if (!(self::$_instance instanceof Installer)) {
-                self::$_instance = new Installer;
-            }
-
-            return self::$_instance;
         }
 
         /**
@@ -78,7 +63,9 @@
          */
         public static function initialiseLog($filename = null)
         {
-            if (is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS, self::Configuration()->get('write_mode', 'directory'))) {
+            if (is_dir(INSTALL_LOGS) || General::realiseDirectory(INSTALL_LOGS,
+                    self::Configuration()->get('write_mode', 'directory'))
+            ) {
                 return parent::initialiseLog($filename);
             }
 
@@ -92,6 +79,22 @@
         public static function initialiseDatabase()
         {
             self::setDatabase();
+        }
+
+        /**
+         * This function returns an instance of the Installer
+         * class. It is the only way to create a new Installer, as
+         * it implements the Singleton interface
+         *
+         * @return Installer
+         */
+        public static function instance()
+        {
+            if (!(self::$_instance instanceof Installer)) {
+                self::$_instance = new Installer;
+            }
+
+            return self::$_instance;
         }
 
         public function run()
@@ -113,7 +116,7 @@
                 }
 
                 self::__render(new InstallerPage('requirements', array(
-                    'errors'=> $errors
+                    'errors' => $errors
                 )));
             }
 
@@ -149,6 +152,15 @@
             )));
         }
 
+        protected static function __render(InstallerPage $page)
+        {
+            $output = $page->generate();
+
+            header('Content-Type: text/html; charset=utf-8');
+            echo $output;
+            exit;
+        }
+
         /**
          * This function checks the server can support a Symphony installation.
          * It checks that PHP is 5.2+, MySQL, Zlib, LibXML, XSLT modules are enabled
@@ -166,7 +178,11 @@
             if (version_compare(phpversion(), '5.3', '<=')) {
                 $errors[] = array(
                     'msg' => __('PHP Version is not correct'),
-                    'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.', array('<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.3</code>', '<code>' . phpversion() . '</code>'))
+                    'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.',
+                        array(
+                            '<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.3</code>',
+                            '<code>' . phpversion() . '</code>'
+                        ))
                 );
             }
 
@@ -174,7 +190,8 @@
             if (!file_exists(INSTALL . '/includes/install.sql') || !is_readable(INSTALL . '/includes/install.sql')) {
                 $errors[] = array(
                     'msg' => __('Missing install.sql file'),
-                    'details'  => __('It appears that %s is either missing or not readable. This is required to populate the database and must be uploaded before installation can commence. Ensure that PHP has read permissions.', array('<code>install.sql</code>'))
+                    'details' => __('It appears that %s is either missing or not readable. This is required to populate the database and must be uploaded before installation can commence. Ensure that PHP has read permissions.',
+                        array('<code>install.sql</code>'))
                 );
             }
 
@@ -182,7 +199,7 @@
             if (!function_exists('mysqli_connect')) {
                 $errors[] = array(
                     'msg' => __('MySQLi extension not present'),
-                    'details'  => __('Symphony requires PHP to be configured with MySQLi to work.')
+                    'details' => __('Symphony requires PHP to be configured with MySQLi to work.')
                 );
             }
 
@@ -198,7 +215,7 @@
             if (!extension_loaded('xml') && !extension_loaded('libxml')) {
                 $errors[] = array(
                     'msg' => __('XML extension not present'),
-                    'details'  => __('Symphony needs the XML extension to pass data to the site frontend.')
+                    'details' => __('Symphony needs the XML extension to pass data to the site frontend.')
                 );
             }
 
@@ -206,7 +223,8 @@
             if (!extension_loaded('xsl') && !extension_loaded('xslt') && !function_exists('domxml_xslt_stylesheet')) {
                 $errors[] = array(
                     'msg' => __('XSLT extension not present'),
-                    'details'  => __('Symphony needs an XSLT processor such as %s or Sablotron to build pages.', array('Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>'))
+                    'details' => __('Symphony needs an XSLT processor such as %s or Sablotron to build pages.',
+                        array('Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>'))
                 );
             }
 
@@ -214,7 +232,7 @@
             if (!function_exists('json_decode')) {
                 $errors[] = array(
                     'msg' => __('JSON functionality is not present'),
-                    'details'  => __('Symphony uses JSON functionality throughout the backend for translations and the interface.')
+                    'details' => __('Symphony uses JSON functionality throughout the backend for translations and the interface.')
                 );
             }
 
@@ -222,7 +240,8 @@
             if (!is_writable(DOCROOT)) {
                 $errors['no-write-permission-root'] = array(
                     'msg' => 'Root folder not writable: ' . DOCROOT,
-                    'details' => __('Symphony does not have write permission to the root directory. Please modify permission settings on %s. This can be reverted once installation is complete.', array('<code>' . DOCROOT . '</code>'))
+                    'details' => __('Symphony does not have write permission to the root directory. Please modify permission settings on %s. This can be reverted once installation is complete.',
+                        array('<code>' . DOCROOT . '</code>'))
                 );
             }
 
@@ -230,7 +249,8 @@
             if (is_dir(DOCROOT . '/workspace') && !is_writable(DOCROOT . '/workspace')) {
                 $errors['no-write-permission-workspace'] = array(
                     'msg' => 'Workspace folder not writable: ' . DOCROOT . '/workspace',
-                    'details' => __('Symphony does not have write permission to the existing %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.', array('<code>/workspace</code>', '<code>chmod -R</code>'))
+                    'details' => __('Symphony does not have write permission to the existing %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.',
+                        array('<code>/workspace</code>', '<code>chmod -R</code>'))
                 );
             }
 
@@ -267,8 +287,7 @@
                         'msg' => 'Database credentials were denied',
                         'details' => __('Symphony was unable to access the database with these credentials.')
                     );
-                }
-                // Connection related
+                } // Connection related
                 else {
                     $errors['no-database-connection'] = array(
                         'msg' => 'Could not establish database connection.',
@@ -280,44 +299,45 @@
             try {
                 // Check the database table prefix is legal. #1815
                 if (!preg_match('/^[0-9a-zA-Z\$_]*$/', $fields['database']['tbl_prefix'])) {
-                    $errors['database-table-prefix']  = array(
+                    $errors['database-table-prefix'] = array(
                         'msg' => 'Invalid database table prefix: ‘' . $fields['database']['tbl_prefix'] . '’',
-                        'details' =>  __('The table prefix %s is invalid. The table prefix must only contain numbers, letters or underscore characters.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
+                        'details' => __('The table prefix %s is invalid. The table prefix must only contain numbers, letters or underscore characters.',
+                            array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
                     );
-                }
-                // Check the database credentials
+                } // Check the database credentials
                 elseif (Symphony::Database()->isConnected()) {
                     // Incorrect MySQL version
                     $version = Symphony::Database()->fetchVar('version', 0, "SELECT VERSION() AS `version`;");
                     if (version_compare($version, '5.5', '<')) {
-                        $errors['database-incorrect-version']  = array(
-                            'msg' => 'MySQL Version is not correct. '. $version . ' detected.',
-                            'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.', array('<code>MySQL 5.5</code>', '<code>' . $version . '</code>'))
+                        $errors['database-incorrect-version'] = array(
+                            'msg' => 'MySQL Version is not correct. ' . $version . ' detected.',
+                            'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.',
+                                array('<code>MySQL 5.5</code>', '<code>' . $version . '</code>'))
                         );
-                    }
-                    else {
+                    } else {
                         // Existing table prefix
                         if (Symphony::Database()->tableExists($fields['database']['tbl_prefix'] . '%')) {
                             $errors['database-table-prefix'] = array(
-                                'msg'     => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
-                                'details' => __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array(
+                                'msg' => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
+                                'details' => __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.',
+                                    array(
 
-                                    '<code>' . $fields['database']['tbl_prefix'] . '</code>'
-                                ))
+                                        '<code>' . $fields['database']['tbl_prefix'] . '</code>'
+                                    ))
                             );
                         }
                     }
                 }
             } catch (DatabaseException $e) {
-                $errors['unknown-database']  = array(
-                        'msg' => 'Database ‘' . $fields['database']['db'] . '’ not found.',
-                        'details' =>  __('Symphony was unable to connect to the specified database.')
-                    );
+                $errors['unknown-database'] = array(
+                    'msg' => 'Database ‘' . $fields['database']['db'] . '’ not found.',
+                    'details' => __('Symphony was unable to connect to the specified database.')
+                );
             }
 
             // Website name not entered
             if (trim($fields['general']['sitename']) === '') {
-                $errors['general-no-sitename']  = array(
+                $errors['general-no-sitename'] = array(
                     'msg' => 'No sitename entered.',
                     'details' => __('You must enter a Site name. This will be shown at the top of your backend.')
                 );
@@ -325,7 +345,7 @@
 
             // Username Not Entered
             if (trim($fields['user']['username']) === '') {
-                $errors['user-no-username']  = array(
+                $errors['user-no-username'] = array(
                     'msg' => 'No username entered.',
                     'details' => __('You must enter a Username. This will be your Symphony login information.')
                 );
@@ -333,15 +353,13 @@
 
             // Password Not Entered
             if (trim($fields['user']['password']) === '') {
-                $errors['user-no-password']  = array(
+                $errors['user-no-password'] = array(
                     'msg' => 'No password entered.',
                     'details' => __('You must enter a Password. This will be your Symphony login information.')
                 );
-            }
-
-            // Password mismatch
+            } // Password mismatch
             elseif ($fields['user']['password'] !== $fields['user']['confirm-password']) {
-                $errors['user-password-mismatch']  = array(
+                $errors['user-password-mismatch'] = array(
                     'msg' => 'Passwords did not match.',
                     'details' => __('The password and confirmation did not match. Please retype your password.')
                 );
@@ -349,48 +367,29 @@
 
             // No Name entered
             if (trim($fields['user']['firstname']) === '' || trim($fields['user']['lastname']) === '') {
-                $errors['user-no-name']  = array(
+                $errors['user-no-name'] = array(
                     'msg' => 'Did not enter First and Last names.',
-                    'details' =>  __('You must enter your name.')
+                    'details' => __('You must enter your name.')
                 );
             }
 
             // Invalid Email
             if (!preg_match('/^\w(?:\.?[\w%+-]+)*@\w(?:[\w-]*\.)+?[a-z]{2,}$/i', $fields['user']['email'])) {
-                $errors['user-invalid-email']  = array(
+                $errors['user-invalid-email'] = array(
                     'msg' => 'Invalid email address supplied.',
-                    'details' =>  __('This is not a valid email address. You must provide an email address since you will need it if you forget your password.')
+                    'details' => __('This is not a valid email address. You must provide an email address since you will need it if you forget your password.')
                 );
             }
 
             // Admin path not entered
             if (trim($fields['symphony']['admin-path']) === '') {
-                $errors['no-symphony-path']  = array(
+                $errors['no-symphony-path'] = array(
                     'msg' => 'No Symphony path entered.',
                     'details' => __('You must enter a path for accessing Symphony, or leave the default. This will be used to access Symphony\'s backend.')
                 );
             }
 
             return $errors;
-        }
-
-        /**
-         * If something went wrong, the `__abort` function will write an entry to the Log
-         * file and display the failure page to the user.
-         *
-         * @todo: Resume installation after an error has been fixed.
-         * @param string $message
-         * @param integer $start
-         */
-        protected static function __abort($message, $start)
-        {
-            Symphony::Log()->error($message);
-            Symphony::Log()->error(sprintf('INSTALLATION ABORTED: Execution Time - %d sec (%s)',
-                max(1, time() - $start),
-                date('d.m.y H:i:s')
-            ));
-
-            self::__render(new InstallerPage('failure'));
         }
 
         private static function __install()
@@ -414,7 +413,7 @@
             } catch (DatabaseException $e) {
                 self::__abort(
                     'There was a problem while trying to establish a connection to the MySQL server. Please check your settings.',
-                $start);
+                    $start);
             }
 
             // MySQL: Setting prefix & character encoding
@@ -428,7 +427,7 @@
             } catch (DatabaseException $e) {
                 self::__abort(
                     'There was an error while trying to import data to the database. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
-                $start);
+                    $start);
             }
 
             // MySQL: Creating default author
@@ -436,22 +435,22 @@
 
             try {
                 Symphony::Database()->insert(array(
-                    'id'                    => 1,
-                    'username'              => Symphony::Database()->cleanValue($fields['user']['username']),
-                    'password'              => Cryptography::hash(Symphony::Database()->cleanValue($fields['user']['password'])),
-                    'first_name'            => Symphony::Database()->cleanValue($fields['user']['firstname']),
-                    'last_name'             => Symphony::Database()->cleanValue($fields['user']['lastname']),
-                    'email'                 => Symphony::Database()->cleanValue($fields['user']['email']),
-                    'last_seen'             => null,
-                    'user_type'             => 'developer',
-                    'primary'               => 'yes',
-                    'default_area'          => null,
-                    'auth_token_active'     => 'no'
+                    'id' => 1,
+                    'username' => Symphony::Database()->cleanValue($fields['user']['username']),
+                    'password' => Cryptography::hash(Symphony::Database()->cleanValue($fields['user']['password'])),
+                    'first_name' => Symphony::Database()->cleanValue($fields['user']['firstname']),
+                    'last_name' => Symphony::Database()->cleanValue($fields['user']['lastname']),
+                    'email' => Symphony::Database()->cleanValue($fields['user']['email']),
+                    'last_seen' => null,
+                    'user_type' => 'developer',
+                    'primary' => 'yes',
+                    'default_area' => null,
+                    'auth_token_active' => 'no'
                 ), 'tbl_authors');
             } catch (DatabaseException $e) {
                 self::__abort(
                     'There was an error while trying create the default author. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
-                $start);
+                    $start);
             }
 
             // Configuration: Populating array
@@ -470,28 +469,28 @@
             if (!General::realiseDirectory(MANIFEST, $conf['directory']['write_mode'])) {
                 self::__abort(
                     'Could not create ‘manifest’ directory. Check permission on the root folder.',
-                $start);
+                    $start);
             }
 
             Symphony::Log()->info('WRITING: Creating ‘logs’ folder (/manifest/logs)');
             if (!General::realiseDirectory(LOGS, $conf['directory']['write_mode'])) {
                 self::__abort(
                     'Could not create ‘logs’ directory. Check permission on /manifest.',
-                $start);
+                    $start);
             }
 
             Symphony::Log()->info('WRITING: Creating ‘cache’ folder (/manifest/cache)');
             if (!General::realiseDirectory(CACHE, $conf['directory']['write_mode'])) {
                 self::__abort(
                     'Could not create ‘cache’ directory. Check permission on /manifest.',
-                $start);
+                    $start);
             }
 
             Symphony::Log()->info('WRITING: Creating ‘tmp’ folder (/manifest/tmp)');
             if (!General::realiseDirectory(MANIFEST . '/tmp', $conf['directory']['write_mode'])) {
                 self::__abort(
                     'Could not create ‘tmp’ directory. Check permission on /manifest.',
-                $start);
+                    $start);
             }
 
             // Writing configuration file
@@ -502,7 +501,7 @@
             if (!Symphony::Configuration()->write(CONFIG, $conf['file']['write_mode'])) {
                 self::__abort(
                     'Could not create config file ‘' . CONFIG . '’. Check permission on /manifest.',
-                $start);
+                    $start);
             }
 
             // Writing htaccess file
@@ -517,7 +516,7 @@
             if (!General::writeFile(DOCROOT . "/.htaccess", $htaccess, $conf['file']['write_mode'], 'a')) {
                 self::__abort(
                     'Could not write ‘.htaccess’ file. Check permission on ' . DOCROOT,
-                $start);
+                    $start);
             }
 
             // Writing /workspace folder
@@ -527,35 +526,35 @@
                 if (!General::realiseDirectory(WORKSPACE, $conf['directory']['write_mode'])) {
                     self::__abort(
                         'Could not create ‘workspace’ directory. Check permission on the root folder.',
-                    $start);
+                        $start);
                 }
 
                 Symphony::Log()->info('WRITING: Creating ‘data-sources’ folder (/workspace/data-sources)');
                 if (!General::realiseDirectory(DATASOURCES, $conf['directory']['write_mode'])) {
                     self::__abort(
                         'Could not create ‘workspace/data-sources’ directory. Check permission on the root folder.',
-                    $start);
+                        $start);
                 }
 
                 Symphony::Log()->info('WRITING: Creating ‘events’ folder (/workspace/events)');
                 if (!General::realiseDirectory(EVENTS, $conf['directory']['write_mode'])) {
                     self::__abort(
                         'Could not create ‘workspace/events’ directory. Check permission on the root folder.',
-                    $start);
+                        $start);
                 }
 
                 Symphony::Log()->info('WRITING: Creating ‘pages’ folder (/workspace/pages)');
                 if (!General::realiseDirectory(PAGES, $conf['directory']['write_mode'])) {
                     self::__abort(
                         'Could not create ‘workspace/pages’ directory. Check permission on the root folder.',
-                    $start);
+                        $start);
                 }
 
                 Symphony::Log()->info('WRITING: Creating ‘utilities’ folder (/workspace/utilities)');
                 if (!General::realiseDirectory(UTILITIES, $conf['directory']['write_mode'])) {
                     self::__abort(
                         'Could not create ‘workspace/utilities’ directory. Check permission on the root folder.',
-                    $start);
+                        $start);
                 }
             } else {
                 Symphony::Log()->info('An existing ‘workspace’ directory was found at this location. Symphony will use this workspace.');
@@ -569,7 +568,7 @@
                     } catch (DatabaseException $e) {
                         self::__abort(
                             'There was an error while trying to import data to the database. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
-                        $start);
+                            $start);
                     }
                 }
             }
@@ -581,7 +580,7 @@
                 if (!General::realiseDirectory(EXTENSIONS, $conf['directory']['write_mode'])) {
                     self::__abort(
                         'Could not create ‘extension’ directory. Check permission on the root folder.',
-                    $start);
+                        $start);
                 }
             }
 
@@ -601,7 +600,7 @@
                     }
                 } catch (Exception $ex) {
                     $disabled_extensions[] = $handle;
-                    Symphony::Log()->warning('Could not enable the extension ‘' . $handle . '’. '. $ex->getMessage());
+                    Symphony::Log()->warning('Could not enable the extension ‘' . $handle . '’. ' . $ex->getMessage());
                 }
             }
 
@@ -632,12 +631,22 @@
             return $disabled_extensions;
         }
 
-        protected static function __render(InstallerPage $page)
+        /**
+         * If something went wrong, the `__abort` function will write an entry to the Log
+         * file and display the failure page to the user.
+         *
+         * @todo: Resume installation after an error has been fixed.
+         * @param string $message
+         * @param integer $start
+         */
+        protected static function __abort($message, $start)
         {
-            $output = $page->generate();
+            Symphony::Log()->error($message);
+            Symphony::Log()->error(sprintf('INSTALLATION ABORTED: Execution Time - %d sec (%s)',
+                max(1, time() - $start),
+                date('d.m.y H:i:s')
+            ));
 
-            header('Content-Type: text/html; charset=utf-8');
-            echo $output;
-            exit;
+            self::__render(new InstallerPage('failure'));
         }
     }

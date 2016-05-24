@@ -19,7 +19,7 @@
                 Symphony::Configuration()->set('version', '2.2dev', 'symphony');
                 if (Symphony::Database()->tableContainsField('tbl_sections_association', 'cascading_deletion')) {
                     Symphony::Database()->query(
-                        'ALTER TABLE `tbl_sections_association` CHANGE  `cascading_deletion` `hide_association` enum("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "no";'
+                        'ALTER TABLE `tbl_sections_association` CHANGE  `cascading_deletion` `hide_association` ENUM("yes","no") COLLATE utf8_unicode_ci NOT NULL DEFAULT "no";'
                     );
 
                     // Update Select table to include the new association field
