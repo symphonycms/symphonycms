@@ -107,10 +107,9 @@
          *  The name of the property to retrieve
          * @param string $group
          *  The group that this property will be in
-         * @return array|string
-         *  If `$name` or `$group` are not
-         *  provided this function will return the full `$this->_properties`
-         *  array.
+         * @return mixed
+         *  If `$name` or `$group` are not provided this function
+         *  will return the full `$this->_properties` array.
          */
         public function get($name = null, $group = null)
         {
@@ -202,7 +201,7 @@
          *
          * @param string $file
          *  the path of the file to write.
-         * @param integer|null $permissions (optional)
+         * @param integer $permissions (optional)
          *  the permissions as an octal number to set set on the resulting file.
          *  If this is not provided it will use the permissions defined in [`write_mode`][`file`]
          * @return boolean

@@ -427,7 +427,7 @@
                 }
             }
 
-            if ($field && !$group) {
+            if (!empty($field) && !$group) {
                 $group = $field->requiresSQLGrouping();
             }
 

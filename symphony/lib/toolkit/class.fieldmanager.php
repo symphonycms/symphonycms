@@ -178,7 +178,7 @@
          *
          * @throws DatabaseException
          * @throws Exception
-         * @param integer|array $id
+         * @param integer|array|null $id
          *  The ID of the field to retrieve. Defaults to null which will return multiple field
          *  objects. Since Symphony 2.3, `$id` will accept an array of Field ID's
          * @param integer $section_id
@@ -202,8 +202,9 @@
          *  Only return fields if they match one of the Field Constants. Available values are
          *  `__TOGGLEABLE_ONLY__`, `__UNTOGGLEABLE_ONLY__`, `__FILTERABLE_ONLY__`,
          *  `__UNFILTERABLE_ONLY__` or `__FIELD_ALL__`. Defaults to `__FIELD_ALL__`
-         * @return array
-         *  An array of Field objects. If no Field are found, null is returned.
+         * @return array|Field
+         *  An array of Field objects. If no Field are found, null is returned. If `$id` is
+         *  specified, this will return a Field object.
          */
         public static function fetch(
             $id = null,

@@ -454,7 +454,7 @@
          * @param string $setting (optional)
          *  the name of the setting to access the value for. This is optional and
          *  defaults to null in which case all settings are returned.
-         * @return null|mixed|array
+         * @return mixed
          *  the value of the setting if there is one, all settings if the input setting
          *  was omitted or null if the setting was supplied but there is no value
          *  for that setting.

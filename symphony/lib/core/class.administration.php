@@ -313,9 +313,9 @@
          */
         public function getPageCallback($page = null)
         {
-            if (!$page && $this->_callback) {
+            if (!$page && !is_null($this->_callback)) {
                 return $this->_callback;
-            } elseif (!$page && !$this->_callback) {
+            } elseif (!$page && is_null($this->_callback)) {
                 trigger_error(__('Cannot request a page callback without first specifying the page.'));
             }
 

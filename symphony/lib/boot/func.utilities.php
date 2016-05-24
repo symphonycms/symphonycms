@@ -54,7 +54,7 @@
      *
      * @param string $name
      *  The name of the constant to set
-     * @param string $value
+     * @param mixed $value
      *  The value of the desired constant
      */
     function define_safe($name, $value)
