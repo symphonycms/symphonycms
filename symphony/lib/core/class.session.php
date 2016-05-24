@@ -73,11 +73,9 @@ class Session extends Container
      * Start the session if it is not already started.
      *
      * @throws Exception when headers have already been sent
-     * @param array $session
-     *  The session data
      * @return string
      */
-    public function start(array $session = null)
+    public function start()
     {
         if (false === $this->isStarted()) {
             // Disable PHP cache headers
@@ -118,11 +116,7 @@ class Session extends Container
             session_start();
         }
 
-        if (null === $session) {
-            $session = $_SESSION;
-        }
-
-        $this->store =& $session;
+        $this->store =& $_SESSION;
 
         return session_id();
     }
