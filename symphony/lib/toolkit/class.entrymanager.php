@@ -412,7 +412,7 @@ class EntryManager
                 $field->buildSortingSQL($joins, $where, $sort, $section->getSortingOrder());
             }
 
-            if (!$group) {
+            if (!empty($field) && !$group) {
                 $group = $field->requiresSQLGrouping();
             }
         } else if (self::$_fetchSortField === 'system:id' || self::$_fetchSortField === 'id') {

@@ -106,13 +106,11 @@ class Configuration
      * @param string $group
      *  The group that this property will be in
      * @return array|string
-     *  If `$name` or `$group` are not
-     *  provided this function will return the full `$this->_properties`
-     *  array.
+     *  If `$name` or `$group` are not provided this function will return
+     *  the full `$this->_properties` array.
      */
     public function get($name = null, $group = null)
     {
-
         // Return the whole array if no name or index is requested
         if (!$name && !$group) {
             return $this->_properties;
