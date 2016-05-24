@@ -75,7 +75,7 @@
         /**
          * @var array|boolean
          */
-        protected $_lastResult = null;
+        protected $_lastResult = array();
 
         /**
          * @var string
@@ -230,7 +230,7 @@
         public function flush()
         {
             $this->_result = null;
-            $this->_lastResult = null;
+            $this->_lastResult = array();
             $this->_lastQuery = null;
             $this->_lastQueryHash = null;
         }
