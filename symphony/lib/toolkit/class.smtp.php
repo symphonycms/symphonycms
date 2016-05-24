@@ -4,13 +4,6 @@
      */
 
     /**
-     * Exceptions to be thrown by the SMTP Client class
-     */
-    class SMTPException extends Exception
-    {
-    }
-
-    /**
      * A SMTP client class, for sending text/plain emails.
      * This class only supports the very basic SMTP functions.
      * Inspired by the SMTP class in the Zend library

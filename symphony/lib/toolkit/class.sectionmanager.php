@@ -8,7 +8,6 @@
      * installation by exposing basic CRUD operations. Sections are stored in the
      * database in `tbl_sections`.
      */
-    include_once TOOLKIT . '/class.section.php';
 
     class SectionManager
     {
@@ -78,7 +77,6 @@
                 array($section_id));
 
             // Delete all the entries
-            include_once(TOOLKIT . '/class.entrymanager.php');
             $entries = Symphony::Database()->fetchCol('id', "SELECT `id` FROM `tbl_entries` WHERE `section_id` = ?",
                 array($section_id));
             EntryManager::delete($entries);
