@@ -75,7 +75,7 @@ class Session
                 array('Session', 'gc')
             );
 
-            session_set_cookie_params($lifetime, $path, ($domain ? $domain : self::getDomain()), $secure, $httpOnly);
+            session_set_cookie_params($lifetime, rawurlencode($path), ($domain ? $domain : self::getDomain()), $secure, $httpOnly);
             session_cache_limiter('');
 
             if (session_id() == '') {
