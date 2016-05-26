@@ -105,12 +105,12 @@ class Session
      */
     public static function getDomain()
     {
-        if (isset($_SERVER['HTTP_HOST'])) {
-            if (preg_match('/(localhost|127\.0\.0\.1)/', $_SERVER['HTTP_HOST'])) {
+        if (HTTP_HOST != null) {
+            if (preg_match('/(localhost|127\.0\.0\.1)/', HTTP_HOST)) {
                 return null; // prevent problems on local setups
             }
 
-            return preg_replace('/(^www\.|:\d+$)/i', null, $_SERVER['HTTP_HOST']);
+            return preg_replace('/(^www\.|:\d+$)/i', null, HTTP_HOST);
         }
 
         return null;
