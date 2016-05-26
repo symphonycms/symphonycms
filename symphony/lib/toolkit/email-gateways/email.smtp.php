@@ -13,6 +13,7 @@
 class SMTPGateway extends EmailGateway
 {
     protected $_SMTP;
+    protected $_helo_hostname;
     protected $_host;
     protected $_port;
     protected $_protocol = 'tcp';
@@ -58,11 +59,11 @@ class SMTPGateway extends EmailGateway
         $this->validate();
 
         $settings = array();
-        if ($this->_auth == true) {
+        $settings['helo_hostname'] = $this->_helo_hostname;
+        if ($this->_auth) {
             $settings['username'] = $this->_user;
             $settings['password'] = $this->_pass;
         }
-
         $settings['secure'] = $this->_secure;
 
         try {
@@ -78,7 +79,8 @@ class SMTPGateway extends EmailGateway
                     continue;
                 }
 
-                $name = empty($name) ? $name : EmailHelper::qEncode($name);
+                // if the key is not numeric, qEncode the key.
+                $name = General::intval($name) > -1 ? General::intval($name) : EmailHelper::qEncode($name);
                 $recipients[$name] = $email;
             }
 
@@ -134,7 +136,7 @@ class SMTPGateway extends EmailGateway
             // Send the email command. If the envelope from variable is set, use that for the MAIL command. This improves bounce handling.
             $this->_SMTP->sendMail(is_null($this->_envelope_from)?$this->_sender_email_address:$this->_envelope_from, $this->_recipients, $this->_body);
 
-            if ($this->_keepalive == false) {
+            if ($this->_keepalive === false) {
                 $this->closeConnection();
             }
 
@@ -172,12 +174,22 @@ class SMTPGateway extends EmailGateway
                 $this->_SMTP->quit();
                 return parent::closeConnection();
             } catch (Exception $e) {
-
             }
         }
 
         parent::closeConnection();
         return false;
+    }
+
+    /**
+     * Sets the HELO/EHLO hostanme
+     *
+     * @param string $helo_hostname
+     * @return void
+     */
+    public function setHeloHostname($helo_hostname = null)
+    {
+        $this->_helo_hostname = $helo_hostname;
     }
 
     /**
@@ -299,6 +311,7 @@ class SMTPGateway extends EmailGateway
      */
     public function setConfiguration($config)
     {
+        $this->setHeloHostname($config['helo_hostname']);
         $this->setFrom($config['from_address'], $config['from_name']);
         $this->setHost($config['host']);
         $this->setPort($config['port']);
@@ -328,6 +341,15 @@ class SMTPGateway extends EmailGateway
         $group->setAttribute('class', 'settings condensed pickable');
         $group->setAttribute('id', 'smtp');
         $group->appendChild(new XMLElement('legend', __('Email: SMTP')));
+
+        $div = new XMLElement('div');
+
+        $label = Widget::Label(__('HELO Hostname'));
+        $label->appendChild(Widget::Input('settings[email_smtp][helo_hostname]', $this->_helo_hostname));
+        $div->appendChild($label);
+
+        $group->appendChild($div);
+        $group->appendChild(new XMLElement('p', __('A fully qualified domain name (FQDN) of your server, e.g. "www.example.com". If left empty, Symphony will attempt to find an IP address for the EHLO/HELO greeting.'), array('class' => 'help')));
 
         $div = new XMLElement('div');
         $div->setAttribute('class', 'two columns');
@@ -378,7 +400,7 @@ class SMTPGateway extends EmailGateway
         $group->appendChild(Widget::Input('settings[email_smtp][auth]', '0', 'hidden'));
         $input = Widget::Input('settings[email_smtp][auth]', '1', 'checkbox');
 
-        if ($this->_auth == true) {
+        if ($this->_auth === true) {
             $input->setAttribute('checked', 'checked');
         }
 

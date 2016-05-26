@@ -9,7 +9,6 @@
  */
 class contentAjaxEventDocumentation extends TextPage
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -55,7 +54,9 @@ class contentAjaxEventDocumentation extends TextPage
             'rootelement' => $rootelement
         ));
 
-        $documentation = join(PHP_EOL, array_map(create_function('$x', 'return rtrim($x->generate(true, 4));'), $doc_parts));
+        $documentation = join(PHP_EOL, array_map(function($part) {
+            return rtrim($part->generate(true, 4));
+        }, $doc_parts));
         $documentation = str_replace('\'', '\\\'', $documentation);
 
         $documentation = '<fieldset id="event-documentation" class="settings"><legend>' . __('Documentation') . '</legend>' . $documentation . '</fieldset>';
@@ -108,12 +109,12 @@ class contentAjaxEventDocumentation extends TextPage
 
         if ($this->hasMultipleFilter($filters)) {
             $code = new XMLElement($rootelement);
-            $entry = new XMLElement('entry', null, array('index' => '0', 'result' => 'success' , 'type' => 'create | edit'));
+            $entry = new XMLElement('entry', null, array('index' => '0', 'result' => 'success', 'type' => 'create | edit'));
             $entry->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
 
             $code->appendChild($entry);
         } else {
-            $code = new XMLElement($rootelement, null, array('result' => 'success' , 'type' => 'create | edit'));
+            $code = new XMLElement($rootelement, null, array('result' => 'success', 'type' => 'create | edit'));
             $code->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
         }
 
@@ -133,7 +134,7 @@ class contentAjaxEventDocumentation extends TextPage
             $entry->appendChild(new XMLElement('field-name', null, array('type' => 'invalid | missing')));
             $code->appendChild($entry);
 
-            $entry = new XMLElement('entry', null, array('index' => '1', 'result' => 'success' , 'type' => 'create | edit'));
+            $entry = new XMLElement('entry', null, array('index' => '1', 'result' => 'success', 'type' => 'create | edit'));
             $entry->appendChild(new XMLElement('message', __('Entry [created | edited] successfully.')));
             $code->appendChild($entry);
         } else {

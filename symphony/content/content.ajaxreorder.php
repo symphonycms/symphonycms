@@ -33,7 +33,7 @@ class contentAjaxReorder extends XMLPage
             $destination = self::kREORDER_EXTENSION;
         }
 
-        switch ($destination){
+        switch ($destination) {
             case self::kREORDER_PAGES:
                 foreach ($items as $id => $position) {
                     if (!PageManager::edit($id, array('sortorder' => $position))) {

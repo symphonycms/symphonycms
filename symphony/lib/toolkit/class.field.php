@@ -458,7 +458,6 @@ class Field
      */
     public function findDefaults(array &$settings)
     {
-
     }
 
     /**
@@ -735,7 +734,8 @@ class Field
      * @since Symphony 2.5.0
      * @return array
      */
-    public function getAssociationContext() {
+    public function getAssociationContext()
+    {
         $context = Symphony::Engine()->Page->getContext();
         $associations = $context['associations']['parent'];
         $field_association = array();
@@ -765,7 +765,8 @@ class Field
      * @since Symphony 2.5.0
      * @param XMLElement $wrapper
      */
-    public function setAssociationContext(XMLElement &$wrapper) {
+    public function setAssociationContext(XMLElement &$wrapper)
+    {
         $association_context = $this->getAssociationContext();
 
         if (!empty($association_context)) {
@@ -1112,7 +1113,6 @@ class Field
      */
     public function displayPublishPanel(XMLElement &$wrapper, $data = null, $flagWithError = null, $fieldnamePrefix = null, $fieldnamePostfix = null, $entry_id = null)
     {
-
     }
 
     /**
@@ -1670,7 +1670,6 @@ class Field
      */
     public function fetchAssociatedEntryCount($value)
     {
-
     }
 
     /**
@@ -1685,11 +1684,10 @@ class Field
      *  return an array of the associated entry ids.
      * @deprecated Since Symphony 2.5.0 this method is not called anymore in the core. Please use
      *  `Field::findRelatedEntries` and `Field::findParentRelatedEntries` instead. This method
-	 *  will be removed in Symphony 3.0
+     *  will be removed in Symphony 3.0
      */
     public function fetchAssociatedEntryIDs($value)
     {
-
     }
 
     /**
@@ -1702,7 +1700,8 @@ class Field
      * @param  integer $parent_field_id
      * @return array
      */
-    public function findRelatedEntries($entry_id, $parent_field_id) {
+    public function findRelatedEntries($entry_id, $parent_field_id)
+    {
         try {
             $ids = Symphony::Database()->fetchCol('entry_id', sprintf("
                 SELECT `entry_id`
@@ -1710,8 +1709,7 @@ class Field
                 WHERE `relation_id` = %d
                 AND `entry_id` IS NOT NULL
             ", $this->get('id'), $entry_id));
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return array();
         }
 
@@ -1728,7 +1726,8 @@ class Field
      * @param  integer $entry_id
      * @return array
      */
-    public function findParentRelatedEntries($field_id, $entry_id) {
+    public function findParentRelatedEntries($field_id, $entry_id)
+    {
         try {
             $ids = Symphony::Database()->fetchCol('relation_id', sprintf("
                 SELECT `relation_id`
@@ -1736,8 +1735,7 @@ class Field
                 WHERE `entry_id` = %d
                 AND `relation_id` IS NOT NULL
             ", $field_id, $entry_id));
-        }
-        catch(Exception $e){
+        } catch (Exception $e) {
             return array();
         }
 

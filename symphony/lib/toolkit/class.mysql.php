@@ -535,7 +535,6 @@ class MySQL
         // TYPE is deprecated since MySQL 4.0.18, ENGINE is preferred
         if ($query_type == self::__WRITE_OPERATION__) {
             $query = preg_replace('/TYPE=(MyISAM|InnoDB)/i', 'ENGINE=$1', $query);
-
         } elseif ($query_type == self::__READ_OPERATION__ && !preg_match('/^SELECT\s+SQL(_NO)?_CACHE/i', $query)) {
             if ($this->isCachingEnabled()) {
                 $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_CACHE ', $query);

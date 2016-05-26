@@ -52,11 +52,11 @@ class General
      */
     public static function validateString($string, $rule)
     {
-        if (!is_array($rule) && $rule == '') {
+        if (!is_array($rule) && ($rule == '' || $rule == null)) {
             return true;
         }
 
-        if (!is_array($string) && $string == '') {
+        if (!is_array($string) && ($string == '' || $rule == null)) {
             return true;
         }
 
@@ -123,7 +123,6 @@ class General
         }
 
         if (is_object($xsltProcessor)) {
-
             $xsl = '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
             <xsl:template match="/"></xsl:template>
@@ -137,7 +136,6 @@ class General
                 return false;
             }
         } else {
-
             $_parser = xml_parser_create();
             xml_parser_set_option($_parser, XML_OPTION_SKIP_WHITE, 0);
             xml_parser_set_option($_parser, XML_OPTION_CASE_FOLDING, 0);
@@ -351,7 +349,6 @@ class General
         $string = strtolower($string);
 
         return $string;
-
     }
 
     /**
@@ -386,7 +383,6 @@ class General
         $string = strtolower($string);
 
         return $string;
-
     }
 
     /**
@@ -601,7 +597,6 @@ class General
 
         if (is_array($haystack)) {
             foreach ($haystack as $key => $val) {
-
                 if (is_array($val)) {
                     if (self::in_array_multi($needle, $val)) {
                         return true;
@@ -664,9 +659,9 @@ class General
                             $result[$handle][$index][array_pop(array_keys($pair))][$key] = array_pop(array_values($pair));
                         }
                     }
+                } else {
+                    $result[$handle][$key] = $value;
                 }
-
-                else $result[$handle][$key] = $value;
             }
         }
 
@@ -687,7 +682,8 @@ class General
     public static function getPostData()
     {
         if (!function_exists('merge_file_post_data')) {
-            function merge_file_post_data($type, array $file, &$post) {
+            function merge_file_post_data($type, array $file, &$post)
+            {
                 foreach ($file as $key => $value) {
                     if (!isset($post[$key])) {
                         $post[$key] = array();
@@ -1356,7 +1352,6 @@ class General
     {
         // Upload the file
         if (@is_uploaded_file($tmp_name)) {
-
             $dest_path = rtrim($dest_path, '/') . '/';
 
             // Try place the file in the correction location
@@ -1368,7 +1363,6 @@ class General
 
         // Could not move the file
         return false;
-
     }
 
     /**
@@ -1414,7 +1408,7 @@ class General
         );
 
         $last = strtolower($file_size[strlen($file_size)-1]);
-        switch($last) {
+        switch ($last) {
             case 'g':
                 $file_size *= 1024;
             case 'm':
@@ -1493,7 +1487,6 @@ class General
         $pageinfo->setAttribute('current-page', $current_page);
 
         return $pageinfo;
-
     }
 
     /**
@@ -1511,7 +1504,7 @@ class General
      */
     public static function hash($input, $algorithm = 'sha1')
     {
-        switch($algorithm) {
+        switch ($algorithm) {
             case 'sha1':
                 return SHA1::hash($input);
 
@@ -1581,7 +1574,6 @@ class General
             if (!call_user_func($validator, $param['var'])) {
                 throw new InvalidArgumentException(__('Argument `$%1$s` is not of type `%2$s`, given `%3$s`.', array($name, $param['type'], gettype($param['var']))));
             }
-
         }
     }
 
@@ -1644,7 +1636,6 @@ class General
     public static function intval($value)
     {
         if (is_numeric($value) && preg_match('/^[0-9]+$/i', $value) === 1) {
-
             return intval($value);
         }
 

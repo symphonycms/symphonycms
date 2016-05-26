@@ -153,14 +153,14 @@ class Entry
      * @throws DatabaseException
      * @throws Exception
      * @return integer
-     *  Either `__ENTRY_OK__` or `__ENTRY_FIELD_ERROR__`
+     *  Either `Entry::__ENTRY_OK__` or `Entry::__ENTRY_FIELD_ERROR__`
      */
     public function setDataFromPost($data, &$errors = null, $simulate = false, $ignore_missing_fields = false)
     {
         $status = Entry::__ENTRY_OK__;
 
         // Entry has no ID, create it:
-        if (!$this->get('id') && $simulate == false) {
+        if (!$this->get('id') && $simulate === false) {
             $entry_id = $this->assignEntryId();
 
             if (is_null($entry_id)) {
@@ -224,7 +224,7 @@ class Entry
             return $this->_data;
         }
 
-        return ($asObject == true ? (object)$fieldData : $fieldData);
+        return ($asObject ? (object)$fieldData : $fieldData);
     }
 
     /**

@@ -300,14 +300,17 @@ class Lang
      * @return boolean
      *  If true, the language is enabled.
      */
-    public static function isLanguageEnabled($code) {
-        if($code == 'en') return true;
+    public static function isLanguageEnabled($code)
+    {
+        if ($code == 'en') {
+            return true;
+        }
 
         $handle = (isset(self::$_languages[$code])) ? self::$_languages[$code]['handle'] : '';
         $enabled_extensions = array();
 
         // Fetch list of active extensions
-        if(class_exists('Symphony', false) && (!is_null(Symphony::ExtensionManager()))){
+        if (class_exists('Symphony', false) && (!is_null(Symphony::ExtensionManager()))) {
             $enabled_extensions = Symphony::ExtensionManager()->listInstalledHandles();
         }
 
@@ -321,19 +324,20 @@ class Lang
      * @param string $path
      *  Path of the language file that should be loaded
      */
-    private static function load($path) {
+    private static function load($path)
+    {
         // Load language file
-        if(file_exists($path)) {
+        if (file_exists($path)) {
             require($path);
         }
 
         // Populate dictionary ($dictionary is declared inside $path)
-        if(isset($dictionary) && is_array($dictionary)) {
+        if (isset($dictionary) && is_array($dictionary)) {
             self::$_dictionary = array_merge(self::$_dictionary, $dictionary);
         }
 
         // Populate transliterations ($transliterations is declared inside $path)
-        if(isset($transliterations) && is_array($transliterations)) {
+        if (isset($transliterations) && is_array($transliterations)) {
             self::$_transliterations = array_merge(self::$_transliterations, $transliterations);
         }
     }
@@ -343,7 +347,8 @@ class Lang
      *
      * @return string
      */
-    public static function get() {
+    public static function get()
+    {
         return self::$_lang;
     }
 
@@ -361,25 +366,24 @@ class Lang
      * @return string
      *  Returns the translated string
      */
-    public static function translate($string, array $inserts = null, $namespace = null) {
-        if(is_null($namespace) && class_exists('Symphony', false)){
+    public static function translate($string, array $inserts = null, $namespace = null)
+    {
+        if (is_null($namespace) && class_exists('Symphony', false)) {
             $namespace = Symphony::getPageNamespace();
         }
 
-        if(isset($namespace) && isset(self::$_dictionary[$namespace][$string])) {
+        if (isset($namespace) && isset(self::$_dictionary[$namespace][$string])) {
             $translated = self::$_dictionary[$namespace][$string];
-        }
-        else if(isset(self::$_dictionary[$string])) {
+        } elseif (isset(self::$_dictionary[$string])) {
             $translated = self::$_dictionary[$string];
-        }
-        else {
+        } else {
             $translated = $string;
         }
 
         $translated = empty($translated) ? $string : $translated;
 
         // Replace translation placeholders
-        if(is_array($inserts) && !empty($inserts)) {
+        if (is_array($inserts) && !empty($inserts)) {
             $translated = vsprintf($translated, $inserts);
         }
 
@@ -397,12 +401,13 @@ class Lang
      * @return array
      *  Returns an associative array of language codes and names, e. g. 'en' => 'English'
      */
-    public static function getAvailableLanguages($checkStatus = true) {
+    public static function getAvailableLanguages($checkStatus = true)
+    {
         $languages = array();
 
         // Get available languages
-        foreach(self::$_languages as $key => $language) {
-            if(self::isLanguageEnabled($key) || ($checkStatus === false && isset($language['handle']))){
+        foreach (self::$_languages as $key => $language) {
+            if (self::isLanguageEnabled($key) || ($checkStatus === false && isset($language['handle']))) {
                 $languages[$key] = $language['name'];
             }
         }
@@ -417,7 +422,8 @@ class Lang
      * @return boolean
      *  Returns true for localized system, false for English system
      */
-    public static function isLocalized() {
+    public static function isLocalized()
+    {
         return (self::get() !== 'en');
     }
 
@@ -429,10 +435,11 @@ class Lang
      * @return string
      *  Return the given date with translated month and day names
      */
-    public static function localizeDate($string) {
+    public static function localizeDate($string)
+    {
         // Only translate dates in localized environments
-        if(self::isLocalized()) {
-            foreach(self::$_datetime_dictionary as $value) {
+        if (self::isLocalized()) {
+            foreach (self::$_datetime_dictionary as $value) {
                 $string = preg_replace('/\b' . $value . '\b/i', self::translate($value), $string);
             }
         }
@@ -448,12 +455,13 @@ class Lang
      * @return string
      *  Returns the given date with English month and day names
      */
-    public static function standardizeDate($string) {
+    public static function standardizeDate($string)
+    {
         // Only standardize dates in localized environments
-        if(self::isLocalized()) {
+        if (self::isLocalized()) {
 
             // Translate names to English
-            foreach(self::$_datetime_dictionary as $values) {
+            foreach (self::$_datetime_dictionary as $values) {
                 $string = preg_replace('/\b' . self::translate($values) . '\b/i' . (self::isUnicodeCompiled() === true ? 'u' : null), $values, $string);
             }
 
@@ -462,7 +470,7 @@ class Lang
             // @todo Test if this separator is still required. It's a hidden setting
             // and users are only aware of it if they go digging/pointed in the right direction
             $separator = Symphony::Configuration()->get('datetime_separator', 'region');
-            if($separator !== ' ') {
+            if ($separator !== ' ') {
                 $string = str_replace($separator, ' ', $string);
             }
         }
@@ -489,9 +497,10 @@ class Lang
      * @return string
      *  Returns resultant handle
      */
-    public static function createHandle($string, $max_length = 255, $delim = '-', $uriencode = false, $apply_transliteration = true, $additional_rule_set = NULL) {
+    public static function createHandle($string, $max_length = 255, $delim = '-', $uriencode = false, $apply_transliteration = true, $additional_rule_set = null)
+    {
         // Use the transliteration table if provided
-        if($apply_transliteration === true){
+        if ($apply_transliteration === true) {
             $string = self::applyTransliterations($string);
         }
 
@@ -510,9 +519,10 @@ class Lang
      * @return string
      *  Returns created filename
      */
-    public static function createFilename($string, $delim='-', $apply_transliteration = true) {
+    public static function createFilename($string, $delim='-', $apply_transliteration = true)
+    {
         // Use the transliteration table if provided
-        if($apply_transliteration === true){
+        if ($apply_transliteration === true) {
             $file = pathinfo($string);
             $string = self::applyTransliterations($file['filename']) . '.' . $file['extension'];
         }
@@ -530,7 +540,8 @@ class Lang
      * @return mixed
      *  Returns the transliterated string
      */
-    private static function applyTransliterations($string) {
+    private static function applyTransliterations($string)
+    {
         // Apply the straight transliterations with strtr as it's much faster
         $string = strtr($string, self::$_transliterations['straight']);
 
@@ -550,8 +561,8 @@ class Lang
      * @since Symphony 2.2.2
      * @return boolean
      */
-    public static function isUnicodeCompiled() {
+    public static function isUnicodeCompiled()
+    {
         return (@preg_match('/\pL/u', 'a') == 1 ? true : false);
     }
-
 }

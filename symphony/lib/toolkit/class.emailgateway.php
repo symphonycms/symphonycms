@@ -20,7 +20,7 @@ class EmailGatewayException extends Exception
      */
     public function __construct($message, $code = 0, $previous = null)
     {
-        $trace = parent::getTrace();
+        $trace = $this->getTrace();
         // Best-guess to retrieve classname of email-gateway.
         // Might fail in non-standard uses, will then return an
         // empty string.
@@ -37,7 +37,8 @@ class EmailGatewayException extends Exception
  * The validation exception to be thrown by all email gateways.
  * This exception is thrown if data does not pass validation.
  */
-class EmailValidationException extends EmailGatewayException{
+class EmailValidationException extends EmailGatewayException
+{
 }
 
 /**
@@ -46,7 +47,7 @@ class EmailValidationException extends EmailGatewayException{
  *
  * @todo add validation to all set functions.
  */
-abstract Class EmailGateway
+abstract class EmailGateway
 {
     protected $_recipients = array();
     protected $_sender_name;
@@ -97,11 +98,9 @@ abstract Class EmailGateway
      * was successfully sent.
      * See the default gateway for an example.
      *
-     * @abstract
-     *
      * @return boolean
      */
-    public abstract function send();
+    abstract public function send();
 
     /**
      * Open new connection to the email server.
@@ -209,7 +208,9 @@ abstract Class EmailGateway
         if (!is_array($email)) {
             $email = explode(',', $email);
             // trim all values
-            array_walk($email, create_function('&$val', '$val = trim($val);'));
+            array_walk($email, function(&$val) {
+                return $val = trim($val);
+            });
             // remove empty elements
             $email = array_filter($email);
         }
@@ -718,10 +719,10 @@ abstract Class EmailGateway
             $charset = '';
         }
         // if the mime type is not set, try to obtain using the getMimeType
-        if (empty($type)){
+        if (empty($type)) {
             //assume that the attachment mimetime is appended
             $type = General::getMimeType($file);
-        } 
+        }
         // Return binary description
         return array(
             'Content-Type'              => $type.';'.$charset.' name="'.$filename.'"',
@@ -876,8 +877,9 @@ abstract Class EmailGateway
     private function __fromCamel($string)
     {
         $string[0] = strtolower($string[0]);
-        $func = create_function('$c', 'return "_" . strtolower($c[1]);');
 
-        return preg_replace_callback('/([A-Z])/', $func, $string);
+        return preg_replace_callback('/([A-Z])/', function($c) {
+            return "_" . strtolower($c[1]);
+        }, $string);
     }
 }

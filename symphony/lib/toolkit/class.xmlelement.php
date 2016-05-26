@@ -815,7 +815,7 @@ class XMLElement implements IteratorAggregate
         } else {
             if ($this->_elementStyle === 'xml') {
                 $result .= ' />';
-            } else if (in_array($this->_name, XMLElement::$no_end_tags) || (substr($this->getName(), 0, 3) === '!--')) {
+            } elseif (in_array($this->_name, XMLElement::$no_end_tags) || (substr($this->getName(), 0, 3) === '!--')) {
                 $result .= '>';
             } else {
                 $result .= sprintf("></%s>", $this->getName());
@@ -908,8 +908,7 @@ class XMLElement implements IteratorAggregate
             foreach ($node->childNodes as $childNode) {
                 if ($childNode instanceof DOMCdataSection) {
                     $element->setValue(General::wrapInCDATA($childNode->data));
-                }
-                else if ($childNode instanceof DOMText) {
+                } elseif ($childNode instanceof DOMText) {
                     if ($childNode->isWhitespaceInElementContent() === false) {
                         $element->setValue(General::sanitize($childNode->data));
                     }

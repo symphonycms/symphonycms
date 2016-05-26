@@ -17,4 +17,3 @@ $upload = array(
 if (file_exists(MANIFEST . '/validators.php') && is_readable(MANIFEST . '/validators.php')) {
     include MANIFEST . '/validators.php';
 }
-

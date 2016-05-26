@@ -120,7 +120,6 @@ if ($match != "" && $e->getAdditional()->rename_failed !== true) {
         'accesskey' => 's'
     ));
     $actions->appendChild($button);
-
 } elseif ($e->getAdditional()->rename_failed) {
     $div->appendChild(
         new XMLElement('p', __('Sorry, but Symphony was unable to rename the folder. You can try renaming %s to %s yourself, or you can uninstall the extension to continue.', array(

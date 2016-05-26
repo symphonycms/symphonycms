@@ -1,6 +1,8 @@
 <?php
 
-if (!defined("__IN_SYMPHONY__")) die("You cannot directly access this file.");
+if (!defined("__IN_SYMPHONY__")) {
+    die("You cannot directly access this file.");
+}
 
 /**
  * @package toolkit

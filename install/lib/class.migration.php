@@ -10,9 +10,8 @@
      * future it is hoped Migrations will support downgrading as well.
      */
 
-    Abstract Class Migration
+    abstract class Migration
     {
-
         /**
          * The current installed version of Symphony, before updating
          * @var string
@@ -33,17 +32,15 @@
         {
             static::$existing_version = $existing_version;
 
-            try{
+            try {
                 $canProceed = static::$function();
 
                 return ($canProceed === false) ? false : true;
-            }
-            catch(DatabaseException $e) {
+            } catch (DatabaseException $e) {
                 Symphony::Log()->pushToLog('Could not complete upgrading. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getMessage(), E_ERROR, true);
 
                 return false;
-            }
-            catch(Exception $e){
+            } catch (Exception $e) {
                 Symphony::Log()->pushToLog('Could not complete upgrading because of the following error: ' . $e->getMessage(), E_ERROR, true);
 
                 return false;
@@ -85,10 +82,9 @@
             Symphony::Configuration()->set('version', static::getVersion(), 'symphony');
             Symphony::Configuration()->set('useragent', 'Symphony/' . static::getVersion(), 'general');
 
-            if(Symphony::Configuration()->write() === false) {
+            if (Symphony::Configuration()->write() === false) {
                 throw new Exception('Failed to write configuration file, please check the file permissions.');
-            }
-            else {
+            } else {
                 return true;
             }
         }
@@ -129,5 +125,4 @@
         {
             return array();
         }
-
     }

@@ -75,12 +75,12 @@ abstract class Symphony implements Singleton
     private static $exception = null;
 
     /**
-     * The Symphony constructor initialises the class variables of Symphony.
-     * It will set the DateTime settings, define new date constants and initialise
-     * the correct Language for the currently logged in Author. If magic quotes
-     * are enabled, Symphony will sanitize the `$_SERVER`, `$_COOKIE`,
-     * `$_GET` and `$_POST` arrays. The constructor loads in
-     * the initial Configuration values from the `CONFIG` file
+     * The Symphony constructor initialises the class variables of Symphony. At present
+     * constructor has a couple of responsibilities:
+     * - Start a profiler instance
+     * - If magic quotes are enabled, clean `$_SERVER`, `$_COOKIE`, `$_GET` and `$_POST` arrays 
+     * - Initialise the correct Language for the currently logged in Author.
+     * - Start the session and adjust the error handling if the user is logged in
      */
     protected function __construct()
     {
@@ -92,14 +92,6 @@ abstract class Symphony implements Singleton
             General::cleanArray($_GET);
             General::cleanArray($_POST);
         }
-
-        // Set date format throughout the system
-        define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
-        define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
-        define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
-        DateTimeObj::setSettings(self::Configuration()->get('region'));
-
-        self::initialiseErrorHandler();
 
         // Initialize language management
         Lang::initialize();
@@ -150,7 +142,8 @@ abstract class Symphony implements Singleton
 
     /**
      * Setter for `$Configuration`. This function initialise the configuration
-     * object and populate its properties based on the given $array.
+     * object and populate its properties based on the given `$array`. Since
+     * Symphony 2.6.5, it will also set Symphony's date constants.
      *
      * @since Symphony 2.3
      * @param array $data
@@ -168,6 +161,12 @@ abstract class Symphony implements Singleton
 
         self::$Configuration = new Configuration(true);
         self::$Configuration->setArray($data);
+
+        // Set date format throughout the system
+        define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
+        define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
+        define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
+        DateTimeObj::setSettings(self::Configuration()->get('region'));
     }
 
     /**
@@ -276,7 +275,8 @@ abstract class Symphony implements Singleton
      * @since Symphony 2.5.0
      * @return Cookie
      */
-    public static function Cookie() {
+    public static function Cookie()
+    {
         return self::$Cookie;
     }
 
@@ -389,7 +389,6 @@ abstract class Symphony implements Singleton
                     self::Database()->enableLogging();
                 }
             }
-
         } catch (DatabaseException $e) {
             self::throwCustomError(
                 $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
@@ -412,7 +411,8 @@ abstract class Symphony implements Singleton
      * @since Symphony 2.5.0
      * @return Author
      */
-    public static function Author() {
+    public static function Author()
+    {
         return self::$Author;
     }
 
@@ -733,7 +733,7 @@ abstract class Symphony implements Singleton
  * to allow the template for the exception to be provided from the `TEMPLATES`
  * directory
  */
-Class SymphonyErrorPageHandler extends GenericExceptionHandler
+class SymphonyErrorPageHandler extends GenericExceptionHandler
 {
     /**
      * The render function will take a `SymphonyErrorPage` exception and
@@ -770,9 +770,8 @@ Class SymphonyErrorPageHandler extends GenericExceptionHandler
  * from the `TEMPLATES` directory.
  */
 
-Class SymphonyErrorPage extends Exception
+class SymphonyErrorPage extends Exception
 {
-
     /**
      * A heading for the error page, this will be prepended to
      * "Symphony Fatal Error".
@@ -830,7 +829,6 @@ Class SymphonyErrorPage extends Exception
      */
     public function __construct($message, $heading = 'Symphony Fatal Error', $template = 'generic', array $additional = array(), $status = Page::HTTP_STATUS_ERROR)
     {
-
         if ($message instanceof XMLElement) {
             $this->_messageObject = $message;
             $message = $this->_messageObject->generate();
@@ -927,7 +925,7 @@ Class SymphonyErrorPage extends Exception
  * customised output for database exceptions. It displays the exception
  * message as provided by the Database.
  */
-Class DatabaseExceptionHandler extends GenericExceptionHandler
+class DatabaseExceptionHandler extends GenericExceptionHandler
 {
     /**
      * The render function will take a `DatabaseException` and output a

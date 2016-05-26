@@ -142,10 +142,9 @@ class Widget
 
         // Add the 'no' default option to the label, or to the wrapper if it's provided
         $default_hidden = Widget::Input($name, 'no', 'hidden');
-        if(is_null($wrapper)) {
+        if (is_null($wrapper)) {
             $label->appendChild($default_hidden);
-        }
-        else {
+        } else {
             $wrapper->appendChild($default_hidden);
         }
 
@@ -162,7 +161,7 @@ class Widget
         )));
 
         // If a wrapper was given, add the label to it
-        if(!is_null($wrapper)) {
+        if (!is_null($wrapper)) {
             $wrapper->appendChild($label);
         }
 
@@ -738,7 +737,6 @@ class Widget
         }
 
         return $obj;
-
     }
 
     /**
@@ -869,7 +867,7 @@ class Widget
         $calendar->setAttribute('class', 'calendar');
 
         $date = DateTimeObj::convertDateToMoment(DateTimeObj::getSetting('date_format'));
-        if($date) {
+        if ($date) {
             if ($time === true) {
                 $separator = DateTimeObj::getSetting('datetime_separator');
                 $time = DateTimeObj::convertTimeToMoment(DateTimeObj::getSetting('time_format'));

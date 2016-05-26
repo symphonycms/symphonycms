@@ -108,7 +108,6 @@ class Session
             }
 
             return preg_replace('/(^www\.|:\d+$)/i', null, $_SERVER['HTTP_HOST']);
-
         }
 
         return null;

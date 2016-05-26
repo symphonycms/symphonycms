@@ -275,7 +275,7 @@ class FieldInput extends Field implements ExportableField, ImportableField
         if ($mode === $modes->getHandle) {
             if (isset($data['handle'])) {
                 return $data['handle'];
-            } else if (isset($data['value'])) {
+            } elseif (isset($data['value'])) {
                 return Lang::createHandle($data['value']);
             }
 
@@ -299,7 +299,7 @@ class FieldInput extends Field implements ExportableField, ImportableField
 
         if (self::isFilterRegex($data[0])) {
             $this->buildRegexSQL($data[0], array('value', 'handle'), $joins, $where);
-        } else if ($andOperation) {
+        } elseif ($andOperation) {
             foreach ($data as $value) {
                 $this->_key++;
                 $value = $this->cleanValue($value);

@@ -21,5 +21,4 @@ class contentSystemLog
         print $log;
         exit;
     }
-
 }

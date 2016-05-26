@@ -112,7 +112,6 @@ class Alert
      */
     public function asXML()
     {
-
         $p = new XMLElement('p', $this->message, array('role' => 'alert'));
         $p->setAttribute('class', 'notice');
 

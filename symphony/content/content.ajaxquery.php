@@ -2,47 +2,46 @@
 
 require_once(TOOLKIT . '/class.jsonpage.php');
 
-Class contentAjaxQuery extends JSONPage
+class contentAjaxQuery extends JSONPage
 {
-
     public function view()
     {
         $database = Symphony::Configuration()->get('db', 'database');
-        $field_ids = explode(',', General::sanitize($_GET['field_id']));
-        $search = General::sanitize($_GET['query']);
-        $types = explode(',', General::sanitize($_GET['types']));
-        $limit = intval(General::sanitize($_GET['limit']));
+        $field_ids = array_map(array('General','intval'), explode(',', General::sanitize($_GET['field_id'])));
+        $search = MySQL::cleanValue(General::sanitize($_GET['query']));
+        $types = array_map(array('MySQL','cleanValue'), explode(',', General::sanitize($_GET['types'])));
+        $limit = General::intval(General::sanitize($_GET['limit']));
 
         // Set limit
         if ($limit === 0) {
             $max = '';
-        } elseif (empty($limit)) {
+        } elseif ($limit < 0) {
             $max = ' LIMIT 100';
         } else {
             $max = sprintf(' LIMIT %d', $limit);
         }
 
         // Entries
-        if(in_array('entry', $types)) {
-            foreach($field_ids as $field_id) {
+        if (in_array('entry', $types)) {
+            foreach ($field_ids as $field_id) {
                 $this->get($database, intval($field_id), $search, $max);
             }
         }
 
         // Associations
-        if(in_array('association', $types)) {
-            foreach($field_ids as $field_id) {
+        if (in_array('association', $types)) {
+            foreach ($field_ids as $field_id) {
                 $association_id = $this->getAssociationId($field_id);
 
-                if($association_id) {
+                if ($association_id) {
                     $this->get($database, $association_id, $search, $max);
                 }
             }
         }
 
         // Static values
-        if(in_array('static', $types)) {
-            foreach($field_ids as $field_id) {
+        if (in_array('static', $types)) {
+            foreach ($field_ids as $field_id) {
                 $this->getStatic($field_id, $search);
             }
         }
@@ -160,5 +159,4 @@ Class contentAjaxQuery extends JSONPage
             }
         }
     }
-
 }

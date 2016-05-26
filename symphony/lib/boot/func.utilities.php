@@ -10,7 +10,7 @@
  *
  *  @param string $url
  */
-function redirect ($url)
+function redirect($url)
 {
     // Just make sure.
     $url = str_replace('Location:', null, $url);
@@ -28,6 +28,7 @@ function redirect ($url)
         $url  = str_replace($host, idn_to_ascii($host), $url);
     }
 
+    cleanup_session_cookies();
     header('Status: 302 Found');
     header('Expires: Mon, 12 Dec 1982 06:00:00 GMT');
     header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
@@ -74,7 +75,7 @@ function define_safe($name, $value)
  */
 function getCurrentPage()
 {
-    if (!isset($_GET['symphony-page'])) {
+    if (!isset($_GET['symphony-page']) || !is_string($_GET['symphony-page'])) {
         return null;
     }
 
@@ -190,7 +191,7 @@ function cleanup_session_cookies()
 function is_session_empty()
 {
     $session_is_empty = true;
-    if(is_array($_SESSION)) {
+    if (is_array($_SESSION)) {
         foreach ($_SESSION as $contents) {
             if (!empty($contents)) {
                 $session_is_empty = false;
@@ -221,19 +222,16 @@ function symphony($mode)
  */
 function symphony_launcher($mode)
 {
-    if (strtolower($mode) == 'administration') {
+    if (is_string($mode) && strtolower($mode) == 'administration') {
         $renderer = Administration::instance();
-    }
-
-    else {
+    } else {
         $renderer = Frontend::instance();
     }
 
     $output = $renderer->display(getCurrentPage());
 
     // #1808
-    if (isset($_SERVER['HTTP_MOD_REWRITE']))
-    {
+    if (isset($_SERVER['HTTP_MOD_REWRITE'])) {
         $output = file_get_contents(GenericExceptionHandler::getTemplate('fatalerror.rewrite'));
         $output = str_replace('{ASSETS_URL}', ASSETS_URL, $output);
         $output = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $output);

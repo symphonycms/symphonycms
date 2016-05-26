@@ -42,7 +42,6 @@ abstract class ResourcesPage extends AdministrationPage
         $type = $params['type'];
 
         if (!is_null($sort)) {
-
             General::sanitize($sort);
         }
 
@@ -435,5 +434,4 @@ abstract class ResourcesPage extends AdministrationPage
             return false;
         }
     }
-
 }

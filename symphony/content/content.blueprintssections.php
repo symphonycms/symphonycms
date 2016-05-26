@@ -16,7 +16,7 @@ class contentBlueprintsSections extends AdministrationPage
     {
         $section_id = $context[1];
 
-        if(isset($section_id)) {
+        if (isset($section_id)) {
             $context['associations'] = array(
                 'parent' => SectionManager::fetchParentAssociations($section_id),
                 'child' => SectionManager::fetchChildAssociations($section_id)
@@ -68,8 +68,8 @@ class contentBlueprintsSections extends AdministrationPage
                 if ($s->get('hidden') === 'yes') {
                     $tr->setAttribute('class', 'inactive');
                 }
-                
-                $aTableBody[] = $tr; 
+
+                $aTableBody[] = $tr;
             }
         }
 
@@ -278,7 +278,9 @@ class contentBlueprintsSections extends AdministrationPage
             }
         }
 
-        uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->_name, $b->_name);'));
+        uasort($types, function($a, $b) {
+            return strnatcasecmp($a->_name, $b->_name);
+        });
 
         foreach ($types as $type) {
             $defaults = array();
@@ -306,7 +308,6 @@ class contentBlueprintsSections extends AdministrationPage
         $div->appendChild(Widget::Input('action[save]', __('Create Section'), 'submit', array('accesskey' => 's')));
 
         $this->Form->appendChild($div);
-
     }
 
     public function __viewEdit()
@@ -475,7 +476,6 @@ class contentBlueprintsSections extends AdministrationPage
                 $field->set('sortorder', $position);
                 $field->displaySettingsPanel($wrapper, (isset($this->_errors[$position]) ? $this->_errors[$position] : null));
                 $ol->appendChild($wrapper);
-
             }
         }
 
@@ -485,7 +485,9 @@ class contentBlueprintsSections extends AdministrationPage
             }
         }
 
-        uasort($types, create_function('$a, $b', 'return strnatcasecmp($a->_name, $b->_name);'));
+        uasort($types, function($a, $b) {
+            return strnatcasecmp($a->_name, $b->_name);
+        });
 
         foreach ($types as $type) {
             $defaults = array();
@@ -698,7 +700,6 @@ class contentBlueprintsSections extends AdministrationPage
             if ($canProceed) {
                 // If we are creating a new Section
                 if (!$edit) {
-
                     $meta['sortorder'] = SectionManager::fetchNextSortOrder();
 
                     /**
@@ -849,7 +850,6 @@ class contentBlueprintsSections extends AdministrationPage
                         Symphony::ExtensionManager()->notifyMembers('SectionPostEdit', '/blueprints/sections/', array('section_id' => $section_id));
 
                         redirect(SYMPHONY_URL . "/blueprints/sections/edit/$section_id/saved/");
-
                     }
                 }
             }

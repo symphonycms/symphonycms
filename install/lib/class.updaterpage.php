@@ -4,9 +4,8 @@
      * @package content
      */
 
-    Class UpdaterPage extends InstallerPage
+    class UpdaterPage extends InstallerPage
     {
-
         public function __construct($template, $params = array())
         {
             parent::__construct($template, $params);
@@ -25,10 +24,10 @@
             );
 
             // Add Release Notes for the latest migration
-            if(isset($this->_params['release-notes'])){
+            if (isset($this->_params['release-notes'])) {
                 $nodeset = $this->Form->getChildrenByName('h1');
                 $h1 = end($nodeset);
-                if($h1 instanceof XMLElement) {
+                if ($h1 instanceof XMLElement) {
                     $h1->appendChild(
                         new XMLElement(
                             'em',
@@ -56,19 +55,19 @@
             $this->Form->appendChild($h2);
             $this->Form->appendChild($p);
 
-            if(!is_writable(CONFIG)) {
+            if (!is_writable(CONFIG)) {
                 $this->Form->appendChild(
                     new XMLElement('p', __('Please check that your configuration file is writable before proceeding'), array('class' => 'warning'))
                 );
             }
 
-            if(!empty($this->_params['pre-notes'])){
+            if (!empty($this->_params['pre-notes'])) {
                 $h2 = new XMLElement('h2', __('Pre-Installation Notes:'));
                 $dl = new XMLElement('dl');
 
-                foreach($this->_params['pre-notes'] as $version => $notes){
+                foreach ($this->_params['pre-notes'] as $version => $notes) {
                     $dl->appendChild(new XMLElement('dt', $version));
-                    foreach($notes as $note) {
+                    foreach ($notes as $note) {
                         $dl->appendChild(new XMLElement('dd', $note));
                     }
                 }
@@ -91,13 +90,11 @@
             // Attempt to get update information from the log file
             try {
                 $log = file_get_contents(INSTALL_LOGS . '/update');
-            }
-            catch (Exception $ex) {
+            } catch (Exception $ex) {
                 $log_entry = Symphony::Log()->popFromLog();
-                if(isset($log_entry['message'])) {
+                if (isset($log_entry['message'])) {
                     $log = $log_entry['message'];
-                }
-                else {
+                } else {
                     $log = 'Unknown error occurred when reading the update log';
                 }
             }
@@ -118,13 +115,13 @@
             $h2 = new XMLElement('h2', __('Updating Complete'));
             $this->Form->appendChild($h2);
 
-            if(!empty($this->_params['post-notes'])){
+            if (!empty($this->_params['post-notes'])) {
                 $dl = new XMLElement('dl');
 
-                foreach($this->_params['post-notes'] as $version => $notes){
-                    if($notes) {
+                foreach ($this->_params['post-notes'] as $version => $notes) {
+                    if ($notes) {
                         $dl->appendChild(new XMLElement('dt', $version));
-                        foreach($notes as $note) {
+                        foreach ($notes as $note) {
                             $dl->appendChild(new XMLElement('dd', $note));
                         }
                     }
@@ -149,5 +146,4 @@
 
             $this->Form->appendChild($submit);
         }
-
     }

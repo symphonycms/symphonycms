@@ -12,7 +12,6 @@
 
 class contentSystemAuthors extends AdministrationPage
 {
-
     public $_Author;
     public $_errors = array();
 
@@ -156,7 +155,6 @@ class contentSystemAuthors extends AdministrationPage
         ));
 
         $this->Form->appendChild($version);
-
     }
 
     public function __actionIndex()
@@ -544,7 +542,6 @@ class contentSystemAuthors extends AdministrationPage
 
     public function __actionNew()
     {
-
         if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
             $fields = $_POST['fields'];
 
@@ -552,7 +549,7 @@ class contentSystemAuthors extends AdministrationPage
             $this->_Author->set('user_type', $fields['user_type']);
             $this->_Author->set('primary', 'no');
             $this->_Author->set('email', $fields['email']);
-            $this->_Author->set('username', $fields['username']);
+            $this->_Author->set('username', General::sanitize($fields['username']));
             $this->_Author->set('first_name', General::sanitize($fields['first_name']));
             $this->_Author->set('last_name', General::sanitize($fields['last_name']));
             $this->_Author->set('last_seen', null);
@@ -641,7 +638,7 @@ class contentSystemAuthors extends AdministrationPage
             }
 
             $this->_Author->set('email', $fields['email']);
-            $this->_Author->set('username', $fields['username']);
+            $this->_Author->set('username', General::sanitize($fields['username']));
             $this->_Author->set('first_name', General::sanitize($fields['first_name']));
             $this->_Author->set('last_name', General::sanitize($fields['last_name']));
             $this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
@@ -693,7 +690,7 @@ class contentSystemAuthors extends AdministrationPage
                 // All good, let's save the Author
                 if (is_array($this->_errors) && empty($this->_errors) && $this->_Author->commit()) {
                     Symphony::Database()->delete('tbl_forgotpass', sprintf("
-                        `expiry` < %d OR `author_id` = %d",
+                        `expiry` < '%s' OR `author_id` = %d",
                         DateTimeObj::getGMT('c'),
                         $author_id
                     ));

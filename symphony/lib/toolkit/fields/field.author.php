@@ -464,7 +464,6 @@ class FieldAuthor extends Field implements ExportableField
                     ) {$regex} '{$pattern}'
                 )
             ";
-
         } elseif ($andOperation) {
             foreach ($data as $value) {
                 $this->_key++;
@@ -499,7 +498,6 @@ class FieldAuthor extends Field implements ExportableField
                     ";
                 }
             }
-
         } else {
             if (!is_array($data)) {
                 $data = array($data);
@@ -602,7 +600,7 @@ class FieldAuthor extends Field implements ExportableField
             if (!isset($groups[$this->get('element_name')][$author_id])) {
                 $author = AuthorManager::fetchByID($author_id);
                 // If there is an author, use those values, otherwise just blank it.
-                if($author instanceof Author) {
+                if ($author instanceof Author) {
                     $username = $author->get('username');
                     $full_name = $author->getFullName();
                 } else {

@@ -140,7 +140,6 @@ class EntryManager
             }
 
             Symphony::Database()->insert($fields, 'tbl_entries_data_' . $field_id);
-
         }
 
         $entry->set('id', $entry_id);
@@ -420,9 +419,9 @@ class EntryManager
         }
 
         $sql = sprintf("
-            SELECT %s`e`.id, `e`.section_id, e.`author_id`,
-                UNIX_TIMESTAMP(e.`creation_date`) AS `creation_date`,
-                UNIX_TIMESTAMP(e.`modification_date`) AS `modification_date`
+            SELECT %s`e`.`id`, `e`.section_id, `e`.`author_id`,
+                `e`.`creation_date` AS `creation_date`,
+                `e`.`modification_date` AS `modification_date`
             FROM `tbl_entries` AS `e`
             %s
             WHERE 1
@@ -431,7 +430,7 @@ class EntryManager
             %s
             %s
             %s
-            ", 
+            ",
             $group ? 'DISTINCT ' : '',
             $joins,
             $entry_id ? "AND `e`.`id` IN ('".implode("', '", $entry_id)."') " : '',
@@ -442,6 +441,13 @@ class EntryManager
         );
 
         $rows = Symphony::Database()->fetch($sql);
+
+        // Create UNIX timestamps, as it has always been (Re: #2501)
+        foreach ($rows as &$entry) {
+            $entry['creation_date'] = DateTimeObj::get('U', $entry['creation_date']);
+            $entry['modification_date'] = DateTimeObj::get('U', $entry['modification_date']);
+        }
+        unset($entry);
 
         return ($buildentries && (is_array($rows) && !empty($rows)) ? self::__buildEntries($rows, $section_id, $element_names) : $rows);
     }

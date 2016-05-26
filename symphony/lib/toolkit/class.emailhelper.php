@@ -7,7 +7,7 @@
 /**
  * A helper class for various email functions.
  */
-abstract Class EmailHelper
+abstract class EmailHelper
 {
     /**
      * Folding an email header field body as required by RFC2822.

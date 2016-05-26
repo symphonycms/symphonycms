@@ -11,8 +11,8 @@
  * a UI for a subset of the `CONFIG` file.
  */
 
-class contentSystemPreferences extends AdministrationPage {
-
+class contentSystemPreferences extends AdministrationPage
+{
     public $_errors = array();
 
     // Overload the parent 'view' function since we dont need the switchboard logic
@@ -29,13 +29,10 @@ class contentSystemPreferences extends AdministrationPage {
         if (General::checkFile(CONFIG) === false) {
             $this->pageAlert(__('The Symphony configuration file, %s, or folder is not writable. You will not be able to save changes to preferences.', array('<code>/manifest/config.php</code>')), Alert::ERROR);
             $bIsWritable = false;
-
         } elseif ($formHasErrors) {
             $this->pageAlert(
-                __('An error occurred while processing this form. See below for details.')
-                , Alert::ERROR
+                __('An error occurred while processing this form. See below for details.'), Alert::ERROR
             );
-
         } elseif (isset($this->_context[0]) && $this->_context[0] == 'success') {
             $this->pageAlert(__('Preferences saved.'), Alert::SUCCESS);
         }
@@ -54,7 +51,7 @@ class contentSystemPreferences extends AdministrationPage {
             asort($languages);
 
             $options = array();
-            foreach($languages as $code => $name) {
+            foreach ($languages as $code => $name) {
                 $options[] = array($code, $code == Symphony::Configuration()->get('lang', 'symphony'), $name);
             }
 
@@ -71,7 +68,7 @@ class contentSystemPreferences extends AdministrationPage {
         $email_gateways = $email_gateway_manager->listAll();
 
         if (count($email_gateways) >= 1) {
-            $group = new XMLElement('fieldset', NULL, array('class' => 'settings condensed'));
+            $group = new XMLElement('fieldset', null, array('class' => 'settings condensed'));
             $group->appendChild(new XMLElement('legend', __('Default Email Settings')));
             $label = Widget::Label(__('Gateway'));
 
@@ -108,7 +105,7 @@ class contentSystemPreferences extends AdministrationPage {
         $caches['database'] = 'Database';
 
         if (count($caches) > 1) {
-            $group = new XMLElement('fieldset', NULL, array('class' => 'settings condensed'));
+            $group = new XMLElement('fieldset', null, array('class' => 'settings condensed'));
             $group->appendChild(new XMLElement('legend', __('Default Cache Settings')));
 
             /**
@@ -199,7 +196,7 @@ class contentSystemPreferences extends AdministrationPage {
         Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/preferences/');
 
         if (isset($_POST['action']['save'])) {
-            $settings = $_POST['settings'];
+            $settings = filter_var_array($_POST['settings'], FILTER_SANITIZE_STRING);
 
             /**
              * Just prior to saving the preferences and writing them to the `CONFIG`
@@ -213,7 +210,10 @@ class contentSystemPreferences extends AdministrationPage {
              * @param array $errors
              *  An array of errors passed by reference
              */
-            Symphony::ExtensionManager()->notifyMembers('Save', '/system/preferences/', array('settings' => &$settings, 'errors' => &$this->_errors));
+            Symphony::ExtensionManager()->notifyMembers('Save', '/system/preferences/', array(
+                'settings' => &$settings,
+                'errors' => &$this->_errors
+            ));
 
             if (!is_array($this->_errors) || empty($this->_errors)) {
                 if (is_array($settings) && !empty($settings)) {

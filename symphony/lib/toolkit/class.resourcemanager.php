@@ -35,7 +35,7 @@ class ResourceManager
      */
     private static function getColumnFromType($type)
     {
-        switch($type) {
+        switch ($type) {
             case ResourceManager::RESOURCE_TYPE_EVENT:
                 return 'events';
             case ResourceManager::RESOURCE_TYPE_DS:
@@ -53,7 +53,7 @@ class ResourceManager
      */
     public static function getManagerFromType($type)
     {
-        switch($type) {
+        switch ($type) {
             case ResourceManager::RESOURCE_TYPE_EVENT:
                 return 'EventManager';
             case ResourceManager::RESOURCE_TYPE_DS:
@@ -106,7 +106,7 @@ class ResourceManager
      */
     public static function setSortingField($type, $sort, $write = true)
     {
-        Symphony::Configuration()->set(self::getColumnFromType($type) . '_index_sortby',  $sort , 'sorting');
+        Symphony::Configuration()->set(self::getColumnFromType($type) . '_index_sortby',  $sort, 'sorting');
 
         if ($write) {
             Symphony::Configuration()->write();
@@ -241,7 +241,6 @@ class ResourceManager
 
                 array_multisort($name, $order, $label, SORT_ASC, $resources);
             }
-
         }
 
         $data = array();
@@ -351,7 +350,6 @@ class ResourceManager
             $result = $pages[0][$col];
 
             if (!in_array($r_handle, explode(',', $result))) {
-
                 if (strlen($result) > 0) {
                     $result .= ',';
                 }

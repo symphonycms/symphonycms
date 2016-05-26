@@ -35,7 +35,6 @@ class contentPublish extends AdministrationPage
 
             // Set the sorting in the `EntryManager` for subsequent use
             EntryManager::setFetchSorting($sort, $order);
-
         } else {
             $sort = General::sanitize($sort);
 
@@ -67,7 +66,6 @@ class contentPublish extends AdministrationPage
                 redirect(Administration::instance()->getCurrentPageURL() . $params['filters']);
             }
         }
-
     }
 
     /**
@@ -266,14 +264,7 @@ class contentPublish extends AdministrationPage
         $ul->setAttribute('data-associated-ids', '0');
         $ul->setAttribute('data-search-types', implode($data['search'], ','));
 
-        // Add default filter help
-        $operator = array(
-            'filter' => 'is',
-            'help' => __('Find values that are an exact match for the given string.')
-        );
-        $this->createFilterHelp($ul, $operator);
-
-        // Add custom filter help
+        // Add help text for each filter operator
         foreach ($data['operators'] as $operator) {
             $this->createFilterHelp($ul, $operator);
         }
@@ -281,8 +272,9 @@ class contentPublish extends AdministrationPage
         $wrapper->appendChild($ul);
     }
 
-    private function createFilterHelp(&$wrapper, $operator) {
-        if(empty($operator['help'])) {
+    private function createFilterHelp(&$wrapper, $operator)
+    {
+        if (empty($operator['help'])) {
             return;
         }
 
@@ -313,7 +305,7 @@ class contentPublish extends AdministrationPage
     {
         $section_id = SectionManager::fetchIDFromHandle($context['section_handle']);
 
-        if($section_id) {
+        if ($section_id) {
             $context['associations'] = array(
                 'parent' => SectionManager::fetchParentAssociations($section_id),
                 'child' => SectionManager::fetchChildAssociations($section_id)
@@ -365,8 +357,7 @@ class contentPublish extends AdministrationPage
                 __('Unknown Section'),
                 Page::HTTP_STATUS_NOT_FOUND
             );
-        }
-        else if (!is_writable(CONFIG)) {
+        } elseif (!is_writable(CONFIG)) {
             $this->pageAlert(__('The Symphony configuration file, %s, is not writable. The sort order cannot be modified.', array('<code>/manifest/config.php</code>')), Alert::NOTICE);
         }
 
@@ -413,7 +404,6 @@ class contentPublish extends AdministrationPage
                     // Replace the date field where with the `creation_date` or `modification_date`.
                     $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
                     $where .= $date_where;
-
                 } else {
                     // Handle normal fields
                     $field_id = FieldManager::fetchFieldIDFromElementName(
@@ -425,7 +415,7 @@ class contentPublish extends AdministrationPage
                     if ($field instanceof Field) {
                         $field->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false));
 
-                        $value = implode(',' , $value);
+                        $value = implode(',', $value);
                         $encoded_value = rawurlencode($value);
                         $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, $encoded_value);
 
@@ -515,7 +505,6 @@ class contentPublish extends AdministrationPage
         $columns = array();
 
         if (is_array($visible_columns) && !empty($visible_columns)) {
-
             foreach ($visible_columns as $column) {
                 $columns[] = array(
                     'label' => $column->get('label'),
@@ -567,12 +556,10 @@ class contentPublish extends AdministrationPage
         $aTableBody = array();
 
         if (!is_array($entries['records']) || empty($entries['records'])) {
-
             $aTableBody = array(
                 Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', null, count($aTableHead))), 'odd')
             );
         } else {
-
             $field_pool = array();
 
             if (is_array($visible_columns) && !empty($visible_columns)) {
@@ -1128,7 +1115,6 @@ class contentPublish extends AdministrationPage
 
                 // Check to see if the dancing was premature
                 if (!$entry->commit()) {
-                    define_safe('__SYM_DB_INSERT_FAILED__', true);
                     $this->pageAlert(null, Alert::ERROR);
                 } else {
                     /**
@@ -1328,7 +1314,6 @@ class contentPublish extends AdministrationPage
 
             $this->pageAlert($message, Alert::ERROR);
         } else {
-
             if (is_array($main_fields) && !empty($main_fields)) {
                 foreach ($main_fields as $field) {
                     $primary->appendChild($this->__wrapFieldWithDiv($field, $entry));
@@ -1384,11 +1369,11 @@ class contentPublish extends AdministrationPage
             $fields = $post['fields'];
 
             // Initial checks to see if the Entry is ok
-            if (__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
+            if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
                 $this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
                 // Secondary checks, this will actually process the data and attempt to save
-            } elseif (__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
+            } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
                 foreach ($errors as $field_id => $message) {
                     $this->pageAlert($message, Alert::ERROR);
                 }
@@ -1409,7 +1394,6 @@ class contentPublish extends AdministrationPage
 
                 // Check to see if the dancing was premature
                 if (!$entry->commit()) {
-                    define_safe('__SYM_DB_INSERT_FAILED__', true);
                     $this->pageAlert(null, Alert::ERROR);
                 } else {
                     /**

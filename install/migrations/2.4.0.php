@@ -1,8 +1,7 @@
 <?php
 
-    Class migration_240 extends Migration
+    class migration_240 extends Migration
     {
-
         public static $publish_filtering_disabled = false;
 
         public static function getVersion()
@@ -18,7 +17,7 @@
         public static function upgrade()
         {
             // [#702] Update to include Admin Path configuration
-            if(version_compare(self::$existing_version, '2.4beta2', '<=')) {
+            if (version_compare(self::$existing_version, '2.4beta2', '<=')) {
                 // Add missing config value for index view string length
                 Symphony::Configuration()->set('cell_truncation_length', '75', 'symphony');
                 // Add admin-path to configuration
@@ -28,12 +27,14 @@
             // [#1626] Update all tables to be UTF-8 encoding/collation
             // @link https://gist.github.com/michael-e/5789168
             $tables = Symphony::Database()->fetch("SHOW TABLES");
-            if(is_array($tables) && !empty($tables)){
-                foreach($tables as $table){
+            if (is_array($tables) && !empty($tables)) {
+                foreach ($tables as $table) {
                     $table = current($table);
 
                     // If it's not a Symphony table, ignore it
-                    if(!preg_match('/^' . Symphony::Database()->getPrefix() . '/', $table)) continue;
+                    if (!preg_match('/^' . Symphony::Database()->getPrefix() . '/', $table)) {
+                        continue;
+                    }
 
                     Symphony::Database()->query(sprintf(
                         "ALTER TABLE `%s` CHARACTER SET utf8 COLLATE utf8_unicode_ci",
@@ -52,11 +53,11 @@
                     ALTER TABLE `tbl_fields_date`
                     CHANGE `pre_populate` `pre_populate` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL;
                 ');
+            } catch (Exception $ex) {
             }
-            catch (Exception $ex) {}
 
             // [#1997] Add filtering column to the Sections table
-            if(!Symphony::Database()->tableContainsField('tbl_sections', 'filter')) {
+            if (!Symphony::Database()->tableContainsField('tbl_sections', 'filter')) {
                 Symphony::Database()->query("
                     ALTER TABLE `tbl_sections`
                     ADD `filter` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes';
@@ -64,13 +65,13 @@
             }
 
             $installed_extensions = Symphony::ExtensionManager()->listInstalledHandles();
-            if(in_array('publishfiltering', $installed_extensions)) {
+            if (in_array('publishfiltering', $installed_extensions)) {
                 Symphony::ExtensionManager()->uninstall('publishfiltering');
                 self::$publish_filtering_disabled = true;
             }
 
             // [#1874] XSRF/CRSF options
-            if(version_compare(self::$existing_version, '2.4beta3', '<=')) {
+            if (version_compare(self::$existing_version, '2.4beta3', '<=')) {
                 // How long should a XSRF token be valid
                 Symphony::Configuration()->set('token_lifetime', '15 minutes', 'symphony');
                 // Should the token be removed as soon as it has been used?
@@ -78,7 +79,7 @@
             }
 
             // [#1874] XSRF/CRSF options
-            if(version_compare(self::$existing_version, '2.4RC1', '<=')) {
+            if (version_compare(self::$existing_version, '2.4RC1', '<=')) {
                 // On update, disable XSRF for compatibility purposes
                 Symphony::Configuration()->set('enable_xsrf', 'no', 'symphony');
             }
@@ -100,7 +101,7 @@
         {
             $notes = array();
 
-            if(self::$publish_filtering_disabled) {
+            if (self::$publish_filtering_disabled) {
                 $notes[] = __("As Symphony 2.4 adds the Publish Filtering extension into the core, the standalone extension has been uninstalled. You can remove it from your installation at any time.");
             }
 
@@ -110,5 +111,4 @@
 
             return $notes;
         }
-
     }

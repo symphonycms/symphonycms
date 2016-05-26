@@ -515,7 +515,7 @@ class ExtensionManager implements FileResource
             foreach ($delegates as $delegate) {
                 Symphony::Database()->insert(
                     array(
-                        'extension_id' => $id  ,
+                        'extension_id' => $id,
                         'page' => $delegate['page'],
                         'delegate' => $delegate['delegate'],
                         'callback' => $delegate['callback']
@@ -692,7 +692,7 @@ class ExtensionManager implements FileResource
         $profiling = Symphony::Profiler() instanceof Profiler;
 
         foreach ($services as $s) {
-            if($profiling) {
+            if ($profiling) {
                 // Initial seeding and query count
                 Symphony::Profiler()->seed();
                 $queries = Symphony::Database()->queryCount();
@@ -707,7 +707,7 @@ class ExtensionManager implements FileResource
             }
 
             // Complete the Profiling sample
-            if($profiling) {
+            if ($profiling) {
                 $queries = Symphony::Database()->queryCount() - $queries;
                 Symphony::Profiler()->sample($delegate . '|' . $s['name'], PROFILE_LAP, 'Delegate', $queries);
             }
@@ -857,16 +857,17 @@ class ExtensionManager implements FileResource
             }
         }
 
-        foreach($extensions as $i => $e){
+        foreach ($extensions as $i => $e) {
             $data[$i] = array();
-            foreach($e as $key => $value) {
+            foreach ($e as $key => $value) {
                 // If $select is empty, we assume every field is requested
-                if(in_array($key, $select) || empty($select)) $data[$i][$key] = $value;
+                if (in_array($key, $select) || empty($select)) {
+                    $data[$i][$key] = $value;
+                }
             }
         }
 
         return $data;
-
     }
 
     /**

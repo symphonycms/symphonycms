@@ -13,6 +13,7 @@
 	 * @param {Object} options An object specifying containing the attributes specified below
 	 * @param {String} [options.items='time'] Selector to find the absolute date
 	 * @param {String} [options.timestamp='utc'] Attribute of `object.items` representing the timestamp of the given date
+	 * @param {Integer} [options.max=0] Plugin will disable when the minutes exceed this value. By default this behaviour is off.
 	 *
 	 * @example
 
@@ -22,7 +23,8 @@
 		var objects = this,
 			settings = {
 				items: 'time',
-				timestamp: 'utc'
+				timestamp: 'utc',
+				max: 0
 			};
 
 		$.extend(settings, options);
@@ -95,7 +97,7 @@
 			if(time < 90) {
 				return Symphony.Language.get('about 1 hour ago');
 			}
-			else {
+			else if (!settings.max || time < settings.max) {
 				return Symphony.Language.get('about {$hours} hours ago', {
 					'hours': Math.floor(time / 60)
 				});
@@ -109,10 +111,13 @@
 		objects.find(settings.items).each(function timeago() {
 			var item = $(this),
 				from = parse(item),
-				to = new Date();
+				to = new Date(),
+				rel = say(from, to);
 
 			// Set relative time
-			item.text(say(from, to));
+			if (rel) {
+				item.text(rel);
+			}
 		});
 
 	/*-----------------------------------------------------------------------*/

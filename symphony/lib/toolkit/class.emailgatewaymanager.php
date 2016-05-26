@@ -8,7 +8,7 @@
  * A manager to standardize the finding and listing of installed gateways.
  */
 
-Class EmailGatewayManager implements FileResource
+class EmailGatewayManager implements FileResource
 {
     /**
      * The default gateway to use when one is not provided. This value can

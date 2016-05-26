@@ -4,9 +4,8 @@
      * @package content
      */
 
-    Class InstallerPage extends HTMLPage
+    class InstallerPage extends HTMLPage
     {
-
         private $_template;
 
         protected $_params;
@@ -34,7 +33,7 @@
             $this->addHeaderToPage('Pragma', 'no-cache');
 
             $this->setTitle($this->_page_title);
-            $this->addElementToHead(new XMLElement('meta', NULL, array('charset' => 'UTF-8')), 1);
+            $this->addElementToHead(new XMLElement('meta', null, array('charset' => 'UTF-8')), 1);
 
             $this->addStylesheetToHead(APPLICATION_URL . '/assets/css/installer.min.css', 'screen', 30);
 
@@ -52,23 +51,23 @@
 
             $title->appendChild($version);
 
-            if(!is_null($extra)){
+            if (!is_null($extra)) {
                 $title->appendChild($extra);
             }
 
             $this->Form->appendChild($title);
 
-            if(isset($this->_params['show-languages']) && $this->_params['show-languages']){
+            if (isset($this->_params['show-languages']) && $this->_params['show-languages']) {
                 $languages = new XMLElement('ul');
 
-                foreach(Lang::getAvailableLanguages(false) as $code => $lang) {
+                foreach (Lang::getAvailableLanguages(false) as $code => $lang) {
                     $languages->appendChild(new XMLElement(
                         'li',
                         Widget::Anchor(
                             $lang,
                             '?lang=' . $code
                         ),
-                        ($_REQUEST['lang'] == $code || ($_REQUEST['lang'] == NULL && $code == 'en')) ? array('class' => 'selected') : array()
+                        ($_REQUEST['lang'] == $code || ($_REQUEST['lang'] == null && $code == 'en')) ? array('class' => 'selected') : array()
                     ));
                 }
 
@@ -96,13 +95,11 @@
 
             // What folder wasn't writable? The docroot or the logs folder?
             // RE: #1706
-            if(is_writeable(DOCROOT) === false) {
+            if (is_writeable(DOCROOT) === false) {
                 $folder = DOCROOT;
-            }
-            else if(is_writeable(MANIFEST) === false) {
+            } elseif (is_writeable(MANIFEST) === false) {
                 $folder = MANIFEST;
-            }
-            else if(is_writeable(INSTALL_LOGS) === false) {
+            } elseif (is_writeable(INSTALL_LOGS) === false) {
                 $folder = INSTALL_LOGS;
             }
 
@@ -118,7 +115,7 @@
 
             $this->Form->appendChild($h2);
 
-            if(!empty($this->_params['errors'])){
+            if (!empty($this->_params['errors'])) {
                 $div = new XMLElement('div');
                 $this->__appendError(array_keys($this->_params['errors']), $div, __('Symphony needs the following requirements to be met before things can be taken to the “next level”.'));
 
@@ -136,11 +133,11 @@
 
             $languages = array();
 
-            foreach(Lang::getAvailableLanguages(false) as $code => $lang) {
+            foreach (Lang::getAvailableLanguages(false) as $code => $lang) {
                 $languages[] = array($code, ($code === 'en'), $lang);
             }
 
-            if(count($languages) > 1){
+            if (count($languages) > 1) {
                 $languages[0][1] = false;
                 $languages[1][1] = true;
             }
@@ -161,13 +158,11 @@
             // Attempt to get log information from the log file
             try {
                 $log = file_get_contents(INSTALL_LOGS . '/install');
-            }
-            catch (Exception $ex) {
+            } catch (Exception $ex) {
                 $log_entry = Symphony::Log()->popFromLog();
-                if(isset($log_entry['message'])) {
+                if (isset($log_entry['message'])) {
                     $log = $log_entry['message'];
-                }
-                else {
+                } else {
                     $log = 'Unknown error occurred when reading the install log';
                 }
             }
@@ -196,13 +191,13 @@
             $this->Form->appendChild($div);
 
             $ul = new XMLElement('ul');
-            foreach($this->_params['disabled-extensions'] as $handle){
+            foreach ($this->_params['disabled-extensions'] as $handle) {
                 $ul->appendChild(
                     new XMLElement('li', '<code>' . $handle . '</code>')
                 );
             }
 
-            if($ul->getNumberOfChildren() !== 0){
+            if ($ul->getNumberOfChildren() !== 0) {
                 $this->Form->appendChild(
                     new XMLElement('p',
                         __('Looks like the following extensions couldn’t be enabled and must be manually installed. It’s a minor setback in our otherwise prosperous future together.')
@@ -225,7 +220,7 @@
 
         protected function viewConfiguration()
         {
-        /* -----------------------------------------------
+            /* -----------------------------------------------
          * Populating fields array
          * -----------------------------------------------
          */
@@ -246,7 +241,7 @@
 
             $this->Form->appendChild($div);
 
-            if(!empty($this->_params['errors'])) {
+            if (!empty($this->_params['errors'])) {
                 $this->Form->appendChild(
                     Widget::Error(new XMLElement('p'), __('Oops, a minor hurdle on your path to glory! There appears to be something wrong with the details entered below.'))
                 );
@@ -260,7 +255,7 @@
             $fieldset = new XMLElement('fieldset');
             $div = new XMLElement('div');
             $this->__appendError(array('no-write-permission-root', 'no-write-permission-workspace'), $div);
-            if($div->getNumberOfChildren() > 0) {
+            if ($div->getNumberOfChildren() > 0) {
                 $fieldset->appendChild($div);
                 $this->Form->appendChild($fieldset);
             }
@@ -430,35 +425,35 @@
 
         private function __appendError(array $codes, XMLElement &$element, $message = null)
         {
-            if(is_null($message)) {
+            if (is_null($message)) {
                 $message =  __('The following errors have been reported:');
             }
 
-            foreach($codes as $i => $c){
-                if(!isset($this->_params['errors'][$c])) unset($codes[$i]);
+            foreach ($codes as $i => $c) {
+                if (!isset($this->_params['errors'][$c])) {
+                    unset($codes[$i]);
+                }
             }
 
-            if(!empty($codes)) {
-                if(count($codes) > 1){
+            if (!empty($codes)) {
+                if (count($codes) > 1) {
                     $ul = new XMLElement('ul');
 
-                    foreach($codes as $c){
-                        if(isset($this->_params['errors'][$c])){
+                    foreach ($codes as $c) {
+                        if (isset($this->_params['errors'][$c])) {
                             $ul->appendChild(new XMLElement('li', $this->_params['errors'][$c]['details']));
                         }
                     }
 
                     $element = Widget::Error($element, $message);
                     $element->appendChild($ul);
-                }
-                else{
+                } else {
                     $code = array_pop($codes);
 
-                    if(isset($this->_params['errors'][$code])){
+                    if (isset($this->_params['errors'][$code])) {
                         $element = Widget::Error($element, $this->_params['errors'][$code]['details']);
                     }
                 }
             }
         }
-
     }

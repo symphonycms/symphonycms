@@ -210,12 +210,14 @@ class SectionDatasource extends Datasource
         if (!empty($associated_entry_counts)) {
             foreach ($associated_entry_counts as $section_id => $fields) {
                 foreach ($this->_associated_sections as $section) {
-                    if ($section['id'] != $section_id) continue;
+                    if ($section['id'] != $section_id) {
+                        continue;
+                    }
 
                     // For each related field show the count (#2083)
-                    foreach($fields as $field_id => $count) {
+                    foreach ($fields as $field_id => $count) {
                         $field_handle = FieldManager::fetchHandleFromID($field_id);
-                        if($field_handle) {
+                        if ($field_handle) {
                             $xEntry->setAttribute($section['handle'] . '-' . $field_handle, (string)$count);
                         }
 
@@ -420,7 +422,6 @@ class SectionDatasource extends Datasource
                 if (!empty($value)) {
                     $where .= " AND `e`.id " . $c . " (".implode(", ", $value).") ";
                 }
-
             } elseif ($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
                 $date_joins = '';
                 $date_where = '';

@@ -306,7 +306,7 @@ class Gateway
                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
             }
 
-            switch($this->_method) {
+            switch ($this->_method) {
                 case 'POST':
                     curl_setopt($ch, CURLOPT_POST, 1);
                     curl_setopt($ch, CURLOPT_POSTFIELDS, $this->_postfields);
@@ -426,7 +426,6 @@ class Gateway
             } while (true);
 
             $response = $dechunked;
-
         }
 
         // Following code emulates part of the function curl_getinfo()

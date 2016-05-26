@@ -8,7 +8,6 @@
  */
 class SMTPException extends Exception
 {
-
 }
 
 /**
@@ -33,10 +32,8 @@ class SMTP
     protected $_header_fields = array();
 
     protected $_from = null;
-    protected $_subject = null;
-    protected $_to = array();
 
-    protected $_ip = '127.0.0.1';
+    protected $_helo_host = null;
     protected $_connection = false;
 
     protected $_helo = false;
@@ -58,7 +55,8 @@ class SMTP
      *    $options['secure'] can be ssl, tls or null.
      *    $options['username'] the username used to login to the server. Leave empty for no authentication.
      *    $options['password'] the password used to login to the server. Leave empty for no authentication.
-     *    $options['local_ip'] the ip address used in the ehlo/helo commands. Only ip's are accepted.
+     *    $options['helo_hostname'] the hostname address used in the EHLO/HELO commands. Ideally an FQDN.
+     *    $options['local_ip'] the ip address used in the EHLO/HELO commands if no helo_hostname is given.
      * @throws SMTPException
      */
     public function __construct($host = '127.0.0.1', $port = null, $options = array())
@@ -71,7 +69,7 @@ class SMTP
                 case 'ssl':
                     $this->_transport = 'ssl';
                     $this->_secure = 'ssl';
-                    if ($port == null) {
+                    if ($port === null) {
                         $port = 465;
                     }
                     break;
@@ -82,13 +80,15 @@ class SMTP
             }
         }
 
-        if (is_null($options['local_ip'])) {
-            $this->_ip = gethostbyname(php_uname('n'));
+        if (!empty($options['helo_hostname'])) {
+            $this->_helo_host = $options['helo_hostname'];
+        } elseif (!empty($options['local_ip'])) {
+            $this->_helo_host = '[' . $options['local_ip'] . ']';
         } else {
-            $this->_ip = $options['local_ip'];
+            $this->_helo_host = '[' . gethostbyname(php_uname('n')) . ']';
         }
 
-        if ($port == null) {
+        if ($port === null) {
             $port = 25;
         }
 
@@ -267,7 +267,6 @@ class SMTP
             foreach ($body as $val) {
                 $this->_send($name . ': ' . $val);
             }
-
         }
         // Send an empty newline. Solves bugs with Apple Mail
         $this->_send('');
@@ -354,7 +353,7 @@ class SMTP
      */
     protected function _ehlo()
     {
-        $this->_send('EHLO [' . $this->_ip . ']');
+        $this->_send('EHLO ' . $this->_helo_host);
         $this->_expect(array(250, 220), 300);
     }
 
@@ -367,7 +366,7 @@ class SMTP
      */
     protected function _helo()
     {
-        $this->_send('HELO [' . $this->_ip . ']');
+        $this->_send('HELO ' . $this->_helo_host);
         $this->_expect(array(250, 220), 300);
     }
 
@@ -473,7 +472,6 @@ class SMTP
             } elseif ($cmd === null || !in_array($cmd, $code)) {
                 $errMsg = $msg;
             }
-
         } while (strpos($more, '-') === 0); // The '-' message prefix indicates an information string instead of a response string.
 
         if ($errMsg !== '') {

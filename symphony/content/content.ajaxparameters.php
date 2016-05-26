@@ -38,7 +38,7 @@ class contentAjaxParameters extends JSONPage
             $params = array_merge($params, $this->__getDSParams());
         }
 
-        foreach ($params as $param) { 
+        foreach ($params as $param) {
             if (empty($filter) || strripos($param, $filter) !== false) {
                 $this->_Result[] = $param;
             }

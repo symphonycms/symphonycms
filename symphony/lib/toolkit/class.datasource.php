@@ -295,13 +295,11 @@ class Datasource
      */
     public function processParameters(array $env = null)
     {
-
         if ($env) {
             $this->_env = $env;
         }
 
         if ((isset($this->_env) && is_array($this->_env)) && isset($this->dsParamFILTERS) && is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)) {
-
             foreach ($this->dsParamFILTERS as $key => $value) {
                 $value = stripslashes($value);
                 $new_value = $this->__processParametersInString($value, $this->_env);
@@ -467,10 +465,9 @@ class Datasource
                     if (!empty($replacement)) {
                         break;
                     }
-
                 }
 
-                if ($escape == true) {
+                if ($escape) {
                     $replacement = urlencode($replacement);
                 }
 

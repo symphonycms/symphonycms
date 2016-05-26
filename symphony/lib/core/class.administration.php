@@ -94,7 +94,7 @@ class Administration extends Symphony
     public static function isLoggedIn()
     {
         if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && in_array(strlen($_REQUEST['auth-token']), array(6, 8, 16))) {
-            return parent::loginFromToken($_REQUEST['auth-token']);
+            return self::loginFromToken($_REQUEST['auth-token']);
         }
 
         return parent::isLoggedIn();
@@ -202,7 +202,7 @@ class Administration extends Symphony
                 $this->_callback['context'] = array();
             }
 
-            if($this->__canAccessAlerts()) {
+            if ($this->__canAccessAlerts()) {
                 // Can the core be updated?
                 $this->checkCoreForUpdates();
                 // Do any extensions need updating?

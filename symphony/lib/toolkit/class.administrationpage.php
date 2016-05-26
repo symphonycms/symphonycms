@@ -12,7 +12,7 @@
  * and the view/action being the view.
  */
 
-Class AdministrationPage extends HTMLPage
+class AdministrationPage extends HTMLPage
 {
     /**
      * An array of `Alert` objects used to display page level
@@ -248,7 +248,6 @@ Class AdministrationPage extends HTMLPage
         } else {
             $ul->appendChild($li);
         }
-
     }
 
     /**
@@ -598,7 +597,9 @@ Class AdministrationPage extends HTMLPage
         $body_id = trim(
             preg_replace_callback(
                 "/([A-Z])/",
-                create_function('$id', 'return "-" . strtolower($id[0]);'),
+                function($id) {
+                    return "-" . strtolower($id[0]);
+                },
                 $body_id
             ),
             '-'
@@ -882,7 +883,6 @@ Class AdministrationPage extends HTMLPage
         // Loop over the default Symphony navigation file, converting
         // it into an associative array representation
         foreach ($xml->xpath('/navigation/group') as $n) {
-
             $index = (string)$n->attributes()->index;
             $children = $n->xpath('children/item');
             $content = $n->attributes();
@@ -988,7 +988,6 @@ Class AdministrationPage extends HTMLPage
 
             if (is_array($extension_navigation) && !empty($extension_navigation)) {
                 foreach ($extension_navigation as $item) {
-
                     $type = isset($item['children']) ? Extension::NAV_GROUP : Extension::NAV_CHILD;
 
                     switch ($type) {
@@ -1047,7 +1046,8 @@ Class AdministrationPage extends HTMLPage
      * @param array $item
      * @return array
      */
-    private static function createParentNavItem($index, $item) {
+    private static function createParentNavItem($index, $item)
+    {
         $nav_item = array(
             'name' => $item['name'],
             'type' => isset($item['type']) ? $item['type'] : 'structure',
@@ -1068,7 +1068,8 @@ Class AdministrationPage extends HTMLPage
      * @param string $extension_handle
      * @return array
      */
-    private static function createChildNavItem($item, $extension_handle) {
+    private static function createChildNavItem($item, $extension_handle)
+    {
         if (!isset($item['relative']) || $item['relative'] === true) {
             $link = '/extension/' . $extension_handle . '/' . ltrim($item['link'], '/');
         } else {

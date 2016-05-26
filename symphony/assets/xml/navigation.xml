@@ -26,14 +26,12 @@
 			<item link="/system/authors/" name="Authors" />
 			<item link="/system/authors/edit/" name="Author Edit" visible="no" />
 			<item link="/system/authors/new/" name="Author New" visible="no" limit="manager" />
-			<item link="/system/authors/summary/" name="Author Summary" visible="no" />
 
 			<item link="/system/preferences/" limit="developer" name="Preferences" />
 
 			<item link="/system/extensions/" limit="developer" name="Extensions" />
 			<item link="/system/extensions/info/" name="Extension Information" visible="no" />
 
-			<item link="/system/actions/" limit="primary" visible="no" name="File Actions" />
 			<item link="/system/log/" limit="primary" visible="no" name="Activity Log" />
 		</children>
 	</group>

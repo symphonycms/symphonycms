@@ -11,20 +11,16 @@
     ini_set('magic_quotes_runtime', false);
 
     // Redirect to installer if it exists
-    if (!file_exists(CONFIG))
-    {
+    if (!file_exists(CONFIG)) {
         $bInsideInstaller = (bool)preg_match('%(/|\\\\)install(/|\\\\)index.php$%', $_SERVER['SCRIPT_FILENAME']);
 
         if (!$bInsideInstaller && Symphony::isInstallerAvailable()) {
             header(sprintf('Location: %s/install/', URL));
             exit;
-        }
-
-        else if(!$bInsideInstaller) {
+        } elseif (!$bInsideInstaller) {
             die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
         }
-    }
-    else {
+    } else {
         // Load configuration file:
         include CONFIG;
         Symphony::initialiseConfiguration($settings);
@@ -35,8 +31,11 @@
         // Handle custom admin paths, #702
         $adminPath = Symphony::Configuration()->get('admin-path', 'symphony');
         $adminPath = (is_null($adminPath)) ? 'symphony' :  $adminPath;
-        if (isset($_GET['symphony-page']) && strpos($_GET['symphony-page'], $adminPath, 0) === 0) {
-            $_GET['symphony-page'] = preg_replace('%^' . preg_quote($adminPath) . '\/%', '', $_GET['symphony-page'], 1);
+        // getCurrentPage() always starts with / #2522
+        $adminRegExp = '%^\/' . preg_quote($adminPath) . '\/%';
+
+        if (preg_match($adminRegExp, getCurrentPage()) === 1) {
+            $_GET['symphony-page'] = preg_replace($adminRegExp, '', getCurrentPage(), 1);
 
             if ($_GET['symphony-page'] == '') {
                 unset($_GET['symphony-page']);
@@ -65,8 +64,7 @@
         );
 
         // Use default launcher:
-        if (defined('SYMPHONY_LAUNCHER') === false)
-        {
+        if (defined('SYMPHONY_LAUNCHER') === false) {
             define('SYMPHONY_LAUNCHER', 'symphony_launcher');
         }
     }
