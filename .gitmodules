@@ -1,0 +1,6 @@
+[submodule "extensions/pagesfield"]
+	path = extensions/pagesfield
+	url = git://github.com/symphonists/pagesfield.git
+[submodule "extensions/richtext_redactor"]
+	path = extensions/richtext_redactor
+	url = https://github.com/remie/richtext_redactor.git
