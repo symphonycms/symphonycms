@@ -242,15 +242,19 @@ define_safe('__SECURE__',
 
 /**
  * The root url directory.
+ * This constant will always ends with '/'
+ * to avoid problems when the root is simply /
+ *
+ * @since Symphony 2.7.0
  * @var string
  */
-define_safe('DIRROOT', rtrim(dirname(server_safe('PHP_SELF')), '\/'));
+define_safe('DIRROOT', rtrim(dirname(server_safe('PHP_SELF')), '\/') . '/');
 
 /**
  * The current domain name.
  * @var string
  */
-define_safe('DOMAIN', HTTP_HOST . DIRROOT);
+define_safe('DOMAIN', HTTP_HOST . rtrim(DIRROOT, '/'));
 
 /**
  * The base URL of this Symphony install, minus the symphony path.
