@@ -75,7 +75,13 @@ class Session
                 array('Session', 'gc')
             );
 
-            session_set_cookie_params($lifetime, rawurlencode($path), ($domain ? $domain : self::getDomain()), $secure, $httpOnly);
+            session_set_cookie_params(
+                $lifetime,
+                static::createCookieSafePath($path),
+                ($domain ? $domain : self::getDomain()),
+                $secure,
+                $httpOnly
+            );
             session_cache_limiter('');
 
             if (session_id() == '') {
@@ -91,6 +97,24 @@ class Session
         }
 
         return session_id();
+    }
+
+    /**
+     * Returns a properly formatted ascii string for the cookie path.
+     * Browsers are notoriously bad at parsing the cookie path. They do not
+     * respect the content-encoding header. So we must be careful when dealing
+     * with setups with special characters in their paths.
+     *
+     * @since Symphony 2.7.0
+     **/
+    protected static function createCookieSafePath($path)
+    {
+        $path = array_filter(explode('/', $path));
+        if (empty($path)) {
+            return '/';
+        }
+        $path = array_map(rawurlencode, $path);
+        return '/' . implode('/', $path) . '/';
     }
 
     /**
