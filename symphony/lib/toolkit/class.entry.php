@@ -256,6 +256,33 @@ class Entry
             $message = null;
             $field = FieldManager::fetch($info['id']);
 
+            /**
+             * Prior to checking a field's post data.
+             *
+             * @delegate EntryPreCheckPostFieldData
+             * @since Symphony 2.7.0
+             * @param string $context
+             * '/backend/' resp. '/frontend/'
+             * @param object $section
+             *  The section of the field
+             * @param object $field
+             *  The field, passed by reference
+             * @param array $post_data
+             *  All post data, passed by reference
+             * @param array $errors
+             *  The errors (of fields already checked), passed by reference
+             */
+            Symphony::ExtensionManager()->notifyMembers(
+                'EntryPreCheckPostFieldData',
+                class_exists('Administration', false) ? '/backend/' : '/frontend/',
+                array(
+                    'section' => $section,
+                    'field' => &$field,
+                    'post_data' => &$data,
+                    'errors' => &$errors
+                )
+            );
+
             if ($ignore_missing_fields && !isset($data[$field->get('element_name')])) {
                 continue;
             }
