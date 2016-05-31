@@ -244,12 +244,27 @@ class contentPublish extends AdministrationPage
 
         // Custom field comparisons
         foreach ($data['operators'] as $operator) {
+            
             $filter = trim($operator['filter']);
-
+            
+            // Check selected state
+            $selected = false;
+            
+            // Selected state : Comparison mode "between" (x to y)
+            if ($operator['title'] === 'between' && preg_match('/^(-?(?:\d+(?:\.\d+)?|\.\d+)) to (-?(?:\d+(?:\.\d+)?|\.\d+))$/i', $data['filter'] )) {
+                $selected = true;
+            // Selected state : Other comparison modes (except "is")
+            } else if ((!empty($filter) && strpos($data['filter'], $filter) === 0)) {
+                $selected = true;
+            }
+	        
             $comparisons[] = array(
-                $filter,
-                (!empty($filter) && strpos($data['filter'], $filter) === 0),
-                __($operator['title'])
+                $operator['filter'],
+                $selected,
+                __($operator['title']),
+                null,
+                null,
+                array('data-comparison' => $operator['title'])
             );
         }
 
@@ -280,7 +295,7 @@ class contentPublish extends AdministrationPage
 
         $li = new XMLElement('li', __('Comparison mode') . ': ' . $operator['help'], array(
             'class' => 'help',
-            'data-comparison' => trim($operator['filter'])
+            'data-comparison' => $operator['title']
         ));
 
         $wrapper->appendChild($li);
@@ -294,7 +309,7 @@ class contentPublish extends AdministrationPage
             $filter = trim($operator['filter']);
 
             if (!empty($filter) && strpos($data['filter'], $filter) === 0) {
-                $query = substr($data['filter'], strlen($filter));
+                $query = substr($data['filter'], strlen($operator['filter']));
             }
         }
 
