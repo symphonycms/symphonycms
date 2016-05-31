@@ -890,7 +890,7 @@ class contentPublish extends AdministrationPage
                      */
                     Symphony::ExtensionManager()->notifyMembers('EntryPostDelete', '/publish/', array('entry_id' => $checked));
 
-                    redirect($_SERVER['REQUEST_URI']);
+                    redirect(server_safe('REQUEST_URI'));
                     break;
                 default:
                     list($option, $field_id, $value) = explode('-', $_POST['with-selected'], 3);
@@ -941,7 +941,7 @@ class contentPublish extends AdministrationPage
                             ));
                         }
 
-                        redirect($_SERVER['REQUEST_URI']);
+                        redirect(server_safe('REQUEST_URI'));
                     }
             }
         }

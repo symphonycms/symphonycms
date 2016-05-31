@@ -337,7 +337,8 @@ abstract class Page
         if (!$max_size) {
             return true;
         }
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && (int)$_SERVER['CONTENT_LENGTH'] > General::convertHumanFileSizeToBytes($max_size)) {
+
+        if (server_safe('REQUEST_METHOD') === 'POST' && (int)server_safe('CONTENT_LENGTH') > General::convertHumanFileSizeToBytes($max_size)) {
             return false;
         }
 

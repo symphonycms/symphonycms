@@ -68,6 +68,26 @@ function define_safe($name, $value)
 }
 
 /**
+ * Retrieve a value from the $_SERVER array. Makes sure the key exists.
+ * Returns null otherwise.
+ *
+ * This function is an extension point. We could check other storage for
+ * specific values or enforce some security restrictions.
+ *
+ * @param string $name
+ *  The name of the value to retrieve
+ * @return mixed
+ *  The value, is it exists
+ */
+function server_safe($name)
+{
+    if (isset($_SERVER[$name])) {
+        return $_SERVER[$name];
+    }
+    return null;
+}
+
+/**
  * Returns the current URL string from within the Administration
  * context. It omits the Symphony directory from the current URL.
  *
@@ -231,7 +251,7 @@ function symphony_launcher($mode)
     $output = $renderer->display(getCurrentPage());
 
     // #1808
-    if (isset($_SERVER['HTTP_MOD_REWRITE'])) {
+    if (server_safe('HTTP_MOD_REWRITE') != null) {
         $output = file_get_contents(GenericExceptionHandler::getTemplate('fatalerror.rewrite'));
         $output = str_replace('{ASSETS_URL}', ASSETS_URL, $output);
         $output = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $output);

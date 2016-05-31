@@ -208,13 +208,13 @@ define_safe('TWO_WEEKS', (60*60*24*14));
  * Returns the environmental variable if HTTPS is in use.
  * @var string|boolean
  */
-define_safe('HTTPS', $_SERVER['HTTPS']);
+define_safe('HTTPS', server_safe('HTTPS'));
 
 /**
  * Returns the current host, ie. google.com
  * @var string
  */
-$http_host = $_SERVER['HTTP_HOST'];
+$http_host = server_safe('HTTP_HOST');
 define_safe('HTTP_HOST', function_exists('idn_to_utf8') ? idn_to_utf8($http_host) : $http_host);
 unset($http_host);
 
@@ -222,13 +222,13 @@ unset($http_host);
  * Returns the IP address of the machine that is viewing the current page.
  * @var string
  */
-define_safe('REMOTE_ADDR', $_SERVER['REMOTE_ADDR']);
+define_safe('REMOTE_ADDR', server_safe('REMOTE_ADDR'));
 
 /**
  * Returns the User Agent string of the browser that is viewing the current page
  * @var string
  */
-define_safe('HTTP_USER_AGENT', $_SERVER['HTTP_USER_AGENT']);
+define_safe('HTTP_USER_AGENT', server_safe('HTTP_USER_AGENT'));
 
 /**
  * If HTTPS is on, `__SECURE__` will be set to true, otherwise false. Use union of
@@ -237,16 +237,14 @@ define_safe('HTTP_USER_AGENT', $_SERVER['HTTP_USER_AGENT']);
  * @var string|boolean
  */
 define_safe('__SECURE__',
-    (HTTPS == 'on' ||
-        isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
-        $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')
+    (HTTPS == 'on' || server_safe('HTTP_X_FORWARDED_PROTO') == 'https')
 );
 
 /**
  * The root url directory.
  * @var string
  */
-define_safe('DIRROOT', rtrim(dirname($_SERVER['PHP_SELF']), '\/'));
+define_safe('DIRROOT', rtrim(dirname(server_safe('PHP_SELF')), '\/'));
 
 /**
  * The current domain name.
