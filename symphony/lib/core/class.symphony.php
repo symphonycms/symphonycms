@@ -259,10 +259,7 @@ abstract class Symphony implements Singleton
      */
     public static function initialiseCookie()
     {
-        $cookie_path = @parse_url(URL, PHP_URL_PATH);
-        $cookie_path = '/' . trim($cookie_path, '/');
-
-        define_safe('__SYM_COOKIE_PATH__', $cookie_path);
+        define_safe('__SYM_COOKIE_PATH__', DIRROOT);
         define_safe('__SYM_COOKIE_PREFIX_', self::Configuration()->get('cookie_prefix', 'symphony'));
         define_safe('__SYM_COOKIE_PREFIX__', self::Configuration()->get('cookie_prefix', 'symphony'));
 
