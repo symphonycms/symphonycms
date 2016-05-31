@@ -208,25 +208,27 @@ define_safe('TWO_WEEKS', (60*60*24*14));
  * Returns the environmental variable if HTTPS is in use.
  * @var string|boolean
  */
-define_safe('HTTPS', getenv('HTTPS'));
+define_safe('HTTPS', $_SERVER['HTTPS']);
 
 /**
  * Returns the current host, ie. google.com
  * @var string
  */
-define_safe('HTTP_HOST', function_exists('idn_to_utf8') ? idn_to_utf8(getenv('HTTP_HOST')) : getenv('HTTP_HOST'));
+$http_host = $_SERVER['HTTP_HOST'];
+define_safe('HTTP_HOST', function_exists('idn_to_utf8') ? idn_to_utf8($http_host) : $http_host);
+unset($http_host);
 
 /**
  * Returns the IP address of the machine that is viewing the current page.
  * @var string
  */
-define_safe('REMOTE_ADDR', getenv('REMOTE_ADDR'));
+define_safe('REMOTE_ADDR', $_SERVER['REMOTE_ADDR']);
 
 /**
  * Returns the User Agent string of the browser that is viewing the current page
  * @var string
  */
-define_safe('HTTP_USER_AGENT', getenv('HTTP_USER_AGENT'));
+define_safe('HTTP_USER_AGENT', $_SERVER['HTTP_USER_AGENT']);
 
 /**
  * If HTTPS is on, `__SECURE__` will be set to true, otherwise false. Use union of
