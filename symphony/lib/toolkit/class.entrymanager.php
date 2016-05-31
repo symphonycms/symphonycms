@@ -174,39 +174,48 @@ class EntryManager
                 continue;
             }
 
+            $did_lock = false;
             try {
+                $did_lock = Symphony::Database()->query('LOCK TABLES tbl_entries_data_' . $field_id . ' WRITE');
                 Symphony::Database()->delete('tbl_entries_data_' . $field_id, sprintf("
                     `entry_id` = %d", $entry->get('id')
                 ));
-            } catch (Exception $e) {
-                // Discard?
-            }
 
-            if (!is_array($field) || empty($field)) {
-                continue;
-            }
-
-            $data = array(
-                'entry_id' => $entry->get('id')
-            );
-
-            $fields = array();
-
-            foreach ($field as $key => $value) {
-                if (is_array($value)) {
-                    foreach ($value as $ii => $v) {
-                        $fields[$ii][$key] = $v;
+                if (!is_array($field) || empty($field)) {
+                    if ($did_lock) {
+                        Symphony::Database()->query('UNLOCK TABLES');
                     }
-                } else {
-                    $fields[max(0, count($fields) - 1)][$key] = $value;
+                    continue;
                 }
+
+                $data = array(
+                    'entry_id' => $entry->get('id')
+                );
+
+                $fields = array();
+
+                foreach ($field as $key => $value) {
+                    if (is_array($value)) {
+                        foreach ($value as $ii => $v) {
+                            $fields[$ii][$key] = $v;
+                        }
+                    } else {
+                        $fields[max(0, count($fields) - 1)][$key] = $value;
+                    }
+                }
+
+                foreach ($fields as $index => $field_data) {
+                    $fields[$index] = array_merge($data, $field_data);
+                }
+
+                Symphony::Database()->insert($fields, 'tbl_entries_data_' . $field_id);
+            } catch (Exception $e) {
+                Symphony::Log()->pushExceptionToLog($e, true);
             }
 
-            foreach ($fields as $index => $field_data) {
-                $fields[$index] = array_merge($data, $field_data);
+            if ($did_lock) {
+                Symphony::Database()->query('UNLOCK TABLES');
             }
-
-            Symphony::Database()->insert($fields, 'tbl_entries_data_' . $field_id);
         }
 
         return true;
