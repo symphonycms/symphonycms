@@ -3,6 +3,9 @@
     // Find out where we are:
     define('DOCROOT', __DIR__);
 
+    // Propagate this change to all executables:
+    chdir(DOCROOT);
+
     // Include autoloader:
     require_once DOCROOT . '/vendor/autoload.php';
 

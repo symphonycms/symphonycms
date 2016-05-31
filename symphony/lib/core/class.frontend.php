@@ -163,23 +163,27 @@ class FrontendPageNotFoundExceptionHandler extends SymphonyErrorPageHandler
 
         // No 404 detected, throw default Symphony error page
         if (is_null($page['id'])) {
-            parent::render(new SymphonyErrorPage(
+            self::sendHeaders($e);
+            $e = new SymphonyErrorPage(
                 $e->getMessage(),
                 __('Page Not Found'),
                 'generic',
                 array(),
                 Page::HTTP_STATUS_NOT_FOUND
-            ));
+            );
+            include $e->getTemplate();
 
             // Recursive 404
         } elseif (isset($previous_exception)) {
-            parent::render(new SymphonyErrorPage(
+            self::sendHeaders($e);
+            $e = new SymphonyErrorPage(
                 __('This error occurred whilst attempting to resolve the 404 page for the original request.') . ' ' . $e->getMessage(),
                 __('Page Not Found'),
                 'generic',
                 array(),
                 Page::HTTP_STATUS_NOT_FOUND
-            ));
+            );
+            include $e->getTemplate();
 
             // Handle 404 page
         } else {
@@ -188,8 +192,7 @@ class FrontendPageNotFoundExceptionHandler extends SymphonyErrorPageHandler
             Frontend::instance()->setException($e);
             $output = Frontend::instance()->display($url);
             echo $output;
-
-            exit;
         }
+        exit;
     }
 }

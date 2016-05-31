@@ -60,14 +60,14 @@ class FieldUpload extends Field implements ExportableField, ImportableField
                 'title' => 'contains',
                 'filter' => 'regexp: ',
                 'help' => __('Find files that match the given <a href="%s">MySQL regular expressions</a>.', array(
-                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+                    'http://dev.mysql.com/doc/mysql/en/regexp.html'
                 ))
             ),
             array(
                 'title' => 'does not contain',
                 'filter' => 'not-regexp: ',
                 'help' => __('Find files that do not match the given <a href="%s">MySQL regular expressions</a>.', array(
-                    'http://dev.mysql.com/doc/mysql/en/Regexp.html'
+                    'http://dev.mysql.com/doc/mysql/en/regexp.html'
                 ))
             ),
             array(
@@ -428,11 +428,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
             // Grab the existing entry data to preserve the MIME type and size information
             if (isset($entry_id)) {
-                $row = Symphony::Database()->fetchRow(0, sprintf(
-                    "SELECT `file`, `mimetype`, `size`, `meta` FROM `tbl_entries_data_%d` WHERE `entry_id` = %d",
-                    $this->get('id'),
-                    $entry_id
-                ));
+                $row = $this->getCurrentValues($entry_id);
 
                 if (empty($row) === false) {
                     $result = $row;
@@ -468,14 +464,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
         // Check to see if the entry already has a file associated with it:
         if (is_null($entry_id) === false) {
-            $row = Symphony::Database()->fetchRow(0, sprintf(
-                "SELECT *
-                FROM `tbl_entries_data_%s`
-                WHERE `entry_id` = %d
-                LIMIT 1",
-                $this->get('id'),
-                $entry_id
-            ));
+            $row = $this->getCurrentValues($entry_id);
 
             $existing_file = isset($row['file']) ? $this->getFilePath($row['file']) : null;
 
@@ -560,6 +549,19 @@ class FieldUpload extends Field implements ExportableField, ImportableField
             'mimetype' =>   $data['type'],
             'meta' =>       serialize(static::getMetaInfo($file, $data['type']))
         );
+    }
+
+    protected function getCurrentValues($entry_id)
+    {
+        return Symphony::Database()->fetchRow(0, sprintf(
+            "SELECT `file`, `mimetype`, `size`, `meta`
+                FROM `tbl_entries_data_%d`
+                WHERE `entry_id` = %d
+                LIMIT 1
+            ",
+            $this->get('id'),
+            $entry_id
+        ));
     }
 
     /*-------------------------------------------------------------------------

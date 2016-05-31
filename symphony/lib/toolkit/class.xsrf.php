@@ -61,33 +61,60 @@ class XSRF
      * falling back to using `/dev/urandom` and a microtime implementation
      * otherwise
      *
-     * @param integer $length
+     * @param integer $length optional. By default, 30.
      * @return string
+     *  base64 encoded, url safe
      */
-    public static function generateNonce($length = 20)
+    public static function generateNonce($length = 30)
     {
-        // Base64 encode some random binary data, and strip the "=" if there are any.
-        if (function_exists("openssl_random_pseudo_bytes")) {
-            return str_replace("=", "", base64_encode(openssl_random_pseudo_bytes($length)));
+        $random = null;
+        if ($length < 1) {
+            throw new Exception('$length must be greater than 0');
         }
 
-        // Fallback if openssl not available
-        if (is_readable("/dev/urandom")) {
-            if (($handle = @fopen("/dev/urandom", "rb")) !== false) {
-                $bytes = fread($handle, $length);
-                fclose($handle);
-                return str_replace("=", "", base64_encode($bytes));
+        // Use the new PHP 7 random_bytes call, if available
+        if (function_exists('random_bytes')) {
+            $random = random_bytes($length);
+        }
+
+        // Try mcrypt package, if available
+        else if (function_exists('mcrypt_create_iv')) {
+            $random = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
+        }
+
+        // Get some random binary data from open ssl, if available
+        else if (function_exists('openssl_random_pseudo_bytes')) {
+            $random = openssl_random_pseudo_bytes($length);
+        }
+
+        // Fallback to /dev/urandom
+        else if (is_readable('/dev/urandom')) {
+            if (($handle = @fopen('/dev/urandom', 'rb')) !== false) {
+                $random = @fread($handle, $length);
+                @fclose($handle);
             }
         }
 
-        // Fallback if /dev/urandom not readable.
-        $state = microtime();
+        // Fallback if no random bytes were found
+        if (!$random) {
+            $random = microtime();
 
-        for ($i = 0; $i < 1000; $i += 20) {
-            $state = sha1(microtime() . $state);
+            for ($i = 0; $i < 1000; $i += $length) {
+                $random = sha1(microtime() . $random);
+            }
         }
 
-        return str_replace("=", "", base64_encode(substr($state, 0, $length)));
+        // Convert to base64
+        $random = base64_encode($random);
+
+        // Replace unsafe chars
+        $random = strtr($random, '+/', '-_');
+        $random = str_replace('=', '', $random);
+
+        // Truncate the string to specified lengh
+        $random = substr($random, 0, $length);
+
+        return $random;
     }
 
     /**
@@ -114,7 +141,7 @@ class XSRF
     {
         $token = self::getSessionToken();
         if (is_null($token)) {
-            $nonce = self::generateNonce(20);
+            $nonce = self::generateNonce();
             self::setSessionToken($nonce);
 
         // Handle old tokens (< 2.6.0)

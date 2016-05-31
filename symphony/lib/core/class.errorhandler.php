@@ -13,7 +13,10 @@
 class GenericExceptionHandler
 {
     /**
-     * Whether the `GenericExceptionHandler` should handle exceptions. Defaults to true
+     * Whether the `GenericExceptionHandler` should display exceptions. Defaults to true.
+     * @since Symphony 2.6.4
+     *  When disabled, exception are now rendered usign the fatalerror.disabled template,
+     *  to prevent leaking debug data.
      * @var boolean
      */
     public static $enabled = true;
@@ -23,6 +26,20 @@ class GenericExceptionHandler
      * @var Log
      */
     private static $_Log = null;
+
+    /**
+     * Whether to log errors or not.
+     * This one is to be used temporarily, e.g., when PHP function is
+     * supposed throw Exception and log should be kept clean.
+     *
+     * @since Symphony 2.6.4
+     * @var boolean
+     * @example
+     *  GenericExceptionHandler::$logDisabled = true;
+     *  DoSomethingThatEndsWithWarningsYouDoNotWantInLogs();
+     *  GenericExceptionHandler::$logDisabled = false;
+     */
+    public static $logDisabled = false;
 
     /**
      * Initialise will set the error handler to be the `__CLASS__::handler` function.
@@ -68,21 +85,19 @@ class GenericExceptionHandler
      * function, the output is displayed and then exited to prevent any further
      * logic from occurring.
      *
+     * @since Symphony 2.6.4
+     *  The method is final
+     *
      * @param Exception $e
      *  The Exception object
      * @return string
      *  The result of the Exception's render function
      */
-    public static function handler(Exception $e)
+    final public static function handler(Exception $e)
     {
         $output = '';
 
         try {
-            // Instead of just throwing an empty page, return a 404 page.
-            if (self::$enabled !== true) {
-                $e = new FrontendPageNotFoundException();
-            };
-
             $exception_type = get_class($e);
 
             if (class_exists("{$exception_type}Handler") && method_exists("{$exception_type}Handler", 'render')) {
@@ -92,7 +107,7 @@ class GenericExceptionHandler
             }
 
             // Exceptions should be logged if they are not caught.
-            if (self::$_Log instanceof Log) {
+            if (!self::$logDisabled && self::$_Log instanceof Log) {
                 self::$_Log->pushExceptionToLog($e, true);
             }
 
@@ -109,12 +124,22 @@ class GenericExceptionHandler
             } catch (Exception $e) {
                 echo "<pre>";
                 echo 'A severe error occurred whilst trying to handle an exception, check the Symphony log for more details' . PHP_EOL;
-                echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
+                if (self::$enabled === true) {
+                    echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
+                }
                 exit;
             }
         }
 
         // Pending nothing disasterous, we should have `$e` and `$output` values here.
+        self::sendHeaders($e);
+
+        echo $output;
+        exit;
+    }
+
+    protected static function sendHeaders(Exception $e)
+    {
         if (!headers_sent()) {
             cleanup_session_cookies();
 
@@ -122,6 +147,9 @@ class GenericExceptionHandler
             $httpStatus = null;
             if ($e instanceof SymphonyErrorPage) {
                 $httpStatus = $e->getHttpStatusCode();
+                if (isset($e->getAdditional()->header)) {
+                    header($e->getAdditional()->header);
+                }
             } elseif ($e instanceof FrontendPageNotFoundException) {
                 $httpStatus = Page::HTTP_STATUS_NOT_FOUND;
             }
@@ -133,9 +161,6 @@ class GenericExceptionHandler
             Page::renderStatusCode($httpStatus);
             header('Content-Type: text/html; charset=utf-8');
         }
-
-        echo $output;
-        exit;
     }
 
     /**
@@ -154,11 +179,19 @@ class GenericExceptionHandler
     {
         $format = '%s/%s.tpl';
 
-        if (file_exists($template = sprintf($format, WORKSPACE . '/template', $name))) {
+        if (!self::$enabled) {
+            if (!file_exists($template = sprintf($format, TEMPLATE, 'fatalerror.disabled'))) {
+                return false;
+            }
             return $template;
-        } elseif (file_exists($template = sprintf($format, TEMPLATE, $name))) {
+        }
+        else if (file_exists($template = sprintf($format, WORKSPACE . '/template', $name))) {
             return $template;
-        } else {
+        }
+        else if (file_exists($template = sprintf($format, TEMPLATE, $name))) {
+            return $template;
+        }
+        else {
             return false;
         }
     }
@@ -243,7 +276,7 @@ class GenericExceptionHandler
 
             try {
                 // Log the error message
-                if (self::$_Log instanceof Log) {
+                if (!self::$logDisabled && self::$_Log instanceof Log) {
                     self::$_Log->pushToLog(sprintf(
                         '%s %s: %s%s%s',
                         __CLASS__,
@@ -267,7 +300,9 @@ class GenericExceptionHandler
             } catch (Exception $e) {
                 echo "<pre>";
                 echo 'A severe error occurred whilst trying to handle an exception, check the Symphony log for more details' . PHP_EOL;
-                echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
+                if (self::$enabled === true) {
+                    echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
+                }
             }
         }
     }
@@ -277,6 +312,7 @@ class GenericExceptionHandler
      * Exception in a user friendly way.
      *
      * @since Symphony 2.4
+     * @since Symphony 2.6.4 the method is protected
      * @param string $template
      *  The template name, which should correspond to something in the TEMPLATE
      *  directory, eg `fatalerror.fatal`.
@@ -290,17 +326,17 @@ class GenericExceptionHandler
      * @return string
      *  The HTML of the formatted error message.
      */
-    public static function renderHtml($template, $heading, $message, $file = null, $line = null, $lines = null, $trace = null, $queries = null)
+    protected static function renderHtml($template, $heading, $message, $file = null, $line = null, $lines = null, $trace = null, $queries = null)
     {
         $html = sprintf(
             file_get_contents(self::getTemplate($template)),
             $heading,
-            General::unwrapCDATA($message),
-            $file,
-            $line,
-            $lines,
-            $trace,
-            $queries
+            !self::$enabled ? 'Something unexpected occurred.' : General::unwrapCDATA($message),
+            !self::$enabled ? '' : $file,
+            !self::$enabled ? '' : $line,
+            !self::$enabled ? null : $lines,
+            !self::$enabled ? null : $trace,
+            !self::$enabled ? null : $queries
         );
 
         $html = str_replace('{ASSETS_URL}', ASSETS_URL, $html);
@@ -316,7 +352,7 @@ class GenericExceptionHandler
  * raise the errors to Exceptions so they can be dealt with by the
  * `GenericExceptionHandler`. The type of errors that are raised to Exceptions
  * depends on the `error_reporting` level. All errors raised, except
- * `E_NOTICE` and `E_STRICT` are written to the Symphony log.
+ * `E_STRICT` are written to the Symphony log.
  */
 class GenericErrorHandler
 {
@@ -400,9 +436,12 @@ class GenericErrorHandler
     }
 
     /**
-     * The handler function will write the error to the `$Log` if it is not `E_NOTICE`
-     * or `E_STRICT` before raising the error as an Exception. This allows all `E_WARNING`
+     * The handler function will write the error to the `$Log` if it is not
+     * `E_STRICT` before raising the error as an Exception. This allows all `E_WARNING`
      * to actually be captured by an Exception handler.
+     *
+     * @since Symphony 2.6.4
+     *  The method is final
      *
      * @param integer $code
      *  The error code, one of the PHP error constants
@@ -417,7 +456,7 @@ class GenericErrorHandler
      * @return string
      *  Usually a string of HTML that will displayed to a user
      */
-    public static function handler($code, $message, $file = null, $line = null)
+    final public static function handler($code, $message, $file = null, $line = null)
     {
         // Only log if the error won't be raised to an exception and the error is not `E_STRICT`
         if (!self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$_Log instanceof Log) {
@@ -432,6 +471,9 @@ class GenericErrorHandler
         }
 
         if (self::isEnabled()) {
+            // prevent double logging
+            GenericExceptionHandler::$logDisabled = true;
+            // throw Error
             throw new ErrorException($message, 0, $code, $file, $line);
         }
     }

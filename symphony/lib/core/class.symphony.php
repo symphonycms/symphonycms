@@ -100,9 +100,7 @@ abstract class Symphony implements Singleton
         self::initialiseCookie();
 
         // If the user is not a logged in Author, turn off the verbose error messages.
-        if (!self::isLoggedIn() && is_null(self::$Author)) {
-            GenericExceptionHandler::$enabled = false;
-        }
+        GenericExceptionHandler::$enabled = self::isLoggedIn() && !is_null(self::$Author);
 
         // Engine is ready.
         self::$Profiler->sample('Engine Initialisation');
@@ -564,8 +562,8 @@ abstract class Symphony implements Singleton
      */
     public static function isLoggedIn()
     {
-        // Check to see if Symphony exists, or if we already have an Author instance.
-        if (is_null(self::$_instance) || self::$Author) {
+        // Check to see if we already have an Author instance.
+        if (self::$Author) {
             return true;
         }
 
@@ -586,10 +584,6 @@ abstract class Symphony implements Singleton
         if (self::isInstallerAvailable()) {
             $migrations = scandir(DOCROOT . '/install/migrations');
             $migration_file = end($migrations);
-
-            include_once DOCROOT . '/install/lib/class.migration.php';
-            include_once DOCROOT . '/install/migrations/' . $migration_file;
-
             $migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
             return call_user_func(array($migration_class, 'getVersion'));
         }
@@ -629,8 +623,6 @@ abstract class Symphony implements Singleton
     /**
      * A wrapper for throwing a new Symphony Error page.
      *
-     * This methods sets the `GenericExceptionHandler::$enabled` value to `true`.
-     *
      * @see core.SymphonyErrorPage
      * @param string|XMLElement $message
      *  A description for this error, which can be provided as a string
@@ -651,7 +643,6 @@ abstract class Symphony implements Singleton
      */
     public static function throwCustomError($message, $heading = 'Symphony Fatal Error', $status = Page::HTTP_STATUS_ERROR, $template = 'generic', array $additional = array())
     {
-        GenericExceptionHandler::$enabled = true;
         throw new SymphonyErrorPage($message, $heading, $template, $additional, $status);
     }
 
@@ -737,9 +728,11 @@ class SymphonyErrorPageHandler extends GenericExceptionHandler
 {
     /**
      * The render function will take a `SymphonyErrorPage` exception and
-     * output a HTML page. This function first checks to see if their is a custom
+     * output a HTML page. This function first checks to see if the `GenericExceptionHandler`
+     * is enabled and pass control to it if not. After that, the method checks if there is a custom
      * template for this exception otherwise it reverts to using the default
-     * `usererror.generic.php`
+     * `usererror.generic.php`. If the template is not found, it will call
+     * `GenericExceptionHandler::render()`.
      *
      * @param Exception $e
      *  The Exception object
@@ -748,17 +741,14 @@ class SymphonyErrorPageHandler extends GenericExceptionHandler
      */
     public static function render(Exception $e)
     {
-        if ($e->getTemplate() === false) {
-            Page::renderStatusCode($e->getHttpStatusCode());
-
-            if (isset($e->getAdditional()->header)) {
-                header($e->getAdditional()->header);
-            }
-
-            echo '<h1>Symphony Fatal Error</h1><p>'.$e->getMessage().'</p>';
-            exit;
+        if (!GenericExceptionHandler::$enabled) {
+            return GenericExceptionHandler::render($e);
+        }
+        else if ($e->getTemplate() === false) {
+            return GenericExceptionHandler::render($e);
         }
 
+        self::sendHeaders($e);
         include $e->getTemplate();
     }
 }
@@ -967,10 +957,10 @@ class DatabaseExceptionHandler extends GenericExceptionHandler
 
         $html = sprintf(
             file_get_contents(self::getTemplate('fatalerror.database')),
-            $e->getDatabaseErrorMessage(),
-            $e->getQuery(),
-            $trace,
-            $queries
+            !self::$enabled ? 'Database error' : $e->getDatabaseErrorMessage(),
+            !self::$enabled ? '' : $e->getQuery(),
+            !self::$enabled ? '' : $trace,
+            !self::$enabled ? '' : $queries
         );
 
         $html = str_replace('{ASSETS_URL}', ASSETS_URL, $html);

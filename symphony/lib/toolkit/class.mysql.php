@@ -738,7 +738,7 @@ class MySQL
      */
     public function delete($table, $where = null)
     {
-        $sql = "DELETE FROM $table";
+        $sql = "DELETE FROM `$table`";
 
         if (!is_null($where)) {
             $sql .= " WHERE $where";
@@ -1036,7 +1036,7 @@ class MySQL
     {
         if ($force_engine) {
             // Silently attempt to change the storage engine. This prevents INNOdb errors.
-            $this->query('SET storage_engine=MYISAM');
+            $this->query('SET default_storage_engine = MYISAM');
         }
 
         $queries = preg_split('/;[\\r\\n]+/', $sql, -1, PREG_SPLIT_NO_EMPTY);

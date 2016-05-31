@@ -58,6 +58,9 @@ class Session
 
             if (session_id() == '') {
                 ini_set('session.save_handler', 'user');
+                ini_set('session.use_trans_sid', '0');
+                ini_set('session.use_strict_mode', '1');
+                ini_set('session.use_only_cookies', '1');
                 ini_set('session.gc_maxlifetime', $lifetime);
                 ini_set('session.gc_probability', '1');
                 ini_set('session.gc_divisor', Symphony::Configuration()->get('session_gc_divisor', 'symphony'));
@@ -72,7 +75,7 @@ class Session
                 array('Session', 'gc')
             );
 
-            session_set_cookie_params($lifetime, $path, ($domain ? $domain : self::getDomain()), $secure, $httpOnly);
+            session_set_cookie_params($lifetime, rawurlencode($path), ($domain ? $domain : self::getDomain()), $secure, $httpOnly);
             session_cache_limiter('');
 
             if (session_id() == '') {
@@ -102,12 +105,12 @@ class Session
      */
     public static function getDomain()
     {
-        if (isset($_SERVER['HTTP_HOST'])) {
-            if (preg_match('/(localhost|127\.0\.0\.1)/', $_SERVER['HTTP_HOST']) || $_SERVER['SERVER_ADDR'] == '127.0.0.1') {
+        if (HTTP_HOST != null) {
+            if (preg_match('/(localhost|127\.0\.0\.1)/', HTTP_HOST)) {
                 return null; // prevent problems on local setups
             }
 
-            return preg_replace('/(^www\.|:\d+$)/i', null, $_SERVER['HTTP_HOST']);
+            return preg_replace('/(^www\.|:\d+$)/i', null, HTTP_HOST);
         }
 
         return null;
@@ -159,7 +162,7 @@ class Session
         $session_data = Session::read($id);
         if (is_null($session_data)) {
             $empty = true;
-            $unserialized_data = Session::unserialize($session_data);
+            $unserialized_data = Session::unserialize($data);
 
             foreach ($unserialized_data as $d) {
                 if (!empty($d)) {
@@ -168,7 +171,7 @@ class Session
             }
 
             if ($empty) {
-                return false;
+                return true;
             }
         }
 
@@ -188,7 +191,7 @@ class Session
      * @since Symphony 2.3.3
      * @param string $data
      *  The serialized session data
-     * @return string
+     * @return array
      *  The unserialised session data
      */
     private static function unserialize($data)
@@ -217,7 +220,7 @@ class Session
      */
     public static function read($id)
     {
-        return Symphony::Database()->fetchVar(
+        return (string)Symphony::Database()->fetchVar(
             'session_data',
             0,
             sprintf(
