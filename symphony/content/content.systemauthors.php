@@ -600,10 +600,18 @@ class contentSystemAuthors extends AdministrationPage
         }
 
         $isOwner = ($author_id == Symphony::Author()->get('id'));
+        $fields = $_POST['fields'];
+        $this->_Author = AuthorManager::fetchByID($author_id);
+
+        $canEdit = // Managers can edit all Authors, and their own.
+                (Symphony::Author()->isManager() && $this->_Author->isAuthor())
+                // Primary account can edit all accounts.
+                || Symphony::Author()->isPrimaryAccount()
+                // Developers can edit all developers, managers and authors, and their own,
+                // but not the primary account
+                || (Symphony::Author()->isDeveloper() && $this->_Author->isPrimaryAccount() === false);
 
         if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
-            $fields = $_POST['fields'];
-            $this->_Author = AuthorManager::fetchByID($author_id);
             $authenticated = false;
 
             if ($fields['email'] != $this->_Author->get('email')) {
@@ -616,15 +624,10 @@ class contentSystemAuthors extends AdministrationPage
 
                 // Developers don't need to specify the old password, unless it's their own account
             } elseif (
-
                 // All accounts can edit their own
-                $isOwner
-                    // Managers can edit all Authors, and their own.
-                || (Symphony::Author()->isManager() && $this->_Author->isAuthor())
-                    // Primary account can edit all accounts.
-                || Symphony::Author()->isPrimaryAccount()
-                    // Developers can edit all developers, managers and authors, and their own.
-                || Symphony::Author()->isDeveloper() && $this->_Author->isPrimaryAccount() === false
+                $isOwner ||
+                // Is allowed to edit?
+                $canEdit
             ) {
                 $authenticated = true;
             }
@@ -730,6 +733,26 @@ class contentSystemAuthors extends AdministrationPage
                 $this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), Alert::ERROR);
             }
         } elseif (@array_key_exists('delete', $_POST['action'])) {
+            // Validate rights
+            if (!$canEdit) {
+                $this->pageAlert(__('You are not allowed to delete this author.'), Alert::ERROR);
+                return;
+            }
+            // Admin changing another profile
+            if (!$isOwner) {
+                $entered_password = Symphony::Database()->cleanValue($fields['confirm-change-password']);
+
+                if (!isset($fields['confirm-change-password']) || empty($fields['confirm-change-password'])) {
+                    $this->_errors['confirm-change-password'] = __('Please provide your own password to make changes to this author.');
+                } elseif (Cryptography::compare($entered_password, Symphony::Author()->get('password')) !== true) {
+                    $this->_errors['confirm-change-password'] = __('Wrong password, please enter your own password to make changes to this author.');
+                }
+            }
+            if (is_array($this->_errors) && !empty($this->_errors)) {
+                $this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), Alert::ERROR);
+                return;
+            }
+
             /**
              * Prior to deleting an author, provided with the Author ID.
              *
