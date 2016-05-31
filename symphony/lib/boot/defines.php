@@ -274,14 +274,16 @@ define_safe('ASSETS_URL', APPLICATION_URL . '/assets');
 
 /**
  * The integer value for event-type resources.
-  * @deprecated Use ResourceManager::RESOURCE_TYPE_EVENT, this will be removed in Symphony 3.0.
+ *
+ * @deprecated Use ResourceManager::RESOURCE_TYPE_EVENT, this will be removed in Symphony 3.0.
  * @var integer
  */
 define_safe('RESOURCE_TYPE_EVENT', 20);
 
 /**
  * The integer value for datasource-type resources.
-  * @deprecated Use ResourceManager::RESOURCE_TYPE_DS, this will be removed in Symphony 3.0.
+ *
+ * @deprecated Use ResourceManager::RESOURCE_TYPE_DS, this will be removed in Symphony 3.0.
  * @var integer
  */
 define_safe('RESOURCE_TYPE_DS', 21);
