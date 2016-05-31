@@ -367,6 +367,7 @@ class FrontendPage extends XSLTPage
             'root' => URL,
             'root-dir' => DIRROOT,
             'workspace' => URL . '/workspace',
+            'workspace-dir' => DIRROOT . 'workspace',
             'http-host' => HTTP_HOST,
             'root-page' => ($root_page ? $root_page : $page['handle']),
             'current-page' => $page['handle'],
