@@ -344,7 +344,7 @@ class FrontendPage extends XSLTPage
         $this->_pageData = $page;
         $path = explode('/', $page['path']);
         $root_page = is_array($path) ? array_shift($path) : $path;
-        $current_path = explode(dirname($_SERVER['SCRIPT_NAME']), $_SERVER['REQUEST_URI'], 2);
+        $current_path = explode(dirname(server_safe('SCRIPT_NAME')), server_safe('REQUEST_URI'), 2);
         $current_path = '/' . ltrim(end($current_path), '/');
         $split_path = explode('?', $current_path, 3);
         $current_path = rtrim(current($split_path), '/');
