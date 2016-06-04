@@ -223,7 +223,7 @@ class contentPublish extends AdministrationPage
         $label = Widget::Label();
         $label->setAttribute('class', 'column primary');
 
-        $input = Widget::Input($data['type'], $data['query'], 'text', array(
+        $input = Widget::Input($data['type'], General::sanitize($data['query']), 'text', array(
             'placeholder' => __('Type and hit enter to apply filter…'),
             'autocomplete' => 'off'
         ));
@@ -1768,7 +1768,9 @@ class contentPublish extends AdministrationPage
 
         if (isset($_REQUEST['prepopulate']) && is_array($_REQUEST['prepopulate'])) {
             foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
-                $prepopulate_querystring .= sprintf("prepopulate[%s]=%s&", $field_id, rawurldecode($value));
+                // Properly decode and re-encode value for output
+                $value = rawurlencode(rawurldecode($value));
+                $prepopulate_querystring .= sprintf("prepopulate[%s]=%s&", $field_id, $value);
             }
             $prepopulate_querystring = trim($prepopulate_querystring, '&');
         }
@@ -1796,7 +1798,9 @@ class contentPublish extends AdministrationPage
         if (isset($_REQUEST['prepopulate']) && is_array($_REQUEST['prepopulate'])) {
             foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
                 $handle = FieldManager::fetchHandleFromID($field_id);
-                $filter_querystring .= sprintf("filter[%s]=%s&", $handle, rawurldecode($value));
+                // Properly decode and re-encode value for output
+                $value = rawurlencode(rawurldecode($value));
+                $filter_querystring .= sprintf('filter[%s]=%s&', $handle, $value);
             }
             $filter_querystring = trim($filter_querystring, '&');
         }
