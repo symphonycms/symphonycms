@@ -78,9 +78,11 @@ abstract class Symphony implements Singleton
      * The Symphony constructor initialises the class variables of Symphony. At present
      * constructor has a couple of responsibilities:
      * - Start a profiler instance
-     * - If magic quotes are enabled, clean `$_SERVER`, `$_COOKIE`, `$_GET` and `$_POST` arrays 
+     * - If magic quotes are enabled, clean `$_SERVER`, `$_COOKIE`, `$_GET`, `$_POST` and the `$_REQUEST` arrays.
      * - Initialise the correct Language for the currently logged in Author.
      * - Start the session and adjust the error handling if the user is logged in
+     *
+     * The `$_REQUEST` array has been added in 2.7.0
      */
     protected function __construct()
     {
@@ -91,6 +93,7 @@ abstract class Symphony implements Singleton
             General::cleanArray($_COOKIE);
             General::cleanArray($_GET);
             General::cleanArray($_POST);
+            General::cleanArray($_REQUEST);
         }
 
         // Initialize language management
