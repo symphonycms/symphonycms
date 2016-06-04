@@ -73,22 +73,17 @@ class XSRF
         }
 
         // Use the new PHP 7 random_bytes call, if available
-        if (function_exists('random_bytes')) {
+        if (!$random && function_exists('random_bytes')) {
             $random = random_bytes($length);
         }
 
-        // Try mcrypt package, if available
-        else if (function_exists('mcrypt_create_iv')) {
-            $random = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
-        }
-
         // Get some random binary data from open ssl, if available
-        else if (function_exists('openssl_random_pseudo_bytes')) {
+        if (!$random && function_exists('openssl_random_pseudo_bytes')) {
             $random = openssl_random_pseudo_bytes($length);
         }
 
         // Fallback to /dev/urandom
-        else if (is_readable('/dev/urandom')) {
+        if (!$random && is_readable('/dev/urandom')) {
             if (($handle = @fopen('/dev/urandom', 'rb')) !== false) {
                 $random = @fread($handle, $length);
                 @fclose($handle);
