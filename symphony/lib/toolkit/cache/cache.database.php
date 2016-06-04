@@ -191,7 +191,7 @@ class CacheDatabase implements iNamespacedCache
         } elseif (!is_null($namespace)) {
             $this->Database->delete('tbl_cache', sprintf("`namespace` = '%s'", $namespace));
         } else {
-            $this->Database->delete('tbl_cache'), "UNIX_TIMESTAMP() > `expiry`");
+            $this->Database->delete('tbl_cache', "UNIX_TIMESTAMP() > `expiry`");
         }
 
         $this->__optimise();
