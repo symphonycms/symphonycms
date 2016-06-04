@@ -1068,7 +1068,7 @@ class contentPublish extends AdministrationPage
 
     public function __actionNew()
     {
-        if (array_key_exists('save', $_POST['action']) || array_key_exists("done", $_POST['action'])) {
+        if (is_array($_POST['action']) && (array_key_exists('save', $_POST['action']) || array_key_exists('done', $_POST['action']))) {
             $section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle']);
 
             if (!$section = SectionManager::fetch($section_id)) {
@@ -1373,7 +1373,7 @@ class contentPublish extends AdministrationPage
     {
         $entry_id = intval($this->_context['entry_id']);
 
-        if (@array_key_exists('save', $_POST['action']) || @array_key_exists("done", $_POST['action'])) {
+        if (is_array($_POST['action']) && (array_key_exists('save', $_POST['action']) || array_key_exists("done", $_POST['action']))) {
             if (!$ret = EntryManager::fetch($entry_id)) {
                 Administration::instance()->throwCustomError(
                     __('The Entry, %s, could not be found.', array($entry_id)),
@@ -1438,7 +1438,7 @@ class contentPublish extends AdministrationPage
                     ));
                 }
             }
-        } elseif (@array_key_exists('delete', $_POST['action']) && is_numeric($entry_id)) {
+        } elseif (is_array($_POST['action']) && array_key_exists('delete', $_POST['action']) && is_numeric($entry_id)) {
             /**
              * Prior to deletion of entries. An array of Entry ID's is provided which
              * can be manipulated. This delegate was renamed from `Delete` to `EntryPreDelete`
@@ -1766,7 +1766,7 @@ class contentPublish extends AdministrationPage
     {
         $prepopulate_querystring = '';
 
-        if (isset($_REQUEST['prepopulate'])) {
+        if (isset($_REQUEST['prepopulate']) && is_array($_REQUEST['prepopulate'])) {
             foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
                 $prepopulate_querystring .= sprintf("prepopulate[%s]=%s&", $field_id, rawurldecode($value));
             }
@@ -1793,7 +1793,7 @@ class contentPublish extends AdministrationPage
     {
         $filter_querystring = '';
 
-        if (isset($_REQUEST['prepopulate'])) {
+        if (isset($_REQUEST['prepopulate']) && is_array($_REQUEST['prepopulate'])) {
             foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
                 $handle = FieldManager::fetchHandleFromID($field_id);
                 $filter_querystring .= sprintf("filter[%s]=%s&", $handle, rawurldecode($value));
