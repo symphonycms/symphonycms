@@ -114,7 +114,7 @@ class Session
             return '/';
         }
         $path = array_map(rawurlencode, $path);
-        return '/' . implode('/', $path) . '/';
+        return '/' . implode('/', $path);
     }
 
     /**
