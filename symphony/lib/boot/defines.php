@@ -241,6 +241,14 @@ define_safe('__SECURE__',
 );
 
 /**
+ * Returns the protocol used to this request.
+ * If __SECURE__ it will be https:
+ * If not, http:
+ * @var string
+ */
+define_safe('HTTP_PROTO', 'http' . (defined('__SECURE__') && __SECURE__ ? 's' : '') . ':');
+
+/**
  * The root url directory.
  * This constant will always ends with '/'
  * to avoid problems when the root is simply /
@@ -260,7 +268,7 @@ define_safe('DOMAIN', HTTP_HOST . rtrim(DIRROOT, '/'));
  * The base URL of this Symphony install, minus the symphony path.
  * @var string
  */
-define_safe('URL', 'http' . (defined('__SECURE__') && __SECURE__ ? 's' : '') . '://' . DOMAIN);
+define_safe('URL', HTTP_PROTO . '//' . DOMAIN);
 
 /**
  * Returns the folder name for Symphony as an application
