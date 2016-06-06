@@ -89,7 +89,7 @@ class contentLogin extends HTMLPage
                 } else {
                     // Email exception
                     if (isset($this->_email_error) && $this->_email_error) {
-                        $label = Widget::Error($label, __('This Symphony instance has not been set up for emailing, %s', array('<code>' . $this->_email_error . '</code>')));
+                        $label = Widget::Error($label, __('This Symphony instance has not been set up for emailing, %s', array('<code>' . General::sanitize($this->_email_error) . '</code>')));
                     }
                 }
 
