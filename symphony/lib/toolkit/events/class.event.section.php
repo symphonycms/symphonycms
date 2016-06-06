@@ -724,7 +724,7 @@ abstract class SectionEvent extends Event
 
                 foreach ($messages as $recipient => $message) {
                     $xType->appendChild(
-                        new XMLElement('message', $message, array(
+                        new XMLElement('message', General::wrapInCDATA($message), array(
                             'recipient' => $recipient
                         ))
                     );
