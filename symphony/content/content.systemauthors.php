@@ -157,54 +157,6 @@ class contentSystemAuthors extends AdministrationPage
         $this->Form->appendChild($version);
     }
 
-    public function __actionIndex()
-    {
-        $checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
-
-        if (is_array($checked) && !empty($checked)) {
-            /**
-             * Extensions can listen for any custom actions that were added
-             * through `AddCustomPreferenceFieldsets` or `AddCustomActions`
-             * delegates.
-             *
-             * @delegate CustomActions
-             * @since Symphony 2.3.2
-             * @param string $context
-             *  '/system/authors/'
-             * @param array $checked
-             *  An array of the selected rows. The value is usually the ID of the
-             *  the associated object.
-             */
-            Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/authors/', array(
-                'checked' => $checked
-            ));
-
-            if ($_POST['with-selected'] == 'delete') {
-                /**
-                * Prior to deleting an author, provided with an array of Author ID's.
-                *
-                * @delegate AuthorPreDelete
-                * @since Symphony 2.2
-                * @param string $context
-                * '/system/authors/'
-                * @param array $author_ids
-                *  An array of Author ID that are about to be removed
-                */
-                Symphony::ExtensionManager()->notifyMembers('AuthorPreDelete', '/system/authors/', array('author_ids' => $checked));
-
-                foreach ($checked as $author_id) {
-                    $a = AuthorManager::fetchByID($author_id);
-
-                    if (is_object($a) && $a->get('id') != Symphony::Author()->get('id')) {
-                        AuthorManager::delete($author_id);
-                    }
-                }
-
-                redirect(SYMPHONY_URL . '/system/authors/');
-            }
-        }
-    }
-
     // Both the Edit and New pages need the same form
     public function __viewNew()
     {
