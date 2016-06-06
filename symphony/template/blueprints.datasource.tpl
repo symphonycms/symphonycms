@@ -48,7 +48,9 @@ class datasource<!-- CLASS NAME --> extends <!-- CLASS EXTENDS -->
             // is not picked up by the default catch() statement below
             FrontendPageNotFoundExceptionHandler::render($e);
         } catch (Exception $e) {
-            $result->appendChild(new XMLElement('error', $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile()));
+            $result->appendChild(new XMLElement('error',
+                General::wrapInCDATA($e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile())
+            ));
             return $result;
         }
 
