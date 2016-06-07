@@ -317,15 +317,9 @@ class SMTPGateway extends EmailGateway
         $this->setPort($config['port']);
         $this->setSecure($config['secure']);
 
-        if ($config['auth'] == 1) {
-            $this->setAuth(true);
-            $this->setUser($config['username']);
-            $this->setPass($config['password']);
-        } else {
-            $this->setAuth(false);
-            $this->setUser('');
-            $this->setPass('');
-        }
+        $this->setAuth((int)$config['auth'] === 1);
+        $this->setUser($config['username']);
+        $this->setPass($config['password']);
     }
 
     /**
