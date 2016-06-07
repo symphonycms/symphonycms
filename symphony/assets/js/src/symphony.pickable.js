@@ -56,12 +56,12 @@
 
 			// Hide all choices
 			object.trigger('pickstart.pickable');
-			related.hide();
+			related.hide().find('input, select, textarea').prop('readonly', true);
 
 			// Selection found
 			picked = $('#' + choice);
 			if(picked.length > 0) {
-				picked.show().trigger('pick.pickable');
+				picked.show().find('input, select, textarea').prop('readonly', false).trigger('pick.pickable');
 				object.trigger('pickstop.pickable');
 			}
 
