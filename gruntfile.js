@@ -4,6 +4,18 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
 
+        pkg: grunt.file.readJSON('package.json'),
+
+        meta: {
+            banner: '/*!\n * <%= pkg.title || pkg.name %> ' +
+                    ' v<%= pkg.version %>\n' +
+                    ' * commit <%= commitish %> -' +
+                    ' <%= grunt.template.today("yyyy-mm-dd") %>\n' +
+                    ' <%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
+                    ' * Copyright (c) <%= grunt.template.today("yyyy") %>\n' +
+                    ' * License <%= pkg.license %>\n */\n'
+        },
+
         concat: {
             dist: {
                 files: {
@@ -52,6 +64,9 @@ module.exports = function (grunt) {
 
         csso: {
             styles: {
+                options: {
+                    banner: '<%= meta.banner %>'
+                },
                 files: {
                     'symphony/assets/css/symphony.min.css': [
                         'symphony/assets/css/symphony.min.css'
@@ -88,6 +103,7 @@ module.exports = function (grunt) {
         uglify: {
             scripts: {
                 options: {
+                    banner: '<%= meta.banner %>',
                     preserveComments: 'some'
                 },
                 files: {
@@ -146,8 +162,17 @@ module.exports = function (grunt) {
                 tabWidth: 4,
                 errorSeverity: 10
             }
-        }
+        },
 
+        commitish: '',
+        'git-rev-parse': {
+            options: {
+                prop: 'commitish',
+                silent: true,
+                number: 7
+            },
+            dist: {}
+        }
     });
 
     grunt.loadNpmTasks('grunt-contrib-concat');
@@ -157,9 +182,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-phpcs');
+    grunt.loadNpmTasks('grunt-git-rev-parse');
 
-    grunt.registerTask('default', ['concat', 'autoprefixer', 'csso', 'uglify']);
-    grunt.registerTask('css', ['concat', 'autoprefixer', 'csso']);
+    grunt.registerTask('default', ['css', 'js']);
+    grunt.registerTask('css', ['git-rev-parse', 'concat', 'autoprefixer', 'csso']);
     grunt.registerTask('php', ['phpcs']);
-    grunt.registerTask('js', ['uglify']);
+    grunt.registerTask('js', ['git-rev-parse', 'uglify']);
 };
