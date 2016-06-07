@@ -100,6 +100,7 @@ return array(
     'Updater' => $baseDir . '/install/lib/class.updater.php',
     'UpdaterPage' => $baseDir . '/install/lib/class.updaterpage.php',
     'Widget' => $baseDir . '/symphony/lib/toolkit/class.widget.php',
+    'FilteringWidget' => $baseDir . '/symphony/lib/toolkit/class.filteringwidget.php',
     'XMLElement' => $baseDir . '/symphony/lib/toolkit/class.xmlelement.php',
     'XMLElementChildrenFilter' => $baseDir . '/symphony/lib/toolkit/class.xmlelement.php',
     'XMLPage' => $baseDir . '/symphony/lib/toolkit/class.xmlpage.php',

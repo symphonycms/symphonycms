@@ -124,7 +124,7 @@
 			});
 
 			// Finish animations
-			duplicator.on('animationend.duplicator', '.instance', function finish() {
+			duplicator.on('animationend.duplicator', '.instance', function finish(event) {	
 				var instance = $(this).removeClass('js-animate');
 
 				// Trigger events
@@ -150,28 +150,28 @@
 			});
 
 			// Lock constructor
-			duplicator.on('constructstop.duplicator', '.instance', function lockConstructor() {
+			duplicator.on('constructstop.duplicator', '.instance', function lockConstructor(event) {
 				if(duplicator.find('.instance').length >= settings.maximum) {
 					constructor.addClass('disabled');
 				}
 			});
 
 			// Unlock constructor
-			duplicator.on('destructstart.duplicator', '.instance', function unlockConstructor() {
+			duplicator.on('destructstart.duplicator', '.instance', function unlockConstructor(event) {
 				if(duplicator.find('.instance').length <= settings.maximum) {
 					constructor.removeClass('disabled');
 				}
 			});
 
 			// Lock destructor
-			duplicator.on('destructstart.duplicator', '.instance', function lockDestructor() {
+			duplicator.on('destructstart.duplicator', '.instance', function lockDestructor(event) {
 				if(duplicator.find('.instance').length - 1 == settings.minimum) {
 					duplicator.find('a.destructor').addClass('disabled');
 				}
 			});
 
 			// Unlock destructor
-			duplicator.on('constructstop.duplicator', '.instance', function unlockDestructor() {
+			duplicator.on('constructstop.duplicator', '.instance', function unlockDestructor(event) {
 				if(duplicator.find('.instance').length > settings.minimum) {
 					duplicator.find('a.destructor').removeClass('disabled');
 				}

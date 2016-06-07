@@ -94,7 +94,9 @@ class contentPublish extends AdministrationPage
     public function createFilteringDrawer($section)
     {
         $this->filteringForm = Widget::Form(null, 'get', 'filtering');
-        $this->createFilteringDuplicator($section);
+        $this->filteringForm->appendChild(
+            FilteringWidget::FilteringDuplicator($section, null, General::sanitize($_GET['filter']))
+        );
 
         return $this->filteringForm;
     }
@@ -325,6 +327,15 @@ class contentPublish extends AdministrationPage
                 'parent' => SectionManager::fetchParentAssociations($section_id),
                 'child' => SectionManager::fetchChildAssociations($section_id)
             );
+
+            $filters = $_REQUEST['filter'];
+            if (is_array($filters)){
+                $context['filters'] = array();
+                foreach ($filters as $field => $value) {
+                    // $field_id = FieldManager::fetchFieldIDFromElementName($field,$section_id);
+                    $context['filters'][$field] = $value;
+                }
+            }
         }
 
         return parent::build($context);
