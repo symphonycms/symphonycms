@@ -208,7 +208,7 @@
 
             $this->Form->appendChild(
                 new XMLElement('p',
-                    __('I think you and I will achieve great things together. Just one last thing: how about we remove the %s folder and secure the safety of our relationship?', array('<code>' . basename(INSTALL) . '</code>'))
+                    __('I think you and I will achieve great things together. Just one last thing: please remove the %s folder to secure the safety of our relationship.', array('<code>' . basename(INSTALL) . '</code>'))
                 )
             );
 
@@ -220,7 +220,7 @@
 
         protected function viewConfiguration()
         {
-            /* -----------------------------------------------
+        /* -----------------------------------------------
          * Populating fields array
          * -----------------------------------------------
          */
