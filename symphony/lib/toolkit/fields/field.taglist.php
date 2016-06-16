@@ -397,9 +397,9 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         }
 
         if ($this->get('validator')) {
-			if (!is_array($data)) {
-				$data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
-			}
+            if (!is_array($data)) {
+                $data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
+            }
             $data = array_filter(array_map('trim', $data));
 
             if (empty($data)) {
@@ -419,10 +419,10 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     {
         $status = self::__OK__;
 
-		if (!is_array($data)) {
-        	$data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
-		}
-		$data = array_filter(array_map('trim', $data));
+        if (!is_array($data)) {
+            $data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
+        }
+        $data = array_filter(array_map('trim', $data));
 
         if (empty($data)) {
             return null;
