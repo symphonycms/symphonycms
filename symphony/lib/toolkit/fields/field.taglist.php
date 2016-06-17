@@ -706,9 +706,9 @@ class FieldTagList extends Field implements ExportableField, ImportableField
                 $condition = ($negation) ? '!=' : '=';
                 foreach ($data as $key => $bit) {
                     $joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t{$field_id}_{$this->_key}` ON (`e`.`id` = `t{$field_id}_{$this->_key}`.entry_id) ";
-                    $where .= " AND (
-                                        t{$field_id}_{$this->_key}.value $condition '$bit''
-                                        OR t{$field_id}_{$this->_key}.handle $condition '$bit''
+                    $where .= " AND ((
+                                        t{$field_id}_{$this->_key}.value $condition '$bit'
+                                        OR t{$field_id}_{$this->_key}.handle $condition '$bit'
                                     )";
 
                     if ($null) {
@@ -716,6 +716,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
                     } else {
                         $where .= ") ";
                     }
+                    $this->_key++;
                 }
             } else {
                 $condition = ($negation) ? 'NOT IN' : 'IN';
