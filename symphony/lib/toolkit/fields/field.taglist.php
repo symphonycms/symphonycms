@@ -397,8 +397,10 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         }
 
         if ($this->get('validator')) {
-            $data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
-            $data = array_map('trim', $data);
+            if (!is_array($data)) {
+                $data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
+            }
+            $data = array_filter(array_map('trim', $data));
 
             if (empty($data)) {
                 return self::__OK__;
@@ -416,8 +418,11 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     public function processRawFieldData($data, &$status, &$message = null, $simulate = false, $entry_id = null)
     {
         $status = self::__OK__;
-        $data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
-        $data = array_map('trim', $data);
+
+        if (!is_array($data)) {
+            $data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
+        }
+        $data = array_filter(array_map('trim', $data));
 
         if (empty($data)) {
             return null;
@@ -692,7 +697,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
                 $negation = true;
                 $null = true;
             }
-            
+
             foreach ($data as &$value) {
                 $value = $this->cleanValue($value);
             }
@@ -703,7 +708,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
                     $joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t{$field_id}_{$this->_key}` ON (`e`.`id` = `t{$field_id}_{$this->_key}`.entry_id) ";
                     $where .= " AND (
                                         t{$field_id}_{$this->_key}.value $condition '$bit''
-                                        OR t{$field_id}_{$this->_key}.handle $condition '$bit'' 
+                                        OR t{$field_id}_{$this->_key}.handle $condition '$bit''
                                     )";
 
                     if ($null) {
