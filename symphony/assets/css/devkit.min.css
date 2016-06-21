@@ -1,6 +1,6 @@
 /*!
  * symphonycms  v2.6.7
- * commit 5b9e33c - 2016-06-20
+ * commit 93ac344 - 2016-06-20
  * http://www.getsymphony.com
  * Copyright (c) 2016
  * License MIT
