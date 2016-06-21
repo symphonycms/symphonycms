@@ -452,6 +452,7 @@ fieldset.settings.highlight {
 	margin: 0 0 0 -1.5rem;
 	padding: 0;
 	border: none;
+	display: block;
 }
 
 #password legend {
