@@ -469,7 +469,7 @@ fieldset.settings.highlight {
 	right: 0;
 }
 
-div.password {
+.password {
 	position: absolute;
 	left: 0;
 	box-sizing: border-box;
@@ -479,8 +479,7 @@ div.password {
 }
 
 @media screen and (max-width: 700px) {
-
-	div.password {
+	.password {
 		padding: 0;
 	}
 }
@@ -607,15 +606,15 @@ ul.page form span {
 
 /* Checkboxes */
 
-div.field-checkbox {
+.field-checkbox {
 	min-height: 1.6rem;
 }
 
-div.field-checkbox:first-child {
+.field-checkbox:first-child {
 	margin-top: 2rem;
 }
 
-div.field-checkbox + .field:not(.field-checkbox) {
+.field-checkbox + .field:not(.field-checkbox) {
 	margin-top: 2.6rem;
 }
 
