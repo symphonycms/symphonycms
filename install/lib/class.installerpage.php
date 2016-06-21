@@ -6,11 +6,11 @@
 
     class InstallerPage extends HTMLPage
     {
-        private $_template;
-
         protected $_params;
 
         protected $_page_title;
+
+        protected $_template;
 
         public function __construct($template, $params = array())
         {
@@ -157,6 +157,7 @@
             try {
                 $log = file_get_contents(INSTALL_LOGS . '/install');
             } catch (Exception $ex) {
+                var_dump($ex);
                 $log_entry = Symphony::Log()->popFromLog();
                 if (isset($log_entry['message'])) {
                     $log = $log_entry['message'];
