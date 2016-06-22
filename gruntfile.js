@@ -2,6 +2,9 @@
 module.exports = function (grunt) {
     'use strict';
 
+    // standardize EOL
+    grunt.util.linefeed = '\n';
+
     grunt.initConfig({
 
         pkg: grunt.file.readJSON('package.json'),
