@@ -1,6 +1,13 @@
 <?php
+    namespace SymphonyCms\Installer\Steps;
 
     use \Psr\Log\LoggerInterface;
+    use Configuration;
+    use DatabaseException;
+    use Symphony;
+    use Author;
+    use Cryptography;
+    use Exception;
 
     class CreateDatabase implements Step
     {
@@ -22,7 +29,7 @@
         /**
          * {@inheritdoc}
          */
-        public function handle(Configuration $config)
+        public function handle(Configuration $config, array $data)
         {
             // MySQL: Establishing connection
             $this->logger->info('MYSQL: Establishing Connection');
@@ -61,19 +68,18 @@
             $this->logger->info('MYSQL: Creating Default Author');
 
             try {
-                Symphony::Database()->insert(array(
-                    'id' => 1,
-                    'username' => Symphony::Database()->cleanValue($_POST['fields']['user']['username']),
-                    'password' => Cryptography::hash(Symphony::Database()->cleanValue($_POST['fields']['user']['password'])),
-                    'first_name' => Symphony::Database()->cleanValue($_POST['fields']['user']['firstname']),
-                    'last_name' => Symphony::Database()->cleanValue($_POST['fields']['user']['lastname']),
-                    'email' => Symphony::Database()->cleanValue($_POST['fields']['user']['email']),
-                    'last_seen' => null,
-                    'user_type' => 'developer',
-                    'primary' => 'yes',
-                    'default_area' => null,
-                    'auth_token_active' => 'no'
-                ), 'tbl_authors');
+                // Clean all the user data.
+                $userData = array_map([Symphony::Database(), 'cleanValue'], $data['user']);
+
+                $author = new Author;
+                $author->set('user_type', 'developer');
+                $author->set('primary', 'yes');
+                $author->set('username', $userData['username']);
+                $author->set('password', Cryptography::hash($userData['password']));
+                $author->set('first_name', $userData['firstname']);
+                $author->set('last_name', $userData['lastname']);
+                $author->set('email', $userData['email']);
+                $author->commit();
             } catch (DatabaseException $e) {
                 throw new Exception(sprintf(
                     'There was an error while trying create the default author. MySQL returned: %s:%s',

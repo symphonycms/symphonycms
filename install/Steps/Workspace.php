@@ -1,6 +1,8 @@
 <?php
+    namespace SymphonyCms\Installer\Steps;
 
     use \Psr\Log\LoggerInterface;
+    use Configuration;
 
     class Workspace implements Step
     {
@@ -22,12 +24,12 @@
         /**
          * {@inheritdoc}
          */
-        public function handle(Configuration $config)
+        public function handle(Configuration $config, array $data)
         {
             if (!is_dir(DOCROOT . '/workspace')) {
-                return (new CreateWorkspace($this->logger))->handle($config);
+                return (new CreateWorkspace($this->logger))->handle($config, $data);
             } else {
-                return (new ImportWorkspace($this->logger))->handle($config);
+                return (new ImportWorkspace($this->logger))->handle($config, $data);
             }
         }
     }

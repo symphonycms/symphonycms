@@ -1,6 +1,10 @@
 <?php
+    namespace SymphonyCms\Installer\Steps;
 
     use \Psr\Log\LoggerInterface;
+    use Configuration;
+    use General;
+    use Exception;
 
     class CreateHtaccess implements Step
     {
@@ -22,7 +26,7 @@
         /**
          * {@inheritdoc}
          */
-        public function handle(Configuration $config)
+        public function handle(Configuration $config, array $data)
         {
             // Writing htaccess file
             $this->logger->info('CONFIGURING: Frontend');
@@ -33,7 +37,7 @@
                 file_get_contents(INSTALL . '/includes/htaccess.txt')
             );
 
-            if (!General::writeFile(DOCROOT . "/.htaccess", $htaccess, $config->get('write_mode', 'directory'), 'a')) {
+            if (!General::writeFile(DOCROOT . "/.htaccess", $htaccess, $config->get('write_mode', 'file'), 'a')) {
                 throw new Exception('Could not write ‘.htaccess’ file. Check permission on ' . DOCROOT);
             }
 

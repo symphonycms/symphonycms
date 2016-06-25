@@ -1,6 +1,10 @@
 <?php
+    namespace SymphonyCms\Installer\Steps;
 
     use \Psr\Log\LoggerInterface;
+    use Configuration;
+    use Lang;
+    use ExtensionManager;
 
     class EnableLanguage implements Step
     {
@@ -22,7 +26,7 @@
         /**
          * {@inheritdoc}
          */
-        public function handle(Configuration $config)
+        public function handle(Configuration $config, array $data)
         {
             // Loading default language
             if (isset($_REQUEST['lang']) && $_REQUEST['lang'] !== 'en') {

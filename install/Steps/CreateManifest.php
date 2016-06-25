@@ -1,6 +1,10 @@
 <?php
+    namespace SymphonyCms\Installer\Steps;
 
     use \Psr\Log\LoggerInterface;
+    use Configuration;
+    use General;
+    use Exception;
 
     class CreateManifest implements Step
     {
@@ -37,7 +41,7 @@
         /**
          * {@inheritdoc}
          */
-        public function handle(Configuration $config)
+        public function handle(Configuration $config, array $data)
         {
             foreach ($this->getManifestDirectories() as $name => $dir) {
                 $this->logger->info(sprintf(

@@ -157,12 +157,7 @@
             try {
                 $log = file_get_contents(INSTALL_LOGS . '/install');
             } catch (Exception $ex) {
-                $log_entry = Symphony::Log()->popFromLog();
-                if (isset($log_entry['message'])) {
-                    $log = $log_entry['message'];
-                } else {
-                    $log = 'Unknown error occurred when reading the install log';
-                }
+                $log = (string)$ex;
             }
 
             $code = new XMLElement('code', $log);

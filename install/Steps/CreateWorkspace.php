@@ -1,6 +1,10 @@
 <?php
+    namespace SymphonyCms\Installer\Steps;
 
     use \Psr\Log\LoggerInterface;
+    use Configuration;
+    use General;
+    use Exception;
 
     class CreateWorkspace implements Step
     {
@@ -38,7 +42,7 @@
         /**
          * {@inheritdoc}
          */
-        public function handle(Configuration $config)
+        public function handle(Configuration $config, array $data)
         {
             foreach ($this->getWorkspaceDirectories() as $name => $dir) {
                 $this->logger->info(sprintf(

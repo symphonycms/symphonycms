@@ -1,6 +1,11 @@
 <?php
+    namespace SymphonyCms\Installer\Steps;
 
     use \Psr\Log\LoggerInterface;
+    use Configuration;
+    use Symphony;
+    use DatabaseException;
+    use Exception;
 
     class ImportWorkspace implements Step
     {
@@ -22,7 +27,7 @@
         /**
          * {@inheritdoc}
          */
-        public function handle(Configuration $config)
+        public function handle(Configuration $config, array $data)
         {
             $this->logger->info('An existing ‘workspace’ directory was found at this location. Symphony will use this workspace.');
 

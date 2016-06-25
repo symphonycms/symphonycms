@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+<?php
+    use Symfony\Component\Console\Application;
+    use SymphonyCms\Installer\Command as Installer;
+
+    // Find out where we are:
+    define('DOCROOT', __DIR__ . '/../');
+    define('APP_MODE', isset($_GET['mode']) ? $_GET['mode'] : 'frontend');
+
+    // Include autoloader:
+    $autoloader = require_once DOCROOT . '/vendor/autoload.php';
+
+    $application = new Application();
+    $application->add(new Installer\RequirementsCommmand());
+    $application->add(new Installer\InstallCommmand());
+    $application->run();
+
+

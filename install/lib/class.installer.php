@@ -1,7 +1,12 @@
 <?php
 
+    use SymphonyCms\Installer\Lib\Requirements;
+    use SymphonyCms\Installer\Steps;
+
     class Installer extends Administration
     {
+        protected static $requirements;
+
         /**
          * Override the default Symphony constructor to initialise the Log, Config
          * and Database objects for installation/update. This allows us to use the
@@ -37,6 +42,8 @@
             // Initialize error handlers
             GenericExceptionHandler::initialise(Symphony::Log());
             GenericErrorHandler::initialise(Symphony::Log());
+
+            self::$requirements = new Requirements();
         }
 
         /**
@@ -124,17 +131,16 @@
 
             // Check for configuration errors and, if there are no errors, install Symphony!
             if (isset($_POST['fields'])) {
-                $errors = self::__checkConfiguration();
+                $fields = $_POST['fields'];
+                $errors = self::checkConfiguration($fields);
                 if (!empty($errors)) {
                     Symphony::Log()->error('Installer - Wrong configuration.');
 
                     foreach ($errors as $err) {
-                        Symphony::Log()->error(
-                            sprintf('Configuration - %s', $err['msg'])
-                        );
+                        Symphony::Log()->error(sprintf('Configuration - %s', $err['msg']));
                     }
                 } else {
-                    $disabled_extensions = self::__install();
+                    $disabled_extensions = self::install($fields);
 
                     self::__render(new InstallerPage('success', array(
                         'disabled-extensions' => $disabled_extensions
@@ -162,14 +168,6 @@
         {
             $errors = array();
 
-            // Check for PHP 5.2+
-            if (version_compare(phpversion(), '5.3', '<=')) {
-                $errors[] = array(
-                    'msg' => __('PHP Version is not correct'),
-                    'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.', array('<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.3</code>', '<code>' . phpversion() . '</code>'))
-                );
-            }
-
             // Make sure the install.sql file exists
             if (!file_exists(INSTALL . '/includes/install.sql') || !is_readable(INSTALL . '/includes/install.sql')) {
                 $errors[] = array(
@@ -178,61 +176,7 @@
                 );
             }
 
-            // Is MySQL available?
-            if (!function_exists('mysqli_connect')) {
-                $errors[] = array(
-                    'msg' => __('MySQLi extension not present'),
-                    'details'  => __('Symphony requires PHP to be configured with MySQLi to work.')
-                );
-            }
-
-            // Is ZLib available?
-            if (!extension_loaded('zlib')) {
-                $errors[] = array(
-                    'msg' => __('ZLib extension not present'),
-                    'details' => __('Symphony uses the ZLib compression library for log rotation.')
-                );
-            }
-
-            // Is libxml available?
-            if (!extension_loaded('xml') && !extension_loaded('libxml')) {
-                $errors[] = array(
-                    'msg' => __('XML extension not present'),
-                    'details'  => __('Symphony needs the XML extension to pass data to the site frontend.')
-                );
-            }
-
-            // Is libxslt available?
-            if (!extension_loaded('xsl') && !extension_loaded('xslt') && !function_exists('domxml_xslt_stylesheet')) {
-                $errors[] = array(
-                    'msg' => __('XSLT extension not present'),
-                    'details'  => __('Symphony needs an XSLT processor such as %s or Sablotron to build pages.', array('Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>'))
-                );
-            }
-
-            // Is json_encode available?
-            if (!function_exists('json_decode')) {
-                $errors[] = array(
-                    'msg' => __('JSON functionality is not present'),
-                    'details'  => __('Symphony uses JSON functionality throughout the backend for translations and the interface.')
-                );
-            }
-
-            // Cannot write to root folder.
-            if (!is_writable(DOCROOT)) {
-                $errors['no-write-permission-root'] = array(
-                    'msg' => 'Root folder not writable: ' . DOCROOT,
-                    'details' => __('Symphony does not have write permission to the root directory. Please modify permission settings on %s. This can be reverted once installation is complete.', array('<code>' . DOCROOT . '</code>'))
-                );
-            }
-
-            // Cannot write to workspace
-            if (is_dir(DOCROOT . '/workspace') && !is_writable(DOCROOT . '/workspace')) {
-                $errors['no-write-permission-workspace'] = array(
-                    'msg' => 'Workspace folder not writable: ' . DOCROOT . '/workspace',
-                    'details' => __('Symphony does not have write permission to the existing %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.', array('<code>/workspace</code>', '<code>chmod -R</code>'))
-                );
-            }
+            $errors = array_merge($errors, self::$requirements->check());
 
             return $errors;
         }
@@ -243,12 +187,12 @@
          * folders exist and are writable and that the Database credentials are correct.
          * Once those initial checks pass, the rest of the form values are validated.
          *
+         * @param array $fields
          * @return array An associative array of errors if something went wrong, otherwise an empty array.
          */
-        private static function __checkConfiguration()
+        public static function checkConfiguration(array $fields)
         {
             $errors = array();
-            $fields = $_POST['fields'];
 
             // Testing the database connection
             try {
@@ -393,10 +337,13 @@
             self::__render(new InstallerPage('failure'));
         }
 
-        private static function __install()
+        /*
+         * @param array $data
+         * @return array
+         */
+        public static function install(array $data)
         {
             $start = microtime(true);
-            $fields = $_POST['fields'];
             Symphony::Log()->info('INSTALLATION PROCESS STARTED (' . DateTimeObj::get('c') . ')');
 
             // Configuration: Populating array
@@ -404,36 +351,34 @@
 
             foreach ($conf as $group => $settings) {
                 foreach ($settings as $key => $value) {
-                    if (isset($fields[$group]) && isset($fields[$group][$key])) {
-                        $conf[$group][$key] = $fields[$group][$key];
+                    // This ensures on data the configuration cares about is populated,
+                    // anything else will be ignored and accessible in `$data`.
+                    if (isset($data[$group]) && isset($data[$group][$key])) {
+                        $conf[$group][$key] = $data[$group][$key];
                     }
                 }
             }
-
-            // Don't like this. Find another way.
-            $conf['directory']['write_mode'] = octdec($conf['directory']['write_mode']);
-            $conf['file']['write_mode'] = octdec($conf['file']['write_mode']);
 
             Symphony::Configuration()->setArray($conf);
 
             $steps = [
                 // Create database
-                CreateDatabase::class,
+                Steps\CreateDatabase::class,
                 // Create manifest folder structure
-                CreateManifest::class,
+                Steps\CreateManifest::class,
                 // Write .htaccess
-                CreateHtaccess::class,
+                Steps\CreateHtaccess::class,
                 // Create or import the workspace
-                Workspace::class,
+                Steps\Workspace::class,
                 // Enable extensions
-                EnableExtensions::class,
+                Steps\EnableExtensions::class,
                 // Enable language
-                EnableLanguage::class
+                Steps\EnableLanguage::class
             ];
 
             try {
                 foreach ($steps as $step) {
-                    (new $step(Symphony::Log()->getLog()))->handle(Symphony::Configuration());
+                    (new $step(Symphony::Log()->getLog()))->handle(Symphony::Configuration(), $data);
                 }
             } catch (Exception $ex) {
                 self::__abort($ex->getMessage(), $start);

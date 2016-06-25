@@ -30,10 +30,7 @@
                 'class' => '\Monolog\Handler\StreamHandler',
                 'args' => array(
                     '{vars.filename}',
-                    100,
-                    true,
-                    '{file.write_mode}',
-                    false
+                    100
                 )
             ),
             'formatter' => array(
