@@ -160,7 +160,7 @@ class GenericExceptionHandler
 
         $queries = null;
 
-        if (is_object(Symphony::Database())) {
+        if (is_object(Symphony::Database()) && Symphony::Database()->isConnected()) {
             $debug = Symphony::Database()->debug();
 
             if (!empty($debug)) {

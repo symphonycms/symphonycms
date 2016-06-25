@@ -172,23 +172,11 @@ class Configuration
      */
     public function __toString()
     {
-        $string = 'array(';
-
-        foreach ($this->_properties as $group => $data) {
-            $string .= str_repeat(PHP_EOL, 3) . "\t\t###### ".strtoupper($group)." ######";
-            $string .= PHP_EOL . "\t\t'$group' => array(";
-
-            foreach ($data as $key => $value) {
-                $string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? var_export($value, true) : 'null').",";
-            }
-
-            $string .= PHP_EOL . "\t\t),";
-            $string .= PHP_EOL . "\t\t########";
-        }
-
-        $string .= PHP_EOL . "\t)";
-
-        return $string;
+        return str_replace(
+            ['\n'],
+            [PHP_EOL],
+            var_export($this->_properties, true)
+        );
     }
 
     /**
@@ -212,7 +200,7 @@ class Configuration
             $file = CONFIG;
         }
 
-        $string = "<?php\n\t\$settings = " . (string)$this . ";\n";
+        $string = "<?php" . PHP_EOL . '$settings = ' . (string)$this . ";" . PHP_EOL;
 
         return General::writeFile($file, $string, $permissions);
     }

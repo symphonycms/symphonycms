@@ -671,7 +671,7 @@ class MySQL
      */
     public function debug($type = null)
     {
-        return MySQL::$_conn_pdo->debug();
+        return MySQL::$_conn_pdo->debug($type);
     }
 
     /**

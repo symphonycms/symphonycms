@@ -157,7 +157,6 @@
             try {
                 $log = file_get_contents(INSTALL_LOGS . '/install');
             } catch (Exception $ex) {
-                var_dump($ex);
                 $log_entry = Symphony::Log()->popFromLog();
                 if (isset($log_entry['message'])) {
                     $log = $log_entry['message'];
@@ -220,16 +219,17 @@
         protected function viewConfiguration()
         {
             /* -----------------------------------------------
-         * Populating fields array
-         * -----------------------------------------------
-         */
+             * Populating fields array
+             * -----------------------------------------------
+             */
 
             $fields = isset($_POST['fields']) ? $_POST['fields'] : $this->_params['default-config'];
 
-        /* -----------------------------------------------
-         * Welcome
-         * -----------------------------------------------
-         */
+            /* -----------------------------------------------
+             * Welcome
+             * -----------------------------------------------
+             */
+
             $div = new XMLElement('div');
             $div->appendChild(
                 new XMLElement('h2', __('Find something sturdy to hold on to because things are about to get awesome.'))

@@ -92,14 +92,14 @@
 
         ###### FILE ######
         'file' => array(
-            'write_mode' => 0644,
+            'write_mode' => '0644',
         ),
         ########
 
 
         ###### DIRECTORY ######
         'directory' => array(
-            'write_mode' => 0755,
+            'write_mode' => '0755',
         ),
         ########
 
