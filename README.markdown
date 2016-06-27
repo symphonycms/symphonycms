@@ -37,7 +37,7 @@ Useful places:
 
 ## Server requirements
 
-- PHP 5.6 or above
+- PHP 5.5.9 or above
 - PHP’s LibXML module, with the XSLT extension enabled (`--with-xsl`)
 - PHP’s built in `json` functions, which are enabled by default in PHP 5.2 and above; if they are missing, ensure PHP wasn’t compiled with `--disable-json`
 - [Composer](https://getcomposer.org/)

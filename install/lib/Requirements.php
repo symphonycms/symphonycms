@@ -15,12 +15,12 @@
             $errors = array();
 
             // Check for PHP 5.4+
-            if (version_compare(phpversion(), '5.4', '<=')) {
+            if (version_compare(phpversion(), '5.5.9', '<=')) {
                 $errors[] = array(
                     'msg' => __('PHP Version is not correct'),
                     'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.',
                         array(
-                            '<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.3</code>',
+                            '<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.5.9</code>',
                             '<code>' . phpversion() . '</code>'
                         ))
                 );
