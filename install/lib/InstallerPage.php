@@ -1,6 +1,19 @@
 <?php
 
     /**
+     * @package install
+     */
+    namespace SymphonyCms\Installer\Lib;
+
+    use DateTimeObj;
+    use Exception;
+    use HTMLPage;
+    use Lang;
+    use Symphony;
+    use Widget;
+    use XMLElement;
+
+    /**
      * @package content
      */
 

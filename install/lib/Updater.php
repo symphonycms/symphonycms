@@ -1,4 +1,15 @@
 <?php
+    /**
+     * @package install
+     */
+    namespace SymphonyCms\Installer\Lib;
+
+    use DatabaseException;
+    use DirectoryIterator;
+    use Exception;
+    use General;
+    use Lang;
+    use Symphony;
 
     class Updater extends Installer
     {
@@ -102,7 +113,7 @@
 
                 // Include migration so we can see what the version is
                 include_once($m->getPathname());
-                $classname = 'migration_' . str_replace('.', '', $version);
+                $classname = 'SymphonyCms\\Installer\\Migrations\\migration_' . str_replace('.', '', $version);
 
                 $m = new $classname();
 

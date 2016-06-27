@@ -1,5 +1,8 @@
 <?php
 
+    /**
+     * @package install
+     */
     namespace SymphonyCms\Installer\Lib;
 
     class Requirements

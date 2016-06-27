@@ -3,6 +3,11 @@
     /**
      * @package install
      */
+    namespace SymphonyCms\Installer\Lib;
+
+    use DatabaseException;
+    use Exception;
+    use Symphony;
 
     /**
      * The Migration class is extended by updates files that contain the necessary
@@ -35,9 +40,7 @@
             static::$existing_version = $existing_version;
 
             try {
-                $canProceed = static::$function();
-
-                return ($canProceed === false) ? false : true;
+                return static::$function();
             } catch (DatabaseException $e) {
                 Symphony::Log()->error('Could not complete upgrading. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getMessage());
 
@@ -87,9 +90,9 @@
 
             if (Symphony::Configuration()->write() === false) {
                 throw new Exception('Failed to write configuration file, please check the file permissions.');
-            } else {
-                return true;
             }
+
+            return true;
         }
 
         /**

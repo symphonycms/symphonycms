@@ -1,8 +1,14 @@
 <?php
 
     /**
-     * @package content
+     * @package install
      */
+    namespace SymphonyCms\Installer\Lib;
+
+    use Exception;
+    use Symphony;
+    use Widget;
+    use XMLElement;
 
     class UpdaterPage extends InstallerPage
     {
@@ -87,16 +93,11 @@
             $h2 = new XMLElement('h2', __('Updating Failure'));
             $p = new XMLElement('p', __('An error occurred while updating Symphony.'));
 
-            // Attempt to get update information from the log file
+            // Attempt to get update information from the log fileØ
             try {
                 $log = file_get_contents(INSTALL_LOGS . '/update');
             } catch (Exception $ex) {
-                $log_entry = Symphony::Log()->popFromLog();
-                if (isset($log_entry['message'])) {
-                    $log = $log_entry['message'];
-                } else {
-                    $log = 'Unknown error occurred when reading the update log';
-                }
+                $log = (string)$ex;
             }
 
             $code = new XMLElement('code', $log);

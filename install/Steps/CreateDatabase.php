@@ -1,13 +1,13 @@
 <?php
     namespace SymphonyCms\Installer\Steps;
 
-    use \Psr\Log\LoggerInterface;
-    use Configuration;
-    use DatabaseException;
-    use Symphony;
     use Author;
+    use Configuration;
     use Cryptography;
+    use DatabaseException;
     use Exception;
+    use Psr\Log\LoggerInterface;
+    use Symphony;
 
     class CreateDatabase implements Step
     {

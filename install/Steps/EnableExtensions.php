@@ -1,12 +1,12 @@
 <?php
     namespace SymphonyCms\Installer\Steps;
 
-    use \Psr\Log\LoggerInterface;
     use Configuration;
-    use General;
-    use Exception;
     use DirectoryIterator;
+    use Exception;
     use ExtensionManager;
+    use General;
+    use Psr\Log\LoggerInterface;
 
     class EnableExtensions implements Step
     {

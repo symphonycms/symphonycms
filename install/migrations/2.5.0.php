@@ -1,5 +1,11 @@
 <?php
 
+    namespace SymphonyCms\Installer\Migrations;
+
+    use SymphonyCms\Installer\Lib\Migration;
+    use Symphony;
+    use Exception;
+
     class migration_250 extends Migration
     {
         public static function getVersion()

@@ -1,4 +1,9 @@
 <?php
+    namespace SymphonyCms\Installer\Migrations;
+
+    use SymphonyCms\Installer\Lib\Installer;
+    use SymphonyCms\Installer\Lib\Updater;
+    use General;
 
     ini_set('display_errors', 1);
 

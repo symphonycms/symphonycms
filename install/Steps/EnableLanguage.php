@@ -1,10 +1,10 @@
 <?php
     namespace SymphonyCms\Installer\Steps;
 
-    use \Psr\Log\LoggerInterface;
     use Configuration;
-    use Lang;
     use ExtensionManager;
+    use Lang;
+    use Psr\Log\LoggerInterface;
 
     class EnableLanguage implements Step
     {

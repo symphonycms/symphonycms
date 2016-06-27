@@ -1,8 +1,8 @@
 <?php
     namespace SymphonyCms\Installer\Steps;
 
-    use \Psr\Log\LoggerInterface;
     use Configuration;
+    use Psr\Log\LoggerInterface;
 
     class Workspace implements Step
     {

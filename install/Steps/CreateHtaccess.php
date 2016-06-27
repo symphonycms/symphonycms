@@ -1,10 +1,10 @@
 <?php
     namespace SymphonyCms\Installer\Steps;
 
-    use \Psr\Log\LoggerInterface;
     use Configuration;
-    use General;
     use Exception;
+    use General;
+    use Psr\Log\LoggerInterface;
 
     class CreateHtaccess implements Step
     {

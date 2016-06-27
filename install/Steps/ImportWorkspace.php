@@ -1,11 +1,11 @@
 <?php
     namespace SymphonyCms\Installer\Steps;
 
-    use \Psr\Log\LoggerInterface;
     use Configuration;
-    use Symphony;
     use DatabaseException;
     use Exception;
+    use Psr\Log\LoggerInterface;
+    use Symphony;
 
     class ImportWorkspace implements Step
     {

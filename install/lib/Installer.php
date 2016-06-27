@@ -1,6 +1,20 @@
 <?php
 
-    use SymphonyCms\Installer\Lib\Requirements;
+    /**
+     * @package install
+     */
+    namespace SymphonyCms\Installer\Lib;
+
+    use Administration;
+    use DatabaseException;
+    use DateTimeObj;
+    use Exception;
+    use General;
+    use GenericErrorHandler;
+    use GenericExceptionHandler;
+    use Lang;
+    use Profiler;
+    use Symphony;
     use SymphonyCms\Installer\Steps;
 
     class Installer extends Administration
@@ -153,6 +167,16 @@
                 'errors' => $errors,
                 'default-config' => Symphony::Configuration()->get()
             )));
+        }
+
+        /**
+         * @param InstallerPage $page
+         */
+        protected static function __render(InstallerPage $page)
+        {
+            header('Content-Type: text/html; charset=utf-8');
+            echo $page->generate();
+            exit;
         }
 
         /**

@@ -1,4 +1,8 @@
 <?php
+    namespace SymphonyCms\Installer\Migrations;
+
+    use SymphonyCms\Installer\Lib\Migration;
+    use Symphony;
 
     class migration_232 extends Migration
     {
