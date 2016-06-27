@@ -13,7 +13,7 @@
     use SymphonyCms\Installer\Lib\ConsoleInstaller;
     use Configuration;
 
-    class InstallCommmand extends Command
+    class InstallCommand extends Command
     {
         protected function configure()
         {
@@ -81,3 +81,5 @@
             return 0;
         }
     }
+
+    return __NAMESPACE__;

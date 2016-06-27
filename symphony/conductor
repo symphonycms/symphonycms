@@ -20,8 +20,26 @@
     $autoloader = require_once DOCROOT . '/vendor/autoload.php';
 
     $application = new Application('symphony/conductor', VERSION);
-    $application->add(new Installer\RequirementsCommmand());
-    $application->add(new Installer\InstallCommmand());
+
+    // Attempt to find all the commands in this project
+    // TODO: Find a better way.
+    foreach ([DOCROOT . '/install', SYMPHONY, EXTENSIONS, WORKSPACE] as $directory) {
+        try {
+            $dir = new DirectoryIterator($directory . '/command');
+            foreach ($dir as $fileinfo) {
+                if ($fileinfo->isDot() || $fileinfo->isDir()) {
+                    continue;
+                }
+
+                // Rely on the commands return the namespace once they are required.
+                $namespace = require_once $fileinfo->getRealPath();
+                $command = $namespace . '\\' . $fileinfo->getBasename('.php');
+
+               $application->add(new $command);
+            }
+        } catch (Exception $ex) {
+
+        }
+    }
+
     $application->run();
-
-

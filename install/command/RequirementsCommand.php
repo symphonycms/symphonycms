@@ -7,7 +7,7 @@
     use Symfony\Component\Console\Output\OutputInterface;
     use SymphonyCms\Installer\Lib\Requirements;
 
-    class RequirementsCommmand extends Command
+    class RequirementsCommand extends Command
     {
         protected function configure()
         {
@@ -36,3 +36,5 @@
             return 0;
         }
     }
+
+    return __NAMESPACE__;
