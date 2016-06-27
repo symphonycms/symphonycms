@@ -14,8 +14,8 @@
         {
             $errors = array();
 
-            // Check for PHP 5.2+
-            if (version_compare(phpversion(), '5.3', '<=')) {
+            // Check for PHP 5.4+
+            if (version_compare(phpversion(), '5.4', '<=')) {
                 $errors[] = array(
                     'msg' => __('PHP Version is not correct'),
                     'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.',
@@ -27,7 +27,7 @@
             }
 
             // Is PDO available?
-            if (!function_exists('pdo')) {
+            if (!extension_loaded('pdo')) {
                 $errors[] = array(
                     'msg' => __('PDO extension not present'),
                     'details' => __('Symphony requires PHP to be configured with PDO to work.')
@@ -35,7 +35,7 @@
             }
 
             // Is CURL available?
-            if (!function_exists('curl')) {
+            if (!extension_loaded('curl')) {
                 $errors[] = array(
                     'msg' => __('CURL extension not present'),
                     'details' => __('Symphony requires PHP to be configured with CURL for HTTP communication.')
