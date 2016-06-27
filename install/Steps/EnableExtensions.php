@@ -6,25 +6,9 @@
     use Exception;
     use ExtensionManager;
     use General;
-    use Psr\Log\LoggerInterface;
 
-    class EnableExtensions implements Step
+    class EnableExtensions extends DefaultStep
     {
-        /**
-         * @var LoggerInterface
-         */
-        protected $logger;
-
-        /**
-         * CreateManifest constructor.
-         *
-         * @param LoggerInterface $logger
-         */
-        public function __construct(LoggerInterface $logger)
-        {
-            $this->logger = $logger;
-        }
-
         /**
          * {@inheritdoc}
          */
@@ -50,6 +34,7 @@
 
                 $handle = $e->getBasename();
                 try {
+                    $this->logger->debug('Enabling the extension ‘' . $handle . '’.');
                     if (!ExtensionManager::enable($handle)) {
                         $this->logger->warning('Could not enable the extension ‘' . $handle . '’.');
                     }

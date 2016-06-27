@@ -39,8 +39,7 @@
             }
 
             // Include the default Config for installation.
-            include(INSTALL . '/includes/config_default.php');
-            static::initialiseConfiguration($settings);
+            static::initialiseConfiguration(require_once(INSTALL . '/includes/config_default.php'));
 
             // Initialize date/time
             define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
@@ -402,7 +401,12 @@
 
             try {
                 foreach ($steps as $step) {
-                    (new $step(Symphony::Log()->getLog()))->handle(Symphony::Configuration(), $data);
+                    $installStep = new $step(Symphony::Log()->getLog());
+                    $installStep->setOverride(false);
+
+                    if (false === $installStep->handle(Symphony::Configuration(), $data)) {
+                        throw new Exception(sprintf('Aborting installation, %s failed', $step));
+                    }
                 }
             } catch (Exception $ex) {
                 self::__abort($ex->getMessage(), $start);

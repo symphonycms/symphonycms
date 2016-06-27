@@ -1,5 +1,5 @@
 <?php
-    $settings = array(
+    return $settings = array(
 
 
         ###### ADMIN ######

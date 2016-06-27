@@ -200,7 +200,7 @@ class Configuration
             $file = CONFIG;
         }
 
-        $string = "<?php" . PHP_EOL . '$settings = ' . (string)$this . ";" . PHP_EOL;
+        $string = "<?php" . PHP_EOL . 'return $settings = ' . (string)$this . ";" . PHP_EOL;
 
         return General::writeFile($file, $string, $permissions);
     }

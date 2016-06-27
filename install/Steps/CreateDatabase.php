@@ -6,26 +6,10 @@
     use Cryptography;
     use DatabaseException;
     use Exception;
-    use Psr\Log\LoggerInterface;
     use Symphony;
 
-    class CreateDatabase implements Step
+    class CreateDatabase extends DefaultStep
     {
-        /**
-         * @var LoggerInterface
-         */
-        protected $logger;
-
-        /**
-         * CreateManifest constructor.
-         *
-         * @param LoggerInterface $logger
-         */
-        public function __construct(LoggerInterface $logger)
-        {
-            $this->logger = $logger;
-        }
-
         /**
          * {@inheritdoc}
          */
@@ -48,10 +32,17 @@
                 );
             }
 
-            // MySQL: Setting prefix & character encoding
-            Symphony::Database()->setPrefix($config->get('tbl_prefix', 'database'));
+            if (Symphony::Database()->tableExists($config->get('tbl_prefix', 'database') . '%') && !$this->override) {
+                $this->logger->error('MYSQL: Database table prefix is already in use. Change prefix or run installation with the `--override` flag.', [
+                    'prefix' => $config->get('tbl_prefix', 'database'),
+                    'db' => $config->get('db', 'database')
+                ]);
 
-            // MySQL: Importing schema
+                return false;
+            }
+
+            // MySQL: Setting prefix & importing schema
+            Symphony::Database()->setPrefix($config->get('tbl_prefix', 'database'));
             $this->logger->info('MYSQL: Importing Table Schema');
 
             try {
@@ -65,27 +56,31 @@
             }
 
             // MySQL: Creating default author
-            $this->logger->info('MYSQL: Creating Default Author');
+            if (isset($data['user'])) {
+                $this->logger->info('MYSQL: Creating Default Author');
 
-            try {
-                // Clean all the user data.
-                $userData = array_map([Symphony::Database(), 'cleanValue'], $data['user']);
+                try {
+                    // Clean all the user data.
+                    $userData = array_map([Symphony::Database(), 'cleanValue'], $data['user']);
 
-                $author = new Author;
-                $author->set('user_type', 'developer');
-                $author->set('primary', 'yes');
-                $author->set('username', $userData['username']);
-                $author->set('password', Cryptography::hash($userData['password']));
-                $author->set('first_name', $userData['firstname']);
-                $author->set('last_name', $userData['lastname']);
-                $author->set('email', $userData['email']);
-                $author->commit();
-            } catch (DatabaseException $e) {
-                throw new Exception(sprintf(
-                    'There was an error while trying create the default author. MySQL returned: %s:%s',
-                    $e->getDatabaseErrorCode(),
-                    $e->getDatabaseErrorMessage()
-                ));
+                    $author = new Author;
+                    $author->set('user_type', 'developer');
+                    $author->set('primary', 'yes');
+                    $author->set('username', $userData['username']);
+                    $author->set('password', Cryptography::hash($userData['password']));
+                    $author->set('first_name', $userData['firstname']);
+                    $author->set('last_name', $userData['lastname']);
+                    $author->set('email', $userData['email']);
+                    $author->commit();
+                } catch (DatabaseException $e) {
+                    throw new Exception(sprintf(
+                        'There was an error while trying create the default author. MySQL returned: %s:%s',
+                        $e->getDatabaseErrorCode(),
+                        $e->getDatabaseErrorMessage()
+                    ));
+                }
+            } else {
+                $this->logger->info('MYSQL: Skipping Default Author creation');
             }
 
             return true;

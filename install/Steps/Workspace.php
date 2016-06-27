@@ -2,31 +2,15 @@
     namespace SymphonyCms\Installer\Steps;
 
     use Configuration;
-    use Psr\Log\LoggerInterface;
 
-    class Workspace implements Step
+    class Workspace extends DefaultStep
     {
-        /**
-         * @var LoggerInterface
-         */
-        protected $logger;
-
-        /**
-         * CreateManifest constructor.
-         *
-         * @param LoggerInterface $logger
-         */
-        public function __construct(LoggerInterface $logger)
-        {
-            $this->logger = $logger;
-        }
-
         /**
          * {@inheritdoc}
          */
         public function handle(Configuration $config, array $data)
         {
-            if (!is_dir(DOCROOT . '/workspace')) {
+            if (!is_dir(WORKSPACE)) {
                 return (new CreateWorkspace($this->logger))->handle($config, $data);
             } else {
                 return (new ImportWorkspace($this->logger))->handle($config, $data);

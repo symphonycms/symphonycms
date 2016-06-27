@@ -4,35 +4,17 @@
     use Configuration;
     use DatabaseException;
     use Exception;
-    use Psr\Log\LoggerInterface;
     use Symphony;
 
-    class ImportWorkspace implements Step
+    class ImportWorkspace extends DefaultStep
     {
-        /**
-         * @var LoggerInterface
-         */
-        protected $logger;
-
-        /**
-         * CreateManifest constructor.
-         *
-         * @param LoggerInterface $logger
-         */
-        public function __construct(LoggerInterface $logger)
-        {
-            $this->logger = $logger;
-        }
-
         /**
          * {@inheritdoc}
          */
         public function handle(Configuration $config, array $data)
         {
-            $this->logger->info('An existing ‘workspace’ directory was found at this location. Symphony will use this workspace.');
-
             // MySQL: Importing workspace data
-            $this->logger->info('MYSQL: Importing Workspace Data...');
+            $this->logger->info('MYSQL: Importing existing workspace data');
 
             if (is_file(WORKSPACE . '/install.sql')) {
                 try {

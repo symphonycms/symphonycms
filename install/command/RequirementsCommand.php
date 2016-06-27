@@ -12,7 +12,7 @@
         protected function configure()
         {
             $this
-                ->setName('check')
+                ->setName('requirements')
                 ->setDescription('Check if this server is capable of installing Symphony.')
             ;
         }
@@ -22,12 +22,17 @@
             $requirements = new Requirements();
             $errors = $requirements->check();
 
-            if (empty($errors)) {
-                $output->writeln('All good, the show goes on');
-            } else {
+            if (!empty($errors)) {
+                $output->writeln('<error>Fail.</error> Unfortunately this server does not support Symphony CMS:');
                 foreach ($errors as $error) {
                     $output->writeln($error['msg'] . ' ' . $error['details']);
                 }
+
+                return 1;
             }
+
+            $output->writeln('<info>Pass.</info> The server supports the minimum requirements for Symphony CMS.');
+
+            return 0;
         }
     }

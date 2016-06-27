@@ -4,25 +4,9 @@
     use Configuration;
     use Exception;
     use General;
-    use Psr\Log\LoggerInterface;
 
-    class CreateManifest implements Step
+    class CreateManifest extends DefaultStep
     {
-        /**
-         * @var LoggerInterface
-         */
-        protected $logger;
-
-        /**
-         * CreateManifest constructor.
-         *
-         * @param LoggerInterface $logger
-         */
-        public function __construct(LoggerInterface $logger)
-        {
-            $this->logger = $logger;
-        }
-
         /**
          * Return the directories that should be created.
          *
@@ -44,6 +28,24 @@
         public function handle(Configuration $config, array $data)
         {
             foreach ($this->getManifestDirectories() as $name => $dir) {
+                if (is_dir($dir)) {
+                    if ($this->override) {
+                        $this->logger->info(sprintf(
+                            'REMOVING: Deleting ‘%s‘ folder',
+                            $name
+                        ));
+
+                        General::deleteDirectory($dir);
+                    } else {
+                        $this->logger->info(sprintf(
+                            'SKIPPING: `%s` folder exists',
+                            $name
+                        ));
+
+                        continue;
+                    }
+                }
+
                 $this->logger->info(sprintf(
                     'WRITING: Creating ‘%s‘ folder',
                     $name

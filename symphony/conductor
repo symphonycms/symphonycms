@@ -4,13 +4,22 @@
     use SymphonyCms\Installer\Command as Installer;
 
     // Find out where we are:
-    define('DOCROOT', __DIR__ . '/../');
-    define('APP_MODE', isset($_GET['mode']) ? $_GET['mode'] : 'frontend');
+    define('DOCROOT', realpath(__DIR__ . '/../'));
+    define('APP_MODE', 'console');
+    define('VERSION', '3.0.0-alpha.1');
+
+    // Set the current timezone, should that not be available default to GMT.
+    if (!date_default_timezone_set(@date_default_timezone_get())) {
+        date_default_timezone_set('GMT');
+    }
+
+    // Set appropriate error reporting:
+    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 
     // Include autoloader:
     $autoloader = require_once DOCROOT . '/vendor/autoload.php';
 
-    $application = new Application();
+    $application = new Application('symphony/conductor', VERSION);
     $application->add(new Installer\RequirementsCommmand());
     $application->add(new Installer\InstallCommmand());
     $application->run();

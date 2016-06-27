@@ -7,8 +7,7 @@
 
     ini_set('display_errors', 1);
 
-    // Set the current timezone, should that not be available
-    // default to GMT.
+    // Set the current timezone, should that not be available default to GMT.
     if (!date_default_timezone_set(@date_default_timezone_get())) {
         date_default_timezone_set('GMT');
     }
@@ -26,7 +25,7 @@
     $clean_url = rtrim($clean_url, '/\\');
     define('DOMAIN', $clean_url);
 
-    $clean_path = rtrim(dirname(__FILE__), '/\\');
+    $clean_path = rtrim(__DIR__, '/\\');
     $clean_path = preg_replace(array('/\/{2,}/i', '/install$/i'), array('/', null), $clean_path);
     $clean_path = rtrim($clean_path, '/\\');
     define('DOCROOT', $clean_path);

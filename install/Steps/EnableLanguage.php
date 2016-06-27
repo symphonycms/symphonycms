@@ -4,25 +4,9 @@
     use Configuration;
     use ExtensionManager;
     use Lang;
-    use Psr\Log\LoggerInterface;
 
-    class EnableLanguage implements Step
+    class EnableLanguage extends DefaultStep
     {
-        /**
-         * @var LoggerInterface
-         */
-        protected $logger;
-
-        /**
-         * EnableLanguage constructor.
-         *
-         * @param LoggerInterface $logger
-         */
-        public function __construct(LoggerInterface $logger)
-        {
-            $this->logger = $logger;
-        }
-
         /**
          * {@inheritdoc}
          */

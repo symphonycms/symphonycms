@@ -4,25 +4,9 @@
     use Configuration;
     use Exception;
     use General;
-    use Psr\Log\LoggerInterface;
 
-    class CreateWorkspace implements Step
+    class CreateWorkspace extends DefaultStep
     {
-        /**
-         * @var LoggerInterface
-         */
-        protected $logger;
-
-        /**
-         * CreateManifest constructor.
-         *
-         * @param LoggerInterface $logger
-         */
-        public function __construct(LoggerInterface $logger)
-        {
-            $this->logger = $logger;
-        }
-
         /**
          * Return the directories that should be created.
          *
