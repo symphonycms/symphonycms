@@ -26,19 +26,19 @@
                 );
             }
 
-            // Is MySQL available?
-            if (!function_exists('mysqli_connect')) {
+            // Is PDO available?
+            if (!function_exists('pdo')) {
                 $errors[] = array(
-                    'msg' => __('MySQLi extension not present'),
-                    'details' => __('Symphony requires PHP to be configured with MySQLi to work.')
+                    'msg' => __('PDO extension not present'),
+                    'details' => __('Symphony requires PHP to be configured with PDO to work.')
                 );
             }
 
-            // Is ZLib available?
-            if (!extension_loaded('zlib')) {
+            // Is CURL available?
+            if (!function_exists('curl')) {
                 $errors[] = array(
-                    'msg' => __('ZLib extension not present'),
-                    'details' => __('Symphony uses the ZLib compression library for log rotation.')
+                    'msg' => __('CURL extension not present'),
+                    'details' => __('Symphony requires PHP to be configured with CURL for HTTP communication.')
                 );
             }
 

@@ -64,11 +64,11 @@
             // TODO: Ask the user.
             $data = [
                 'user' => [
-                    'firstname' => 'Brendan',
-                    'lastname' => 'Abbott',
-                    'username' => 'brendan',
+                    'firstname' => 'Test',
+                    'lastname' => 'User',
+                    'username' => 'symphony',
                     'password' => 'testing',
-                    'email' => 'brendan@bloodbone.ws'
+                    'email' => 'team@getsymphony.com'
                 ]
             ];
 
