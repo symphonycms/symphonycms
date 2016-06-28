@@ -12,6 +12,9 @@
  */
 class JSON
 {
+    /**
+     * @var DOMDocument
+     */
     private static $dom;
 
     /**

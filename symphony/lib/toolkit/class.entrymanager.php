@@ -209,7 +209,7 @@ class EntryManager
 
                 Symphony::Database()->insert($fields, 'tbl_entries_data_' . $field_id);
             } catch (Exception $e) {
-                Symphony::Log()->pushExceptionToLog($e, true);
+                Symphony::Log()->pushExceptionToLog($e);
             }
 
             if ($did_lock) {
