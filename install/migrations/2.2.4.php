@@ -1,17 +1,17 @@
 <?php
-    namespace SymphonyCms\Installer\Migrations;
+namespace SymphonyCms\Installer\Migrations;
 
-    use SymphonyCms\Installer\Lib\Migration;
+use SymphonyCms\Installer\Lib\Migration;
 
-    class migration_224 extends Migration
+class migration_224 extends Migration
+{
+    public static function getVersion()
     {
-        public static function getVersion()
-        {
-            return '2.2.4';
-        }
-
-        public static function getReleaseNotes()
-        {
-            return 'http://getsymphony.com/download/releases/version/2.2.4/';
-        }
+        return '2.2.4';
     }
+
+    public static function getReleaseNotes()
+    {
+        return 'http://getsymphony.com/download/releases/version/2.2.4/';
+    }
+}

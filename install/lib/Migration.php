@@ -1,134 +1,134 @@
 <?php
 
+/**
+ * @package install
+ */
+namespace SymphonyCms\Installer\Lib;
+
+use DatabaseException;
+use Exception;
+use Symphony;
+
+/**
+ * The Migration class is extended by updates files that contain the necessary
+ * logic to update the current installation to the migration version. In the
+ * future it is hoped Migrations will support downgrading as well.
+ */
+abstract class Migration
+{
     /**
-     * @package install
+     * The current installed version of Symphony, before updating
+     *
+     * @var string
      */
-    namespace SymphonyCms\Installer\Lib;
-
-    use DatabaseException;
-    use Exception;
-    use Symphony;
+    public static $existing_version = null;
 
     /**
-     * The Migration class is extended by updates files that contain the necessary
-     * logic to update the current installation to the migration version. In the
-     * future it is hoped Migrations will support downgrading as well.
+     * While we are supporting PHP5.2, we can't do this neatly as 5.2
+     * lacks late static binding. `self` will always refer to `Migration`,
+     * not the calling class, ie. `Migration_202`.
+     * In Symphony 2.4, we will support PHP5.3 only, and we can have this
+     * efficiency!
+     *
+     * @param callable $function
+     * @param null $existing_version
+     * @return boolean
+     * True if successful, false otherwise
      */
-
-    abstract class Migration
+    public static function run($function, $existing_version = null)
     {
-        /**
-         * The current installed version of Symphony, before updating
-         * @var string
-         */
-        public static $existing_version = null;
+        static::$existing_version = $existing_version;
 
-        /**
-         * While we are supporting PHP5.2, we can't do this neatly as 5.2
-         * lacks late static binding. `self` will always refer to `Migration`,
-         * not the calling class, ie. `Migration_202`.
-         * In Symphony 2.4, we will support PHP5.3 only, and we can have this
-         * efficiency!
-         *
-         * @param callable $function
-         * @param null $existing_version
-         * @return boolean
-         * True if successful, false otherwise
-         */
-        public static function run($function, $existing_version = null)
-        {
-            static::$existing_version = $existing_version;
+        try {
+            return static::$function();
+        } catch (DatabaseException $e) {
+            Symphony::Log()->error('Could not complete upgrading. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getMessage());
 
-            try {
-                return static::$function();
-            } catch (DatabaseException $e) {
-                Symphony::Log()->error('Could not complete upgrading. MySQL returned: ' . $e->getDatabaseErrorCode() . ': ' . $e->getMessage());
+            return false;
+        } catch (Exception $e) {
+            Symphony::Log()->error('Could not complete upgrading because of the following error: ' . $e->getMessage());
 
-                return false;
-            } catch (Exception $e) {
-                Symphony::Log()->error('Could not complete upgrading because of the following error: ' . $e->getMessage());
-
-                return false;
-            }
-        }
-
-        /**
-         * Return's the most current version that this migration provides.
-         * Note that just because the migration file is 2.3, the migration
-         * might only cater for 2.3 Beta 1 at this stage, hence the function.
-         *
-         * @return string
-         */
-        public static function getVersion()
-        {
-            return null;
-        }
-
-        /**
-         * Return's the string to this migration's release notes. Like `getVersion()`,
-         * this may not be the complete version, but rather the release notes for
-         * the Beta/RC.
-         *
-         * @return string
-         */
-        public static function getReleaseNotes()
-        {
-            return null;
-        }
-
-        /**
-         * This function will upgrade Symphony from the `self::$existing_version`
-         * to `getVersion()`.
-         *
-         * @throws Exception when the configuration is not writable
-         * @return boolean
-         */
-        public static function upgrade()
-        {
-            Symphony::Configuration()->set('version', static::getVersion(), 'symphony');
-            Symphony::Configuration()->set('useragent', 'Symphony/' . static::getVersion(), 'general');
-
-            if (Symphony::Configuration()->write() === false) {
-                throw new Exception('Failed to write configuration file, please check the file permissions.');
-            }
-
-            return true;
-        }
-
-        /**
-         * This function is not implemented yet. It will take the `self::$existing_version`
-         * and downgrade the Symphony install to `getVersion`.
-         *
-         * @return boolean
-         */
-        public static function downgrade()
-        {
-            return true;
-        }
-
-        /**
-         * Called before an upgrade has started, this function allows migrations to
-         * include notices to display the user. These may be warnings about what is
-         * about to happen, or a description of what this upgrade provides.
-         *
-         * @return array
-         * An array of strings, where each string will become a list item.
-         */
-        public static function preUpdateNotes()
-        {
-            return array();
-        }
-
-        /**
-         * Called after an upgrade has started, this function allows migrations to
-         * include notices to display the user. These may be post upgrade steps such
-         * as new extensions that are available or required by the current version
-         *
-         * @return array
-         * An array of strings, where each string will become a list item.
-         */
-        public static function postUpdateNotes()
-        {
-            return array();
+            return false;
         }
     }
+
+    /**
+     * Return's the string to this migration's release notes. Like `getVersion()`,
+     * this may not be the complete version, but rather the release notes for
+     * the Beta/RC.
+     *
+     * @return string
+     */
+    public static function getReleaseNotes()
+    {
+        return null;
+    }
+
+    /**
+     * This function will upgrade Symphony from the `self::$existing_version`
+     * to `getVersion()`.
+     *
+     * @throws Exception when the configuration is not writable
+     * @return boolean
+     */
+    public static function upgrade()
+    {
+        Symphony::Configuration()->set('version', static::getVersion(), 'symphony');
+        Symphony::Configuration()->set('useragent', 'Symphony/' . static::getVersion(), 'general');
+
+        if (Symphony::Configuration()->write() === false) {
+            throw new Exception('Failed to write configuration file, please check the file permissions.');
+        }
+
+        return true;
+    }
+
+    /**
+     * Return's the most current version that this migration provides.
+     * Note that just because the migration file is 2.3, the migration
+     * might only cater for 2.3 Beta 1 at this stage, hence the function.
+     *
+     * @return string
+     */
+    public static function getVersion()
+    {
+        return null;
+    }
+
+    /**
+     * This function is not implemented yet. It will take the `self::$existing_version`
+     * and downgrade the Symphony install to `getVersion`.
+     *
+     * @return boolean
+     */
+    public static function downgrade()
+    {
+        return true;
+    }
+
+    /**
+     * Called before an upgrade has started, this function allows migrations to
+     * include notices to display the user. These may be warnings about what is
+     * about to happen, or a description of what this upgrade provides.
+     *
+     * @return array
+     * An array of strings, where each string will become a list item.
+     */
+    public static function preUpdateNotes()
+    {
+        return array();
+    }
+
+    /**
+     * Called after an upgrade has started, this function allows migrations to
+     * include notices to display the user. These may be post upgrade steps such
+     * as new extensions that are available or required by the current version
+     *
+     * @return array
+     * An array of strings, where each string will become a list item.
+     */
+    public static function postUpdateNotes()
+    {
+        return array();
+    }
+}

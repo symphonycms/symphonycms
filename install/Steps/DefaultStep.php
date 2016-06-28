@@ -1,36 +1,35 @@
 <?php
+namespace SymphonyCms\Installer\Steps;
 
-    namespace SymphonyCms\Installer\Steps;
+use Psr\Log\LoggerInterface;
 
-    use Psr\Log\LoggerInterface;
+abstract class DefaultStep implements Step
+{
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
 
-    abstract class DefaultStep implements Step
+    /**
+     * @var boolean
+     */
+    protected $override = false;
+
+    /**
+     * CreateManifest constructor.
+     *
+     * @param LoggerInterface $logger
+     */
+    public function __construct(LoggerInterface $logger)
     {
-        /**
-         * @var LoggerInterface
-         */
-        protected $logger;
-
-        /**
-         * @var boolean
-         */
-        protected $override = false;
-
-        /**
-         * CreateManifest constructor.
-         *
-         * @param LoggerInterface $logger
-         */
-        public function __construct(LoggerInterface $logger)
-        {
-            $this->logger = $logger;
-        }
-
-        /**
-         * {@inheritdoc}
-         */
-        public function setOverride($override = false)
-        {
-            $this->override = $override;
-        }
+        $this->logger = $logger;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setOverride($override = false)
+    {
+        $this->override = $override;
+    }
+}

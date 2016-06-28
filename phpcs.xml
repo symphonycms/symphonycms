@@ -10,4 +10,6 @@
     <rule ref="PSR2">
         <exclude name="Generic.Files.LineLength"/>
     </rule>
+
+    <rule ref="PSR1" />
 </ruleset>

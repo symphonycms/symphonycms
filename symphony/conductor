@@ -1,45 +1,44 @@
 #!/usr/bin/env php
 <?php
-    use Symfony\Component\Console\Application;
-    use SymphonyCms\Installer\Command as Installer;
+use Symfony\Component\Console\Application;
+use SymphonyCms\Installer\Command as Installer;
 
-    // Find out where we are:
-    define('DOCROOT', realpath(__DIR__ . '/../'));
-    define('APP_MODE', 'console');
-    define('VERSION', '3.0.0-alpha.1');
+// Find out where we are:
+define('DOCROOT', realpath(__DIR__ . '/../'));
+define('APP_MODE', 'console');
+define('VERSION', '3.0.0-alpha.1');
 
-    // Set the current timezone, should that not be available default to GMT.
-    if (!date_default_timezone_set(@date_default_timezone_get())) {
-        date_default_timezone_set('GMT');
-    }
+// Set the current timezone, should that not be available default to GMT.
+if (!date_default_timezone_set(@date_default_timezone_get())) {
+    date_default_timezone_set('GMT');
+}
 
-    // Set appropriate error reporting:
-    error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
+// Set appropriate error reporting:
+error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 
-    // Include autoloader:
-    $autoloader = require_once DOCROOT . '/vendor/autoload.php';
+// Include autoloader:
+$autoloader = require_once DOCROOT . '/vendor/autoload.php';
 
-    $application = new Application('symphony/conductor', VERSION);
+$application = new Application('symphony/conductor', VERSION);
 
-    // Attempt to find all the commands in this project
-    // TODO: Find a better way.
-    foreach ([DOCROOT . '/install', SYMPHONY, EXTENSIONS, WORKSPACE] as $directory) {
-        try {
-            $dir = new DirectoryIterator($directory . '/command');
-            foreach ($dir as $fileinfo) {
-                if ($fileinfo->isDot() || $fileinfo->isDir()) {
-                    continue;
-                }
-
-                // Rely on the commands return the namespace once they are required.
-                $namespace = require_once $fileinfo->getRealPath();
-                $command = $namespace . '\\' . $fileinfo->getBasename('.php');
-
-               $application->add(new $command);
+// Attempt to find all the commands in this project
+foreach ([DOCROOT . '/install', SYMPHONY, EXTENSIONS, WORKSPACE] as $directory) {
+    try {
+        $dir = new DirectoryIterator($directory . '/command');
+        foreach ($dir as $fileinfo) {
+            if ($fileinfo->isDot() || $fileinfo->isDir()) {
+                continue;
             }
-        } catch (Exception $ex) {
 
+            // Rely on the commands return the namespace once they are required.
+            $namespace = require_once $fileinfo->getRealPath();
+            $command = $namespace . '\\' . $fileinfo->getBasename('.php');
+
+            $application->add(new $command);
         }
+    } catch (Exception $ex) {
+        // Skip
     }
+}
 
-    $application->run();
+$application->run();
