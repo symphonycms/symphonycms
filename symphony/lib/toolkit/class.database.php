@@ -70,9 +70,9 @@ Class Database {
     protected $_result = null;
 
     /**
-     * @var array|boolean
+     * @var array
      */
-    protected $_lastResult = null;
+    protected $_lastResult = array();
 
     /**
      * @var string
@@ -128,7 +128,7 @@ Class Database {
     public function flush()
     {
         $this->_result = null;
-        $this->_lastResult = null;
+        $this->_lastResult = array();
         $this->_lastQuery = null;
         $this->_lastQueryHash = null;
     }
@@ -379,7 +379,8 @@ Class Database {
             $params['fetch-type'] = 'ASSOC';
             $this->query($query, $params, $values);
         }
-        else if(is_null($this->_lastResult) || $this->_lastResult === false) {
+
+        if(empty($this->_lastResult)) {
             return array();
         }
 
