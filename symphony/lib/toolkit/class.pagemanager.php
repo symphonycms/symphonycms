@@ -474,7 +474,7 @@ class PageManager
         ));
 
         // Fetch the Page Types for each page, if required
-        if ($include_types) {
+        if ($include_types && is_array($pages)) {
             foreach ($pages as &$page) {
                 $page['type'] = PageManager::fetchPageTypes($page['id']);
             }
