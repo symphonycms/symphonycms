@@ -1344,11 +1344,12 @@ class General
      * @param string $tmp_name
      *  the full path name of the source file to move.
      * @param integer $perm (optional)
-     *  the permissions to apply to the moved file. this defaults to 0777.
+     *  the permissions to apply to the moved file. this defaults to 0644 @since
+     *  Symphony 2.7.0. It was 0777 in 2.6.x and less.
      * @return boolean
      *  true if the file was moved and its permissions set as required. false otherwise.
      */
-    public static function uploadFile($dest_path, $dest_name, $tmp_name, $perm = 0777)
+    public static function uploadFile($dest_path, $dest_name, $tmp_name, $perm = 0644)
     {
         // Upload the file
         if (@is_uploaded_file($tmp_name)) {
@@ -1356,6 +1357,9 @@ class General
 
             // Try place the file in the correction location
             if (@move_uploaded_file($tmp_name, $dest_path . $dest_name)) {
+                if (is_null($perm)) {
+                    $perm = 0644;
+                }
                 @chmod($dest_path . $dest_name, intval($perm, 8));
                 return true;
             }
