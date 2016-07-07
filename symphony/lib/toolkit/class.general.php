@@ -1356,7 +1356,7 @@ class General
 
             // Try place the file in the correction location
             if (@move_uploaded_file($tmp_name, $dest_path . $dest_name)) {
-                chmod($dest_path . $dest_name, intval($perm, 8));
+                @chmod($dest_path . $dest_name, intval($perm, 8));
                 return true;
             }
         }
