@@ -223,7 +223,7 @@ class contentPublish extends AdministrationPage
         $label = Widget::Label();
         $label->setAttribute('class', 'column primary');
 
-        $input = Widget::Input($data['type'], $data['query'], 'text', array(
+        $input = Widget::Input($data['type'], General::sanitize($data['query']), 'text', array(
             'placeholder' => __('Type and hit enter to apply filter…'),
             'autocomplete' => 'off'
         ));
@@ -244,12 +244,27 @@ class contentPublish extends AdministrationPage
 
         // Custom field comparisons
         foreach ($data['operators'] as $operator) {
+            
             $filter = trim($operator['filter']);
-
+            
+            // Check selected state
+            $selected = false;
+            
+            // Selected state : Comparison mode "between" (x to y)
+            if ($operator['title'] === 'between' && preg_match('/^(-?(?:\d+(?:\.\d+)?|\.\d+)) to (-?(?:\d+(?:\.\d+)?|\.\d+))$/i', $data['filter'] )) {
+                $selected = true;
+            // Selected state : Other comparison modes (except "is")
+            } else if ((!empty($filter) && strpos($data['filter'], $filter) === 0)) {
+                $selected = true;
+            }
+	        
             $comparisons[] = array(
-                $filter,
-                (!empty($filter) && strpos($data['filter'], $filter) === 0),
-                __($operator['title'])
+                $operator['filter'],
+                $selected,
+                __($operator['title']),
+                null,
+                null,
+                array('data-comparison' => $operator['title'])
             );
         }
 
@@ -280,7 +295,7 @@ class contentPublish extends AdministrationPage
 
         $li = new XMLElement('li', __('Comparison mode') . ': ' . $operator['help'], array(
             'class' => 'help',
-            'data-comparison' => trim($operator['filter'])
+            'data-comparison' => $operator['title']
         ));
 
         $wrapper->appendChild($li);
@@ -294,7 +309,7 @@ class contentPublish extends AdministrationPage
             $filter = trim($operator['filter']);
 
             if (!empty($filter) && strpos($data['filter'], $filter) === 0) {
-                $query = substr($data['filter'], strlen($filter));
+                $query = substr($data['filter'], strlen($operator['filter']));
             }
         }
 
@@ -472,10 +487,17 @@ class contentPublish extends AdministrationPage
          */
         Symphony::ExtensionManager()->notifyMembers('AdjustPublishFiltering', '/publish/', array('section-id' => $section_id, 'where' => &$where, 'joins' => &$joins));
 
+        // get visible columns
+        $visible_columns = $section->fetchVisibleColumns();
+        // extract the needed schema
+        $element_names = array_values(array_map(function ($field) {
+            return $field->get('element_name');
+        }, $visible_columns));
+
         // Check that the filtered query fails that the filter is dropped and an
         // error is logged. #841 ^BA
         try {
-            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins, true);
+            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins, true, false, true, $element_names);
         } catch (DatabaseException $ex) {
             $this->pageAlert(__('An error occurred while retrieving filtered entries. Showing all entries instead.'), Alert::ERROR);
             $filter_querystring = null;
@@ -489,7 +511,7 @@ class contentPublish extends AdministrationPage
                 E_NOTICE,
                 true
             );
-            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'));
+            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), null, null, true, false, true, $element_names);
         }
 
         // Flag filtering
@@ -501,7 +523,6 @@ class contentPublish extends AdministrationPage
         $this->Breadcrumbs->appendChild($filter_stats);
 
         // Build table
-        $visible_columns = $section->fetchVisibleColumns();
         $columns = array();
 
         if (is_array($visible_columns) && !empty($visible_columns)) {
@@ -869,7 +890,7 @@ class contentPublish extends AdministrationPage
                      */
                     Symphony::ExtensionManager()->notifyMembers('EntryPostDelete', '/publish/', array('entry_id' => $checked));
 
-                    redirect($_SERVER['REQUEST_URI']);
+                    redirect(server_safe('REQUEST_URI'));
                     break;
                 default:
                     list($option, $field_id, $value) = explode('-', $_POST['with-selected'], 3);
@@ -920,7 +941,7 @@ class contentPublish extends AdministrationPage
                             ));
                         }
 
-                        redirect($_SERVER['REQUEST_URI']);
+                        redirect(server_safe('REQUEST_URI'));
                     }
             }
         }
@@ -1047,7 +1068,7 @@ class contentPublish extends AdministrationPage
 
     public function __actionNew()
     {
-        if (array_key_exists('save', $_POST['action']) || array_key_exists("done", $_POST['action'])) {
+        if (is_array($_POST['action']) && (array_key_exists('save', $_POST['action']) || array_key_exists('done', $_POST['action']))) {
             $section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle']);
 
             if (!$section = SectionManager::fetch($section_id)) {
@@ -1352,7 +1373,7 @@ class contentPublish extends AdministrationPage
     {
         $entry_id = intval($this->_context['entry_id']);
 
-        if (@array_key_exists('save', $_POST['action']) || @array_key_exists("done", $_POST['action'])) {
+        if (is_array($_POST['action']) && (array_key_exists('save', $_POST['action']) || array_key_exists("done", $_POST['action']))) {
             if (!$ret = EntryManager::fetch($entry_id)) {
                 Administration::instance()->throwCustomError(
                     __('The Entry, %s, could not be found.', array($entry_id)),
@@ -1417,7 +1438,7 @@ class contentPublish extends AdministrationPage
                     ));
                 }
             }
-        } elseif (@array_key_exists('delete', $_POST['action']) && is_numeric($entry_id)) {
+        } elseif (is_array($_POST['action']) && array_key_exists('delete', $_POST['action']) && is_numeric($entry_id)) {
             /**
              * Prior to deletion of entries. An array of Entry ID's is provided which
              * can be manipulated. This delegate was renamed from `Delete` to `EntryPreDelete`
@@ -1745,9 +1766,11 @@ class contentPublish extends AdministrationPage
     {
         $prepopulate_querystring = '';
 
-        if (isset($_REQUEST['prepopulate'])) {
+        if (isset($_REQUEST['prepopulate']) && is_array($_REQUEST['prepopulate'])) {
             foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
-                $prepopulate_querystring .= sprintf("prepopulate[%s]=%s&", $field_id, rawurldecode($value));
+                // Properly decode and re-encode value for output
+                $value = rawurlencode(rawurldecode($value));
+                $prepopulate_querystring .= sprintf("prepopulate[%s]=%s&", $field_id, $value);
             }
             $prepopulate_querystring = trim($prepopulate_querystring, '&');
         }
@@ -1772,10 +1795,12 @@ class contentPublish extends AdministrationPage
     {
         $filter_querystring = '';
 
-        if (isset($_REQUEST['prepopulate'])) {
+        if (isset($_REQUEST['prepopulate']) && is_array($_REQUEST['prepopulate'])) {
             foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
                 $handle = FieldManager::fetchHandleFromID($field_id);
-                $filter_querystring .= sprintf("filter[%s]=%s&", $handle, rawurldecode($value));
+                // Properly decode and re-encode value for output
+                $value = rawurlencode(rawurldecode($value));
+                $filter_querystring .= sprintf('filter[%s]=%s&', $handle, $value);
             }
             $filter_querystring = trim($filter_querystring, '&');
         }

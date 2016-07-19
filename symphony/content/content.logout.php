@@ -16,6 +16,6 @@ class contentLogout extends HTMLPage
     public function view()
     {
         Administration::instance()->logout();
-        redirect(URL);
+        redirect(URL . '/');
     }
 }

@@ -186,7 +186,7 @@ class Datasource
             // is not picked up by the default catch() statement below
             FrontendPageNotFoundExceptionHandler::render($e);
         } catch (Exception $e) {
-            $result->appendChild(new XMLElement('error', $e->getMessage()));
+            $result->appendChild(new XMLElement('error', General::wrapInCDATA($e->getMessage())));
             return $result;
         }
 

@@ -2,7 +2,22 @@
 module.exports = function (grunt) {
     'use strict';
 
+    // standardize EOL
+    grunt.util.linefeed = '\n';
+
     grunt.initConfig({
+
+        pkg: grunt.file.readJSON('package.json'),
+
+        meta: {
+            banner: '/*!\n * <%= pkg.title || pkg.name %> ' +
+                    ' v<%= pkg.version %>\n' +
+                    ' * commit <%= commitish %> -' +
+                    ' <%= grunt.template.today("yyyy-mm-dd") %>\n' +
+                    ' <%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
+                    ' * Copyright (c) <%= grunt.template.today("yyyy") %>\n' +
+                    ' * License <%= pkg.license %>\n */\n'
+        },
 
         concat: {
             dist: {
@@ -52,6 +67,9 @@ module.exports = function (grunt) {
 
         csso: {
             styles: {
+                options: {
+                    banner: '<%= meta.banner %>'
+                },
                 files: {
                     'symphony/assets/css/symphony.min.css': [
                         'symphony/assets/css/symphony.min.css'
@@ -88,6 +106,7 @@ module.exports = function (grunt) {
         uglify: {
             scripts: {
                 options: {
+                    banner: '<%= meta.banner %>',
                     preserveComments: 'some'
                 },
                 files: {
@@ -101,6 +120,7 @@ module.exports = function (grunt) {
                         'symphony/assets/js/src/symphony.js',
                         'symphony/assets/js/src/symphony.affix.js',
                         'symphony/assets/js/src/symphony.collapsible.js',
+                        'symphony/assets/js/src/symphony.defaultvalue.js',
                         'symphony/assets/js/src/symphony.orderable.js',
                         'symphony/assets/js/src/symphony.selectable.js',
                         'symphony/assets/js/src/symphony.duplicator.js',
@@ -127,9 +147,35 @@ module.exports = function (grunt) {
             scripts: {
                 files: 'symphony/assets/js/src/*.js',
                 tasks: ['js']
+            },
+            php: {
+                files: ['symphony/**/*.php', 'install/**/*.php'],
+                tasks: ['php']
             }
-        }
+        },
 
+        phpcs: {
+            application: {
+                src: ['symphony/**/*.php', 'install/**/*.php', 'index.php']
+            },
+            options: {
+                bin: 'vendor/bin/phpcs',
+                standard: 'PSR1',
+                showSniffCodes: true,
+                tabWidth: 4,
+                errorSeverity: 10
+            }
+        },
+
+        commitish: '',
+        'git-rev-parse': {
+            options: {
+                prop: 'commitish',
+                silent: true,
+                number: 7
+            },
+            dist: {}
+        }
     });
 
     grunt.loadNpmTasks('grunt-contrib-concat');
@@ -138,8 +184,11 @@ module.exports = function (grunt) {
     //grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-phpcs');
+    grunt.loadNpmTasks('grunt-git-rev-parse');
 
-    grunt.registerTask('default', ['concat', 'autoprefixer', 'csso', 'uglify']);
-    grunt.registerTask('css', ['concat', 'autoprefixer', 'csso']);
-    grunt.registerTask('js', ['uglify']);
+    grunt.registerTask('default', ['css', 'js']);
+    grunt.registerTask('css', ['git-rev-parse', 'concat', 'autoprefixer', 'csso']);
+    grunt.registerTask('php', ['phpcs']);
+    grunt.registerTask('js', ['git-rev-parse', 'uglify']);
 };

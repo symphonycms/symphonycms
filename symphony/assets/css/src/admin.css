@@ -452,6 +452,7 @@ fieldset.settings.highlight {
 	margin: 0 0 0 -1.5rem;
 	padding: 0;
 	border: none;
+	display: block;
 }
 
 #password legend {
@@ -460,6 +461,7 @@ fieldset.settings.highlight {
 	color: #222;
 	line-height: 1.5;
 	text-shadow: none;
+	display: block;
 }
 
 #password i {
@@ -468,7 +470,7 @@ fieldset.settings.highlight {
 	right: 0;
 }
 
-div.password {
+.password {
 	position: absolute;
 	left: 0;
 	box-sizing: border-box;
@@ -478,8 +480,7 @@ div.password {
 }
 
 @media screen and (max-width: 700px) {
-
-	div.password {
+	.password {
 		padding: 0;
 	}
 }
@@ -606,15 +607,15 @@ ul.page form span {
 
 /* Checkboxes */
 
-div.field-checkbox {
+.field-checkbox {
 	min-height: 1.6rem;
 }
 
-div.field-checkbox:first-child {
+.field-checkbox:first-child {
 	margin-top: 2rem;
 }
 
-div.field-checkbox + .field:not(.field-checkbox) {
+.field-checkbox + .field:not(.field-checkbox) {
 	margin-top: 2.6rem;
 }
 

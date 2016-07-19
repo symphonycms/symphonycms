@@ -317,15 +317,9 @@ class SMTPGateway extends EmailGateway
         $this->setPort($config['port']);
         $this->setSecure($config['secure']);
 
-        if ($config['auth'] == 1) {
-            $this->setAuth(true);
-            $this->setUser($config['username']);
-            $this->setPass($config['password']);
-        } else {
-            $this->setAuth(false);
-            $this->setUser('');
-            $this->setPass('');
-        }
+        $this->setAuth((int)$config['auth'] === 1);
+        $this->setUser($config['username']);
+        $this->setPass($config['password']);
     }
 
     /**
@@ -344,8 +338,10 @@ class SMTPGateway extends EmailGateway
 
         $div = new XMLElement('div');
 
+        $readonly = array('readonly' => 'readonly');
+
         $label = Widget::Label(__('HELO Hostname'));
-        $label->appendChild(Widget::Input('settings[email_smtp][helo_hostname]', $this->_helo_hostname));
+        $label->appendChild(Widget::Input('settings[email_smtp][helo_hostname]', $this->_helo_hostname, 'text', $readonly));
         $div->appendChild($label);
 
         $group->appendChild($div);
@@ -356,12 +352,12 @@ class SMTPGateway extends EmailGateway
 
         $label = Widget::Label(__('From Name'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][from_name]', $this->_sender_name));
+        $label->appendChild(Widget::Input('settings[email_smtp][from_name]', $this->_sender_name, 'text', $readonly));
         $div->appendChild($label);
 
         $label = Widget::Label(__('From Email Address'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][from_address]', $this->_sender_email_address));
+        $label->appendChild(Widget::Input('settings[email_smtp][from_address]', $this->_sender_email_address, 'text', $readonly));
         $div->appendChild($label);
 
         $group->appendChild($div);
@@ -371,12 +367,12 @@ class SMTPGateway extends EmailGateway
 
         $label = Widget::Label(__('Host'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][host]', $this->_host));
+        $label->appendChild(Widget::Input('settings[email_smtp][host]', $this->_host, 'text', $readonly));
         $div->appendChild($label);
 
         $label = Widget::Label(__('Port'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][port]', (string)$this->_port));
+        $label->appendChild(Widget::Input('settings[email_smtp][port]', (string)$this->_port, 'text', $readonly));
         $div->appendChild($label);
         $group->appendChild($div);
 
@@ -388,7 +384,7 @@ class SMTPGateway extends EmailGateway
             array('ssl',$this->_secure == 'ssl', __('SSL encryption')),
             array('tls',$this->_secure == 'tls', __('TLS encryption')),
         );
-        $select = Widget::Select('settings[email_smtp][secure]', $options);
+        $select = Widget::Select('settings[email_smtp][secure]', $options, $readonly);
         $label->appendChild($select);
         $group->appendChild($label);
 
@@ -398,7 +394,7 @@ class SMTPGateway extends EmailGateway
         $label->setAttribute('class', 'column');
         // To fix the issue with checkboxes that do not send a value when unchecked.
         $group->appendChild(Widget::Input('settings[email_smtp][auth]', '0', 'hidden'));
-        $input = Widget::Input('settings[email_smtp][auth]', '1', 'checkbox');
+        $input = Widget::Input('settings[email_smtp][auth]', '1', 'checkbox', $readonly);
 
         if ($this->_auth === true) {
             $input->setAttribute('checked', 'checked');
@@ -414,12 +410,12 @@ class SMTPGateway extends EmailGateway
 
         $label = Widget::Label(__('Username'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][username]', $this->_user, 'text', array('autocomplete' => 'off')));
+        $label->appendChild(Widget::Input('settings[email_smtp][username]', $this->_user, 'text', array_merge($readonly, array('autocomplete' => 'off'))));
         $div->appendChild($label);
 
         $label = Widget::Label(__('Password'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][password]', $this->_pass, 'password', array('autocomplete' => 'off')));
+        $label->appendChild(Widget::Input('settings[email_smtp][password]', $this->_pass, 'password', array_merge($readonly, array('autocomplete' => 'off'))));
         $div->appendChild($label);
         $group->appendChild($div);
 

@@ -15,6 +15,9 @@
       "issues": "https://github.com/symphonycms/symphony-2/issues",
       "wiki": "https://github.com/symphonycms/symphony-2/wiki"
     },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "2.*"
+    },
     "minimum-stability": "stable",
     "autoload": {
       "classmap": ["symphony/content", "symphony/lib", "symphony/template", "install"],

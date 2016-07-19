@@ -80,11 +80,11 @@ class CacheDatabase implements iNamespacedCache
         $data = false;
 
         // Check namespace first
-        if (!is_null($namespace)) {
+        if (!is_null($namespace) && is_null($hash)) {
             $data = $this->Database->fetch("
                 SELECT SQL_NO_CACHE *
                 FROM `tbl_cache`
-                WHERE `namespace` = '$namepspace'
+                WHERE `namespace` = '$namespace'
                 AND (`expiry` IS NULL OR UNIX_TIMESTAMP() <= `expiry`)
             ");
         }
@@ -187,11 +187,11 @@ class CacheDatabase implements iNamespacedCache
     public function delete($hash = null, $namespace = null)
     {
         if (!is_null($hash)) {
-            $this->Database->delete("`tbl_cache`", sprintf("`hash` = '%s'", $hash));
+            $this->Database->delete('tbl_cache', sprintf("`hash` = '%s'", $hash));
         } elseif (!is_null($namespace)) {
-            $this->Database->delete("`tbl_cache`", sprintf("`namespace` = '%s'", $namespace));
+            $this->Database->delete('tbl_cache', sprintf("`namespace` = '%s'", $namespace));
         } else {
-            $this->Database->delete("`tbl_cache`", "UNIX_TIMESTAMP() > `expiry`");
+            $this->Database->delete('tbl_cache', "UNIX_TIMESTAMP() > `expiry`");
         }
 
         $this->__optimise();

@@ -208,25 +208,27 @@ define_safe('TWO_WEEKS', (60*60*24*14));
  * Returns the environmental variable if HTTPS is in use.
  * @var string|boolean
  */
-define_safe('HTTPS', getenv('HTTPS'));
+define_safe('HTTPS', server_safe('HTTPS'));
 
 /**
  * Returns the current host, ie. google.com
  * @var string
  */
-define_safe('HTTP_HOST', function_exists('idn_to_utf8') ? idn_to_utf8(getenv('HTTP_HOST')) : getenv('HTTP_HOST'));
+$http_host = server_safe('HTTP_HOST');
+define_safe('HTTP_HOST', function_exists('idn_to_utf8') ? idn_to_utf8($http_host) : $http_host);
+unset($http_host);
 
 /**
  * Returns the IP address of the machine that is viewing the current page.
  * @var string
  */
-define_safe('REMOTE_ADDR', getenv('REMOTE_ADDR'));
+define_safe('REMOTE_ADDR', server_safe('REMOTE_ADDR'));
 
 /**
  * Returns the User Agent string of the browser that is viewing the current page
  * @var string
  */
-define_safe('HTTP_USER_AGENT', getenv('HTTP_USER_AGENT'));
+define_safe('HTTP_USER_AGENT', server_safe('HTTP_USER_AGENT'));
 
 /**
  * If HTTPS is on, `__SECURE__` will be set to true, otherwise false. Use union of
@@ -235,23 +237,38 @@ define_safe('HTTP_USER_AGENT', getenv('HTTP_USER_AGENT'));
  * @var string|boolean
  */
 define_safe('__SECURE__',
-    (HTTPS == 'on' ||
-        isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
-        $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')
+    (HTTPS == 'on' || server_safe('HTTP_X_FORWARDED_PROTO') == 'https')
 );
+
+/**
+ * Returns the protocol used to this request.
+ * If __SECURE__ it will be https:
+ * If not, http:
+ * @var string
+ */
+define_safe('HTTP_PROTO', 'http' . (defined('__SECURE__') && __SECURE__ ? 's' : '') . ':');
+
+/**
+ * The root url directory.
+ * This constant will be empty if Symphony
+ * is installed at the root level
+ *
+ * @since Symphony 2.7.0
+ * @var string
+ */
+define_safe('DIRROOT', rtrim(dirname(server_safe('PHP_SELF')), '\/'));
 
 /**
  * The current domain name.
  * @var string
  */
-define_safe('DOMAIN', HTTP_HOST . rtrim(dirname($_SERVER['PHP_SELF']), '\/'));
-
+define_safe('DOMAIN', HTTP_HOST . DIRROOT);
 
 /**
  * The base URL of this Symphony install, minus the symphony path.
  * @var string
  */
-define_safe('URL', 'http' . (defined('__SECURE__') && __SECURE__ ? 's' : '') . '://' . DOMAIN);
+define_safe('URL', HTTP_PROTO . '//' . DOMAIN);
 
 /**
  * Returns the folder name for Symphony as an application
@@ -269,14 +286,16 @@ define_safe('ASSETS_URL', APPLICATION_URL . '/assets');
 
 /**
  * The integer value for event-type resources.
-  * @deprecated Use ResourceManager::RESOURCE_TYPE_EVENT, this will be removed in Symphony 3.0.
+ *
+ * @deprecated Use ResourceManager::RESOURCE_TYPE_EVENT, this will be removed in Symphony 3.0.
  * @var integer
  */
 define_safe('RESOURCE_TYPE_EVENT', 20);
 
 /**
  * The integer value for datasource-type resources.
-  * @deprecated Use ResourceManager::RESOURCE_TYPE_DS, this will be removed in Symphony 3.0.
+ *
+ * @deprecated Use ResourceManager::RESOURCE_TYPE_DS, this will be removed in Symphony 3.0.
  * @var integer
  */
 define_safe('RESOURCE_TYPE_DS', 21);

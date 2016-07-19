@@ -387,6 +387,14 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         }
     }
 
+    private function parseUserSubmittedData($data)
+    {
+        if (!is_array($data)) {
+            $data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
+        }
+        return array_filter(array_map('trim', $data));
+    }
+
     public function checkPostFieldData($data, &$message, $entry_id = null)
     {
         $message = null;
@@ -397,8 +405,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         }
 
         if ($this->get('validator')) {
-            $data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
-            $data = array_map('trim', $data);
+            $data = $this->parseUserSubmittedData($data);
 
             if (empty($data)) {
                 return self::__OK__;
@@ -416,8 +423,8 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     public function processRawFieldData($data, &$status, &$message = null, $simulate = false, $entry_id = null)
     {
         $status = self::__OK__;
-        $data = preg_split('/\,\s*/i', $data, -1, PREG_SPLIT_NO_EMPTY);
-        $data = array_map('trim', $data);
+
+        $data = $this->parseUserSubmittedData($data);
 
         if (empty($data)) {
             return null;
@@ -614,50 +621,134 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         }
     }
 
+    public function fetchFilterableOperators()
+    {
+        return array(
+            array(
+                'title' => 'is',
+                'filter' => ' ',
+                'help' => __('Find values that are an exact match for the given string.')
+            ),
+            array(
+                'filter' => 'sql: NOT NULL',
+                'title' => 'is not empty',
+                'help' => __('Find entries where any value is selected.')
+            ),
+            array(
+                'filter' => 'sql: NULL',
+                'title' => 'is empty',
+                'help' => __('Find entries where no value is selected.')
+            ),
+            array(
+                'filter' => 'sql-null-or-not: ',
+                'title' => 'is empty or not',
+                'help' => __('Find entries where no value is selected or it is not equal to this value.')
+            ),
+            array(
+                'filter' => 'not: ',
+                'title' => 'is not',
+                'help' => __('Find entries where the value is not equal to this value.')
+            ),
+            array(
+                'filter' => 'regexp: ',
+                'title' => 'regexp',
+                'help' => __('Find entries where the value matches the regex.')
+            ),
+            array(
+                'filter' => 'not-regexp: ',
+                'title' => 'is not regexp',
+                'help' => __('Find entries where the value does not match the regex.')
+            )
+        );
+    }
+
     public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false)
     {
         $field_id = $this->get('id');
 
         if (self::isFilterRegex($data[0])) {
             $this->buildRegexSQL($data[0], array('value', 'handle'), $joins, $where);
-        } elseif ($andOperation) {
-            foreach ($data as $value) {
-                $this->_key++;
-                $value = $this->cleanValue($value);
-                $joins .= "
-                    LEFT JOIN
-                        `tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-                        ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-                ";
-                $where .= "
-                    AND (
-                        t{$field_id}_{$this->_key}.value = '{$value}'
-                        OR t{$field_id}_{$this->_key}.handle = '{$value}'
-                    )
-                ";
+        } else if (preg_match('/^sql:\s*/', $data[0], $matches)) {
+            $data = trim(array_pop(explode(':', $data[0], 2)));
+
+            if (strpos($data, "NOT NULL") !== false) {
+
+                // Check for NOT NULL (ie. Entries that have any value)
+                $joins .= " LEFT JOIN
+                                `tbl_entries_data_{$field_id}` AS `t{$field_id}`
+                            ON (`e`.`id` = `t{$field_id}`.entry_id)";
+                $where .= " AND `t{$field_id}`.value IS NOT NULL ";
+
+            } else if (strpos($data, "NULL") !== false) {
+
+                // Check for NULL (ie. Entries that have no value)
+                $joins .= " LEFT JOIN
+                                `tbl_entries_data_{$field_id}` AS `t{$field_id}`
+                            ON (`e`.`id` = `t{$field_id}`.entry_id)";
+                $where .= " AND `t{$field_id}`.value IS NULL ";
+
             }
         } else {
-            if (!is_array($data)) {
-                $data = array($data);
+            $negation = false;
+            $null = false;
+            if (preg_match('/^not:/', $data[0])) {
+                $data[0] = preg_replace('/^not:/', null, $data[0]);
+                $negation = true;
+            } elseif (preg_match('/^sql-null-or-not:/', $data[0])) {
+                $data[0] = preg_replace('/^sql-null-or-not:/', null, $data[0]);
+                $negation = true;
+                $null = true;
             }
 
             foreach ($data as &$value) {
                 $value = $this->cleanValue($value);
             }
 
-            $this->_key++;
-            $data = implode("', '", $data);
-            $joins .= "
-                LEFT JOIN
-                    `tbl_entries_data_{$field_id}` AS t{$field_id}_{$this->_key}
-                    ON (e.id = t{$field_id}_{$this->_key}.entry_id)
-            ";
-            $where .= "
-                AND (
-                    t{$field_id}_{$this->_key}.value IN ('{$data}')
-                    OR t{$field_id}_{$this->_key}.handle IN ('{$data}')
-                )
-            ";
+            if ($andOperation) {
+                $condition = ($negation) ? '!=' : '=';
+                foreach ($data as $key => $bit) {
+                    $joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t{$field_id}_{$this->_key}` ON (`e`.`id` = `t{$field_id}_{$this->_key}`.entry_id) ";
+                    $where .= " AND ((
+                                        t{$field_id}_{$this->_key}.value $condition '$bit'
+                                        OR t{$field_id}_{$this->_key}.handle $condition '$bit'
+                                    )";
+
+                    if ($null) {
+                        $where .= " OR `t{$field_id}_{$this->_key}`.`value` IS NULL) ";
+                    } else {
+                        $where .= ") ";
+                    }
+                    $this->_key++;
+                }
+            } else {
+                $condition = ($negation) ? 'NOT IN' : 'IN';
+
+                $data = "'".implode("', '", $data)."'";
+
+                // Apply a different where condition if we are using $negation. RE: #29
+                if ($negation) {
+                    $condition = 'NOT EXISTS';
+                    $where .= " AND $condition (
+                        SELECT *
+                        FROM `tbl_entries_data_$field_id` AS `t{$field_id}_{$this->_key}`
+                        WHERE `t{$field_id}_{$this->_key}`.entry_id = `e`.id AND (
+                            `t{$field_id}_{$this->_key}`.handle IN ($data) OR
+                            `t{$field_id}_{$this->_key}`.value IN ($data)
+                        )
+                    )";
+                } else {
+
+                    // Normal filtering
+                    $joins .= " LEFT JOIN `tbl_entries_data_$field_id` AS `t{$field_id}_{$this->_key}` ON (`e`.`id` = `t{$field_id}_{$this->_key}`.entry_id) ";
+                    $where .= " AND (
+                                    t{$field_id}_{$this->_key}.value IN ($data)
+                                    OR t{$field_id}_{$this->_key}.handle IN ($data)
+                                ";
+
+                    // If we want entries with null values included in the result
+                    $where .= ($null) ? " OR `t{$field_id}_{$this->_key}`.`relation_id` IS NULL) " : ") ";
+                }
+            }
         }
 
         return true;

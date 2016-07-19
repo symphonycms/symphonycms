@@ -333,8 +333,12 @@ abstract class Page
      */
     public function isRequestValid()
     {
-        $max_size = ini_get('post_max_size');
-        if (getenv('REQUEST_METHOD') === 'POST' && (int)getenv('CONTENT_LENGTH') > General::convertHumanFileSizeToBytes($max_size)) {
+        $max_size = @ini_get('post_max_size');
+        if (!$max_size) {
+            return true;
+        }
+
+        if (server_safe('REQUEST_METHOD') === 'POST' && (int)server_safe('CONTENT_LENGTH') > General::convertHumanFileSizeToBytes($max_size)) {
             return false;
         }
 

@@ -12,7 +12,7 @@ Options +SymLinksIfOwnerMatch -Indexes
     </IfModule>
 
     RewriteEngine on
-    RewriteBase /<!-- REWRITE_BASE -->
+    RewriteBase "/<!-- REWRITE_BASE -->"
 
     ### SECURITY - Protect crucial files
     RewriteRule ^manifest/(.*)$ - [F]

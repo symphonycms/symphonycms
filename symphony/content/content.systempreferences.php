@@ -64,8 +64,7 @@ class contentSystemPreferences extends AdministrationPage
         }
 
         // Get available EmailGateways
-        $email_gateway_manager = new EmailGatewayManager;
-        $email_gateways = $email_gateway_manager->listAll();
+        $email_gateways = EmailGatewayManager::listAll();
 
         if (count($email_gateways) >= 1) {
             $group = new XMLElement('fieldset', null, array('class' => 'settings condensed'));
@@ -75,8 +74,8 @@ class contentSystemPreferences extends AdministrationPage
             // Get gateway names
             ksort($email_gateways);
 
-            $default_gateway = $email_gateway_manager->getDefaultGateway();
-            $selected_is_installed = $email_gateway_manager->__getClassPath($default_gateway);
+            $default_gateway = EmailGatewayManager::getDefaultGateway();
+            $selected_is_installed = EmailGatewayManager::__getClassPath($default_gateway);
 
             $options = array();
 
@@ -92,7 +91,7 @@ class contentSystemPreferences extends AdministrationPage
         }
 
         foreach ($email_gateways as $gateway) {
-            $gateway_settings = $email_gateway_manager->create($gateway['handle'])->getPreferencesPane();
+            $gateway_settings = EmailGatewayManager::create($gateway['handle'])->getPreferencesPane();
 
             if (is_a($gateway_settings, 'XMLElement')) {
                 $this->Form->appendChild($gateway_settings);

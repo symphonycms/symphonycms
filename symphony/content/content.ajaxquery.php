@@ -1,6 +1,11 @@
 <?php
-
-require_once(TOOLKIT . '/class.jsonpage.php');
+/**
+ * @package content
+ */
+/**
+ * The AjaxQuery returns an JSON array of entries, associations and other
+ * static values, depending on the parameters received.
+ */
 
 class contentAjaxQuery extends JSONPage
 {

@@ -78,9 +78,11 @@ abstract class Symphony implements Singleton
      * The Symphony constructor initialises the class variables of Symphony. At present
      * constructor has a couple of responsibilities:
      * - Start a profiler instance
-     * - If magic quotes are enabled, clean `$_SERVER`, `$_COOKIE`, `$_GET` and `$_POST` arrays 
+     * - If magic quotes are enabled, clean `$_SERVER`, `$_COOKIE`, `$_GET`, `$_POST` and the `$_REQUEST` arrays.
      * - Initialise the correct Language for the currently logged in Author.
      * - Start the session and adjust the error handling if the user is logged in
+     *
+     * The `$_REQUEST` array has been added in 2.7.0
      */
     protected function __construct()
     {
@@ -91,6 +93,7 @@ abstract class Symphony implements Singleton
             General::cleanArray($_COOKIE);
             General::cleanArray($_GET);
             General::cleanArray($_POST);
+            General::cleanArray($_REQUEST);
         }
 
         // Initialize language management
@@ -259,10 +262,7 @@ abstract class Symphony implements Singleton
      */
     public static function initialiseCookie()
     {
-        $cookie_path = @parse_url(URL, PHP_URL_PATH);
-        $cookie_path = '/' . trim($cookie_path, '/');
-
-        define_safe('__SYM_COOKIE_PATH__', $cookie_path);
+        define_safe('__SYM_COOKIE_PATH__', DIRROOT === '' ? '/' : DIRROOT);
         define_safe('__SYM_COOKIE_PREFIX_', self::Configuration()->get('cookie_prefix', 'symphony'));
         define_safe('__SYM_COOKIE_PREFIX__', self::Configuration()->get('cookie_prefix', 'symphony'));
 
@@ -586,10 +586,6 @@ abstract class Symphony implements Singleton
         if (self::isInstallerAvailable()) {
             $migrations = scandir(DOCROOT . '/install/migrations');
             $migration_file = end($migrations);
-
-            include_once DOCROOT . '/install/lib/class.migration.php';
-            include_once DOCROOT . '/install/migrations/' . $migration_file;
-
             $migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
             return call_user_func(array($migration_class, 'getVersion'));
         }
