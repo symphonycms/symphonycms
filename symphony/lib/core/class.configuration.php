@@ -167,7 +167,7 @@ class Configuration
      * This magic `__toString` function converts the internal `$this->_properties`
      * array into a string representation. Symphony generates the `MANIFEST/config.php`
      * file in this manner.
-     * @see serializeArray()
+     * @see Configuration::serializeArray()
      * @return string
      *  A string that contains a array representation of `$this->_properties`.
      *  This is used by Symphony to write the `config.php` file.
@@ -191,20 +191,18 @@ class Configuration
     }
 
     /**
-     * The `serializeArray` function properly format and indent multidimensional
+     * The `serializeArray` function will properly format and indent multidimensional
      * arrays using recursivity.
      * 
      * `__toString()` call `serializeArray` to use the recursive condition.
      * The keys (int) in array won't have apostrophe.
      * Array without multidimensional array will be output with normal indentation.
-     * 
      * @return string
-     *  A string that contains a array representation of the $data parameter.
+     *  A string that contains a array representation of the '$data parameter'.
      * @param array $arr
-     *  An associative array of properties, 'property' => 'value' or
-     *  'group' => array('property' => 'value').
+     *  A array of properties to serialize.
      * @param integer $indentation
-     *  A Integer used to indent multidimensional array using recursivity.
+     *  The current level of indentation.
      */
 
     protected function serializeArray(array $arr, $indentation = 0)
