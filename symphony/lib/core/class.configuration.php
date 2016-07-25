@@ -202,7 +202,7 @@ class Configuration
         }
         $string = 'array(';
         foreach ($arr as $key => $value) {
-            $string .= PHP_EOL . "$tabs'$key' => ";
+            $string .= (is_numeric($key) ? PHP_EOL . "$tabs $key => " : PHP_EOL . "$tabs'$key' => ");
             if (is_array($value)) {
                 if (empty($value)) {
                     $string .= 'array()';
