@@ -190,6 +190,19 @@ class Configuration
         return $string;
     }
 
+    /**
+     * The `serializeArray` function will output tabs in front of multidimensional
+     * array with recursivity until the end of the array.
+     * 
+     * `__toString()` call `serializeArray` to use the recursive condition.
+     * The keys (int) in array won't have apostrophe.
+     * Array without multidimensional array will be output with normal indentation.
+     *
+     * @return string
+     *  A string that contains a array representation of `$this->_properties`.
+     *  This is used by Symphony to write the `config.php` file.
+     */
+
     protected function serializeArray(array $arr, $indentation = 0)
     {
         $tabs = '';
