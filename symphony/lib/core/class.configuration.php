@@ -178,18 +178,43 @@ class Configuration
 
         foreach ($this->_properties as $group => $data) {
             $string .= str_repeat(PHP_EOL, 3) . "\t\t###### ".strtoupper($group)." ######";
-            $string .= PHP_EOL . "\t\t'$group' => array(";
+            $string .= PHP_EOL . "\t\t'$group' => ";
 
-            foreach ($data as $key => $value) {
-                $string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? var_export($value, true) : 'null').",";
-            }
+            $string .= $this->serializeArray($data, 3);
 
-            $string .= PHP_EOL . "\t\t),";
+            $string .= ",";
             $string .= PHP_EOL . "\t\t########";
         }
-
         $string .= PHP_EOL . "\t)";
 
+        return $string;
+    }
+
+    protected function serializeArray(array $arr, $indentation = 0)
+    {
+        $tabs = '';
+        $closeTabs = '';
+        for ($i = 0; $i < $indentation; $i++) {
+            $tabs .= "\t";
+            if ($i < $indentation - 1) {
+                $closeTabs .= "\t";
+            }
+        }
+        $string = 'array(';
+        foreach ($arr as $key => $value) {
+            $string .= PHP_EOL . "$tabs'$key' => ";
+            if (is_array($value)) {
+                if (empty($value)) {
+                    $string .= 'array()';
+                } else {
+                    $string .= $this->serializeArray($value, $indentation + 1);
+                }
+            } else {
+                $string .= (General::strlen($value) > 0 ? var_export($value, true) : 'null');
+            }
+            $string .= ",";
+        }
+        $string .=  PHP_EOL . "$closeTabs)";
         return $string;
     }
 
