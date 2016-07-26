@@ -28,7 +28,7 @@ class Configuration
     private $_forceLowerCase = false;
 
     /**
-     * The string representing the tab character used to serialize the configuration
+     * The string representing the tab characters used to serialize the configuration
      * @var string
      */
     const TAB = '    ';
