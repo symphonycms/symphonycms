@@ -468,7 +468,13 @@
             // Configuration: Populating array
             $conf = Symphony::Configuration()->get();
 
+            if (!is_array($conf)) {
+                self::__abort('The configuration is not an array, can not continue', $start);
+            }
             foreach ($conf as $group => $settings) {
+                if (!is_array($settings)) {
+                    continue;
+                }
                 foreach ($settings as $key => $value) {
                     if (isset($fields[$group]) && isset($fields[$group][$key])) {
                         $conf[$group][$key] = $fields[$group][$key];
