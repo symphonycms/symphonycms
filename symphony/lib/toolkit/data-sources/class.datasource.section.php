@@ -217,12 +217,7 @@ class SectionDatasource extends Datasource
                     // For each related field show the count (#2083)
                     foreach ($fields as $field_id => $count) {
                         $field_handle = FieldManager::fetchHandleFromID($field_id);
-                        if ($field_handle) {
-                            $xEntry->setAttribute($section['handle'] . '-' . $field_handle, (string)$count);
-                        }
-
-                        // Backwards compatibility (without field handle)
-                        $xEntry->setAttribute($section['handle'], (string)$count);
+                        $xEntry->setAttribute($section['handle'] . '-' . $field_handle, (string)$count);
                     }
                 }
             }
