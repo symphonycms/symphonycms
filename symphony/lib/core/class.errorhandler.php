@@ -434,5 +434,9 @@ class GenericErrorHandler
         if (self::isEnabled()) {
             throw new ErrorException($message, 0, $code, $file, $line);
         }
+
+        // This is needed to stop php from processing the error
+        // See http://php.net/manual/en/function.set-error-handler.php
+        return true;
     }
 }
