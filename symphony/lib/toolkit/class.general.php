@@ -104,7 +104,7 @@ class General
      * @param boolean $isFile (optional)
      *  if this is true, the method will attempt to read from a file, `$data`
      *  instead.
-     * @param mixed $xsltProcessor (optional)
+     * @param XsltProcess $xsltProcessor (optional)
      *  if set, the validation will be done using this XSLT processor rather
      *  than the built in XML parser. the default is null.
      * @param string $encoding (optional)
@@ -900,7 +900,7 @@ class General
      *  the path of the file to write.
      * @param mixed $data
      *  the data to write to the file.
-     * @param integer|null $perm (optional)
+     * @param integer|string $perm (optional)
      *  the permissions as an octal number to set set on the resulting file.
      *  this defaults to 0644 (if omitted or set to null)
      * @param string $mode (optional)
@@ -1339,11 +1339,11 @@ class General
      *
      * @param string $dest_path
      *  the file path to which the source file is to be moved.
-     * @param string #dest_name
+     * @param string $dest_name
      *  the file name within the file path to which the source file is to be moved.
      * @param string $tmp_name
      *  the full path name of the source file to move.
-     * @param integer $perm (optional)
+     * @param integer|string $perm (optional)
      *  the permissions to apply to the moved file. this defaults to 0644 @since
      *  Symphony 2.7.0. It was 0777 in 2.6.x and less.
      * @return boolean
