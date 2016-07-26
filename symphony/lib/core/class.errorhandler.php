@@ -63,23 +63,46 @@ class GenericExceptionHandler
     }
 
     /**
-     * The handler function is given an Exception and will call it's render
-     * function to display the Exception to a user. After calling the render
+     * This function's goal is to validate the `$e` parameter in order to ensure
+     * that the object is an `Exception` or a `Throwable` instance.
+     * @since Symphony 2.7.0
+     *
+     * @param Throwable $e
+     *  The Throwable object that will be validated
+     * @return string
+     */
+    public static function isValidThrowable($e)
+    {
+        return $e instanceof Exception || $e instanceof Throwable;
+    }
+
+    /**
+     * The handler function is given an Throwable and will call it's render
+     * function to display the Throwable to a user. After calling the render
      * function, the output is displayed and then exited to prevent any further
      * logic from occurring.
      *
-     * @param Exception $e
-     *  The Exception object
+     * @since Symphony 2.7.0
+     *  This function works with both Exceptions and Throwable
+     *  Supporting both PHP 5.6 and 7 forces use to not qualify the $e parameter
+     *
+     * @param Throwable $e
+     *  The Throwable object
      * @return string
-     *  The result of the Exception's render function
+     *  The result of the Throwable's render function
      */
-    public static function handler(Exception $e)
+    public static function handler($e)
     {
         $output = '';
 
         try {
             // Instead of just throwing an empty page, return a 404 page.
             if (self::$enabled !== true) {
+                $e = new FrontendPageNotFoundException();
+            }
+
+            // Validate the type, resolve to a 404 if not valid
+            if (!static::isValidThrowable($e)) {
                 $e = new FrontendPageNotFoundException();
             }
 
@@ -164,14 +187,17 @@ class GenericExceptionHandler
     }
 
     /**
-     * The render function will take an Exception and output a HTML page
+     * The render function will take an Throwable and output a HTML page
      *
-     * @param Exception $e
-     *  The Exception object
+     * @since Symphony 2.7.0
+     *  This function works with both Exceptions and Throwable
+     *
+     * @param Throwable $e
+     *  The Throwable object
      * @return string
      *  An HTML string
      */
-    public static function render(Exception $e)
+    public static function render($e)
     {
         $lines = null;
 
@@ -274,12 +300,16 @@ class GenericExceptionHandler
 
     /**
      * This function will fetch the desired `$template`, and output the
-     * Exception in a user friendly way.
+     * Throwable in a user friendly way.
      *
      * @since Symphony 2.4
      * @param string $template
      *  The template name, which should correspond to something in the TEMPLATE
      *  directory, eg `fatalerror.fatal`.
+     *
+     * @since Symphony 2.7.0
+     *  This function works with both Exceptions and Throwable
+     *
      * @param string $heading
      * @param string $message
      * @param string $file
