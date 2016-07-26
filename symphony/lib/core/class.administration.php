@@ -28,7 +28,7 @@ class Administration extends Symphony
      * handled using the _switchboard function.
      *
      * @see toolkit.AdministrationPage#__switchboard()
-     * @var array
+     * @var array|boolean
      */
     private $_callback = null;
 
