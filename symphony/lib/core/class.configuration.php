@@ -181,7 +181,7 @@ class Configuration
             $string .= str_repeat(PHP_EOL, 3) . "$tab$tab###### ".strtoupper($group)." ######";
             $string .= PHP_EOL . "$tab$tab'$group' => ";
 
-            $string .= $this->serializeArray($data, 3);
+            $string .= $this->serializeArray($data, 3, $tab);
 
             $string .= ",";
             $string .= PHP_EOL . "$tab$tab########";
