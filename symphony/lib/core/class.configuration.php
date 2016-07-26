@@ -50,7 +50,7 @@ class Configuration
      *
      * @param string $name
      *  The name of the property to set, eg 'timezone'
-     * @param string $value
+     * @param array|string|integer|float|boolean $value
      *  The value for the property to set, eg. '+10:00'
      * @param string $group
      *  The group for this property, eg. 'region'
@@ -105,7 +105,7 @@ class Configuration
      *  The name of the property to retrieve
      * @param string $group
      *  The group that this property will be in
-     * @return array|string
+     * @return array|string|integer|float|boolean
      *  If `$name` or `$group` are not
      *  provided this function will return the full `$this->_properties`
      *  array.

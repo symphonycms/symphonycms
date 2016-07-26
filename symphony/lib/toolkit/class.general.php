@@ -501,7 +501,7 @@ class General
      *
      * @param string $path
      *  the path containing the directories to create.
-     * @param integer $mode (optional)
+     * @param string|integer $mode (optional)
      *  the permissions (in octal) of the directories to create. Defaults to 0755
      * @param boolean $silent (optional)
      *  true if an exception should be raised if an error occurs, false
