@@ -81,7 +81,7 @@ class GenericExceptionHandler
             // Instead of just throwing an empty page, return a 404 page.
             if (self::$enabled !== true) {
                 $e = new FrontendPageNotFoundException();
-            };
+            }
 
             $exception_type = get_class($e);
 
