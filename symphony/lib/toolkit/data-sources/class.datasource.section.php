@@ -231,9 +231,6 @@ class SectionDatasource extends Datasource
                         if ($field_handle) {
                             $xEntry->setAttribute($section_handle . '-' . $field_handle, (string)$count);
                         }
-
-                        // Backwards compatibility (without field handle)
-                        $xEntry->setAttribute($section_handle, (string)$count);
                     }
                 }
             }
