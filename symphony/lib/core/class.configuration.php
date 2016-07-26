@@ -175,17 +175,18 @@ class Configuration
     public function __toString()
     {
         $string = 'array(';
+        $tab = "\t";
 
         foreach ($this->_properties as $group => $data) {
-            $string .= str_repeat(PHP_EOL, 3) . "\t\t###### ".strtoupper($group)." ######";
-            $string .= PHP_EOL . "\t\t'$group' => ";
+            $string .= str_repeat(PHP_EOL, 3) . "$tab$tab###### ".strtoupper($group)." ######";
+            $string .= PHP_EOL . "$tab$tab'$group' => ";
 
             $string .= $this->serializeArray($data, 3);
 
             $string .= ",";
-            $string .= PHP_EOL . "\t\t########";
+            $string .= PHP_EOL . "$tab$tab########";
         }
-        $string .= PHP_EOL . "\t)";
+        $string .= PHP_EOL . "$tab)";
 
         return $string;
     }
@@ -203,16 +204,18 @@ class Configuration
      *  A array of properties to serialize.
      * @param integer $indentation
      *  The current level of indentation.
+     * @param string $tab
+     *  A horizontal tab
      */
 
-    protected function serializeArray(array $arr, $indentation = 0)
+    protected function serializeArray(array $arr, $indentation = 0, $tab = "\t")
     {
         $tabs = '';
         $closeTabs = '';
         for ($i = 0; $i < $indentation; $i++) {
-            $tabs .= "\t";
+            $tabs .= $tab;
             if ($i < $indentation - 1) {
-                $closeTabs .= "\t";
+                $closeTabs .= $tab;
             }
         }
         $string = 'array(';
@@ -222,7 +225,7 @@ class Configuration
                 if (empty($value)) {
                     $string .= 'array()';
                 } else {
-                    $string .= $this->serializeArray($value, $indentation + 1);
+                    $string .= $this->serializeArray($value, $indentation + 1, $tab);
                 }
             } else {
                 $string .= (General::strlen($value) > 0 ? var_export($value, true) : 'null');
