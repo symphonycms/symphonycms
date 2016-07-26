@@ -737,13 +737,18 @@ class SymphonyErrorPageHandler extends GenericExceptionHandler
      * template for this exception otherwise it reverts to using the default
      * `usererror.generic.php`
      *
-     * @param Exception $e
-     *  The Exception object
+     * @param Throwable $e
+     *  The Throwable object
      * @return string
      *  An HTML string
      */
-    public static function render(Exception $e)
+    public static function render($e)
     {
+        // Validate the type, resolve to a 404 if not valid
+        if (!static::isValidThrowable($e)) {
+            $e = new FrontendPageNotFoundException();
+        }
+
         if ($e->getTemplate() === false) {
             Page::renderStatusCode($e->getHttpStatusCode());
 
@@ -927,13 +932,18 @@ class DatabaseExceptionHandler extends GenericExceptionHandler
      * The render function will take a `DatabaseException` and output a
      * HTML page.
      *
-     * @param Exception $e
-     *  The Exception object
+     * @param Throwable $e
+     *  The Throwable object
      * @return string
      *  An HTML string
      */
-    public static function render(Exception $e)
+    public static function render($e)
     {
+        // Validate the type, resolve to a 404 if not valid
+        if (!static::isValidThrowable($e)) {
+            $e = new FrontendPageNotFoundException();
+        }
+
         $trace = $queries = null;
 
         foreach ($e->getTrace() as $t) {
