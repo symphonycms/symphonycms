@@ -250,7 +250,6 @@ class SectionDatasource extends Datasource
 
         // Support the legacy parameter `ds-datasource-handle`
         $key = 'ds-' . $this->dsParamROOTELEMENT;
-        $singleParam = count($this->dsParamPARAMOUTPUT) == 1;
 
         foreach ($this->dsParamPARAMOUTPUT as $param) {
             // The new style of paramater is `ds-datasource-handle.field-handle`
@@ -259,27 +258,15 @@ class SectionDatasource extends Datasource
             if ($param === 'system:id') {
                 $this->_param_pool[$param_key][] = $entry->get('id');
 
-                if ($singleParam) {
-                    $this->_param_pool[$key][] = $entry->get('id');
-                }
             } elseif ($param === 'system:author') {
                 $this->_param_pool[$param_key][] = $entry->get('author_id');
 
-                if ($singleParam) {
-                    $this->_param_pool[$key][] = $entry->get('author_id');
-                }
             } elseif ($param === 'system:creation-date' || $param === 'system:date') {
                 $this->_param_pool[$param_key][] = $entry->get('creation_date');
 
-                if ($singleParam) {
-                    $this->_param_pool[$key][] = $entry->get('creation_date');
-                }
             } elseif ($param === 'system:modification-date') {
                 $this->_param_pool[$param_key][] = $entry->get('modification_date');
 
-                if ($singleParam) {
-                    $this->_param_pool[$key][] = $entry->get('modification_date');
-                }
             }
         }
     }
@@ -302,11 +289,6 @@ class SectionDatasource extends Datasource
 
         // Support the legacy parameter `ds-datasource-handle`
         $key = 'ds-' . $this->dsParamROOTELEMENT;
-        $singleParam = count($this->dsParamPARAMOUTPUT) == 1;
-
-        if ($singleParam && (!isset($this->_param_pool[$key]) || !is_array($this->_param_pool[$key]))) {
-            $this->_param_pool[$key] = array();
-        }
 
         foreach ($this->dsParamPARAMOUTPUT as $param) {
             if (self::$_fieldPool[$field_id]->get('element_name') !== $param) {
@@ -325,15 +307,9 @@ class SectionDatasource extends Datasource
             if (is_array($param_pool_values)) {
                 $this->_param_pool[$param_key] = array_merge($param_pool_values, $this->_param_pool[$param_key]);
 
-                if ($singleParam) {
-                    $this->_param_pool[$key] = array_merge($param_pool_values, $this->_param_pool[$key]);
-                }
             } elseif (!is_null($param_pool_values)) {
                 $this->_param_pool[$param_key][] = $param_pool_values;
 
-                if ($singleParam) {
-                    $this->_param_pool[$key][] = $param_pool_values;
-                }
             }
         }
     }
