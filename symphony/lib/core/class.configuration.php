@@ -28,6 +28,12 @@ class Configuration
     private $_forceLowerCase = false;
 
     /**
+     * The string representing the tab character used to serialize the configuration
+     * @var string
+     */
+    const TAB = '    ';
+
+    /**
      * The constructor for the Configuration class takes one parameter,
      * `$forceLowerCase` which will make all property and
      * group names lowercase or not. By default they are left to the case
@@ -175,7 +181,8 @@ class Configuration
     public function __toString()
     {
         $string = 'array(';
-        $tab = "\t";
+
+        $tab = static::TAB;
 
         foreach ($this->_properties as $group => $data) {
             $string .= str_repeat(PHP_EOL, 3) . "$tab$tab###### ".strtoupper($group)." ######";
@@ -208,7 +215,7 @@ class Configuration
      *  A horizontal tab
      */
 
-    protected function serializeArray(array $arr, $indentation = 0, $tab = "\t")
+    protected function serializeArray(array $arr, $indentation = 0, $tab = self::TAB)
     {
         $tabs = '';
         $closeTabs = '';
@@ -257,7 +264,10 @@ class Configuration
             $file = CONFIG;
         }
 
-        $string = "<?php\n\t\$settings = " . (string)$this . ";\n";
+        $tab = static::TAB;
+        $eol = PHP_EOL;
+
+        $string = "<?php$eol$tab\$settings = " . (string)$this . ";$eol";
 
         return General::writeFile($file, $string, $permissions);
     }
