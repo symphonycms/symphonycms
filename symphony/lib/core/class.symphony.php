@@ -652,13 +652,18 @@ abstract class Symphony implements Singleton
     }
 
     /**
-     * Setter accepts a previous Exception. Useful for determining the context
-     * of a current exception (ie. detecting recursion).
+     * Setter accepts a previous Throwable. Useful for determining the context
+     * of a current Throwable (ie. detecting recursion).
      *
      * @since Symphony 2.3.2
-     * @param Exception $ex
+     *
+     * @since Symphony 2.7.0
+     *  This function works with both Exception and Throwable
+     *  Supporting both PHP 5.6 and 7 forces use to not qualify the $e parameter
+     *
+     * @param Throwable $ex
      */
-    public static function setException(Exception $ex)
+    public static function setException($ex)
     {
         self::$exception = $ex;
     }
@@ -667,7 +672,7 @@ abstract class Symphony implements Singleton
      * Accessor for `self::$exception`.
      *
      * @since Symphony 2.3.2
-     * @return Exception|null
+     * @return Throwable|null
      */
     public static function getException()
     {

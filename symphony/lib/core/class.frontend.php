@@ -149,14 +149,14 @@ class FrontendPageNotFoundExceptionHandler extends SymphonyErrorPageHandler
      * that has been given the '404' page type, otherwise it will just use the default
      * Symphony error page template to output the exception
      *
-     * @param Exception $e
-     *  The Exception object
+     * @param Throwable $e
+     *  The Throwable object
      * @throws FrontendPageNotFoundException
      * @throws SymphonyErrorPage
      * @return string
      *  An HTML string
      */
-    public static function render(Exception $e)
+    public static function render($e)
     {
         $page = PageManager::fetchPageByType('404');
         $previous_exception = Frontend::instance()->getException();
