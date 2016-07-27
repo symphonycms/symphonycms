@@ -119,8 +119,8 @@ class Cookie
     /**
      * Initialises a new Session instance using this cookie's params
      *
-     * @throws Exception
-     * @return Session
+     * @throws Throwable
+     * @return string|boolean
      */
     private function __init()
     {

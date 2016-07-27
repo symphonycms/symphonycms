@@ -193,7 +193,7 @@ class Log
      * @param boolean $append
      *  If set to true, the given `$message` will be append to the previous log
      *  message found in the `$_log` array
-     * @return mixed
+     * @return boolean|null
      *  If `$writeToLog` is passed, this function will return boolean, otherwise
      *  void
      */
@@ -256,7 +256,7 @@ class Log
      * @param boolean $append
      *  If set to true, the given `$message` will be append to the previous log
      *  message found in the `$_log` array
-     * @return mixed
+     * @return boolean|null
      *  If `$writeToLog` is passed, this function will return boolean, otherwise
      *  void
      */
