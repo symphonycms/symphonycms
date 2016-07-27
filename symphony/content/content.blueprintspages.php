@@ -738,7 +738,6 @@ class contentBlueprintsPages extends AdministrationPage
 
                     // If the file wasn't created, it's usually permissions related
                     if (!$file_created) {
-                        $redirect = null;
                         return $this->pageAlert(
                             __('Page Template could not be written to disk.')
                             . ' ' . __('Please check permissions on %s.', array('<code>/workspace/pages</code>')),
