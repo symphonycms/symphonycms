@@ -270,7 +270,7 @@ class FrontendPage extends XSLTPage
             if (is_null($devkit) && !$output) {
                 $errstr = null;
 
-                while (list($key, $val) = $this->Proc->getError()) {
+                while (list($val) = $this->Proc->getError()) {
                     $errstr .= 'Line: ' . $val['line'] . ' - ' . $val['message'] . PHP_EOL;
                 }
 
