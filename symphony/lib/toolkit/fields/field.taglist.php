@@ -721,8 +721,6 @@ class FieldTagList extends Field implements ExportableField, ImportableField
                     $this->_key++;
                 }
             } else {
-                $condition = ($negation) ? 'NOT IN' : 'IN';
-
                 $data = "'".implode("', '", $data)."'";
 
                 // Apply a different where condition if we are using $negation. RE: #29
