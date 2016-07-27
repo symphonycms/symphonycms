@@ -496,7 +496,6 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         if (file_exists($abs_path . '/' . $data['name'])) {
             $extension = General::getExtension($data['name']);
             $new_file = substr($abs_path . '/' . $data['name'], 0, -1 - strlen($extension));
-            $renamed_file = $new_file;
             $count = 1;
 
             do {
