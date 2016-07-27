@@ -300,14 +300,6 @@ class PageManager
                 'path' => $page_path
             );
 
-            if (!PageManager::createPageFiles($page_path, $child['handle'], $child['path'], $child['handle'])) {
-                $success = false;
-            }
-
-            if (!PageManager::edit($child_id, $fields)) {
-                $success = false;
-            }
-
             $success = PageManager::editPageChildren($child_id, $page_path . '/' . $child['handle']);
         }
 
