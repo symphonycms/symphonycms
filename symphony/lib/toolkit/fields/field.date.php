@@ -449,7 +449,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
         $value = null;
 
         // New entry
-        if ((is_null($data) || empty($data)) && !is_null($this->get('pre_populate'))) {
+        if (empty($data) && is_null($flagWithError) && !is_null($this->get('pre_populate'))) {
             $prepopulate = $this->get('pre_populate');
 
             $date = self::parseDate($prepopulate);
