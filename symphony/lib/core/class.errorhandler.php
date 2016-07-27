@@ -170,7 +170,7 @@ class GenericExceptionHandler
      * @since Symphony 2.3
      * @param string $name
      *  Name of the template
-     * @return mixed
+     * @return string|false
      *  String, which is the path to the template if the template is found,
      *  false otherwise
      */
@@ -445,7 +445,7 @@ class GenericErrorHandler
      * @param integer $line
      *  The line where the error occurred.
      * @throws ErrorException
-     * @return string
+     * @return boolean
      *  Usually a string of HTML that will displayed to a user
      */
     public static function handler($code, $message, $file = null, $line = null)

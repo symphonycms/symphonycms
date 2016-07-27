@@ -569,7 +569,6 @@ class ExtensionManager implements FileResource
      *  An extension object
      * @throws SymphonyErrorPage
      * @throws Exception
-     * @return boolean
      */
     private static function __canUninstallOrDisable(Extension $obj)
     {

@@ -896,7 +896,7 @@ class SymphonyErrorPage extends Exception
      * is not found, `false` is returned
      *
      * @since Symphony 2.3
-     * @return mixed
+     * @return string|false
      *  String, which is the path to the template if the template is found,
      *  false otherwise
      */
