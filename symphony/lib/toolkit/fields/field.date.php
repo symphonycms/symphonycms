@@ -677,7 +677,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
             $timezone = Symphony::Configuration()->get('timezone', 'region');
 
             $date = new DateTime(
-                isset($data['value']) ? $data['value'] : 'now'
+                isset($data['value']) ? $data['value'] : 'kirikou'
             );
 
             $date->setTimezone(new DateTimeZone($timezone));
