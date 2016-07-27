@@ -69,7 +69,8 @@ class GenericExceptionHandler
      *
      * @param Throwable $e
      *  The Throwable object that will be validated
-     * @return string
+     * @return boolean
+     *  true when valid, false otherwise
      */
     public static function isValidThrowable($e)
     {
@@ -83,7 +84,7 @@ class GenericExceptionHandler
      * logic from occurring.
      *
      * @since Symphony 2.7.0
-     *  This function works with both Exceptions and Throwable
+     *  This function works with both Exception and Throwable
      *  Supporting both PHP 5.6 and 7 forces use to not qualify the $e parameter
      *
      * @param Throwable $e
@@ -190,7 +191,7 @@ class GenericExceptionHandler
      * The render function will take an Throwable and output a HTML page
      *
      * @since Symphony 2.7.0
-     *  This function works with both Exceptions and Throwable
+     *  This function works with both Exception and Throwable
      *
      * @param Throwable $e
      *  The Throwable object
@@ -308,7 +309,7 @@ class GenericExceptionHandler
      *  directory, eg `fatalerror.fatal`.
      *
      * @since Symphony 2.7.0
-     *  This function works with both Exceptions and Throwable
+     *  This function works with both Exception and Throwable
      *
      * @param string $heading
      * @param string $message
