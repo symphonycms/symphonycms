@@ -1604,9 +1604,6 @@ class contentPublish extends AdministrationPage
             // Process Parent Associations
             if (!is_null($parent_associations) && !empty($parent_associations)) {
                 foreach ($parent_associations as $as) {
-                    if (empty($as['parent_section_field_id'])) {
-                        continue;
-                    }
                     if ($field = FieldManager::fetch($as['parent_section_field_id'])) {
                         if (isset($_GET['prepopulate'])) {
                             $prepopulate_field = key($_GET['prepopulate']);
@@ -1673,11 +1670,7 @@ class contentPublish extends AdministrationPage
                     $relation_field  = FieldManager::fetch($as['child_section_field_id']);
 
                     // Get entries, using $schema for performance reasons.
-                    if (!is_null($parent_section_field_id)) {
-                        $entry_ids = $relation_field->findRelatedEntries($entry_id, $as['parent_section_field_id']);
-                    } else {
-                        $entry_ids = $relation_field->findRelatedEntries($entry_id, $as['child_section_field_id']);
-                    }
+                    $entry_ids = $relation_field->findRelatedEntries($entry_id, $as['parent_section_field_id']);
                     $schema = $visible_field ? array($visible_field->get('element_name')) : array();
                     $where = sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids));
 
