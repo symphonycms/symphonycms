@@ -752,6 +752,7 @@ abstract class EmailGateway
         return array(
             'Content-Type'              => $type.';'.$charset.' name="'.$filename.'"',
             'Content-Transfer-Encoding' => 'base64',
+            'Content-ID'                => "<$filename>",
             'Content-Disposition'       => 'attachment; filename="' .$filename .'"',
         );
     }
