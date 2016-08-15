@@ -939,7 +939,7 @@ class General
                 $perm = 0644;
             }
 
-            chmod($file, intval($perm, 8));
+            @chmod($file, intval($perm, 8));
         } catch (Exception $ex) {
             // If we can't chmod the file, this is probably because our host is
             // running PHP with a different user to that of the file. Although we
