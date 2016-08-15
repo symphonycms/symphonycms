@@ -202,12 +202,13 @@ class Datasource
     }
 
     /**
-     * By default, all Symphony filters are considering to be AND filters, that is
-     * they are all used and Entries must match each filter to be included. It is
-     * possible to use OR filtering in a field by using an + to separate the values.
-     * eg. If the filter is test1 + test2, this will match any entries where this field
-     * is test1 OR test2. This function is run on each filter (ie. each field) in a
-     * datasource
+     * By default, all Symphony filters are considering to be OR and "+" filters
+     * are used for AND. They are all used and Entries must match each filter to be included.
+     * It is possible to use OR filtering in a field by using an "," to separate the values.
+     * eg. If the filter is "test1, test2", this will match any entries where this field
+     * is test1 OR test2. If the filter is "test1 + test2", this will match entries
+     * where this field is test1 AND test2. Not all fields supports this feature.
+     * This function is run on each filter (ie. each field) in a datasource.
      *
      * @param string $value
      *  The filter string for a field.
@@ -535,12 +536,13 @@ class Datasource
     }
 
     /**
-     * By default, all Symphony filters are considering to be AND filters, that is
-     * they are all used and Entries must match each filter to be included. It is
-     * possible to use OR filtering in a field by using an + to separate the values.
-     * eg. If the filter is test1 + test2, this will match any entries where this field
-     * is test1 OR test2. This function is run on each filter (ie. each field) in a
-     * datasource
+     * By default, all Symphony filters are considering to be OR and "+" filters
+     * are used for AND. They are all used and Entries must match each filter to be included.
+     * It is possible to use OR filtering in a field by using an "," to separate the values.
+     * eg. If the filter is "test1, test2", this will match any entries where this field
+     * is test1 OR test2. If the filter is "test1 + test2", this will match entries
+     * where this field is test1 AND test2. Not all fields supports this feature.
+     * This function is run on each filter (ie. each field) in a datasource.
      *
      * @deprecated Since Symphony 2.6.0 it is recommended to use the static version,
      *  `Datasource::determineFilterType`
