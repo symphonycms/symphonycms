@@ -535,8 +535,8 @@ class Datasource
     }
 
     /**
-     * By default, all Symphony filters are considering to be Or and + filters and used for AND, 
-     * that is they are all used and Entries must match each filter to be included. It is
+     *  By default, all Symphony filters are considering to be OR filters, that is
+     *  they are all used and Entries must match at least one filter to be included. It is
      * possible to use OR filtering in a field by using an + to separate the values.
      * eg. If the filter is test1 + test2, this will match any entries where this field
      * is test1 OR test2. This function is run on each filter (ie. each field) in a
