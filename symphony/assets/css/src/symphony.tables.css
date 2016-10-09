@@ -210,11 +210,18 @@ tr[class*=status-] a:first-of-type::after {
 	border-bottom: 1px solid #f5f5f5;
 }
 
-tr[class*=status-]:nth-child(even) a:first-of-type::after,
-tr[class*=status-]:nth-child(even):hover a:first-of-type::after {
+tr[class*=status-]:nth-child(even) a:first-of-type::after {
 	border-bottom-color: #fff;
 }
 
 tr[class*=status-]:hover a:first-of-type::after {
 	color: #b4b4b4;
+}
+
+tr[class*=status-].selected a:first-of-type::after {
+	border-bottom-color: #5c83ba;
+}
+
+tr[class*=status-]:nth-child(even).selected a:first-of-type::after {
+	border-bottom-color: #668abe;
 }
