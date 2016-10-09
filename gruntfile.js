@@ -10,7 +10,7 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         meta: {
-            banner: '/*!\n * <%= pkg.title || pkg.name %> ' +
+            banner: '/*!\n * <%= pkg.title || pkg.name %>' +
                     ' v<%= pkg.version %>\n' +
                     ' * commit <%= commitish %> -' +
                     ' <%= grunt.template.today("yyyy-mm-dd") %>\n' +
