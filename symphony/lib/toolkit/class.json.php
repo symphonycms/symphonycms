@@ -23,7 +23,7 @@ class JSONException extends Exception
      * @param integer $code
      * @param Exception $ex
      */
-    public function __construct($message, $code = null, Exception $ex = null)
+    public function __construct($message, $code = -1, Exception $ex = null)
     {
         switch ($code) {
             case JSON_ERROR_NONE:
@@ -45,7 +45,9 @@ class JSONException extends Exception
                 $message = __('Malformed UTF-8 characters, possibly incorrectly encoded.');
                 break;
             default:
-                $message = __('Unknown JSON error');
+                if (!$message) {
+                    $message = __('Unknown JSON error');
+                }
                 break;
         }
 
