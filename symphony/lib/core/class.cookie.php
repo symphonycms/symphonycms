@@ -109,7 +109,7 @@ class Cookie
         $this->_domain = $domain;
         $this->_httpOnly = $httpOnly;
 
-        if (defined(__SECURE__)) {
+        if (defined('__SECURE__')) {
             $this->_secure = __SECURE__;
         }
 
