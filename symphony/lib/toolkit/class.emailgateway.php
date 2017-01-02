@@ -481,6 +481,8 @@ abstract class EmailGateway
             throw new EmailValidationException(__('Email subject cannot be empty.'));
         } elseif (strlen(trim($this->_sender_email_address)) <= 0) {
             throw new EmailValidationException(__('Sender email address cannot be empty.'));
+        } elseif (!filter_var($this->_sender_email_address, FILTER_VALIDATE_EMAIL)) {
+            throw new EmailValidationException(__('Sender email address must be a valid email address.'));
         } else {
             foreach ($this->_recipients as $address) {
                 if (strlen(trim($address)) <= 0) {
