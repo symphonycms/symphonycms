@@ -387,7 +387,7 @@ class SectionDatasource extends Datasource
 
             // Support system:id as well as the old 'id'. #1691
             if ($field_id === 'system:id' || $field_id === 'id') {
-               if ($filter_type == Datasource::FILTER_AND) {
+                if ($filter_type == Datasource::FILTER_AND) {
                     $value = array_map(function ($val) {
                         return explode(',', $val);
                     }, $value);
