@@ -227,7 +227,7 @@ var Symphony = (function($, crossroads) {
 				}
 
 				// Return false if group does not exist in Storage
-				if(typeof Storage.Context[group] === undefined) {
+				if(typeof Storage.Context[group] === 'undefined') {
 					return false;
 				}
 
