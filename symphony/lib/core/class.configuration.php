@@ -28,6 +28,12 @@ class Configuration
     private $_forceLowerCase = false;
 
     /**
+     * The string representing the tab characters used to serialize the configuration
+     * @var string
+     */
+    const TAB = '    ';
+
+    /**
      * The constructor for the Configuration class takes one parameter,
      * `$forceLowerCase` which will make all property and
      * group names lowercase or not. By default they are left to the case
@@ -167,7 +173,7 @@ class Configuration
      * This magic `__toString` function converts the internal `$this->_properties`
      * array into a string representation. Symphony generates the `MANIFEST/config.php`
      * file in this manner.
-     *
+     * @see Configuration::serializeArray()
      * @return string
      *  A string that contains a array representation of `$this->_properties`.
      *  This is used by Symphony to write the `config.php` file.
@@ -176,20 +182,64 @@ class Configuration
     {
         $string = 'array(';
 
+        $tab = static::TAB;
+
         foreach ($this->_properties as $group => $data) {
-            $string .= str_repeat(PHP_EOL, 3) . "\t\t###### ".strtoupper($group)." ######";
-            $string .= PHP_EOL . "\t\t'$group' => array(";
+            $string .= str_repeat(PHP_EOL, 3) . "$tab$tab###### ".strtoupper($group)." ######";
+            $string .= PHP_EOL . "$tab$tab'$group' => ";
 
-            foreach ($data as $key => $value) {
-                $string .= PHP_EOL . "\t\t\t'$key' => ".(strlen($value) > 0 ? var_export($value, true) : 'null').",";
-            }
+            $string .= $this->serializeArray($data, 3, $tab);
 
-            $string .= PHP_EOL . "\t\t),";
-            $string .= PHP_EOL . "\t\t########";
+            $string .= ",";
+            $string .= PHP_EOL . "$tab$tab########";
         }
+        $string .= PHP_EOL . "$tab)";
 
-        $string .= PHP_EOL . "\t)";
+        return $string;
+    }
 
+    /**
+     * The `serializeArray` function will properly format and indent multidimensional
+     * arrays using recursivity.
+     * 
+     * `__toString()` call `serializeArray` to use the recursive condition.
+     * The keys (int) in array won't have apostrophe.
+     * Array without multidimensional array will be output with normal indentation.
+     * @return string
+     *  A string that contains a array representation of the '$data parameter'.
+     * @param array $arr
+     *  A array of properties to serialize.
+     * @param integer $indentation
+     *  The current level of indentation.
+     * @param string $tab
+     *  A horizontal tab
+     */
+
+    protected function serializeArray(array $arr, $indentation = 0, $tab = self::TAB)
+    {
+        $tabs = '';
+        $closeTabs = '';
+        for ($i = 0; $i < $indentation; $i++) {
+            $tabs .= $tab;
+            if ($i < $indentation - 1) {
+                $closeTabs .= $tab;
+            }
+        }
+        $string = 'array(';
+        foreach ($arr as $key => $value) {
+            $string .= (is_numeric($key) ? PHP_EOL . "$tabs $key => " : PHP_EOL . "$tabs'$key' => ");
+            if (is_array($value)) {
+                if (empty($value)) {
+                    $string .= 'array()';
+                } else {
+                    $string .= $this->serializeArray($value, $indentation + 1, $tab);
+                }
+            } else {
+                $string .= (General::strlen($value) > 0 ? var_export($value, true) : 'null');
+            }
+            $string .= ",";
+        }
+        $string .=  PHP_EOL . "$closeTabs)";
         return $string;
     }
 
@@ -214,7 +264,10 @@ class Configuration
             $file = CONFIG;
         }
 
-        $string = "<?php\n\t\$settings = " . (string)$this . ";\n";
+        $tab = static::TAB;
+        $eol = PHP_EOL;
+
+        $string = "<?php$eol$tab\$settings = " . (string)$this . ";$eol";
 
         return General::writeFile($file, $string, $permissions);
     }
