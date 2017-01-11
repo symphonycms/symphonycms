@@ -137,7 +137,7 @@
             );
             $this->Form->appendChild(
                 new XMLElement('p',
-                    __('Your mum is also nagging you about removing that %s directory before you log in.', array('<code>' . basename(INSTALL_URL) . '</code>'))
+                    __('Your mum is also nagging you about <a href="' . URL . '/install/?action=remove">' . __('removing that %s directory') . '</a> before you log in.', array('<code>' . basename(INSTALL_URL) . '</code>'))
                 )
             );
 
