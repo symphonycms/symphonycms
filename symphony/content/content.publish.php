@@ -244,12 +244,12 @@ class contentPublish extends AdministrationPage
 
         // Custom field comparisons
         foreach ($data['operators'] as $operator) {
-            
+
             $filter = trim($operator['filter']);
-            
+
             // Check selected state
             $selected = false;
-            
+
             // Selected state : Comparison mode "between" (x to y)
             if ($operator['title'] === 'between' && preg_match('/^(-?(?:\d+(?:\.\d+)?|\.\d+)) to (-?(?:\d+(?:\.\d+)?|\.\d+))$/i', $data['filter'] )) {
                 $selected = true;
@@ -257,7 +257,7 @@ class contentPublish extends AdministrationPage
             } else if ((!empty($filter) && strpos($data['filter'], $filter) === 0)) {
                 $selected = true;
             }
-	        
+
             $comparisons[] = array(
                 $operator['filter'],
                 $selected,
@@ -1601,6 +1601,9 @@ class contentPublish extends AdministrationPage
             $content = new XMLElement('div', null, array('class' => 'content'));
             $content->setSelfClosingTag(false);
 
+            // backup global sorting
+            $sorting = EntryManager::getFetchSorting();
+
             // Process Parent Associations
             if (!is_null($parent_associations) && !empty($parent_associations)) {
                 foreach ($parent_associations as $as) {
@@ -1608,6 +1611,20 @@ class contentPublish extends AdministrationPage
                         continue; 
                     }
                     if ($field = FieldManager::fetch($as['parent_section_field_id'])) {
+
+                        // Get the related section
+                        $parent_section = SectionManager::fetch($as['child_parent_id']);
+
+                        if (!($parent_section instanceof Section)) {
+                            continue;
+                        }
+
+                        // set global sorting for associated section
+                        EntryManager::setFetchSorting(
+                            $parent_section->getSortingField(),
+                            $parent_section->getSortingOrder()
+                        );
+
                         if (isset($_GET['prepopulate'])) {
                             $prepopulate_field = key($_GET['prepopulate']);
                         }
@@ -1666,6 +1683,12 @@ class contentPublish extends AdministrationPage
                     if (!($child_section instanceof Section)) {
                         continue;
                     }
+
+                    // set global sorting for associated section
+                    EntryManager::setFetchSorting(
+                        $child_section->getSortingField(),
+                        $child_section->getSortingOrder()
+                    );
 
                     // Get the visible field instance (using the sorting field, this is more flexible than visibleColumns())
                     // Get the link field instance
@@ -1756,6 +1779,12 @@ class contentPublish extends AdministrationPage
                     $content->appendChild($element);
                 }
             }
+
+            // reset global sorting
+            EntryManager::setFetchSorting(
+                $sorting->field,
+                $sorting->direction
+            );
         }
 
         $drawer = Widget::Drawer('section-associations', __('Show Associations'), $content);
