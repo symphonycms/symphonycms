@@ -1027,7 +1027,7 @@ class ExtensionManager implements FileResource
                 Symphony::Engine()->throwCustomError(
                     __('Could not find extension %s at location %s.', array(
                         '<code>' . $name . '</code>',
-                        '<code>' . $path . '</code>'
+                        '<code>' . str_replace(DOCROOT . '/', '', $path) . '</code>'
                     )),
                     __('Symphony Extension Missing Error'),
                     Page::HTTP_STATUS_ERROR,
