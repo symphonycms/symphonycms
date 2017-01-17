@@ -15,8 +15,8 @@ if (isset($_POST['extension-missing'])) {
         if (!@rename(EXTENSIONS . '/' . $_POST['existing-folder'], EXTENSIONS . '/' . $_POST['new-folder'])) {
             Symphony::Engine()->throwCustomError(
                 __('Could not find extension %s at location %s.', array(
-                    '<code>' . $name . '</code>',
-                    '<code>' . $path . '</code>'
+                    '<code>' . General::sanitize($name) . '</code>',
+                    '<code>' . General::sanitize($path) . '</code>'
                 )),
                 __('Symphony Extension Missing Error'),
                 Page::HTTP_STATUS_ERROR,
@@ -123,8 +123,8 @@ if ($match != "" && $e->getAdditional()->rename_failed !== true) {
 } elseif ($e->getAdditional()->rename_failed) {
     $div->appendChild(
         new XMLElement('p', __('Sorry, but Symphony was unable to rename the folder. You can try renaming %s to %s yourself, or you can uninstall the extension to continue.', array(
-            '<code>extensions/' . $match . '</code>',
-            '<code>extensions/' . $e->getAdditional()->name . '</code>'
+            '<code>extensions/' . General::sanitize($match) . '</code>',
+            '<code>extensions/' . General::sanitize($e->getAdditional()->name) . '</code>'
         )))
     );
 } else {
