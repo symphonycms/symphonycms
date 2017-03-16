@@ -447,7 +447,7 @@ class FieldManager implements FileResource
                 AND `element_name` IN ('%s')
                 ORDER BY `sortorder` ASC",
                 (!is_null($section_id) ? sprintf("AND `parent_section` = %d", $section_id) : ""),
-                implode("', '", array_unique($element_names))
+                MySQL::cleanValue(implode("', '", array_unique($element_names)))
             );
         }
 
