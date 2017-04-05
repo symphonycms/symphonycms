@@ -36,7 +36,7 @@ Useful places:
 
 ## Server requirements
 
-- PHP 5.3 or above
+- PHP 5.3, 5.4, 5.5 or 5.6
 - PHP’s LibXML module, with the XSLT extension enabled (`--with-xsl`)
 - MySQL 5.5 or above is recommended
 - A webserver (known to be used with Apache, Litespeed, Nginx and Hiawatha)
