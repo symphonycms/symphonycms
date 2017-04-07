@@ -26,13 +26,23 @@ class contentLogin extends HTMLPage
         $this->addElementToHead(new XMLElement('meta', null, array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge,chrome=1')), 1);
         $this->addElementToHead(new XMLElement('meta', null, array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1')), 2);
 
-        $this->addStylesheetToHead(ASSETS_URL . '/css/symphony.min.css', 'screen', null, false);
+        parent::addStylesheetToHead(ASSETS_URL . '/css/symphony.min.css', 'screen', null, false);
 
         $this->setTitle(__('%1$s &ndash; %2$s', array(__('Login'), Symphony::Configuration()->get('sitename', 'general'))));
 
         $this->Body->setAttribute('id', 'login');
 
         Symphony::Profiler()->sample('Page template created', PROFILE_LAP);
+    }
+
+    public function addScriptToHead($path, $position = null, $duplicate = true)
+    {
+        // Prevent script inject injection by extensions
+    }
+
+    public function addStylesheetToHead($path, $type = 'screen', $position = null, $duplicate = true)
+    {
+        // Prevent stylesheet injection by extensions
     }
 
     public function build($context = null)
