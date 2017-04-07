@@ -11,17 +11,17 @@
 	Horizontal drawers
 -----------------------------------------------------------------------------*/
 
-.drawer.horizontal {
+div.drawer.horizontal {
 	position: relative;
 }
 
-.drawer.horizontal .contents {
+div.drawer.horizontal .contents {
 	margin-top: 1.7rem;
 	padding: 2rem 0;
 	border-top: 0.1rem solid rgba(0, 0, 0, 0.05);
 }
 
-.drawer.horizontal .contents:after {
+div.drawer.horizontal .contents:after {
 	content: ' ';
 	display: block;
 	clear: both;
@@ -37,8 +37,8 @@
 /**
  * Height is set implicitly via `top` and `bottom` to allow for dynamic height.
  */
-.drawer.vertical-left,
-.drawer.vertical-right {
+div.drawer.vertical-left,
+div.drawer.vertical-right {
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -48,17 +48,17 @@
 	background: #f4f4f4;
 }
 
-.drawer.vertical-left {
+div.drawer.vertical-left {
 	left: 0;
 	border-right: 0.1rem solid rgba(0, 0, 0, 0.05);
 }
 
-.drawer.vertical-right {
+div.drawer.vertical-right {
 	right: 0;
 	border-left: 0.1rem solid rgba(0, 0, 0, 0.05);
 }
 
-.drawer.vertical-left .contents,
-.drawer.vertical-right .contents {
+div.drawer.vertical-left .contents,
+div.drawer.vertical-right .contents {
 	padding: 2rem;
 }
