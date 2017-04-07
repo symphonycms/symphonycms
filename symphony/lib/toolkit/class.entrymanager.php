@@ -16,8 +16,10 @@ class EntryManager
 {
     /**
      * The Field ID that will be used to sort when fetching Entries, defaults
-     * to null, which implies the Entry ID (id column in `tbl_entries`)
-     * @var integer
+     * to null, which implies the Entry ID (id column in `tbl_entries`).
+     * To order by core fields, use one of
+     * 'system:creation-date', 'system:modification-date', 'system:id'.
+     * @var integer|string
      */
     protected static $_fetchSortField = null;
 
