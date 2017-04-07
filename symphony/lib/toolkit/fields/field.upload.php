@@ -778,7 +778,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         Sorting:
     -------------------------------------------------------------------------*/
 
-    public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
+    public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC', &$select = null)
     {
         if (in_array(strtolower($order), array('random', 'rand'))) {
             $sort = 'ORDER BY RAND()';
@@ -794,6 +794,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
                 $this->get('id'),
                 $order
             );
+            $select = '`ed`.file';
         }
     }
 
