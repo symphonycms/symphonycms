@@ -67,7 +67,14 @@ class contentBlueprintsDatasources extends ResourcesPage
         $providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::DATASOURCE);
         $isEditing = false;
         $about = $handle = null;
-        $fields = array('name'=>null, 'source'=>null, 'filter'=>null, 'required_url_param'=>null, 'negate_url_param'=>null, 'param'=>null);
+        $fields = array(
+            'name' => null,
+            'source' => null,
+            'filter'=> null,
+            'required_url_param' => null,
+            'negate_url_param' => null,
+            'param' => null,
+        );
 
         if (isset($_POST['fields'])) {
             $fields = $_POST['fields'];
@@ -731,7 +738,11 @@ class contentBlueprintsDatasources extends ResourcesPage
             'data-trigger' => '{$'
         ));
         $label->appendChild($input);
-        $group->appendChild($label);
+        if (isset($this->_errors['max_records'])) {
+            $group->appendChild(Widget::Error($label, $this->_errors['max_records']));
+        } else {
+            $group->appendChild($label);
+        }
 
         $label = Widget::Label(__('Page Number'));
         $label->setAttribute('class', 'column ds-param');
@@ -741,7 +752,11 @@ class contentBlueprintsDatasources extends ResourcesPage
             'data-trigger' => '{$'
         ));
         $label->appendChild($input);
-        $group->appendChild($label);
+        if (isset($this->_errors['page_number'])) {
+            $group->appendChild(Widget::Error($label, $this->_errors['page_number']));
+        } else {
+            $group->appendChild($label);
+        }
 
         $fieldset->appendChild($group);
 
@@ -1322,11 +1337,12 @@ class contentBlueprintsDatasources extends ResourcesPage
 
                 if (preg_match_all('@(\$ds-[0-9a-z_\.\-]+)@i', $dsShell, $matches)) {
                     $dependencies = General::array_remove_duplicates($matches[1]);
+                    $dependencies = array_map('addslashes', $dependencies);
                     $dsShell = str_replace('<!-- DS DEPENDENCY LIST -->', "'" . implode("', '", $dependencies) . "'", $dsShell);
                 }
 
                 $dsShell = str_replace('<!-- CLASS EXTENDS -->', $extends, $dsShell);
-                $dsShell = str_replace('<!-- SOURCE -->', $source, $dsShell);
+                $dsShell = str_replace('<!-- SOURCE -->', addslashes($source), $dsShell);
             }
 
             if ($this->_context[0] == 'new') {
@@ -1474,7 +1490,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
     public static function injectFilters(&$shell, array $filters)
     {
-        if (empty($filters)) {
+        if (!is_array($filters) || empty($filters)) {
             return;
         }
 
@@ -1482,11 +1498,11 @@ class contentBlueprintsDatasources extends ResourcesPage
         $string = 'public $dsParamFILTERS = array(' . PHP_EOL;
 
         foreach ($filters as $key => $val) {
-            if (trim($val) == '') {
+            if (trim($val) == '' || !is_string($val)) {
                 continue;
             }
 
-            $string .= "        '$key' => '" . addslashes($val) . "'," . PHP_EOL;
+            $string .= "        '" . addslashes($key) . "' => '" . addslashes($val) . "'," . PHP_EOL;
         }
 
         $string .= "    );" . PHP_EOL . "        " . $placeholder;
@@ -1496,12 +1512,16 @@ class contentBlueprintsDatasources extends ResourcesPage
 
     public static function injectAboutInformation(&$shell, array $details)
     {
-        if (empty($details)) {
+        if (!is_array($details) || empty($details)) {
             return;
         }
 
         foreach ($details as $key => $val) {
-            $shell = str_replace('<!-- ' . strtoupper($key) . ' -->', addslashes($val), $shell);
+            if (!is_string($key) || !is_string($val)) {
+                continue;
+            }
+
+            $shell = str_replace('<!-- ' . strtoupper(addslashes($key)) . ' -->', addslashes($val), $shell);
         }
     }
 
@@ -1510,7 +1530,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         if (!is_array($elements) || empty($elements)) {
             return;
         }
-
+        $elements = array_map('addslashes', $elements);
         $placeholder = '<!-- INCLUDED ELEMENTS -->';
         $shell = str_replace($placeholder, "public \$dsParamINCLUDEDELEMENTS = array(" . PHP_EOL . "        '" . implode("'," . PHP_EOL . "        '", $elements) . "'" . PHP_EOL . '    );' . PHP_EOL . "    " . $placeholder, $shell);
     }
@@ -1524,11 +1544,15 @@ class contentBlueprintsDatasources extends ResourcesPage
         $var_list = null;
 
         foreach ($vars as $key => $val) {
+            if (!is_string($key)) {
+                continue;
+            }
             if (is_array($val)) {
+                $val = array_map('addslashes', $val);
                 $val = "array(" . PHP_EOL . "        '" . implode("'," . PHP_EOL . "        '", $val) . "'" . PHP_EOL . '        );';
-                $var_list .= '    public $dsParam' . strtoupper($key) . ' = ' . $val . PHP_EOL;
+                $var_list .= '    public $dsParam' . strtoupper(addslashes($key)) . ' = ' . $val . PHP_EOL;
             } elseif (trim($val) !== '') {
-                $var_list .= '    public $dsParam' . strtoupper($key) . " = '" . addslashes($val) . "';" . PHP_EOL;
+                $var_list .= '    public $dsParam' . strtoupper(addslashes($key)) . " = '" . addslashes($val) . "';" . PHP_EOL;
             }
         }
 
