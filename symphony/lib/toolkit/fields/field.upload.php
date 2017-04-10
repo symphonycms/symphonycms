@@ -794,7 +794,6 @@ class FieldUpload extends Field implements ExportableField, ImportableField
                 $this->get('id'),
                 $order
             );
-            $select = '`ed`.file';
         }
     }
 
