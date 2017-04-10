@@ -530,7 +530,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
             $eventShell = str_replace('<!-- ROOT ELEMENT -->', $rootelement, $eventShell);
             $eventShell = str_replace('<!-- CLASS NAME -->', $classname, $eventShell);
-            $eventShell = str_replace('<!-- SOURCE -->', $source, $eventShell);
+            $eventShell = str_replace('<!-- SOURCE -->', addslashes($source), $eventShell);
 
             // Remove left over placeholders
             $eventShell = preg_replace(array('/<!--[\w ]++-->/'), '', $eventShell);
@@ -658,8 +658,8 @@ class contentBlueprintsEvents extends ResourcesPage
         if (!is_array($elements) || empty($elements)) {
             return;
         }
-
-        $shell = str_replace('<!-- FILTERS -->', "'" . implode("'," . PHP_EOL . "\t\t\t\t'", $elements) . "'", $shell);
+        $elements = array_map('addslashes', $elements);
+        $shell = str_replace('<!-- FILTERS -->', "'" . implode("'," . PHP_EOL . "        '", $elements) . "'", $shell);
     }
 
     public function __injectAboutInformation(&$shell, $details)
@@ -669,7 +669,11 @@ class contentBlueprintsEvents extends ResourcesPage
         }
 
         foreach ($details as $key => $val) {
-            $shell = str_replace('<!-- ' . strtoupper($key) . ' -->', addslashes($val), $shell);
+            if (!is_string($key) || !is_string($val)) {
+                continue;
+            }
+
+            $shell = str_replace('<!-- ' . strtoupper(addslashes($key)) . ' -->', addslashes($val), $shell);
         }
     }
 }
