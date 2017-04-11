@@ -83,14 +83,14 @@ class contentBlueprintsEvents extends ResourcesPage
             $isEditing = true;
             $handle = $this->_context[1];
             $existing = EventManager::create($handle);
-            $about = $existing->about();
+            $about = General::array_map_recursive('stripslashes', $existing->about());
 
             if ($this->_context[0] == 'edit' && !$existing->allowEditorToParse()) {
                 redirect(SYMPHONY_URL . '/blueprints/events/info/' . $handle . '/');
             }
 
             $fields['name'] = $about['name'];
-            $fields['source'] = $existing->getSource();
+            $fields['source'] = stripslashes($existing->getSource());
             $provided = false;
 
             if (!empty($providers)) {
@@ -105,7 +105,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
             if (!$provided) {
                 if (isset($existing->eParamFILTERS)) {
-                    $fields['filters'] = $existing->eParamFILTERS;
+                    $fields['filters'] = array_map('stripslashes', $existing->eParamFILTERS);
                 }
             }
         }
@@ -401,6 +401,8 @@ class contentBlueprintsEvents extends ResourcesPage
 
         if (trim($fields['name']) == '') {
             $this->_errors['name'] = __('This is a required field');
+        } else if (strpos($fields['name'], '\\') !== false) {
+            $this->_errors['name'] = __('This field contains invalid characters') . ' (\\)';
         }
 
         if (trim($fields['source']) == '') {
