@@ -283,7 +283,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         // Conditions
         $fieldset = new XMLElement('fieldset');
-        $this->setContext($fieldset, array('sections', 'system', 'custom-xml'));
+        $this->setContext($fieldset, array('sections', 'system'));
         $fieldset->appendChild(new XMLElement('legend', __('Conditions')));
         $p = new XMLElement('p', __('Leaving these fields empty will always execute the data source.'));
         $p->setAttribute('class', 'help');
