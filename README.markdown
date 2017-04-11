@@ -209,3 +209,7 @@ Symphony uses [Grunt](http://gruntjs.com/) to build concatenated and minified as
 Symphony’s minified script and style files will be updated automatically when saving source files.
 
 More information: [Contributing to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony).
+
+## Responsible Security Disclosure
+
+Please follow [the guideline for security bug disclosure](https://github.com/symphonycms/symphony-2/wiki/Security-Bug-Disclosure).
