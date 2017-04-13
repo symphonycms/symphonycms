@@ -163,7 +163,7 @@ abstract class ResourcesPage extends AdministrationPage
 
                 $name = Widget::TableData(
                     Widget::Anchor(
-                        $r['name'],
+                        stripslashes($r['name']),
                         SYMPHONY_URL . $context['pageroot'] .  $action . '/' . $r['handle'] . '/',
                         $r['handle'],
                         'resource-' . $action,
@@ -192,7 +192,7 @@ abstract class ResourcesPage extends AdministrationPage
                     $class = call_user_func(array($manager, '__getClassName'), $r['handle']);
                     $section = Widget::TableData(call_user_func(array($class, 'getSourceColumn'), $r['handle']));
                 } elseif (isset($r['source'], $r['source']['name'])) {
-                    $section = Widget::TableData($r['source']['name']);
+                    $section = Widget::TableData(stripslashes($r['source']['name']));
                 } else {
                     $section = Widget::TableData(__('Unknown'), 'inactive');
                 }
