@@ -803,7 +803,7 @@ class FrontendPage extends XSLTPage
 
             return (key($handles) == 0) ? -1 : 1;
         }
-        return(($a->priority() > $b->priority()) ? -1 : 1);
+        return $a->priority() > $b->priority() ? -1 : 1;
     }
 
     /**

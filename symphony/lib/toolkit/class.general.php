@@ -441,7 +441,7 @@ class General
      */
     public static function substrmin($str, $val)
     {
-        return(self::substr($str, 0, min(self::strlen($str), $val)));
+        return self::substr($str, 0, min(self::strlen($str), $val));
     }
 
     /**
@@ -458,7 +458,7 @@ class General
      */
     public static function substrmax($str, $val)
     {
-        return(self::substr($str, 0, max(self::strlen($str), $val)));
+        return self::substr($str, 0, max(self::strlen($str), $val));
     }
 
     /**
@@ -1329,7 +1329,7 @@ class General
             $result .= "&#8230;";
         }
 
-        return($result);
+        return $result;
     }
 
     /**
