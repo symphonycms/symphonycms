@@ -365,6 +365,7 @@ class FrontendPage extends XSLTPage
             'website-name' => Symphony::Configuration()->get('sitename', 'general'),
             'page-title' => $page['title'],
             'root' => URL,
+            'root-dir' => '/' . DIRROOT,
             'workspace' => URL . '/workspace',
             'http-host' => HTTP_HOST,
             'root-page' => ($root_page ? $root_page : $page['handle']),
