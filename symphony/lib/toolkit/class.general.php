@@ -414,15 +414,18 @@ class General
      *  the string to operate on
      * @param int $start
      *  the starting offset
-     * @param int $start
+     * @param int $length
      *  the length of the substring
      * @return string
      *  the resulting substring
      */
-    public static function substr($str, $start, $length)
+    public static function substr($str, $start, $length = null)
     {
         if (function_exists('mb_substr')) {
             return mb_substr($str, $start, $length, 'utf-8');
+        }
+        if ($length === null) {
+            return substr($str, $start);
         }
         return substr($str, $start, $length);
     }
