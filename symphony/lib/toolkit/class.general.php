@@ -405,6 +405,30 @@ class General
     }
 
     /**
+     * Finds position of the first occurrence of a string in a string.
+     * This function will attempt to use PHP's `mbstring` functions if they are available.
+     * This function also forces utf-8 encoding for mbstring.
+     *
+     * @since Symphony 2.7.0
+     * @param string $haystack
+     *  the string to look into
+     * @param string $needle
+     *  the string to look for
+     * @param int $offset
+     *  the search offset. If it is not specified, 0 is used.
+     *  A negative offset counts from the end of the string.
+     * @return int
+     *  the numeric position of the first occurrence of needle in the haystack
+     */
+    public static function strpos($haystack, $needle, $offset = 0)
+    {
+        if (function_exists('mb_strpos')) {
+            return mb_strpos($haystack, $needle, $offset, 'utf-8');
+        }
+        return strpos($haystack, $needle, $offset);
+    }
+
+    /**
      * Creates a sub string.
      * This function will attempt to use PHP's `mbstring` functions if they are available.
      * This function also forces utf-8 encoding.
