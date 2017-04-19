@@ -84,22 +84,25 @@ Symphony.View.add('/:context*:', function() {
 			handles: 'td'
 		})
 		.on('orderstart.orderable', function() {
-
 			// Store current sort order
-			oldSorting = $(this).find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
+			oldSorting = orderable.find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
 		})
 		.on('orderstop.orderable', function() {
 			var newSorting = orderable.find('input').map(function(e) { return this.name + '=' + (e + 1); }).get().join('&');
 
 			// Store sort order, if changed
-			orderable.addClass('busy');
 			if(oldSorting !== null && newSorting !== oldSorting) {
+				// Update UI
+				orderable.addClass('busy');
 
 				// Update items
 				orderable.trigger('orderupdate.admin');
 
+				// Update old value
+				oldSorting = newSorting;
+
 				// Add XSRF token
-				newSorting = newSorting + '&' + Symphony.Utilities.getXSRF(true);
+				newSorting += '&' + Symphony.Utilities.getXSRF(true);
 
 				// Send request
 				$.ajax({
@@ -113,9 +116,6 @@ Symphony.View.add('/:context*:', function() {
 						orderable.removeClass('busy').find('tr').removeClass('selected');
 					}
 				});
-			}
-			else {
-				orderable.removeClass('busy');
 			}
 		});
 
