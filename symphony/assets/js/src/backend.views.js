@@ -24,9 +24,12 @@ Symphony.View.add('/:context*:', function() {
 	// Fix for Webkit browsers to initially show the options. #2127
 	$('select[multiple=multiple]').scrollTop(0);
 
-	// Initialise tag lists inside duplicators
+	// Initialise plugins inside duplicators
 	Symphony.Elements.contents.find('.duplicator').on('constructshow.duplicator', '.instance', function() {
+		// Enable tag lists inside duplicators
 		$(this).find('.tags[data-interactive]').symphonyTags();
+		// Enable parameter suggestions
+		Symphony.Interface.Suggestions.init($(this), 'input[type="text"]');
 	});
 
 	// Navigation sizing
@@ -681,7 +684,7 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 	});
 
 	// Enable parameter suggestions
-	Symphony.Elements.contents.find('.filters-duplicator, .ds-param').each(function() {
+	Symphony.Elements.contents.find('.ds-param').each(function() {
 		Symphony.Interface.Suggestions.init(this, 'input[type="text"]');
 	});
 

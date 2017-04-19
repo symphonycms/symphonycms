@@ -317,7 +317,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         $fieldset->appendChild($group);
 
         $group = new XMLElement('div');
-        $group->setAttribute('class', 'two columns ds-param');
+        $group->setAttribute('class', 'two columns');
 
         $label = Widget::Checkbox('fields[redirect_on_required]', $fields['redirect_on_required'], __('Redirect to 404 page when the required parameter is not present'));
         $label->setAttribute('class', 'column');
