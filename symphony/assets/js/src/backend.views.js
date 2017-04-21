@@ -181,6 +181,21 @@ Symphony.View.add('/:context*:', function() {
 		}
 	});
 
+	// Timestamp validation overwrite
+	Symphony.Elements.header.find('.notifier .js-tv-overwrite').on('click.admin', function (e){
+		var action = $(this).attr('data-action') || 'save';
+		var hidden = Symphony.Elements.contents.find('input[name="action[ignore-timestamp]"]');
+		hidden.prop('checked', true);
+		e.preventDefault();
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+		// Click on the action button:
+		// This is needed since we need to send the button's data in the POST
+		Symphony.Elements.contents.find('> form').find('input, button')
+			.filter('[name="action[' + action + ']"]').first().click();
+		return false;
+	});
+
 	// Catch all JavaScript errors and write them to the Symphony Log
 	Symphony.Elements.window.on('error.admin', function(event) {
 		$.ajax({

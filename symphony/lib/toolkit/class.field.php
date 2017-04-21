@@ -1719,7 +1719,7 @@ class Field
         } elseif ($id = FieldManager::add($fields)) {
             $this->set('id', $id);
             if ($this->requiresTable()) {
-                $this->createTable();
+                return $this->createTable();
             }
             return true;
         }
@@ -1769,6 +1769,42 @@ class Field
     public function requiresTable()
     {
         return true;
+    }
+
+    /**
+     * Checks that we are working with a valid field handle and
+     * that the setting table exists.
+     *
+     * @since Symphony 2.7.0
+     * @return boolean
+     *   true if the table exists, false otherwise
+     */
+    public function tableExists()
+    {
+        if (!$this->_handle) {
+            return false;
+        }
+        return Symphony::Database()->tableExists('tbl_fields_' . $this->_handle);
+    }
+
+    /**
+     * Checks that we are working with a valid field handle and field id, and
+     * checks that the field record exists in the settings table.
+     *
+     * @since Symphony 2.7.0
+     * @return boolean
+     *   true if the field id exists in the table, false otherwise
+     */
+    public function exists()
+    {
+        if (!$this->get('id') || !$this->_handle) {
+            return false;
+        }
+        return !empty(Symphony::Database()->fetch(sprintf(
+            'SELECT `id` FROM `tbl_fields_%s` WHERE `field_id` = %d',
+            $this->_handle,
+            General::intval($this->get('id'))
+        )));
     }
 
     /**

@@ -359,7 +359,6 @@ class contentBlueprintsSections extends AdministrationPage
 
         if (isset($_POST['fields'])) {
             $fields = array();
-
             if (is_array($_POST['fields']) && !empty($_POST['fields'])) {
                 foreach ($_POST['fields'] as $position => $data) {
                     if ($fields[$position] = FieldManager::create($data['type'])) {
@@ -368,9 +367,13 @@ class contentBlueprintsSections extends AdministrationPage
                     }
                 }
             }
+            $timestamp = isset($_POST['action']['timestamp'])
+                ? $_POST['action']['timestamp']
+                : $section->get('modification_date');
         } else {
             $fields = FieldManager::fetch(null, $section_id);
             $fields = array_values($fields);
+            $timestamp = $section->get('modification_date');
         }
 
         if (isset($_POST['meta'])) {
@@ -386,9 +389,8 @@ class contentBlueprintsSections extends AdministrationPage
             'rel' => 'canonical',
             'href' => SYMPHONY_URL . $canonical_link,
         )));
-
         $this->appendSubheading(General::sanitize($meta['name']),
-            Widget::Anchor(__('View Entries'), SYMPHONY_URL . '/publish/' . $section->get('handle'), __('View Section Entries'), 'button')
+            Widget::Anchor(__('View Entries'), SYMPHONY_URL . '/publish/' . $section->get('handle') . '/', __('View Section Entries'), 'button')
         );
         $this->insertBreadcrumbs(array(
             Widget::Anchor(__('Sections'), SYMPHONY_URL . '/blueprints/sections/'),
@@ -524,6 +526,9 @@ class contentBlueprintsSections extends AdministrationPage
         $button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this section'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this section?')));
         $div->appendChild($button);
 
+        $div->appendChild(Widget::Input('action[timestamp]', $timestamp, 'hidden'));
+        $div->appendChild(Widget::Input('action[ignore-timestamp]', 'yes', 'checkbox', array('class' => 'irrelevant')));
+
         $this->Form->appendChild($div);
     }
 
@@ -616,6 +621,10 @@ class contentBlueprintsSections extends AdministrationPage
             if ($edit) {
                 $section_id = $this->_context[1];
                 $existing_section = SectionManager::fetch($section_id);
+                $canProceed = $this->validateTimestamp($section_id, true);
+                if (!$canProceed) {
+                    $this->addTimestampValidationPageAlert($this->_errors['timestamp'], $existing_section, 'save');
+                }
             }
 
             // Check handle to ensure it is unique
@@ -788,9 +797,19 @@ class contentBlueprintsSections extends AdministrationPage
                             $field->set('sortorder', (string)$position);
                             $field->set('parent_section', $section_id);
 
-                            $newField = !(boolean)$field->get('id');
+                            // It is possible that the "existing" field has been deleted
+                            // so we are dealing with an invalid id.
+                            // First make sure the field table still exists and that
+                            // there is a field with the corresponding id in it
+                            $newField = !((boolean)$field->get('id') && $field->tableExists() && $field->exists());
+                            // If the field has not been found, erase the id from $_POST
+                            if ($newField) {
+                                $field->set('id', false);
+                            }
 
+                            // Save data
                             $field->commit();
+                            // Get the new id
                             $field_id = $field->get('id');
 
                             if ($field_id) {
@@ -860,26 +879,35 @@ class contentBlueprintsSections extends AdministrationPage
             }
         }
 
-        if (@array_key_exists("delete", $_POST['action'])) {
+        if (@array_key_exists('delete', $_POST['action'])) {
             $section_id = array($this->_context[1]);
+            $canProceed = $this->validateTimestamp($section_id);
 
-            /**
-             * Just prior to calling the Section Manager's delete function
-             *
-             * @delegate SectionPreDelete
-             * @since Symphony 2.2
-             * @param string $context
-             * '/blueprints/sections/'
-             * @param array $section_ids
-             *  An array of Section ID's passed by reference
-             */
-            Symphony::ExtensionManager()->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => &$section_id));
+            if ($canProceed) {
+                /**
+                 * Just prior to calling the Section Manager's delete function
+                 *
+                 * @delegate SectionPreDelete
+                 * @since Symphony 2.2
+                 * @param string $context
+                 * '/blueprints/sections/'
+                 * @param array $section_ids
+                 *  An array of Section ID's passed by reference
+                 */
+                Symphony::ExtensionManager()->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => &$section_id));
 
-            foreach ($section_id as $section) {
-                SectionManager::delete($section);
+                foreach ($section_id as $section) {
+                    SectionManager::delete($section);
+                }
+
+                redirect(SYMPHONY_URL . '/blueprints/sections/');
+            } else {
+                $this->addTimestampValidationPageAlert(
+                    $this->_errors['timestamp'],
+                    SectionManager::fetch($section_id),
+                    'delete'
+                );
             }
-
-            redirect(SYMPHONY_URL . '/blueprints/sections/');
         }
     }
 
@@ -931,5 +959,36 @@ class contentBlueprintsSections extends AdministrationPage
             'meta' => &$meta,
             'errors' => &$this->_errors
         ));
+    }
+
+    /**
+     * Given $_POST values, this function will validate the current timestamp
+     * and set the proper error messages.
+     *
+     * @since Symphony 2.7.0
+     * @param  int $section_id
+     *   The entry id to validate
+     * @return boolean
+     *   True if the timestamp is valid
+     */
+    protected function validateTimestamp($section_id, $checkMissing = false)
+    {
+        if (!isset($_POST['action']['ignore-timestamp'])) {
+            if ($checkMissing && !isset($_POST['action']['timestamp'])) {
+                if (isset($this->_errors) && is_array($this->_errors)) {
+                    $this->_errors['timestamp'] = __('The section could not be saved due to conflicting changes');
+                }
+                return false;
+            } elseif (isset($_POST['action']['timestamp'])) {
+                $tv = new TimestampValidator('sections');
+                if (!$tv->check($section_id, $_POST['action']['timestamp'])) {
+                    if (isset($this->_errors) && is_array($this->_errors)) {
+                        $this->_errors['timestamp'] = __('The section could not be saved due to conflicting changes');
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

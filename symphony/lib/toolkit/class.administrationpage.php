@@ -1371,4 +1371,54 @@ class AdministrationPage extends HTMLPage
 
         $this->Header->appendChild($ul);
     }
+
+    /**
+     * Adds a localized Alert message for failed timestamp validations.
+     * It also adds meta information about the last author and timestamp.
+     *
+     * @since Symphony 2.7.0
+     * @param string $errorMessage
+     *  The error message to display.
+     * @param Entry|Section $existingObject
+     *  The Entry or section object that failed validation.
+     * @param string $action
+     *  The requested action.
+     */
+    public function addTimestampValidationPageAlert($errorMessage, $existingObject, $action)
+    {
+        $author = AuthorManager::fetchByID($existingObject->get('author_id'));
+
+        $formatteAuthorName = $existingObject->get('author_id') === Symphony::Author()->get('id')
+            ? __('yourself')
+            : (!$author
+                ? __('an unknown user')
+                : $author->get('first_name') . ' ' . $author->get('last_name'));
+
+        $msg = $this->_errors['timestamp'] . ' ' . __(
+            'made by %s at %s.', array(
+                $formatteAuthorName,
+                Widget::Time($existingObject->get('modification_date'))->generate(),
+            )
+        );
+
+        $currentUrl = Administration::instance()->getCurrentPageURL();
+        $overwritelink = Widget::Anchor(
+            __('Replace changes?'),
+            $currentUrl,
+            __('Overwrite'),
+            'js-tv-overwrite',
+            null,
+            array(
+                'data-action' => General::sanitize($action)
+            )
+        );
+        $ignorelink = Widget::Anchor(
+            __('View changes.'),
+            $currentUrl,
+            __('View the updated entry')
+        );
+        $actions = $overwritelink->generate() . ' ' . $ignorelink->generate();
+        
+        $this->pageAlert("$msg $actions", Alert::ERROR);
+    }
 }

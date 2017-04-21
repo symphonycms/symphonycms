@@ -4,7 +4,7 @@
     {
         public static function getVersion()
         {
-            return '2.7.0.beta2';
+            return '2.7.0.beta3';
         }
 
         public static function getReleaseNotes()
@@ -25,6 +25,24 @@
                 ');
             } catch (Exception $ex) {
                 // ignore
+            }
+
+            if (version_compare(Symphony::Configuration()->get('version', 'symphony'), '2.7.0.beta3', '<')) {
+                // Add dates and author columns
+                $now = DateTimeObj::get('Y-m-d H:i:s');
+                $nowGMT = DateTimeObj::getGMT('Y-m-d H:i:s');
+                Symphony::Database()->query("
+                    ALTER TABLE `tbl_sections`
+                        ADD COLUMN `author_id` int(11) unsigned NOT NULL DEFAULT 1,
+                        ADD COLUMN `creation_date` datetime NOT NULL DEFAULT '$now',
+                        ADD COLUMN `creation_date_gmt` datetime NOT NULL DEFAULT '$nowGMT',
+                        ADD COLUMN `modification_date` datetime NOT NULL DEFAULT '$now',
+                        ADD COLUMN `modification_date_gmt` datetime NOT NULL DEFAULT '$nowGMT',
+                        ADD KEY `creation_date` (`creation_date`),
+                        ADD KEY `creation_date_gmt` (`creation_date_gmt`),
+                        ADD KEY `modification_date` (`modification_date`),
+                        ADD KEY `modification_date_gmt` (`modification_date_gmt`);
+                ");
             }
 
             // Update the version information
