@@ -1200,6 +1200,10 @@ class contentPublish extends AdministrationPage
             $entry->set('modification_date', $existingEntry->get('modification_date'));
             $entry->setDataFromPost($fields, $errors, true);
 
+            $timestamp = isset($_POST['action']['timestamp'])
+                ? $_POST['action']['timestamp']
+                : $entry->get('modification_date');
+
             // Editing an entry, so need to create some various objects
         } else {
             $entry = $existingEntry;
@@ -1208,6 +1212,8 @@ class contentPublish extends AdministrationPage
             if (!$section) {
                 $section = SectionManager::fetch($entry->get('section_id'));
             }
+
+            $timestamp = $entry->get('modification_date');
         }
 
         /**
@@ -1365,6 +1371,9 @@ class contentPublish extends AdministrationPage
             $button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this entry'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this entry?')));
             $div->appendChild($button);
 
+            $div->appendChild(Widget::Input('action[timestamp]', $timestamp, 'hidden'));
+            $div->appendChild(Widget::Input('action[ignore-timestamp]', 'yes', 'checkbox', array('class' => 'irrelevant')));
+
             $this->Form->appendChild($div);
 
             // Create a Drawer for Associated Sections
@@ -1376,7 +1385,7 @@ class contentPublish extends AdministrationPage
     {
         $entry_id = intval($this->_context['entry_id']);
 
-        if (is_array($_POST['action']) && (array_key_exists('save', $_POST['action']) || array_key_exists("done", $_POST['action']))) {
+        if (is_array($_POST['action']) && (array_key_exists('save', $_POST['action']) || array_key_exists('done', $_POST['action']))) {
             if (!$ret = EntryManager::fetch($entry_id)) {
                 Administration::instance()->throwCustomError(
                     __('The Entry, %s, could not be found.', array($entry_id)),
@@ -1392,12 +1401,18 @@ class contentPublish extends AdministrationPage
             $post = General::getPostData();
             $fields = $post['fields'];
 
-            // Initial checks to see if the Entry is ok
-            if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
+            $canProceed = $this->validateTimestamp($entry_id, true);
+
+            // Timestamp validation
+            if (!$canProceed) {
+                $this->addTimestampValidationPageAlert($this->_errors['timestamp'], $entry, 'save');
+
+                // Initial checks to see if the Entry is ok
+            } else if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
                 $this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
                 // Secondary checks, this will actually process the data and attempt to save
-            } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
+            } else if (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
                 foreach ($errors as $field_id => $message) {
                     $this->pageAlert($message, Alert::ERROR);
                 }
@@ -1456,22 +1471,31 @@ class contentPublish extends AdministrationPage
             $checked = array($entry_id);
             Symphony::ExtensionManager()->notifyMembers('EntryPreDelete', '/publish/', array('entry_id' => &$checked));
 
-            EntryManager::delete($checked);
+            $canProceed = $this->validateTimestamp($entry_id);
 
-            /**
-             * After the deletion of entries, this delegate provides an array of Entry ID's
-             * that were deleted.
-             *
-             * @since Symphony 2.3
-             * @delegate EntryPostDelete
-             * @param string $context
-             * '/publish/'
-             * @param array $entry_id
-             *  An array of Entry ID's that were deleted.
-             */
-            Symphony::ExtensionManager()->notifyMembers('EntryPostDelete', '/publish/', array('entry_id' => $checked));
+            if ($canProceed) {
+                EntryManager::delete($checked);
 
-            redirect(SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/');
+                /**
+                 * After the deletion of entries, this delegate provides an array of Entry ID's
+                 * that were deleted.
+                 *
+                 * @since Symphony 2.3
+                 * @delegate EntryPostDelete
+                 * @param string $context
+                 * '/publish/'
+                 * @param array $entry_id
+                 *  An array of Entry ID's that were deleted.
+                 */
+                Symphony::ExtensionManager()->notifyMembers('EntryPostDelete', '/publish/', array('entry_id' => $checked));
+
+                redirect(SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/');
+            } else {
+                if (is_array($ret = EntryManager::fetch($entry_id))) {
+                    $entry = $ret[0];
+                    $this->addTimestampValidationPageAlert($this->_errors['timestamp'], $entry, 'delete');
+                }
+            }
         }
     }
 
@@ -1877,5 +1901,36 @@ class contentPublish extends AdministrationPage
         $filter_querystring = preg_replace("/&amp;$/", '', $filter_querystring);
 
         return $filter_querystring ? '?' . $filter_querystring : null;
+    }
+
+    /**
+     * Given $_POST values, this function will validate the current timestamp
+     * and set the proper error messages.
+     *
+     * @since Symphony 2.7.0
+     * @param int $entry_id
+     *  The entry id to validate
+     * @return boolean
+     *  True if the timestamp is valid
+     */
+    protected function validateTimestamp($entry_id, $checkMissing = false)
+    {
+        if (!isset($_POST['action']['ignore-timestamp'])) {
+            if ($checkMissing && !isset($_POST['action']['timestamp'])) {
+                if (isset($this->_errors) && is_array($this->_errors)) {
+                    $this->_errors['timestamp'] = __('The entry could not be saved due to conflicting changes');
+                }
+                return false;
+            } elseif (isset($_POST['action']['timestamp'])) {
+                $tv = new TimestampValidator('entries');
+                if (!$tv->check($entry_id, $_POST['action']['timestamp'])) {
+                    if (isset($this->_errors) && is_array($this->_errors)) {
+                        $this->_errors['timestamp'] = __('The entry could not be saved due to conflicting changes');
+                    }
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

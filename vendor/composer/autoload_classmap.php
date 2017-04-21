@@ -97,6 +97,7 @@ return array(
     'TextFormatter' => $baseDir . '/symphony/lib/toolkit/class.textformatter.php',
     'TextPage' => $baseDir . '/symphony/lib/toolkit/class.textpage.php',
     'TextformatterManager' => $baseDir . '/symphony/lib/toolkit/class.textformattermanager.php',
+    'TimestampValidator' => $baseDir . '/symphony/lib/toolkit/class.timestampvalidator.php',
     'Throwable' => $baseDir . '/symphony/lib/core/class.throwable.php',
     'Updater' => $baseDir . '/install/lib/class.updater.php',
     'UpdaterPage' => $baseDir . '/install/lib/class.updaterpage.php',

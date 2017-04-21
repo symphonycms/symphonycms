@@ -229,8 +229,17 @@ CREATE TABLE `tbl_sections` (
   `hidden` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'no',
   `filter` enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
   `navigation_group` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Content',
+  `author_id` int(11) unsigned NOT NULL DEFAULT 1,
+  `creation_date` datetime NOT NULL,
+  `creation_date_gmt` datetime NOT NULL,
+  `modification_date` datetime NOT NULL,
+  `modification_date_gmt` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `handle` (`handle`)
+  UNIQUE KEY `handle` (`handle`),
+  KEY `creation_date` (`creation_date`),
+  KEY `creation_date_gmt` (`creation_date_gmt`),
+  KEY `modification_date` (`modification_date`),
+  KEY `modification_date_gmt` (`modification_date_gmt`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- *** STRUCTURE: `tbl_sections_association` ***
