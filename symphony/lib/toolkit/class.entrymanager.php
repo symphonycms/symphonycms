@@ -369,6 +369,7 @@ class EntryManager
     public static function fetch($entry_id = null, $section_id = null, $limit = null, $start = null, $where = null, $joins = null, $group = false, $buildentries = true, $element_names = null, $enable_sort = true)
     {
         $sort = null;
+        $select = null;
 
         if (!$entry_id && !$section_id) {
             return false;
