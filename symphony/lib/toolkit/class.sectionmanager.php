@@ -37,7 +37,7 @@ class SectionManager
         $defaults = array();
         $defaults['creation_date'] = $defaults['modification_date'] = DateTimeObj::get('Y-m-d H:i:s');
         $defaults['creation_date_gmt'] = $defaults['modification_date_gmt'] = DateTimeObj::getGMT('Y-m-d H:i:s');
-        $defaults['author_id'] = '1';
+        $defaults['author_id'] = 1;
         $settings = array_replace($defaults, $settings);
         if (!Symphony::Database()->insert($settings, 'tbl_sections')) {
             return false;
