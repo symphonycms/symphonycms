@@ -189,12 +189,19 @@ class Author
             ));
         }
 
+        // Include validators
+        include TOOLKIT . '/util.validators.php';
+
         // Check that Email is provided
         if (is_null($this->get('email'))) {
             $errors['email'] = __('E-mail address is required');
 
             // Check Email is valid
-        } elseif (!General::validateString($this->get('email'), $validators['email'])) {
+        } elseif (isset($validators['email']) && !General::validateString($this->get('email'), $validators['email'])) {
+            $errors['email'] = __('E-mail address entered is invalid');
+
+            // Check Email is valid, fallback when no validator found
+        } elseif (!isset($validators['email']) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = __('E-mail address entered is invalid');
 
             // Check that if an existing Author changes their email address that
