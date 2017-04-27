@@ -1193,12 +1193,12 @@ class Field
             array(
                 'filter' => 'sql: NOT NULL',
                 'title' => 'is not empty',
-                'help' => __('Find entries where any value is selected.')
+                'help' => __('Find entries with a non-empty value.')
             ),
             array(
                 'filter' => 'sql: NULL',
                 'title' => 'is empty',
-                'help' => __('Find entries where no value is selected.')
+                'help' => __('Find entries with an empty value.')
             ),
             array(
                 'title' => 'contains',
