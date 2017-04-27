@@ -359,10 +359,10 @@ abstract class EmailGateway
      * @param boolean $validate_attachment_errors
      * @return void
      */
-    public function setIgnoreAttachmentErrors($validate_attachment_errors)
+    public function setValidateAttachmentErrors($validate_attachment_errors)
     {
         if (!is_bool($validate_attachment_errors)) {
-            throw new EmailGatewayException(__('%s accepts boolean values only.', array('<code>setIgnoreAttachmentErrors</code>')));
+            throw new EmailGatewayException(__('%s accepts boolean values only.', array('<code>setValidateAttachmentErrors</code>')));
         } else {
             $this->_validate_attachment_errors = $validate_attachment_errors;
         }
