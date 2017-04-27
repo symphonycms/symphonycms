@@ -57,7 +57,7 @@ abstract class EmailGateway
     protected $_text_plain;
     protected $_text_html;
     protected $_attachments = array();
-    protected $_ignore_attachment_errors = false;
+    protected $_validate_attachment_errors = true;
     protected $_reply_to_name;
     protected $_reply_to_email_address;
     protected $_header_fields = array();
@@ -350,21 +350,21 @@ abstract class EmailGateway
     }
 
     /**
-     * Sets the property `$_ignore_attachment_errors`
+     * Sets the property `$_validate_attachment_errors`
      *
-     * This property is false by default, so sending will break if any attachment
-     * can not be loaded; if it is true, attachment errors error will be ignored.
+     * This property is true by default, so sending will break if any attachment
+     * can not be loaded; if it is false, attachment errors error will be ignored.
      *
      * @since Symphony 2.7
-     * @param boolean $ignore_attachment_errors
+     * @param boolean $validate_attachment_errors
      * @return void
      */
-    public function setIgnoreAttachmentErrors($ignore_attachment_errors)
+    public function setIgnoreAttachmentErrors($validate_attachment_errors)
     {
-        if (!is_bool($ignore_attachment_errors)) {
+        if (!is_bool($validate_attachment_errors)) {
             throw new EmailGatewayException(__('%s accepts boolean values only.', array('<code>setIgnoreAttachmentErrors</code>')));
         } else {
-            $this->_ignore_attachment_errors = $ignore_attachment_errors;
+            $this->_validate_attachment_errors = $validate_attachment_errors;
         }
     }
 
@@ -631,7 +631,7 @@ abstract class EmailGateway
                      . $this->contentInfoString($file['mime-type'], $file['file'], $file['filename'], $file['charset'])
                      . EmailHelper::base64ContentTransferEncode($file_content);
             } else {
-                if ($this->_ignore_attachment_errors === false) {
+                if ($this->_validate_attachment_errors) {
                     if (!$tmp_file === false) {
                         $filename = $original_filename;
                     } else {
