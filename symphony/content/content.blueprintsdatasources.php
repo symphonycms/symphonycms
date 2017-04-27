@@ -65,6 +65,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         }
 
         $providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::DATASOURCE);
+        $canonical_link = null;
         $isEditing = false;
         $about = $handle = null;
         $fields = array(
@@ -105,6 +106,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             $handle = $this->_context[1];
             $existing = DatasourceManager::create($handle, array(), false);
             $order = isset($existing->dsParamORDER) ? stripslashes($existing->dsParamORDER) : 'asc';
+            $canonical_link = '/blueprints/datasources/edit/' . $handle . '/';
 
             if (!$existing->allowEditorToParse()) {
                 redirect(SYMPHONY_URL . '/blueprints/datasources/info/' . $handle . '/');
@@ -199,6 +201,12 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $this->setPageType('form');
         $this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($name, __('Data Sources'), __('Symphony'))));
+        if ($canonical_link) {
+            $this->addElementToHead(new XMLElement('link', null, array(
+                'rel' => 'canonical',
+                'href' => SYMPHONY_URL . $canonical_link,
+            )));
+        }
         $this->appendSubheading(($isEditing ? $name : __('Untitled')));
         $this->insertBreadcrumbs(array(
             Widget::Anchor(__('Data Sources'), SYMPHONY_URL . '/blueprints/datasources/'),

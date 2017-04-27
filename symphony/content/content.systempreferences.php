@@ -20,7 +20,10 @@ class contentSystemPreferences extends AdministrationPage
     {
         $this->setPageType('form');
         $this->setTitle(__('%1$s &ndash; %2$s', array(__('Preferences'), __('Symphony'))));
-
+        $this->addElementToHead(new XMLElement('link', null, array(
+            'rel' => 'canonical',
+            'href' => SYMPHONY_URL . '/system/preferences/',
+        )));
         $this->appendSubheading(__('Preferences'));
 
         $bIsWritable = true;
