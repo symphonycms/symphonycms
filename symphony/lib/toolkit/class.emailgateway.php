@@ -57,6 +57,7 @@ abstract class EmailGateway
     protected $_text_plain;
     protected $_text_html;
     protected $_attachments = array();
+    protected $_validate_attachment_errors = true;
     protected $_reply_to_name;
     protected $_reply_to_email_address;
     protected $_header_fields = array();
@@ -349,6 +350,25 @@ abstract class EmailGateway
     }
 
     /**
+     * Sets the property `$_validate_attachment_errors`
+     *
+     * This property is true by default, so sending will break if any attachment
+     * can not be loaded; if it is false, attachment errors error will be ignored.
+     *
+     * @since Symphony 2.7
+     * @param boolean $validate_attachment_errors
+     * @return void
+     */
+    public function setValidateAttachmentErrors($validate_attachment_errors)
+    {
+        if (!is_bool($validate_attachment_errors)) {
+            throw new EmailGatewayException(__('%s accepts boolean values only.', array('<code>setValidateAttachmentErrors</code>')));
+        } else {
+            $this->_validate_attachment_errors = $validate_attachment_errors;
+        }
+    }
+
+    /**
      * @todo Document this function
      * @throws EmailGatewayException
      * @param string $encoding
@@ -506,28 +526,29 @@ abstract class EmailGateway
      */
     protected function prepareMessageBody()
     {
-        if (!empty($this->_attachments)) {
+        $attachments = $this->getSectionAttachments();
+        if ($attachments) {
             $this->appendHeaderFields($this->contentInfoArray('multipart/mixed'));
             if (!empty($this->_text_plain) && !empty($this->_text_html)) {
                 $this->_body = $this->boundaryDelimiterLine('multipart/mixed')
                             . $this->contentInfoString('multipart/alternative')
                             . $this->getSectionMultipartAlternative()
-                            . $this->getSectionAttachments()
+                            . $attachments
                 ;
             } elseif (!empty($this->_text_plain)) {
                 $this->_body = $this->boundaryDelimiterLine('multipart/mixed')
                             . $this->contentInfoString('text/plain')
                             . $this->getSectionTextPlain()
-                            . $this->getSectionAttachments()
+                            . $attachments
                 ;
             } elseif (!empty($this->_text_html)) {
                 $this->_body = $this->boundaryDelimiterLine('multipart/mixed')
                             . $this->contentInfoString('text/html')
                             . $this->getSectionTextHtml()
-                            . $this->getSectionAttachments()
+                            . $attachments
                 ;
             } else {
-                $this->_body = $this->getSectionAttachments();
+                $this->_body = $attachments;
             }
             $this->_body .= $this->finalBoundaryDelimiterLine('multipart/mixed');
         } elseif (!empty($this->_text_plain) && !empty($this->_text_html)) {
@@ -610,13 +631,15 @@ abstract class EmailGateway
                      . $this->contentInfoString($file['mime-type'], $file['file'], $file['filename'], $file['charset'])
                      . EmailHelper::base64ContentTransferEncode($file_content);
             } else {
-                if (!$tmp_file === false) {
-                    $filename = $original_filename;
-                } else {
-                    $filename = $file['file'];
-                }
+                if ($this->_validate_attachment_errors) {
+                    if (!$tmp_file === false) {
+                        $filename = $original_filename;
+                    } else {
+                        $filename = $file['file'];
+                    }
 
-                throw new EmailGatewayException(__('The content of the file `%s` could not be loaded.', array($filename)));
+                    throw new EmailGatewayException(__('The content of the file `%s` could not be loaded.', array($filename)));
+                }
             }
 
             if (!$tmp_file === false) {
