@@ -628,11 +628,18 @@ class AdministrationPage extends HTMLPage
 
                 // Add prefixes to all context values by making the
                 // class be {key}-{value}. #1397 ^BA
-            } elseif (!is_numeric($key) && isset($value)) {
-                $value = str_replace('_', '-', $key) . '-'. $value;
+            } else if (!is_numeric($key) && isset($value)) {
+                // Skip arrays
+                if (is_array($value)) {
+                    $value = null;
+                } else {
+                    $value = str_replace('_', '-', $key) . '-'. $value;
+                }
             }
 
-            $body_class .= trim($value) . ' ';
+            if ($value !== null) {
+                $body_class .= trim($value) . ' ';
+            }
         }
 
         $classes = array_merge(explode(' ', trim($body_class)), explode(' ', trim($this->_body_class)));
