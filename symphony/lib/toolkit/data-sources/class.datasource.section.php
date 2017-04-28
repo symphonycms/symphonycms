@@ -571,6 +571,8 @@ class SectionDatasource extends Datasource
             'filters' => $this->dsParamFILTERS
         ));
 
+        $entries_per_page = ($this->dsParamPAGINATERESULTS === 'yes' && isset($this->dsParamLIMIT) && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']);
+
         if (($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || $this->dsParamSTARTPAGE == '0') {
             if ($this->dsParamREDIRECTONEMPTY === 'yes') {
                 throw new FrontendPageNotFoundException;
@@ -581,7 +583,7 @@ class SectionDatasource extends Datasource
             $result->prependChild($sectioninfo);
 
             if ($include_pagination_element) {
-                $pagination_element = General::buildPaginationElement();
+                $pagination_element = General::buildPaginationElement(0, 0, $entries_per_page);
 
                 if ($pagination_element instanceof XMLElement && $result instanceof XMLElement) {
                     $result->prependChild($pagination_element);
@@ -592,12 +594,10 @@ class SectionDatasource extends Datasource
                 $result->appendChild($sectioninfo);
 
                 if ($include_pagination_element) {
-                    $t = ($this->dsParamPAGINATERESULTS === 'yes' && isset($this->dsParamLIMIT) && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']);
-
                     $pagination_element = General::buildPaginationElement(
                         $entries['total-entries'],
                         $entries['total-pages'],
-                        $t,
+                        $entries_per_page,
                         ($this->dsParamPAGINATERESULTS === 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1)
                     );
 
