@@ -273,6 +273,45 @@ class Datasource
     }
 
     /**
+     * Construct an XML fragment that describes a pagination structure.
+     * Do not call as a static function, since this is only temporary.
+     *
+     * @since Symphony 2.7.0
+     * @param array $infos (optional)
+     * @param integer $infos.$total-entries (optional)
+     *  the total number of entries that this structure is paginating. this
+     *  defaults to 0.
+     * @param integer $infos.$total-pages (optional)
+     *  the total number of pages within the pagination structure. this defaults
+     *  to 0.
+     * @param integer $infos.$entries-per-page (optional)
+     *  the number of entries per page. this defaults to 1.
+     * @param integer $infos.$current-page (optional)
+     *  the current page within the total number of pages within this pagination
+     *  structure. this defaults to 1.
+     * @return XMLElement
+     *  the constructed XML fragment.
+     */
+    public static function buildPaginationElement(array $infos = array())
+    {
+        $defaults = array(
+            'total-entries' => 0,
+            'total-pages' => 0,
+            'entries-per-page' => 1,
+            'current-page' => 1
+        );
+        $infos = array_replace($defaults, $infos);
+
+        $pageinfo = new XMLElement('pagination');
+
+        foreach ($defaults as $key => $_) {
+            $pageinfo->setAttribute($key, $infos[$key]);
+        }
+
+        return $pageinfo;
+    }
+
+    /**
      * If the datasource has been negated this function calls `Datasource::__negateResult`
      * which appends an XMLElement to the current root element.
      *

@@ -582,7 +582,9 @@ class SectionDatasource extends Datasource
             $result->prependChild($sectioninfo);
 
             if ($include_pagination_element) {
-                $pagination_element = General::buildPaginationElement(0, 0, $entries_per_page);
+                $pagination_element = $this->buildPaginationElement(array(
+                    'entries-per-page' => $entries_per_page
+                ));
 
                 if ($pagination_element instanceof XMLElement && $result instanceof XMLElement) {
                     $result->prependChild($pagination_element);
@@ -593,12 +595,9 @@ class SectionDatasource extends Datasource
                 $result->appendChild($sectioninfo);
 
                 if ($include_pagination_element) {
-                    $pagination_element = General::buildPaginationElement(
-                        $entries['total-entries'],
-                        $entries['total-pages'],
-                        $entries_per_page,
-                        ($this->dsParamPAGINATERESULTS === 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1)
-                    );
+                    $entries['entries-per-page'] = $entries_per_page;
+                    $entries['current-page'] = $this->dsParamPAGINATERESULTS === 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1;
+                    $pagination_element = $this->buildPaginationElement($entries);
 
                     if ($pagination_element instanceof XMLElement && $result instanceof XMLElement) {
                         $result->prependChild($pagination_element);
