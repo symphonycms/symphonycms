@@ -984,6 +984,7 @@ class General
     /**
      * Checks that the file and it's folder are readable and writable.
      *
+     * @deprecated @since Symphony 2.7.0
      * @since Symphony 2.6.3
      * @return boolean
      */
@@ -1000,6 +1001,53 @@ class General
         }
 
         return true;
+    }
+
+    /**
+     * Checks that the file is readable
+     *
+     * @since Symphony 2.7.0
+     * @return boolean
+     */
+    public static function checkFileReadable($file)
+    {
+        clearstatcache();
+        // Reading a file requires that is exists and can be read
+        return @file_exists($file) && @is_readable($file);
+    }
+
+    /**
+     * Checks that the file is writable
+     *
+     * @since Symphony 2.7.0
+     * @return boolean
+     */
+    public static function checkFileWriteable($file)
+    {
+        clearstatcache();
+        if (@file_exists($file)) {
+            // Writing to an existing file does not require write
+            // permissions on the directory.
+            return @is_writable($file);
+        }
+        $dir = dirname($file);
+        // Creating a file requires write permissions on the directory.
+        return @file_exists($dir) && @is_writable($dir);
+    }
+
+    /**
+     * Checks that the file is writable
+     *
+     * @since Symphony 2.7.0
+     * @return boolean
+     */
+    public static function checkFileDeleteable($file)
+    {
+        clearstatcache();
+        $dir = dirname($file);
+        // Deleting a file requires write permissions on the directory.
+        // It does not requires write permissions on the file
+        return @file_exists($dir) && @is_writable($dir);
     }
 
     /**
