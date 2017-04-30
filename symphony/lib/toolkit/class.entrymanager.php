@@ -408,13 +408,13 @@ class EntryManager
         // Handle when the sort field is an actual Field
         } elseif (self::$_fetchSortField && $field = FieldManager::fetch(self::$_fetchSortField)) {
             if ($field->isSortable()) {
-                $field->buildSortingSQL($joins, $where, $sort, self::$_fetchSortDirection, $select);
+                $field->buildSortingSQL($joins, $where, $sort, self::$_fetchSortDirection);
             }
 
         // Handle if the section has a default sorting field
         } elseif ($section->getSortingField() && $field = FieldManager::fetch($section->getSortingField())) {
             if ($field->isSortable()) {
-                $field->buildSortingSQL($joins, $where, $sort, $section->getSortingOrder(), $select);
+                $field->buildSortingSQL($joins, $where, $sort, $section->getSortingOrder());
             }
 
         // No sort specified, so just sort on system id
@@ -434,7 +434,6 @@ class EntryManager
             SELECT %s`e`.`id`, `e`.section_id, `e`.`author_id`,
                 `e`.`creation_date` AS `creation_date`,
                 `e`.`modification_date` AS `modification_date`
-                %s
             FROM `tbl_entries` AS `e`
             %s
             WHERE 1
@@ -445,7 +444,6 @@ class EntryManager
             %s
             ",
             $group ? 'DISTINCT ' : '',
-            $select ? ', ' . $select : '',
             $joins,
             $entry_id ? "AND `e`.`id` IN ('".implode("', '", $entry_id)."') " : '',
             $section_id ? sprintf("AND `e`.`section_id` = %d", $section_id) : '',
