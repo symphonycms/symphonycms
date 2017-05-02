@@ -806,7 +806,9 @@ class AdministrationPage extends HTMLPage
                 continue;
             }
 
-            if ($this->doesAuthorHaveAccess($n['limit'])) {
+            $item_limit = isset($n['limit']) ? $n['limit'] : null;
+
+            if ($this->doesAuthorHaveAccess($item_limit)) {
                 $xGroup = new XMLElement('li', General::sanitize($n['name']), array('role' => 'presentation'));
 
                 if (isset($n['class']) && trim($n['name']) !== '') {
@@ -823,7 +825,9 @@ class AdministrationPage extends HTMLPage
                             continue;
                         }
 
-                        if ($this->doesAuthorHaveAccess($c['limit'])) {
+                        $child_item_limit = isset($c['limit']) ? $c['limit'] : null;
+
+                        if ($this->doesAuthorHaveAccess($child_item_limit)) {
                             $xChild = new XMLElement('li');
                             $xChild->setAttribute('role', 'menuitem');
                             $linkChild = Widget::Anchor(General::sanitize($c['name']), SYMPHONY_URL . $c['link']);
