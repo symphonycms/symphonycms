@@ -1439,6 +1439,9 @@ class General
         );
 
         $last = strtolower($file_size[strlen($file_size)-1]);
+
+        $file_size = (int) $file_size;
+
         switch ($last) {
             case 'g':
                 $file_size *= 1024;
