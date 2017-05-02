@@ -403,7 +403,7 @@ class Widget
                     $th->setAttribute('scope', $col[1]);
                 }
 
-                if (is_array($col[2]) && !empty($col[2])) {
+                if (!empty($col[2]) && is_array($col[2])) {
                     $th->setAttributeArray($col[2]);
                 }
 
@@ -710,7 +710,7 @@ class Widget
      */
     private static function __SelectBuildOption($option)
     {
-        @list($value, $selected, $desc, $class, $id, $attributes) = $option;
+        list($value, $selected, $desc, $class, $id, $attributes) = array_pad($option, 6, null);
 
         if (!$desc) {
             $desc = $value;
@@ -871,7 +871,7 @@ class Widget
             if ($time === true) {
                 $separator = DateTimeObj::getSetting('datetime_separator');
                 $time = DateTimeObj::convertTimeToMoment(DateTimeObj::getSetting('time_format'));
-        
+
                 $calendar->setAttribute('data-calendar', 'datetime');
                 $calendar->setAttribute('data-format', $date . $separator . $time);
             } else {
