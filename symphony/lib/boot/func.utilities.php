@@ -211,7 +211,7 @@ function cleanup_session_cookies()
 function is_session_empty()
 {
     $session_is_empty = true;
-    if (is_array($_SESSION)) {
+    if (isset($_SESSION) && is_array($_SESSION)) {
         foreach ($_SESSION as $contents) {
             if (!empty($contents)) {
                 $session_is_empty = false;
