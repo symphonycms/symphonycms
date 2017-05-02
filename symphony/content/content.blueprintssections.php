@@ -14,9 +14,8 @@ class contentBlueprintsSections extends AdministrationPage
 
     public function build(array $context = array())
     {
-        $section_id = $context[1];
-
-        if (isset($section_id)) {
+        if (isset($context[1])) {
+            $section_id = $context[1];
             $context['associations'] = array(
                 'parent' => SectionManager::fetchParentAssociations($section_id),
                 'child' => SectionManager::fetchChildAssociations($section_id)
