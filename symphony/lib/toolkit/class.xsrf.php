@@ -23,7 +23,11 @@ class XSRF
      */
     public static function getSessionToken()
     {
-        $token = $_SESSION[__SYM_COOKIE_PREFIX__]['xsrf-token'];
+        $token = null;
+
+        if (isset($_SESSION[__SYM_COOKIE_PREFIX__]['xsrf-token'])) {
+            $token = $_SESSION[__SYM_COOKIE_PREFIX__]['xsrf-token'];
+        }
 
         if (is_array($token)) {
             $token = key($token);
