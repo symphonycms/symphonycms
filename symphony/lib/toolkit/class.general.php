@@ -1022,7 +1022,7 @@ class General
      * @since Symphony 2.7.0
      * @return boolean
      */
-    public static function checkFileWriteable($file)
+    public static function checkFileWritable($file)
     {
         clearstatcache();
         if (@file_exists($file)) {
@@ -1036,17 +1036,17 @@ class General
     }
 
     /**
-     * Checks that the file is writable
+     * Checks that the file is deletable
      *
      * @since Symphony 2.7.0
      * @return boolean
      */
-    public static function checkFileDeleteable($file)
+    public static function checkFileDeletable($file)
     {
         clearstatcache();
         $dir = dirname($file);
         // Deleting a file requires write permissions on the directory.
-        // It does not requires write permissions on the file
+        // It does not require write permissions on the file
         return @file_exists($dir) && @is_writable($dir);
     }
 
