@@ -651,12 +651,12 @@ class FieldTagList extends Field implements ExportableField, ImportableField
             ),
             array(
                 'filter' => 'regexp: ',
-                'title' => 'regexp',
+                'title' => 'contains',
                 'help' => __('Find entries where the value matches the regex.')
             ),
             array(
                 'filter' => 'not-regexp: ',
-                'title' => 'is not regexp',
+                'title' => 'does not contain',
                 'help' => __('Find entries where the value does not match the regex.')
             )
         );
@@ -668,26 +668,8 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
         if (self::isFilterRegex($data[0])) {
             $this->buildRegexSQL($data[0], array('value', 'handle'), $joins, $where);
-        } else if (preg_match('/^sql:\s*/', $data[0], $matches)) {
-            $data = trim(array_pop(explode(':', $data[0], 2)));
-
-            if (strpos($data, "NOT NULL") !== false) {
-
-                // Check for NOT NULL (ie. Entries that have any value)
-                $joins .= " LEFT JOIN
-                                `tbl_entries_data_{$field_id}` AS `t{$field_id}`
-                            ON (`e`.`id` = `t{$field_id}`.entry_id)";
-                $where .= " AND `t{$field_id}`.value IS NOT NULL ";
-
-            } else if (strpos($data, "NULL") !== false) {
-
-                // Check for NULL (ie. Entries that have no value)
-                $joins .= " LEFT JOIN
-                                `tbl_entries_data_{$field_id}` AS `t{$field_id}`
-                            ON (`e`.`id` = `t{$field_id}`.entry_id)";
-                $where .= " AND `t{$field_id}`.value IS NULL ";
-
-            }
+        } else if (self::isFilterSQL($data[0])) {
+            $this->buildFilterSQL($data[0], array('value', 'handle'), $joins, $where);
         } else {
             $negation = false;
             $null = false;
