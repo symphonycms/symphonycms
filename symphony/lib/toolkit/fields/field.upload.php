@@ -57,17 +57,27 @@ class FieldUpload extends Field implements ExportableField, ImportableField
                 'help' => __('Find files that are an exact match for the given string.')
             ),
             array(
+                'filter' => 'sql: NOT NULL',
+                'title' => 'is not empty',
+                'help' => __('Find entries where a file has been saved.')
+            ),
+            array(
+                'filter' => 'sql: NULL',
+                'title' => 'is empty',
+                'help' => __('Find entries where no file has been saved.')
+            ),
+            array(
                 'title' => 'contains',
                 'filter' => 'regexp: ',
                 'help' => __('Find files that match the given <a href="%s">MySQL regular expressions</a>.', array(
-                    'http://dev.mysql.com/doc/mysql/en/regexp.html'
+                    'https://dev.mysql.com/doc/mysql/en/regexp.html'
                 ))
             ),
             array(
                 'title' => 'does not contain',
                 'filter' => 'not-regexp: ',
                 'help' => __('Find files that do not match the given <a href="%s">MySQL regular expressions</a>.', array(
-                    'http://dev.mysql.com/doc/mysql/en/regexp.html'
+                    'https://dev.mysql.com/doc/mysql/en/regexp.html'
                 ))
             ),
             array(
@@ -728,7 +738,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         if (preg_match('/^mimetype:/', $data[0])) {
             $data[0] = str_replace('mimetype:', '', $data[0]);
             $column = 'mimetype';
-        } elseif (preg_match('/^size:/', $data[0])) {
+        } else if (preg_match('/^size:/', $data[0])) {
             $data[0] = str_replace('size:', '', $data[0]);
             $column = 'size';
         } else {
@@ -737,7 +747,9 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
         if (self::isFilterRegex($data[0])) {
             $this->buildRegexSQL($data[0], array($column), $joins, $where);
-        } elseif ($andOperation) {
+        } else if (self::isFilterSQL($data[0])) {
+            $this->buildFilterSQL($data[0], array($column), $joins, $where);
+        } else if ($andOperation) {
             foreach ($data as $value) {
                 $this->_key++;
                 $value = $this->cleanValue($value);
