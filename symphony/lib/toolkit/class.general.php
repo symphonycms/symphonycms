@@ -1594,7 +1594,7 @@ class General
     /**
      * Construct an XML fragment that describes a pagination structure.
      *
-     * @deprecated @since Symohony 2.7.0. Use DataSource::buildPaginationElement()
+     * @deprecated @since Symphony 2.7.0. Use Datasource::buildPaginationElement()
      * @param integer $total_entries (optional)
      *  the total number of entries that this structure is paginating. this
      *  defaults to 0.
@@ -1609,9 +1609,9 @@ class General
      * @return XMLElement
      *  the constructed XML fragment.
      */
-    public static function buildPaginationElement($total_entries = 0, $total_pages = 0, $entries_per_page = null, $current_page = 1)
+    public static function buildPaginationElement($total_entries = 0, $total_pages = 0, $entries_per_page = 1, $current_page = 1)
     {
-        return DataSource::buildPaginationElement(array(
+        return Datasource::buildPaginationElement(array(
             'total-entries' => $total_entries,
             'total-pages' => $total_pages,
             'entries-per-page' => $entries_per_page,
