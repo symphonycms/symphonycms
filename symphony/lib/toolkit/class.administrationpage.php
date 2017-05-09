@@ -807,7 +807,7 @@ class AdministrationPage extends HTMLPage
             }
 
             if ($this->doesAuthorHaveAccess($n['limit'])) {
-                $xGroup = new XMLElement('li', $n['name'], array('role' => 'presentation'));
+                $xGroup = new XMLElement('li', General::sanitize($n['name']), array('role' => 'presentation'));
 
                 if (isset($n['class']) && trim($n['name']) !== '') {
                     $xGroup->setAttribute('class', $n['class']);
@@ -826,7 +826,7 @@ class AdministrationPage extends HTMLPage
                         if ($this->doesAuthorHaveAccess($c['limit'])) {
                             $xChild = new XMLElement('li');
                             $xChild->setAttribute('role', 'menuitem');
-                            $linkChild = Widget::Anchor($c['name'], SYMPHONY_URL . $c['link']);
+                            $linkChild = Widget::Anchor(General::sanitize($c['name']), SYMPHONY_URL . $c['link']);
                             if (isset($c['target'])) {
                                 $linkChild->setAttribute('target', $c['target']);
                             }
