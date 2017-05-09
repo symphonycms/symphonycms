@@ -379,7 +379,7 @@ class contentPublish extends AdministrationPage
         $section = SectionManager::fetch($section_id);
 
         $this->setPageType('table');
-        $this->setTitle(__('%1$s &ndash; %2$s', array($section->get('name'), __('Symphony'))));
+        $this->setTitle(__('%1$s &ndash; %2$s', array(General::sanitize($section->get('name')), __('Symphony'))));
 
         $filters = array();
         $filter_querystring = $prepopulate_querystring = $where = $joins = null;
@@ -469,7 +469,7 @@ class contentPublish extends AdministrationPage
             array_unshift($subheading_buttons, Widget::Anchor(__('Edit Section'), SYMPHONY_URL . '/blueprints/sections/edit/' . $section_id . '/', __('Edit Section Configuration'), 'button'));
         }
 
-        $this->appendSubheading($section->get('name'), $subheading_buttons);
+        $this->appendSubheading(General::sanitize($section->get('name')), $subheading_buttons);
 
         /**
          * Allows adjustments to be made to the SQL where and joins statements
@@ -960,7 +960,7 @@ class contentPublish extends AdministrationPage
         $section = SectionManager::fetch($section_id);
 
         $this->setPageType('form');
-        $this->setTitle(__('%1$s &ndash; %2$s', array($section->get('name'), __('Symphony'))));
+        $this->setTitle(__('%1$s &ndash; %2$s', array(General::sanitize($section->get('name')), __('Symphony'))));
 
         // Ensure errored entries still maintain any prepopulated values [#2211]
         $this->Form->setAttribute('action', $this->Form->getAttribute('action') . $this->getPrepopulateString());
@@ -986,7 +986,7 @@ class contentPublish extends AdministrationPage
 
         // Build filtered breadcrumb [#1378}
         $this->insertBreadcrumbs(array(
-            Widget::Anchor($section->get('name'), SYMPHONY_URL . '/publish/' . $this->_context['section_handle'] . '/' . $this->getFilterString()),
+            Widget::Anchor(General::sanitize($section->get('name')), SYMPHONY_URL . '/publish/' . $this->_context['section_handle'] . '/' . $this->getFilterString()),
         ));
 
         $this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));
@@ -1297,7 +1297,7 @@ class contentPublish extends AdministrationPage
 
         $this->setPageType('form');
         $this->Form->setAttribute('enctype', 'multipart/form-data');
-        $this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($title, $section->get('name'), __('Symphony'))));
+        $this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($title, General::sanitize($section->get('name')), __('Symphony'))));
 
         $sidebar_fields = $section->fetchFields(null, 'sidebar');
         $main_fields = $section->fetchFields(null, 'main');
@@ -1316,7 +1316,7 @@ class contentPublish extends AdministrationPage
         }
 
         $this->insertBreadcrumbs(array(
-            Widget::Anchor($section->get('name'), SYMPHONY_URL . (isset($filter_link) ? $filter_link : $base)),
+            Widget::Anchor(General::sanitize($section->get('name')), SYMPHONY_URL . (isset($filter_link) ? $filter_link : $base)),
         ));
 
         $this->Form->appendChild(Widget::Input('MAX_FILE_SIZE', Symphony::Configuration()->get('max_upload_size', 'admin'), 'hidden'));

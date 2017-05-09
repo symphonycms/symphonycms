@@ -215,7 +215,7 @@ class contentBlueprintsSections extends AdministrationPage
 
         $sections = SectionManager::fetch(null, 'ASC', 'sortorder');
         $label = Widget::Label(__('Navigation Group'));
-        $label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
+        $label->appendChild(Widget::Input('meta[navigation_group]', (isset($meta['navigation_group']) ? General::sanitize($meta['navigation_group']) : null)));
 
         if (isset($this->_errors['navigation_group'])) {
             $navgroupdiv->appendChild(Widget::Error($label, $this->_errors['navigation_group']));
@@ -232,7 +232,7 @@ class contentBlueprintsSections extends AdministrationPage
                     continue;
                 }
 
-                $ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
+                $ul->appendChild(new XMLElement('li', General::sanitize($s->get('navigation_group'))));
                 $groups[] = $s->get('navigation_group');
             }
 
@@ -381,8 +381,8 @@ class contentBlueprintsSections extends AdministrationPage
         }
 
         $this->setPageType('form');
-        $this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($meta['name'], __('Sections'), __('Symphony'))));
-        $this->appendSubheading($meta['name'],
+        $this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(General::sanitize($meta['name']), __('Sections'), __('Symphony'))));
+        $this->appendSubheading(General::sanitize($meta['name']),
             Widget::Anchor(__('View Entries'), SYMPHONY_URL . '/publish/' . $section->get('handle'), __('View Section Entries'), 'button')
         );
         $this->insertBreadcrumbs(array(
@@ -425,7 +425,7 @@ class contentBlueprintsSections extends AdministrationPage
 
         $sections = SectionManager::fetch(null, 'ASC', 'sortorder');
         $label = Widget::Label(__('Navigation Group'));
-        $label->appendChild(Widget::Input('meta[navigation_group]', $meta['navigation_group']));
+        $label->appendChild(Widget::Input('meta[navigation_group]', General::sanitize($meta['navigation_group'])));
 
         if (isset($this->_errors['navigation_group'])) {
             $navgroupdiv->appendChild(Widget::Error($label, $this->_errors['navigation_group']));
@@ -442,7 +442,7 @@ class contentBlueprintsSections extends AdministrationPage
                     continue;
                 }
 
-                $ul->appendChild(new XMLElement('li', $s->get('navigation_group')));
+                $ul->appendChild(new XMLElement('li', General::sanitize($s->get('navigation_group'))));
                 $groups[] = $s->get('navigation_group');
             }
 
