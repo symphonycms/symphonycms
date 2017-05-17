@@ -325,6 +325,7 @@ class contentBlueprintsSections extends AdministrationPage
         $meta = $section->get();
         $section_id = $meta['id'];
         $types = array();
+        $canonical_link = '/blueprints/sections/edit/' . $section_id . '/';
 
         $formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
@@ -382,6 +383,11 @@ class contentBlueprintsSections extends AdministrationPage
 
         $this->setPageType('form');
         $this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array(General::sanitize($meta['name']), __('Sections'), __('Symphony'))));
+        $this->addElementToHead(new XMLElement('link', null, array(
+            'rel' => 'canonical',
+            'href' => SYMPHONY_URL . $canonical_link,
+        )));
+
         $this->appendSubheading(General::sanitize($meta['name']),
             Widget::Anchor(__('View Entries'), SYMPHONY_URL . '/publish/' . $section->get('handle'), __('View Section Entries'), 'button')
         );

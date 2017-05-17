@@ -1178,6 +1178,7 @@ class contentPublish extends AdministrationPage
         $base = '/publish/'.$this->_context['section_handle'] . '/';
         $new_link = $base . 'new/';
         $filter_link = $base;
+        $canonical_link = $base . 'edit/' . $entry_id . '/';
 
         EntryManager::setFetchSorting('id', 'DESC');
 
@@ -1235,6 +1236,7 @@ class contentPublish extends AdministrationPage
         if (isset($_REQUEST['prepopulate'])) {
             $new_link .= $this->getPrepopulateString();
             $filter_link .= $this->getFilterString();
+            $canonical_link .= $this->getPrepopulateString();
         }
 
         if (isset($this->_context['flag'])) {
@@ -1298,6 +1300,10 @@ class contentPublish extends AdministrationPage
         $this->setPageType('form');
         $this->Form->setAttribute('enctype', 'multipart/form-data');
         $this->setTitle(__('%1$s &ndash; %2$s &ndash; %3$s', array($title, General::sanitize($section->get('name')), __('Symphony'))));
+        $this->addElementToHead(new XMLElement('link', null, array(
+            'rel' => 'canonical',
+            'href' => SYMPHONY_URL . $canonical_link,
+        )));
 
         $sidebar_fields = $section->fetchFields(null, 'sidebar');
         $main_fields = $section->fetchFields(null, 'main');

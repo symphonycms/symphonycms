@@ -208,6 +208,7 @@ class contentSystemAuthors extends AdministrationPage
         $this->setPageType('form');
         $isOwner = false;
         $isEditing = ($this->_context[0] == 'edit');
+        $canonical_link = null;
 
         if (isset($_POST['fields'])) {
             $author = $this->_Author;
@@ -223,6 +224,7 @@ class contentSystemAuthors extends AdministrationPage
                     Page::HTTP_STATUS_NOT_FOUND
                 );
             }
+            $canonical_link = '/system/authors/edit/' . $author_id . '/';
         } else {
             $author = new Author;
         }
@@ -240,6 +242,12 @@ class contentSystemAuthors extends AdministrationPage
         }
 
         $this->setTitle(__(($this->_context[0] == 'new' ? '%2$s &ndash; %3$s' : '%1$s &ndash; %2$s &ndash; %3$s'), array($author->getFullName(), __('Authors'), __('Symphony'))));
+        if ($canonical_link) {
+            $this->addElementToHead(new XMLElement('link', null, array(
+                'rel' => 'canonical',
+                'href' => SYMPHONY_URL . $canonical_link,
+            )));
+        }
         $this->appendSubheading(($this->_context[0] == 'new' ? __('Untitled') : $author->getFullName()));
         $this->insertBreadcrumbs(array(
             Widget::Anchor(__('Authors'), SYMPHONY_URL . '/system/authors/'),

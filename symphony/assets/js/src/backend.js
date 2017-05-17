@@ -68,6 +68,19 @@
 
 		// Render view
 		Symphony.View.render();
+
+		// Update state to canonical url
+		if (window.history.replaceState) {
+			// Let extensions read the window.location, delay change on load
+			$(window).load(function () {
+				$('head > link[rel="canonical"][href]').eq(0).each(function () {
+					var href = $(this).attr('href');
+					if (href) {
+						window.history.replaceState(document.title, null, href);
+					}
+				});
+			});
+		}
 	});
 
 })(window.jQuery, window.Symphony);
