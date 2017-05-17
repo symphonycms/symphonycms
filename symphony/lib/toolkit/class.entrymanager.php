@@ -178,18 +178,26 @@ class EntryManager
 
             $did_lock = false;
             try {
-                $did_lock = Symphony::Database()->query('LOCK TABLES tbl_entries_data_' . $field_id . ' WRITE');
-                Symphony::Database()->delete('tbl_entries_data_' . $field_id, sprintf("
-                    `entry_id` = %d", $entry->get('id')
-                ));
-
+                // Check if we have field data
                 if (!is_array($field) || empty($field)) {
-                    if ($did_lock) {
-                        Symphony::Database()->query('UNLOCK TABLES');
-                    }
                     continue;
                 }
 
+                // Check if table exists
+                $table_name = 'tbl_entries_data_' . General::intval($field_id);
+                if (!Symphony::Database()->tableExists($table_name)) {
+                    continue;
+                }
+
+                // Lock the table for write
+                $did_lock = Symphony::Database()->query("LOCK TABLES `$table_name` WRITE");
+
+                // Delete old data
+                Symphony::Database()->delete($table_name, sprintf("
+                    `entry_id` = %d", $entry->get('id')
+                ));
+
+                // Insert new data
                 $data = array(
                     'entry_id' => $entry->get('id')
                 );
@@ -210,7 +218,7 @@ class EntryManager
                     $fields[$index] = array_merge($data, $field_data);
                 }
 
-                Symphony::Database()->insert($fields, 'tbl_entries_data_' . $field_id);
+                Symphony::Database()->insert($fields, $table_name);
             } catch (Exception $e) {
                 Symphony::Log()->pushExceptionToLog($e, true);
             }
