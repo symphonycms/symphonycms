@@ -19,11 +19,16 @@ class contentSystemExtensions extends AdministrationPage
 
     public function __viewIndex()
     {
+        $canonical_link = '/system/extensions/';
         $this->setPageType('table');
         $this->setTitle(__('%1$s &ndash; %2$s', array(__('Extensions'), __('Symphony'))));
+        $this->addElementToHead(new XMLElement('link', null, array(
+            'rel' => 'canonical',
+            'href' => SYMPHONY_URL . $canonical_link,
+        )));
         $this->appendSubheading(__('Extensions'));
 
-        $this->Form->setAttribute('action', SYMPHONY_URL . '/system/extensions/');
+        $this->Form->setAttribute('action', SYMPHONY_URL . $canonical_link);
 
         Sortable::initialize($this, $extensions, $sort, $order);
 

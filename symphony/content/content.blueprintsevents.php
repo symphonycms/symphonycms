@@ -69,9 +69,10 @@ class contentBlueprintsEvents extends ResourcesPage
         }
 
         $isEditing = ($readonly ? true : false);
-        $fields = array("name"=>null, "filters"=>null);
-        $about = array("name"=>null);
+        $fields = array('name' => null, 'filters' => null);
+        $about = array('name' => null);
         $providers = Symphony::ExtensionManager()->getProvidersOf(iProvider::EVENT);
+        $canonical_link = null;
 
         if (isset($_POST['fields'])) {
             $fields = $_POST['fields'];
@@ -108,6 +109,8 @@ class contentBlueprintsEvents extends ResourcesPage
                     $fields['filters'] = array_map('stripslashes', $existing->eParamFILTERS);
                 }
             }
+
+            $canonical_link = '/blueprints/events/' . $this->_context[0] . '/' . $handle . '/';
         }
 
         // Handle name on edited changes, or from reading an edited datasource
@@ -119,6 +122,12 @@ class contentBlueprintsEvents extends ResourcesPage
 
         $this->setPageType('form');
         $this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($name, __('Events'), __('Symphony'))));
+        if ($canonical_link) {
+            $this->addElementToHead(new XMLElement('link', null, array(
+                'rel' => 'canonical',
+                'href' => SYMPHONY_URL . $canonical_link,
+            )));
+        }
         $this->appendSubheading(($isEditing ? $about['name'] : __('Untitled')));
         $this->insertBreadcrumbs(array(
             Widget::Anchor(__('Events'), SYMPHONY_URL . '/blueprints/events/'),
