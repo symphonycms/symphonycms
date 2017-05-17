@@ -1552,20 +1552,43 @@ class Field
      * @param string $order (optional)
      *  an optional sorting direction. this defaults to ascending. if this
      *  is declared either 'random' or 'rand' then a random sort is applied.
-     * @param  string $select (optional)
-     *  an optional select clause to append. This is needed when sorting on a column
-     *  that is not part of the projection. In MySQL 5.7 strict mode, it is now required to
-     *  add all columns in the ORDER BY clause in the SELECT's projection.
      */
-    public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC', &$select = null)
+    public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
     {
         if (in_array(strtolower($order), array('random', 'rand'))) {
             $sort = 'ORDER BY RAND()';
         } else {
             $joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
             $sort = sprintf('ORDER BY `ed`.`value` %s', $order);
-            $select = '`ed`.`value`';
         }
+    }
+
+    /**
+     * Build the needed SQL clause command to make `buildSortingSQL()` work on
+     * MySQL 5.7 in strict mode, which requires all columns in the ORDER BY
+     * clause to be included in the SELECT's projection.
+     *
+     * If no new projection is needed (like if the order is made via a sub-query),
+     * simpy return null.
+     *
+     * @since Symphony 2.7.0
+     * @see Field::buildSortingSQL()
+     * @param string $sort
+     *  the existing sort component of the sql query, after it has been passed
+     *  to `buildSortingSQL()`
+     * @param string $order (optional)
+     *  an optional sorting direction. this defaults to ascending. Should be the
+     *  same value that was passed to `buildSortingSQL()`
+     * @return string
+     *  an optional select clause to append to the generated SQL query.
+     *  This is needed when sorting on a column that is not part of the projection.
+     */
+    public function buildSortingSelectSQL($sort, $order = 'ASC')
+    {
+        if (in_array(strtolower($order), array('random', 'rand'))) {
+            return null;
+        }
+        return '`ed`.`value`';
     }
 
     /**
