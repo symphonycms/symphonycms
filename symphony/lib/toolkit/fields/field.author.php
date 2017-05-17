@@ -539,7 +539,7 @@ class FieldAuthor extends Field implements ExportableField
         Sorting:
     -------------------------------------------------------------------------*/
 
-    public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC', &$select = null)
+    public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
     {
         if (in_array(strtolower($order), array('random', 'rand'))) {
             $sort = 'ORDER BY RAND()';
@@ -549,8 +549,15 @@ class FieldAuthor extends Field implements ExportableField
                 LEFT OUTER JOIN `tbl_authors` AS `a` ON (ed.author_id = a.id)
             ";
             $sort = sprintf('ORDER BY `a`.`first_name` %1$s, `a`.`last_name` %1$s', $order);
-            $select = '`a`.`first_name`, `a`.`last_name`';
         }
+    }
+
+    public function buildSortingSelectSQL($sort, $order = 'ASC')
+    {
+        if (in_array(strtolower($order), array('random', 'rand'))) {
+            return null;
+        }
+        return '`a`.`first_name`, `a`.`last_name`';
     }
 
     /*-------------------------------------------------------------------------
