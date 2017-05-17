@@ -219,7 +219,7 @@ class contentBlueprintsPages extends AdministrationPage
         $this->setPageType('form');
         $fields = array("title"=>null, "handle"=>null, "parent"=>null, "params"=>null, "type"=>null, "data_sources"=>null);
         $existing = $fields;
-
+        $canonical_link = '/blueprints/pages/';
         $nesting = (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes');
 
         // Verify page exists:
@@ -229,12 +229,15 @@ class contentBlueprintsPages extends AdministrationPage
             }
 
             $existing = PageManager::fetchPageByID($page_id);
+            $canonical_link .= 'edit/' . $page_id . '/';
 
             if (!$existing) {
                 Administration::instance()->errorPageNotFound();
             } else {
                 $existing['type'] = PageManager::fetchPageTypes($page_id);
             }
+        } else {
+            $canonical_link .= 'new/';
         }
 
         // Status message:
@@ -282,6 +285,7 @@ class contentBlueprintsPages extends AdministrationPage
             $fields['events'] = preg_split('/,/i', $fields['events'], -1, PREG_SPLIT_NO_EMPTY);
         } elseif (isset($_REQUEST['parent']) && is_numeric($_REQUEST['parent'])) {
             $fields['parent'] = $_REQUEST['parent'];
+            $canonical_link .= '?parent=' . urlencode($_REQUEST['parent']);
         }
 
         $title = $fields['title'];
@@ -298,6 +302,10 @@ class contentBlueprintsPages extends AdministrationPage
                 __('Symphony')
             )
         ));
+        $this->addElementToHead(new XMLElement('link', null, array(
+            'rel' => 'canonical',
+            'href' => SYMPHONY_URL . $canonical_link,
+        )));
 
         $page_id = isset($page_id) ? $page_id : null;
 
