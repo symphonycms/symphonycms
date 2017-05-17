@@ -790,7 +790,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         Sorting:
     -------------------------------------------------------------------------*/
 
-    public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC', &$select = null)
+    public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
     {
         if (in_array(strtolower($order), array('random', 'rand'))) {
             $sort = 'ORDER BY RAND()';
@@ -807,6 +807,11 @@ class FieldUpload extends Field implements ExportableField, ImportableField
                 $order
             );
         }
+    }
+
+    public function buildSortingSelectSQL($sort, $order = 'ASC')
+    {
+        return null;
     }
 
     /*-------------------------------------------------------------------------
