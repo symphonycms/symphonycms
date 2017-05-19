@@ -1674,7 +1674,9 @@ class Field
             return FieldManager::edit($id, $fields);
         } elseif ($id = FieldManager::add($fields)) {
             $this->set('id', $id);
-            $this->createTable();
+            if ($this->requiresTable()) {
+                $this->createTable();
+            }
             return true;
         }
 
@@ -1688,6 +1690,7 @@ class Field
      * additional columns to store the specific data created by the field.
      *
      * @throws DatabaseException
+     * @see Field::requiresTable()
      * @return boolean
      */
     public function createTable()
@@ -1702,6 +1705,26 @@ class Field
               KEY `value` (`value`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
         );
+    }
+
+    /**
+     * Tells Symphony that this field needs a table in order to store
+     * data for each of its entries. Used when adding/deleting this field in a section
+     * or entries are edited/added, data as a performance optimization.
+     * It defaults to true, which force table creation.
+     *
+     * Developers are encouraged to update their null create table implementation
+     * with this method.
+     *
+     * @since Symphony 2.7.0
+     * @see Field::createTable()
+     * @throws DatabaseException
+     * @return boolean
+     *  true if Symphony should call `createTable()`
+     */
+    public function requiresTable()
+    {
+        return true;
     }
 
     /**
