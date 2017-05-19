@@ -185,6 +185,9 @@ class FieldManager implements FileResource
      * existing section associations. This function additionally call the Field's `tearDown`
      * method so that it can cleanup any additional settings or entry tables it may of created.
      *
+     * @since Symphony 2.7.0 it will check to see if the field requires a data table before
+     * blindly trying to delete it.
+     *
      * @throws DatabaseException
      * @throws Exception
      * @param integer $id
@@ -200,7 +203,9 @@ class FieldManager implements FileResource
         Symphony::Database()->delete('tbl_fields_'.$existing->handle(), sprintf(" `field_id` = %d", $id));
         SectionManager::removeSectionAssociation($id);
 
-        Symphony::Database()->query('DROP TABLE IF EXISTS `tbl_entries_data_'.$id.'`');
+        if ($existing->requiresTable()) {
+            Symphony::Database()->query('DROP TABLE IF EXISTS `tbl_entries_data_'.$id.'`');
+        }
 
         return true;
     }

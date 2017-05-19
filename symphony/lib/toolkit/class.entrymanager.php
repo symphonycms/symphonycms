@@ -116,7 +116,13 @@ class EntryManager
                 continue;
             }
 
-            Symphony::Database()->delete('tbl_entries_data_' . $field_id, sprintf("
+            // Check if table exists
+            $table_name = 'tbl_entries_data_' . General::intval($field_id);
+            if (!$field->requiresTable() || !Symphony::Database()->tableExists($table_name)) {
+                continue;
+            }
+
+            Symphony::Database()->delete($table_name, sprintf("
                 `entry_id` = %d", $entry_id
             ));
 
@@ -141,7 +147,7 @@ class EntryManager
                 $fields[$ii] = array_merge($data, $fields[$ii]);
             }
 
-            Symphony::Database()->insert($fields, 'tbl_entries_data_' . $field_id);
+            Symphony::Database()->insert($fields, $table_name);
         }
 
         $entry->set('id', $entry_id);
@@ -185,7 +191,7 @@ class EntryManager
 
                 // Check if table exists
                 $table_name = 'tbl_entries_data_' . General::intval($field_id);
-                if (!Symphony::Database()->tableExists($table_name)) {
+                if (!$field->requiresTable() || !Symphony::Database()->tableExists($table_name)) {
                     continue;
                 }
 
