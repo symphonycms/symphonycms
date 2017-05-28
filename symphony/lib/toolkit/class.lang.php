@@ -190,15 +190,14 @@ class Lang
 
                 $directory = new DirectoryIterator($path);
                 foreach ($directory as $file) {
-                    if ($file->isDot() || !preg_match('/\.php$/', $file->getPathname())) {
+                    if ($file->isDot() || !preg_match('/lang\.[a-z]{2}\.php$/', $file->getPathname())) {
                         continue;
                     }
 
                     include($file->getPathname());
 
-                    // Get language code
-                    $code = explode('.', $file);
-                    $code = $code[1];
+                    // Get language code (chars between lang. and .php)
+                    $code = substr($file->getFilename(), 5, 2);
                     $lang = isset(self::$_languages[$code]) ? self::$_languages[$code] : null;
 
                     // Available extensions
