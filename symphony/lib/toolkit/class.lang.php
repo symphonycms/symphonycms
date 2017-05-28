@@ -102,16 +102,12 @@ class Lang
 
         // Load default datetime strings
         if (empty(self::$_datetime_dictionary)) {
-            include LANG . '/datetime.php';
-
-            self::$_datetime_dictionary = $datetime_strings;
+            self::$_datetime_dictionary = include LANG . '/datetime.php';
         }
 
         // Load default transliterations
         if (empty(self::$_transliterations)) {
-            include LANG . '/transliterations.php';
-
-            self::$_transliterations = $transliterations;
+            self::$_transliterations = include LANG . '/transliterations.php';
         }
 
         // Load default English language
@@ -166,11 +162,11 @@ class Lang
         }
 
         // Fetch extensions
-        $extensions = new DirectoryIterator(EXTENSIONS);
+        $extensions = new FilesystemIterator(EXTENSIONS);
 
         // Language extensions
         foreach ($extensions as $extension) {
-            if ($extension->isDot() || $extension->isFile()) {
+            if ($extension->isFile()) {
                 continue;
             }
 
@@ -188,20 +184,22 @@ class Lang
                     continue;
                 }
 
-                $directory = new DirectoryIterator($path);
+                $directory = new GlobIterator($path . '/lang.*.php');
                 foreach ($directory as $file) {
-                    if ($file->isDot() || !preg_match('/lang\.[a-z]{2}\.php$/', $file->getPathname())) {
-                        continue;
-                    }
-
                     include($file->getPathname());
 
                     // Get language code (chars between lang. and .php)
-                    $code = substr($file->getFilename(), 5, 2);
-                    $lang = isset(self::$_languages[$code]) ? self::$_languages[$code] : null;
+                    $code = substr($file->getFilename(), 5, -4);
+                    $lang = null;
+                    $handle = null;
+                    $extensions = array();
 
-                    // Available extensions
-                    $extensions = (isset($lang)) ? $lang['extensions'] : array();
+                    // Set lang, handle and extensions if defined.
+                    if (isset(self::$_languages[$code])) {
+                        $lang = self::$_languages[$code];
+                        $handle = $lang['handle'];
+                        $extensions = $lang['extensions'];
+                    }
 
                     // Core translations
                     if ($core_handle) {
@@ -209,7 +207,6 @@ class Lang
 
                         // Extension translations
                     } else {
-                        $handle = (isset($lang)) ? $lang['handle'] : null;
                         $extensions = array_merge(array($extension->getFilename()), $extensions);
                     }
 
@@ -254,14 +251,14 @@ class Lang
             return;
         }
 
-        // Store current language code
-        self::$_lang = $code;
-
-        // Clear dictionary
-        self::$_dictionary = array();
-
         // Language file available
         if ($code !== 'en' && (self::isLanguageEnabled($code) || $checkStatus === false)) {
+            // Store desired language code
+            self::$_lang = $code;
+
+            // Clear dictionary
+            self::$_dictionary = array();
+
             // Load core translations
             self::load(vsprintf('%s/lang_%s/lang/lang.%s.php', array(
                 EXTENSIONS, self::$_languages[$code]['handle'], $code
@@ -279,9 +276,6 @@ class Lang
             // Language file unavailable, use default language
         } else {
             self::$_lang = 'en';
-
-            include LANG . '/transliterations.php';
-            self::$_transliterations = $transliterations;
 
             // Log error, if possible
             if ($code !== 'en' && class_exists('Symphony', false) && Symphony::Log() instanceof Log) {
@@ -375,7 +369,7 @@ class Lang
             $namespace = Symphony::getPageNamespace();
         }
 
-        if (isset($namespace) && isset(self::$_dictionary[$namespace][$string])) {
+        if (isset($namespace, self::$_dictionary[$namespace][$string])) {
             $translated = self::$_dictionary[$namespace][$string];
         } elseif (isset(self::$_dictionary[$string])) {
             $translated = self::$_dictionary[$string];
