@@ -1301,21 +1301,13 @@ class General
     }
 
     /**
-     * Truncate a string to a given length. Newlines are replaced with `<br />`
-     * html elements and html tags are removed from the string. If the resulting
-     * string contains only spaces then null is returned. If the resulting string
-     * is less than the input length then it is returned. If the option to
-     * truncate the string to a space character is provided then the string is
-     * truncated to the character prior to the last space in the string. Words
-     * (contiguous non-' ' characters) are then removed from the end of the string
-     * until the length of resulting string is within the input bound. Initial
-     * and trailing spaces are removed. Provided the user requested an
-     * ellipsis suffix and the resulting string is shorter than the input string
-     * then the ellipses are appended to the result which is then returned.
+     * Truncate a string to a given length, respecting word boundaries. The returned
+     * string will always be less than `$maxChars`. Newlines, HTML elements and
+     * leading or trailing spaces are removed from the string.
      *
      * @param string $string
      *  the string to truncate.
-     * @param integer maxChars (optional)
+     * @param integer $maxChars (optional)
      *  the maximum length of the string to truncate the input string to. this
      *  defaults to 200 characters.
      * @param boolean $appendHellip (optional)
@@ -1341,18 +1333,11 @@ class General
             return $string;
         }
 
-        $string = trim(substr($string, 0, $maxChars));
+        // Find the last space before the the maxChars limit is hit.
+        $last_word_break = strrpos($string, ' ', $maxChars - $original_length);
+        $result = substr($string, 0, $last_word_break);
 
-        $array = explode(' ', $string);
-        $length = 0;
-
-        while (!empty($array) && $length > $maxChars) {
-            $length += strlen(array_pop($array)) + 1;
-        }
-
-        $result = implode(' ', $array);
-
-        if ($appendHellip && strlen($result) < $original_length) {
+        if ($appendHellip) {
             $result .= "&#8230;";
         }
 
