@@ -797,10 +797,9 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         } else {
             $sort = sprintf(
                 'ORDER BY (
-                    SELECT DISTINCT %s
+                    SELECT %s
                     FROM tbl_entries_data_%d AS `ed`
                     WHERE entry_id = e.id
-                    LIMIT 0, 1
                 ) %s',
                 '`ed`.file',
                 $this->get('id'),
