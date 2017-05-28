@@ -118,7 +118,7 @@ class EntryManager
 
             // Check if table exists
             $table_name = 'tbl_entries_data_' . General::intval($field_id);
-            if (!$field->requiresTable() || !Symphony::Database()->tableExists($table_name)) {
+            if (!Symphony::Database()->tableExists($table_name)) {
                 continue;
             }
 
@@ -191,7 +191,7 @@ class EntryManager
 
                 // Check if table exists
                 $table_name = 'tbl_entries_data_' . General::intval($field_id);
-                if (!$field->requiresTable() || !Symphony::Database()->tableExists($table_name)) {
+                if (!Symphony::Database()->tableExists($table_name)) {
                     continue;
                 }
 
