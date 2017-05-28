@@ -8,6 +8,7 @@
 - Date: 18th January 2017
 - [Release notes](http://getsymphony.com/download/releases/version/2.6.11/)
 - [Github repository](https://github.com/symphonycms/symphony-2/tree/2.6.11)
+- [MIT Licence](https://github.com/symphonycms/symphony-2/blob/master/LICENCE)
 
 ## Contents
 
