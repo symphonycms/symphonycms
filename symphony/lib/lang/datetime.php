@@ -21,3 +21,5 @@ $datetime_strings = array(
     'next', 'last', 'previous', 'this'
 
 );
+
+return $datetime_strings;

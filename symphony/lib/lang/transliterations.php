@@ -74,3 +74,5 @@ $transliterations = array(
     'straight' => $straight,
     'regexp' => $regexp
 );
+
+return $transliterations;
