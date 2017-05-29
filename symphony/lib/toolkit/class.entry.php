@@ -103,6 +103,7 @@ class Entry
         $fields['creation_date'] = $fields['modification_date'] = DateTimeObj::get('Y-m-d H:i:s');
         $fields['creation_date_gmt'] = $fields['modification_date_gmt'] = DateTimeObj::getGMT('Y-m-d H:i:s');
         $fields['author_id'] = is_null($this->get('author_id')) ? 1 : (int)$this->get('author_id'); // Author_id cannot be null
+        $fields['modification_author_id'] = is_null($this->get('modification_author_id')) ? $fields['author_id'] : (int)$this->get('modification_author_id');
 
         Symphony::Database()->insert($fields, 'tbl_entries');
 

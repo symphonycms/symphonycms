@@ -209,14 +209,15 @@ class EntryManager
      */
     public static function edit(Entry $entry)
     {
-        // Update modification date.
+        // Update modification date and modification author.
         Symphony::Database()->update(
             array(
+                'modification_author_id' => $entry->get('modification_author_id'),
                 'modification_date' => $entry->get('modification_date'),
                 'modification_date_gmt' => $entry->get('modification_date_gmt')
             ),
             'tbl_entries',
-            sprintf(' `id` = %d', $entry->get('id'))
+            sprintf(' `id` = %d', (int)$entry->get('id'))
         );
 
         // Iterate over all data for this entry
@@ -442,7 +443,8 @@ class EntryManager
         }
 
         $sql = sprintf("
-            SELECT %s`e`.`id`, `e`.section_id, `e`.`author_id`,
+            SELECT %s`e`.`id`, `e`.section_id,
+                `e`.`author_id`, `e`.`modification_author_id`,
                 `e`.`creation_date` AS `creation_date`,
                 `e`.`modification_date` AS `modification_date`
                 %s
@@ -583,6 +585,7 @@ class EntryManager
 
             $obj->set('id', $entry['meta']['id']);
             $obj->set('author_id', $entry['meta']['author_id']);
+            $obj->set('modification_author_id', $entry['meta']['modification_author_id']);
             $obj->set('section_id', $entry['meta']['section_id']);
             $obj->set('creation_date', DateTimeObj::get('c', $entry['meta']['creation_date']));
 

@@ -38,23 +38,25 @@ class TimestampValidator
      * if equal to the supplied $timestamp
      *
      * @param int|string $id
-     *   The record id to check
-     * @param  string $timestamp
-     *   The user supplied timestamp
+     *  The record id to check
+     * @param string $timestamp
+     *  The user supplied timestamp
      * @return boolean
-     *   True if the $timestamp is the latest or the $id is invalid, false other wise
+     *  True if the $timestamp is the latest or the $id is invalid, false other wise
      */
     public function check($id, $timestamp)
     {
         $id = General::intval(MySQL::cleanValue($id));
         if ($id < 1) {
-            return true;
+            return false;
         }
         $timestamp = MySQL::cleanValue($timestamp);
-        $results = Symphony::Database()->fetchVar('id', 0, "
+        $sql = "
             SELECT `id` FROM `{$this->table}`
-                WHERE `id` = $id AND `modification_date` = '$timestamp'
-        ");
+                WHERE `id` = $id
+                    AND `modification_date` = '$timestamp'
+        ";
+        $results = Symphony::Database()->fetchVar('id', 0, $sql);
         return !empty($results) && General::intval($results) === $id;
     }
 }
