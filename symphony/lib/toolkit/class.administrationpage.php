@@ -1386,9 +1386,12 @@ class AdministrationPage extends HTMLPage
      */
     public function addTimestampValidationPageAlert($errorMessage, $existingObject, $action)
     {
-        $author = AuthorManager::fetchByID($existingObject->get('author_id'));
-
-        $formatteAuthorName = $existingObject->get('author_id') === Symphony::Author()->get('id')
+        $authorId = $existingObject->get('modification_author_id');
+        if (!$authorId) {
+            $authorId = $existingObject->get('author_id');
+        }
+        $author = AuthorManager::fetchByID($authorId);
+        $formatteAuthorName = $authorId === Symphony::Author()->get('id')
             ? __('yourself')
             : (!$author
                 ? __('an unknown user')

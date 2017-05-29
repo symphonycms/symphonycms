@@ -600,7 +600,10 @@ class contentBlueprintsSections extends AdministrationPage
                 $navigation_group = preg_replace('/^set-navigation-group-/', null, $_POST['with-selected']);
 
                 foreach ($checked as $section_id) {
-                    SectionManager::edit($section_id, array('navigation_group' => urldecode($navigation_group)));
+                    SectionManager::edit($section_id, array(
+                        'navigation_group' => urldecode($navigation_group),
+                        'modification_author_id' => Symphony::Author()->get('id'),
+                    ));
                 }
 
                 redirect(SYMPHONY_URL . '/blueprints/sections/');
@@ -734,6 +737,9 @@ class contentBlueprintsSections extends AdministrationPage
                      */
                     Symphony::ExtensionManager()->notifyMembers('SectionPreCreate', '/blueprints/sections/', array('meta' => &$meta, 'fields' => &$fields));
 
+                    $meta['author_id'] = Symphony::Author()->get('id');
+                    $meta['modification_author_id'] = $meta['author_id'];
+
                     if (!$section_id = SectionManager::add($meta)) {
                         $this->pageAlert(__('An unknown database occurred while attempting to create the section.'), Alert::ERROR);
                     }
@@ -760,6 +766,8 @@ class contentBlueprintsSections extends AdministrationPage
                      *  and the value being a Field object, passed by reference
                      */
                     Symphony::ExtensionManager()->notifyMembers('SectionPreEdit', '/blueprints/sections/', array('section_id' => $section_id, 'meta' => &$meta, 'fields' => &$fields));
+
+                    $meta['modification_author_id'] = Symphony::Author()->get('id');
 
                     if (!SectionManager::edit($section_id, $meta)) {
                         $canProceed = false;

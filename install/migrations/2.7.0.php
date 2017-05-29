@@ -34,6 +34,7 @@
                 Symphony::Database()->query("
                     ALTER TABLE `tbl_sections`
                         ADD COLUMN `author_id` int(11) unsigned NOT NULL DEFAULT 1,
+                        ADD COLUMN `modification_author_id` int(11) unsigned NOT NULL DEFAULT 1,
                         ADD COLUMN `creation_date` datetime NOT NULL DEFAULT '$now',
                         ADD COLUMN `creation_date_gmt` datetime NOT NULL DEFAULT '$nowGMT',
                         ADD COLUMN `modification_date` datetime NOT NULL DEFAULT '$now',
@@ -42,6 +43,11 @@
                         ADD KEY `creation_date_gmt` (`creation_date_gmt`),
                         ADD KEY `modification_date` (`modification_date`),
                         ADD KEY `modification_date_gmt` (`modification_date_gmt`);
+                ");
+                Symphony::Database()->query("
+                    ALTER TABLE `tbl_entries`
+                        ADD COLUMN `modification_author_id` int(11) unsigned NOT NULL DEFAULT 1
+                            AFTER `author_id`
                 ");
             }
 

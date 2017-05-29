@@ -1131,6 +1131,8 @@ class contentPublish extends AdministrationPage
                  */
                 Symphony::ExtensionManager()->notifyMembers('EntryPreCreate', '/publish/new/', array('section' => $section, 'entry' => &$entry, 'fields' => &$fields));
 
+                $entry->set('modification_author_id', Symphony::Author()->get('id'));
+
                 // Check to see if the dancing was premature
                 if (!$entry->commit()) {
                     $this->pageAlert(null, Alert::ERROR);
@@ -1195,6 +1197,7 @@ class contentPublish extends AdministrationPage
             $entry = EntryManager::create();
             $entry->set('id', $entry_id);
             $entry->set('author_id', $existingEntry->get('author_id'));
+            $entry->set('modification_author_id', $existingEntry->get('modification_author_id'));
             $entry->set('section_id', $existingEntry->get('section_id'));
             $entry->set('creation_date', $existingEntry->get('creation_date'));
             $entry->set('modification_date', $existingEntry->get('modification_date'));
@@ -1430,6 +1433,8 @@ class contentPublish extends AdministrationPage
                  * @param array $fields
                  */
                 Symphony::ExtensionManager()->notifyMembers('EntryPreEdit', '/publish/edit/', array('section' => $section, 'entry' => &$entry, 'fields' => $fields));
+
+                $entry->set('modification_author_id', Symphony::Author()->get('id'));
 
                 // Check to see if the dancing was premature
                 if (!$entry->commit()) {
