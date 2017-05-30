@@ -94,38 +94,50 @@ class EntryManager
     }
 
     /**
-     * Given an Entry object, iterate over all of the fields in that object
-     * an insert them into their relevant entry tables.
+     * Executes the SQL queries need to save a field's data for the specified
+     * entry id.
      *
-     * @param Entry $entry
-     *  An Entry object to insert into the database
-     * @throws DatabaseException
-     * @return boolean
+     * It first locks the table for writes, it then deletes existing data and then
+     * it inserts a new row for the data. Errors are discarded and the lock is
+     * released, if it was acquired.
+     *
+     * @param int $entry_id
+     *  The entry id to save the data for
+     * @param int $field_id
+     *  The field id to save the data for
+     * @param array $field
+     *  The field data to save
      */
-    public static function add(Entry $entry)
+    protected static function saveFieldData($entry_id, $field_id, $field)
     {
-        $fields = $entry->get();
-        Symphony::Database()->insert($fields, 'tbl_entries');
-
-        if (!$entry_id = Symphony::Database()->getInsertID()) {
-            return false;
+        // Check that we have a field id
+        if (empty($field_id)) {
+            return;
         }
 
-        foreach ($entry->getData() as $field_id => $field) {
-            if (!is_array($field) || empty($field)) {
-                continue;
-            }
+        // Check if we have field data
+        if (!is_array($field) || empty($field)) {
+            return;
+        }
+
+        $did_lock = false;
+        try {
 
             // Check if table exists
             $table_name = 'tbl_entries_data_' . General::intval($field_id);
             if (!Symphony::Database()->tableExists($table_name)) {
-                continue;
+                return;
             }
 
+            // Lock the table for write
+            $did_lock = Symphony::Database()->query("LOCK TABLES `$table_name` WRITE");
+
+            // Delete old data
             Symphony::Database()->delete($table_name, sprintf("
                 `entry_id` = %d", $entry_id
             ));
 
+            // Insert new data
             $data = array(
                 'entry_id' => $entry_id
             );
@@ -142,12 +154,43 @@ class EntryManager
                 }
             }
 
-            $fieldCount = count($fields);
-            for ($ii = 0; $ii < $fieldCount; $ii++) {
-                $fields[$ii] = array_merge($data, $fields[$ii]);
+            foreach ($fields as $index => $field_data) {
+                $fields[$index] = array_merge($data, $field_data);
             }
 
             Symphony::Database()->insert($fields, $table_name);
+        } catch (Exception $ex) {
+            Symphony::Log()->pushExceptionToLog($ex, true);
+        }
+
+        if ($did_lock) {
+            Symphony::Database()->query('UNLOCK TABLES');
+        }
+    }
+
+    /**
+     * Given an Entry object, iterate over all of the fields in that object
+     * an insert them into their relevant entry tables.
+     *
+     * @see EntryManager::saveFieldData()
+     * @param Entry $entry
+     *  An Entry object to insert into the database
+     * @throws DatabaseException
+     * @return boolean
+     */
+    public static function add(Entry $entry)
+    {
+        $fields = $entry->get();
+        Symphony::Database()->insert($fields, 'tbl_entries');
+
+        if (!$entry_id = Symphony::Database()->getInsertID()) {
+            return false;
+        }
+
+        // Iterate over all data for this entry
+        foreach ($entry->getData() as $field_id => $field) {
+            // Write data
+            static::saveFieldData($entry_id, $field_id, $field);
         }
 
         $entry->set('id', $entry_id);
@@ -158,6 +201,7 @@ class EntryManager
     /**
      * Update an existing Entry object given an Entry object
      *
+     * @see EntryManager::saveFieldData()
      * @param Entry $entry
      *  An Entry object
      * @throws DatabaseException
@@ -175,63 +219,10 @@ class EntryManager
             sprintf(' `id` = %d', $entry->get('id'))
         );
 
-        // Iterate over all data for this entry, deleting existing data first
-        // then inserting a new row for the data
+        // Iterate over all data for this entry
         foreach ($entry->getData() as $field_id => $field) {
-            if (empty($field_id)) {
-                continue;
-            }
-
-            $did_lock = false;
-            try {
-                // Check if we have field data
-                if (!is_array($field) || empty($field)) {
-                    continue;
-                }
-
-                // Check if table exists
-                $table_name = 'tbl_entries_data_' . General::intval($field_id);
-                if (!Symphony::Database()->tableExists($table_name)) {
-                    continue;
-                }
-
-                // Lock the table for write
-                $did_lock = Symphony::Database()->query("LOCK TABLES `$table_name` WRITE");
-
-                // Delete old data
-                Symphony::Database()->delete($table_name, sprintf("
-                    `entry_id` = %d", $entry->get('id')
-                ));
-
-                // Insert new data
-                $data = array(
-                    'entry_id' => $entry->get('id')
-                );
-
-                $fields = array();
-
-                foreach ($field as $key => $value) {
-                    if (is_array($value)) {
-                        foreach ($value as $ii => $v) {
-                            $fields[$ii][$key] = $v;
-                        }
-                    } else {
-                        $fields[max(0, count($fields) - 1)][$key] = $value;
-                    }
-                }
-
-                foreach ($fields as $index => $field_data) {
-                    $fields[$index] = array_merge($data, $field_data);
-                }
-
-                Symphony::Database()->insert($fields, $table_name);
-            } catch (Exception $e) {
-                Symphony::Log()->pushExceptionToLog($e, true);
-            }
-
-            if ($did_lock) {
-                Symphony::Database()->query('UNLOCK TABLES');
-            }
+            // Write data
+            static::saveFieldData($entry->get('id'), $field_id, $field);
         }
 
         return true;
