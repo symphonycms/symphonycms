@@ -1005,9 +1005,14 @@ class General
     }
 
     /**
-     * Checks that the file is readable
+     * Checks that the file is readable.
+     * It first checks to see if the $file path exists
+     * and if it does, checks that it is readable.
      *
+     * @uses clearstatcache
      * @since Symphony 2.7.0
+     * @param string $file
+     *  The path of the file
      * @return boolean
      */
     public static function checkFileReadable($file)
@@ -1018,9 +1023,16 @@ class General
     }
 
     /**
-     * Checks that the file is writable
+     * Checks that the file is writable.
+     * It first checks to see if the $file path exists
+     * and if it does, checks that is it writable. If the file
+     * does not exits, it checks that the directory exists and if it does,
+     * checks that it is writable.
      *
+     * @uses clearstatcache
      * @since Symphony 2.7.0
+     * @param string $file
+     *  The path of the file
      * @return boolean
      */
     public static function checkFileWritable($file)
@@ -1037,9 +1049,14 @@ class General
     }
 
     /**
-     * Checks that the file is deletable
+     * Checks that the file is deletable.
+     * It first checks to see if the $file path exists
+     * and if it does, checks that is it writable.
      *
+     * @uses clearstatcache
      * @since Symphony 2.7.0
+     * @param string $file
+     *  The path of the file
      * @return boolean
      */
     public static function checkFileDeletable($file)
