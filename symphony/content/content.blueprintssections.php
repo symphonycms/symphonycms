@@ -50,8 +50,8 @@ class contentBlueprintsSections extends AdministrationPage
                 $entry_count = EntryManager::fetchCount($s->get('id'));
 
                 // Setup each cell
-                $td1 = Widget::TableData(Widget::Anchor($s->get('name'), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', null, 'content'));
-                $td1->appendChild(Widget::Label(__('Select Section %s', array($s->get('name'))), null, 'accessible', null, array(
+                $td1 = Widget::TableData(Widget::Anchor(General::sanitize($s->get('name')), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', null, 'content'));
+                $td1->appendChild(Widget::Label(__('Select Section %s', array(General::sanitize($s->get('name')))), null, 'accessible', null, array(
                     'for' => 'section-' . $s->get('id')
                 )));
                 $td1->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox', array(
@@ -59,7 +59,7 @@ class contentBlueprintsSections extends AdministrationPage
                 )));
 
                 $td2 = Widget::TableData(Widget::Anchor("$entry_count", SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
-                $td3 = Widget::TableData($s->get('navigation_group'));
+                $td3 = Widget::TableData(General::sanitize($s->get('navigation_group')));
 
                 // Create row
                 $tr = Widget::TableRow(array($td1, $td2, $td3));
@@ -116,7 +116,7 @@ class contentBlueprintsSections extends AdministrationPage
                 $groups[] = $s->get('navigation_group');
 
                 $value = 'set-navigation-group-' . urlencode($s->get('navigation_group'));
-                $options[$index]['options'][] = array($value, false, $s->get('navigation_group'));
+                $options[$index]['options'][] = array($value, false, General::sanitize($s->get('navigation_group')));
             }
         }
 
