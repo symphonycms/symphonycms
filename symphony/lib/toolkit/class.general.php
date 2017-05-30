@@ -1009,7 +1009,7 @@ class General
      * It first checks to see if the $file path exists
      * and if it does, checks that it is readable.
      *
-     * @uses clearstatcache
+     * @uses clearstatcache()
      * @since Symphony 2.7.0
      * @param string $file
      *  The path of the file
@@ -1029,7 +1029,7 @@ class General
      * does not exits, it checks that the directory exists and if it does,
      * checks that it is writable.
      *
-     * @uses clearstatcache
+     * @uses clearstatcache()
      * @since Symphony 2.7.0
      * @param string $file
      *  The path of the file
@@ -1053,7 +1053,7 @@ class General
      * It first checks to see if the $file path exists
      * and if it does, checks that is it writable.
      *
-     * @uses clearstatcache
+     * @uses clearstatcache()
      * @since Symphony 2.7.0
      * @param string $file
      *  The path of the file
@@ -1072,6 +1072,7 @@ class General
      * Delete a file at a given path, silently ignoring errors depending
      * on the value of the input variable $silent.
      *
+     * @uses General::checkFileDeletable()
      * @param string $file
      *  the path of the file to delete
      * @param boolean $silent (optional)
@@ -1086,10 +1087,13 @@ class General
     public static function deleteFile($file, $silent = true)
     {
         try {
+            if (static::checkFileDeletable($file) === false) {
+                throw new Exception(__('Denied by permission'));
+            }
             return unlink($file);
         } catch (Exception $ex) {
             if ($silent === false) {
-                throw new Exception(__('Unable to remove file - %s', array($file)));
+                throw new Exception(__('Unable to remove file - %s', array($file)), 0, $ex);
             }
 
             return false;
@@ -1430,6 +1434,7 @@ class General
      * set its permissions to the input permissions. This will ignore errors
      * in the `is_uploaded_file()`, `move_uploaded_file()` and `chmod()` functions.
      *
+     * @uses General::checkFileWritable()
      * @param string $dest_path
      *  the file path to which the source file is to be moved.
      * @param string $dest_name
@@ -1447,13 +1452,18 @@ class General
         // Upload the file
         if (@is_uploaded_file($tmp_name)) {
             $dest_path = rtrim($dest_path, '/') . '/';
+            $dest = $dest_path . $dest_name;
 
+            // Check that destination is writable
+            if (!static::checkFileWritable($dest)) {
+                return false;
+            }
             // Try place the file in the correction location
-            if (@move_uploaded_file($tmp_name, $dest_path . $dest_name)) {
+            if (@move_uploaded_file($tmp_name, $dest)) {
                 if (is_null($perm)) {
                     $perm = 0644;
                 }
-                @chmod($dest_path . $dest_name, intval($perm, 8));
+                @chmod($dest, intval($perm, 8));
                 return true;
             }
         }
