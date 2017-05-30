@@ -441,6 +441,14 @@ class AdministrationPage extends HTMLPage
             $this->addHeaderToPage('X-Frame-Options', 'SAMEORIGIN');
         }
 
+        if (!array_key_exists('x-content-type-options', $this->headers())) {
+            $this->addHeaderToPage('X-Content-Type-Options', 'nosniff');
+        }
+
+        if (!array_key_exists('x-xss-protection', $this->headers())) {
+            $this->addHeaderToPage('X-XSS-Protection', '1; mode=block');
+        }
+
         if (!array_key_exists('access-control-allow-origin', $this->headers())) {
             $this->addHeaderToPage('Access-Control-Allow-Origin', URL);
         }
