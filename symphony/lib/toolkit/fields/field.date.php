@@ -744,7 +744,7 @@ class FieldDate extends Field implements ExportableField, ImportableField
 
     public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
     {
-        if (in_array(strtolower($order), array('random', 'rand'))) {
+        if (static::isRandomOrder($order)) {
             $sort = 'ORDER BY RAND()';
         } else {
             $sort = sprintf(

@@ -541,7 +541,7 @@ class FieldAuthor extends Field implements ExportableField
 
     public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
     {
-        if (in_array(strtolower($order), array('random', 'rand'))) {
+        if (static::isRandomOrder($order)) {
             $sort = 'ORDER BY RAND()';
         } else {
             $joins .= "
@@ -554,7 +554,7 @@ class FieldAuthor extends Field implements ExportableField
 
     public function buildSortingSelectSQL($sort, $order = 'ASC')
     {
-        if (in_array(strtolower($order), array('random', 'rand'))) {
+        if (static::isRandomOrder($order)) {
             return null;
         }
         return '`a`.`first_name`, `a`.`last_name`';
