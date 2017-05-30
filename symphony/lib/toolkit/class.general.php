@@ -920,9 +920,10 @@ class General
      * with the input content. This function will ignore errors in opening,
      * writing, closing and changing the permissions of the resulting file.
      * If opening or writing the file fail then this will return false.
-     * This method calls `clearstatcache()` in order to make sure we do not
-     * hit the cache when checking for permissions.
+     * This method calls `General::checkFileWritable()` which properly checks
+     * for permissions.
      *
+     * @uses General::checkFileWritable()
      * @param string $file
      *  the path of the file to write.
      * @param mixed $data
@@ -943,7 +944,7 @@ class General
     {
         clearstatcache();
 
-        if (static::checkFile($file) === false) {
+        if (static::checkFileWritable($file) === false) {
             return false;
         }
 
@@ -982,8 +983,9 @@ class General
     }
 
     /**
-     * Checks that the file and it's folder are readable and writable.
+     * Checks that the file and its folder are readable and writable.
      *
+     * @deprecated @since Symphony 2.7.0
      * @since Symphony 2.6.3
      * @return boolean
      */
@@ -1003,9 +1005,74 @@ class General
     }
 
     /**
+     * Checks that the file is readable.
+     * It first checks to see if the $file path exists
+     * and if it does, checks that it is readable.
+     *
+     * @uses clearstatcache()
+     * @since Symphony 2.7.0
+     * @param string $file
+     *  The path of the file
+     * @return boolean
+     */
+    public static function checkFileReadable($file)
+    {
+        clearstatcache();
+        // Reading a file requires that is exists and can be read
+        return @file_exists($file) && @is_readable($file);
+    }
+
+    /**
+     * Checks that the file is writable.
+     * It first checks to see if the $file path exists
+     * and if it does, checks that is it writable. If the file
+     * does not exits, it checks that the directory exists and if it does,
+     * checks that it is writable.
+     *
+     * @uses clearstatcache()
+     * @since Symphony 2.7.0
+     * @param string $file
+     *  The path of the file
+     * @return boolean
+     */
+    public static function checkFileWritable($file)
+    {
+        clearstatcache();
+        if (@file_exists($file)) {
+            // Writing to an existing file does not require write
+            // permissions on the directory.
+            return @is_writable($file);
+        }
+        $dir = dirname($file);
+        // Creating a file requires write permissions on the directory.
+        return @file_exists($dir) && @is_writable($dir);
+    }
+
+    /**
+     * Checks that the file is deletable.
+     * It first checks to see if the $file path exists
+     * and if it does, checks that is it writable.
+     *
+     * @uses clearstatcache()
+     * @since Symphony 2.7.0
+     * @param string $file
+     *  The path of the file
+     * @return boolean
+     */
+    public static function checkFileDeletable($file)
+    {
+        clearstatcache();
+        $dir = dirname($file);
+        // Deleting a file requires write permissions on the directory.
+        // It does not require write permissions on the file
+        return @file_exists($dir) && @is_writable($dir);
+    }
+
+    /**
      * Delete a file at a given path, silently ignoring errors depending
      * on the value of the input variable $silent.
      *
+     * @uses General::checkFileDeletable()
      * @param string $file
      *  the path of the file to delete
      * @param boolean $silent (optional)
@@ -1020,10 +1087,13 @@ class General
     public static function deleteFile($file, $silent = true)
     {
         try {
+            if (static::checkFileDeletable($file) === false) {
+                throw new Exception(__('Denied by permission'));
+            }
             return unlink($file);
         } catch (Exception $ex) {
             if ($silent === false) {
-                throw new Exception(__('Unable to remove file - %s', array($file)));
+                throw new Exception(__('Unable to remove file - %s', array($file)), 0, $ex);
             }
 
             return false;
@@ -1349,6 +1419,7 @@ class General
      * set its permissions to the input permissions. This will ignore errors
      * in the `is_uploaded_file()`, `move_uploaded_file()` and `chmod()` functions.
      *
+     * @uses General::checkFileWritable()
      * @param string $dest_path
      *  the file path to which the source file is to be moved.
      * @param string $dest_name
@@ -1366,13 +1437,18 @@ class General
         // Upload the file
         if (@is_uploaded_file($tmp_name)) {
             $dest_path = rtrim($dest_path, '/') . '/';
+            $dest = $dest_path . $dest_name;
 
+            // Check that destination is writable
+            if (!static::checkFileWritable($dest)) {
+                return false;
+            }
             // Try place the file in the correction location
-            if (@move_uploaded_file($tmp_name, $dest_path . $dest_name)) {
+            if (@move_uploaded_file($tmp_name, $dest)) {
                 if (is_null($perm)) {
                     $perm = 0644;
                 }
-                @chmod($dest_path . $dest_name, intval($perm, 8));
+                @chmod($dest, intval($perm, 8));
                 return true;
             }
         }
