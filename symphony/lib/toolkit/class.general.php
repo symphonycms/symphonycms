@@ -920,9 +920,10 @@ class General
      * with the input content. This function will ignore errors in opening,
      * writing, closing and changing the permissions of the resulting file.
      * If opening or writing the file fail then this will return false.
-     * This method calls `clearstatcache()` in order to make sure we do not
-     * hit the cache when checking for permissions.
+     * This method calls `General::checkFileWritable()` which properly checks
+     * for permissions.
      *
+     * @uses General::checkFileWritable()
      * @param string $file
      *  the path of the file to write.
      * @param mixed $data
@@ -943,7 +944,7 @@ class General
     {
         clearstatcache();
 
-        if (static::checkFile($file) === false) {
+        if (static::checkFileWritable($file) === false) {
             return false;
         }
 
@@ -982,7 +983,7 @@ class General
     }
 
     /**
-     * Checks that the file and it's folder are readable and writable.
+     * Checks that the file and its folder are readable and writable.
      *
      * @deprecated @since Symphony 2.7.0
      * @since Symphony 2.6.3
