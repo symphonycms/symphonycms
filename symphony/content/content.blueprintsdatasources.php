@@ -1423,7 +1423,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             $dsShell = preg_replace(array('/<!--[\w ]++-->/', '/(\t+[\r\n]){2,}/', '/(\r\n){2,}/'), '$1', $dsShell);
 
             // Write the file
-            if (!is_writable(dirname($file)) || !General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file'), 'w', true)) {
+            if (!General::writeFile($file, $dsShell, Symphony::Configuration()->get('write_mode', 'file'), 'w', true)) {
                 $this->pageAlert(
                     __('Failed to write Data source to disk.')
                     . ' ' . __('Please check permissions on %s.', array('<code>/workspace/data-sources</code>')),

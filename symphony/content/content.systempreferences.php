@@ -29,7 +29,7 @@ class contentSystemPreferences extends AdministrationPage
         $bIsWritable = true;
         $formHasErrors = (is_array($this->_errors) && !empty($this->_errors));
 
-        if (General::checkFile(CONFIG) === false) {
+        if (General::checkFileWritable(CONFIG) === false) {
             $this->pageAlert(__('The Symphony configuration file, %s, or folder is not writable. You will not be able to save changes to preferences.', array('<code>/manifest/config.php</code>')), Alert::ERROR);
             $bIsWritable = false;
         } elseif ($formHasErrors) {
@@ -182,7 +182,7 @@ class contentSystemPreferences extends AdministrationPage
     public function action()
     {
         // Do not proceed if the config file cannot be changed
-        if (General::checkFile(CONFIG) === false) {
+        if (General::checkFileWritable(CONFIG) === false) {
             redirect(SYMPHONY_URL . '/system/preferences/');
         }
 
