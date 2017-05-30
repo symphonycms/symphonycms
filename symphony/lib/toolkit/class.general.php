@@ -942,8 +942,6 @@ class General
      */
     public static function writeFile($file, $data, $perm = 0644, $mode = 'w', $trim = false)
     {
-        clearstatcache();
-
         if (static::checkFileWritable($file) === false) {
             return false;
         }
