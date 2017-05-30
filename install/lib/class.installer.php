@@ -4,6 +4,8 @@
 
     class Installer extends Administration
     {
+        private static $POST = array();
+
         /**
          * Override the default Symphony constructor to initialise the Log, Config
          * and Database objects for installation/update. This allows us to use the
@@ -39,6 +41,9 @@
             // Initialize error handlers
             GenericExceptionHandler::initialise(Symphony::Log());
             GenericErrorHandler::initialise(Symphony::Log());
+
+            // Copy POST
+            self::$POST = $_POST;
         }
 
         /**
@@ -115,13 +120,20 @@
                 )));
             }
 
+            // Check for unattended installation
+            $unattended = self::__checkUnattended();
+            if (!empty($unattended)) {
+                // Merge unattended information with the POST
+                self::$POST = array_replace_recursive($unattended, self::$POST);
+            }
+
             // If language is not set and there is language packs available, show language selection pages
-            if (!isset($_POST['lang']) && count(Lang::getAvailableLanguages(false)) > 1) {
+            if (!isset(self::$POST['lang']) && count(Lang::getAvailableLanguages(false)) > 1) {
                 self::__render(new InstallerPage('languages'));
             }
 
             // Check for configuration errors and, if there are no errors, install Symphony!
-            if (isset($_POST['fields'])) {
+            if (isset(self::$POST['fields'])) {
                 $errors = self::__checkConfiguration();
                 if (!empty($errors)) {
                     Symphony::Log()->pushToLog(
@@ -135,7 +147,7 @@
                             E_ERROR, true
                         );
                     }
-                } else {
+                } else if (isset(self::$POST['action']['install'])) {
                     $disabled_extensions = self::__install();
 
                     self::__render(new InstallerPage('success', array(
@@ -147,7 +159,7 @@
             // Display the Installation page
             self::__render(new InstallerPage('configuration', array(
                 'errors' => $errors,
-                'default-config' => Symphony::Configuration()->get()
+                'default-config' => !empty($unattended) ? $unattended['fields'] : Symphony::Configuration()->get()
             )));
         }
 
@@ -251,7 +263,7 @@
         private static function __checkConfiguration()
         {
             $errors = array();
-            $fields = $_POST['fields'];
+            $fields = self::$POST['fields'];
 
             // Testing the database connection
             try {
@@ -380,6 +392,40 @@
         }
 
         /**
+         * This function checks if there is a unattend.php file in the MANIFEST folder.
+         * If it finds one, it will load it and check for the $settings variable.
+         * It will also merge the default config values into the 'fields' array.
+         *
+         * You can find an empty version at install/include/unattend.php
+         *
+         * @return array
+         *   An associative array of values, as if it was submitted by a POST
+         */
+        private static function __checkUnattended()
+        {
+            $filepath = MANIFEST . '/unattend.php';
+            if (!@file_exists($filepath) || !@is_readable($filepath)) {
+                return false;
+            }
+            try {
+                include $filepath;
+                if (!isset($settings) || !is_array($settings) || !isset($settings['fields'])) {
+                    return false;
+                }
+                // Merge with default values
+                $settings['fields'] = array_replace_recursive(Symphony::Configuration()->get(), $settings['fields']);
+                // Special case for the password
+                if (isset($settings['fields']['user']) && isset($settings['fields']['user']['password'])) {
+                    $settings['fields']['user']['confirm-password'] = $settings['fields']['user']['password'];
+                }
+                return $settings;
+            } catch (Exception $ex) {
+                Symphony::Log()->pushExceptionToLog($ex, true);
+            }
+            return false;
+        }
+
+        /**
          * If something went wrong, the `__abort` function will write an entry to the Log
          * file and display the failure page to the user.
          * @todo: Resume installation after an error has been fixed.
@@ -402,7 +448,7 @@
 
         private static function __install()
         {
-            $fields = $_POST['fields'];
+            $fields = self::$POST['fields'];
             $start = time();
 
             Symphony::Log()->writeToLog(PHP_EOL . '============================================', true);
