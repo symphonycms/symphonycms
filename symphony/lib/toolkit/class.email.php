@@ -29,7 +29,7 @@ abstract class Email
      * @throws Exception
      * @return EmailGateway
      */
-    public function create($gateway = null)
+    public static function create($gateway = null)
     {
         $email_gateway_manager = new EmailGatewayManager;
 
