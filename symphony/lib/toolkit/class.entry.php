@@ -328,6 +328,10 @@ class Entry
         if (!$this->get('creation_date_gmt')) {
             $this->set('creation_date_gmt', $this->get('modification_date_gmt'));
         }
+
+        if (!$this->get('author_id')) {
+            $this->set('author_id', 1);
+        }
     }
 
     /**
