@@ -1538,7 +1538,7 @@ class Field
     }
 
     /**
-     * Determine if the requested $order is random.
+     * Determine if the requested $order is random or not.
      *
      * @since Symphony 2.7.0
      * @param string $order
@@ -1546,7 +1546,7 @@ class Field
      * @return boolean
      *  true if the $order is either 'rand' or 'random'
      */
-    public static function isRandomOrder($order)
+    protected function isRandomOrder($order)
     {
         return in_array(strtolower($order), array('random', 'rand'));
     }
@@ -1570,7 +1570,7 @@ class Field
      */
     public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
     {
-        if (static::isRandomOrder($order)) {
+        if ($this->isRandomOrder($order)) {
             $sort = 'ORDER BY RAND()';
         } else {
             $joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
@@ -1600,7 +1600,7 @@ class Field
      */
     public function buildSortingSelectSQL($sort, $order = 'ASC')
     {
-        if (static::isRandomOrder($order)) {
+        if ($this->isRandomOrder($order)) {
             return null;
         }
         return '`ed`.`value`';

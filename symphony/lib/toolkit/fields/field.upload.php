@@ -792,7 +792,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
     public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
     {
-        if (static::isRandomOrder($order)) {
+        if ($this->isRandomOrder($order)) {
             $sort = 'ORDER BY RAND()';
         } else {
             $sort = sprintf(
