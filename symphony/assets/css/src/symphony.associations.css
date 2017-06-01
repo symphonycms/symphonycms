@@ -14,6 +14,11 @@
 	padding: 0.5rem 2rem;
 }
 
+#drawer-section-associations .association-title {
+	font-size: 1.2rem;
+	padding: 2rem 0 0;
+}
+
 .association {
 	min-height: 3rem;
 	margin-top: 2rem;
