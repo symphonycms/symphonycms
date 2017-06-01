@@ -388,6 +388,8 @@ class contentPublish extends AdministrationPage
         if (isset($_REQUEST['filter'])) {
             // legacy implementation, convert single filter to an array
             // split string in the form ?filter=handle:value
+            // @deprecated
+            // This should be removed in Symphony 4.0.0
             if (!is_array($_REQUEST['filter'])) {
                 list($field_handle, $filter_value) = explode(':', $_REQUEST['filter'], 2);
                 $filters[$field_handle] = rawurldecode($filter_value);
@@ -403,9 +405,9 @@ class contentPublish extends AdministrationPage
 
                 if (!is_array($value)) {
                     $filter_type = Datasource::determineFilterType($value);
-                    $value = preg_split('/'.($filter_type == Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
-                    $value = array_map('trim', $value);
-                    $value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
+                    $value = Datasource::splitFilter($filter_type, $value);
+                } else {
+                    $filter_type = Datasource::FILTER_OR;
                 }
 
                 // Handle date meta data #2003
