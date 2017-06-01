@@ -37,6 +37,7 @@ class contentPublish extends AdministrationPage
             EntryManager::setFetchSorting($sort, $order);
         } else {
             $sort = General::sanitize($sort);
+            $filters = '';
 
             // Ensure that this field is infact sortable, otherwise
             // fallback to IDs
@@ -44,26 +45,23 @@ class contentPublish extends AdministrationPage
                 $sort = $section->getDefaultSortingField();
             }
 
+            // Format the filter query string
+            if ($params['filters']) {
+                $filters = preg_replace('/^&amp;/i', '', $params['filters'], 1);
+                $filters = '?' . trim($filters);
+            }
+
             // If the sort order or direction differs from what is saved,
             // update the config file and reload the page
             if ($sort != $section->getSortingField() || $order != $section->getSortingOrder()) {
                 $section->setSortingField($sort, false);
                 $section->setSortingOrder($order);
-
-                if ($params['filters']) {
-                    $params['filters'] = '?' . trim($params['filters'], '&amp;');
-                }
-
-                redirect(Administration::instance()->getCurrentPageURL() . $params['filters']);
+                redirect(Administration::instance()->getCurrentPageURL() . $filters);
             }
 
-            // If the sort order or direction remains the same, reload the page
+            // If the sort order and direction remains the same, reload the page
             if ($sort == $section->getSortingField() && $order == $section->getSortingOrder()) {
-                if ($params['filters']) {
-                    $params['filters'] = '?' . trim($params['filters'], '&amp;');
-                }
-
-                redirect(Administration::instance()->getCurrentPageURL() . $params['filters']);
+                redirect(Administration::instance()->getCurrentPageURL() . $filters);
             }
         }
     }
