@@ -1612,14 +1612,17 @@ class contentPublish extends AdministrationPage
 
             // Process Parent Associations
             if (!is_null($parent_associations) && !empty($parent_associations)) {
+                $title = new XMLElement('h2', __('Linked to'), array('class' => 'association-title'));
+                $content->appendChild($title);
+
                 foreach ($parent_associations as $as) {
                     if (empty($as['parent_section_field_id'])) {
-                        continue; 
+                        continue;
                     }
                     if ($field = FieldManager::fetch($as['parent_section_field_id'])) {
 
                         // Get the related section
-                        $parent_section = SectionManager::fetch($as['child_parent_id']);
+                        $parent_section = SectionManager::fetch($as['child_parent_id'])[0];
 
                         if (!($parent_section instanceof Section)) {
                             continue;
@@ -1657,7 +1660,7 @@ class contentPublish extends AdministrationPage
                         if ($has_entries) {
                             $element = new XMLElement('section', null, array('class' => 'association parent'));
                             $header = new XMLElement('header');
-                            $header->appendChild(new XMLElement('p', __('Linked to %s in', array('<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . '</a>'))));
+                            $header->appendChild(new XMLElement('p', '<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . '</a>'));
                             $element->appendChild($header);
 
                             $ul = new XMLElement('ul', null, array(
@@ -1682,6 +1685,9 @@ class contentPublish extends AdministrationPage
 
             // Process Child Associations
             if (!is_null($child_associations) && !empty($child_associations)) {
+                $title = new XMLElement('h2', __('Links in'), array('class' => 'association-title'));
+                $content->appendChild($title);
+
                 foreach ($child_associations as $as) {
                     // Get the related section
                     $child_section = SectionManager::fetch($as['child_section_id']);
@@ -1727,14 +1733,14 @@ class contentPublish extends AdministrationPage
                     ));
 
                     // Create new entries
-                    $create = new XMLElement('a', __('Create New'), array(
+                    $create = new XMLElement('a', '+', array(
                         'class' => 'button association-new',
                         'href' => SYMPHONY_URL . '/publish/' . $as['handle'] . '/new/' . $prepopulate
                     ));
 
                     // Display existing entries
                     if ($has_entries) {
-                        $header->appendChild(new XMLElement('p', __('Links in %s', array($a->generate()))));
+                        $header->appendChild(new XMLElement('p', $a->generate()));
 
                         $ul = new XMLElement('ul', null, array(
                             'class' => 'association-links',
