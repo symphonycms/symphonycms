@@ -1345,7 +1345,8 @@ class Field
      *  The full filter, eg. `regexp: ^[a-d]`
      * @param array $columns
      *  The array of columns that need the given `$filter` applied to. The conditions
-     *  will be added using `OR`.
+     *  will be added using `OR` when using `regexp:` but they will be added using `AND`
+     *  when using `not-regexp:`
      * @param string $joins
      *  A string containing any table joins for the current SQL fragment. By default
      *  Datasources will always join to the `tbl_entries` table, which has an alias of
