@@ -1345,7 +1345,8 @@ class Field
      *  The full filter, eg. `regexp: ^[a-d]`
      * @param array $columns
      *  The array of columns that need the given `$filter` applied to. The conditions
-     *  will be added using `OR`.
+     *  will be added using `OR` when using `regexp:` but they will be added using `AND`
+     *  when using `not-regexp:`
      * @param string $joins
      *  A string containing any table joins for the current SQL fragment. By default
      *  Datasources will always join to the `tbl_entries` table, which has an alias of
@@ -1360,13 +1361,18 @@ class Field
         $this->_key++;
         $field_id = $this->get('id');
         $filter = $this->cleanValue($filter);
+        $op = '';
 
-        if (preg_match('/^regexp:/i', $filter)) {
+        if (preg_match('/^regexp:\s*/i', $filter)) {
             $pattern = preg_replace('/^regexp:\s*/i', null, $filter);
             $regex = 'REGEXP';
-        } else {
+            $op = 'OR';
+        } elseif (preg_match('/^not-?regexp:\s*/i', $filter)) {
             $pattern = preg_replace('/^not-?regexp:\s*/i', null, $filter);
             $regex = 'NOT REGEXP';
+            $op = 'AND';
+        } else {
+            throw new Exception("Filter `$filter` is not a Regexp filter");
         }
 
         if (strlen($pattern) == 0) {
@@ -1382,7 +1388,7 @@ class Field
         $where .= "AND ( ";
 
         foreach ($columns as $key => $col) {
-            $modifier = ($key === 0) ? '' : 'OR';
+            $modifier = ($key === 0) ? '' : $op;
 
             $where .= "
                 {$modifier} t{$field_id}_{$this->_key}.{$col} {$regex} '{$pattern}'
