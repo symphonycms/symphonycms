@@ -301,11 +301,11 @@ class PageManager
             );
 
             if (!PageManager::createPageFiles($page_path, $child['handle'], $child['path'], $child['handle'])) {
-                $success = false;
+                return false;
             }
 
             if (!PageManager::edit($child_id, $fields)) {
-                $success = false;
+                return false;
             }
 
             $success = PageManager::editPageChildren($child_id, $page_path . '/' . $child['handle']);
