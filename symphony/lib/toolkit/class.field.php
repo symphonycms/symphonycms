@@ -1538,10 +1538,25 @@ class Field
     }
 
     /**
+     * Determine if the requested $order is random or not.
+     *
+     * @since Symphony 2.7.0
+     * @param string $order
+     *  the sorting direction.
+     * @return boolean
+     *  true if the $order is either 'rand' or 'random'
+     */
+    protected function isRandomOrder($order)
+    {
+        return in_array(strtolower($order), array('random', 'rand'));
+    }
+
+    /**
      * Build the SQL command to append to the default query to enable
      * sorting of this field. By default this will sort the results by
      * the entry id in ascending order.
      *
+     * @uses Field::isRandomOrder()
      * @param string $joins
      *  the join element of the query to append the custom join sql to.
      * @param string $where
@@ -1555,7 +1570,7 @@ class Field
      */
     public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
     {
-        if (in_array(strtolower($order), array('random', 'rand'))) {
+        if ($this->isRandomOrder($order)) {
             $sort = 'ORDER BY RAND()';
         } else {
             $joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
@@ -1585,7 +1600,7 @@ class Field
      */
     public function buildSortingSelectSQL($sort, $order = 'ASC')
     {
-        if (in_array(strtolower($order), array('random', 'rand'))) {
+        if ($this->isRandomOrder($order)) {
             return null;
         }
         return '`ed`.`value`';
