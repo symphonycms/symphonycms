@@ -1620,9 +1620,8 @@ class contentPublish extends AdministrationPage
                         continue;
                     }
                     if ($field = FieldManager::fetch($as['parent_section_field_id'])) {
-
                         // Get the related section
-                        $parent_section = SectionManager::fetch($as['child_parent_id'])[0];
+                        $parent_section = SectionManager::fetch($as['parent_section_id']);
 
                         if (!($parent_section instanceof Section)) {
                             continue;
