@@ -177,7 +177,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
                             // Handle pre Symphony 2.2.1 Static DS's
                         } else {
-                            $fields['static_xml'] = trim($existing->grab());
+                            $fields['static_xml'] = trim($existing->execute());
                         }
                         break;
                     default:
