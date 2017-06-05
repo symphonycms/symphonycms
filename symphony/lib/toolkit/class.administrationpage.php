@@ -455,7 +455,7 @@ class AdministrationPage extends HTMLPage
             $this->addHeaderToPage('Access-Control-Allow-Origin', URL);
         }
 
-        if (!array_key_exists('Referrer-Policy', $this->headers())) {
+        if (!array_key_exists('referrer-policy', $this->headers())) {
             $this->addHeaderToPage('Referrer-Policy', 'same-origin');
         }
 
