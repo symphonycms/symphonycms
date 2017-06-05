@@ -421,12 +421,20 @@ class contentSystemAuthors extends AdministrationPage
         // If the Author is the Developer, allow them to set the Default Area to
         // be the Sections Index.
         if ($author->isDeveloper()) {
-            $options[] = array('/blueprints/sections/', $author->get('default_area') == '/blueprints/sections/', __('Sections Index'));
+            $options[] = array(
+                '/blueprints/sections/',
+                $author->get('default_area') == '/blueprints/sections/',
+                __('Sections Index')
+            );
         }
 
         if (is_array($sections) && !empty($sections)) {
             foreach ($sections as $s) {
-                $options[] = array($s->get('id'), $author->get('default_area') == $s->get('id'), $s->get('name'));
+                $options[] = array(
+                    $s->get('id'),
+                    $author->get('default_area') == $s->get('id'),
+                    General::sanitize($s->get('name'))
+                );
             }
         }
 
