@@ -455,6 +455,10 @@ class AdministrationPage extends HTMLPage
             $this->addHeaderToPage('Access-Control-Allow-Origin', URL);
         }
 
+        if (!array_key_exists('referrer-policy', $this->headers())) {
+            $this->addHeaderToPage('Referrer-Policy', 'same-origin');
+        }
+
         if (isset($_REQUEST['action'])) {
             $this->action();
             Symphony::Profiler()->sample('Page action run', PROFILE_LAP);
