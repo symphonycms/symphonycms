@@ -28,6 +28,11 @@
         Symphony::initialiseDatabase();
         Symphony::initialiseExtensionManager();
 
+        // Report all errors
+        if (Symphony::Configuration()->get('error_reporting_all', 'symphony') === 'yes') {
+            error_reporting(E_ALL);
+        }
+
         // Handle custom admin paths, #702
         $adminPath = Symphony::Configuration()->get('admin-path', 'symphony');
         $adminPath = (is_null($adminPath)) ? 'symphony' :  $adminPath;
