@@ -190,6 +190,9 @@ class FieldTagList extends Field implements ExportableField, ImportableField
      */
     public function findAllTags()
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('FieldTagList::findAllTags()', 'FieldTagList::getToggleStates()');
+        }
         $this->getToggleStates();
     }
 

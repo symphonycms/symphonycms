@@ -989,6 +989,9 @@ class General
      */
     public static function checkFile($file)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('General::checkFile()', '`General::checkFileWritable()');
+        }
         clearstatcache();
         $dir = dirname($file);
 

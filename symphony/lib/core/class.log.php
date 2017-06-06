@@ -275,6 +275,54 @@ class Log
     }
 
     /**
+     * Given an method name, this function will properly format a message
+     * and pass it down to `pushToLog()`
+     *
+     * @see Log::pushToLog()
+     * @since Symphony 2.7.0
+     * @param string $method
+     *  The name of the deprecated call
+     * @param string $alternative
+     *  The name of the new method to use
+     * @param array $opts (optional)
+     * @param string $opts.message-format
+     *  The sprintf format to apply to $method
+     * @param string $opts.alternative-format
+     *  The sprintf format to apply to $alternative
+     * @param boolean $opts.write-to-log
+     *  If set to true, this message will be immediately written to the log. By default
+     *  this is set to false, which means that it will only be added to the array ready
+     *  for writing
+     * @param boolean $opts.addbreak
+     *  To be used in conjunction with `$opts.write-to-log`, this will add a line break
+     *  before writing this message in the log file. Defaults to true.
+     * @param boolean $opts.append
+     *  If set to true, the given `$message` will be append to the previous log
+     *  message found in the `$_log` array
+     * @return boolean|null
+     *  If `$writeToLog` is passed, this function will return boolean, otherwise
+     *  void
+     */
+    public function pushDeprecateWarningToLog($method, $alternative = null, array $opts = array())
+    {
+        $defaults = array(
+            'message-format' => __('The method `%s` is deprecated.'),
+            'alternative-format' => __('Please use `%s` instead.'),
+            'write-to-log' => true,
+            'addbreak' => true,
+            'append' => false,
+        );
+        $opts = array_replace($defaults, $opts);
+
+        $message = sprintf($opts['message-format'], $method);
+        if (!empty($alternative)) {
+            $message .= ' ' . sprintf($opts['alternative-format'], $alternative);
+        }
+
+        return $this->pushToLog($message, E_DEPRECATED, $opts['write-to-log'], $opts['addbreak'], $opts['append']);
+    }
+
+    /**
      * The function handles the rotation of the log files. By default it will open
      * the current log file, 'main', which is written to `$_log_path` and
      * check it's file size doesn't exceed `$_max_size`. If it does, the log

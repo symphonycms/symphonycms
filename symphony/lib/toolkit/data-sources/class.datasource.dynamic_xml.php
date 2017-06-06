@@ -22,6 +22,16 @@ require_once CORE . '/class.cacheable.php';
 
 class DynamicXMLDatasource extends Datasource
 {
+    public function __construct($env = null, $process_params = true)
+    {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('new DynamicXMLDatasource()', 'new RemoteDatasource()', array(
+                'alternative-format' => __('Please install the Remote Datasource extension and use `%s` instead.'),
+            ));
+        }
+        parent::__construct($env, $process_params);
+    }
+
     public function execute(array &$param_pool = null)
     {
         $result = new XMLElement($this->dsParamROOTELEMENT);

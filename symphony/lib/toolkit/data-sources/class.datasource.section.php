@@ -170,7 +170,13 @@ class SectionDatasource extends Datasource
             return true;
         }
 
+        // This is deprecated and will be removed in Symphony 3.0.0
         if (in_array('system:date', $this->dsParamINCLUDEDELEMENTS)) {
+            if (Symphony::Log()) {
+                Symphony::Log()->pushDeprecateWarningToLog('system:date', 'system:creation-date` or `system:modification-date', array(
+                    'message-format' => __('The `%s` data-source field is deprecated.')
+                ));
+            }
             $xDate = new XMLElement('system-date');
             $xDate->appendChild(
                 General::createXMLDateObject(
@@ -232,8 +238,9 @@ class SectionDatasource extends Datasource
     /**
      * Given an Entry object, this function will iterate over the `dsParamPARAMOUTPUT`
      * setting to see any of the Symphony system parameters need to be set.
-     * The current system parameters supported are `system:id`, `system:author`
-     * and `system:date`. If these parameters are found, the result is added
+     * The current system parameters supported are `system:id`, `system:author`,
+     * `system:creation-date` and `system:modification-date`.
+     * If these parameters are found, the result is added
      * to the `$param_pool` array using the key, `ds-datasource-handle.parameter-name`
      * For the moment, this function also supports the pre Symphony 2.3 syntax,
      * `ds-datasource-handle` which did not support multiple parameters.
@@ -269,6 +276,11 @@ class SectionDatasource extends Datasource
                     $this->_param_pool[$key][] = $entry->get('author_id');
                 }
             } elseif ($param === 'system:creation-date' || $param === 'system:date') {
+                if ($param === 'system:date' && Symphony::Log()) {
+                    Symphony::Log()->pushDeprecateWarningToLog('system:date', 'system:creation-date', array(
+                        'message-format' => __('The `%s` data-source output parameter is deprecated.')
+                    ));
+                }
                 $this->_param_pool[$param_key][] = $entry->get('creation_date');
 
                 if ($singleParam) {
@@ -432,6 +444,11 @@ class SectionDatasource extends Datasource
                     }
                 }
             } elseif ($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
+                if ($field_id === 'system:date' && Symphony::Log()) {
+                    Symphony::Log()->pushDeprecateWarningToLog('system:date', 'system:creation-date` or `system:modification-date', array(
+                        'message-format' => __('The `%s` data-source filter is deprecated.')
+                    ));
+                }
                 $date_joins = '';
                 $date_where = '';
                 $date = new FieldDate();
@@ -521,6 +538,11 @@ class SectionDatasource extends Datasource
         if ($this->dsParamSORT == 'system:id') {
             EntryManager::setFetchSorting('system:id', $this->dsParamORDER);
         } elseif ($this->dsParamSORT == 'system:date' || $this->dsParamSORT == 'system:creation-date') {
+            if ($this->dsParamSORT === 'system:date' && Symphony::Log()) {
+                Symphony::Log()->pushDeprecateWarningToLog('system:date', 'system:creation-date', array(
+                    'message-format' => __('The `%s` data-source sort is deprecated.')
+                ));
+            }
             EntryManager::setFetchSorting('system:creation-date', $this->dsParamORDER);
         } elseif ($this->dsParamSORT == 'system:modification-date') {
             EntryManager::setFetchSorting('system:modification-date', $this->dsParamORDER);
