@@ -325,21 +325,18 @@ class contentBlueprintsDatasources extends ResourcesPage
         $fieldset->appendChild($group);
 
         $group = new XMLElement('div');
-        $group->setAttribute('class', 'two columns');
+        $group->appendChild(new XMLElement('label', __('Redirect to 404 page when:')));
 
-        $label = Widget::Checkbox('fields[redirect_on_required]', $fields['redirect_on_required'], __('Redirect to 404 page when the required parameter is not present'));
-        $label->setAttribute('class', 'column');
+        $label = Widget::Checkbox('fields[redirect_on_required]', $fields['redirect_on_required'], __('The required parameter is missing'));
         $group->appendChild($label);
 
-        $label = Widget::Checkbox('fields[redirect_on_forbidden]', $fields['redirect_on_forbidden'], __('Redirect to 404 page when the forbidden parameter is present'));
-        $label->setAttribute('class', 'column');
+        $label = Widget::Checkbox('fields[redirect_on_forbidden]', $fields['redirect_on_forbidden'], __('The forbidden parameter is present'));
+        $group->appendChild($label);
+
+        $label = Widget::Checkbox('fields[redirect_on_empty]', $fields['redirect_on_empty'], __('No results are found'));
         $group->appendChild($label);
 
         $fieldset->appendChild($group);
-
-        $label = Widget::Checkbox('fields[redirect_on_empty]', $fields['redirect_on_empty'], __('Redirect to 404 page when no results are found'));
-        $label->setAttribute('class', 'column');
-        $fieldset->appendChild($label);
 
         $this->Form->appendChild($fieldset);
 
