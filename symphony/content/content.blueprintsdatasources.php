@@ -324,8 +324,15 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $fieldset->appendChild($group);
 
+        $this->Form->appendChild($fieldset);
+
+        $fieldset = new XMLElement('fieldset');
+        $this->setContext($fieldset, array('sections', 'system'));
+        $fieldset->appendChild(new XMLElement('legend', __('Page not found')));
+        $p = new XMLElement('p', __('Redirect to 404 page by enabling those criteria.'));
+        $p->setAttribute('class', 'help');
+        $fieldset->appendChild($p);
         $group = new XMLElement('div');
-        $group->appendChild(new XMLElement('label', __('Redirect to 404 page when:')));
 
         $label = Widget::Checkbox('fields[redirect_on_required]', $fields['redirect_on_required'], __('The required parameter is missing'));
         $group->appendChild($label);
