@@ -50,12 +50,26 @@
 }
 
 .association header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
 	padding-top: 1rem;
 }
 
-.association header p {
+.association header > p {
+	flex-grow: 1;
+	overflow: hidden;
 	margin: 0;
 	padding: 0;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.association header > a {
+	flex-shrink: 0;
+	margin-left: 1.5rem;
+	white-space: nowrap;
 }
 
 .association header i a {
@@ -110,9 +124,4 @@
 
 .association-more a::before {
 	content: '\00B7\00B7\00B7' !important;
-}
-
-.association-new {
-	float: right;
-	margin-top: -1.9rem;
 }
