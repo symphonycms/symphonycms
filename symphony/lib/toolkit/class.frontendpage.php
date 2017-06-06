@@ -891,7 +891,7 @@ class FrontendPage extends XSLTPage
             ));
 
             // if the XML is still null, an extension has not run the data source, so run normally
-            // This is deprecated and will be removed in Symphony 3.0.0
+            // This is deprecated and will be replaced by execute in Symphony 3.0.0
             if (is_null($xml)) {
                 $xml = $ds->grab($this->_env['pool']);
             }
