@@ -289,6 +289,10 @@ class Log
      *  The sprintf format to apply to $method
      * @param string $opts.alternative-format
      *  The sprintf format to apply to $alternative
+     * @param string $opts.removal-format
+     *  The sprintf format to apply to $opts.removal-version
+     * @param string $opts.removal-version
+     *  The Symphony version at which the removal is planned
      * @param boolean $opts.write-to-log
      *  If set to true, this message will be immediately written to the log. By default
      *  this is set to false, which means that it will only be added to the array ready
@@ -310,6 +314,8 @@ class Log
         $defaults = array(
             'message-format' => __('The method `%s` is deprecated.'),
             'alternative-format' => __('Please use `%s` instead.'),
+            'removal-format' => __('It will be removed in Symphony %s.'),
+            'removal-version' => '3.0.0',
             'write-to-log' => true,
             'addbreak' => true,
             'append' => false,
@@ -318,6 +324,9 @@ class Log
         $opts = array_replace($defaults, $opts);
 
         $message = sprintf($opts['message-format'], $method);
+        if (!empty($opts['removal-version'])) {
+            $message .= ' ' . sprintf($opts['removal-format'], $opts['removal-version']);
+        }
         if (!empty($alternative)) {
             $message .= ' ' . sprintf($opts['alternative-format'], $alternative);
         }
