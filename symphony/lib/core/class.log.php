@@ -299,6 +299,8 @@ class Log
      * @param boolean $opts.append
      *  If set to true, the given `$message` will be append to the previous log
      *  message found in the `$_log` array
+     * @param boolean $opts.addtrace
+     *  If set to true, the caller of the function will be added. Defaults to true.
      * @return boolean|null
      *  If `$writeToLog` is passed, this function will return boolean, otherwise
      *  void
@@ -311,12 +313,21 @@ class Log
             'write-to-log' => true,
             'addbreak' => true,
             'append' => false,
+            'addtrace' => true,
         );
         $opts = array_replace($defaults, $opts);
 
         $message = sprintf($opts['message-format'], $method);
         if (!empty($alternative)) {
             $message .= ' ' . sprintf($opts['alternative-format'], $alternative);
+        }
+        if ($opts['addtrace'] === true) {
+            $trace = debug_backtrace(0, 3);
+            $index = isset($trace[2]['class']) ? 2 : 1;
+            $caller = $trace[$index]['class'] . '::' . $trace[$index]['function'] . '()';
+            $file = basename($trace[$index - 1]['file']);
+            $line = $trace[$index - 1]['line'];
+            $message .= " Called from `$caller` in $file at line $line";
         }
 
         return $this->pushToLog($message, E_DEPRECATED, $opts['write-to-log'], $opts['addbreak'], $opts['append']);
