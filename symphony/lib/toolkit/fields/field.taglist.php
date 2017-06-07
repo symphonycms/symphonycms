@@ -157,7 +157,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
             SELECT `handle`
             FROM `tbl_entries_data_%d`
             WHERE `entry_id` = %d
-        ", $field_id, $entry_id));
+        ", $this->get('id'), $entry_id));
 
         // Now find the associated entry ids for those `handles` in
         // the parent section.
@@ -165,7 +165,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
             SELECT `entry_id`
             FROM `tbl_entries_data_%d`
             WHERE `handle` IN ('%s')
-        ", $this->get('id'), implode("','", $handles)));
+        ", $field_id, implode("','", $handles)));
 
         return $ids;
     }
