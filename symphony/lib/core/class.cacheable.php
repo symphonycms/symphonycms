@@ -177,6 +177,9 @@ class Cacheable
      */
     public function check($hash)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('Cacheable::check()', 'Cacheable::read()');
+        }
         return $this->read($hash);
     }
 
@@ -189,6 +192,9 @@ class Cacheable
      */
     public function forceExpiry($hash)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('Cacheable::forceExpiry()', 'Cacheable::delete()');
+        }
         return $this->delete($hash);
     }
 
@@ -199,6 +205,9 @@ class Cacheable
      */
     public function clean()
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('Cacheable::forceExpiry()', 'Cacheable::delete()');
+        }
         return $this->delete();
     }
 }

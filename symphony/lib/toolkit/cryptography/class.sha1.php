@@ -23,6 +23,11 @@ class SHA1 extends Cryptography
      */
     public static function hash($input)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('SHA1::hash()', 'PBKDF2::hash()', array(
+                'message-format' => __('The use of `%s` is strongly discouraged due to severe security flaws.'),
+            ));
+        }
         return sha1($input);
     }
 
@@ -36,6 +41,11 @@ class SHA1 extends Cryptography
      */
     public static function file($input)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('SHA1::file()', 'PBKDF2::hash()', array(
+                'message-format' => __('The use of `%s` is strongly discouraged due to severe security flaws.'),
+            ));
+        }
         return sha1_file($input);
     }
 
@@ -52,6 +62,11 @@ class SHA1 extends Cryptography
      */
     public static function compare($input, $hash, $isHash = false)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('SHA1::compare()', 'PBKDF2::compare()', array(
+                'message-format' => __('The use of `%s` is strongly discouraged due to severe security flaws.'),
+            ));
+        }
         return ($hash == self::hash($input));
     }
 }

@@ -23,7 +23,11 @@ class MD5 extends Cryptography
      */
     public static function hash($input)
     {
-        Symphony::Log()->pushToLog('The use of MD5::hash() is discouraged due to severe security flaws.', E_DEPRECATED, true);
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('MD5::hash()', 'PBKDF2::hash()', array(
+                'message-format' => __('The use of `%s` is strongly discouraged due to severe security flaws.'),
+            ));
+        }
         return md5($input);
     }
 
@@ -37,6 +41,11 @@ class MD5 extends Cryptography
      */
     public static function file($input)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('MD5::file()', 'PBKDF2::hash()', array(
+                'message-format' => __('The use of `%s` is strongly discouraged due to severe security flaws.'),
+            ));
+        }
         return md5_file($input);
     }
 
@@ -53,6 +62,11 @@ class MD5 extends Cryptography
      */
     public static function compare($input, $hash, $isHash = false)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('MD5::compare()', 'PBKDF2::compare()', array(
+                'message-format' => __('The use of `%s` is strongly discouraged due to severe security flaws.'),
+            ));
+        }
         return ($hash == self::hash($input));
     }
 }
