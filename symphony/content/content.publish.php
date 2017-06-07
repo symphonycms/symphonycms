@@ -1730,8 +1730,20 @@ class contentPublish extends AdministrationPage
                     // Build the HTML of the relationship
                     $element = new XMLElement('section', null, array('class' => 'association child'));
                     $header = new XMLElement('header');
-                    $filter = '?filter[' . $relation_field->get('element_name') . ']=' . $entry_id;
-                    $prepopulate = '?prepopulate[' . $as['child_section_field_id'] . ']=' . $entry_id;
+
+                    // Get the search value for filters and prepopulate
+                    $entry = current(EntryManager::fetch($entry_id));
+                    $search_value = $relation_field->fetchAssociatedEntrySearchValue(
+                        $entry->getData($as['parent_section_field_id']),
+                        $as['parent_section_field_id'],
+                        $entry_id
+                    );
+                    if (is_array($search_value)) {
+                        $search_value = $entry_id;
+                    }
+
+                    $filter = '?filter[' . $relation_field->get('element_name') . ']=' . $search_value;
+                    $prepopulate = '?prepopulate[' . $as['child_section_field_id'] . ']=' . $search_value;
 
                     // Create link with filter or prepopulate
                     $link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/' . $filter;
