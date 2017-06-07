@@ -1639,7 +1639,8 @@ class contentPublish extends AdministrationPage
 
                         // get associated entries if entry exists,
                         if ($entry_id) {
-                            $entry_ids = $field->findParentRelatedEntries($as['child_section_field_id'], $entry_id);
+                            $relation_field = FieldManager::fetch($as['child_section_field_id']);
+                            $entry_ids = $relation_field->findParentRelatedEntries($as['parent_section_field_id'], $entry_id);
 
                             // get prepopulated entry otherwise
                         } elseif (isset($_GET['prepopulate'])) {
@@ -1656,11 +1657,19 @@ class contentPublish extends AdministrationPage
                             : array();
                         $has_entries = !empty($entries) && $entries['total-entries'] != 0;
 
+                        // Create link
+                        $link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/';
+                        $a = new XMLElement('a', $as['name'], array(
+                            'class' => 'association-section',
+                            'href' => $link
+                        ));
+
+                        $element = new XMLElement('section', null, array('class' => 'association parent'));
+                        $header = new XMLElement('header');
+                        $element->appendChild($header);
+
                         if ($has_entries) {
-                            $element = new XMLElement('section', null, array('class' => 'association parent'));
-                            $header = new XMLElement('header');
-                            $header->appendChild(new XMLElement('p', '<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . '</a>'));
-                            $element->appendChild($header);
+                            $header->appendChild(new XMLElement('p', $a->generate()));
 
                             $ul = new XMLElement('ul', null, array(
                                 'class' => 'association-links',
@@ -1676,8 +1685,12 @@ class contentPublish extends AdministrationPage
                             }
 
                             $element->appendChild($ul);
-                            $content->appendChild($element);
+                        // No entries
+                        } else {
+                            $element->setAttribute('class', 'association parent empty');
+                            $header->appendChild(new XMLElement('p', __('No links to %s', array($a->generate()))));
                         }
+                        $content->appendChild($element);
                     }
                 }
             }
@@ -1706,12 +1719,8 @@ class contentPublish extends AdministrationPage
                     $visible_field   = current($child_section->fetchVisibleColumns());
                     $relation_field  = FieldManager::fetch($as['child_section_field_id']);
 
-                    // Get entries, using $schema for performance reasons.
-                    if (!is_null($parent_section_field_id)) {
-                        $entry_ids = $relation_field->findRelatedEntries($entry_id, $as['parent_section_field_id']);
-                    } else {
-                        $entry_ids = $relation_field->findRelatedEntries($entry_id, $as['child_section_field_id']);
-                    }
+                    $entry_ids = $relation_field->findRelatedEntries($entry_id, $as['parent_section_field_id']);
+
                     $schema = $visible_field ? array($visible_field->get('element_name')) : array();
                     $where = sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids));
 
@@ -1750,7 +1759,7 @@ class contentPublish extends AdministrationPage
                         foreach ($entries['records'] as $key => $e) {
                             // let the first visible field create the mark up
                             if ($visible_field) {
-                                $li = $visible_field->prepareAssociationsDrawerXMLElement($e, $as, $prepopulate);
+                                $li = $visible_field->prepareAssociationsDrawerXMLElement($e, $as);
                             }
                             // or use the system:id if no visible field exists.
                             else {
