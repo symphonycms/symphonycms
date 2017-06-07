@@ -1643,8 +1643,8 @@ class contentPublish extends AdministrationPage
                             $entry_ids = $relation_field->findParentRelatedEntries($as['parent_section_field_id'], $entry_id);
 
                             // get prepopulated entry otherwise
-                        } elseif (isset($_GET['prepopulate'])) {
-                            $entry_ids = array(intval(current($_GET['prepopulate'])));
+                        } elseif (isset($_GET['prepopulate']) && is_array($_GET['prepopulate']) && isset($_GET['prepopulate'][$as['child_section_field_id']])) {
+                            $entry_ids = array(intval($_GET['prepopulate'][$as['child_section_field_id']]));
                         } else {
                             $entry_ids = array();
                         }
