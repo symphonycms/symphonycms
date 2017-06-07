@@ -1845,6 +1845,9 @@ class Field
      */
     public function fetchAssociatedEntryIDs($value)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('Field::fetchAssociatedEntryIDs()', 'Field::findRelatedEntries()` or Field::findParentRelatedEntries()`');
+        }
     }
 
     /**

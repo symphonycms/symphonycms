@@ -161,6 +161,9 @@ class Datasource
      */
     public function grab(array &$param_pool = null)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('Datasource::grab()', 'Datasource::execute()');
+        }
         return $this->execute($param_pool);
     }
 
@@ -553,6 +556,9 @@ class Datasource
      */
     public function __determineFilterType($value)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('Datasource::__determineFilterType()', 'Datasource::determineFilterType()');
+        }
         return self::determineFilterType($value);
     }
 }

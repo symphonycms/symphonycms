@@ -157,7 +157,7 @@ class Section
      * section, but the field that links these sections has hidden this association
      * so an Articles column will not appear on the Author's Publish Index
      *
-     * @deprecated This function will be removed in Symphony 3.0. Use `fetchChildAssociations` instead.
+     * @deprecated This function will be removed in Symphony 3.0. Use `SectionManager::fetchChildAssociations` instead.
      * @param boolean $respect_visibility
      *  Whether to return all the section associations regardless of if they
      *  are deemed visible or not. Defaults to false, which will return all
@@ -166,6 +166,9 @@ class Section
      */
     public function fetchAssociatedSections($respect_visibility = false)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('Section::fetchAssociatedSections()', 'SectionManager::fetchChildAssociations()');
+        }
         return SectionManager::fetchChildAssociations($this->get('id'), $respect_visibility);
     }
 

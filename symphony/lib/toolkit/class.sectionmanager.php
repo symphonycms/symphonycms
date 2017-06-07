@@ -336,6 +336,9 @@ class SectionManager
      */
     public static function fetchAssociatedSections($section_id, $respect_visibility = false)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('SectionManager::fetchAssociatedSections()', 'SectionManager::fetchChildAssociations()');
+        }
         self::fetchChildAssociations($section_id, $respect_visibility);
     }
 

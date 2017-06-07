@@ -14,4 +14,11 @@
  */
 abstract class AjaxPage extends XMLPage
 {
+    public function __construct()
+    {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('new AjaxPage()', 'new XMLPage()');
+        }
+        parent::__construct();
+    }
 }

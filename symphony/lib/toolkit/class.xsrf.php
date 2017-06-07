@@ -218,6 +218,9 @@ class XSRF
      */
     public static function getSession()
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('XSRF::getSession()', 'XSRF::getSessionToken()');
+        }
         return self::getSessionToken();
     }
 }
