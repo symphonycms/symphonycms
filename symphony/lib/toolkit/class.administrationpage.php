@@ -366,7 +366,7 @@ class AdministrationPage extends HTMLPage
         $this->addStylesheetToHead(ASSETS_URL . '/css/symphony.min.css', 'screen', 2, false);
 
         // Calculate timezone offset from UTC
-        $timezone = new DateTimeZone(Symphony::Configuration()->get('timezone', 'region'));
+        $timezone = new DateTimeZone(DateTimeObj::getSetting('timezone'));
         $datetime = new DateTime('now', $timezone);
         $timezoneOffset = intval($timezone->getOffset($datetime)) / 60;
 
@@ -474,6 +474,20 @@ class AdministrationPage extends HTMLPage
         // Add Breadcrumbs
         $this->Context->prependChild($this->Breadcrumbs);
         $this->Contents->appendChild($this->Form);
+
+        // Validate date time config
+        if (empty(__SYM_DATE_FORMAT__)) {
+            $this->pageAlert(
+                __('Your <code>%s</code> file does not define a date format', array(basename(CONFIG))),
+                Alert::NOTICE
+            );
+        }
+        if (empty(__SYM_TIME_FORMAT__)) {
+            $this->pageAlert(
+                __('Your <code>%s</code> file does not define a time format.', array(basename(CONFIG))),
+                Alert::NOTICE
+            );
+        }
 
         $this->view();
 

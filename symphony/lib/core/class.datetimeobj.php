@@ -17,10 +17,15 @@ class DateTimeObj
      * Holds the various settings for the formats that the `DateTimeObj` should
      * use when parsing input dates.
      *
+     * @since Symphony 2.7.0 it contains default values to prevent the case where
+     * no settings are set
      * @since Symphony 2.2.4
      * @var array
      */
-    private static $settings = array();
+    private static $settings = array(
+        'time_format' => 'g:i a',
+        'date_format' => 'm/d/Y',
+    );
 
     /**
      * Mapping PHP to Moment date formats.
@@ -90,7 +95,7 @@ class DateTimeObj
         // Datetime format
         if (isset($settings['datetime_format'])) {
             self::$settings['datetime_format'] = $settings['datetime_format'];
-        } else {
+        } elseif (!isset(self::$settings['datetime_format'])) {
             self::$settings['datetime_format'] = self::$settings['date_format'] . self::$settings['datetime_separator'] . self::$settings['time_format'];
         }
 
@@ -98,6 +103,11 @@ class DateTimeObj
         if (isset($settings['timezone']) && !empty($settings['timezone'])) {
             self::$settings['timezone'] = $settings['timezone'];
             self::setDefaultTimezone($settings['timezone']);
+        } elseif (!isset(self::$settings['timezone'])) {
+            self::$settings['timezone'] = ini_get('date.timezone');
+            if (empty(self::$settings['timezone'])) {
+                self::$settings['timezone'] = 'UTC';
+            }
         }
     }
 
