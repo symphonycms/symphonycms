@@ -17,6 +17,12 @@ class contentPublish extends AdministrationPage
     public function sort(&$sort, &$order, $params)
     {
         $section = $params['current-section'];
+        $filters = '';
+        // Format the filter query string
+        if (isset($params['filters']) && !empty($params['filters'])) {
+            $filters = preg_replace('/^&amp;/i', '', $params['filters'], 1);
+            $filters = '?' . trim($filters);
+        }
 
         // If `?unsort` is appended to the URL, then sorting is reverted
         // to 'none', aka. by 'entry-id'.
@@ -24,11 +30,11 @@ class contentPublish extends AdministrationPage
             $section->setSortingField('id', false);
             $section->setSortingOrder('desc');
 
-            redirect(Administration::instance()->getCurrentPageURL());
+            redirect(Administration::instance()->getCurrentPageURL() . $filters);
         }
 
         // By default, sorting information are retrieved from
-        // the filesystem and stored inside the `Configuration` object
+        // the file system and stored inside the `Configuration` object
         if (is_null($sort) && is_null($order)) {
             $sort = $section->getSortingField();
             $order = $section->getSortingOrder();
@@ -37,18 +43,11 @@ class contentPublish extends AdministrationPage
             EntryManager::setFetchSorting($sort, $order);
         } else {
             $sort = General::sanitize($sort);
-            $filters = '';
 
             // Ensure that this field is infact sortable, otherwise
             // fallback to IDs
             if (($field = FieldManager::fetch($sort)) instanceof Field && !$field->isSortable()) {
                 $sort = $section->getDefaultSortingField();
-            }
-
-            // Format the filter query string
-            if ($params['filters']) {
-                $filters = preg_replace('/^&amp;/i', '', $params['filters'], 1);
-                $filters = '?' . trim($filters);
             }
 
             // If the sort order or direction differs from what is saved,
