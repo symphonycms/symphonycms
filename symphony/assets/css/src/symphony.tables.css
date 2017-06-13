@@ -72,22 +72,25 @@ th a:after {
 }
 
 th a:active,
-th a.active,
 th a.active:after {
 	color: #808080;
 }
 
-th a:after,
-th a.active:hover:after,
-th a.active[href$=asc]:after {
-	content: '\2193';
+th a:after {
 	margin-left: 0.3rem;
+	content: '';
 }
 
-th a.active:after,
-th a[href$=asc]:after,
-th a.active[href$=asc]:hover:after {
-	content: '\2191';
+th a[href*="order=desc"]:after,
+th a.active[href*="order=asc"]:after,
+th a.active[href*="order=desc"]:hover:after {
+	content: '\2193'; /* down arrow */
+}
+
+th a[href*="order=asc"]:after,
+th a.active[href*="order=desc"]:after,
+th a.active[href*="order=asc"]:hover:after {
+	content: '\2191'; /* up arrow */
 }
 
 table.busy td {
