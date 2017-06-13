@@ -231,7 +231,6 @@ class FrontendPage extends XSLTPage
             // Lock down the frontend first so that extensions can easily remove these
             // headers if desired. RE: #2480
             $this->addHeaderToPage('X-Frame-Options', 'SAMEORIGIN');
-            $this->addHeaderToPage('Access-Control-Allow-Origin', URL);
             // Add more http security headers, RE: #2248
             $this->addHeaderToPage('X-Content-Type-Options', 'nosniff');
             $this->addHeaderToPage('X-XSS-Protection', '1; mode=block');
