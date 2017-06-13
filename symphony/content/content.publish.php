@@ -1612,7 +1612,7 @@ class contentPublish extends AdministrationPage
 
             // Process Parent Associations
             if (!is_null($parent_associations) && !empty($parent_associations)) {
-                $title = new XMLElement('h2', __('Linked to'), array('class' => 'association-title'));
+                $title = new XMLElement('h2', __('Linked to') . ':', array('class' => 'association-title'));
                 $content->appendChild($title);
 
                 foreach ($parent_associations as $as) {
@@ -1659,7 +1659,7 @@ class contentPublish extends AdministrationPage
                         if ($has_entries) {
                             $element = new XMLElement('section', null, array('class' => 'association parent'));
                             $header = new XMLElement('header');
-                            $header->appendChild(new XMLElement('p', '<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . '</a>'));
+                            $header->appendChild(new XMLElement('p', '<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . ' (' . count($entry_id) . ')</a>'));
                             $element->appendChild($header);
 
                             $ul = new XMLElement('ul', null, array(
@@ -1684,7 +1684,7 @@ class contentPublish extends AdministrationPage
 
             // Process Child Associations
             if (!is_null($child_associations) && !empty($child_associations)) {
-                $title = new XMLElement('h2', __('Links in'), array('class' => 'association-title'));
+                $title = new XMLElement('h2', __('Links in') . ':', array('class' => 'association-title'));
                 $content->appendChild($title);
 
                 foreach ($child_associations as $as) {
@@ -1726,7 +1726,7 @@ class contentPublish extends AdministrationPage
 
                     // Create link with filter or prepopulate
                     $link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/' . $filter;
-                    $a = new XMLElement('a', $as['name'], array(
+                    $a = new XMLElement('a', $as['name'] . ' (' . count($entry_ids) . ')', array(
                         'class' => 'association-section',
                         'href' => $link
                     ));
