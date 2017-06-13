@@ -294,7 +294,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         // Conditions
         $fieldset = new XMLElement('fieldset');
         $this->setContext($fieldset, array('sections', 'system'));
-        $fieldset->appendChild(new XMLElement('legend', __('Conditions')));
+        $fieldset->appendChild(new XMLElement('legend', __('Execution Conditions')));
         $p = new XMLElement('p', __('Leaving these fields empty will always execute the data source.'));
         $p->setAttribute('class', 'help');
         $fieldset->appendChild($p);
@@ -326,22 +326,26 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $fieldset->appendChild($group);
 
-        $group = new XMLElement('div');
-        $group->setAttribute('class', 'two columns');
+        $this->Form->appendChild($fieldset);
 
-        $label = Widget::Checkbox('fields[redirect_on_required]', $fields['redirect_on_required'], __('Redirect to 404 page when the required parameter is not present'));
-        $label->setAttribute('class', 'column');
+        $fieldset = new XMLElement('fieldset');
+        $this->setContext($fieldset, array('sections', 'system'));
+        $fieldset->appendChild(new XMLElement('legend', __('Error Conditions')));
+        $p = new XMLElement('p', __('Enabling these conditions will send a <code>404 page not found</code> error.'));
+        $p->setAttribute('class', 'help');
+        $fieldset->appendChild($p);
+        $group = new XMLElement('div');
+
+        $label = Widget::Checkbox('fields[redirect_on_required]', $fields['redirect_on_required'], __('The required parameter is missing'));
         $group->appendChild($label);
 
-        $label = Widget::Checkbox('fields[redirect_on_forbidden]', $fields['redirect_on_forbidden'], __('Redirect to 404 page when the forbidden parameter is present'));
-        $label->setAttribute('class', 'column');
+        $label = Widget::Checkbox('fields[redirect_on_forbidden]', $fields['redirect_on_forbidden'], __('The forbidden parameter is present'));
+        $group->appendChild($label);
+
+        $label = Widget::Checkbox('fields[redirect_on_empty]', $fields['redirect_on_empty'], __('No results are found'));
         $group->appendChild($label);
 
         $fieldset->appendChild($group);
-
-        $label = Widget::Checkbox('fields[redirect_on_empty]', $fields['redirect_on_empty'], __('Redirect to 404 page when no results are found'));
-        $label->setAttribute('class', 'column');
-        $fieldset->appendChild($label);
 
         $this->Form->appendChild($fieldset);
 
