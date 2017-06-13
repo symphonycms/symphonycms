@@ -1525,9 +1525,11 @@ class General
      *  the name of the element to append to the namespace of the constructed XML.
      *  this defaults to "date".
      * @param string $date_format (optional)
-     *  the format to apply to the date, defaults to `Y-m-d`
+     *  the format to apply to the date, defaults to `Y-m-d`.
+     *  if empty, uses DateTimeObj settings.
      * @param string $time_format (optional)
-     *  the format to apply to the date, defaults to `H:i`
+     *  the format to apply to the date, defaults to `H:i`.
+     *  if empty, uses DateTimeObj settings.
      * @param string $namespace (optional)
      *  the namespace in which the resulting XML entity will reside. this defaults
      *  to null.
@@ -1539,6 +1541,13 @@ class General
     {
         if (!class_exists('XMLElement')) {
             return false;
+        }
+
+        if (empty($date_format)) {
+            $date_format = DateTimeObj::getSetting('date_format');
+        }
+        if (empty($time_format)) {
+            $time_format = DateTimeObj::getSetting('time_format');
         }
 
         $xDate = new XMLElement(

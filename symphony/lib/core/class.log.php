@@ -132,6 +132,9 @@ class Log
      */
     public function setDateTimeFormat($format)
     {
+        if (empty($format)) {
+            throw new Exception('Datetime format can not be empty');
+        }
         $this->_datetime_format = $format;
     }
 
