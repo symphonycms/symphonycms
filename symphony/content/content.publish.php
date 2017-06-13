@@ -1753,7 +1753,7 @@ class contentPublish extends AdministrationPage
                     ));
 
                     // Create new entries
-                    $create = new XMLElement('a', __('Create New'), array(
+                    $create = new XMLElement('a', __('New'), array(
                         'class' => 'button association-new',
                         'href' => SYMPHONY_URL . '/publish/' . $as['handle'] . '/new/' . $prepopulate
                     ));

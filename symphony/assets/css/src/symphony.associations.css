@@ -15,13 +15,14 @@
 }
 
 #drawer-section-associations .association-title {
-	font-size: 1.2rem;
+	font-size: 1.4rem;
+	font-weight: 400;
 	padding: 2rem 0 0;
 }
 
 .association {
 	min-height: 3rem;
-	margin-top: 2rem;
+	margin: 0.5rem 0 1rem;
 	color: #666;
 }
 
@@ -60,6 +61,7 @@
 .association header > p {
 	flex-grow: 1;
 	overflow: hidden;
+	font-weight: bold;
 	margin: 0;
 	padding: 0;
 	text-overflow: ellipsis;
@@ -89,33 +91,23 @@
 .association-links {
 	width: 26rem;
 	margin: 0;
-	padding: 1rem 0 0;
+	padding: 0.2rem 0 0;
 }
 
 .association-links li {
 	display: block;
 	box-sizing: border-box;
-	line-height: 2;
 	white-space: nowrap;
 }
 
 .association-links a,
 .association-links a:hover {
-	display: inline-block;
+	display: block;
 	overflow: hidden;
 	width: 26rem;
 	line-height: 3rem;
 	text-overflow: ellipsis;
 	border-color: #e8e8e8;
-}
-
-.association-links li a::before {
-	content: '\2192 ';
-	margin-right: 0.3rem;
-}
-
-.association.child .association-links li a::before {
-	content: '\2190 ';
 }
 
 .association-more a {
