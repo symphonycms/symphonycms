@@ -451,10 +451,6 @@ class AdministrationPage extends HTMLPage
             $this->addHeaderToPage('X-XSS-Protection', '1; mode=block');
         }
 
-        if (!array_key_exists('access-control-allow-origin', $this->headers())) {
-            $this->addHeaderToPage('Access-Control-Allow-Origin', URL);
-        }
-
         if (!array_key_exists('referrer-policy', $this->headers())) {
             $this->addHeaderToPage('Referrer-Policy', 'same-origin');
         }
