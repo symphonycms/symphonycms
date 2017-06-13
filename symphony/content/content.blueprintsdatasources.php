@@ -292,7 +292,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         // Conditions
         $fieldset = new XMLElement('fieldset');
         $this->setContext($fieldset, array('sections', 'system'));
-        $fieldset->appendChild(new XMLElement('legend', __('Execution Rules')));
+        $fieldset->appendChild(new XMLElement('legend', __('Execution Conditions')));
         $p = new XMLElement('p', __('Leaving these fields empty will always execute the data source.'));
         $p->setAttribute('class', 'help');
         $fieldset->appendChild($p);
@@ -328,7 +328,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $fieldset = new XMLElement('fieldset');
         $this->setContext($fieldset, array('sections', 'system'));
-        $fieldset->appendChild(new XMLElement('legend', __('Error Rules')));
+        $fieldset->appendChild(new XMLElement('legend', __('Error Conditions')));
         $p = new XMLElement('p', __('Enabling these conditions will send a <code>404 page not found</code> error.'));
         $p->setAttribute('class', 'help');
         $fieldset->appendChild($p);
