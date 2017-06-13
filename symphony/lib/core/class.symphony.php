@@ -166,10 +166,11 @@ abstract class Symphony implements Singleton
         self::$Configuration->setArray($data);
 
         // Set date format throughout the system
-        define_safe('__SYM_DATE_FORMAT__', self::Configuration()->get('date_format', 'region'));
-        define_safe('__SYM_TIME_FORMAT__', self::Configuration()->get('time_format', 'region'));
-        define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . self::Configuration()->get('datetime_separator', 'region') . __SYM_TIME_FORMAT__);
-        DateTimeObj::setSettings(self::Configuration()->get('region'));
+        $region = self::Configuration()->get('region');
+        define_safe('__SYM_DATE_FORMAT__', $region['date_format']);
+        define_safe('__SYM_TIME_FORMAT__', $region['time_format']);
+        define_safe('__SYM_DATETIME_FORMAT__', __SYM_DATE_FORMAT__ . $region['datetime_separator'] . __SYM_TIME_FORMAT__);
+        DateTimeObj::setSettings($region);
     }
 
     /**
@@ -228,7 +229,7 @@ abstract class Symphony implements Singleton
         self::$Log = new Log($filename);
         self::$Log->setArchive((self::Configuration()->get('archive', 'log') == '1' ? true : false));
         self::$Log->setMaxSize(intval(self::Configuration()->get('maxsize', 'log')));
-        self::$Log->setDateTimeFormat(self::Configuration()->get('date_format', 'region') . ' ' . self::Configuration()->get('time_format', 'region'));
+        self::$Log->setDateTimeFormat(__SYM_DATETIME_FORMAT__);
 
         if (self::$Log->open(Log::APPEND, self::Configuration()->get('write_mode', 'file')) == '1') {
             self::$Log->initialise('Symphony Log');
