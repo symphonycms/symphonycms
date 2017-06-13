@@ -68,6 +68,10 @@
 	white-space: nowrap;
 }
 
+.association header > p span {
+	opacity: 0.3;
+}
+
 .association header > a {
 	flex-shrink: 0;
 	margin-left: 1.5rem;
