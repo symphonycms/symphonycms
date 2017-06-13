@@ -630,6 +630,15 @@ class AdministrationPage extends HTMLPage
         $this->__appendBodyId();
         $this->__appendBodyClass($this->_context);
 
+        /**
+         * This is just prior to the page headers being rendered, and is suitable for changing them
+         * @delegate PreRenderHeaders
+         * @since Symphony 2.7.0
+         * @param string $context
+         * '/backend/'
+         */
+        Symphony::ExtensionManager()->notifyMembers('PreRenderHeaders', '/backend/');
+
         return parent::generate($page);
     }
 
