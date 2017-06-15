@@ -205,12 +205,16 @@ class Datasource
     }
 
     /**
-     * By default, all Symphony filters are considering to be OR and "+" filters
+     * By default, all Symphony filters are considering to be OR and " + " filters
      * are used for AND. They are all used and Entries must match each filter to be included.
-     * It is possible to use OR filtering in a field by using an "," to separate the values.
-     * eg. If the filter is "test1, test2", this will match any entries where this field
+     * It is possible to use OR filtering in a field by using an ", " to separate the values.
+     *
+     * If the filter is "test1, test2", this will match any entries where this field
      * is test1 OR test2. If the filter is "test1 + test2", this will match entries
-     * where this field is test1 AND test2. Not all fields supports this feature.
+     * where this field is test1 AND test2. The spaces around the + are required.
+     *
+     * Not all fields supports this feature.
+     *
      * This function is run on each filter (ie. each field) in a datasource.
      *
      * @param string $value
@@ -220,7 +224,32 @@ class Datasource
      */
     public static function determineFilterType($value)
     {
-        return (preg_match('/\s+\+\s+/', $value) ? Datasource::FILTER_AND : Datasource::FILTER_OR);
+        // Check for two possible combos
+        //  1. The old pattern, which is ' + '
+        //  2. A new pattern, which accounts for '+' === ' ' in urls
+        $pattern = '/(\s+\+\s+)|(\+\+\+)/';
+        return preg_match($pattern, $value) === 1 ? Datasource::FILTER_AND : Datasource::FILTER_OR;
+    }
+
+    /**
+     * Splits the filter string value into an array.
+     *
+     * @since Symphony 2.7.0
+     * @param int $filter_type
+     *  The filter's type, as determined by `determineFilterType()`.
+     *  Valid values are Datasource::FILTER_OR or Datasource::FILTER_AND
+     * @param string $value
+     *  The filter's value
+     * @return array
+     *  The splitted filter value, according to its type
+     */
+    public static function splitFilter($filter_type, $value)
+    {
+        $pattern = $filter_type === Datasource::FILTER_AND ? '\+' : '(?<!\\\\),';
+        $value = preg_split('/\s*' . $pattern . '\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
+        $value = array_map('trim', $value);
+        $value = array_map(array('Datasource', 'removeEscapedCommas'), $value);
+        return $value;
     }
 
     /**
