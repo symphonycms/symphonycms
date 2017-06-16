@@ -4,7 +4,7 @@
     {
         public static function getVersion()
         {
-            return '2.7.0.beta3';
+            return '2.7.0.RC1';
         }
 
         public static function getReleaseNotes()

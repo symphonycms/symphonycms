@@ -1,8 +1,8 @@
 {
     "name": "symphonycms/symphony-2",
-    "version": "2.6.11",
+    "version": "2.7.0.RC1",
     "description": "Symphony is a PHP & MySQL based CMS that utilises XML and XSLT as its core technologies.",
-    "homepage": "http://www.getsymphony.com",
+    "homepage": "https://www.getsymphony.com",
     "license": "MIT",
     "authors": [
         {
@@ -11,7 +11,7 @@
         }
     ],
     "support": {
-      "forum": "http://www.getsymphony.com/discuss/",
+      "forum": "https://www.getsymphony.com/discuss/",
       "issues": "https://github.com/symphonycms/symphony-2/issues",
       "wiki": "https://github.com/symphonycms/symphony-2/wiki"
     },

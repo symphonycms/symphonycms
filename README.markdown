@@ -4,10 +4,10 @@
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
 
-- Version: 2.6.11
-- Date: 18th January 2017
-- [Release notes](http://getsymphony.com/download/releases/version/2.6.11/)
-- [Github repository](https://github.com/symphonycms/symphony-2/tree/2.6.11)
+- Version: 2.7.0.RC1
+- Date: 15th june 2017
+- [Release notes](http://getsymphony.com/download/releases/version/2.7.0/)
+- [Github repository](https://github.com/symphonycms/symphony-2/tree/2.7.0)
 - [MIT Licence](https://github.com/symphonycms/symphony-2/blob/master/LICENCE)
 
 ## Contents
@@ -26,7 +26,7 @@
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.6.11` and is considered stable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.7.0.RC1` and is considered stable.
 
 Useful places:
 
@@ -37,7 +37,7 @@ Useful places:
 
 ## Server requirements
 
-- PHP 5.3, 5.4, 5.5 or 5.6
+- PHP 5.3-5.6 or 7.0-7.1
 - PHP’s LibXML module, with the XSLT extension enabled (`--with-xsl`)
 - MySQL 5.5 or above is recommended
 - A webserver (known to be used with Apache, Litespeed, Nginx and Hiawatha)
