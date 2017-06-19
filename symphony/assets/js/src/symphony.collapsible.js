@@ -119,7 +119,7 @@
 
 				setTimeout(function collapseAllInvisibleEnd() {
 					var first = visibles.eq(0);
-					var firstOffset = first.offset().top;
+					var firstOffset = !first.length ? 0 : first.offset().top;
 					// update invisible accordingly
 					invisibles = items.not(visibles);
 					invisibles.each(function () { collapseItem($(this), 0); });
