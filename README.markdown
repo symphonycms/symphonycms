@@ -4,7 +4,7 @@
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
 
-- Version: 2.7.0.RC1
+- Version: 2.7.0-RC1
 - Date: 15th june 2017
 - [Release notes](http://getsymphony.com/download/releases/version/2.7.0/)
 - [Github repository](https://github.com/symphonycms/symphony-2/tree/2.7.0)
@@ -26,7 +26,7 @@
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.7.0.RC1` and is considered stable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.7.0-RC1` and is considered stable.
 
 Useful places:
 
@@ -194,19 +194,13 @@ Follow the instructions below if you are updating from Symphony 2.0 (not from Gi
 
 Symphony uses [Grunt](http://gruntjs.com/) to build concatenated and minified assets:
 
-1. Install `grunt-cli` globally ([see the Grunt documentation](http://gruntjs.com/getting-started)):
-
-		npm install -g grunt-cli
-
-2. Install all dependencies from the repository’s root:
+1. Install all dependencies from the repository’s root:
 
 		npm install
 
-3. Run the `watch` task:
+2. Build Symphony’s assets:
 
-		grunt watch
-
-Symphony’s minified script and style files will be updated automatically when saving source files.
+		./node_modules/.bin/grunt
 
 More information: [Contributing to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony).
 
