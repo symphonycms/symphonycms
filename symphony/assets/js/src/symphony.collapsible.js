@@ -174,7 +174,7 @@
 				visibles.each(function () { expandItem($(this), settings.delay); });
 				setTimeout(function expandAllInvisible() {
 					var first = visibles.eq(0);
-					var firstOffset = first.offset().top;
+					var firstOffset = !first.length ? 0 : first.offset().top;
 					invisibles.addClass('js-animate-all'); // prevent focus
 					invisibles.each(function () { expandItem($(this), 0); });
 					invisibles.trigger('animationend.collapsible');
