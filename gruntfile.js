@@ -107,7 +107,15 @@ module.exports = function (grunt) {
             scripts: {
                 options: {
                     banner: '<%= meta.banner %>',
-                    preserveComments: 'some'
+                    preserveComments: 'some',
+                    screwIE8: true,
+                    quoteStyle: 3,
+                    compress: {
+                        drop_console: true,
+                        dead_code: true,
+                        unused: true,
+                        warnings: grunt.option('verbose')
+                    }
                 },
                 files: {
                     'symphony/assets/js/symphony.min.js': [
@@ -133,7 +141,7 @@ module.exports = function (grunt) {
                         'symphony/assets/js/src/symphony.filtering.js',
                         'symphony/assets/js/src/symphony.suggestions.js',
                         'symphony/assets/js/src/backend.js',
-                        'symphony/assets/js/src/backend.views.js',
+                        'symphony/assets/js/src/backend.views.js'
                     ]
                 }
             }
