@@ -1668,7 +1668,7 @@ class contentPublish extends AdministrationPage
                         // get associated entries if entry exists,
                         if ($entry_id) {
                             $relation_field = FieldManager::fetch($as['child_section_field_id']);
-                            $entry_ids = $relation_field->findParentRelatedEntries($as['parent_section_field_id'], $entry_id);
+                            $entry_ids = $relation_field->findParentRelatedEntries($as['child_section_field_id'], $entry_id);
 
                             // get prepopulated entry otherwise
                         } elseif (isset($_GET['prepopulate']) && is_array($_GET['prepopulate']) && isset($_GET['prepopulate'][$as['child_section_field_id']])) {
@@ -1687,7 +1687,7 @@ class contentPublish extends AdministrationPage
 
                         // Create link
                         $link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/';
-                        $a = new XMLElement('a', $as['name'] . ' <span>(' . count($entry_id) . ')</span>', array(
+                        $a = new XMLElement('a', $as['name'] . ' <span>(' . count($entry_ids) . ')</span>', array(
                             'class' => 'association-section',
                             'href' => $link
                         ));
