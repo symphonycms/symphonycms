@@ -1596,8 +1596,10 @@ class Field
      * If no new projection is needed (like if the order is made via a sub-query),
      * simply return null.
      *
-     * For backward compatibility, this method checks if its data table contains
-     * a `value` column. Extension developers should make their Field implement
+     * For backward compatibility, this method checks if the sort expression
+     * contains `ed`.`value`. This check will be removed in Symphony 3.0.0.
+     *
+     * Extension developers should make their Fields implement
      * `buildSortingSelectSQL()` when overriding `buildSortingSQL()`.
      *
      * @since Symphony 2.7.0
@@ -1619,25 +1621,11 @@ class Field
             return null;
         }
         // @deprecated This check should be removed in Symphony 3.0.0
-        if ($this->_hasValueCol === null) {
-            try {
-                $cols = Symphony::Database()->fetch("
-                    SHOW COLUMNS FROM `tbl_entries_data_".$this->get('id') .
-                    "` LIKE 'value';"
-                );
-                $this->_hasValueCol = !empty($cols);
-            } catch (Exception $ex) {
-                // ignore
-                $this->_hasValueCol = false;
-            }
-            var_dump($this->_hasValueCol);die;
-        }
-        if (!$this->_hasValueCol) {
+        if (strpos($sort, '`ed`.`value`') === false) {
             return null;
         }
         return '`ed`.`value`';
     }
-    private $_hasValueCol = null;
 
     /**
      * Default implementation of record grouping. This default implementation
