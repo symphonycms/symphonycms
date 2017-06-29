@@ -154,7 +154,7 @@ class Author
      */
     public function createAuthToken()
     {
-        return General::substrmin(SHA1::hash($this->get('username') . $this->get('password')), 8);
+        return General::substrmin(sha1($this->get('username') . $this->get('password')), 8);
     }
 
     /**
