@@ -1697,7 +1697,10 @@ class contentPublish extends AdministrationPage
                         $element->appendChild($header);
 
                         if ($has_entries) {
-                            $header->appendChild(new XMLElement('p', $a->generate()));
+                            $element = new XMLElement('section', null, array('class' => 'association parent'));
+                            $header = new XMLElement('header');
+                            $header->appendChild(new XMLElement('p', '<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . ' (' . count($entry_id) . ')</a>'));
+                            $element->appendChild($header);
 
                             $ul = new XMLElement('ul', null, array(
                                 'class' => 'association-links',
@@ -1775,7 +1778,7 @@ class contentPublish extends AdministrationPage
 
                     // Create link with filter or prepopulate
                     $link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/' . $filter;
-                    $a = new XMLElement('a', $as['name'] . ' <span>(' . count($entry_ids) . ')</span>', array(
+                    $a = new XMLElement('a', $as['name'] . ' (' . count($entry_ids) . ')', array(
                         'class' => 'association-section',
                         'href' => $link
                     ));
