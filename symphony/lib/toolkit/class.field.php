@@ -1562,7 +1562,11 @@ class Field
      * sorting of this field. By default this will sort the results by
      * the entry id in ascending order.
      *
+     * Extension developers should always implement both `buildSortingSQL()`
+     * and `buildSortingSelectSQL()`.
+     *
      * @uses Field::isRandomOrder()
+     * @see Field::buildSortingSelectSQL()
      * @param string $joins
      *  the join element of the query to append the custom join sql to.
      * @param string $where
@@ -1590,9 +1594,16 @@ class Field
      * clause to be included in the SELECT's projection.
      *
      * If no new projection is needed (like if the order is made via a sub-query),
-     * simpy return null.
+     * simply return null.
+     *
+     * For backward compatibility, this method checks if the sort expression
+     * contains `ed`.`value`. This check will be removed in Symphony 3.0.0.
+     *
+     * Extension developers should make their Fields implement
+     * `buildSortingSelectSQL()` when overriding `buildSortingSQL()`.
      *
      * @since Symphony 2.7.0
+     * @uses Field::isRandomOrder()
      * @see Field::buildSortingSQL()
      * @param string $sort
      *  the existing sort component of the sql query, after it has been passed
@@ -1607,6 +1618,10 @@ class Field
     public function buildSortingSelectSQL($sort, $order = 'ASC')
     {
         if ($this->isRandomOrder($order)) {
+            return null;
+        }
+        // @deprecated This check should be removed in Symphony 3.0.0
+        if (strpos($sort, '`ed`.`value`') === false) {
             return null;
         }
         return '`ed`.`value`';
