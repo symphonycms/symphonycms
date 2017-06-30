@@ -331,7 +331,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         $fieldset = new XMLElement('fieldset');
         $this->setContext($fieldset, array('sections', 'system'));
         $fieldset->appendChild(new XMLElement('legend', __('Error Conditions')));
-        $p = new XMLElement('p', __('If enabled conditions are met, a <code>"404 page not found"</code> error will be sent.'));
+        $p = new XMLElement('p', __('Meeting one of these conditions will send a <code>404 Not Found</code> error.'));
         $p->setAttribute('class', 'help');
         $fieldset->appendChild($p);
         $group = new XMLElement('div');
