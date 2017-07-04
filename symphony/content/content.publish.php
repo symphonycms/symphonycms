@@ -1703,7 +1703,7 @@ class contentPublish extends AdministrationPage
                         if ($has_entries) {
                             $element = new XMLElement('section', null, array('class' => 'association parent'));
                             $header = new XMLElement('header');
-                            $header->appendChild(new XMLElement('p', '<a class="association-section" href="' . SYMPHONY_URL . '/publish/' . $as['handle'] . '/">' . $as['name'] . ' <span>(' . count($entry_id) . ')</span></a>'));
+                            $header->appendChild(new XMLElement('p', $a->generate()));
                             $element->appendChild($header);
 
                             $ul = new XMLElement('ul', null, array(
