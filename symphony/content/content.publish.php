@@ -441,6 +441,7 @@ class contentPublish extends AdministrationPage
                     } else {
                         unset($filters[$handle]);
                     }
+                    unset($field);
                 }
             }
 
@@ -659,6 +660,8 @@ class contentPublish extends AdministrationPage
                                 )
                             );
                         }
+
+                        unset($field);
                     }
                 }
 
@@ -940,6 +943,7 @@ class contentPublish extends AdministrationPage
                             ));
                         }
 
+                        unset($field);
                         redirect(server_safe('REQUEST_URI'));
                     }
             }
@@ -1017,6 +1021,7 @@ class contentPublish extends AdministrationPage
                         $field->get('id'),
                         $field->processRawFieldData($value, $error, $message, true)
                     );
+                    unset($field);
                 }
             }
         }
@@ -1727,6 +1732,7 @@ class contentPublish extends AdministrationPage
                             $header->appendChild(new XMLElement('p', __('No links to %s', array($a->generate()))));
                         }
                         $content->appendChild($element);
+                        unset($field);
                     }
                 }
             }
