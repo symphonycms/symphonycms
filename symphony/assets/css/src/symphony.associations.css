@@ -114,6 +114,16 @@
 	border-color: #e8e8e8;
 }
 
+.association-links li a::before {
+	content: '\2192 ';
+	margin-right: 0.3rem;
+}
+
+.association-links.parent li a::before {
+	content: '\2190 ';
+	margin-right: 0.3rem;
+}
+
 .association-more a {
 	color: #a9a9a9;
 }
