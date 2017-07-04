@@ -1933,11 +1933,11 @@ class Field
      *
      * @since Symphony 2.5.0
      *
-     * @param  integer $field_id
+     * @param  integer $parent_field_id
      * @param  integer $entry_id
      * @return array
      */
-    public function findParentRelatedEntries($field_id, $entry_id)
+    public function findParentRelatedEntries($parent_field_id, $entry_id)
     {
         try {
             $ids = Symphony::Database()->fetchCol('relation_id', sprintf("
@@ -1945,7 +1945,7 @@ class Field
                 FROM `tbl_entries_data_%d`
                 WHERE `entry_id` = %d
                 AND `relation_id` IS NOT NULL
-            ", $field_id, $entry_id));
+            ", $this->get('id') , $entry_id));
         } catch (Exception $e) {
             return array();
         }
