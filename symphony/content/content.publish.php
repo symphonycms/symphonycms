@@ -1687,7 +1687,11 @@ class contentPublish extends AdministrationPage
 
                         // Create link
                         $link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/';
-                        $a = new XMLElement('a', $as['name'] . ' <span>(' . count($entry_ids) . ')</span>', array(
+                        $aname = General::sanitize($as['name']);
+                        if (count($entry_ids) > 0) {
+                            $aname .= ' <span>(' . count($entry_ids) . ')</span>';
+                        }
+                        $a = new XMLElement('a', $aname, array(
                             'class' => 'association-section',
                             'href' => $link
                         ));
@@ -1778,7 +1782,11 @@ class contentPublish extends AdministrationPage
 
                     // Create link with filter or prepopulate
                     $link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/' . $filter;
-                    $a = new XMLElement('a', $as['name'] . ' <span>(' . count($entry_ids) . ')</span>', array(
+                    $aname = General::sanitize($as['name']);
+                    if (count($entry_ids) > 0) {
+                        $aname .= ' <span>(' . count($entry_ids) . ')</span>';
+                    }
+                    $a = new XMLElement('a', $aname, array(
                         'class' => 'association-section',
                         'href' => $link
                     ));
