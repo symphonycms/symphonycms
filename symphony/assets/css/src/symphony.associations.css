@@ -17,25 +17,25 @@
 #drawer-section-associations .association-title {
 	font-size: 1.4rem;
 	font-weight: 400;
-	padding: 2rem 0 0;
+	padding: 0;
+	margin: 4rem 0 2rem;
+}
+
+#drawer-section-associations .association-title:first-child {
+	margin-top: 1.5rem; /* content has 0.5 so it's visually 2rem */
 }
 
 .association {
-	min-height: 3rem;
-	margin: 0.5rem 0 1rem;
+	margin: 2rem 0;
 	color: #666;
 }
 
-.association + .association {
-	margin-top: 1.5rem;
+.empty {
+	margin-bottom: 1rem;
 }
 
 .empty + .empty {
 	margin-top: 0;
-}
-
-.association:last-of-type {
-	padding-bottom: 1rem;
 }
 
 .association a {
@@ -46,16 +46,12 @@
 	color: #323232;
 }
 
-.association:first-of-type header {
-	padding-top: 0.6rem;
-}
-
 .association header {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
-	padding-top: 1rem;
+	padding-top: 0;
 }
 
 .association header > p {
