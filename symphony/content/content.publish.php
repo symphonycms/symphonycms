@@ -1693,7 +1693,8 @@ class contentPublish extends AdministrationPage
                         }
                         $a = new XMLElement('a', $aname, array(
                             'class' => 'association-section',
-                            'href' => $link
+                            'href' => $link,
+                            'title' => strip_tags($aname),
                         ));
 
                         $element = new XMLElement('section', null, array('class' => 'association parent'));
@@ -1788,7 +1789,8 @@ class contentPublish extends AdministrationPage
                     }
                     $a = new XMLElement('a', $aname, array(
                         'class' => 'association-section',
-                        'href' => $link
+                        'href' => $link,
+                        'title' => strip_tags($aname),
                     ));
 
                     // Create new entries
