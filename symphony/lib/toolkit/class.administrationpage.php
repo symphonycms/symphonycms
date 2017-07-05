@@ -546,6 +546,7 @@ class AdministrationPage extends HTMLPage
 
         if ($hasAccess) {
             $page_context = $this->getContext();
+            $section_handle = !isset($page_context['section_handle']) ? null : $page_context['section_handle'];
             /**
              * Immediately after the core access rules allowed access to this page
              * (i.e. not called if the core rules denied it).
@@ -575,8 +576,8 @@ class AdministrationPage extends HTMLPage
                 'page_limit' => $page_limit,
                 'page_url' => $page,
                 'section' => array(
-                    'id' => !isset($page_context['section_handle']) ? 0 : SectionManager::fetchIDFromHandle($page_context['section_handle']),
-                    'handle' => $page_context['section_handle']
+                    'id' => !$section_handle ? 0 : SectionManager::fetchIDFromHandle($section_handle),
+                    'handle' => $section_handle
                 ),
             ));
         }
