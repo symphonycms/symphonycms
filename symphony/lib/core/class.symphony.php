@@ -435,7 +435,7 @@ abstract class Symphony implements Singleton
      *  If the password provided is already hashed, setting this parameter to
      *  true will stop it becoming rehashed. By default it is false.
      * @return boolean
-     *  True if the Author was logged in, false otherwise
+     *  true if the Author was logged in, false otherwise
      */
     public static function login($username, $password, $isHash = false)
     {
@@ -494,7 +494,7 @@ abstract class Symphony implements Singleton
      *  of the Author's username and password
      * @throws DatabaseException
      * @return boolean
-     *  True if the Author is logged in, false otherwise
+     *  true if the Author is logged in, false otherwise
      */
     public static function loginFromToken($token)
     {

@@ -42,7 +42,7 @@ class TimestampValidator
      * @param string $timestamp
      *  The user supplied timestamp
      * @return boolean
-     *  True if the $timestamp is the latest or the $id is invalid, false other wise
+     *  true if the $timestamp is the latest or the $id is invalid, false other wise
      */
     public function check($id, $timestamp)
     {

@@ -977,7 +977,7 @@ class contentBlueprintsSections extends AdministrationPage
      * @param  int $section_id
      *   The entry id to validate
      * @return boolean
-     *   True if the timestamp is valid
+     *   true if the timestamp is valid
      */
     protected function validateTimestamp($section_id, $checkMissing = false)
     {

@@ -176,7 +176,7 @@ class Session
      * `$_SESSION[Cookie->_index]`
      * @throws DatabaseException
      * @return boolean
-     *  True if the Session information was saved successfully, false otherwise
+     *  true if the Session information was saved successfully, false otherwise
      */
     public static function write($id, $data)
     {
@@ -264,7 +264,7 @@ class Session
      *  The identifier for the Session to destroy
      * @throws DatabaseException
      * @return boolean
-     *  True if the Session was deleted successfully, false otherwise
+     *  true if the Session was deleted successfully, false otherwise
      */
     public static function destroy($id)
     {
@@ -287,7 +287,7 @@ class Session
      *  The max session lifetime.
      * @throws DatabaseException
      * @return boolean
-     *  True on Session deletion, false if an error occurs
+     *  true on Session deletion, false if an error occurs
      */
     public static function gc($max)
     {

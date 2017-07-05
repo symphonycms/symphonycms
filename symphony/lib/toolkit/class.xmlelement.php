@@ -585,7 +585,7 @@ class XMLElement implements IteratorAggregate
      *  The index of the child to be removed. If the index given is negative
      *  it will be calculated from the end of `$this->_children`.
      * @return boolean
-     *  True if child was successfully removed, false otherwise.
+     *  true if child was successfully removed, false otherwise.
      */
     public function removeChildAt($index)
     {

@@ -79,7 +79,7 @@ abstract class Extension
      *
      * @see toolkit.ExtensionManager#install()
      * @return boolean
-     *  True if the install completely successfully, false otherwise
+     *  true if the install completely successfully, false otherwise
      */
     public function install()
     {

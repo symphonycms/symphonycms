@@ -506,7 +506,7 @@ class AdministrationPage extends HTMLPage
      *
      * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
      * @return boolean
-     *  True if the Author can access the current page, false otherwise
+     *  true if the Author can access the current page, false otherwise
      */
     public function canAccessPage()
     {

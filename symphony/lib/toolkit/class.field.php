@@ -1324,7 +1324,7 @@ class Field
      * @param string $string
      *  The string to test.
      * @return boolean
-     *  True if the string is prefixed with `regexp:` or `not-regexp:`, false otherwise.
+     *  true if the string is prefixed with `regexp:` or `not-regexp:`, false otherwise.
      */
     protected static function isFilterRegex($string)
     {
@@ -1405,7 +1405,7 @@ class Field
      * @param string $string
      *  The string to test.
      * @return boolean
-     *  True if the string is prefixed with `sql:`, false otherwise.
+     *  true if the string is prefixed with `sql:`, false otherwise.
      */
     protected static function isFilterSQL($string)
     {
@@ -1490,7 +1490,7 @@ class Field
      *  AND or OR conditions. This parameter will be set to true if $data used a
      *  + to separate the values, otherwise it will be false. It is false by default.
      * @return boolean
-     *  True if the construction of the SQL was successful, false otherwise.
+     *  true if the construction of the SQL was successful, false otherwise.
      */
     public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false)
     {

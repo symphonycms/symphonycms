@@ -139,7 +139,7 @@ class FieldManager implements FileResource
      *  An associative array of settings, where the key is the column name
      *  and the value is the value.
      * @return boolean
-     *  True on success, false on failure
+     *  true on success, false on failure
      */
     public static function saveSettings($field_id, $settings)
     {

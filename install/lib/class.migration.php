@@ -26,7 +26,7 @@
          * efficiency!
          *
          * @return boolean
-         *  True if successful, false otherwise
+         *  true if successful, false otherwise
          */
         public static function run($function, $existing_version = null)
         {

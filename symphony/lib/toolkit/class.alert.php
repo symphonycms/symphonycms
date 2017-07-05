@@ -98,7 +98,7 @@ class Alert
      *  The name of the variable to check, message or type are the valid
      *  values
      * @return boolean
-     *  True when set, false when not set.
+     *  true when set, false when not set.
      */
     public function __isset($name)
     {

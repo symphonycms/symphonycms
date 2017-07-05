@@ -683,7 +683,7 @@ class FrontendPage extends XSLTPage
      *  The URL parameters provided from parsing the current URL. This
      *  does not include any `$_GET` or `$_POST` variables.
      * @return boolean
-     *  True if the number of $schema (split by /) is less than the size
+     *  true if the number of $schema (split by /) is less than the size
      *  of the $bits array.
      */
     private function __isSchemaValid($schema, array $bits)

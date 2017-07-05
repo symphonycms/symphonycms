@@ -61,7 +61,7 @@ abstract class Event
      * used by the event editor.
      *
      * @return boolean
-     *   True if event can be edited, false otherwise. Defaults to false
+     *   true if event can be edited, false otherwise. Defaults to false
      */
     public static function allowEditorToParse()
     {

@@ -515,7 +515,7 @@ class MySQL
      *  is not either of these, it will return objects.
      * @throws DatabaseException
      * @return boolean
-     *  True if the query executed without errors, false otherwise
+     *  true if the query executed without errors, false otherwise
      */
     public function query($query, $type = "OBJECT")
     {
@@ -879,7 +879,7 @@ class MySQL
      *  The field name
      * @throws DatabaseException
      * @return boolean
-     *  True if `$table` contains `$field`, false otherwise
+     *  true if `$table` contains `$field`, false otherwise
      */
     public function tableContainsField($table, $field)
     {
@@ -899,7 +899,7 @@ class MySQL
      *  The table name
      * @throws DatabaseException
      * @return boolean
-     *  True if `$table` exists, false otherwise
+     *  true if `$table` exists, false otherwise
      */
     public function tableExists($table)
     {

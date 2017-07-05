@@ -81,7 +81,7 @@ interface iDatasource
      * @param array $errors
      *  Passed as an empty array, can be populated with any validation errors
      * @return boolean
-     *  True if the datasource is valid, false otherwise.
+     *  true if the datasource is valid, false otherwise.
      *  If false it is expected that `$errors` are populated.
     */
     public static function validate(array &$settings, array &$errors);

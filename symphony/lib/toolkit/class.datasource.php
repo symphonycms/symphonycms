@@ -113,7 +113,7 @@ class Datasource
      * Datasource's `about()` information will be displayed.
      *
      * @return boolean
-     *   True if the Datasource can be edited, false otherwise. Defaults to false
+     *   true if the Datasource can be edited, false otherwise. Defaults to false
      */
     public function allowEditorToParse()
     {

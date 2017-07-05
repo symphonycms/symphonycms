@@ -1938,7 +1938,7 @@ class contentPublish extends AdministrationPage
      * @param int $entry_id
      *  The entry id to validate
      * @return boolean
-     *  True if the timestamp is valid
+     *  true if the timestamp is valid
      */
     protected function validateTimestamp($entry_id, $checkMissing = false)
     {

@@ -50,7 +50,7 @@ class XsltProcess
      * Checks if there is an available `XSLTProcessor`
      *
      * @return boolean
-     *  True if there is an existing `XsltProcessor` class, false otherwise
+     *  true if there is an existing `XsltProcessor` class, false otherwise
      */
     public static function isXSLTProcessorAvailable()
     {
