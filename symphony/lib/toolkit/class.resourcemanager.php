@@ -168,13 +168,13 @@ class ResourceManager
 
         foreach ($resources as &$r) {
             // If source is numeric, it's considered to be a Symphony Section
-            if (isset($r['source']) && $r['source'] > 0) {
+            if (isset($r['source']) && General::intval($r['source']) > 0) {
                 $section = SectionManager::fetch($r['source']);
 
                 if ($section !== false) {
                     $r['source'] = array(
-                        'name' => $section->get('name'),
-                        'handle' => $section->get('handle'),
+                        'name' => General::sanitize($section->get('name')),
+                        'handle' => General::sanitize($section->get('handle')),
                         'id' => $r['source']
                     );
                 } else {
@@ -184,8 +184,8 @@ class ResourceManager
                 // If source is set but no numeric, it's considered to be a Symphony Type (e.g. authors or navigation)
             } elseif (isset($r['source'])) {
                 $r['source'] = array(
-                    'name' => ucwords($r['source']),
-                    'handle' => $r['source']
+                    'name' => ucwords(General::sanitize($r['source'])),
+                    'handle' => General::sanitize($r['source']),
                 );
 
                 // Resource provided by extension?
@@ -195,7 +195,7 @@ class ResourceManager
                 if (!empty($extension)) {
                     $extension = Symphony::ExtensionManager()->about($extension);
                     $r['source'] = array(
-                        'name' => $extension['name'],
+                        'name' => General::sanitize($extension['name']),
                         'handle' => Lang::createHandle($extension['name'])
                     );
                 }
