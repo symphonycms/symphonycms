@@ -1,4 +1,4 @@
-### Symphony 2.6.x ###
+### Symphony 2.7.x ###
 Options +SymLinksIfOwnerMatch -Indexes
 
 <IfModule !mod_rewrite.c>
