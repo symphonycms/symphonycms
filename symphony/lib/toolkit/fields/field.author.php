@@ -464,9 +464,9 @@ class FieldAuthor extends Field implements ExportableField
                     ) {$regex} '{$pattern}'
                 )
             ";
-        } else if (self::isFilterSQL($data[0])) {
+        } elseif (self::isFilterSQL($data[0])) {
             $this->buildFilterSQL($data[0], array('username', 'first_name', 'last_name'), $joins, $where);
-        } else if ($andOperation) {
+        } elseif ($andOperation) {
             foreach ($data as $value) {
                 $this->_key++;
                 $value = $this->cleanValue($value);

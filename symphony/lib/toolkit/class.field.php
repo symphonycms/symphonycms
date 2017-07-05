@@ -1443,7 +1443,7 @@ class Field
 
         if (preg_match('/^sql:\s*NOT NULL$/i', $filter)) {
             $pattern = 'NOT NULL';
-        } else if (preg_match('/^sql:\s*NULL$/i', $filter)) {
+        } elseif (preg_match('/^sql:\s*NULL$/i', $filter)) {
             $pattern = 'NULL';
         } else {
             // No match, return
@@ -1502,12 +1502,12 @@ class Field
             $this->buildRegexSQL($data[0], array('value'), $joins, $where);
 
             // SQL filtering: allows for NULL/NOT NULL statements
-        } else if (self::isFilterSQL($data[0])) {
+        } elseif (self::isFilterSQL($data[0])) {
             $this->buildFilterSQL($data[0], array('value'), $joins, $where);
 
             // AND operation, iterates over `$data` and uses a new JOIN for
             // every item.
-        } else if ($andOperation) {
+        } elseif ($andOperation) {
             foreach ($data as $value) {
                 $this->_key++;
                 $value = $this->cleanValue($value);

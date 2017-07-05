@@ -738,7 +738,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         if (preg_match('/^mimetype:/', $data[0])) {
             $data[0] = str_replace('mimetype:', '', $data[0]);
             $column = 'mimetype';
-        } else if (preg_match('/^size:/', $data[0])) {
+        } elseif (preg_match('/^size:/', $data[0])) {
             $data[0] = str_replace('size:', '', $data[0]);
             $column = 'size';
         } else {
@@ -747,9 +747,9 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
         if (self::isFilterRegex($data[0])) {
             $this->buildRegexSQL($data[0], array($column), $joins, $where);
-        } else if (self::isFilterSQL($data[0])) {
+        } elseif (self::isFilterSQL($data[0])) {
             $this->buildFilterSQL($data[0], array($column), $joins, $where);
-        } else if ($andOperation) {
+        } elseif ($andOperation) {
             foreach ($data as $value) {
                 $this->_key++;
                 $value = $this->cleanValue($value);

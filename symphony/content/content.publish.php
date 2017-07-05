@@ -251,7 +251,7 @@ class contentPublish extends AdministrationPage
             if ($operator['title'] === 'between' && preg_match('/^(-?(?:\d+(?:\.\d+)?|\.\d+)) to (-?(?:\d+(?:\.\d+)?|\.\d+))$/i', $data['filter'] )) {
                 $selected = true;
             // Selected state : Other comparison modes (except "is")
-            } else if ((!empty($filter) && strpos($data['filter'], $filter) === 0)) {
+            } elseif ((!empty($filter) && strpos($data['filter'], $filter) === 0)) {
                 $selected = true;
             }
 
@@ -1419,11 +1419,11 @@ class contentPublish extends AdministrationPage
                 $this->addTimestampValidationPageAlert($this->_errors['timestamp'], $entry, 'save');
 
                 // Initial checks to see if the Entry is ok
-            } else if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
+            } elseif (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
                 $this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
                 // Secondary checks, this will actually process the data and attempt to save
-            } else if (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
+            } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
                 foreach ($errors as $field_id => $message) {
                     $this->pageAlert($message, Alert::ERROR);
                 }

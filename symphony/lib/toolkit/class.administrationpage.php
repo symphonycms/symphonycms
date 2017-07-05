@@ -708,7 +708,7 @@ class AdministrationPage extends HTMLPage
 
                 // Add prefixes to all context values by making the
                 // class be {key}-{value}. #1397 ^BA
-            } else if (!is_numeric($key) && isset($value)) {
+            } elseif (!is_numeric($key) && isset($value)) {
                 // Skip arrays
                 if (is_array($value)) {
                     $value = null;

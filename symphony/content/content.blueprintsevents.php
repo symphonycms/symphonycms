@@ -410,7 +410,7 @@ class contentBlueprintsEvents extends ResourcesPage
 
         if (trim($fields['name']) == '') {
             $this->_errors['name'] = __('This is a required field');
-        } else if (strpos($fields['name'], '\\') !== false) {
+        } elseif (strpos($fields['name'], '\\') !== false) {
             $this->_errors['name'] = __('This field contains invalid characters') . ' (\\)';
         }
 

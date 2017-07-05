@@ -361,7 +361,7 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
 
         if (self::isFilterRegex($data[0])) {
             $this->buildRegexSQL($data[0], array('value'), $joins, $where);
-        } else if (self::isFilterSQL($data[0])) {
+        } elseif (self::isFilterSQL($data[0])) {
             $this->buildFilterSQL($data[0], array('value'), $joins, $where);
         } else {
             if (is_array($data)) {

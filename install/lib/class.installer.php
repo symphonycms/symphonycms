@@ -147,7 +147,7 @@
                             E_ERROR, true
                         );
                     }
-                } else if (isset(self::$POST['action']['install'])) {
+                } elseif (isset(self::$POST['action']['install'])) {
                     $disabled_extensions = self::__install();
 
                     self::__render(new InstallerPage('success', array(
