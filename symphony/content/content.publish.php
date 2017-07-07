@@ -691,10 +691,11 @@ class contentPublish extends AdministrationPage
                     'entry' => $entry
                 ));
 
-                $tableData[count($tableData) - 1]->appendChild(Widget::Label(__('Select Entry %d', array($entry->get('id'))), null, 'accessible', null, array(
+                $lastCol = $tableData[count($tableData) - 1];
+                $lastCol->appendChild(Widget::Label(__('Select Entry %d', array($entry->get('id'))), null, 'accessible', null, array(
                     'for' => 'entry-' . $entry->get('id')
                 )));
-                $tableData[count($tableData) - 1]->appendChild(Widget::Input('items['.$entry->get('id').']', null, 'checkbox', array(
+                $lastCol->appendChild(Widget::Input('items['.$entry->get('id').']', $entry->get('modification_date'), 'checkbox', array(
                     'id' => 'entry-' . $entry->get('id')
                 )));
 
