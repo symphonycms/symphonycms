@@ -527,6 +527,7 @@ class AdministrationPage extends HTMLPage
                     foreach ($item['children'] as $c) {
                         if ($c['link'] === $page && isset($c['limit'])) {
                             $page_limit = $c['limit'];
+                            // TODO: break out of the loop here in Symphony 3.0.0
                         }
                     }
                 }
@@ -545,6 +546,7 @@ class AdministrationPage extends HTMLPage
 
         if ($hasAccess) {
             $page_context = $this->getContext();
+            $section_handle = !isset($page_context['section_handle']) ? null : $page_context['section_handle'];
             /**
              * Immediately after the core access rules allowed access to this page
              * (i.e. not called if the core rules denied it).
@@ -564,14 +566,18 @@ class AdministrationPage extends HTMLPage
              *  The computed page limit for the current page
              * @param string $page_url
              *  The computed page url for the current page
+             * @param int $section.id
+             *  The id of the section for this url
+             * @param string $section.handle
+             *  The handle of the section for this url
              */
             Symphony::ExtensionManager()->notifyMembers('CanAccessPage', '/backend/', array(
                 'allowed' => &$hasAccess,
                 'page_limit' => $page_limit,
                 'page_url' => $page,
                 'section' => array(
-                    'id' => !isset($page_context['section_handle']) ? 0 : SectionManager::fetchIDFromHandle($page_context['section_handle']),
-                    'handle' => $page_context['section_handle']
+                    'id' => !$section_handle ? 0 : SectionManager::fetchIDFromHandle($section_handle),
+                    'handle' => $section_handle
                 ),
             ));
         }
@@ -1047,6 +1053,7 @@ class AdministrationPage extends HTMLPage
                 }
 
                 $hasAccess = true;
+                $url = '/publish/' . $s->get('handle') . '/';
                 /**
                  * Immediately after the core access rules allowed access to this page
                  * (i.e. not called if the core rules denied it).
@@ -1066,11 +1073,15 @@ class AdministrationPage extends HTMLPage
                  *  The computed page limit for the current page
                  * @param string $page_url
                  *  The computed page url for the current page
+                 * @param int $section.id
+                 *  The id of the section for this url
+                 * @param string $section.handle
+                 *  The handle of the section for this url
                  */
                 Symphony::ExtensionManager()->notifyMembers('CanAccessPage', '/backend/', array(
                     'allowed' => &$hasAccess,
-                    'page_limit' => $c['limit'],
-                    'page_url' => $c['link'],
+                    'page_limit' => 'author',
+                    'page_url' => $url,
                     'section' => array(
                         'id' => $s->get('id'),
                         'handle' => $s->get('handle')
@@ -1079,7 +1090,7 @@ class AdministrationPage extends HTMLPage
 
                 if ($hasAccess) {
                     $nav[$group_index]['children'][] = array(
-                        'link' => '/publish/' . $s->get('handle') . '/',
+                        'link' => $url,
                         'name' => $s->get('name'),
                         'type' => 'section',
                         'section' => array(
