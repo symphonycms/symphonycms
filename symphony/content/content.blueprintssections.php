@@ -58,7 +58,7 @@ class contentBlueprintsSections extends AdministrationPage
                     'id' => 'section-' . $s->get('id')
                 )));
 
-                $td2 = Widget::TableData(Widget::Anchor("$entry_count", SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
+                $td2 = Widget::TableData(Widget::Anchor((string)$entry_count, SYMPHONY_URL . '/publish/' . $s->get('handle') . '/'));
                 $td3 = Widget::TableData(General::sanitize($s->get('navigation_group')));
 
                 // Create row
