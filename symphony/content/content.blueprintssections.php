@@ -54,7 +54,7 @@ class contentBlueprintsSections extends AdministrationPage
                 $td1->appendChild(Widget::Label(__('Select Section %s', array(General::sanitize($s->get('name')))), null, 'accessible', null, array(
                     'for' => 'section-' . $s->get('id')
                 )));
-                $td1->appendChild(Widget::Input('items['.$s->get('id').']', 'on', 'checkbox', array(
+                $td1->appendChild(Widget::Input('items['.$s->get('id').']', $s->get('modification_date'), 'checkbox', array(
                     'id' => 'section-' . $s->get('id')
                 )));
 
