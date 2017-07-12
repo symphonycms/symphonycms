@@ -7,9 +7,14 @@
     "url": "https://github.com/symphonycms/symphony-2.git"
   },
   "license": "MIT",
+  "scripts": {
+    "build": "grunt",
+    "watch": "grunt watch"
+  },
   "devDependencies": {
     "grunt": "~1.0.1",
     "grunt-autoprefixer": "~3.0.4",
+    "grunt-cli": "^1.2.0",
     "grunt-contrib-concat": "~1.0.1",
     "grunt-contrib-jshint": "~1.0.0",
     "grunt-contrib-uglify": "~1.0.1",
