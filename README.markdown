@@ -196,21 +196,20 @@ Follow the instructions below if you are updating from Symphony 2.0 (not from Gi
 
 ## Contributing
 
-Symphony uses [Grunt](http://gruntjs.com/) to build concatenated and minified assets:
+Symphony uses [npm](https://npmjs.com/) to build concatenated and minified assets,
+so make sure you have node and npm installed and in your path.
 
-1. Install `grunt-cli` globally ([see the Grunt documentation](http://gruntjs.com/getting-started)):
-
-		npm install -g grunt-cli
-
-2. Install all dependencies from the repository’s root:
+1. Install all dependencies from the repository’s root:
 
 		npm install
 
-3. Run the `watch` task:
+2. Build the assets
 
-		grunt watch
+		npm run build
 
-Symphony’s minified script and style files will be updated automatically when saving source files.
+3. Optionally, you can minify script and style files upon saving source files
+
+		npm run watch
 
 More information: [Contributing to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony).
 
