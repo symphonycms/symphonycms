@@ -58,6 +58,10 @@ Before installation, see the [notes on file permissions](#file-permissions).
 
 	(Replace `target-directory` with your chosen new directory name.)
 
+1. Run composer to install the dependencies and generate the auto-loader:
+
+		composer install
+
 1.	_(Optional)_ If you would like to add the bundled optional extensions, run the following commands to checkout the `bundle` branch which contains the Git submodules references and update the submodules:
 
 		git checkout --track origin/bundle
