@@ -1652,7 +1652,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         $info = $gateway->getInfoLast();
 
         // 28 is CURLE_OPERATION_TIMEDOUT
-        if ($info['curl_error'] == 28) {
+        if ($info['curl_errno'] === 28) {
             $error = __('Request timed out. %d second limit reached.', array($timeout));
             return false;
         } elseif ($data === false || $info['http_code'] != 200) {

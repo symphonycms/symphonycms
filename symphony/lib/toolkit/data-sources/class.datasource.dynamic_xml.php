@@ -107,7 +107,7 @@ class DynamicXMLDatasource extends Datasource
                     $result->setAttribute('valid', 'false');
 
                     // 28 is CURLE_OPERATION_TIMEOUTED
-                    if ($info['curl_error'] == 28) {
+                    if ($info['curl_error'] === 28) {
                         $result->appendChild(
                             new XMLElement('error',
                                 sprintf('Request timed out. %d second limit reached.', $timeout)
