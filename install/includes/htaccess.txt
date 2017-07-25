@@ -27,7 +27,6 @@ Options +SymLinksIfOwnerMatch -Indexes
     ### CHECK FOR TRAILING SLASH - Will ignore files
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_URI} !/$
-    RewriteCond %{REQUEST_URI} !(.*)/$
     RewriteRule ^(.*)$ $1/ [L,R=301]
 
     ### URL Correction
