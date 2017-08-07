@@ -215,6 +215,7 @@ class SectionManager
      */
     public static function fetchIDFromHandle($handle)
     {
+        $handle = Symphony::Database()->cleanValue($handle);
         return Symphony::Database()->fetchVar('id', 0, "SELECT `id` FROM `tbl_sections` WHERE `handle` = '$handle' LIMIT 1");
     }
 
