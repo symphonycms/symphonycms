@@ -297,7 +297,7 @@
 						text: value
 					});
 
-					if(help) {
+					if (help.length) {
 						suggestion.insertBefore(help);
 					}
 					else {
