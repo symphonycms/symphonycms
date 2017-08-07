@@ -1123,7 +1123,9 @@ class contentBlueprintsDatasources extends ResourcesPage
              * @param string $file
              *  The path to the Datasource file
              */
-            Symphony::ExtensionManager()->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array('file' => DATASOURCES . "/data." . $this->_context[1] . ".php"));
+            Symphony::ExtensionManager()->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array(
+                'file' => DATASOURCES . "/data." . $this->_context[1] . ".php")
+            );
 
             if (!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php')) {
                 $this->pageAlert(
@@ -1383,6 +1385,8 @@ class contentBlueprintsDatasources extends ResourcesPage
                  *  being the `field_id` and the value the filter.
                  * @param array $dependencies
                  *  An array of dependencies that this datasource has
+                 * @param string $source
+                 *  The source of the datasource's data
                  */
                 Symphony::ExtensionManager()->notifyMembers('DatasourcePreCreate', '/blueprints/datasources/', array(
                     'file' => $file,
@@ -1390,7 +1394,8 @@ class contentBlueprintsDatasources extends ResourcesPage
                     'params' => $params,
                     'elements' => $elements,
                     'filters' => $filters,
-                    'dependencies' => $dependencies
+                    'dependencies' => $dependencies,
+                    'source' => $source
                 ));
             } else {
                 /**
@@ -1405,8 +1410,6 @@ class contentBlueprintsDatasources extends ResourcesPage
                  *  The path to the Datasource file
                  * @param string $contents
                  *  The contents for this Datasource as a string passed by reference
-                 * @param array $dependencies
-                 *  An array of dependencies that this datasource has
                  * @param array $params
                  *  An array of all the `$dsParam*` values
                  * @param array $elements
@@ -1414,14 +1417,19 @@ class contentBlueprintsDatasources extends ResourcesPage
                  * @param array $filters
                  *  An associative array of all the filters for this datasource with the key
                  *  being the `field_id` and the value the filter.
+                 * @param array $dependencies
+                 *  An array of dependencies that this datasource has
+                 * @param string $source
+                 *  The source of the datasource's data
                  */
                 Symphony::ExtensionManager()->notifyMembers('DatasourcePreEdit', '/blueprints/datasources/', array(
                     'file' => $file,
                     'contents' => &$dsShell,
-                    'dependencies' => $dependencies,
                     'params' => $params,
                     'elements' => $elements,
-                    'filters' => $filters
+                    'filters' => $filters,
+                    'dependencies' => $dependencies,
+                    'source' => $source
                 ));
             }
 
