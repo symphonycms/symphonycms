@@ -475,7 +475,11 @@ class Field
     {
         // Create header
         $location = ($this->get('location') ? $this->get('location') : 'main');
-        $header = new XMLElement('header', null, array('class' => 'frame-header ' . $location, 'data-name' => $this->name()));
+        $header = new XMLElement('header', null, array(
+            'class' => 'frame-header ' . $location,
+            'data-name' => $this->name(),
+            'title' => $this->get('id'),
+        ));
         $label = (($this->get('label')) ? $this->get('label') : __('New Field'));
         $header->appendChild(new XMLElement('h4', '<strong>' . $label . '</strong> <span class="type">' . $this->name() . '</span>'));
         $wrapper->appendChild($header);
