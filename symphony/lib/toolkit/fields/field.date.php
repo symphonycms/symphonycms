@@ -279,6 +279,9 @@ class FieldDate extends Field implements ExportableField, ImportableField
                     $string = self::$min_date . ' to ' . $earlier;
                     break;
             }
+        } elseif (preg_match('/IS( NOT)? NULL/i', $string)) {
+            $string = array('start' => $string, 'end' => $string);
+            return self::RANGE;
 
             // Look to see if its a shorthand date (year only), and convert to full date
             // Look to see if the give date is a shorthand date (year and month) and convert it to full date
