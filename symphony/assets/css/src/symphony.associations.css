@@ -30,11 +30,11 @@
 	color: #666;
 }
 
-.empty {
+.association.empty {
 	margin-bottom: 1rem;
 }
 
-.empty + .empty {
+.association.empty + .association.empty {
 	margin-top: 0;
 }
 
