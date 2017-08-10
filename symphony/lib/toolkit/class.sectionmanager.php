@@ -191,7 +191,8 @@ class SectionManager
 
             $obj->set('creation_date', DateTimeObj::get('c', $obj->get('creation_date')));
 
-            if (!empty($obj->get('modification_date'))) {
+            $modDate = $obj->get('modification_date');
+            if (!empty($modDate)) {
                 $obj->set('modification_date', DateTimeObj::get('c', $obj->get('modification_date')));
             } else {
                 $obj->set('modification_date', $obj->get('creation_date'));

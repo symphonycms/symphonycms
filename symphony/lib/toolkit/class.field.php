@@ -1819,11 +1819,12 @@ class Field
         if (!$this->get('id') || !$this->_handle) {
             return false;
         }
-        return !empty(Symphony::Database()->fetch(sprintf(
+        $row = Symphony::Database()->fetch(sprintf(
             'SELECT `id` FROM `tbl_fields_%s` WHERE `field_id` = %d',
             $this->_handle,
             General::intval($this->get('id'))
-        )));
+        ));
+        return !empty($row);
     }
 
     /**

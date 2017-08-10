@@ -472,13 +472,15 @@ class AdministrationPage extends HTMLPage
         $this->Contents->appendChild($this->Form);
 
         // Validate date time config
-        if (empty(__SYM_DATE_FORMAT__)) {
+        $dateFormat = defined('__SYM_DATE_FORMAT__') ? __SYM_DATE_FORMAT__ : null;
+        if (empty($dateFormat)) {
             $this->pageAlert(
                 __('Your <code>%s</code> file does not define a date format', array(basename(CONFIG))),
                 Alert::NOTICE
             );
         }
-        if (empty(__SYM_TIME_FORMAT__)) {
+        $timeFormat = defined('__SYM_TIME_FORMAT__') ? __SYM_TIME_FORMAT__ : null;
+        if (empty($timeFormat)) {
             $this->pageAlert(
                 __('Your <code>%s</code> file does not define a time format.', array(basename(CONFIG))),
                 Alert::NOTICE
