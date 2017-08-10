@@ -176,7 +176,7 @@
         {
             $errors = array();
 
-            // Check for PHP 5.2+
+            // Check for PHP 5.3+
             if (version_compare(phpversion(), '5.3', '<=')) {
                 $errors[] = array(
                     'msg' => __('PHP Version is not correct'),
