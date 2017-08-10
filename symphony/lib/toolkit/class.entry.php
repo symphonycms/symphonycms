@@ -332,6 +332,10 @@ class Entry
         if (!$this->get('author_id')) {
             $this->set('author_id', 1);
         }
+
+        if (!$this->get('modification_author_id')) {
+            $this->set('modification_author_id', $this->get('author_id'));
+        }
     }
 
     /**
