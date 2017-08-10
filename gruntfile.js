@@ -122,7 +122,6 @@ module.exports = function (grunt) {
                         'symphony/assets/js/lib/jquery.js',
                         'symphony/assets/js/lib/signals.js',
                         'symphony/assets/js/lib/crossroads.js',
-                        'symphony/assets/js/lib/selectize.js',
                         'symphony/assets/js/lib/moment.min.js',
                         'symphony/assets/js/lib/clndr.min.js',
                         'symphony/assets/js/src/symphony.js',
