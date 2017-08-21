@@ -382,7 +382,7 @@ class EntryManager
         $sortSelectClause = null;
 
         if (!$entry_id && !$section_id) {
-            return false;
+            return array();
         }
 
         if (!$section_id) {
@@ -391,7 +391,7 @@ class EntryManager
 
         $section = SectionManager::fetch($section_id);
         if (!is_object($section)) {
-            return false;
+            return array();
         }
 
         // SORTING
