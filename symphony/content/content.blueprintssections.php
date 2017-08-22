@@ -892,6 +892,8 @@ class contentBlueprintsSections extends AdministrationPage
             $canProceed = $this->validateTimestamp($section_id);
 
             if ($canProceed) {
+                $section_ids = array($section_id);
+
                 /**
                  * Just prior to calling the Section Manager's delete function
                  *
@@ -902,9 +904,11 @@ class contentBlueprintsSections extends AdministrationPage
                  * @param array $section_ids
                  *  An array of Section ID's passed by reference
                  */
-                Symphony::ExtensionManager()->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => array(&$section_id)));
+                Symphony::ExtensionManager()->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => &$section_ids));
 
-                SectionManager::delete($section_id);
+                foreach ($section_ids as $section) {
+                    SectionManager::delete($section);
+                }
 
                 redirect(SYMPHONY_URL . '/blueprints/sections/');
             } else {
