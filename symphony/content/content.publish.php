@@ -1819,7 +1819,7 @@ class contentPublish extends AdministrationPage
                         foreach ($entries['records'] as $key => $e) {
                             // let the first visible field create the mark up
                             if ($visible_field) {
-                                $li = $visible_field->prepareAssociationsDrawerXMLElement($e, $as);
+                                $li = $visible_field->prepareAssociationsDrawerXMLElement($e, $as, $prepopulate);
                             }
                             // or use the system:id if no visible field exists.
                             else {
