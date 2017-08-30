@@ -1703,35 +1703,30 @@ class contentPublish extends AdministrationPage
                             'title' => strip_tags($aname),
                         ));
 
+                        if (!$has_entries) {
+                            unset($field);
+                            continue;
+                        }
+
                         $element = new XMLElement('section', null, array('class' => 'association parent'));
                         $header = new XMLElement('header');
+                        $header->appendChild(new XMLElement('p', $a->generate()));
                         $element->appendChild($header);
 
-                        if ($has_entries) {
-                            $element = new XMLElement('section', null, array('class' => 'association parent'));
-                            $header = new XMLElement('header');
-                            $header->appendChild(new XMLElement('p', $a->generate()));
-                            $element->appendChild($header);
+                        $ul = new XMLElement('ul', null, array(
+                            'class' => 'association-links',
+                            'data-section-id' => $as['child_section_id'],
+                            'data-association-ids' => implode(', ', $entry_ids)
+                        ));
 
-                            $ul = new XMLElement('ul', null, array(
-                                'class' => 'association-links',
-                                'data-section-id' => $as['child_section_id'],
-                                'data-association-ids' => implode(', ', $entry_ids)
-                            ));
-
-                            foreach ($entries['records'] as $e) {
-                                // let the field create the mark up
-                                $li = $field->prepareAssociationsDrawerXMLElement($e, $as);
-                                // add it to the unordered list
-                                $ul->appendChild($li);
-                            }
-
-                            $element->appendChild($ul);
-                        // No entries
-                        } else {
-                            $element->setAttribute('class', 'association parent empty');
-                            $header->appendChild(new XMLElement('p', __('No links to %s', array($a->generate()))));
+                        foreach ($entries['records'] as $e) {
+                            // let the field create the mark up
+                            $li = $field->prepareAssociationsDrawerXMLElement($e, $as);
+                            // add it to the unordered list
+                            $ul->appendChild($li);
                         }
+
+                        $element->appendChild($ul);
                         $content->appendChild($element);
                         unset($field);
                     }
