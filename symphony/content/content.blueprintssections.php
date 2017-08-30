@@ -891,29 +891,34 @@ class contentBlueprintsSections extends AdministrationPage
             $section_id = $this->_context[1];
             $canProceed = $this->validateTimestamp($section_id);
 
-            if ($canProceed) {
-                /**
-                 * Just prior to calling the Section Manager's delete function
-                 *
-                 * @delegate SectionPreDelete
-                 * @since Symphony 2.2
-                 * @param string $context
-                 * '/blueprints/sections/'
-                 * @param array $section_ids
-                 *  An array of Section ID's passed by reference
-                 */
-                Symphony::ExtensionManager()->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => array(&$section_id)));
-
-                SectionManager::delete($section_id);
-
-                redirect(SYMPHONY_URL . '/blueprints/sections/');
-            } else {
+            if (!$canProceed) {
                 $this->addTimestampValidationPageAlert(
                     $this->_errors['timestamp'],
                     SectionManager::fetch($section_id),
                     'delete'
                 );
+                return;
             }
+
+            $section_ids = array($section_id);
+
+            /**
+             * Just prior to calling the Section Manager's delete function
+             *
+             * @delegate SectionPreDelete
+             * @since Symphony 2.2
+             * @param string $context
+             * '/blueprints/sections/'
+             * @param array $section_ids
+             *  An array of Section ID's passed by reference
+             */
+            Symphony::ExtensionManager()->notifyMembers('SectionPreDelete', '/blueprints/sections/', array('section_ids' => &$section_ids));
+
+            foreach ($section_ids as $section) {
+                SectionManager::delete($section);
+            }
+
+            redirect(SYMPHONY_URL . '/blueprints/sections/');
         }
     }
 
