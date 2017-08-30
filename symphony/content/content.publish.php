@@ -1778,9 +1778,10 @@ class contentPublish extends AdministrationPage
                     $header = new XMLElement('header');
 
                     // Get the search value for filters and prepopulate
-                    $filter      = '';
+                    $filter = '';
                     $prepopulate = '';
-                    if ($entry = current(EntryManager::fetch($entry_id))) {
+                    $entry = current(EntryManager::fetch($entry_id));
+                    if ($entry) {
                         $search_value = $relation_field->fetchAssociatedEntrySearchValue(
                             $entry->getData($as['parent_section_field_id']),
                             $as['parent_section_field_id'],
@@ -1789,7 +1790,7 @@ class contentPublish extends AdministrationPage
                         if (is_array($search_value)) {
                             $search_value = $entry_id;
                         }
-                        $filter      = '?filter[' . $relation_field->get('element_name') . ']=' . $search_value;
+                        $filter = '?filter[' . $relation_field->get('element_name') . ']=' . $search_value;
                         $prepopulate = '?prepopulate[' . $as['child_section_field_id'] . ']=' . $search_value;
                     }
 
