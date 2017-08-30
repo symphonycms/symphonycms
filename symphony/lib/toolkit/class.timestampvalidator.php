@@ -28,7 +28,7 @@ class TimestampValidator
     public function __construct($table)
     {
         General::ensureType(array(
-            'table' => array('var' => $table, 'type'=> 'string'),
+            'table' => array('var' => $table, 'type' => 'string'),
         ));
         $this->table = 'tbl_' . MySQL::cleanValue($table);
     }
