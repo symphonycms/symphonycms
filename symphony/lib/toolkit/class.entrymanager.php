@@ -115,8 +115,8 @@ class EntryManager
             return;
         }
 
-        // Check if we have field data
-        if (!is_array($field) || empty($field)) {
+        // Ignore when not an array
+        if (!is_array($field)) {
             return;
         }
 
@@ -158,7 +158,10 @@ class EntryManager
                 $fields[$index] = array_merge($data, $field_data);
             }
 
-            Symphony::Database()->insert($fields, $table_name);
+            // Insert only if we have field data
+            if (!empty($fields)) {
+                Symphony::Database()->insert($fields, $table_name);
+            }
         } catch (Exception $ex) {
             Symphony::Log()->pushExceptionToLog($ex, true);
         }
