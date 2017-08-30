@@ -1688,10 +1688,14 @@ class General
     {
         foreach ($params as $name => $param) {
             if (isset($param['optional']) && ($param['optional'] === true)) {
-                if (is_null($param['var'])) {
+                if (empty($param['var'])) {
                     continue;
                 }
                 // if not null, check it's type
+            }
+
+            if (empty($param['type'])) {
+                $param['type'] = 'Undefined';
             }
 
             // validate the validator
