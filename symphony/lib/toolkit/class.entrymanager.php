@@ -115,9 +115,9 @@ class EntryManager
             return;
         }
 
-        // Ignore when not an array
+        // Ignore parameter when not an array
         if (!is_array($field)) {
-            return;
+            $field = array();
         }
 
         $did_lock = false;
