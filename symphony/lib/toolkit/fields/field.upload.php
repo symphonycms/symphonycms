@@ -15,7 +15,9 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         'image/jpeg',
         'image/pjpeg',
         'image/png',
-        'image/x-png'
+        'image/x-png',
+        'image/svg+xml',
+        'image/svg'
     );
 
     public function __construct()
