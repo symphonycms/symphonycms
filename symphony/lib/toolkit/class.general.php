@@ -891,6 +891,24 @@ class General
     }
 
     /**
+     * Keyed version of php's array_map function.
+     * The callback's signature is:
+     *  `function ($key, $value, $array)`
+     *
+     * @since Symphony 3.0.0
+     * @param string $function
+     * @param array $array
+     * @return array
+     *  a new array with all the values passed through the given `$function`
+     */
+    public static function array_map($function, array $array)
+    {
+        return array_map(function ($key) use ($function, $array) {
+            return $function($key, $array[$key], $array);
+        }, array_keys($array));
+    }
+
+    /**
      * Convert an array into an XML fragment and append it to an existing
      * XML element. Any arrays contained as elements in the input array will
      * also be recursively formatted and appended to the input XML fragment.
