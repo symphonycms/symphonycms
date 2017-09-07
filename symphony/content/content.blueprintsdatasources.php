@@ -1171,6 +1171,9 @@ class contentBlueprintsDatasources extends ResourcesPage
             } else {
                 $xml_errors = null;
 
+                // Escape Ampersands
+                $fields['static_xml'] = str_replace('&', '&amp;', $fields['static_xml']);
+
                 General::validateXML($fields['static_xml'], $xml_errors, false, new XsltProcess());
 
                 if (!empty($xml_errors)) {
