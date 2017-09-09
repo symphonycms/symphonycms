@@ -946,7 +946,12 @@ class contentBlueprintsDatasources extends ResourcesPage
         $fieldset->appendChild($p);
 
         $label = Widget::Label();
-        $label->appendChild(Widget::Textarea('fields[static_xml]', 12, 50, General::sanitize($fields['static_xml']), array('class' => 'code', 'placeholder' => '<static>content</static>')));
+        $static_xml = htmlspecialchars(
+            $fields['static_xml'],
+            ENT_XML1|ENT_COMPAT,
+            'UTF-8'
+        );
+        $label->appendChild(Widget::Textarea('fields[static_xml]', 12, 50, $static_xml, array('class' => 'code', 'placeholder' => '<static>content</static>')));
 
         if (isset($this->_errors['static_xml'])) {
             $fieldset->appendChild(Widget::Error($label, $this->_errors['static_xml']));
