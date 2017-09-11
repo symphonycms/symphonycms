@@ -1189,7 +1189,8 @@ class contentPublish extends AdministrationPage
 
         EntryManager::setFetchSorting('id', 'DESC');
 
-        if (!$existingEntry = EntryManager::fetch($entry_id)) {
+        $existingEntry = EntryManager::fetch($entry_id);
+        if (empty($existingEntry)) {
             Administration::instance()->throwCustomError(
                 __('Unknown Entry'),
                 __('The Entry, %s, could not be found.', array($entry_id)),
@@ -1397,7 +1398,8 @@ class contentPublish extends AdministrationPage
         $entry_id = intval($this->_context['entry_id']);
 
         if (is_array($_POST['action']) && (array_key_exists('save', $_POST['action']) || array_key_exists('done', $_POST['action']))) {
-            if (!$ret = EntryManager::fetch($entry_id)) {
+            $ret = EntryManager::fetch($entry_id);
+            if (empty($ret)) {
                 Administration::instance()->throwCustomError(
                     __('The Entry, %s, could not be found.', array($entry_id)),
                     __('Unknown Entry'),
@@ -1504,7 +1506,8 @@ class contentPublish extends AdministrationPage
 
                 redirect(SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/');
             } else {
-                if (is_array($ret = EntryManager::fetch($entry_id))) {
+                $ret = EntryManager::fetch($entry_id);
+                if (!empty($ret)) {
                     $entry = $ret[0];
                     $this->addTimestampValidationPageAlert($this->_errors['timestamp'], $entry, 'delete');
                 }
@@ -1770,18 +1773,21 @@ class contentPublish extends AdministrationPage
                     $header = new XMLElement('header');
 
                     // Get the search value for filters and prepopulate
+                    $filter = '';
+                    $prepopulate = '';
                     $entry = current(EntryManager::fetch($entry_id));
-                    $search_value = $relation_field->fetchAssociatedEntrySearchValue(
-                        $entry->getData($as['parent_section_field_id']),
-                        $as['parent_section_field_id'],
-                        $entry_id
-                    );
-                    if (is_array($search_value)) {
-                        $search_value = $entry_id;
+                    if ($entry) {
+                        $search_value = $relation_field->fetchAssociatedEntrySearchValue(
+                            $entry->getData($as['parent_section_field_id']),
+                            $as['parent_section_field_id'],
+                            $entry_id
+                        );
+                        if (is_array($search_value)) {
+                            $search_value = $entry_id;
+                        }
+                        $filter = '?filter[' . $relation_field->get('element_name') . ']=' . $search_value;
+                        $prepopulate = '?prepopulate[' . $as['child_section_field_id'] . ']=' . $search_value;
                     }
-
-                    $filter = '?filter[' . $relation_field->get('element_name') . ']=' . $search_value;
-                    $prepopulate = '?prepopulate[' . $as['child_section_field_id'] . ']=' . $search_value;
 
                     // Create link with filter or prepopulate
                     $link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/' . $filter;
