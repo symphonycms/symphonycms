@@ -181,6 +181,11 @@ class contentBlueprintsDatasources extends ResourcesPage
                         } else {
                             $fields['static_xml'] = trim($existing->grab());
                         }
+                        $fields['static_xml'] = htmlspecialchars(
+                            $fields['static_xml'],
+                            ENT_XML1|ENT_COMPAT,
+                            'UTF-8'
+                        );
                         break;
                     default:
                         $fields['filter'][$fields['source']] = $existing->dsParamFILTERS;
