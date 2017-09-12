@@ -1017,7 +1017,8 @@ class contentPublish extends AdministrationPage
                 ));
 
                 // The actual pre-populating should only happen if there is not existing fields post data
-                if (!isset($_POST['fields']) && $field = FieldManager::fetch($field_id)) {
+                // and if the field allows it
+                if (!isset($_POST['fields']) && ($field = FieldManager::fetch($field_id)) && $field->canPrePopulate()) {
                     $entry->setData(
                         $field->get('id'),
                         $field->processRawFieldData($value, $error, $message, true)
