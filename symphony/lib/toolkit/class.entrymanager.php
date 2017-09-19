@@ -121,6 +121,7 @@ class EntryManager
         }
 
         $did_lock = false;
+        $exception = null;
         try {
 
             // Check if table exists
@@ -163,11 +164,16 @@ class EntryManager
                 Symphony::Database()->insert($fields, $table_name);
             }
         } catch (Exception $ex) {
+            $exception = $ex;
             Symphony::Log()->pushExceptionToLog($ex, true);
         }
 
         if ($did_lock) {
             Symphony::Database()->query('UNLOCK TABLES');
+        }
+
+        if ($exception) {
+            throw $exception;
         }
     }
 
