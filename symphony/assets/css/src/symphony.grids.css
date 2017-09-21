@@ -61,7 +61,8 @@ form.columns {
 	padding: 1rem 1.8rem 0;
 }
 
-form.columns .column.primary {
+form.columns .column.primary,
+form.columns .column.secondary:first-of-type {
 	width: 100%;
 	padding: 0;
 }
