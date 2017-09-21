@@ -92,7 +92,16 @@ class Section
      */
     public function getSortingField()
     {
-        $result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_sortby', 'sorting');
+        $result = null;
+        
+        Symphony::ExtensionManager()->notifyMembers('getSortingField', '/publish/', array(
+            'section-handle' => $this->get('handle'),
+            'field' => &$result,
+        ));
+
+        if($result == null){
+            $result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_sortby', 'sorting');
+        }
 
         return (is_null($result) ? $this->getDefaultSortingField() : $result);
     }
@@ -106,7 +115,14 @@ class Section
      */
     public function getSortingOrder()
     {
-        $result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_order', 'sorting');
+        Symphony::ExtensionManager()->notifyMembers('getSortingOrder', '/publish/', array(
+            'section-handle' => $this->get('handle'),
+            'order' => &$result
+        ));
+
+        if($result == null){
+            $result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_order', 'sorting');
+        }
 
         return (is_null($result) ? 'asc' : $result);
     }
@@ -123,10 +139,19 @@ class Section
      */
     public function setSortingField($sort, $write = true)
     {
-        Symphony::Configuration()->set('section_' . $this->get('handle') . '_sortby', $sort, 'sorting');
+        Symphony::ExtensionManager()->notifyMembers('setSortingField', '/publish/', array(
+            'section-handle' => $this->get('handle'),
+            'sort' => $sort,
+            'updated' => $updated,
+        ));
 
-        if ($write) {
-            Symphony::Configuration()->write();
+        //if the delegate handled the request dont set the default.
+        if (!$updated){
+            Symphony::Configuration()->set('section_' . $this->get('handle') . '_sortby', $sort, 'sorting');
+
+            if ($write) {
+                Symphony::Configuration()->write();
+            }
         }
     }
 
@@ -142,10 +167,17 @@ class Section
      */
     public function setSortingOrder($order, $write = true)
     {
-        Symphony::Configuration()->set('section_' . $this->get('handle') . '_order', $order, 'sorting');
+        Symphony::ExtensionManager()->notifyMembers('setSortingOrder', '/publish/', array(
+            'section-handle' => $this->get('handle'),
+            'order' => $order,
+            'updated' => $updated,
+        ));
+        if (!$updated){
+            Symphony::Configuration()->set('section_' . $this->get('handle') . '_order', $order, 'sorting');
 
-        if ($write) {
-            Symphony::Configuration()->write();
+            if ($write) {
+                Symphony::Configuration()->write();
+            }
         }
     }
 
