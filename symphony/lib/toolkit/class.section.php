@@ -92,7 +92,28 @@ class Section
      */
     public function getSortingField()
     {
-        $result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_sortby', 'sorting');
+        $result = null;
+        
+        /**
+         * Just prior to getting the configured sorting field.
+         *
+         * @delegate SectionGetSortingField
+         * @since Symphony 3.0.0
+         * @param string $context
+         * '/publish/'
+         * @param string $section-handle
+         *  The handle of the current section
+         * @param string &$field
+         *  The field as set by extensions
+         */
+        Symphony::ExtensionManager()->notifyMembers('SectionGetSortingField', '/publish/', array(
+            'section-handle' => $this->get('handle'),
+            'field' => &$result,
+        ));
+
+        if (!$result) {
+            $result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_sortby', 'sorting');
+        }
 
         return (is_null($result) ? $this->getDefaultSortingField() : $result);
     }
@@ -106,7 +127,26 @@ class Section
      */
     public function getSortingOrder()
     {
-        $result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_order', 'sorting');
+        /**
+         * Just prior to getting the configured sorting order.
+         *
+         * @delegate SectionGetSortingOrder
+         * @since Symphony 3.0.0
+         * @param string $context
+         * '/publish/'
+         * @param string $section-handle
+         *  The handle of the current section
+         * @param string &$order
+         *  The order as set by extensions
+         */
+        Symphony::ExtensionManager()->notifyMembers('SectionGetSortingOrder', '/publish/', array(
+            'section-handle' => $this->get('handle'),
+            'order' => &$result
+        ));
+
+        if (!$result) {
+            $result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_order', 'sorting');
+        }
 
         return (is_null($result) ? 'asc' : $result);
     }
@@ -123,10 +163,33 @@ class Section
      */
     public function setSortingField($sort, $write = true)
     {
-        Symphony::Configuration()->set('section_' . $this->get('handle') . '_sortby', $sort, 'sorting');
+        /**
+         * Just prior to setting the configured sorting field.
+         *
+         * @delegate SectionSetSortingField
+         * @since Symphony 3.0.0
+         * @param string $context
+         * '/publish/'
+         * @param string $section-handle
+         *  The handle of the current section
+         * @param string $field
+         *  The field as passed to the setSortingField function
+         * @param boolean $updated
+         *  The updated flag, set by extensions, which prevents the saving of the value
+         */
+        Symphony::ExtensionManager()->notifyMembers('SectionSetSortingField', '/publish/', array(
+            'section-handle' => $this->get('handle'),
+            'field' => $sort,
+            'updated' => &$updated,
+        ));
 
-        if ($write) {
-            Symphony::Configuration()->write();
+        // The delegate handled the request, don't set the default.
+        if (!$updated) {
+            Symphony::Configuration()->set('section_' . $this->get('handle') . '_sortby', $sort, 'sorting');
+
+            if ($write) {
+                Symphony::Configuration()->write();
+            }
         }
     }
 
@@ -142,10 +205,33 @@ class Section
      */
     public function setSortingOrder($order, $write = true)
     {
-        Symphony::Configuration()->set('section_' . $this->get('handle') . '_order', $order, 'sorting');
+        /**
+         * Just prior to setting the configured sorting order.
+         *
+         * @delegate SectionSetSortingOrder
+         * @since Symphony 3.0.0
+         * @param string $context
+         * '/publish/'
+         * @param string $section-handle
+         *  The handle of the current section
+         * @param string $order
+         *  The order as passed to the setSortingOrder function
+         * @param boolean $updated
+         *  The updated flag, set by extensions, which prevents the saving of the value
+         */
+        Symphony::ExtensionManager()->notifyMembers('SectionSetSortingOrder', '/publish/', array(
+            'section-handle' => $this->get('handle'),
+            'order' => $order,
+            'updated' => &$updated,
+        ));
 
-        if ($write) {
-            Symphony::Configuration()->write();
+        // The delegate handled the request, don't set the default.
+        if (!$updated) {
+            Symphony::Configuration()->set('section_' . $this->get('handle') . '_order', $order, 'sorting');
+
+            if ($write) {
+                Symphony::Configuration()->write();
+            }
         }
     }
 
