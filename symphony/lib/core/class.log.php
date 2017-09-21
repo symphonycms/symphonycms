@@ -396,9 +396,7 @@ class Log
         }
 
         if ($flag == self::OVERWRITE) {
-            if (file_exists($this->_log_path) && is_writable($this->_log_path)) {
-                General::deleteFile($this->_log_path);
-            }
+            General::deleteFile($this->_log_path);
 
             $this->writeToLog('============================================', true);
             $this->writeToLog('Log Created: ' . DateTimeObj::get('c'), true);

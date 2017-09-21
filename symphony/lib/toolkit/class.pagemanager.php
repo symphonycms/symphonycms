@@ -193,9 +193,7 @@ class PageManager
 
         if (PageManager::writePageFiles($new, $data)) {
             // Remove the old file, in the case of a rename
-            if (file_exists($old)) {
-                General::deleteFile($old);
-            }
+            General::deleteFile($old);
 
             /**
              * Just after a Page Template is saved after been created.
