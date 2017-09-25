@@ -4,10 +4,10 @@
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
 
-- Version: 2.7.0
-- Date: 11th July 2017
-- [Release notes](http://getsymphony.com/download/releases/version/2.7.0/)
-- [Github repository](https://github.com/symphonycms/symphony-2/tree/2.7.0)
+- Version: 2.7.1
+- Date: 1st February 2018
+- [Release notes](https://www.getsymphony.com/download/releases/version/2.7.1/)
+- [Github repository](https://github.com/symphonycms/symphony-2/tree/2.7.1)
 - [MIT Licence](https://github.com/symphonycms/symphony-2/blob/master/LICENCE)
 
 ## Contents
@@ -26,12 +26,12 @@
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.7.0` and is considered stable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.7.1` and is considered stable.
 
 Useful places:
 
-- [The Symphony website](http://getsymphony.com/)
-- [The Symphony forum](http://getsymphony.com/discuss/)
+- [The Symphony website](https://www.getsymphony.com/)
+- [The Symphony forum](https://www.getsymphony.com/discuss/)
 - [Symphony Extensions](http://symphonyextensions.com/)
 - [Contributing to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony)
 
@@ -88,7 +88,7 @@ Before installation, see the [notes on file permissions](#file-permissions).
 
 ### Via the old-fashioned way
 
-1. This step assumes you downloaded a zip archive from the [Symphony website](http://getsymphony.com). Upload the following files and directories to the root directory of your website:
+1. This step assumes you downloaded a zip archive from the [Symphony website](https://www.getsymphony.com). Upload the following files and directories to the root directory of your website:
 
 	- `index.php`
 	- `/extensions`
@@ -137,7 +137,7 @@ Symphony `2.3` officially only supports updating from a `2.2.x` release. There a
 
 #### Versions prior to 2.2
 
-Symphony `2.2` introduces numerous improvements that may affect extension compatibility. Before updating, be sure to consult the [extension compatibility table](http://getsymphony.com/download/extensions/compatibility/) to verify that the extensions you’re using have all been updated for Symphony `2.2`.
+Symphony `2.2` introduces numerous improvements that may affect extension compatibility. Before updating, be sure to consult the [extension compatibility table](https://www.getsymphony.com/download/extensions/compatibility/) to verify that the extensions you’re using have all been updated for Symphony `2.2`.
 
 #### Versions prior to 2.1
 

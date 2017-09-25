@@ -172,6 +172,7 @@ class ComposerStaticInit5f867b58cbaae676dc2f623c94dcd5ad
         'migration_268' => __DIR__ . '/../..' . '/install/migrations/2.6.8.php',
         'migration_269' => __DIR__ . '/../..' . '/install/migrations/2.6.9.php',
         'migration_270' => __DIR__ . '/../..' . '/install/migrations/2.7.0.php',
+        'migration_271' => __DIR__ . '/../..' . '/install/migrations/2.7.1.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
