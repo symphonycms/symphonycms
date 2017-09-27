@@ -5,6 +5,13 @@
  */
 
 /**
+ * The filesystem path to the `root` folder, i.e.
+ * the folder containing all other Symphony directories
+ * @var string
+ */
+define_safe('DOCROOT', realpath(__DIR__ . '/../../..'));
+
+/**
  * Used to determine if Symphony has been loaded, useful to prevent
  * files from being accessed directly.
  * @var boolean
