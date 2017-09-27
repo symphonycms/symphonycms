@@ -261,7 +261,7 @@ class GenericExceptionHandler
         $queries = null;
 
         if (is_object(Symphony::Database())) {
-            $debug = Symphony::Database()->debug();
+            $debug = Symphony::Database()->getLogs();
 
             if (!empty($debug)) {
                 foreach ($debug as $query) {
