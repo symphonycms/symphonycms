@@ -317,6 +317,7 @@ abstract class Symphony implements Singleton
      * is omitted, this function will set `$Database` to be of the `MySQL`
      * class.
      *
+     * @deprecated @since Symphony 3.0.0 - This function now does nothing
      * @since Symphony 2.3
      * @param StdClass $database (optional)
      *  The class to handle all Database operations, if omitted this function
@@ -326,12 +327,6 @@ abstract class Symphony implements Singleton
      */
     public static function setDatabase(StdClass $database = null)
     {
-        if (self::Database()) {
-            return true;
-        }
-
-        self::$Database = !is_null($database) ? $database : new MySQL;
-
         return true;
     }
 
@@ -357,38 +352,17 @@ abstract class Symphony implements Singleton
      */
     public static function initialiseDatabase()
     {
-        self::setDatabase();
         $details = self::Configuration()->get('database');
+        self::$Database = new Database($details);
 
         try {
-            if (!self::Database()->connect($details['host'], $details['user'], $details['password'], $details['port'], $details['db'])) {
-                return false;
-            }
+            self::Database()->connect();
 
             if (!self::Database()->isConnected()) {
                 return false;
             }
 
-            self::Database()->setPrefix($details['tbl_prefix']);
-            self::Database()->setCharacterEncoding();
-            self::Database()->setCharacterSet();
             self::Database()->setTimeZone(self::Configuration()->get('timezone', 'region'));
-
-            if (isset($details['query_caching'])) {
-                if ($details['query_caching'] == 'off') {
-                    self::Database()->disableCaching();
-                } elseif ($details['query_caching'] == 'on') {
-                    self::Database()->enableCaching();
-                }
-            }
-
-            if (isset($details['query_logging'])) {
-                if ($details['query_logging'] == 'off') {
-                    self::Database()->disableLogging();
-                } elseif ($details['query_logging'] == 'on') {
-                    self::Database()->enableLogging();
-                }
-            }
         } catch (DatabaseException $e) {
             self::throwCustomError(
                 $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
@@ -959,7 +933,7 @@ class DatabaseExceptionHandler extends GenericExceptionHandler
         }
 
         if (is_object(Symphony::Database())) {
-            $debug = Symphony::Database()->debug();
+            $debug = Symphony::Database()->getLogs();
 
             if (!empty($debug)) {
                 foreach ($debug as $query) {
