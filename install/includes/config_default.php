@@ -43,6 +43,10 @@
             'user' => null,
             'password' => null,
             'db' => null,
+            'driver' => 'mysql',
+            'charset' => 'utf8mb4',
+            'collate' => 'utf8mb4_unicode_ci',
+            'engine' => 'InnoDB',
             'tbl_prefix' => 'sym_',
             'query_caching' => 'on',
             'query_logging' => 'on'

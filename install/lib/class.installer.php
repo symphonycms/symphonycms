@@ -294,7 +294,7 @@
 
             try {
                 // Check the database table prefix is legal. #1815
-                if (!preg_match('/^[0-9a-zA-Z\$_]*$/', $fields['database']['tbl_prefix'])) {
+                if (!preg_match('/^[0-9a-zA-Z_]+$/', $fields['database']['tbl_prefix'])) {
                     $errors['database-table-prefix']  = array(
                         'msg' => 'Invalid database table prefix: ‘' . $fields['database']['tbl_prefix'] . '’',
                         'details' =>  __('The table prefix %s is invalid. The table prefix must only contain numbers, letters or underscore characters.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
