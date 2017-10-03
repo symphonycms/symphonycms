@@ -4,8 +4,20 @@
  * @package toolkit
  */
 
+/**
+ * This DatabaseStatement specialization class allows creation of INSERT INTO statements.
+ */
 final class DatabaseInsert extends DatabaseStatement
 {
+    /**
+     * Creates a new DatabaseInsert statement on table $table.
+     *
+     * @see Database::insert()
+     * @param Database $db
+     *  The underlying database connection
+     * @param string $table
+     *  The name of the table to act on.
+     */
     public function __construct(Database $db, $table)
     {
         parent::__construct($db, 'INSERT INTO');
@@ -14,6 +26,15 @@ final class DatabaseInsert extends DatabaseStatement
         $this->unsafeAppendSQLPart('table', $table);
     }
 
+    /**
+     * Appends one or multiple values into the insert statements.
+     *
+     * @param array $values
+     *  The values to append. Keys are columns names and values will be added
+     *  to the value array and be substituted with SQL parameters.
+     * @return DatabaseInsert
+     *  The current instance
+     */
     public function values(array $values)
     {
         $cols = '(' . $this->asTickedList(array_keys($values)) . ')';
@@ -24,6 +45,12 @@ final class DatabaseInsert extends DatabaseStatement
         return $this;
     }
 
+    /**
+     * Creates a ON DUPLICATE KEY UPDATE statement, based on values already appended.
+     *
+     * @return DatabaseInsert
+     *  The current instance
+     */
     public function updateOnDuplicateKey()
     {
         $update = implode(self::LIST_DELIMITER, General::array_map(function ($key, $value) {

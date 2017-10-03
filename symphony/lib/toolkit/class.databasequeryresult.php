@@ -4,20 +4,77 @@
  * @package toolkit
  */
 
-final class DatabaseQueryResult extends DatabaseStatementResult
+/**
+ * This class hold the data created by the execution of a specialized DatabaseStatement class.
+ * Statements that needs this class returns tabular data.
+ * It implements the IteratorAggregate interface but also provide its own API with more control
+ * built in.
+ */
+final class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAggregate
 {
+    /**
+     * The read offset.
+     *
+     * @var int
+     */
     private $offset = 0;
+
+    /**
+     * The type of variable that should be returned.
+     *
+     * @var int
+     */
     private $type = PDO::FETCH_ASSOC;
+
+    /**
+     * The orientation of the offset.
+     *
+     * @var int
+     */
     private $orientation = PDO::FETCH_ORI_NEXT;
 
+    /**
+     * Implements the IteratorAggregate getIterator function by delegating it to
+     * the PDOStatement.
+     *
+     * @return Traversable
+     */
+    public function getIterator()
+    {
+        return $this->stm;
+    }
+
+    /**
+     * Sets the offset value
+     *
+     * @param int $offset
+     *  A positive number by which to limit the number of results
+     * @return DatabaseQueryResult
+     *  The current instance
+     */
     public function offset($offset)
     {
+        General::ensureType([
+            'offset' => ['var' => $offset, 'type' => 'int'],
+        ]);
         $this->offset = $offset;
         return $this;
     }
 
+    /**
+     * Sets the type of the returned structure value.
+     *
+     * @param int $type
+     *  The type to use
+     *  Either PDO::FETCH_ASSOC or PDO::FETCH_OBJ
+     * @return DatabaseQueryResult
+     *  The current instance
+     */
     public function type($type)
     {
+        General::ensureType([
+            'type' => ['var' => $type, 'type' => 'int'],
+        ]);
         if ($type !== PDO::FETCH_ASSOC && $type !== PDO::FETCH_OBJ) {
             throw new DatabaseException('Invalid fetch type');
         }
@@ -25,8 +82,20 @@ final class DatabaseQueryResult extends DatabaseStatementResult
         return $this;
     }
 
+    /**
+     * Sets the orientation value, which controls the way the offset is applied.
+     *
+     * @param int $orientation
+     *  The orientation value to use.
+     *  Either PDO::FETCH_ORI_NEXT or PDO::FETCH_ORI_ABS
+     * @return DatabaseQueryResult
+     *  The current instance
+     */
     public function orientation($orientation)
     {
+        General::ensureType([
+            'orientation' => ['var' => $orientation, 'type' => 'int'],
+        ]);
         if ($type !== PDO::FETCH_ORI_NEXT && $type !== PDO::FETCH_OBJ) {
             throw new DatabaseException('Invalid fetch type');
         }
@@ -34,6 +103,16 @@ final class DatabaseQueryResult extends DatabaseStatementResult
         return $this;
     }
 
+    /**
+     * Retrieve the the next available record.
+     *
+     * @see type()
+     * @see orientation()
+     * @see offset()
+     * @return array|object
+     *  The next available record.
+     *  null if there are not more available records.
+     */
     public function next()
     {
         return $this->statement()->fetch(
@@ -43,6 +122,15 @@ final class DatabaseQueryResult extends DatabaseStatementResult
         );
     }
 
+    /**
+     * Retrieve all available rows.
+     *
+     * @see type()
+     * @see orientation()
+     * @see offset()
+     * @return array
+     *  An array of objects or arrays
+     */
     public function rows()
     {
         $rows = [];
@@ -52,13 +140,30 @@ final class DatabaseQueryResult extends DatabaseStatementResult
         return $rows;
     }
 
+    /**
+     * Retrieves the number of available records.
+     *
+     * @return int
+     *  The number of available records
+     */
     public function rowCount()
     {
         return $this->statement()->rowCount();
     }
 
+    /**
+     * Retrieves all values for the specified column.
+     *
+     * @param string|int $col
+     * @return array
+     *  An array containing all the values for the specified column
+     * @throws DatabaseException
+     */
     public function column($col)
     {
+        if (!is_string($col) && !is_int($col)) {
+            throw new DatabaseException('`$col must be a string or an integer');
+        }
         $rows = [];
         while ($row = $this->next()) {
             if ($this->type === PDO::FETCH_OBJ) {
@@ -70,12 +175,29 @@ final class DatabaseQueryResult extends DatabaseStatementResult
         return $rows;
     }
 
+    /**
+     * Retrieves the number of available columns in each record.
+     *
+     * @return int
+     *  The number of available columns
+     */
     public function columnCount()
     {
         $this->statement()->columnCount();
     }
 
-    public function var($name)
+    /**
+     * Retrieve the value of the specified column in the next available record.
+     * Note: this method can return null even if there are more records.
+     *
+     * @see type()
+     * @see orientation()
+     * @see offset()
+     * @param string $col
+     * @return mixed
+     *  The value of the column
+     */
+    public function variable($col)
     {
         if ($row = $this->next()) {
             if ($this->type === PDO::FETCH_OBJ) {

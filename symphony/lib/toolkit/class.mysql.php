@@ -21,11 +21,12 @@ class DatabaseException extends Exception
 
     /**
      * Constructor takes a message and an associative array to set to
-     * `$_error`. The message is passed to the default Exception constructor
+     * `$_error`. Before the message is passed to the default Exception constructor,
+     * it tries to translate the message.
      */
     public function __construct($message, array $error = null)
     {
-        parent::__construct($message);
+        parent::__construct(__($message));
         $this->_error = $error;
     }
 
@@ -42,7 +43,7 @@ class DatabaseException extends Exception
     /**
      * Accessor function for the Database error code for this type of error
      *
-     * @return integer
+     * @return int
      */
     public function getDatabaseErrorCode()
     {
@@ -77,14 +78,14 @@ class MySQL
     /**
      * Constant to indicate whether the query is a write operation.
      *
-     * @var integer
+     * @var int
      */
     const __WRITE_OPERATION__ = 0;
 
     /**
      * Constant to indicate whether the query is a write operation
      *
-     * @var integer
+     * @var int
      */
     const __READ_OPERATION__ = 1;
 
@@ -98,7 +99,7 @@ class MySQL
     /**
      * The number of queries this class has executed, defaults to 0.
      *
-     * @var integer
+     * @var int
      */
     private static $_query_count = 0;
 
@@ -191,7 +192,7 @@ class MySQL
     /**
      * Returns the number of queries that has been executed
      *
-     * @return integer
+     * @return int
      */
     public static function queryCount()
     {
@@ -490,7 +491,7 @@ class MySQL
      * considered to be a read operation which are subject to query caching.
      *
      * @param string $query
-     * @return integer
+     * @return int
      *  `self::__WRITE_OPERATION__` or `self::__READ_OPERATION__`
      */
     public function determineQueryType($query)
@@ -623,7 +624,7 @@ class MySQL
      * Returns the last insert ID from the previous query. This is
      * the value from an auto_increment field.
      *
-     * @return integer
+     * @return int
      *  The last interested row's ID
      */
     public function getInsertID()
@@ -794,7 +795,7 @@ class MySQL
      * LIMIT to the given `$query`, so for the more efficient use, it is recommended
      * that the `$query` have a LIMIT set.
      *
-     * @param integer $offset
+     * @param int $offset
      *  The row to return from the SQL query. For instance, if the second
      *  row from the result was required, the offset would be 1, because it
      *  is zero based.
@@ -849,7 +850,7 @@ class MySQL
      *
      * @param string $column
      *  The column name in the query to return the values for
-     * @param integer $offset
+     * @param int $offset
      *  The row to use to return the value for the given `$column` from the SQL
      *  query. For instance, if `$column` form the second row was required, the
      *  offset would be 1, because it is zero based.
@@ -947,7 +948,7 @@ class MySQL
          *  The hash used by Symphony to uniquely identify this query
          * @param string $msg
          *  The error message provided by MySQL which includes information on why the execution failed
-         * @param integer $num
+         * @param int $num
          *  The error number that corresponds with the MySQL error message
          */
         if (self::$_logging === true) {

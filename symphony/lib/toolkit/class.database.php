@@ -27,7 +27,7 @@ class Database
      * Constant to indicate whether the query is a write operation.
      *
      * @deprecated @since Symphony 3.0.0
-     * @var integer
+     * @var int
      */
     const __WRITE_OPERATION__ = 0;
 
@@ -35,7 +35,7 @@ class Database
      * Constant to indicate whether the query is a write operation
      *
      * @deprecated @since Symphony 3.0.0
-     * @var integer
+     * @var int
      */
     const __READ_OPERATION__ = 1;
 
@@ -56,7 +56,7 @@ class Database
     /**
      * The number of queries this class has executed, defaults to 0.
      *
-     * @var integer
+     * @var int
      */
     private $queryCount = 0;
 
@@ -75,6 +75,9 @@ class Database
         'charset' => null,
         'collate' => null,
         'engine' => null,
+        'tbl_prefix' => null,
+        'query_caching' => null,
+        'query_logging' => null,
         'options' => [],
     ];
 
@@ -118,7 +121,7 @@ class Database
     }
 
     /**
-     * Returns all the log entries.
+     * Getter for all the log entries.
      *
      * @return array
      */
@@ -147,6 +150,7 @@ class Database
      * connection string.
      *
      * @return string
+     *  The generated DNS connection string
      */
     public function getDSN()
     {
@@ -191,7 +195,7 @@ class Database
     }
 
     /**
-     * Checks if the connection was already made.
+     * Checks if the connection was already made successfully.
      *
      * @return boolean
      *  true if the connection was made, false otherwise
@@ -203,8 +207,9 @@ class Database
 
     /**
      * Issues a call to `connect()` if the current instance is not already
-     * connected. Does nothing 
+     * connected. Does nothing if already connected.
      *
+     * @see isConnected()
      * @return Database
      *  The current instance.
      * @throws DatabaseException
@@ -219,9 +224,10 @@ class Database
 
     /**
      * Returns the number of queries that has been executed since
-     * the creation of the object
+     * the creation of the object.
      *
-     * @return integer
+     * @return int
+     *  The total number of query executed.
      */
     public function queryCount()
     {
@@ -273,8 +279,7 @@ class Database
      */
     public function isCachingEnabled()
     {
-        return isset($this->config['query_caching']) &&
-            in_array($this->config['query_caching'], ['on', true], true);
+        return in_array($this->config['query_caching'], ['on', true], true);
     }
 
     /**
@@ -295,16 +300,13 @@ class Database
 
     /**
      * Returns the prefix used by Symphony for this Database instance.
-     * By default, it is `sym_`.
      *
+     * @see __construct()
      * @since Symphony 2.4
      * @return string
      */
     public function getPrefix()
     {
-        if (!isset($this->config['tbl_prefix'])) {
-            return 'sym_';
-        }
         return $this->config['tbl_prefix'];
     }
 
@@ -339,8 +341,7 @@ class Database
      */
     public function isLoggingEnabled()
     {
-        return isset($this->config['query_logging']) &&
-            in_array($this->config['query_logging'], ['on', true], true);
+        return in_array($this->config['query_logging'], ['on', true], true);
     }
 
     /**
@@ -383,8 +384,12 @@ class Database
      * If not connected to the database, it will default to PHP's `addslashes`.
      * This is useful for unit tests.
      *
-     * Note that this function does not encode _ or %.
+     * This function does not encode _ or %.
      *
+     * This function should not be used. Instead, pass your data in the proper
+     * function that will delegate to SQL parameters.
+     *
+     * @see DatabaseStatement::appendValues()
      * @param string $value
      *  The string to be encoded into an escaped SQL string
      * @return string
@@ -403,6 +408,9 @@ class Database
      * array of data, encoding only the value, not the key. This function
      * can handle recursive arrays. This function manipulates the given
      * parameter by reference.
+     *
+     * This function should not be used. Instead, pass your data in the proper
+     * function that will delegate to SQL parameters.
      *
      * @see quote
      * @param array $array
@@ -549,7 +557,7 @@ class Database
      * the value from an auto_increment field.
      * If the lastInsertId is empty or not a valid integer, -1 is returned.
      *
-     * @return integer
+     * @return int
      *  The last interested row's ID
      */
     public function getInsertID()
@@ -628,6 +636,8 @@ class Database
 
     /**
      * Factory method that creates a new `CREATE TABLE` statement.
+     * Also sets the charset, collate and engine values using the
+     * instance configuration.
      *
      * @param string $table
      * @return DatabaseCreate
@@ -642,6 +652,8 @@ class Database
 
     /**
      * Factory method that creates a new `CREATE TABLE IF NOT EXISTS` statement.
+     * Also sets the charset, collate and engine values using the
+     * instance configuration.
      *
      * @param string $table
      * @return DatabaseCreate
@@ -656,13 +668,15 @@ class Database
 
     /**
      * Factory method that creates a new `ALTER TABLE` statement.
+     * Also sets the collate value using the instance configuration.
      *
      * @param string $table
      * @return DatabaseAlter
      */
     public function alter($table)
     {
-        return new DatabaseAlter($this, $table);
+        return (new DatabaseAlter($this, $table))
+            ->collate($this->config['collate']);
     }
 
     /**
@@ -754,6 +768,7 @@ class Database
      * Developers are encouraged to call `DatabaseStatement::execute()` instead,
      * because it will make sure to set required state properly.
      *
+     * @see validateSQLQuery()
      * @see DatabaseStatement::execute()
      * @see DatabaseStatement::result()
      * @param string $query
@@ -768,14 +783,17 @@ class Database
         }
 
         $query = $stm->generateSQL();
+        $values = $stm->getValues();
         $result = null;
 
         // Cleanup from last time, set some logging parameters
         $this->flush();
         $this->lastQuery = $query;
-        $this->lastQueryHash = md5($query.$start);
+        $this->lastQueryHash = md5($query . $start);
 
         try {
+            // Validate the query
+            $this->validateSQLQuery($query);
             // Prepare the query
             $pstm = $this->conn->prepare($query);
             $this->lastQuery = $pstm->queryString;
@@ -802,6 +820,26 @@ class Database
     }
 
     /**
+     * @internal
+     * This method checks for common pattern of SQL injection, like `--`, `'` and `;`.
+     *
+     * @see execute()
+     * @param string $query
+     * @return void
+     * @throws DatabaseException
+     */
+    public function validateSQLQuery($query)
+    {
+        if (strpos('--', $query) !== false) {
+            throw new DatabaseException('Query contains illegal characters: `--`');
+        } elseif (strpos('\'', $query) !== false) {
+            throw new DatabaseException('Query contains illegal character: `\'`');
+        } elseif (strpos(';', $query) !== false) {
+            throw new DatabaseException('Query contains illegal character: `;`');
+        }
+    }
+
+    /**
      * Convenience function to allow you to execute multiple SQL queries at once
      * by providing a string with the queries delimited with a `;`
      *
@@ -812,7 +850,7 @@ class Database
      * @param boolean $force_engine
      *  @deprecated @since Symphony 3.0.0
      *  The default engine is now InnoDb.
-     *  The import script should use InnonDb as well.
+     *  The import script should use InnoDb as well.
      *  Before 3.0.0:
      *  If set to true, this will set MySQL's default storage engine to MyISAM.
      *  Defaults to false, which will use MySQL's default storage engine when
@@ -883,7 +921,7 @@ class Database
          *  The hash used by Symphony to uniquely identify this query
          * @param string $msg
          *  The error message provided by MySQL which includes information on why the execution failed
-         * @param integer $num
+         * @param int $num
          *  The error number that corresponds with the MySQL error message
          */
         if (Symphony::ExtensionManager() instanceof ExtensionManager) {
@@ -907,7 +945,7 @@ class Database
      * basic profiling/debugging purposes
      *
      * @uses PostQueryExecution
-     * @param integer $stop
+     * @param int $stop
      */
     private function logLastQuery($stop) {
         /**
@@ -1045,7 +1083,7 @@ class Database
      *
      * @deprecated @since Symphony 3.0.0
      * @param string $query
-     * @return integer
+     * @return int
      *  `self::__WRITE_OPERATION__` or `self::__READ_OPERATION__`
      */
     public function determineQueryType($query)
@@ -1251,7 +1289,7 @@ class Database
      * that the `$query` have a LIMIT set.
      *
      * @deprecated @since Symphony 3.0.0
-     * @param integer $offset
+     * @param int $offset
      *  The row to return from the SQL query. For instance, if the second
      *  row from the result was required, the offset would be 1, because it
      *  is zero based.
@@ -1309,7 +1347,7 @@ class Database
      * @see select
      * @param string $column
      *  The column name in the query to return the values for
-     * @param integer $offset
+     * @param int $offset
      *  The row to use to return the value for the given `$column` from the SQL
      *  query. For instance, if `$column` form the second row was required, the
      *  offset would be 1, because it is zero based.
