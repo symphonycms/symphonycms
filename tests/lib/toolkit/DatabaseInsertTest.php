@@ -17,7 +17,7 @@ final class DatabaseInsertTest extends TestCase
                         'z' => true
                     ]);
         $this->assertEquals(
-            "INSERT INTO `sym_insert` (`x`, `y`, `z`) VALUES (:x, :y, :z)",
+            "INSERT INTO `insert` (`x`, `y`, `z`) VALUES (:x, :y, :z)",
             $sql->generateSQL(),
             'INSERT INTO clause'
         );
@@ -39,7 +39,7 @@ final class DatabaseInsertTest extends TestCase
                     ])
                   ->updateOnDuplicateKey();
         $this->assertEquals(
-            "INSERT INTO `sym_insert` (`x`, `y`, `z`) VALUES (:x, :y, :z) ON DUPLICATE KEY UPDATE `x` = VALUES(`x`), `y` = VALUES(`y`), `z` = VALUES(`z`)",
+            "INSERT INTO `insert` (`x`, `y`, `z`) VALUES (:x, :y, :z) ON DUPLICATE KEY UPDATE `x` = VALUES(`x`), `y` = VALUES(`y`), `z` = VALUES(`z`)",
             $sql->generateSQL(),
             'INSERT ... UPDATE ON DUPLICATE KEY clause'
         );

@@ -73,7 +73,7 @@ class DatabaseStatement
      * Placeholder flag: Developer should check if the statement supports name
      * parameters, which is on by default.
      *
-     * @var boolean
+     * @var bool
      */
     private $usePlaceholders = false;
 
@@ -149,6 +149,7 @@ class DatabaseStatement
     }
 
     /**
+     * @internal
      * Appends part $part of type $type into the SQL parts array.
      * Type $type is just a tag value, used to classify parts.
      * This can allow things like filtering out some parts.
@@ -161,7 +162,7 @@ class DatabaseStatement
      *  The type value for this part
      * @param string $part
      *  The actual SQL code part
-     * @return DatabaseSatement
+     * @return DatabaseStatement
      *  The current instance
      */
     public final function unsafeAppendSQLPart($type, $part)
@@ -190,7 +191,7 @@ class DatabaseStatement
     /**
      * Appends an opening parenthesis as a part of type 'parenthesis'.
      *
-     * @return DatabaseSatement
+     * @return DatabaseStatement
      *  The current instance
      */
     public final function appendOpenParenthesis()
@@ -204,7 +205,7 @@ class DatabaseStatement
      * Appends an closing parenthesis as a part of type 'parenthesis'.
      * No validation is made to check if there are currently opened parenthesis.
      *
-     * @return DatabaseSatement
+     * @return DatabaseStatement
      *  The current instance
      */
     public final function appendCloseParenthesis()
@@ -238,7 +239,7 @@ class DatabaseStatement
      * @see usePlaceholders()
      * @param array $values
      *  The values to send to the database
-     * @return DatabaseSatement
+     * @return DatabaseStatement
      *  The current instance
      */
     protected final function appendValues(array $values)
@@ -247,21 +248,45 @@ class DatabaseStatement
         return $this;
     }
 
-    
+    /**
+     * Enable the use of placeholders (?) in the query instead of named parameters.
+     *
+     * @return DatabaseStatement
+     *  The current instance
+     */
     public final function usePlaceholders()
     {
         $this->usePlaceholders = true;
         return $this;
     }
 
-    public final function isUsignPlaceholders()
+    /**
+     * If the current statement uses placeholders (?).
+     *
+     * @return bool
+     *  true is the statement uses placeholders
+     */
+    public final function isUsingPlaceholders()
     {
         return $this->usePlaceholders;
     }
 
+    /**
+     * @internal
+     * Merges the $s parameter into the current instance, which get mutated.
+     *
+     * @unstable TODO: Might get removed (?)
+     *
+     * @param DatabaseStatement $s
+     *  The statement to merge with the current one.
+     * @return DatabaseStatement
+     *  The current instance
+     * @throws DatabaseException
+     *  When merging a statement that uses named parameter with one using placeholders
+     */
     public final function mergeWith(DatabaseStatement $s)
     {
-        if ($this->isUsignPlaceholders() !== $s->isUsignPlaceholders()) {
+        if ($this->isUsingPlaceholders() !== $s->isUsingPlaceholders()) {
             throw new DatabaseException('Cannot merge statement that using placeholders with one that does not');
         }
         foreach ($s->getSQL() as $type => $part) {
@@ -271,6 +296,14 @@ class DatabaseStatement
         return $this;
     }
 
+    /**
+     * Closes any remaining part of the statement.
+     * Called just before sending the statement to the server.
+     *
+     * @see execute()
+     * @return DatabaseStatement
+     *  The current instance
+     */
     public function finalize()
     {
         while ($this->getOpenParenthesisCount() > 0) {
@@ -279,6 +312,13 @@ class DatabaseStatement
         return $this;
     }
 
+    /**
+     * Send the query and all associated values to the server for execution
+     *
+     * @see Database::execute()
+     * @return DatabaseStatementResult
+     * @throws DatabaseException
+     */
     public final function execute()
     {
         return $this
@@ -287,15 +327,26 @@ class DatabaseStatement
             ->execute($this);
     }
 
+    /**
+     * Factory function that creates a new DatabaseStatementResult based upon the $result
+     * and $stm parameters.
+     * Child classes can overwrite this method to return a specialized version of the
+     * DatabaseStatementResult class.
+     *
+     * @param bool $result
+     * @param PDOStatement $stm
+     * @return DatabaseStatementResult
+     */
     public function results($result, PDOStatement $stm)
     {
         General::ensureType([
-            'result' => ['var' => $result, 'type' => 'boolean'],
+            'result' => ['var' => $result, 'type' => 'bool'],
         ]);
         return new DatabaseStatementResult($result, $stm);
     }
 
     /**
+     * @internal
      * Given a string, replace the default table prefixes with the
      * table prefix for this database instance.
      *
@@ -313,17 +364,60 @@ class DatabaseStatement
         return $table;
     }
 
+    /**
+     * @internal
+     * Given a valid field name, returns its variant as a SQL parameter.
+     * If the $key string is numeric, it will default to placeholders.
+     * If enabled, it will use named parameters.
+     *
+     * @see validateFieldName()
+     * @see isUsingPlaceholders()
+     * @see usePlaceholders()
+     * @param string $key
+     * @return string
+     *  The parameter expression
+     */
     public final function asPlaceholderString($key)
     {
-        $this->validateFieldName($key);
-        return !$this->isUsignPlaceholders() || General::intval($key) === -1 ? ":$key" : '?';
+        if (!$this->isUsingPlaceholders() || General::intval($key) === -1) {
+            $this->validateFieldName($key);
+            return ":$key";
+        }
+        return '?';
     }
 
+    /**
+     * Given an array of valid field names, maps `asPlaceholderString` on each
+     * keys and then implodes the resulting array using LIST_DELIMITER
+     *
+     * @see asPlaceholderString()
+     * @see LIST_DELIMITER
+     * @param array $values
+     * @return void
+     */
     public final function asPlaceholdersList(array $values)
     {
         return implode(self::LIST_DELIMITER, array_map([$this, 'asPlaceholderString'], array_keys($values)));
     }
 
+    /**
+     * @internal
+     * Given some value, it will create a ticked string, i.e. "`string`".
+     * If the $value parameter is:
+     *  1. an array: it will call asPlaceholdersList()
+     *  2. a string with comma in it: it will explode that string and call
+     *     asTickedList() with the resulting array
+     *  3. the string '*': it will keep it as is
+     *  4. a string: it will surround all words with ticks
+     *
+     * For other type of variable, it will throw an Exception.
+     *
+     * @see asTickedList()
+     * @param string|array $value
+     * @return string
+     *  The resulting ticked string or list
+     * @throws Exception
+     */
     public final function asTickedString($value)
     {
         if (is_array($value)) {
@@ -348,23 +442,94 @@ class DatabaseStatement
         return "`$value`";
     }
 
+    /**
+     * @internal
+     * Given an array, this method will call asTickedString() on each values and
+     * then implode the results with LIST_DELIMITER.
+     *
+     * @see asTickedString()
+     * @param array $values
+     * @return string
+     *  The resulting list of ticked strings
+     */
     public final function asTickedList(array $values)
     {
         return implode(self::LIST_DELIMITER, array_map([$this, 'asTickedString'], $values));
     }
 
-    protected function validateFieldName($element)
+    /**
+     * @internal
+     * This method validates that the string $field is a valid field name
+     * in SQL. If it is not, it throws DatabaseException
+     *
+     * @param string $field
+     * @return void
+     * @throws DatabaseException
+     * @throws Exception
+     */
+    protected function validateFieldName($field)
     {
-        if (preg_match('/^[0-9a-zA-Z_]+$/', $element) === false) {
-            throw new DatabaseException("Element name $element is not valid");
+        General::ensureType([
+            'field' => ['var' => $field, 'type' => 'string'],
+        ]);
+        if (preg_match('/^[0-9a-zA-Z_]+$/', $field) === false) {
+            throw new DatabaseException("Field name '$field' is not valid since it contains");
         }
     }
 
+    /**
+     * @internal
+     * This method checks if the $key index is not empty in the $options array.
+     * If it is not empty, it will return its value. If is it, it returns null
+     *
+     * Specialized statement can override this method to provide default values
+     * or check alternate storage space for default values.
+     *
+     * @param array $options
+     * @param string|int $key.
+     * @return mixed
+     */
     protected function getOption(array $options, $key)
     {
-        return (isset($options[$key]) && !empty($options[$key]) ? $options[$key] : null);
+        return !empty($options[$key]) ? $options[$key] : null;
     }
 
+    /**
+     * @internal
+     * Given a field name valid field $k, this methods build a column definition
+     * SQL part from an array of options. It will use the array $options to generate
+     * the a complete SQL definition part, with all its possible properties.
+     *
+     * This method is mostly used for CREATE and ALTER statements.
+     *
+     * @see validateFieldName()
+     * @see getOptions()
+     * @see DatabaseCreate
+     * @see DatabaseAlter
+     * @param string $k
+     *  The name of the field
+     * @param string|array $options
+     *  All the options needed to properly create the column.
+     *  The method `getOptions()` is used to get the value of the field.
+     *  When the value is a string, it is considered as the column's type.
+     * @param string $options.type
+     *  The SQL type of the column.
+     * @param string $options.collate
+     *  The collate to use with this column. Only used for character based columns.
+     * @param bool $options.null
+     *  If the column should accept NULL. Defaults to false, i.e. NOT NULL.
+     * @param string|int $options.default
+     *  The default value of the column.
+     * @param bool $options.signed
+     *  If the column should be signed. Only used for number based columns.
+     *  Defaults to false, i.e. UNSIGNED.
+     * @param boolean $options.auto
+     *  If the column should use AUTO_INCREMENT. Only used for integer based columns.
+     *  Defaults to false.
+     * @return string
+     *  The SQL part containing the column definition.
+     * @throws DatabaseException
+     */
     public function buildColumnDefinitionFromArray($k, $options)
     {
         if (is_string($options)) {
@@ -379,19 +544,19 @@ class DatabaseStatement
         if ($collate) {
             $collate = ' COLLATE ' . $collate;
         }
-        $notnull = !isset($options['null']) || $options['null'] === false;
-        $null = $notnull ? ' NOT NULL' : ' DEFAULT NULL';
-        $default = $notnull && isset($options['default']) ? " DEFAULT " . $this->getDb()->quote($options['default']) : '';
+        $notNull = !isset($options['null']) || $options['null'] === false;
+        $null = $notNull ? ' NOT NULL' : ' DEFAULT NULL';
+        $default = $notNull && isset($options['default']) ? " DEFAULT " . $this->getDb()->quote($options['default']) : '';
         $unsigned = !isset($options['signed']) || $options['signed'] === false;
-        $stringoptions = $collate . $null . $default;
+        $stringOptions = $collate . $null . $default;
 
         if (strpos($type, 'varchar') === 0 || strpos($type, 'text') === 0) {
-            $type .= $stringoptions;
+            $type .= $stringOptions;
         } elseif (strpos($type, 'enum') === 0) {
             if (isset($options['values']) && is_array($options['values'])) {
                 $type .= "(" . implode(self::LIST_DELIMITER, array_map([$this->getDb(), 'quote'], $options['values'])) . ")";
             }
-            $type .= $stringoptions;
+            $type .= $stringOptions;
         } elseif (strpos($type, 'int') === 0) {
             if ($unsigned) {
                 $type .= ' unsigned';
@@ -407,6 +572,27 @@ class DatabaseStatement
         return "$k $type";
     }
 
+    /**
+     * @internal
+     * Given a field name valid field $k, this methods build a key definition
+     * SQL part from an array of options. It will use the array $options to generate
+     * the a complete SQL definition part, with all its possible properties.
+     *
+     * @param string $k
+     *  The name of the key
+     * @param string|array $options
+     *  All the options needed to properly create the key.
+     *  When the value is a string, it is considered as the key's type.
+     * @param string $options.type
+     *  The SQL type of the key.
+     *  Valid values are: 'key', 'unique', 'primary', 'fulltext', 'index'
+     * @param string|array $options.cols
+     *  The list of columns to be included in the key.
+     *  If omitted, the name of the key be added as the only column in the key.
+     * @return string
+     *  The SQL part containing the key definition.
+     * @throws DatabaseException
+     */
     public function buildKeyDefinitionFromArray($k, $options) {
         if (is_string($options)) {
             $options = ['type' => $options];
@@ -421,10 +607,10 @@ class DatabaseStatement
             $cols = [$cols];
         }
         $k = $this->asTickedString($k);
-        $typeindex = in_array($type, [
+        $typeIndex = in_array($type, [
             'key', 'unique', 'primary', 'fulltext', 'index'
         ]);
-        if ($typeindex === false) {
+        if ($typeIndex === false) {
             throw new DatabaseException("Key of type `$type` is not valid");
         }
         switch ($type) {
@@ -444,6 +630,56 @@ class DatabaseStatement
         return "$type $k ($cols)";
     }
 
+    /**
+     * @internal This method is used to create WHERE clauses. Developers should not call
+     * directly this API, but use factory methods for specialized statements
+     * which expose the following model.
+     *
+     * Given an operator or field name $k, this method will generate a logical comparison
+     * SQL part from its $c value. This method focuses on expressiveness and shortness.
+     * Since array keys cannot contains multiple values, single keys are shifted left, even if
+     * it is not the order in which SQL wants it. Multiple nested array can be needed to form a
+     * key -> key -> values chain. The way it should be read is OPERATOR on KEY for VALUES.
+     *
+     * Scalar values are replaced with SQL parameters in the actual resulting SQL.
+     *
+     * Examples
+     *  ('x, 'y') -> `x` = :y
+     *  ('<', ['x' => 1]) -> 'x' < 1
+     *  ('or', ['x' => 'y', 'y' => 'x']) -> (`x` = :y OR `y` = :x)
+     *  ('in', ['x' => ['y', 'z']]) -> `x` IN (:y, :z)
+     *
+     * Values are by default scalar values.
+     * Reference to other SQL field should be denoted with the prefix `$`.
+     *
+     * ('x', '$id') -> `x` = `id`
+     *
+     * Function class are also supported
+     *
+     * ('<=', ['x' => 'SUM(total)']) -> `x` <= SUM(`total`)
+     *
+     * Everything can be nested
+     *
+     * ('or', [
+     *      'and' => ['x' => 1, 'y' = 2],
+     *      '<' => ['x' => 2],
+     *      'between' ['x' => [10, 12]]
+     * ]) -> (
+     *   (`x` = ? AND `y` = ?) OR
+     *   `x` < ? OR
+     *   `x` BETWEEN ? AND ?
+     * )
+     *
+     * @see DatabaseQuery
+     * @see DatabaseDelete
+     * @see DatabaseUpdate
+     * @param string $k
+     *  Can either be an operator or a field name
+     * @param string|array $c
+     *  Can be a single value, a list of values or nested list of valid ($k, $c) pairs.
+     * @return string
+     *  The SQL part containing logical comparison
+     */
     public final function buildSingleWhereClauseFromArray($k, $c)
     {
         $op = '=';
@@ -528,6 +764,13 @@ class DatabaseStatement
         return "$tk $op $k";
     }
 
+    /**
+     * @internal
+     * This method maps all $conditions [$k => $c] pairs on `buildSingleWhereClauseFromArray()`
+     *
+     * @param array $conditions
+     * @return void
+     */
     public final function buildWhereClauseFromArray(array $conditions)
     {
         return implode(self::STATEMENTS_DELIMITER,
