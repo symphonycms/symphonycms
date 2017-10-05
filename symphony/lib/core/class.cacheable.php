@@ -35,7 +35,7 @@ class Cacheable
      */
     public function __construct($cacheProvider = null)
     {
-        if (($cacheProvider instanceof MySQL)) {
+        if (($cacheProvider instanceof Database)) {
             $cache = new CacheDatabase($cacheProvider);
             $this->cacheProvider = $cache;
         } elseif (
