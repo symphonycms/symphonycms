@@ -17,22 +17,22 @@
 class CacheDatabase implements iNamespacedCache
 {
     /**
-     * An instance of the MySQL class to communicate with `tbl_cache`
+     * An instance of the Database class to communicate with `tbl_cache`
      * which is where the cached data is stored.
      *
-     * @var MySQL
+     * @var Database
      */
     private $Database;
 
     /**
      * The constructor for the Cacheable takes an instance of the
-     * MySQL class and assigns it to `$this->Database`
+     * Database class and assigns it to `$this->Database`
      *
-     * @param MySQL $Database
-     *  An instance of the MySQL class to store the cached
+     * @param Database $Database
+     *  An instance of the Database class to store the cached
      *  data in.
      */
-    public function __construct(MySQL $Database)
+    public function __construct(Database $Database)
     {
         $this->Database = $Database;
     }
