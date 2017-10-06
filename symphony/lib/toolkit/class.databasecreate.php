@@ -39,7 +39,8 @@ final class DatabaseCreate extends DatabaseStatement
      * @param Database $db
      *  The underlying database connection
      * @param string $table
-     *  The name of the table to act on.
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
      * @param string $optimizer
      *  An optional optimizer hint.
      *  Currently, only IF NOT EXISTS is supported

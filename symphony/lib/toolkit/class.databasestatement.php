@@ -119,7 +119,7 @@ class DatabaseStatement
      *
      * @return Database
      */
-    protected final function getDB()
+    final protected function getDB()
     {
         return $this->db;
     }
@@ -129,7 +129,7 @@ class DatabaseStatement
      *
      * @return array
      */
-    protected final function getSQL()
+    final protected function getSQL()
     {
         return $this->sql;
     }
@@ -141,7 +141,7 @@ class DatabaseStatement
      * @return string
      *  The resulting SQL string
      */
-    public final function generateSQL()
+    final public function generateSQL()
     {
         return implode(self::STATEMENTS_DELIMITER, array_map(function ($part) {
             return current(array_values($part));
@@ -165,7 +165,7 @@ class DatabaseStatement
      * @return DatabaseStatement
      *  The current instance
      */
-    public final function unsafeAppendSQLPart($type, $part)
+    final public function unsafeAppendSQLPart($type, $part)
     {
         General::ensureType([
             'type' => ['var' => $type, 'type' => 'string'],
@@ -183,7 +183,7 @@ class DatabaseStatement
      * @see appendOpenParenthesis()
      * @return int
      */
-    public final function getOpenParenthesisCount()
+    final public function getOpenParenthesisCount()
     {
         return $this->openParenthesisCount;
     }
@@ -194,7 +194,7 @@ class DatabaseStatement
      * @return DatabaseStatement
      *  The current instance
      */
-    public final function appendOpenParenthesis()
+    final public function appendOpenParenthesis()
     {
         $this->unsafeAppendSQLPart('parenthesis', '(');
         $this->openParenthesisCount++;
@@ -208,7 +208,7 @@ class DatabaseStatement
      * @return DatabaseStatement
      *  The current instance
      */
-    public final function appendCloseParenthesis()
+    final public function appendCloseParenthesis()
     {
         $this->unsafeAppendSQLPart('parenthesis', ')');
         $this->openParenthesisCount--;
@@ -221,7 +221,7 @@ class DatabaseStatement
      *
      * @return array
      */
-    public final function getValues()
+    final public function getValues()
     {
         return $this->values;
     }
@@ -242,9 +242,18 @@ class DatabaseStatement
      * @return DatabaseStatement
      *  The current instance
      */
-    protected final function appendValues(array $values)
+    final protected function appendValues(array $values)
     {
         $this->values = array_merge($this->values, $values);
+        foreach ($this->values as $key => $value) {
+            if (is_string($key)) {
+                $safeKey = $this->convertToParameterName($key);
+                if ($key !== $safeKey) {
+                    unset($this->values[$key]);
+                    $this->values[$safeKey] = $value;
+                }
+            }
+        }
         return $this;
     }
 
@@ -254,7 +263,7 @@ class DatabaseStatement
      * @return DatabaseStatement
      *  The current instance
      */
-    public final function usePlaceholders()
+    final public function usePlaceholders()
     {
         $this->usePlaceholders = true;
         return $this;
@@ -266,7 +275,7 @@ class DatabaseStatement
      * @return bool
      *  true is the statement uses placeholders
      */
-    public final function isUsingPlaceholders()
+    final public function isUsingPlaceholders()
     {
         return $this->usePlaceholders;
     }
@@ -284,7 +293,7 @@ class DatabaseStatement
      * @throws DatabaseException
      *  When merging a statement that uses named parameter with one using placeholders
      */
-    public final function mergeWith(DatabaseStatement $s)
+    final public function mergeWith(DatabaseStatement $s)
     {
         if ($this->isUsingPlaceholders() !== $s->isUsingPlaceholders()) {
             throw new DatabaseException('Cannot merge statement that using placeholders with one that does not');
@@ -319,7 +328,7 @@ class DatabaseStatement
      * @return DatabaseStatementResult
      * @throws DatabaseException
      */
-    public final function execute()
+    final public function execute()
     {
         return $this
             ->finalize()
@@ -353,11 +362,12 @@ class DatabaseStatement
      * @param string $query
      * @return string
      */
-    public final function replaceTablePrefix($table) {
+    final public function replaceTablePrefix($table)
+    {
         General::ensureType([
             'table' => ['var' => $table, 'type' => 'string'],
         ]);
-        if ($this->getDB()->getPrefix() != 'tbl_'){
+        if ($this->getDB()->getPrefix() != 'tbl_') {
             $table = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', $this->getDB()->getPrefix() .'\\1\\2', trim($table));
         }
 
@@ -373,14 +383,16 @@ class DatabaseStatement
      * @see validateFieldName()
      * @see isUsingPlaceholders()
      * @see usePlaceholders()
+     * @see convertToParameterName()
      * @param string $key
      * @return string
      *  The parameter expression
      */
-    public final function asPlaceholderString($key)
+    final public function asPlaceholderString($key)
     {
         if (!$this->isUsingPlaceholders() || General::intval($key) === -1) {
             $this->validateFieldName($key);
+            $key = $this->convertToParameterName($key);
             return ":$key";
         }
         return '?';
@@ -395,7 +407,7 @@ class DatabaseStatement
      * @param array $values
      * @return void
      */
-    public final function asPlaceholdersList(array $values)
+    final public function asPlaceholdersList(array $values)
     {
         return implode(self::LIST_DELIMITER, array_map([$this, 'asPlaceholderString'], array_keys($values)));
     }
@@ -418,12 +430,12 @@ class DatabaseStatement
      *  The resulting ticked string or list
      * @throws Exception
      */
-    public final function asTickedString($value)
+    final public function asTickedString($value)
     {
         if (is_array($value)) {
             return $this->asTickedList($value);
         } elseif (strpos($value, ',') !== false) {
-            return $this->asTickedList(explode(',',$value));
+            return $this->asTickedList(explode(',', $value));
         }
         General::ensureType([
             'value' => ['var' => $value, 'type' => 'string'],
@@ -452,7 +464,7 @@ class DatabaseStatement
      * @return string
      *  The resulting list of ticked strings
      */
-    public final function asTickedList(array $values)
+    final public function asTickedList(array $values)
     {
         return implode(self::LIST_DELIMITER, array_map([$this, 'asTickedString'], $values));
     }
@@ -473,8 +485,31 @@ class DatabaseStatement
             'field' => ['var' => $field, 'type' => 'string'],
         ]);
         if (preg_match('/^[0-9a-zA-Z_]+$/', $field) === false) {
-            throw new DatabaseException("Field name '$field' is not valid since it contains");
+            throw new DatabaseException(
+                "Field name '$field' is not valid since it contains illegal characters"
+            );
         }
+    }
+
+    /**
+     * @internal
+     * This function converts a valid field name into a suitable value
+     * to use as a SQL parameter name.
+     *
+     * @see validateFieldName()
+     * @see appendValues()
+     * @param string $field
+     * @return string
+     *  The sanitized for parameter name field value
+     */
+    public function convertToParameterName($field)
+    {
+        General::ensureType([
+            'value' => ['var' => $field, 'type' => 'string'],
+        ]);
+        $field = str_replace(['-', '.'], '_', $field);
+        $field = preg_replace('/[^0-9a-zA-Z_]+/', '', $field);
+        return $field;
     }
 
     /**
@@ -523,7 +558,7 @@ class DatabaseStatement
      * @param bool $options.signed
      *  If the column should be signed. Only used for number based columns.
      *  Defaults to false, i.e. UNSIGNED.
-     * @param boolean $options.auto
+     * @param bool $options.auto
      *  If the column should use AUTO_INCREMENT. Only used for integer based columns.
      *  Defaults to false.
      * @return string
@@ -534,9 +569,9 @@ class DatabaseStatement
     {
         if (is_string($options)) {
             $options = ['type' => $options];
-        } else if (!is_array($options)) {
+        } elseif (!is_array($options)) {
             throw new DatabaseException('Field value can only be a string or an array');
-        } else if (!isset($options['type'])) {
+        } elseif (!isset($options['type'])) {
             throw new DatabaseException('Field type must be defined.');
         }
         $type = strtolower($options['type']);
@@ -546,7 +581,9 @@ class DatabaseStatement
         }
         $notNull = !isset($options['null']) || $options['null'] === false;
         $null = $notNull ? ' NOT NULL' : ' DEFAULT NULL';
-        $default = $notNull && isset($options['default']) ? " DEFAULT " . $this->getDb()->quote($options['default']) : '';
+        $default = $notNull && isset($options['default']) ?
+            " DEFAULT " . $this->getDb()->quote($options['default']) :
+            '';
         $unsigned = !isset($options['signed']) || $options['signed'] === false;
         $stringOptions = $collate . $null . $default;
 
@@ -554,7 +591,10 @@ class DatabaseStatement
             $type .= $stringOptions;
         } elseif (strpos($type, 'enum') === 0) {
             if (isset($options['values']) && is_array($options['values'])) {
-                $type .= "(" . implode(self::LIST_DELIMITER, array_map([$this->getDb(), 'quote'], $options['values'])) . ")";
+                $type .= "(" . implode(
+                    self::LIST_DELIMITER,
+                    array_map([$this->getDb(), 'quote'], $options['values'])
+                ) . ")";
             }
             $type .= $stringOptions;
         } elseif (strpos($type, 'int') === 0) {
@@ -593,12 +633,13 @@ class DatabaseStatement
      *  The SQL part containing the key definition.
      * @throws DatabaseException
      */
-    public function buildKeyDefinitionFromArray($k, $options) {
+    public function buildKeyDefinitionFromArray($k, $options)
+    {
         if (is_string($options)) {
             $options = ['type' => $options];
-        } else if (!is_array($options)) {
+        } elseif (!is_array($options)) {
             throw new DatabaseException('Key value can only be a string or an array');
-        } else if (!isset($options['type'])) {
+        } elseif (!isset($options['type'])) {
             throw new DatabaseException('Key type must be defined.');
         }
         $type = strtolower($options['type']);
@@ -680,7 +721,7 @@ class DatabaseStatement
      * @return string
      *  The SQL part containing logical comparison
      */
-    public final function buildSingleWhereClauseFromArray($k, $c)
+    final public function buildSingleWhereClauseFromArray($k, $c)
     {
         $op = '=';
         if (is_object($c)) {
@@ -771,9 +812,10 @@ class DatabaseStatement
      * @param array $conditions
      * @return void
      */
-    public final function buildWhereClauseFromArray(array $conditions)
+    final public function buildWhereClauseFromArray(array $conditions)
     {
-        return implode(self::STATEMENTS_DELIMITER,
+        return implode(
+            self::STATEMENTS_DELIMITER,
             General::array_map(
                 [$this, 'buildSingleWhereClauseFromArray'],
                 $conditions
