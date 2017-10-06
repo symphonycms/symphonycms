@@ -24,7 +24,8 @@ final class DatabaseAlter extends DatabaseStatement
      * @param Database $db
      *  The underlying database connection
      * @param string $table
-     *  The name of the table to act on.
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
      */
     public function __construct(Database $db, $table)
     {

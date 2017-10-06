@@ -29,13 +29,13 @@ class DatabaseStatementResult
      * Creates a new DatabaseStatementResult object, containing its $success parameter
      * and the resulting $stm statement.
      *
-     * @param boolean $success
+     * @param bool $success
      * @param PDOStatement $stm
      */
     public function __construct($success, PDOStatement $stm = null)
     {
         General::ensureType([
-            'success' => ['var' => $success, 'type' => 'boolean'],
+            'success' => ['var' => $success, 'type' => 'bool'],
         ]);
         $this->success = $success;
         $this->stm = $stm;

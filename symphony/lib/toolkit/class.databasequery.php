@@ -40,7 +40,8 @@ final class DatabaseQuery extends DatabaseStatement
      *
      * @see alias()
      * @param string $table
-     *  The name of the table to act on.
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
      * @param string $alias
      *  An optional alias for the table. Defaults to null, i.e. no alias.
      * @return DatabaseQuery
@@ -80,7 +81,8 @@ final class DatabaseQuery extends DatabaseStatement
      *
      * @see alias()
      * @param string $table
-     *  The name of the table to act on.
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
      * @param string $alias
      *  An optional alias for the table. Defaults to null, i.e. no alias.
      * @return DatabaseQuery
@@ -102,7 +104,8 @@ final class DatabaseQuery extends DatabaseStatement
      *
      * @see alias()
      * @param string $table
-     *  The name of the table to act on.
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
      * @param string $alias
      *  An optional alias for the table. Defaults to null, i.e. no alias.
      * @return DatabaseQuery
@@ -124,7 +127,8 @@ final class DatabaseQuery extends DatabaseStatement
      *
      * @see alias()
      * @param string $table
-     *  The name of the table to act on.
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
      * @param string $alias
      *  An optional alias for the table. Defaults to null, i.e. no alias.
      * @return DatabaseQuery
@@ -146,7 +150,8 @@ final class DatabaseQuery extends DatabaseStatement
      *
      * @see alias()
      * @param string $table
-     *  The name of the table to act on.
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
      * @param string $alias
      *  An optional alias for the table. Defaults to null, i.e. no alias.
      * @return DatabaseQuery
@@ -168,7 +173,8 @@ final class DatabaseQuery extends DatabaseStatement
      *
      * @see alias()
      * @param string $table
-     *  The name of the table to act on.
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
      * @param string $alias
      *  An optional alias for the table. Defaults to null, i.e. no alias.
      * @return DatabaseQuery

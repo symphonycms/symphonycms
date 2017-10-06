@@ -82,12 +82,12 @@ final class DatabaseQueryTest extends TestCase
                         'sym.tbl_test1.x' => 1,
                     ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `a` FROM `test_table` LEFT JOIN `sym`.`test1` ON `test_table`.`id` = `sym`.`test1`.`other-id` WHERE `sym`.`test1`.`x` = :sym.tbl_test1.x",
+            "SELECT SQL_NO_CACHE `a` FROM `test_table` LEFT JOIN `sym`.`test1` ON `test_table`.`id` = `sym`.`test1`.`other-id` WHERE `sym`.`test1`.`x` = :sym_tbl_test1_x",
             $sql->generateSQL(),
             "SQL clause with WHERE LEFT JOIN"
         );
         $values = $sql->getValues();
-        $this->assertEquals(1, $values['sym.tbl_test1.x'], 'sym.tbl_test1.x is 1');
+        $this->assertEquals(1, $values['sym_tbl_test1_x'], 'sym_tbl_test1_x is 1');
         $this->assertEquals(1, count($values), '1 value');
     }
 

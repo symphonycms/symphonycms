@@ -182,11 +182,12 @@ class Database
             $config = $this->config;
             $this->conn = new PDO(
                 $this->getDSN(),
-                $config['username'],
+                $config['user'],
                 $config['password'],
                 is_array($config['options']) ? $config['options'] : []
             );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conn->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
         } catch (PDOException $ex) {
             $this->throwDatabaseError($ex);
         }
@@ -538,16 +539,33 @@ class Database
      * Factory method that creates a new `INSERT` statement.
      *
      * @param string $table
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
+     *  @deprecated Symphony 3.0.0
+     *  If $table is an array, it is treated as the fields values
+     *  Use DatabaseInsert::values()
+     * @param string $table
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
+     *  @deprecated Symphony 3.0.0
+     *  This parameter is deprecated and will be removed.
+     *  Use the first parameter and DatabaseInsert::values()
+     * @param bool $updateOnDuplicate
+     *  If set to true, data will updated if any key constraints are found that cause
+     *  conflicts. Defaults to false
+     *  @deprecated Symphony 3.0.0
+     *  This parameter is deprecated and will be removed.
+     *  Use DatabaseInsert::updateOnDuplicateKey()
      * @return DatabaseInsert
      */
-    public function insert($table, ...$oldparams)
+    public function insert($table, ...$oldParams)
     {
         // Compat layer
         if (is_array($table)) {
-            if (isset($oldparams[0]) && isset($oldparams[1])) {
-                return $this->_insert($table, $oldparams[0], $oldparams[1]);
+            if (isset($oldParams[0]) && isset($oldParams[1])) {
+                return $this->_insert($table, $oldParams[0], $oldParams[1]);
             }
-            return $this->_insert($table, $oldparams[0]);
+            return $this->_insert($table, $oldParams[0]);
         }
         return new DatabaseInsert($this, $table);
     }
@@ -569,16 +587,23 @@ class Database
      * Factory method that creates a new `UPDATE` statement.
      *
      * @param string $table
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
+     * @param string $where
+     *  An unsanitized WHERE condition.
+     *  @deprecated Symphony 3.0.0
+     *  This parameter is deprecated and will be removed.
+     *  Use DatabaseUpdate::where()
      * @return DatabaseUpdate
      */
-    public function update($table, ...$oldparams)
+    public function update($table, ...$oldParams)
     {
         // Compat layer
         if (is_array($table)) {
-            if (isset($oldparams[0]) && isset($oldparams[1])) {
-                return $this->_update($table, $oldparams[0], $oldparams[1]);
+            if (isset($oldParams[0]) && isset($oldParams[1])) {
+                return $this->_update($table, $oldParams[0], $oldParams[1]);
             }
-            return $this->_update($table, $oldparams[0]);
+            return $this->_update($table, $oldParams[0]);
         }
         return new DatabaseUpdate($this, $table);
     }
@@ -587,7 +612,13 @@ class Database
      * Factory method that creates a new `DELETE` statement.
      *
      * @param string $table
-     * @param @deprecated string $where
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
+     * @param string $where
+     *  An unsanitized WHERE condition.
+     *  @deprecated Symphony 3.0.0
+     *  This parameter is deprecated and will be removed.
+     *  Use DatabaseDelete::where()
      * @return DatabaseDelete
      */
     public function delete($table, $where = null)
@@ -775,7 +806,8 @@ class Database
      * @return DatabaseStatementResult
      * @throws DatabaseException
      */
-    public function execute(DatabaseStatement $stm) {
+    public function execute(DatabaseStatement $stm)
+    {
         $this->autoConnect();
 
         if ($this->isLoggingEnabled()) {
@@ -816,7 +848,7 @@ class Database
             $this->logLastQuery(precision_timer('stop', $start));
         }
 
-        return $stm->result($result, $stm);
+        return $stm->results($result, $pstm);
     }
 
     /**
@@ -893,10 +925,11 @@ class Database
      * @param Exception $ex
      *  The exception thrown while doing something with the Database
      */
-    private function throwDatabaseError(Exception $ex = null) {
+    private function throwDatabaseError(Exception $ex = null)
+    {
         if (isset($ex) && $ex) {
             $msg = $ex->getMessage();
-            $errornum = $ex->getCode();
+            $errornum = (int)$ex->getCode();
         } else {
             $error = $this->conn->errorInfo();
             $msg = $error[2];
@@ -925,19 +958,30 @@ class Database
          *  The error number that corresponds with the MySQL error message
          */
         if (Symphony::ExtensionManager() instanceof ExtensionManager) {
-            Symphony::ExtensionManager()->notifyMembers('QueryExecutionError', class_exists('Administration') ? '/backend/' : '/frontend/', [
-                'query' => $this->lastQuery,
-                'query_hash' => $this->lastQueryHash,
-                'msg' => $msg,
-                'num' => $errornum
-            ]);
+            Symphony::ExtensionManager()->notifyMembers(
+                'QueryExecutionError',
+                class_exists('Administration') ? '/backend/' : '/frontend/',
+                [
+                    'query' => $this->lastQuery,
+                    'query_hash' => $this->lastQueryHash,
+                    'msg' => $msg,
+                    'num' => $errornum
+                ]
+            );
         }
 
-        throw new DatabaseException(__('Database Error (%1$s): %2$s in query: %3$s', [$errornum, $msg, $this->_lastQuery]), [
-            'msg' => $msg,
-            'num' => $errornum,
-            'query' => $this->_lastQuery
-        ], $ex);
+        throw new DatabaseException(
+            __(
+                'Database Error (%1$s): %2$s in query: %3$s',
+                [$errornum, $msg, $this->lastQuery]
+            ),
+            [
+                'msg' => $msg,
+                'num' => $errornum,
+                'query' => $this->lastQuery
+            ],
+            $ex
+        );
     }
 
     /**
@@ -947,7 +991,8 @@ class Database
      * @uses PostQueryExecution
      * @param int $stop
      */
-    private function logLastQuery($stop) {
+    private function logLastQuery($stop)
+    {
         /**
          * After a query has successfully executed, that is it was considered
          * valid SQL, this delegate will provide the query, the query_hash and
@@ -970,11 +1015,15 @@ class Database
          */
         if (Symphony::ExtensionManager() instanceof ExtensionManager) {
             // TODO: Log unlogged queries
-            Symphony::ExtensionManager()->notifyMembers('PostQueryExecution', class_exists('Administration') ? '/backend/' : '/frontend/', [
-                'query' => $this->lastQuery,
-                'query_hash' => $this->lastQueryHash,
-                'execution_time' => $stop
-            ]);
+            Symphony::ExtensionManager()->notifyMembers(
+                'PostQueryExecution',
+                class_exists('Administration') ? '/backend/' : '/frontend/',
+                [
+                    'query' => $this->lastQuery,
+                    'query_hash' => $this->lastQueryHash,
+                    'execution_time' => $stop
+                ]
+            );
         }
 
         // Keep internal log for easy debugging
@@ -1078,7 +1127,7 @@ class Database
     /**
      * Determines whether this query is a read operation, or if it is a write operation.
      * A write operation is determined as any query that starts with CREATE, INSERT,
-     * REPLACE, ALTER, DELETE, UPDATE, OPTIMIZE, TRUNCATE or DROP. Anything else is
+     * REPLACE, ALTER, DELETE, UPDATE, OPTIMIZE, TRUNCATE, DROP or LOCK. Anything else is
      * considered to be a read operation which are subject to query caching.
      *
      * @deprecated @since Symphony 3.0.0
@@ -1088,7 +1137,10 @@ class Database
      */
     public function determineQueryType($query)
     {
-        return (preg_match('/^(create|insert|replace|alter|delete|update|optimize|truncate|drop)/i', $query) ? self::__WRITE_OPERATION__ : self::__READ_OPERATION__);
+        return preg_match(
+            '/^(create|insert|replace|alter|delete|update|optimize|truncate|drop|lock)/i',
+            $query
+        ) === 1 ? self::__WRITE_OPERATION__ : self::__READ_OPERATION__;
     }
 
     /**
@@ -1100,16 +1152,17 @@ class Database
      * function will return boolean, but set `$this->_lastResult` to the result.
      *
      * @deprecated @since Symphony 3.0.0
-     * @see select
-     * @see insert
-     * @see update
-     * @see delete
-     * @see create
-     * @see alter
-     * @see drop
-     * @see truncate
-     * @see optimize
-     * @see set
+     * @see select()
+     * @see insert()
+     * @see update()
+     * @see delete()
+     * @see create()
+     * @see alter()
+     * @see drop()
+     * @see truncate()
+     * @see optimize()
+     * @see set()
+     * @see autoConnect()
      * @uses PostQueryExecution
      * @param string $query
      *  The full SQL query to execute.
@@ -1134,6 +1187,15 @@ class Database
         }
 
         $result = null;
+        // Format SQL because PDO does not seem to like it
+        $query = trim(str_replace(PHP_EOL, ' ', $query));
+        $query = trim(str_replace('\t', ' ', $query));
+        while (strpos($query, '  ') !== false) {
+            $query = str_replace('  ', ' ', $query);
+        }
+        if ($this->getPrefix() !== 'tbl_') {
+            $query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', $this->getPrefix().'\\1\\2', $query);
+        }
 
         // Cleanup from last time, set some logging parameters
         $this->flush();
@@ -1141,25 +1203,29 @@ class Database
         $this->lastQueryHash = md5($query.$start);
         $query_type = $this->determineQueryType($query);
 
-        if (self::$_connection['tbl_prefix'] !== 'tbl_') {
-            $query = preg_replace('/tbl_(\S+?)([\s\.,]|$)/', self::$_connection['tbl_prefix'].'\\1\\2', $query);
-        }
-
         // TYPE is deprecated since MySQL 4.0.18, ENGINE is preferred
         if ($query_type == self::__WRITE_OPERATION__) {
             $query = preg_replace('/TYPE=(MyISAM|InnoDB)/i', 'ENGINE=$1', $query);
-        } elseif ($query_type == self::__READ_OPERATION__ && !preg_match('/^SELECT\s+SQL(_NO)?_CACHE/i', $query)) {
-            if ($this->isCachingEnabled()) {
-                $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
-            } else {
-                $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_NO_CACHE ', $query);
+        } elseif ($query_type == self::__READ_OPERATION__) {
+            if (preg_match('/^SELECT\s+SQL(_NO)?_CACHE/i', $query) === false) {
+                if ($this->isCachingEnabled()) {
+                    $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
+                } else {
+                    $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_NO_CACHE ', $query);
+                }
             }
             $fetchType = $type == "OBJECT" ? PDO::FETCH_OBJ : PDO::FETCH_ASSOC;
         }
 
         try {
             // Execute it
-            $result = $this->conn->exec($query, $fetchType);
+            if ($fetchType) {
+                $resultPdo = $this->conn->query($query);
+                $result = $resultPdo->fetchAll($fetchType);
+                $resultPdo->closeCursor();
+            } else {
+                $result = $this->conn->exec($query);
+            }
             $this->queryCount++;
             $this->_lastResult = $result;
         } catch (PDOException $ex) {
@@ -1203,9 +1269,9 @@ class Database
      * @throws DatabaseException
      * @return boolean
      */
-    public function _insert(array $fields, $table, $updateOnDuplicate = false)
+    public function _insert(array $fields, $table, $updateOnDuplicate = false) // @codingStandardsIgnoreLine
     {
-        $stm = $this->insert($table)->fields($fields);
+        $stm = $this->insert($table)->values($fields);
         if ($updateOnDuplicate) {
             $stm->updateOnDuplicateKey();
         }
@@ -1231,7 +1297,7 @@ class Database
      * @throws DatabaseException
      * @return boolean
      */
-    public function _update(array $fields, $table, $where = null)
+    public function _update(array $fields, $table, $where = null) // @codingStandardsIgnoreLine
     {
         $stm = $this->update($table)->set($fields);
         if ($where) {
