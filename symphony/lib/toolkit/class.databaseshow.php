@@ -23,13 +23,16 @@ final class DatabaseShow extends DatabaseStatement
 
     /**
      * Appends a LIKE clause.
+     * This clause will likely be a table name, so it calls replaceTablePrefix().
      *
+     * @see replaceTablePrefix()
      * @param string $value
      *  The LIKE search pattern to look for
      * @return void
      */
     public function like($value)
     {
+        $value = $this->replaceTablePrefix($value);
         $this->usePlaceholders();
         $this->appendValues([$value]);
         $this->unsafeAppendSQLPart('like', "LIKE ?");
