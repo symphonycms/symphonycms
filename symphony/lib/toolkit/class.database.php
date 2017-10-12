@@ -1271,11 +1271,19 @@ class Database
      */
     public function _insert(array $fields, $table, $updateOnDuplicate = false) // @codingStandardsIgnoreLine
     {
-        $stm = $this->insert($table)->values($fields);
-        if ($updateOnDuplicate) {
-            $stm->updateOnDuplicateKey();
+        $success = true;
+        // Multiple inserts
+        if (!is_array(current($fields))) {
+            $fields = [$fields];
         }
-        return $stm->execute()->success();
+        foreach ($fields as $field) {
+            $stm = $this->insert($table)->values($field);
+            if ($updateOnDuplicate) {
+                $stm->updateOnDuplicateKey();
+            }
+            $success = $success && $stm->execute()->success();
+        }
+        return $success;
     }
 
     /**
