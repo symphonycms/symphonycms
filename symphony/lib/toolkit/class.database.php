@@ -1127,7 +1127,7 @@ class Database
     /**
      * Determines whether this query is a read operation, or if it is a write operation.
      * A write operation is determined as any query that starts with CREATE, INSERT,
-     * REPLACE, ALTER, DELETE, UPDATE, OPTIMIZE, TRUNCATE, DROP or LOCK. Anything else is
+     * REPLACE, ALTER, DELETE, UPDATE, OPTIMIZE, TRUNCATE, DROP, LOCK or UNLOCK. Anything else is
      * considered to be a read operation which are subject to query caching.
      *
      * @deprecated @since Symphony 3.0.0
@@ -1138,7 +1138,7 @@ class Database
     public function determineQueryType($query)
     {
         return preg_match(
-            '/^(create|insert|replace|alter|delete|update|optimize|truncate|drop|lock)/i',
+            '/^(create|insert|replace|alter|delete|update|optimize|truncate|drop|lock|unlock)/i',
             $query
         ) === 1 ? self::__WRITE_OPERATION__ : self::__READ_OPERATION__;
     }
