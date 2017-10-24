@@ -671,7 +671,7 @@ abstract class SectionEvent extends Event
 
             $email = Email::create();
 
-            // Huib: Exceptions are also thrown in the settings functions, not only in the send function.
+            // Exceptions are also thrown in the settings functions, not only in the send function.
             // Those Exceptions should be caught too.
             try {
                 $email->recipients = array(
