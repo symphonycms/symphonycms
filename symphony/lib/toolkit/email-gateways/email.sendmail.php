@@ -167,12 +167,12 @@ class SendmailGateway extends EmailGateway
 
         $label = Widget::Label(__('From Name'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_sendmail][from_name]', $this->_sender_name, 'text', $readonly));
+        $label->appendChild(Widget::Input('settings[email_sendmail][from_name]', General::sanitize($this->_sender_name), 'text', $readonly));
         $div->appendChild($label);
 
         $label = Widget::Label(__('From Email Address'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_sendmail][from_address]', $this->_sender_email_address, 'text', $readonly));
+        $label->appendChild(Widget::Input('settings[email_sendmail][from_address]', General::sanitize($this->_sender_email_address), 'text', $readonly));
         $div->appendChild($label);
 
         $group->appendChild($div);

@@ -341,7 +341,7 @@ class SMTPGateway extends EmailGateway
         $readonly = array('readonly' => 'readonly');
 
         $label = Widget::Label(__('HELO Hostname'));
-        $label->appendChild(Widget::Input('settings[email_smtp][helo_hostname]', $this->_helo_hostname, 'text', $readonly));
+        $label->appendChild(Widget::Input('settings[email_smtp][helo_hostname]', General::sanitize($this->_helo_hostname), 'text', $readonly));
         $div->appendChild($label);
 
         $group->appendChild($div);
@@ -352,12 +352,12 @@ class SMTPGateway extends EmailGateway
 
         $label = Widget::Label(__('From Name'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][from_name]', $this->_sender_name, 'text', $readonly));
+        $label->appendChild(Widget::Input('settings[email_smtp][from_name]', General::sanitize($this->_sender_name), 'text', $readonly));
         $div->appendChild($label);
 
         $label = Widget::Label(__('From Email Address'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][from_address]', $this->_sender_email_address, 'text', $readonly));
+        $label->appendChild(Widget::Input('settings[email_smtp][from_address]', General::sanitize($this->_sender_email_address), 'text', $readonly));
         $div->appendChild($label);
 
         $group->appendChild($div);
@@ -367,12 +367,12 @@ class SMTPGateway extends EmailGateway
 
         $label = Widget::Label(__('Host'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][host]', $this->_host, 'text', $readonly));
+        $label->appendChild(Widget::Input('settings[email_smtp][host]', General::sanitize($this->_host), 'text', $readonly));
         $div->appendChild($label);
 
         $label = Widget::Label(__('Port'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][port]', (string)$this->_port, 'text', $readonly));
+        $label->appendChild(Widget::Input('settings[email_smtp][port]', General::sanitize((string) $this->_port), 'text', $readonly));
         $div->appendChild($label);
         $group->appendChild($div);
 
@@ -410,12 +410,12 @@ class SMTPGateway extends EmailGateway
 
         $label = Widget::Label(__('Username'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][username]', $this->_user, 'text', array_merge($readonly, array('autocomplete' => 'off'))));
+        $label->appendChild(Widget::Input('settings[email_smtp][username]', General::sanitize($this->_user), 'text', array_merge($readonly, array('autocomplete' => 'off'))));
         $div->appendChild($label);
 
         $label = Widget::Label(__('Password'));
         $label->setAttribute('class', 'column');
-        $label->appendChild(Widget::Input('settings[email_smtp][password]', $this->_pass, 'password', array_merge($readonly, array('autocomplete' => 'off'))));
+        $label->appendChild(Widget::Input('settings[email_smtp][password]', General::sanitize($this->_pass), 'password', array_merge($readonly, array('autocomplete' => 'off'))));
         $div->appendChild($label);
         $group->appendChild($div);
 
