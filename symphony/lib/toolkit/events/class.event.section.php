@@ -197,7 +197,7 @@ abstract class SectionEvent extends Event
      * @return string
      *  'missing' or 'invalid'
      */
-    public function __reduceType($a, $b)
+    public static function __reduceType($a, $b)
     {
         if (is_array($b)) {
             return array_reduce($b, array('SectionEvent', '__reduceType'));
