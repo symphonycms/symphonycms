@@ -9,6 +9,9 @@
  */
 final class DatabaseCreate extends DatabaseStatement
 {
+    use DatabaseColumnDefinition;
+    use DatabaseKeyDefinition;
+
     /**
      * The default charset option value for this statement
      *
@@ -116,7 +119,7 @@ final class DatabaseCreate extends DatabaseStatement
     /**
      * Appends one or multiple columns definitions clauses.
      *
-     * @see buildColumnDefinitionFromArray
+     * @see DatabaseColumnDefinition::buildColumnDefinitionFromArray
      * @param array $fields
      *  The field definitions to append
      * @return DatabaseCreate

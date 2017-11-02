@@ -9,6 +9,9 @@
  */
 final class DatabaseAlter extends DatabaseStatement
 {
+    use DatabaseColumnDefinition;
+    use DatabaseKeyDefinition;
+
     /**
      * The default collate option value for this statement
      *
@@ -97,7 +100,7 @@ final class DatabaseAlter extends DatabaseStatement
      /**
      * Appends multiple ADD COLUMN `column` clause.
      *
-     * @see DatabaseStatement::buildColumnDefinitionFromArray()
+     * @see DatabaseColumnDefinition::buildColumnDefinitionFromArray()
      * @param string|array $column
      *  The column to use with the AFTER keyword
      * @return DatabaseAlter
@@ -167,7 +170,7 @@ final class DatabaseAlter extends DatabaseStatement
     /**
      * Appends one or multiple ADD KEY `key` clause.
      *
-     * @see DatabaseStatement::buildKeyDefinitionFromArray()
+     * @see DatabaseKeyDefinition::buildKeyDefinitionFromArray()
      * @param array|string $keys
      *  The key definitions to append
      * @return DatabaseAlter
@@ -210,7 +213,7 @@ final class DatabaseAlter extends DatabaseStatement
     /**
      * Appends one or multiple ADD INDEX `index` clause.
      *
-     * @see DatabaseStatement::buildKeyDefinitionFromArray()
+     * @see DatabaseKeyDefinition::buildKeyDefinitionFromArray()
      * @param array|string $keys
      *  The index definitions to append
      * @return DatabaseAlter
@@ -253,7 +256,7 @@ final class DatabaseAlter extends DatabaseStatement
      /**
      * Appends one and only one ADD PRIMARY KEY `key` clause.
      *
-     * @see DatabaseStatement::buildKeyDefinitionFromArray()
+     * @see DatabaseKeyDefinition::buildKeyDefinitionFromArray()
      * @param array|string $keys
      *  One or more columns inclued in the primary key
      * @return DatabaseAlter

@@ -9,6 +9,8 @@
  */
 final class DatabaseShow extends DatabaseStatement
 {
+    use DatabaseWhereDefinition;
+
     /**
      * Creates a new DatabaseSet statement on table $table.
      *
@@ -42,7 +44,7 @@ final class DatabaseShow extends DatabaseStatement
     /**
      * Appends one or multiple WHERE clauses.
      *
-     * @see DatabaseStatement::buildWhereClauseFromArray()
+     * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
      * @param array $conditions
      *  The logical comparison conditions
      * @return DatabaseShow

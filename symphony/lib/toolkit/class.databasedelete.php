@@ -9,6 +9,8 @@
  */
 final class DatabaseDelete extends DatabaseStatement
 {
+    use DatabaseWhereDefinition;
+
     /**
      * Creates a new DatabaseDelete statement on table $table.
      *
@@ -30,7 +32,7 @@ final class DatabaseDelete extends DatabaseStatement
     /**
      * Appends one or multiple WHERE clauses.
      *
-     * @see DatabaseStatement::buildWhereClauseFromArray()
+     * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
      * @param array $conditions
      *  The logical comparison conditions
      * @return DatabaseDelete
