@@ -34,6 +34,7 @@
 
             $this->setTitle($this->_page_title);
             $this->addElementToHead(new XMLElement('meta', null, array('charset' => 'UTF-8')), 1);
+            $this->addElementToHead(new XMLElement('meta', null, array('name' => 'robots', 'content' => 'noindex')), 2);
 
             $this->addStylesheetToHead(APPLICATION_URL . '/assets/css/installer.min.css', 'screen', 30);
 
