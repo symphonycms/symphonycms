@@ -9,6 +9,8 @@
  */
 final class DatabaseQuery extends DatabaseStatement
 {
+    use DatabaseWhereDefinition;
+
      /**
      * Creates a new DatabaseQuery statement on table $table, with and optional projection $values
      * and an optional optimizer value.
@@ -194,7 +196,7 @@ final class DatabaseQuery extends DatabaseStatement
     /**
      * Appends one an only one ON condition clause.
      *
-     * @see DatabaseStatement::buildWhereClauseFromArray()
+     * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
      * @param array $conditions
      *  The logical comparison conditions
      * @return DatabaseQuery
@@ -210,7 +212,7 @@ final class DatabaseQuery extends DatabaseStatement
     /**
      * Appends one or multiple WHERE clauses.
      *
-     * @see DatabaseStatement::buildWhereClauseFromArray()
+     * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
      * @param array $conditions
      *  The logical comparison conditions
      * @return DatabaseQuery
@@ -282,7 +284,7 @@ final class DatabaseQuery extends DatabaseStatement
     /**
      * Appends one or multiple HAVING clauses.
      *
-     * @see DatabaseStatement::buildWhereClauseFromArray()
+     * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
      * @param array $conditions
      *  The logical comparison conditions
      * @return DatabaseQuery

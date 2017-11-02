@@ -9,6 +9,8 @@
  */
 final class DatabaseUpdate extends DatabaseStatement
 {
+    use DatabaseWhereDefinition;
+
     /**
      * Creates a new DatabaseUpdate statement on table $table.
      *
@@ -30,7 +32,7 @@ final class DatabaseUpdate extends DatabaseStatement
     /**
      * Appends one and only one SET clause, with one or multiple values.
      *
-     * @see DatabaseStatement::buildWhereClauseFromArray()
+     * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
      * @param array $values
      *  The values to set. Array keys are used as column names and values are substituted
      *  by SQL parameters.
@@ -48,7 +50,7 @@ final class DatabaseUpdate extends DatabaseStatement
     /**
      * Appends one or multiple WHERE clauses.
      *
-     * @see DatabaseStatement::buildWhereClauseFromArray()
+     * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
      * @param array $conditions
      *  The logical comparison conditions
      * @return DatabaseUpdate
