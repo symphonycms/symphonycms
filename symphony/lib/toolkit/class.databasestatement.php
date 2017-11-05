@@ -13,6 +13,7 @@
  * The class also offers methods to sanitize and validate field values.
  *
  * Finally, the class can be inherited by specialized class for particular queries.
+ *
  * @see DatabaseQuery
  * @see DatabaseCreate
  * @see DatabaseUpdate
@@ -237,6 +238,7 @@ class DatabaseStatement
      * When using a numeric array, parameters should be place holders (?)
      *
      * @see usePlaceholders()
+     * @see convertToParameterName()
      * @param array $values
      *  The values to send to the database
      * @return DatabaseStatement
@@ -510,22 +512,5 @@ class DatabaseStatement
         $field = str_replace(['-', '.'], '_', $field);
         $field = preg_replace('/[^0-9a-zA-Z_]+/', '', $field);
         return $field;
-    }
-
-    /**
-     * @internal
-     * This method checks if the $key index is not empty in the $options array.
-     * If it is not empty, it will return its value. If is it, it returns null
-     *
-     * Specialized statement can override this method to provide default values
-     * or check alternate storage space for default values.
-     *
-     * @param array $options
-     * @param string|int $key.
-     * @return mixed
-     */
-    protected function getOption(array $options, $key)
-    {
-        return !empty($options[$key]) ? $options[$key] : null;
     }
 }
