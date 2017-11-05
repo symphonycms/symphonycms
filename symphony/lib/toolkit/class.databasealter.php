@@ -53,21 +53,6 @@ final class DatabaseAlter extends DatabaseStatement
     }
 
     /**
-     * This method checks if the $key index is not empty in the $options array.
-     * If it is not empty, it will return its value. If is it, it will lookup a
-     * member variable on the current instance.
-     *
-     * @see DatabaseStatement::getOption()
-     * @param array $options
-     * @param string|int $key.
-     * @return mixed
-     */
-    protected function getOption(array $options, $key)
-    {
-        return !empty($options[$key]) ? $options[$key] : !empty($this->{$key}) ? $this->{$key} : null;
-    }
-
-    /**
      * Appends the FIRST keyword
      *
      * @return DatabaseAlter
@@ -140,7 +125,7 @@ final class DatabaseAlter extends DatabaseStatement
     /**
      * Appends a CHANGE COLUMN `old_column` `new_column` clause.
      *
-     * @see DatabaseStatement::buildColumnDefinitionFromArray()
+     * @see DatabaseColumnDefinition::buildColumnDefinitionFromArray()
      * @param array|string $old_columns
      *  The name of the old columns to change. Their new version must be specified at the same
      *  index in $new_columns

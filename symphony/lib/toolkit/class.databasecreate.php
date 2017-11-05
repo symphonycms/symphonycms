@@ -102,21 +102,6 @@ final class DatabaseCreate extends DatabaseStatement
     }
 
     /**
-     * This method checks if the $key index is not empty in the $options array.
-     * If it is not empty, it will return its value. If is it, it will lookup a
-     * member variable on the current instance.
-     *
-     * @see DatabaseStatement::getOption()
-     * @param array $options
-     * @param string|int $key.
-     * @return mixed
-     */
-    protected function getOption(array $options, $key)
-    {
-        return (isset($options[$key]) && !empty($options[$key]) ? $options[$key] : $this->{$key});
-    }
-
-    /**
      * Appends one or multiple columns definitions clauses.
      *
      * @see DatabaseColumnDefinition::buildColumnDefinitionFromArray

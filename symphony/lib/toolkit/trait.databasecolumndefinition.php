@@ -8,6 +8,23 @@ trait DatabaseColumnDefinition
 {
     /**
      * @internal
+     * This method checks if the $key index is not empty in the $options array.
+     * If it is not empty, it will return its value. If is it, it will lookup a
+     * member variable $key on the current instance and return its value if not empty.
+     * If both storage are empty, it returns null
+     *
+     * @see DatabaseColumnDefinition::buildColumnDefinitionFromArray()
+     * @param array $options
+     * @param string|int $key.
+     * @return mixed
+     */
+    protected function getOption(array $options, $key)
+    {
+        return !empty($options[$key]) ? $options[$key] : !empty($this->{$key}) ? $this->{$key} : null;
+    }
+
+    /**
+     * @internal
      * Given a field name valid field $k, this methods build a column definition
      * SQL part from an array of options. It will use the array $options to generate
      * the a complete SQL definition part, with all its possible properties.
