@@ -180,7 +180,7 @@ class Datasource
      */
     public function execute(array &$param_pool = null)
     {
-        $result = new XMLElement($this->dsParamROOTELEMENT);
+        $result = new XMLElement($this->escapeFirstCharIfDigit($this->dsParamROOTELEMENT));
 
         try {
             $result = $this->execute($param_pool);
@@ -264,7 +264,7 @@ class Datasource
     public function emptyXMLSet(XMLElement $xml = null)
     {
         if (is_null($xml)) {
-            $xml = new XMLElement($this->dsParamROOTELEMENT);
+            $xml = new XMLElement($this->escapeFirstCharIfDigit($this->dsParamROOTELEMENT));
         }
 
         $xml->appendChild($this->__noRecordsFound());
@@ -284,7 +284,7 @@ class Datasource
     public function negateXMLSet(XMLElement $xml = null)
     {
         if (is_null($xml)) {
-            $xml = new XMLElement($this->dsParamROOTELEMENT);
+            $xml = new XMLElement($this->escapeFirstCharIfDigit($this->dsParamROOTELEMENT));
         }
 
         $xml->appendChild($this->__negateResult());
@@ -534,6 +534,38 @@ class Datasource
     public static function removeEscapedCommas($string)
     {
         return preg_replace('/(?<!\\\\)\\\\,/', ',', $string);
+    }
+
+    private static $digitReplacements = array(
+        '1' => 'one',
+        '2' => 'two',
+        '3' => 'three',
+        '4' => 'four',
+        '5' => 'five',
+        '6' => 'six',
+        '7' => 'seven',
+        '8' => 'eight',
+        '9' => 'nine',
+        '0' => 'zero',
+    );
+    /**
+     * XML does not allow tags or attribute to begin with a number.
+     * This function will replace the leading digit with its english equivalent.
+     *
+     * @param string $value
+     * @return string
+     *  The escaped name
+     */
+    public function escapeFirstCharIfDigit($value)
+    {
+        foreach (static::$digitReplacements as $d => $r) {
+            if (strpos($value, $d) === 0) {
+                $value = substr($value, 1);
+                $value = lcfirst($value);
+                return "$r-$value";
+            }
+        }
+        return $value;
     }
 
     /**
