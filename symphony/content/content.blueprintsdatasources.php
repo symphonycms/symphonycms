@@ -201,6 +201,14 @@ class contentBlueprintsDatasources extends ResourcesPage
             $name = $fields['name'];
         }
 
+        // Add an alert when the name begins with a number
+        if ($name && preg_match('/^[0-9]/', $name)) {
+            $this->pageAlert(
+                __('The name of this data-source begins with a number. Since this is invalid XML, it will be replaced with its English equivalent'),
+                Alert::NOTICE
+            );
+        }
+
         $this->setPageType('form');
         $this->setTitle(__(($isEditing ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'), array($name, __('Data Sources'), __('Symphony'))));
         if ($canonical_link) {
