@@ -228,7 +228,8 @@ abstract class Symphony implements Singleton
 
         self::$Log = new Log($filename);
         self::$Log->setArchive((self::Configuration()->get('archive', 'log') == '1' ? true : false));
-        self::$Log->setMaxSize(intval(self::Configuration()->get('maxsize', 'log')));
+        self::$Log->setMaxSize(self::Configuration()->get('maxsize', 'log'));
+        self::$Log->setFilter(self::Configuration()->get('filter', 'log'));
         self::$Log->setDateTimeFormat(__SYM_DATETIME_FORMAT__);
 
         if (self::$Log->open(Log::APPEND, self::Configuration()->get('write_mode', 'file')) == '1') {

@@ -50,6 +50,13 @@ class Log
     private $_archive = false;
 
     /**
+     * The filter applied to logs before they are written.
+     * @since Symphony 2.7.1
+     * @var integer
+     */
+    private $_filter = -1;
+
+    /**
      * The date format that this Log entries will be written as. Defaults to
      * Y/m/d H:i:s.
      * @var string
@@ -119,7 +126,19 @@ class Log
      */
     public function setMaxSize($size)
     {
-        $this->_max_size = $size;
+        $this->_max_size = General::intval($size);
+    }
+
+    /**
+     * Setter for the `$_filter`.
+     *
+     * @since Symphony 2.7.1
+     * @param mixed $filter
+     *  The filter used on log $type parameter.
+     */
+    public function setFilter($filter)
+    {
+        $this->_filter = General::intval($filter);
     }
 
     /**
@@ -185,7 +204,8 @@ class Log
      * @param string $message
      *  The message to add to the Log
      * @param integer $type
-     *  A PHP error constant for this message, defaults to E_NOTICE
+     *  A PHP error constant for this message, defaults to E_NOTICE.
+     *  If null or 0, will be converted to E_ERROR.
      * @param boolean $writeToLog
      *  If set to true, this message will be immediately written to the log. By default
      *  this is set to false, which means that it will only be added to the array ready
@@ -202,6 +222,10 @@ class Log
      */
     public function pushToLog($message, $type = E_NOTICE, $writeToLog = false, $addbreak = true, $append = false)
     {
+        if (!$type) {
+            $type = E_ERROR;
+        }
+
         if ($append) {
             $this->_log[count($this->_log) - 1]['message'] =  $this->_log[count($this->_log) - 1]['message'] . $message;
         } else {
@@ -209,7 +233,7 @@ class Log
             $message = DateTimeObj::get($this->_datetime_format) . ' > ' . $this->__defineNameString($type) . ': ' . $message;
         }
 
-        if ($writeToLog) {
+        if ($writeToLog && ($this->_filter === -1 || ($this->_filter & $type))) {
             return $this->writeToLog($message, $addbreak);
         }
     }

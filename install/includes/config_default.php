@@ -31,6 +31,7 @@
         'log' => array(
             'archive' => '1',
             'maxsize' => '102400',
+            'filter' => E_ALL ^ E_DEPRECATED,
         ),
         ########
 
