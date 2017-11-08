@@ -186,6 +186,7 @@ class Configuration
 
         foreach ($this->_properties as $group => $data) {
             $string .= str_repeat(PHP_EOL, 3) . "$tab$tab###### ".strtoupper($group)." ######";
+            $group = addslashes($group);
             $string .= PHP_EOL . "$tab$tab'$group' => ";
 
             $string .= $this->serializeArray($data, 3, $tab);
@@ -201,7 +202,7 @@ class Configuration
     /**
      * The `serializeArray` function will properly format and indent multidimensional
      * arrays using recursivity.
-     * 
+     *
      * `__toString()` call `serializeArray` to use the recursive condition.
      * The keys (int) in array won't have apostrophe.
      * Array without multidimensional array will be output with normal indentation.
@@ -214,7 +215,6 @@ class Configuration
      * @param string $tab
      *  A horizontal tab
      */
-
     protected function serializeArray(array $arr, $indentation = 0, $tab = self::TAB)
     {
         $tabs = '';
@@ -227,6 +227,7 @@ class Configuration
         }
         $string = 'array(';
         foreach ($arr as $key => $value) {
+            $key = addslashes($key);
             $string .= (is_numeric($key) ? PHP_EOL . "$tabs $key => " : PHP_EOL . "$tabs'$key' => ");
             if (is_array($value)) {
                 if (empty($value)) {
