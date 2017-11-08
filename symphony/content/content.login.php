@@ -38,7 +38,7 @@ class contentLogin extends HTMLPage
 
     public function addScriptToHead($path, $position = null, $duplicate = true)
     {
-        // Prevent script inject injection by extensions
+        // Prevent script injection by extensions
     }
 
     public function addStylesheetToHead($path, $type = 'screen', $position = null, $duplicate = true)
