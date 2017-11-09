@@ -174,7 +174,7 @@ class SectionDatasource extends Datasource
         if (in_array('system:date', $this->dsParamINCLUDEDELEMENTS)) {
             if (Symphony::Log()) {
                 Symphony::Log()->pushDeprecateWarningToLog('system:date', 'system:creation-date` or `system:modification-date', array(
-                    'message-format' => __('The `%s` data-source field is deprecated.')
+                    'message-format' => __('The `%s` data source field is deprecated.')
                 ));
             }
             $xDate = new XMLElement('system-date');
@@ -283,7 +283,7 @@ class SectionDatasource extends Datasource
             } elseif ($param === 'system:creation-date' || $param === 'system:date') {
                 if ($param === 'system:date' && Symphony::Log()) {
                     Symphony::Log()->pushDeprecateWarningToLog('system:date', 'system:creation-date', array(
-                        'message-format' => __('The `%s` data-source output parameter is deprecated.')
+                        'message-format' => __('The `%s` data source output parameter is deprecated.')
                     ));
                 }
                 $this->_param_pool[$param_key][] = $entry->get('creation_date');
@@ -450,7 +450,7 @@ class SectionDatasource extends Datasource
             } elseif ($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
                 if ($field_id === 'system:date' && Symphony::Log()) {
                     Symphony::Log()->pushDeprecateWarningToLog('system:date', 'system:creation-date` or `system:modification-date', array(
-                        'message-format' => __('The `%s` data-source filter is deprecated.')
+                        'message-format' => __('The `%s` data source filter is deprecated.')
                     ));
                 }
                 $date_joins = '';
@@ -544,7 +544,7 @@ class SectionDatasource extends Datasource
         } elseif ($this->dsParamSORT == 'system:date' || $this->dsParamSORT == 'system:creation-date') {
             if ($this->dsParamSORT === 'system:date' && Symphony::Log()) {
                 Symphony::Log()->pushDeprecateWarningToLog('system:date', 'system:creation-date', array(
-                    'message-format' => __('The `%s` data-source sort is deprecated.')
+                    'message-format' => __('The `%s` data source sort is deprecated.')
                 ));
             }
             EntryManager::setFetchSorting('system:creation-date', $this->dsParamORDER);

@@ -264,13 +264,13 @@ class Field
     }
 
     /**
-     * Test whether this field supports data-source output grouping. This
+     * Test whether this field supports data source output grouping. This
      * default implementation prohibits grouping. Data-source grouping allows
      * clients of this field to group the XML output according to this field.
      * Subclasses should override this if grouping is supported.
      *
      * @return boolean
-     *  true if this field does support data-source grouping, false otherwise.
+     *  true if this field does support data source grouping, false otherwise.
      */
     public function allowDatasourceOutputGrouping()
     {
@@ -292,14 +292,14 @@ class Field
     }
 
     /**
-     * Test whether this field supports data-source parameter output. This
+     * Test whether this field supports data source parameter output. This
      * default implementation prohibits parameter output. Data-source
      * parameter output allows this field to be provided as a parameter
-     * to other data-sources or XSLT. Subclasses should override this if
+     * to other data sources or XSLT. Subclasses should override this if
      * parameter output is supported.
      *
      * @return boolean
-     *  true if this supports data-source parameter output, false otherwise.
+     *  true if this supports data source parameter output, false otherwise.
      */
     public function allowDatasourceParamOutput()
     {
@@ -1242,7 +1242,7 @@ class Field
     }
 
     /**
-     * Display the default data-source filter panel.
+     * Display the default data source filter panel.
      *
      * @param XMLElement $wrapper
      *    the input XMLElement to which the display of this will be appended.
@@ -1648,7 +1648,7 @@ class Field
     }
 
     /**
-     * Function to format this field if it chosen in a data-source to be
+     * Function to format this field if it chosen in a data source to be
      * output as a parameter in the XML.
      *
      * Since Symphony 2.5.0, it will defaults to `prepareReadableValue` return value.

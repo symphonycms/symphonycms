@@ -86,7 +86,7 @@ class DatasourceManager implements FileResource
     /**
      * Finds all available Datasources by searching the data-sources folder in
      * the workspace and in all installed extension folders. Returns an
-     * associative array of data-sources.
+     * associative array of data sources.
      *
      * @see toolkit.Manager#about()
      * @return array
