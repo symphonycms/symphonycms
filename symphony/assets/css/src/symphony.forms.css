@@ -70,6 +70,10 @@ select[size] {
 	max-height: 10rem;
 }
 
+textarea {
+	resize: vertical;
+}
+
 input[size] {
 	width: auto;
 }
