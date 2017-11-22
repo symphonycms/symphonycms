@@ -28,7 +28,12 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
     {
         return true;
     }
-
+    
+    public function canPrePopulate()
+    {
+        return true;
+    }
+    
     /*-------------------------------------------------------------------------
         Setup:
     -------------------------------------------------------------------------*/
