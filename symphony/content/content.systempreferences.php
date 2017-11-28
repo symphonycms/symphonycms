@@ -198,7 +198,12 @@ class contentSystemPreferences extends AdministrationPage
         Symphony::ExtensionManager()->notifyMembers('CustomActions', '/system/preferences/');
 
         if (isset($_POST['action']['save'])) {
+            // Sanitize all values
             $settings = filter_var_array($_POST['settings'], FILTER_SANITIZE_STRING);
+            // Reset (un-sanitize) the password of the SMTP email gateway. RE: #2763
+            if (isset($_POST['settings']['email_smtp']['password'])) {
+                $settings['email_smtp']['password'] = $_POST['settings']['email_smtp']['password'];
+            }
 
             /**
              * Just prior to saving the preferences and writing them to the `CONFIG`
