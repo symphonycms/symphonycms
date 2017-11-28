@@ -1168,6 +1168,8 @@ class contentBlueprintsDatasources extends ResourcesPage
             $this->_errors['name'] = __('This is a required field');
         } elseif (strpos($fields['name'], '\\') !== false) {
             $this->_errors['name'] = __('This field contains invalid characters') . ' (\\)';
+        } elseif (!preg_match('/^[a-z]/i', $fields['name'])) {
+            $this->_errors['name'] = __('The name of the data source must begin with a letter.');
         }
 
         if ($fields['source'] == 'static_xml') {

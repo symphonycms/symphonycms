@@ -223,12 +223,17 @@ class SectionDatasource extends Datasource
                     // For each related field show the count (#2083)
                     foreach ($fields as $field_id => $count) {
                         $field_handle = FieldManager::fetchHandleFromID($field_id);
+                        $section_handle = $section['handle'];
+                        // Make sure attribute does not begin with a digit
+                        if (preg_match('/^[0-9]/', $section_handle)) {
+                            $section_handle = 'x-' . $section_handle;
+                        }
                         if ($field_handle) {
-                            $xEntry->setAttribute($section['handle'] . '-' . $field_handle, (string)$count);
+                            $xEntry->setAttribute($section_handle . '-' . $field_handle, (string)$count);
                         }
 
                         // Backwards compatibility (without field handle)
-                        $xEntry->setAttribute($section['handle'], (string)$count);
+                        $xEntry->setAttribute($section_handle, (string)$count);
                     }
                 }
             }
