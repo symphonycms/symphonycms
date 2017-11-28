@@ -1020,19 +1020,24 @@ class ExtensionManager implements FileResource
             $path = self::__getDriverPath($name);
 
             if (!is_file($path)) {
-                Symphony::Engine()->throwCustomError(
-                    __('Could not find extension %s at location %s.', array(
-                        '<code>' . $name . '</code>',
-                        '<code>' . str_replace(DOCROOT . '/', '', $path) . '</code>'
-                    )),
-                    __('Symphony Extension Missing Error'),
-                    Page::HTTP_STATUS_ERROR,
-                    'missing_extension',
-                    array(
-                        'name' => $name,
-                        'path' => $path
-                    )
-                );
+                $errMsg = __('Could not find extension %s at location %s.', array(
+                    '<code>' . $name . '</code>',
+                    '<code>' . str_replace(DOCROOT . '/', '', $path) . '</code>'
+                ));
+                try {
+                    Symphony::Engine()->throwCustomError(
+                        $errMsg,
+                        __('Symphony Extension Missing Error'),
+                        Page::HTTP_STATUS_ERROR,
+                        'missing_extension',
+                        array(
+                            'name' => $name,
+                            'path' => $path
+                        )
+                    );
+                } catch (Exception $ex) {
+                    throw new Exception($errMsg, 0, $ex);
+                }
             }
 
             if (!class_exists($classname)) {
