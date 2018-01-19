@@ -1810,7 +1810,13 @@ class Field
      * Checks that we are working with a valid field handle and field id, and
      * checks that the field record exists in the settings table.
      *
+     * @since Symphony 2.7.1 It does check if the settings table only contains
+     *   default columns and assume those fields do not require a record in the settings table.
+     *   When this situation is detected the field is considered as valid even if no records were
+     *   found in the settings table.
+     *
      * @since Symphony 2.7.0
+     * @see Field::tableExists()
      * @return boolean
      *   true if the field id exists in the table, false otherwise
      */
@@ -1824,7 +1830,37 @@ class Field
             $this->_handle,
             General::intval($this->get('id'))
         ));
-        return !empty($row);
+        if (empty($row)) {
+            // Some fields do not create any records in their settings table because they do not
+            // implement a proper `Field::commit()` method.
+            // The base implementation of the commit function only deals with the "core"
+            // `tbl_fields` table.
+            // The problem with this approach is that it can lead to data corruption when
+            // saving a field that got deleted by another user.
+            // The only way a field can live without a commit method is if it does not store any
+            // settings at all.
+            // But current version of Symphony assume that the `tbl_fields_$handle` table exists
+            // with at least a `id` and `field_id` column, so field are required to at least create
+            // the table to make their field work without SQL errors from the core.
+            $columns = Symphony::Database()->fetchCol('Field', sprintf(
+                'DESC `tbl_fields_%s`',
+                $this->_handle
+            ));
+            // The table only has the two required columns, tolerate the missing record
+            $isDefault = count($columns) === 2 &&
+                in_array('id', $columns) &&
+                in_array('field_id', $columns);
+            if ($isDefault) {
+                Symphony::Log()->pushDeprecateWarningToLog($this->_handle, get_class($this), array(
+                    'message-format' => __('The field `%1$s` does not create settings records in the `tbl_fields_%1$s`.'),
+                    'alternative-format' => __('Please implement the commit function in class `%s`.'),
+                    'removal-format' => __('The compatibility check will will be removed in Symphony %s.'),
+                    'removal-version' => '4.0.0',
+                ));
+            }
+            return $isDefault;
+        }
+        return true;
     }
 
     /**
