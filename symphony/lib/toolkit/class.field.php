@@ -1781,7 +1781,6 @@ class Field
      *
      * @since Symphony 2.7.0
      * @see Field::createTable()
-     * @throws DatabaseException
      * @return boolean
      *  true if Symphony should call `createTable()`
      */
