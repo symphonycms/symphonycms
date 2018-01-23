@@ -8,12 +8,14 @@
 	Symphony.Interface.Suggestions = function() {
 
 		var context;
+		var options;
 
 		/**
 		 * Initialise suggestions
 		 */
-		var init = function(element, selector) {
+		var init = function(element, selector, opts) {
 			context = $(element);
+			options = $.extend({}, options, opts);
 
 			// Disable autocomplete
 			context.find(selector).each(function() {
@@ -76,11 +78,11 @@
 
 		/**
 		 * Handle mouse interactions on the suggestion list.
-	     * In order to make this work with the keyboard as well, set the class
-	     * `.active` to the current target.
-	     *
-	     * @param Event event
-	     *  The mouseover event
+		 * In order to make this work with the keyboard as well, set the class
+		 * `.active` to the current target.
+		 *
+		 * @param Event event
+		 *  The mouseover event
 		 */
 		var handleOver = function(event) {
 			var suggestion = $(event.target);
@@ -91,10 +93,10 @@
 
 		/**
 		 * Handle finished mouse interactions on the suggestion list and
-	     * remove `.active` class set by `handleOver`.
-	     *
-	     * @param Event event
-	     *  The mouseout event
+		 * remove `.active` class set by `handleOver`.
+		 *
+		 * @param Event event
+		 *  The mouseout event
 		 */
 		var handleOut = function(event) {
 			var suggestion = $(event.target);
@@ -104,9 +106,9 @@
 
 		/**
 		 * Handle keyboard navigation in the suggestion list.
-	     *
-	     * @param Event event
-	     *  The keydown event
+		 *
+		 * @param Event event
+		 *  The keydown event
 		 */
 		var handleNavigation = function(event) {
 			var input = $(this),
@@ -133,9 +135,9 @@
 			// Enter
 			else if(event.which == 13) {
 				event.preventDefault();
-				active = input.next('.suggestions').find('li:not(.help).active').text();
+				active = input.next('.suggestions').find('li:not(.help).active')
 
-				if(active) {
+				if(active.length) {
 					select(active, input);
 				}
 			}
@@ -143,14 +145,14 @@
 
 		/**
 		 * Handle suggestion selection by click.
-	     *
-	     * @param Event event
-	     *  The mousedown event
+		 *
+		 * @param Event event
+		 *  The mousedown event
 		 */
 		var handleSelect = function(event) {
 			var input = $(event.target).parent('.suggestions').prev('input');
 
-			select(event.target.textContent, input);
+			select($(event.target), input);
 		};
 
 	/*-------------------------------------------------------------------------
@@ -251,11 +253,11 @@
 
 			// Add suggestions
 			$.each(result, function(index, value) {
-				if(index === 'status') {
+				if (index === 'status') {
 					return;
 				}
 
-				if(prefix === '{') {
+				if (prefix === '{') {
 					value = '{' + value + '}';
 				}
 
@@ -263,7 +265,11 @@
 					text: value
 				});
 
-				if(help.length) {
+				if ($.isFunction(options.editSuggestion)) {
+					options.editSuggestion(suggestion, index, value, result);
+				}
+
+				if (help.length) {
 					suggestion.insertBefore(help);
 				}
 				else {
@@ -276,8 +282,7 @@
 
 		var list = function(suggestions, result) {
 			var clone = suggestions.clone(),
-				help = clone.find('.help:first'),
-				values = [];
+				help = clone.find('.help:first');
 
 			// Clear existing suggestions
 			clear(clone);
@@ -285,17 +290,13 @@
 			// Add suggestions
 			if(result.entries) {
 				$.each(result.entries, function(index, data) {
-					values.push(data.value);
-				});
-
-				values = values.filter(function(item, index, array) {
-					return array.indexOf(item) === index;
-				});
-
-				$.each(values, function(index, value) {
 					var suggestion = $('<li />', {
-						text: value
+						text: data.value
 					});
+
+					if ($.isFunction(options.editSuggestion)) {
+						options.editSuggestion(suggestion, index, data, result);
+					}
 
 					if (help.length) {
 						suggestion.insertBefore(help);
@@ -320,15 +321,21 @@
 
 		var select = function(value, input) {
 			var types = input.attr('data-search-types');
+			var text = value.text();
 
 			if(types && types.indexOf('parameters') !== -1) {
-				insert(value, input);
+				insert(text, input);
 			}
 			else {
-				value = value.replace(/,/g, '\\,').replace(/&/g, '%26');
-				input.val(value);
+				text = $.trim(text.replace(/,/g, '\\,').replace(/&/g, '%26'));
+				input.attr('data-value', value.attr('data-value'));
+				input.val(text);
 				input.addClass('updated');
 				input.change();
+			}
+
+			if ($.isFunction(options.valueSelected)) {
+				options.valueSelected(value, input);
 			}
 
 			clear(input.next('.suggestions'));

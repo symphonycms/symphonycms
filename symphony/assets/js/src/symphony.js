@@ -12,6 +12,7 @@
  * @class
  */
 var Symphony = (function($, crossroads) {
+	'use strict';
 
 	// Internal Symphony storage
 	var Storage = {
@@ -65,7 +66,7 @@ var Symphony = (function($, crossroads) {
 			},
 
 			// Use English strings on error
-			error: function(jqXHR, textStatus, errorThrown) {
+			error: function() {
 				$.extend(true, Storage.Dictionary, strings);
 			}
 		});
@@ -74,7 +75,7 @@ var Symphony = (function($, crossroads) {
 	// request animation frame
 	var raf = window.requestAnimationFrame || window.mozRequestAnimationFrame ||  
 		window.webkitRequestAnimationFrame || window.msRequestAnimationFrame ||
-		window.oRequestAnimationFrame || function (f) { return window.setTimeout(f, 16/1000) };
+		window.oRequestAnimationFrame || function (f) { return window.setTimeout(f, 1000/16); };
 	var craf = window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame ||
 		window.mozCancelRequestAnimationFrame || window.oCancelRequestAnimationFrame ||
 		window.msCancelRequestAnimationFrame  || function (t) { window.clearTimeout(t); };

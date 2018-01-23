@@ -2,7 +2,8 @@
  * @package assets
  */
 
-(function($, Symphony) {
+(function($) {
+	'use strict';
 
 	$(function() {
 
@@ -21,4 +22,4 @@
 		}
 	});
 
-})(window.jQuery, window.Symphony);
+})(window.jQuery);

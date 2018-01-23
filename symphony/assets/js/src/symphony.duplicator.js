@@ -3,6 +3,7 @@
  */
 
 (function($, Symphony) {
+	'use strict';
 
 	/**
 	 * Duplicators are advanced lists used throughout the
@@ -81,9 +82,8 @@
 		---------------------------------------------------------------------*/
 
 			// Construct instances
-			apply.on('click.duplicator', '.constructor:not(.disabled)', function construct(event, speed) {
-				var instance = templates.filter('[data-type="' + $(this).parent().find('select').val() + '"]').clone(true),
-					heightMin, heightMax;
+			apply.on('click.duplicator', '.constructor:not(.disabled)', function construct(event) {
+				var instance = templates.filter('[data-type="' + $(this).parent().find('select').val() + '"]').clone(true);
 
 				event.preventDefault();
 
@@ -109,7 +109,7 @@
 			});
 
 			// Destruct instances
-			duplicator.on('click.duplicator', '.destructor:not(.disabled)', function destruct(event) {
+			duplicator.on('click.duplicator', '.destructor:not(.disabled)', function destruct() {
 				var instance = $(this).closest('.instance');
 
 				// Remove instance
@@ -178,7 +178,7 @@
 			});
 
 			// Lock unique instances
-			duplicator.on('constructstop.duplicator', '.instance', function lockUnique(event) {
+			duplicator.on('constructstop.duplicator', '.instance', function lockUnique() {
 				var instance = $(this);
 
 				if(instance.is('.unique')) {
@@ -195,7 +195,7 @@
 			});
 
 			// Unlock unique instances
-			duplicator.on('destructstart.duplicator', '.instance', function unlockUnique(event) {
+			duplicator.on('destructstart.duplicator', '.instance', function unlockUnique() {
 				var instance = $(this),
 					option;
 
@@ -210,7 +210,7 @@
 			});
 
 			// Build field indexes
-			duplicator.on('constructstop.duplicator refresh.duplicator', '.instance', function buildIndexes(event) {
+			duplicator.on('constructstop.duplicator refresh.duplicator', '.instance', function buildIndexes() {
 				var instance = $(this),
 					position = duplicator.find('.instance').index(instance);
 
@@ -228,7 +228,7 @@
 			});
 
 			// Refresh field indexes
-			duplicator.on('orderstop.orderable', function refreshIndexes(event) {
+			duplicator.on('orderstop.orderable', function refreshIndexes() {
 				duplicator.find('.instance').trigger('refresh.duplicator');
 			});
 

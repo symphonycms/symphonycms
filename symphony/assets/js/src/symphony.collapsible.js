@@ -3,6 +3,7 @@
  */
 
 (function($, Symphony) {
+	'use strict';
 
 	// Saves the value into the local storage at the specified storage key.
 	var save = function (storage, value) {
@@ -100,7 +101,7 @@
 			});
 
 			// Collapse all items
-			object.on('collapseall.collapsible', function collapseAll(event) {
+			object.on('collapseall.collapsible', function collapseAll() {
 				var items = object.find(settings.items + ':not(.collapsed)'),
 					visibles = Symphony.Utilities.inSight(items),
 					invisibles = $(),
@@ -164,7 +165,7 @@
 			});
 
 			// Expand all items
-			object.on('expandall.collapsible', function expandAll(event) {
+			object.on('expandall.collapsible', function expandAll() {
 				var items = object.find(settings.items + '.collapsed'),
 					visibles = Symphony.Utilities.inSight(items).filter('*:lt(4)'),
 					invisibles = items.not(visibles),
@@ -188,7 +189,7 @@
 			});
 
 			// Finish animations
-			object.on('animationend.collapsible', settings.items, function finish(event) {
+			object.on('animationend.collapsible', settings.items, function finish() {
 				var item = $(this);
 
 				// Trigger events
@@ -224,7 +225,7 @@
 
 			// Save states
 			var saveTimer = 0;
-			object.on('collapsestop.collapsible expandstop.collapsible store.collapsible', settings.items, function saveState(event) {
+			object.on('collapsestop.collapsible expandstop.collapsible store.collapsible', settings.items, function saveState() {
 				if(settings.save_state === true && Symphony.Support.localStorage === true) {
 					// save it to local storage, delayed, once
 					clearTimeout(saveTimer);
@@ -232,7 +233,7 @@
 						var collapsed = object.find(settings.items).map(function(index) {
 							if($(this).is('.collapsed')) {
 								return index;
-							};
+							}
 						}).get().join(',');
 
 						save(storage, collapsed);
@@ -241,7 +242,7 @@
 			});
 
 			// Restore states
-			object.on('restore.collapsible', function restoreState(event) {
+			object.on('restore.collapsible', function restoreState() {
 				if(settings.save_state === true && Symphony.Support.localStorage === true && window.localStorage[storage]) {
 					$.each(window.localStorage[storage].split(','), function(index, value) {
 						var collapsed = object.find(settings.items).eq(value);
@@ -253,7 +254,7 @@
 			});
 
 			// Refresh state storage after ordering
-			object.on('orderstop.orderable', function refreshOrderedState(event) {
+			object.on('orderstop.orderable', function refreshOrderedState() {
 				object.find(settings.items).trigger('store.collapsible');
 			});
 

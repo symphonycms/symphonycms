@@ -3,6 +3,7 @@
  */
 
 (function($, Symphony) {
+	'use strict';
 
 	/**
 	 * Create orderable elements.
@@ -71,7 +72,7 @@
 		});
 
 		// Stop ordering
-		objects.on('mouseup.orderable mouseleave.orderable', function stopOrdering(event) {
+		objects.on('mouseup.orderable mouseleave.orderable', function stopOrdering() {
 			var object = $(this),
 				item;
 
