@@ -16,10 +16,11 @@
     "grunt-autoprefixer": "~3.0.4",
     "grunt-cli": "^1.2.0",
     "grunt-contrib-concat": "~1.0.1",
-    "grunt-contrib-jshint": "~1.0.0",
-    "grunt-contrib-uglify": "~1.0.1",
+    "grunt-contrib-jshint": "~1.1.0",
+    "grunt-contrib-uglify": "~3.3.0",
     "grunt-contrib-watch": "~1.0.0",
-    "grunt-csso": "~1.0.0",
+    "grunt-curl": "^2.4.1",
+    "grunt-csso": "~2.2.1",
     "grunt-git-rev-parse": "^0.1.5",
     "grunt-phpcs": "^0.4.0"
   }

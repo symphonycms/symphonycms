@@ -107,19 +107,20 @@ module.exports = function (grunt) {
             scripts: {
                 options: {
                     banner: '<%= meta.banner %>',
-                    preserveComments: 'some',
-                    screwIE8: true,
-                    quoteStyle: 3,
                     compress: {
                         drop_console: true,
-                        dead_code: true,
-                        unused: true,
-                        warnings: grunt.option('verbose')
-                    }
+                        dead_code: true
+                    },
+                    output: {
+                        comments: 'some',
+                        quote_style: 3
+                    },
+                    warnings: grunt.option('verbose')
                 },
                 files: {
                     'symphony/assets/js/symphony.min.js': [
                         'symphony/assets/js/lib/jquery.js',
+                        'symphony/assets/js/lib/jquery.migrate.js',
                         'symphony/assets/js/lib/signals.js',
                         'symphony/assets/js/lib/crossroads.js',
                         'symphony/assets/js/lib/moment.min.js',
@@ -144,6 +145,12 @@ module.exports = function (grunt) {
                     ]
                 }
             }
+        },
+
+        curl: {
+            'symphony/assets/js/lib/jquery.js': 'https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js',
+            'symphony/assets/js/lib/jquery.migrate.js': 'https://code.jquery.com/jquery-migrate-3.0.1.js',
+            'symphony/assets/js/lib/clndr.min.js': 'https://raw.githubusercontent.com/kylestetz/CLNDR/master/clndr.min.js'
         },
 
         watch: {
@@ -191,6 +198,7 @@ module.exports = function (grunt) {
     //grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-curl');
     grunt.loadNpmTasks('grunt-phpcs');
     grunt.loadNpmTasks('grunt-git-rev-parse');
 

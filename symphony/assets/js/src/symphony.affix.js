@@ -91,7 +91,7 @@
 	/*-----------------------------------------------------------------------*/
 
 	// One listener for all instances
-	$(window).scroll(function affixScroll(e) {
+	$(window).on('scroll', function affixScroll(e) {
 		scrollTop = $(this).scrollTop();
 		Symphony.Utilities.requestAnimationFrame(function affixScrollRaf() {
 			instances.each(function affixScrollOne() {
