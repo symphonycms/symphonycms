@@ -111,7 +111,7 @@
 		});
 
 		// Remove all selections by doubleclicking the body
-		$('body').bind('dblclick.selectable', function removeAllSelection() {
+		$('body').on('dblclick.selectable', function removeAllSelection() {
 			objects.find(settings.items).removeClass('selected').trigger('deselect.selectable');
 		});
 

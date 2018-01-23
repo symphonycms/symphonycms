@@ -92,6 +92,9 @@ var Symphony = (function($, crossroads) {
 	// Deep copy jQuery.support
 	$.extend(true, Storage.Support, $.support);
 
+	// Turn off migrate trace
+	jQuery.migrateTrace = undefined;
+
 /*-------------------------------------------------------------------------
 	Symphony API
 -------------------------------------------------------------------------*/

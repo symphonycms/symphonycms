@@ -4,7 +4,7 @@
 
 (function($, Symphony) {
 
-	$(document).ready(function() {
+	$(function() {
 
 		// Init collapsibles
 		var collapsible = $('.frame').symphonyCollapsible({

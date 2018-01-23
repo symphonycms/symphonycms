@@ -42,7 +42,7 @@
 	});
 
 	// Initialise backend
-	$(document).ready(function() {
+	$(function() {
 
 		// Cache main elements
 		Symphony.Elements.window = $(window);
@@ -71,15 +71,21 @@
 
 		// Update state to canonical url
 		if (window.history.replaceState) {
-			// Let extensions read the window.location, delay change on load
-			$(window).load(function () {
+			var replaceState = function () {
 				$('head > link[rel="canonical"][href]').eq(0).each(function () {
 					var href = $(this).attr('href');
 					if (href) {
 						window.history.replaceState(document.title, null, href);
 					}
 				});
-			});
+			};
+			// Let extensions read the window.location when load is completed
+			if (document.readyState === 'complete') {
+				replaceState()
+			} else {
+				// Document not loaded, delay change on load
+				$(window).on('load', replaceState);
+			}
 		}
 	});
 

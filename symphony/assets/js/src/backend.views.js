@@ -192,7 +192,7 @@ Symphony.View.add('/:context*:', function() {
 		// Click on the action button:
 		// This is needed since we need to send the button's data in the POST
 		Symphony.Elements.contents.find('> form').find('input, button')
-			.filter('[name="action[' + action + ']"]').first().click();
+			.filter('[name="action[' + action + ']"]').first().trigger('click');
 		return false;
 	});
 
