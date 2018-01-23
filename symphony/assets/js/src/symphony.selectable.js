@@ -2,7 +2,8 @@
  * @package assets
  */
 
-(function($, Symphony) {
+(function($) {
+	'use strict';
 
 	/**
 	 * Create selectable elements. Clicking an item will select it
@@ -127,4 +128,4 @@
 		return objects;
 	};
 
-})(window.jQuery, window.Symphony);
+})(window.jQuery);

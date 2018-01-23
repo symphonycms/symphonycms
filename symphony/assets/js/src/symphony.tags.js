@@ -2,7 +2,8 @@
  * @package assets
  */
 
-(function($, Symphony) {
+(function($) {
+	'use strict';
 
 	/**
 	 * Insert tags from a list into an input field based on three modes:
@@ -32,7 +33,7 @@
 		Events
 	-------------------------------------------------------------------------*/
 
-		objects.on('click.tags', settings.items, function tagging(event) {
+		objects.on('click.tags', settings.items, function tagging() {
 			var item = $(this),
 				object = item.parent(),
 				input = object.prev().find('input, textarea'),
@@ -69,8 +70,7 @@
 
 			// Multiple
 			else {
-				var exp = new RegExp('^' + tag.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + '$', 'i'),
-					tags = value.split(/,\s*/),
+				var tags = value.split(/,\s*/),
 					removed = false;
 
 				// Check existing tags
@@ -108,4 +108,4 @@
 		return objects;
 	};
 
-})(window.jQuery, window.Symphony);
+})(window.jQuery);

@@ -91,14 +91,14 @@
 		});
 
 		// Detach message
-		objects.on('detach.notify', settings.items, function detachMessage(event) {
+		objects.on('detach.notify', settings.items, function detachMessage() {
 			var item = $(this),
 				notifier = item.parents('div.notifier');
 
 			notifier.trigger('detachstart.notify', [item]);
 
 			// Prepare item removal
-			notifier.one('movestop.notify', function(event) {
+			notifier.one('movestop.notify', function() {
 				var notifier = $(this),
 					offset = notifier.scrollTop();
 
@@ -149,7 +149,7 @@
 		});
 
 		// Count messages
-		objects.on('attachstop.notify detachstop.notify', 'div.notifier', function toggleNavigator(event) {
+		objects.on('attachstop.notify detachstop.notify', 'div.notifier', function toggleNavigator() {
 			var notifier = $(this),
 				items = notifier.find(settings.items);
 
@@ -165,16 +165,15 @@
 		});
 
 		// Next message
-		objects.on('click', 'nav', function switchMessage(event) {
-			var nav = $(this),
-				notifier = $(this).closest('div.notifier');
+		objects.on('click', 'nav', function switchMessage() {
+			var notifier = $(this).closest('div.notifier');
 
 			// Move messages
 			notifier.trigger('move.notify');
 		});
 
 		// Move messages
-		objects.on('move.notify', 'div.notifier', function moveMessage(event) {
+		objects.on('move.notify', 'div.notifier', function moveMessage() {
 			var notifier = $(this),
 				current = notifier.find('.active'),
 				next = current.next(settings.items),
@@ -210,10 +209,9 @@
 		});
 
 		// Ignore message
-		objects.on('click', 'a.ignore', function ignoreMessage(event) {
+		objects.on('click', 'a.ignore', function ignoreMessage() {
 			var ignore = $(this),
 				item = ignore.parents(settings.items),
-				notifier = item.parents('div.notifier'),
 				text = item.text(),
 				storage;
 

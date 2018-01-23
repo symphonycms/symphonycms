@@ -84,24 +84,28 @@ module.exports = function (grunt) {
             }
         },
 
-        /*
         jshint: {
-            scripts: [
-                'symphony/assets/js/src/symphony.js',
-                'symphony/assets/js/src/symphony.collapsible.js',
-                'symphony/assets/js/src/symphony.orderable.js',
-                'symphony/assets/js/src/symphony.selectable.js',
-                'symphony/assets/js/src/symphony.duplicator.js',
-                'symphony/assets/js/src/symphony.tags.js',
-                'symphony/assets/js/src/symphony.suggestions.js',
-                'symphony/assets/js/src/symphony.pickable.js',
-                'symphony/assets/js/src/symphony.timeago.js',
-                'symphony/assets/js/src/symphony.notify.js',
-                'symphony/assets/js/src/symphony.drawer.js',
-                'symphony/assets/js/src/admin.js'
-            ]
+            files: [
+                'symphony/assets/js/src/*.js',
+            ],
+            options: {
+                browser: true,
+                devel: true,
+                curly: true,
+                laxbreak: true,
+                strict: true,
+                nonew: true,
+                esversion: 5,
+                maxcomplexity: 12,
+                undef: true,
+                unused: true,
+                quotmark: 'single',
+                globals: {
+                    jQuery: true,
+                    moment: true,
+                }
+            }
         },
-        */
 
         uglify: {
             scripts: {
@@ -119,29 +123,8 @@ module.exports = function (grunt) {
                 },
                 files: {
                     'symphony/assets/js/symphony.min.js': [
-                        'symphony/assets/js/lib/jquery.js',
-                        'symphony/assets/js/lib/jquery.migrate.js',
-                        'symphony/assets/js/lib/signals.js',
-                        'symphony/assets/js/lib/crossroads.js',
-                        'symphony/assets/js/lib/moment.min.js',
-                        'symphony/assets/js/lib/clndr.min.js',
-                        'symphony/assets/js/src/symphony.js',
-                        'symphony/assets/js/src/symphony.affix.js',
-                        'symphony/assets/js/src/symphony.collapsible.js',
-                        'symphony/assets/js/src/symphony.defaultvalue.js',
-                        'symphony/assets/js/src/symphony.orderable.js',
-                        'symphony/assets/js/src/symphony.selectable.js',
-                        'symphony/assets/js/src/symphony.duplicator.js',
-                        'symphony/assets/js/src/symphony.tags.js',
-                        'symphony/assets/js/src/symphony.pickable.js',
-                        'symphony/assets/js/src/symphony.timeago.js',
-                        'symphony/assets/js/src/symphony.notify.js',
-                        'symphony/assets/js/src/symphony.drawer.js',
-                        'symphony/assets/js/src/symphony.calendar.js',
-                        'symphony/assets/js/src/symphony.filtering.js',
-                        'symphony/assets/js/src/symphony.suggestions.js',
-                        'symphony/assets/js/src/backend.js',
-                        'symphony/assets/js/src/backend.views.js'
+                        'symphony/assets/js/lib/*.js',
+                        'symphony/assets/js/src/*.js',
                     ]
                 }
             }
@@ -195,7 +178,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-autoprefixer');
     grunt.loadNpmTasks('grunt-csso');
-    //grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-curl');
@@ -205,5 +188,5 @@ module.exports = function (grunt) {
     grunt.registerTask('default', ['css', 'js']);
     grunt.registerTask('css', ['git-rev-parse', 'concat', 'autoprefixer', 'csso']);
     grunt.registerTask('php', ['phpcs']);
-    grunt.registerTask('js', ['git-rev-parse', 'uglify']);
+    grunt.registerTask('js', ['git-rev-parse', 'jshint', 'uglify']);
 };

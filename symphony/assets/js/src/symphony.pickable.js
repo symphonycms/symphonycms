@@ -2,7 +2,8 @@
  * @package assets
  */
 
-(function($, Symphony) {
+(function($) {
+	'use strict';
 
 	/**
 	 * Pickable allows to show and hide elements based on the value of a select box.
@@ -42,7 +43,7 @@
 	-------------------------------------------------------------------------*/
 
 		// Switch content
-		objects.on('change.pickable', function pick(event) {
+		objects.on('change.pickable', function pick() {
 			var object = $(this),
 				choice = object.val(),
 				relation = object.attr('id') || object.attr('name'),
@@ -110,4 +111,4 @@
 		return objects;
 	};
 
-})(window.jQuery, window.Symphony);
+})(window.jQuery);

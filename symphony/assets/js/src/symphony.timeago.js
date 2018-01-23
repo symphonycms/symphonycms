@@ -3,6 +3,7 @@
  */
 
 (function($, Symphony) {
+	'use strict';
 
 	/**
 	 * Convert absolute to relative dates.
