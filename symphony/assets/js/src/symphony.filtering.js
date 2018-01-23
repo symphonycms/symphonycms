@@ -130,13 +130,13 @@
 				var item = $(this),
 					filterPrefix = item.find('.comparison').val(),
 					query = item.find('.filter'),
-					value;
+					value = $.trim(query.val());
 
 				if (filterPrefix.length === 0 || !filterPrefix.trim()) {
 					filterPrefix = '';
 				}
 
-				value = 'filter[' + query.attr('name') + ']=' + filterPrefix + $.trim(query.val());
+				value = 'filter[' + query.attr('name') + ']=' + filterPrefix + value;
 				filters.push(value);
 			});
 

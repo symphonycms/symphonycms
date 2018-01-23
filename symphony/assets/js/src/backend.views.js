@@ -5,6 +5,7 @@
  */
 
 (function($, Symphony) {
+	'use strict';
 
 /*--------------------------------------------------------------------------
 	General backend view
@@ -568,9 +569,7 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 
 	// Restore collapsible states for new sections
 	if(status === 'created') {
-		var fields = duplicator.find('.instance'),
-			storageId = Symphony.Context.get('context-id');
-
+		var storageId = Symphony.Context.get('context-id');
 		storageId = storageId.split('.');
 		storageId.pop();
 		storageId = 'symphony.collapsible.' + storageId.join('.') + '.0.collapsed';
@@ -593,7 +592,9 @@ Symphony.View.add('/blueprints/sections/:action:/:id:/:status:', function(action
 --------------------------------------------------------------------------*/
 
 Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function(action) {
-	if(!action) return;
+	if(!action) {
+		return;
+	}
 
 	var context = $('#ds-context'),
 		source = $('#ds-source'),
@@ -605,7 +606,7 @@ Symphony.View.add('/blueprints/datasources/:action:/:id:/:status:/:*:', function
 
 	// Update data source handle
 	name.on('blur.admin input.admin', function updateDsHandle() {
-		var current = nameChangeCount = nameChangeCount + 1,
+		var current = (nameChangeCount++),
 		value = name.val();
 
 		setTimeout(function fetchDsHandle(nameChangeCount, current, value) {
@@ -744,13 +745,12 @@ Symphony.View.add('/blueprints/events/:action:/:name:/:status:/:*:', function() 
 	var context = $('#event-context'),
 		source = $('#event-source'),
 		filters = $('#event-filters'),
-		form = Symphony.Elements.contents.find('> form'),
 		name = Symphony.Elements.contents.find('input[name="fields[name]"]').attr('data-updated', 0),
 		nameChangeCount = 0;
 
 	// Update event handle
 	name.on('blur.admin input.admin', function updateEventHandle() {
-		var current = nameChangeCount = nameChangeCount + 1;
+		var current = (nameChangeCount++);
 
 		setTimeout(function checkEventHandle(nameChangeCount, current) {
 			if(nameChangeCount == current) {
@@ -856,7 +856,7 @@ Symphony.View.add('/system/extensions/:context*:', function() {
 	});
 
 	// Update controls contextually
-	Symphony.Elements.contents.find('.actions select').on('focus.admin', function(event) {
+	Symphony.Elements.contents.find('.actions select').on('focus.admin', function() {
 		var selected = Symphony.Elements.contents.find('tr.selected'),
 			canUpdate = selected.filter('.extension-can-update').length,
 			canInstall = selected.filter('.extension-can-install').length,

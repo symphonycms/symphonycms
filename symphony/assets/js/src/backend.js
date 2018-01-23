@@ -5,6 +5,7 @@
  */
 
 (function($, Symphony) {
+	'use strict';
 
 	// Set environment
 	var environment = (function () {
@@ -81,7 +82,7 @@
 			};
 			// Let extensions read the window.location when load is completed
 			if (document.readyState === 'complete') {
-				replaceState()
+				replaceState();
 			} else {
 				// Document not loaded, delay change on load
 				$(window).on('load', replaceState);

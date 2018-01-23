@@ -2,7 +2,8 @@
  * @package assets
  */
 
-(function($, Symphony) {
+(function($) {
+	'use strict';
 
 	/**
 	 * Fills the target input/textarea with a value from the source element.
@@ -48,7 +49,7 @@
 			return source.find('option:selected').text();
 		};
 
-		var sourceChanged = function (e) {
+		var sourceChanged = function () {
 			if (isOn) {
 				setTargetValue(getSourceValue());
 			}
@@ -74,7 +75,7 @@
 		Initialisation
 	-------------------------------------------------------------------------*/
 
-		objects.on(settings.targetEvent, function (e) {
+		objects.on(settings.targetEvent, function () {
 			if (!getTargetValue()) {
 				on();
 			}
@@ -92,4 +93,4 @@
 		return objects;
 	};
 
-})(window.jQuery, window.Symphony);
+})(window.jQuery);

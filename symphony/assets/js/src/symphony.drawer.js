@@ -3,6 +3,7 @@
  */
 
 (function($, Symphony) {
+	'use strict';
 
 	/**
 	 * Drawers are hidden areas in the backend that are used to
@@ -55,7 +56,7 @@
 			samePositionButtons.removeClass('selected');
 
 			// Close opened drawers from same region
-			$('.drawer.' + position).filter(function(index) {
+			$('.drawer.' + position).filter(function() {
 				return $(this).data('open');
 			}).trigger('collapse.drawer', [speed, true]);
 
@@ -69,7 +70,7 @@
 					width: settings.verticalWidth
 				}, {
 					duration: speed,
-					step: function(now, fx){
+					step: function(now){
 						form.css('margin-left', now + 1); // +1px right border
 					},
 					complete: function() {
@@ -88,7 +89,7 @@
 					width: settings.verticalWidth
 				}, {
 					duration: speed,
-					step: function(now, fx){
+					step: function(now){
 						form.css('margin-right', now + 1); // +1px left border
 					},
 					complete: function() {
@@ -146,7 +147,7 @@
 					width: 0
 				}, {
 					duration: speed,
-					step: function(now, fx){
+					step: function(now){
 						if (!stay) {
 							form.css('margin-left', now);
 						}
@@ -164,7 +165,7 @@
 					width: 0
 				}, {
 					duration: speed,
-					step: function(now, fx){
+					step: function(now){
 						if (!stay) {
 							form.css('margin-right', now);
 						}
@@ -225,7 +226,6 @@
 
 		objects.each(function drawers() {
 			var drawer = $(this),
-				position = drawer.data('position'),
 				button = $('.button.drawer[href="#' + drawer.attr('id') + '"]'),
 				context = drawer.data('context') ? '.' + drawer.data('context') : '',
 				storedState;
@@ -248,11 +248,15 @@
 			// Click event for the related button
 			button.on('click.drawer', function(event) {
 				event.preventDefault();
-				!drawer.data('open') ? drawer.trigger('expand.drawer') : drawer.trigger('collapse.drawer');
+				drawer.trigger(!drawer.data('open') ? 'expand.drawer': 'collapse.drawer');
 			});
 
 			// Initially opened drawers
-			drawer.data('open') ? drawer.trigger('expand.drawer', [0]) : drawer.trigger('collapse.drawer', [0, true]);
+			if (drawer.data('open')) {
+				drawer.trigger('expand.drawer', [0]);
+			} else {
+				drawer.trigger('collapse.drawer', [0, true]);
+			}
 		});
 
 	/*-----------------------------------------------------------------------*/
