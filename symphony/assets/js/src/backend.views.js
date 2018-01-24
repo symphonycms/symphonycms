@@ -856,7 +856,7 @@ Symphony.View.add('/system/extensions/:context*:', function() {
 	});
 
 	// Update controls contextually
-	Symphony.Elements.contents.find('.actions select').on('click.admin focus.admin', function(event) {
+	Symphony.Elements.contents.find('.actions select').on('focus.admin', function(event) {
 		var selected = Symphony.Elements.contents.find('tr.selected'),
 			canUpdate = selected.filter('.extension-can-update').length,
 			canInstall = selected.filter('.extension-can-install').length,
