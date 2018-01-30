@@ -23,6 +23,24 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(1, count($values), '1 value');
     }
 
+    public function testSELECTMULTIPLEWHERE()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+                  ->from('tbl_test_table')
+                  ->where(['x' => 1])
+                  ->where(['y' => 1]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` = :x AND `y` = :y",
+            $sql->generateSQL(),
+            'Simple SQL clause with WHERE filter'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(1, $values['x'], 'x is 1');
+        $this->assertEquals(1, $values['y'], 'y is 1');
+        $this->assertEquals(2, count($values), '2 values');
+    }
+
     public function testSELECTwithOR()
     {
         $db = new Database([]);
@@ -88,6 +106,25 @@ final class DatabaseQueryTest extends TestCase
         );
         $values = $sql->getValues();
         $this->assertEquals(1, $values['sym_tbl_test1_x'], 'sym_tbl_test1_x is 1');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
+    public function testSELECTwithMULTIPLEJOINS()
+    {
+        $db = new Database([]);
+        $sql = $db->select(['a'])
+                  ->from('tbl_test_table')
+                  ->leftJoin('sym.tbl_test1')
+                  ->on(['tbl_test_table.id' => '$sym.tbl_test1.other-id'])
+                  ->rightJoin('sym.tbl_test2')
+                  ->on(['tbl_test_table.x' => ['>' => '4']]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `a` FROM `test_table` LEFT JOIN `sym`.`test1` ON `test_table`.`id` = `sym`.`test1`.`other-id` RIGHT JOIN `sym`.`test2` ON `test_table`.`x` > :tbl_test_table_x",
+            $sql->generateSQL(),
+            "SQL clause with WHERE LEFT JOIN"
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(4, $values['tbl_test_table_x'], 'tbl_test_table_x is 4');
         $this->assertEquals(1, count($values), '1 value');
     }
 
@@ -196,7 +233,8 @@ final class DatabaseQueryTest extends TestCase
         $sql = $db->select()
                   ->from('tbl_test_table')
                   ->alias('tbl_')
-                  ->innerJoin('innertable', 'inner');
+                  ->innerJoin('innertable', 'inner')
+                  ->done();
         $this->assertEquals(
             "SELECT SQL_NO_CACHE * FROM `test_table` AS `tbl_` INNER JOIN `innertable` AS `inner`",
             $sql->generateSQL(),

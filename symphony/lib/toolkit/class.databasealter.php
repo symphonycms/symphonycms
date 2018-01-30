@@ -39,6 +39,32 @@ final class DatabaseAlter extends DatabaseStatement
     }
 
     /**
+     * Returns the parts statement structure for this specialized statement.
+     *
+     * @return array
+     */
+    protected function getStatementStructure()
+    {
+        return [
+            'statement',
+            'table',
+            [
+                'add columns',
+                'first',
+                'after',
+            ],
+            'drop columns',
+            'change columns',
+            'add key',
+            'drop key',
+            'add index',
+            'drop index',
+            'add primary key',
+            'drop primary key',
+        ];
+    }
+
+    /**
      * Set the default collate for all textual columns being altered.
      *
      * @param string $collate
@@ -82,7 +108,7 @@ final class DatabaseAlter extends DatabaseStatement
         return $this;
     }
 
-     /**
+    /**
      * Appends multiple ADD COLUMN `column` clause.
      *
      * @see DatabaseColumnDefinition::buildColumnDefinitionFromArray()
@@ -238,7 +264,7 @@ final class DatabaseAlter extends DatabaseStatement
         return $this;
     }
 
-     /**
+    /**
      * Appends one and only one ADD PRIMARY KEY `key` clause.
      *
      * @see DatabaseKeyDefinition::buildKeyDefinitionFromArray()

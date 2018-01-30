@@ -16,6 +16,7 @@ final class DatabaseStatementTest extends TestCase
         $this->assertEquals('`x`', $sql->asTickedString('`x`'));
         $this->assertEquals('`xtest`', $sql->asTickedString('x`test'));
         $this->assertEquals('`x`.`y`', $sql->asTickedString('x.y'));
+        $this->assertEquals('`x`.`y`', $sql->asTickedString('x.`y`'));
         $this->assertEquals('`x`.`y`.`z`', $sql->asTickedString('x.y.z'));
     }
 

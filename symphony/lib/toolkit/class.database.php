@@ -860,7 +860,7 @@ class Database
      * @return void
      * @throws DatabaseException
      */
-    public function validateSQLQuery($query)
+    final public function validateSQLQuery($query)
     {
         if (strpos('--', $query) !== false) {
             throw new DatabaseException('Query contains illegal characters: `--`');
@@ -906,7 +906,7 @@ class Database
             if (trim($sql) !== '') {
                 $stm = new DatabaseStatement($this);
                 $sql = $stm->replaceTablePrefix($sql);
-                $stm->unsafeAppendSQLPart('import', $sql);
+                $stm->unsafeAppendSQLPart('statement', $sql);
                 if (!$stm->execute()->success()) {
                     return false;
                 }

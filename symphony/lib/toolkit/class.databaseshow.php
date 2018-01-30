@@ -24,6 +24,20 @@ final class DatabaseShow extends DatabaseStatement
     }
 
     /**
+     * Returns the parts statement structure for this specialized statement.
+     *
+     * @return array
+     */
+    protected function getStatementStructure()
+    {
+        return [
+            'statement',
+            'like',
+            'where',
+        ];
+    }
+
+    /**
      * Appends a LIKE clause.
      * This clause will likely be a table name, so it calls replaceTablePrefix().
      *
@@ -52,8 +66,9 @@ final class DatabaseShow extends DatabaseStatement
      */
     public function where(array $conditions)
     {
+        $op = $this->containsSQLParts('where') ? 'AND' : 'WHERE';
         $where = $this->buildWhereClauseFromArray($conditions);
-        $this->unsafeAppendSQLPart('where', "WHERE $where");
+        $this->unsafeAppendSQLPart('where', "$op $where");
         return $this;
     }
 

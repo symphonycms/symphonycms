@@ -30,6 +30,20 @@ final class DatabaseDelete extends DatabaseStatement
     }
 
     /**
+     * Returns the parts statement structure for this specialized statement.
+     *
+     * @return array
+     */
+    protected function getStatementStructure()
+    {
+        return [
+            'statement',
+            'table',
+            'where',
+        ];
+    }
+
+    /**
      * Appends one or multiple WHERE clauses.
      *
      * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
@@ -42,6 +56,27 @@ final class DatabaseDelete extends DatabaseStatement
     {
         $where = $this->buildWhereClauseFromArray($conditions);
         $this->unsafeAppendSQLPart('where', "WHERE $where");
+        return $this;
+    }
+
+    /**
+     * @internal This method is not meant to be called directly. Use execute().
+     * This method validates all the SQL parts currently stored.
+     * It makes sure that there is only one part of each types.
+     *
+     * @see DatabaseStatement::validate()
+     * @return DatabaseDelete
+     * @throws DatabaseException
+     */
+    public function validate()
+    {
+        parent::validate();
+        if (count($this->getSQLParts('table')) !== 1) {
+            throw new DatabaseException('DatabaseDelete can only hold one table part');
+        }
+        if (count($this->getSQLParts('where')) > 1) {
+            throw new DatabaseException('DatabaseDelete can only hold one or zero where part');
+        }
         return $this;
     }
 }

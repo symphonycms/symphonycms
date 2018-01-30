@@ -79,14 +79,6 @@ class DatabaseStatement
     private $usePlaceholders = false;
 
     /**
-     * Reference counter of the number of currently opened (hence unclosed)
-     * parenthesis. This allow auto-closing open parenthesis
-     *
-     * @var int
-     */
-    private $openParenthesisCount = 0;
-
-    /**
      * Creates a new DatabaseStatement object, linked to the $db parameter
      * and containing the optional $statement.
      *
@@ -136,17 +128,86 @@ class DatabaseStatement
     }
 
     /**
+     * Returns all the parts for the specified type
+     *
+     * @param string $type
+     *  The type value for the parts to retrieve
+     * @return array
+     */
+    final public function getSQLParts($type)
+    {
+        return array_filter($this->getSQL(), function ($part) use ($type) {
+            if (is_array($type)) {
+                return in_array(current(array_keys($part)), $type);
+            }
+            return current(array_keys($part)) === $type;
+        });
+    }
+
+    /**
+     * Returns true if the statement contains the specified part.
+     *
+     * @see getSQLParts()
+     * @param string $type
+     *  The type value for the parts to check for
+     * @return bool
+     */
+    final public function containsSQLParts($type)
+    {
+        return !empty($this->getSQLParts($type));
+    }
+
+    /**
+     * Returns the order in which parts needs to be generated.
+     * Only those parts will be included when calling generateSQL().
+     * When multiple parts can share the same order, use a sub-array.
+     * Control characters can be used to merge parts together.
+     * Those characters are:
+     *  - `(` and `)` which wraps one or more parts in parenthesis
+     *  - `,` which joins part with a comma if both the preceding and next parts are not empty
+     *
+     * @see getSQLParts()
+     * @see generateSQL()
+     * @return array
+     */
+    protected function getStatementStructure()
+    {
+        return ['statement'];
+    }
+
+    /**
      * Merges the SQL parts array into a string, joined with the content of the
      * `STATEMENTS_DELIMITER` constant.
+     * The order in which the part are merged are given by getStatementStructure().
      *
+     * @see getStatementStructure()
      * @return string
      *  The resulting SQL string
      */
     final public function generateSQL()
     {
+        $allParts = $this->getStatementStructure();
+        $orderedParts = [];
+        foreach ($allParts as $ti => $type) {
+            if (in_array($type, ['(', ')'])) {
+                $orderedParts[] = [$type];
+                continue;
+            } elseif ($type === ',') {
+                $before = $this->getSQLParts($allParts[$ti - 1]);
+                $after = $this->getSQLParts($allParts[$ti + 1]);
+                if (!empty($before) && !empty($after)) {
+                    $orderedParts[] = [$type];
+                }
+                continue;
+            }
+            $parts = $this->getSQLParts($type);
+            foreach ($parts as $pt => $part) {
+                $orderedParts[] = $part;
+            }
+        }
         return implode(self::STATEMENTS_DELIMITER, array_map(function ($part) {
-            return current(array_values($part));
-        }, $this->sql));
+            return current($part);
+        }, $orderedParts));
     }
 
     /**
@@ -155,16 +216,20 @@ class DatabaseStatement
      * Type $type is just a tag value, used to classify parts.
      * This can allow things like filtering out some parts.
      *
+     * Only allowed parts will be accepted. The only valid part by default is 'statement'.
+     *
      * BEWARE: This method does not validate or sanitize anything, except the
      * type of both parameters, which must be string. This method should be
      * used as a last resort or with properly sanitized values.
      *
+     * @see getStatementStructure()
      * @param string $type
      *  The type value for this part
      * @param string $part
      *  The actual SQL code part
      * @return DatabaseStatement
      *  The current instance
+     * @throws DatabaseException
      */
     final public function unsafeAppendSQLPart($type, $part)
     {
@@ -172,47 +237,11 @@ class DatabaseStatement
             'type' => ['var' => $type, 'type' => 'string'],
             'part' => ['var' => $part, 'type' => 'string'],
         ]);
+        if (!General::in_array_multi($type, $this->getStatementStructure(), true)) {
+            $class = get_class($this);
+            throw new DatabaseException("SQL Part type `$type` is not valid for class `$class`");
+        }
         $this->sql[] = [$type => $part];
-        return $this;
-    }
-
-    /**
-     * Getter for the number of currently opened (unclosed) parenthesis,
-     * amongst all parts. This number represents only parenthesis that are
-     * opened using `appendOpenParenthesis()`, not ones present in other parts.
-     *
-     * @see appendOpenParenthesis()
-     * @return int
-     */
-    final public function getOpenParenthesisCount()
-    {
-        return $this->openParenthesisCount;
-    }
-
-    /**
-     * Appends an opening parenthesis as a part of type 'parenthesis'.
-     *
-     * @return DatabaseStatement
-     *  The current instance
-     */
-    final public function appendOpenParenthesis()
-    {
-        $this->unsafeAppendSQLPart('parenthesis', '(');
-        $this->openParenthesisCount++;
-        return $this;
-    }
-
-    /**
-     * Appends an closing parenthesis as a part of type 'parenthesis'.
-     * No validation is made to check if there are currently opened parenthesis.
-     *
-     * @return DatabaseStatement
-     *  The current instance
-     */
-    final public function appendCloseParenthesis()
-    {
-        $this->unsafeAppendSQLPart('parenthesis', ')');
-        $this->openParenthesisCount--;
         return $this;
     }
 
@@ -283,33 +312,10 @@ class DatabaseStatement
     }
 
     /**
-     * @internal
-     * Merges the $s parameter into the current instance, which get mutated.
-     *
-     * @unstable TODO: Might get removed (?)
-     *
-     * @param DatabaseStatement $s
-     *  The statement to merge with the current one.
-     * @return DatabaseStatement
-     *  The current instance
-     * @throws DatabaseException
-     *  When merging a statement that uses named parameter with one using placeholders
-     */
-    final public function mergeWith(DatabaseStatement $s)
-    {
-        if ($this->isUsingPlaceholders() !== $s->isUsingPlaceholders()) {
-            throw new DatabaseException('Cannot merge statement that using placeholders with one that does not');
-        }
-        foreach ($s->getSQL() as $type => $part) {
-            $this->unsafeAppendSQLPart($type, $part);
-        }
-        $this->appendValues($s->getValues());
-        return $this;
-    }
-
-    /**
-     * Closes any remaining part of the statement.
-     * Called just before sending the statement to the server.
+     * @internal This method is not meant to be called directly. Use execute().
+     * Appends any remaining part of the statement.
+     * Called just before validation and the actual sending of the statement to
+     * the SQL server.
      *
      * @see execute()
      * @return DatabaseStatement
@@ -317,14 +323,30 @@ class DatabaseStatement
      */
     public function finalize()
     {
-        while ($this->getOpenParenthesisCount() > 0) {
-            $this->appendCloseParenthesis();
+        return $this;
+    }
+
+    /**
+     * @internal This method is not meant to be called directly. Use execute().
+     * This method should validate all the SQL parts currently stored.
+     * Plain DatabaseStatement instances requires to have only one statement in them.
+     * Subclasses are expected to throw DatabaseException when invalid.
+     *
+     * @see generateSQL()
+     * @return DatabaseStatement
+     * @throws DatabaseException
+     */
+    public function validate()
+    {
+        if (count($this->getSQLParts('statement')) !== 1) {
+            throw new DatabaseException('DatabaseStatement can only hold one statement part');
         }
         return $this;
     }
 
     /**
-     * Send the query and all associated values to the server for execution
+     * Send the query and all associated values to the server for execution.
+     * Calls finalize before sending creating and sending the query to the server.
      *
      * @see Database::execute()
      * @return DatabaseStatementResult
@@ -334,6 +356,7 @@ class DatabaseStatement
     {
         return $this
             ->finalize()
+            ->validate()
             ->getDB()
             ->execute($this);
     }
@@ -434,6 +457,9 @@ class DatabaseStatement
      */
     final public function asTickedString($value)
     {
+        if (!$value) {
+            return '';
+        }
         if (is_array($value)) {
             return $this->asTickedList($value);
         } elseif (strpos($value, ',') !== false) {
@@ -481,7 +507,7 @@ class DatabaseStatement
      * @throws DatabaseException
      * @throws Exception
      */
-    protected function validateFieldName($field)
+    final protected function validateFieldName($field)
     {
         General::ensureType([
             'field' => ['var' => $field, 'type' => 'string'],
@@ -504,7 +530,7 @@ class DatabaseStatement
      * @return string
      *  The sanitized for parameter name field value
      */
-    public function convertToParameterName($field)
+    final public function convertToParameterName($field)
     {
         General::ensureType([
             'value' => ['var' => $field, 'type' => 'string'],

@@ -38,6 +38,36 @@ final class DatabaseQuery extends DatabaseStatement
     }
 
     /**
+     * Returns the parts statement structure for this specialized statement.
+     *
+     * @return array
+     */
+    protected function getStatementStructure()
+    {
+        return [
+            'statement',
+            'cache',
+            'optimizer',
+            'projection',
+            'table',
+            'as',
+            [
+                'join',
+                'inner join',
+                'left join',
+                'right join',
+                'outer join',
+            ],
+            'where',
+            'order by',
+            'group by',
+            'having',
+            'limit',
+            'offset',
+        ];
+    }
+
+    /**
      * Appends a FROM `table` clause
      *
      * @see alias()
@@ -94,11 +124,7 @@ final class DatabaseQuery extends DatabaseStatement
     {
         $table = $this->replaceTablePrefix($table);
         $table = $this->asTickedString($table);
-        $this->unsafeAppendSQLPart('join', "JOIN $table");
-        if ($alias) {
-            $this->alias($alias);
-        }
-        return $this;
+        return new DatabaseQueryJoin($this, 'join', "JOIN $table", $alias);
     }
 
     /**
@@ -117,11 +143,7 @@ final class DatabaseQuery extends DatabaseStatement
     {
         $table = $this->replaceTablePrefix($table);
         $table = $this->asTickedString($table);
-        $this->unsafeAppendSQLPart('innerjoin', "INNER JOIN $table");
-        if ($alias) {
-            $this->alias($alias);
-        }
-        return $this;
+        return new DatabaseQueryJoin($this, 'inner join', "INNER JOIN $table", $alias);
     }
 
     /**
@@ -140,11 +162,7 @@ final class DatabaseQuery extends DatabaseStatement
     {
         $table = $this->replaceTablePrefix($table);
         $table = $this->asTickedString($table);
-        $this->unsafeAppendSQLPart('leftjoin', "LEFT JOIN $table");
-        if ($alias) {
-            $this->alias($alias);
-        }
-        return $this;
+        return new DatabaseQueryJoin($this, 'left join', "LEFT JOIN $table", $alias);
     }
 
     /**
@@ -163,11 +181,7 @@ final class DatabaseQuery extends DatabaseStatement
     {
         $table = $this->replaceTablePrefix($table);
         $table = $this->asTickedString($table);
-        $this->unsafeAppendSQLPart('rightjoin', "RIGHT JOIN $table");
-        if ($alias) {
-            $this->alias($alias);
-        }
-        return $this;
+        return new DatabaseQueryJoin($this, 'right join', "RIGHT JOIN $table", $alias);
     }
 
     /**
@@ -186,27 +200,7 @@ final class DatabaseQuery extends DatabaseStatement
     {
         $table = $this->replaceTablePrefix($table);
         $table = $this->asTickedString($table);
-        $this->unsafeAppendSQLPart('outerjoin', "OUTER JOIN $table");
-        if ($alias) {
-            $this->alias($alias);
-        }
-        return $this;
-    }
-
-    /**
-     * Appends one an only one ON condition clause.
-     *
-     * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
-     * @param array $conditions
-     *  The logical comparison conditions
-     * @return DatabaseQuery
-     *  The current instance
-     */
-    public function on(array $conditions)
-    {
-        $conditions = $this->buildWhereClauseFromArray($conditions);
-        $this->unsafeAppendSQLPart('on', "ON $conditions");
-        return $this;
+        return new DatabaseQueryJoin($this, 'outer join', "OUTER JOIN $table", $alias);
     }
 
     /**
@@ -220,8 +214,9 @@ final class DatabaseQuery extends DatabaseStatement
      */
     public function where(array $conditions)
     {
+        $op = $this->containsSQLParts('where') ? 'AND' : 'WHERE';
         $where = $this->buildWhereClauseFromArray($conditions);
-        $this->unsafeAppendSQLPart('where', "WHERE $where");
+        $this->unsafeAppendSQLPart('where', "$op $where");
         return $this;
     }
 
@@ -259,7 +254,7 @@ final class DatabaseQuery extends DatabaseStatement
             $orders[] = "$col $dir";
         }
         $orders = implode(self::LIST_DELIMITER, $orders);
-        $this->unsafeAppendSQLPart('orderby', "ORDER BY $orders");
+        $this->unsafeAppendSQLPart('order by', "ORDER BY $orders");
         return $this;
     }
 
@@ -277,7 +272,7 @@ final class DatabaseQuery extends DatabaseStatement
             $columns = [$columns];
         }
         $group =  $this->asTickedList($columns);
-        $this->unsafeAppendSQLPart('groupby', "GROUP BY $group");
+        $this->unsafeAppendSQLPart('group by', "GROUP BY $group");
         return $this;
     }
 
@@ -348,5 +343,71 @@ final class DatabaseQuery extends DatabaseStatement
             'result' => ['var' => $result, 'type' => 'bool'],
         ]);
         return new DatabaseQueryResult($result, $stm);
+    }
+}
+
+/**
+ * Class responsible to hold all the data needed to create a JOIN x AS y ON z clause.
+ * The data needs to be encapsulated until all the operations are completed.
+ * Only then is it possible to append the part in the underlying DatabaseStatement.
+ */
+class DatabaseQueryJoin
+{
+    private $q;
+    private $join;
+    private $type;
+
+    /**
+     * Creates a new DatabaseQueryJoin object linked to the $q DatabaseQuery.
+     *
+     * @param DatabaseQuery $q
+     * @param string $type
+     * @param string $join
+     * @param string $alias
+     */
+    public function __construct(DatabaseQuery $q, $type, $join, $alias = null)
+    {
+        $this->q = $q;
+        $this->join = $join;
+        $this->type = $type;
+        if ($alias) {
+            $this->alias($alias);
+        }
+    }
+
+    public function alias($alias)
+    {
+        General::ensureType([
+            'alias' => ['var' => $alias, 'type' => 'string'],
+        ]);
+        $alias = $this->q->asTickedString($alias);
+        $this->join .= " AS $alias";
+        return $this;
+    }
+
+    public function done()
+    {
+        $this->q->unsafeAppendSQLPart($this->type, $this->join);
+        $q = $this->q;
+        $this->q = null;
+        return $q;
+    }
+
+    /**
+     * Appends one an only one ON condition clause to the underlying DatabaseQuery.
+     *
+     * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
+     * @param array $conditions
+     *  The logical comparison conditions
+     * @return DatabaseQuery
+     *  The current instance
+     */
+    public function on(array $conditions)
+    {
+        $conditions = $this->q->buildWhereClauseFromArray($conditions);
+        $this->q->unsafeAppendSQLPart($this->type, $this->join . " ON $conditions");
+        $q = $this->q;
+        $this->q = null;
+        return $q;
     }
 }

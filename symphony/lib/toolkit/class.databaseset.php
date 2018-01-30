@@ -29,6 +29,20 @@ final class DatabaseSet extends DatabaseStatement
     }
 
     /**
+     * Returns the parts statement structure for this specialized statement.
+     *
+     * @return array
+     */
+    protected function getStatementStructure()
+    {
+        return [
+            'statement',
+            'variable',
+            'value',
+        ];
+    }
+
+    /**
      * Set the value of the variable to this value.
      *
      * @param string $value
