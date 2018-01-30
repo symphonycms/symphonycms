@@ -327,24 +327,6 @@ class DatabaseStatement
     }
 
     /**
-     * @internal This method is not meant to be called directly. Use execute().
-     * This method should validate all the SQL parts currently stored.
-     * Plain DatabaseStatement instances requires to have only one statement in them.
-     * Subclasses are expected to throw DatabaseException when invalid.
-     *
-     * @see generateSQL()
-     * @return DatabaseStatement
-     * @throws DatabaseException
-     */
-    public function validate()
-    {
-        if (count($this->getSQLParts('statement')) !== 1) {
-            throw new DatabaseException('DatabaseStatement can only hold one statement part');
-        }
-        return $this;
-    }
-
-    /**
      * Send the query and all associated values to the server for execution.
      * Calls finalize before sending creating and sending the query to the server.
      *
@@ -356,7 +338,6 @@ class DatabaseStatement
     {
         return $this
             ->finalize()
-            ->validate()
             ->getDB()
             ->execute($this);
     }

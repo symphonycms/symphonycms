@@ -45,7 +45,9 @@ final class DatabaseInsert extends DatabaseStatement
 
     /**
      * Appends one or multiple values into the insert statements.
+     * Can only be called once in the lifetime of the object.
      *
+     * @throws DatabaseException
      * @param array $values
      *  The values to append. Keys are columns names and values will be added
      *  to the value array and be substituted with SQL parameters.
@@ -54,6 +56,9 @@ final class DatabaseInsert extends DatabaseStatement
      */
     public function values(array $values)
     {
+        if ($this->containsSQLParts('values')) {
+            throw new DatabaseException('DatabaseInsert can not hold more than one values clause');
+        }
         $cols = '(' . $this->asTickedList(array_keys($values)) . ')';
         $this->unsafeAppendSQLPart('cols', $cols);
         $v = 'VALUES (' . $this->asPlaceholdersList($values) . ')';
@@ -64,44 +69,22 @@ final class DatabaseInsert extends DatabaseStatement
 
     /**
      * Creates a ON DUPLICATE KEY UPDATE statement, based on values already appended.
+     * Can only be called once in the lifetime of the object.
      *
+     * @throws DatabaseException
      * @return DatabaseInsert
      *  The current instance
      */
     public function updateOnDuplicateKey()
     {
+        if ($this->containsSQLParts('on duplicate')) {
+            throw new DatabaseException('DatabaseInsert can not hold more than one on duplicate clause');
+        }
         $update = implode(self::LIST_DELIMITER, General::array_map(function ($key, $value) {
             $key = $this->asTickedString($key);
             return "$key = VALUES($key)";
         }, $this->getValues()));
         $this->unsafeAppendSQLPart('on duplicate', "ON DUPLICATE KEY UPDATE $update");
-        return $this;
-    }
-
-    /**
-     * @internal This method is not meant to be called directly. Use execute().
-     * This method validates all the SQL parts currently stored.
-     * It makes sure that there is only one part of each types.
-     *
-     * @see DatabaseStatement::validate()
-     * @return DatabaseInsert
-     * @throws DatabaseException
-     */
-    public function validate()
-    {
-        parent::validate();
-        if (count($this->getSQLParts('table')) !== 1) {
-            throw new DatabaseException('DatabaseInsert can only hold one table part');
-        }
-        if (count($this->getSQLParts('cols')) !== 1) {
-            throw new DatabaseException('DatabaseInsert can only hold one columns part');
-        }
-        if (count($this->getSQLParts('values')) !== 1) {
-            throw new DatabaseException('DatabaseInsert can only hold one values part');
-        }
-        if (count($this->getSQLParts('on duplicate')) !== 1) {
-            throw new DatabaseException('DatabaseInsert can only hold one or zero on duplicate part');
-        }
         return $this;
     }
 }

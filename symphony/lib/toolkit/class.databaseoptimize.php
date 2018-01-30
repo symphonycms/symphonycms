@@ -39,22 +39,4 @@ final class DatabaseOptimize extends DatabaseStatement
             'table',
         ];
     }
-
-    /**
-     * @internal This method is not meant to be called directly. Use execute().
-     * This method validates all the SQL parts currently stored.
-     * It makes sure that there is only one part of each types.
-     *
-     * @see DatabaseStatement::validate()
-     * @return DatabaseOptimize
-     * @throws DatabaseException
-     */
-    public function validate()
-    {
-        parent::validate();
-        if (count($this->getSQLParts('table')) !== 1) {
-            throw new DatabaseException('DatabaseOptimize can only hold one table part');
-        }
-        return $this;
-    }
 }

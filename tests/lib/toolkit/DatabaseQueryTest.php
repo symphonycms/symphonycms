@@ -234,9 +234,9 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->alias('tbl_')
                   ->innerJoin('innertable', 'inner')
-                  ->done();
+                  ->on(['z' => '$z']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE * FROM `test_table` AS `tbl_` INNER JOIN `innertable` AS `inner`",
+            "SELECT SQL_NO_CACHE * FROM `test_table` AS `tbl_` INNER JOIN `innertable` AS `inner` ON `z` = `z`",
             $sql->generateSQL(),
             'AS clause'
         );
