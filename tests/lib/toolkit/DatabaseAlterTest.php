@@ -72,6 +72,25 @@ final class DatabaseAlterTest extends TestCase
         );
     }
 
+    public function testALTERADDCOLFIRSTANDAFTER()
+    {
+        $db = new Database([]);
+        $sql = $db->alter('alter')
+                  ->add([
+                        'x' => 'varchar(100)'
+                    ])
+                  ->first()
+                  ->add([
+                        'x' => 'varchar(100)'
+                    ])
+                  ->after('y');
+        $this->assertEquals(
+            "ALTER TABLE `alter` ADD COLUMN `x` varchar(100) NOT NULL FIRST ADD COLUMN `x` varchar(100) NOT NULL AFTER `y`",
+            $sql->generateSQL(),
+            'ALTER ADD COLUMN FIRST ADD COLUMN AFTER clause'
+        );
+    }
+
     public function testALTERDROPCOL()
     {
         $db = new Database([]);
@@ -81,6 +100,21 @@ final class DatabaseAlterTest extends TestCase
             "ALTER TABLE `alter` DROP COLUMN `x`",
             $sql->generateSQL(),
             'ALTER DROP COLUMN clause'
+        );
+    }
+
+    public function testALTERADDDROPCOL()
+    {
+        $db = new Database([]);
+        $sql = $db->alter('alter')
+                  ->add([
+                    'x' => 'varchar(100)'
+                  ])
+                  ->drop('x');
+        $this->assertEquals(
+            "ALTER TABLE `alter` ADD COLUMN `x` varchar(100) NOT NULL DROP COLUMN `x`",
+            $sql->generateSQL(),
+            'ALTER ADD COLUMN DROP COLUMN clause'
         );
     }
 

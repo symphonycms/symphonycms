@@ -28,6 +28,22 @@ final class DatabaseInsert extends DatabaseStatement
     }
 
     /**
+     * Returns the parts statement structure for this specialized statement.
+     *
+     * @return array
+     */
+    protected function getStatementStructure()
+    {
+        return [
+            'statement',
+            'table',
+            'cols',
+            'values',
+            'on duplicate',
+        ];
+    }
+
+    /**
      * Appends one or multiple values into the insert statements.
      *
      * @param array $values
@@ -58,7 +74,34 @@ final class DatabaseInsert extends DatabaseStatement
             $key = $this->asTickedString($key);
             return "$key = VALUES($key)";
         }, $this->getValues()));
-        $this->unsafeAppendSQLPart('values', "ON DUPLICATE KEY UPDATE $update");
+        $this->unsafeAppendSQLPart('on duplicate', "ON DUPLICATE KEY UPDATE $update");
+        return $this;
+    }
+
+    /**
+     * @internal This method is not meant to be called directly. Use execute().
+     * This method validates all the SQL parts currently stored.
+     * It makes sure that there is only one part of each types.
+     *
+     * @see DatabaseStatement::validate()
+     * @return DatabaseInsert
+     * @throws DatabaseException
+     */
+    public function validate()
+    {
+        parent::validate();
+        if (count($this->getSQLParts('table')) !== 1) {
+            throw new DatabaseException('DatabaseInsert can only hold one table part');
+        }
+        if (count($this->getSQLParts('cols')) !== 1) {
+            throw new DatabaseException('DatabaseInsert can only hold one columns part');
+        }
+        if (count($this->getSQLParts('values')) !== 1) {
+            throw new DatabaseException('DatabaseInsert can only hold one values part');
+        }
+        if (count($this->getSQLParts('on duplicate')) !== 1) {
+            throw new DatabaseException('DatabaseInsert can only hold one or zero on duplicate part');
+        }
         return $this;
     }
 }

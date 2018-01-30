@@ -36,6 +36,20 @@ final class DatabaseDrop extends DatabaseStatement
     }
 
     /**
+     * Returns the parts statement structure for this specialized statement.
+     *
+     * @return array
+     */
+    protected function getStatementStructure()
+    {
+        return [
+            'statement',
+            'optimizer',
+            'table',
+        ];
+    }
+
+    /**
      * Appends the name of the table to drop.
      *
      * @param string $table

@@ -30,6 +30,21 @@ final class DatabaseUpdate extends DatabaseStatement
     }
 
     /**
+     * Returns the parts statement structure for this specialized statement.
+     *
+     * @return array
+     */
+    protected function getStatementStructure()
+    {
+        return [
+            'statement',
+            'table',
+            'values',
+            'where',
+        ];
+    }
+
+    /**
      * Appends one and only one SET clause, with one or multiple values.
      *
      * @see DatabaseWhereDefinition::buildWhereClauseFromArray()

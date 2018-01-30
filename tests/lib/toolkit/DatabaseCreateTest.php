@@ -17,9 +17,10 @@ final class DatabaseCreateTest extends TestCase
                   ->fields([
                     'x' => 'varchar(100)'
                   ])
-                  ->appendCloseParenthesis(); // this would by called by execute()
+                  ->validate() // this would by called by execute()
+                  ->finalize();
         $this->assertEquals(
-            "CREATE TABLE `create` ( `x` varchar(100) COLLATE utf8 NOT NULL )",
+            "CREATE TABLE `create` ( `x` varchar(100) COLLATE utf8 NOT NULL ) ENGINE=engine DEFAULT CHARSET=utf8 COLLATE=utf8",
             $sql->generateSQL(),
             'CREATE clause'
         );
@@ -49,11 +50,34 @@ final class DatabaseCreateTest extends TestCase
                         'auto' => true
                     ]
                   ])
-                  ->appendCloseParenthesis(); // this would by called by execute()
+                  ->validate() // this would by called by execute()
+                  ->finalize();
         $this->assertEquals(
-            "CREATE TABLE `create` ( `x` varchar(100) COLLATE utf8 NOT NULL DEFAULT 'TATA', `y` datetime NOT NULL DEFAULT '2012-01-01 12:12:12', `z` enum('yes', 'no') COLLATE utf8 NOT NULL DEFAULT 'yes', `id` int(11) unsigned NOT NULL AUTO_INCREMENT )",
+            "CREATE TABLE `create` ( `x` varchar(100) COLLATE utf8 NOT NULL DEFAULT 'TATA', `y` datetime NOT NULL DEFAULT '2012-01-01 12:12:12', `z` enum('yes', 'no') COLLATE utf8 NOT NULL DEFAULT 'yes', `id` int(11) unsigned NOT NULL AUTO_INCREMENT ) COLLATE=utf8",
             $sql->generateSQL(),
             'CREATE clause with multiple fields'
+        );
+    }
+
+    public function testCREATEMULTIPLECALLS()
+    {
+        $db = new Database([]);
+        $sql = $db->create('create')
+                  ->fields([
+                    'x' => 'varchar(100)'
+                  ])
+                  ->fields([
+                    'y' => [
+                        'type' => 'datetime',
+                        'default' => '2012-01-01 12:12:12'
+                    ]
+                  ])
+                  ->validate() // this would by called by execute()
+                  ->finalize();
+        $this->assertEquals(
+            "CREATE TABLE `create` ( `x` varchar(100) NOT NULL , `y` datetime NOT NULL DEFAULT '2012-01-01 12:12:12' )",
+            $sql->generateSQL(),
+            'CREATE clause'
         );
     }
 
@@ -84,7 +108,8 @@ final class DatabaseCreateTest extends TestCase
                         'cols' => 'x',
                     ]
                   ])
-                  ->appendCloseParenthesis(); // this would by called by execute()
+                  ->validate() // this would by called by execute()
+                  ->finalize();
         $this->assertEquals(
             "CREATE TABLE `create` ( `x` varchar(100) NOT NULL, `id` int(11) unsigned NOT NULL AUTO_INCREMENT , PRIMARY KEY (`id`), KEY `x` (`x`), UNIQUE KEY `x1` (`x`), INDEX `x2` (`x`, `id`), FULLTEXT `x3` (`x`) )",
             $sql->generateSQL(),
@@ -92,16 +117,43 @@ final class DatabaseCreateTest extends TestCase
         );
     }
 
-    public function testCREATEfinalize()
+    public function testCREATEKeyBeforeFields()
+    {
+        {
+            $db = new Database([]);
+            $sql = $db->create('create')
+                      ->keys([
+                        'id' => 'primary',
+                        'x' => 'key',
+                      ])
+                      ->fields([
+                        'x' => 'varchar(100)',
+                        'id' => [
+                            'type' => 'int(11)',
+                            'auto' => true
+                        ]
+                      ])
+                      ->validate() // this would by called by execute()
+                      ->finalize();
+            $this->assertEquals(
+                "CREATE TABLE `create` ( `x` varchar(100) NOT NULL, `id` int(11) unsigned NOT NULL AUTO_INCREMENT , PRIMARY KEY (`id`), KEY `x` (`x`) )",
+                $sql->generateSQL(),
+                'CREATE clause with KEYS'
+            );
+        }
+    }
+
+    public function testCREATENoFields()
     {
         $db = new Database([]);
         $sql = $db->create('create')
                   ->charset('utf8')
                   ->collate('utf8')
                   ->engine('engine')
-                  ->finalize(); // this would by called by execute()
+                  ->validate() // this would by called by execute()
+                  ->finalize();
         $this->assertEquals(
-            "CREATE TABLE `create` ENGINE=engine DEFAULT CHARSET=utf8 COLLATE=utf8",
+            "CREATE TABLE `create` ( ) ENGINE=engine DEFAULT CHARSET=utf8 COLLATE=utf8",
             $sql->generateSQL(),
             'CREATE clause with finalize()'
         );

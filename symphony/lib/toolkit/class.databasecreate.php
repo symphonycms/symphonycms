@@ -60,6 +60,28 @@ final class DatabaseCreate extends DatabaseStatement
     }
 
     /**
+     * Returns the parts statement structure for this specialized statement.
+     *
+     * @return array
+     */
+    protected function getStatementStructure()
+    {
+        return [
+            'statement',
+            'optimizer',
+            'table',
+            '(',
+            'fields',
+            ',',
+            'keys',
+            ')',
+            'engine',
+            'charset',
+            'collate',
+        ];
+    }
+
+    /**
      * Sets the charset to use in this table.
      *
      * @param string $charset
@@ -104,7 +126,7 @@ final class DatabaseCreate extends DatabaseStatement
     /**
      * Appends one or multiple columns definitions clauses.
      *
-     * @see DatabaseColumnDefinition::buildColumnDefinitionFromArray
+     * @see DatabaseColumnDefinition::buildColumnDefinitionFromArray()
      * @param array $fields
      *  The field definitions to append
      * @return DatabaseCreate
@@ -112,10 +134,11 @@ final class DatabaseCreate extends DatabaseStatement
      */
     public function fields(array $fields)
     {
-        if ($this->getOpenParenthesisCount() === 0) {
-            $this->appendOpenParenthesis();
+        $prefix = '';
+        if ($this->containsSQLParts('fields')) {
+            $prefix = ', ';
         }
-        $fields = implode(self::LIST_DELIMITER, General::array_map(function ($k, $field) {
+        $fields = $prefix . implode(self::LIST_DELIMITER, General::array_map(function ($k, $field) {
             return $this->buildColumnDefinitionFromArray($k, $field);
         }, $fields));
         $this->unsafeAppendSQLPart('fields', $fields);
@@ -132,13 +155,11 @@ final class DatabaseCreate extends DatabaseStatement
      */
     public function keys(array $keys)
     {
-        $preamble = '';
-        if ($this->getOpenParenthesisCount() === 0) {
-            $this->appendOpenParenthesis();
-        } else {
-            $preamble = self::LIST_DELIMITER;
+        $prefix = '';
+        if ($this->containsSQLParts('keys')) {
+            $prefix = ',';
         }
-        $keys = $preamble . implode(self::LIST_DELIMITER, General::array_map(function ($key, $options) {
+        $keys = $prefix . implode(self::LIST_DELIMITER, General::array_map(function ($key, $options) {
             return $this->buildKeyDefinitionFromArray($key, $options);
         }, $keys));
         $this->unsafeAppendSQLPart('keys', $keys);
@@ -155,7 +176,6 @@ final class DatabaseCreate extends DatabaseStatement
      */
     public function finalize()
     {
-        parent::finalize();
         if ($this->engine) {
             $this->unsafeAppendSQLPart('engine', "ENGINE={$this->engine}");
         }
@@ -164,6 +184,27 @@ final class DatabaseCreate extends DatabaseStatement
         }
         if ($this->collate) {
             $this->unsafeAppendSQLPart('collate', "COLLATE={$this->collate}");
+        }
+        return $this;
+    }
+
+    /**
+     * @internal This method is not meant to be called directly. Use execute().
+     * This method validates all the SQL parts currently stored.
+     * It makes sure that there is only one part of each types.
+     *
+     * @see DatabaseStatement::validate()
+     * @return DatabaseCreate
+     * @throws DatabaseException
+     */
+    public function validate()
+    {
+        parent::validate();
+        if (count($this->getSQLParts('optimizer')) > 1) {
+            throw new DatabaseException('DatabaseCreate can only hold one or zero optimizer part');
+        }
+        if (count($this->getSQLParts('table')) !== 1) {
+            throw new DatabaseException('DatabaseCreate can only hold one table part');
         }
         return $this;
     }

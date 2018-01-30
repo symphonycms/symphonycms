@@ -28,6 +28,20 @@ final class DatabaseDescribe extends DatabaseStatement
     }
 
     /**
+     * Returns the parts statement structure for this specialized statement.
+     *
+     * @return array
+     */
+    protected function getStatementStructure()
+    {
+        return [
+            'statement',
+            'table',
+            'field',
+        ];
+    }
+
+    /**
      * Appends a single field to describe
      *
      * @param string $field
@@ -54,7 +68,7 @@ final class DatabaseDescribe extends DatabaseStatement
      */
     public function fields(array $fields)
     {
-        $this->unsafeAppendSQLPart('fields', $this->asTickedList($fields));
+        $this->unsafeAppendSQLPart('field', $this->asTickedList($fields));
         return $this;
     }
 
