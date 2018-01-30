@@ -60,7 +60,7 @@ final class DatabaseDrop extends DatabaseStatement
     {
         $table = $this->replaceTablePrefix($table);
         $table = $this->asTickedString($table);
-        $this->unsafeAppendSQLPart('table', ", $table");
+        $this->unsafeAppendSQLPart('table', self::LIST_DELIMITER . $table);
         return $this;
     }
 }

@@ -64,6 +64,7 @@ final class DatabaseUpdate extends DatabaseStatement
 
     /**
      * Appends one or multiple WHERE clauses.
+     * Calling this method multiple times will join the WHERE clauses with a AND.
      *
      * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
      * @param array $conditions
@@ -73,8 +74,9 @@ final class DatabaseUpdate extends DatabaseStatement
      */
     public function where(array $conditions)
     {
+        $op = $this->containsSQLParts('where') ? 'AND' : 'WHERE';
         $where = $this->buildWhereClauseFromArray($conditions);
-        $this->unsafeAppendSQLPart('where', "WHERE $where");
+        $this->unsafeAppendSQLPart('where', "$op $where");
         return $this;
     }
 }

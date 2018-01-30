@@ -134,10 +134,7 @@ final class DatabaseCreate extends DatabaseStatement
      */
     public function fields(array $fields)
     {
-        $prefix = '';
-        if ($this->containsSQLParts('fields')) {
-            $prefix = ', ';
-        }
+        $prefix = $this->containsSQLParts('fields') ? self::LIST_DELIMITER : '';
         $fields = $prefix . implode(self::LIST_DELIMITER, General::array_map(function ($k, $field) {
             return $this->buildColumnDefinitionFromArray($k, $field);
         }, $fields));
@@ -155,10 +152,7 @@ final class DatabaseCreate extends DatabaseStatement
      */
     public function keys(array $keys)
     {
-        $prefix = '';
-        if ($this->containsSQLParts('keys')) {
-            $prefix = ',';
-        }
+        $prefix = $this->containsSQLParts('keys') ? self::LIST_DELIMITER : '';
         $keys = $prefix . implode(self::LIST_DELIMITER, General::array_map(function ($key, $options) {
             return $this->buildKeyDefinitionFromArray($key, $options);
         }, $keys));
@@ -184,27 +178,6 @@ final class DatabaseCreate extends DatabaseStatement
         }
         if ($this->collate) {
             $this->unsafeAppendSQLPart('collate', "COLLATE={$this->collate}");
-        }
-        return $this;
-    }
-
-    /**
-     * @internal This method is not meant to be called directly. Use execute().
-     * This method validates all the SQL parts currently stored.
-     * It makes sure that there is only one part of each types.
-     *
-     * @see DatabaseStatement::validate()
-     * @return DatabaseCreate
-     * @throws DatabaseException
-     */
-    public function validate()
-    {
-        parent::validate();
-        if (count($this->getSQLParts('optimizer')) > 1) {
-            throw new DatabaseException('DatabaseCreate can only hold one or zero optimizer part');
-        }
-        if (count($this->getSQLParts('table')) !== 1) {
-            throw new DatabaseException('DatabaseCreate can only hold one table part');
         }
         return $this;
     }

@@ -40,14 +40,20 @@ final class DatabaseShow extends DatabaseStatement
     /**
      * Appends a LIKE clause.
      * This clause will likely be a table name, so it calls replaceTablePrefix().
+     * Can only be called once in the lifetime of the object.
      *
      * @see replaceTablePrefix()
+     * @throws DatabaseException
      * @param string $value
      *  The LIKE search pattern to look for
-     * @return void
+     * @return DatabaseShow
+     *  The current instance
      */
     public function like($value)
     {
+        if ($this->containsSQLParts('like')) {
+            throw new DatabaseException('DatabaseShow can not hold more than one like clause');
+        }
         $value = $this->replaceTablePrefix($value);
         $this->usePlaceholders();
         $this->appendValues([$value]);
@@ -57,6 +63,7 @@ final class DatabaseShow extends DatabaseStatement
 
     /**
      * Appends one or multiple WHERE clauses.
+     * Calling this method multiple times will join the WHERE clauses with a AND.
      *
      * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
      * @param array $conditions

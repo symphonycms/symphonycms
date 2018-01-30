@@ -51,10 +51,8 @@ final class DatabaseDescribe extends DatabaseStatement
      */
     public function field($field)
     {
-        General::ensureType([
-            'field' => ['var' => $field, 'type' => 'string'],
-        ]);
-        $this->unsafeAppendSQLPart('field', $this->asTickedString($field));
+        $prefix = $this->containsSQLParts('field') ? self::LIST_DELIMITER : '';
+        $this->unsafeAppendSQLPart('field', $prefix . $this->asTickedString($field));
         return $this;
     }
 

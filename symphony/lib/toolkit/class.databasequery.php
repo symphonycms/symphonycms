@@ -69,8 +69,10 @@ final class DatabaseQuery extends DatabaseStatement
 
     /**
      * Appends a FROM `table` clause
+     * Can only be called once in the lifetime of the object.
      *
      * @see alias()
+     * @throws DatabaseException
      * @param string $table
      *  The name of the table to act on, including the tbl prefix which will be changed
      *  to the Database table prefix.
@@ -81,6 +83,9 @@ final class DatabaseQuery extends DatabaseStatement
      */
     public function from($table, $alias = null)
     {
+        if ($this->containsSQLParts('table')) {
+            throw new DatabaseException('DatabaseQuery can not hold more than one table clause');
+        }
         $table = $this->replaceTablePrefix($table);
         $table = $this->asTickedString($table);
         $this->unsafeAppendSQLPart('table', "FROM $table");
@@ -92,7 +97,9 @@ final class DatabaseQuery extends DatabaseStatement
 
     /**
      * Appends a AS `alias` clause.
+     * Can only be called once in the lifetime of the object.
      *
+     * @throws DatabaseException
      * @param string $alias
      *  The name of the alias
      * @return DatabaseQuery
@@ -100,6 +107,9 @@ final class DatabaseQuery extends DatabaseStatement
      */
     public function alias($alias)
     {
+        if ($this->containsSQLParts('as')) {
+            throw new DatabaseException('DatabaseQuery can not hold more than one as clause');
+        }
         General::ensureType([
             'alias' => ['var' => $alias, 'type' => 'string'],
         ]);
@@ -111,14 +121,13 @@ final class DatabaseQuery extends DatabaseStatement
     /**
      * Appends a JOIN `table` clause
      *
-     * @see alias()
      * @param string $table
      *  The name of the table to act on, including the tbl prefix which will be changed
      *  to the Database table prefix.
      * @param string $alias
      *  An optional alias for the table. Defaults to null, i.e. no alias.
-     * @return DatabaseQuery
-     *  The current instance
+     * @return DatabaseQueryJoin
+     *  A new instance of DatabaseQueryJoin linked to the current DatabaseQuery instance
      */
     public function join($table, $alias = null)
     {
@@ -130,14 +139,13 @@ final class DatabaseQuery extends DatabaseStatement
     /**
      * Appends a INNER JOIN `table` clause
      *
-     * @see alias()
      * @param string $table
      *  The name of the table to act on, including the tbl prefix which will be changed
      *  to the Database table prefix.
      * @param string $alias
      *  An optional alias for the table. Defaults to null, i.e. no alias.
-     * @return DatabaseQuery
-     *  The current instance
+     * @return DatabaseQueryJoin
+     *  A new instance of DatabaseQueryJoin linked to the current DatabaseQuery instance
      */
     public function innerJoin($table, $alias = null)
     {
@@ -149,14 +157,13 @@ final class DatabaseQuery extends DatabaseStatement
     /**
      * Appends a LEFT JOIN `table` clause
      *
-     * @see alias()
      * @param string $table
      *  The name of the table to act on, including the tbl prefix which will be changed
      *  to the Database table prefix.
      * @param string $alias
      *  An optional alias for the table. Defaults to null, i.e. no alias.
-     * @return DatabaseQuery
-     *  The current instance
+     * @return DatabaseQueryJoin
+     *  A new instance of DatabaseQueryJoin linked to the current DatabaseQuery instance
      */
     public function leftJoin($table, $alias = null)
     {
@@ -168,14 +175,13 @@ final class DatabaseQuery extends DatabaseStatement
     /**
      * Appends a RIGHT JOIN `table` clause
      *
-     * @see alias()
      * @param string $table
      *  The name of the table to act on, including the tbl prefix which will be changed
      *  to the Database table prefix.
      * @param string $alias
      *  An optional alias for the table. Defaults to null, i.e. no alias.
-     * @return DatabaseQuery
-     *  The current instance
+     * @return DatabaseQueryJoin
+     *  A new instance of DatabaseQueryJoin linked to the current DatabaseQuery instance
      */
     public function rightJoin($table, $alias = null)
     {
@@ -187,14 +193,13 @@ final class DatabaseQuery extends DatabaseStatement
     /**
      * Appends a OUTER JOIN `table` clause
      *
-     * @see alias()
      * @param string $table
      *  The name of the table to act on, including the tbl prefix which will be changed
      *  to the Database table prefix.
      * @param string $alias
      *  An optional alias for the table. Defaults to null, i.e. no alias.
-     * @return DatabaseQuery
-     *  The current instance
+     * @return DatabaseQueryJoin
+     *  A new instance of DatabaseQueryJoin linked to the current DatabaseQuery instance
      */
     public function outerJoin($table, $alias = null)
     {
@@ -205,6 +210,7 @@ final class DatabaseQuery extends DatabaseStatement
 
     /**
      * Appends one or multiple WHERE clauses.
+     * Calling this method multiple times will join the WHERE clauses with a AND.
      *
      * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
      * @param array $conditions
@@ -254,7 +260,8 @@ final class DatabaseQuery extends DatabaseStatement
             $orders[] = "$col $dir";
         }
         $orders = implode(self::LIST_DELIMITER, $orders);
-        $this->unsafeAppendSQLPart('order by', "ORDER BY $orders");
+        $op = $this->containsSQLParts('order by') ? ',' : 'ORDER BY';
+        $this->unsafeAppendSQLPart('order by', "$op $orders");
         return $this;
     }
 
@@ -272,7 +279,8 @@ final class DatabaseQuery extends DatabaseStatement
             $columns = [$columns];
         }
         $group =  $this->asTickedList($columns);
-        $this->unsafeAppendSQLPart('group by', "GROUP BY $group");
+        $op = $this->containsSQLParts('group by') ? ',' : 'GROUP BY';
+        $this->unsafeAppendSQLPart('group by', "$op $group");
         return $this;
     }
 
@@ -287,14 +295,17 @@ final class DatabaseQuery extends DatabaseStatement
      */
     public function having(array $conditions)
     {
+        $op = $this->containsSQLParts('having') ? 'AND' : 'HAVING';
         $where = $this->buildWhereClauseFromArray($conditions);
-        $this->unsafeAppendSQLPart('having', "HAVING $where");
+        $this->unsafeAppendSQLPart('having', "$op $where");
         return $this;
     }
 
     /**
      * Appends one and only one LIMIT clause.
+     * Can only be called once in the lifetime of the object.
      *
+     * @throws DatabaseException
      * @param int $limit
      *  The maximum number of records to return
      * @return DatabaseQuery
@@ -302,6 +313,9 @@ final class DatabaseQuery extends DatabaseStatement
      */
     public function limit($limit)
     {
+        if ($this->containsSQLParts('limit')) {
+            throw new DatabaseException('DatabaseQuery can not hold more than one limit clause');
+        }
         $limit = General::intval($limit);
         if ($limit === -1) {
             throw new DatabaseException("Invalid limit value: `$limit`");
@@ -312,7 +326,9 @@ final class DatabaseQuery extends DatabaseStatement
 
     /**
      * Appends one and only one OFFSET clause.
+     * Can only be called once in the lifetime of the object.
      *
+     * @throws DatabaseException
      * @param int $offset
      *  The number at which to start returning results
      * @return DatabaseQuery
@@ -320,6 +336,9 @@ final class DatabaseQuery extends DatabaseStatement
      */
     public function offset($offset)
     {
+        if ($this->containsSQLParts('offset')) {
+            throw new DatabaseException('DatabaseQuery can not hold more than one offset clause');
+        }
         $offset = General::intval($offset);
         if ($offset === -1) {
             throw new DatabaseException("Invalid offset value: `$offset`");
@@ -356,14 +375,18 @@ class DatabaseQueryJoin
     private $q;
     private $join;
     private $type;
+    private $alias;
 
     /**
      * Creates a new DatabaseQueryJoin object linked to the $q DatabaseQuery.
      *
      * @param DatabaseQuery $q
      * @param string $type
+     *  The SQL part type to be added
      * @param string $join
+     *  The requested JOIN syntax
      * @param string $alias
+     *  An optional alias for the joined table
      */
     public function __construct(DatabaseQuery $q, $type, $join, $alias = null)
     {
@@ -375,37 +398,43 @@ class DatabaseQueryJoin
         }
     }
 
+    /**
+     * Appends a AS `alias` clause.
+     * Can only be called once in the lifetime of the object.
+     *
+     * @throws DatabaseException
+     * @param string $alias
+     *  The name of the alias
+     * @return DatabaseQueryJoin
+     *  The current instance
+     */
     public function alias($alias)
     {
+        if ($this->alias) {
+            throw new DatabaseException('DatabaseQueryJoin can not hold more than one as clause');
+        }
         General::ensureType([
             'alias' => ['var' => $alias, 'type' => 'string'],
         ]);
         $alias = $this->q->asTickedString($alias);
-        $this->join .= " AS $alias";
+        $this->alias = " AS $alias";
         return $this;
-    }
-
-    public function done()
-    {
-        $this->q->unsafeAppendSQLPart($this->type, $this->join);
-        $q = $this->q;
-        $this->q = null;
-        return $q;
     }
 
     /**
      * Appends one an only one ON condition clause to the underlying DatabaseQuery.
+     * Can only be called once in the lifetime of the object.
      *
      * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
      * @param array $conditions
      *  The logical comparison conditions
      * @return DatabaseQuery
-     *  The current instance
+     *  The underlying DatabaseQuery instance
      */
     public function on(array $conditions)
     {
         $conditions = $this->q->buildWhereClauseFromArray($conditions);
-        $this->q->unsafeAppendSQLPart($this->type, $this->join . " ON $conditions");
+        $this->q->unsafeAppendSQLPart($this->type, "{$this->join}{$this->alias} ON $conditions");
         $q = $this->q;
         $this->q = null;
         return $q;
