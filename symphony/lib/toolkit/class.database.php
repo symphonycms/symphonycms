@@ -425,7 +425,7 @@ class Database
             if (is_array($val)) {
                 $this->quoteFields($val);
             } elseif (!$val || strlen(trim($val)) === 0) {
-                $array[$key] = 'null';
+                $array[$key] = 'NULL';
             } else {
                 $array[$key] = $this->quote($val);
             }
@@ -792,6 +792,27 @@ class Database
     }
 
     /**
+     * @internal
+     * Finds the best possible PDO::PARAM_* value to bind with, based on the PHP type.
+     *
+     * @param mixed $value
+     *  The value on which to deduce its PDO type
+     * @return int
+     *  Either PDO::PARAM_NULL, PDO::PARAM_INT, PDO::PARAM_BOOL or PDO::PARAM_STR
+     */
+    public function deducePDOParamType($value)
+    {
+        if ($value === null) {
+            return PDO::PARAM_NULL;
+        } elseif (is_numeric($value)) {
+            return PDO::PARAM_INT;
+        } elseif (is_bool($value)) {
+            return PDO::PARAM_BOOL;
+        }
+        return PDO::PARAM_STR;
+    }
+
+    /**
      * Given a DatabaseStatement, it will execute it and return
      * its result, by calling `DatabaseStatement::result()`.
      * Any error will throw a DatabaseException.
@@ -829,8 +850,17 @@ class Database
             // Prepare the query
             $pstm = $this->conn->prepare($query);
             $this->lastQuery = $pstm->queryString;
+            // Bind all values
+            foreach ($values as $param => $value) {
+                if (General::intval($param) !== -1) {
+                    $param = $param + 1;
+                } else {
+                    $param = ":$param";
+                }
+                $pstm->bindValue($param, $value, $this->deducePDOParamType($value));
+            }
             // Execute it
-            $result = $pstm->execute($values);
+            $result = $pstm->execute();
             $this->queryCount++;
         } catch (PDOException $ex) {
             $this->throwDatabaseError($ex);

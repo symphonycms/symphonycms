@@ -89,6 +89,24 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(3, count($values), '3 values');
     }
 
+    public function testSELECTwithWHEREISNULL()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+                  ->from('tbl_test_table')
+                  ->where([
+                        'x' => null
+                    ]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` = :x",
+            $sql->generateSQL(),
+            "SQL clause with WHERE IS NULL"
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(null, $values['x'], 'x is NULL');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
     public function testSELECTwithJOIN()
     {
         $db = new Database([]);
