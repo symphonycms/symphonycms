@@ -387,7 +387,31 @@ final class DatabaseQueryTest extends TestCase
             'Simple SQL clause with WHERE sub-query'
         );
         $values = $sql->getValues();
-        $this->assertEquals(2, $values['i1_y'], 'y is 2');
+        $this->assertEquals(2, $values['i1_y'], 'i1_y is 2');
         $this->assertEquals(1, count($values), '1 value');
+    }
+
+    public function testSELECTWithSubQueries()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+                  ->from('tbl_test_table');
+        $sub1 = $sql->select(['y'])
+                  ->from('sub')
+                  ->where(['y' => 2]);
+        $sub2 = $sql->select(['y'])
+                  ->from('sub')
+                  ->where(['y' => 4]);
+        $sql->where(['x' => $sub1]);
+        $sql->where(['in' => ['y' => $sub2]]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` = (SELECT SQL_NO_CACHE `y` FROM `sub` WHERE `y` = :i1_y) AND `y` IN (SELECT SQL_NO_CACHE `y` FROM `sub` WHERE `y` = :i2_y)",
+            $sql->generateSQL(),
+            'Simple SQL clause with WHERE two sub-queries'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(2, $values['i1_y'], 'i1_y is 2');
+        $this->assertEquals(4, $values['i2_y'], 'i2_y is 4');
+        $this->assertEquals(2, count($values), '2 values');
     }
 }

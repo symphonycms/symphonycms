@@ -80,9 +80,18 @@ trait DatabaseWhereDefinition
             // key is the IN() function
             } elseif ($k === 'in') {
                 $values = current(array_values($c));
-                $this->appendValues($values);
-                $this->usePlaceholders();
-                $pc = $this->asPlaceholdersList($values);
+                if (is_array($values)) {
+                    $this->appendValues($values);
+                    $this->usePlaceholders();
+                    $pc = $this->asPlaceholdersList($values);
+                } elseif ($values instanceof DatabaseSubQuery) {
+                    foreach ($values->getValues() as $ck => $cv) {
+                        $this->appendValues([$ck => $cv]);
+                    }
+                    $pc = $values->finalize()->generateSQL();
+                } else {
+                    throw new DatabaseException("The IN() function accepts array of scalars or a DatabaseSubQuery");
+                }
                 $tk = $this->replaceTablePrefix(current(array_keys($c)));
                 $tk = $this->asTickedString($tk);
                 return "$tk IN ($pc)";
