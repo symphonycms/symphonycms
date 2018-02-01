@@ -371,4 +371,23 @@ final class DatabaseQueryTest extends TestCase
         $values = $sql->getValues();
         $this->assertEquals(0, count($values), '0 value');
     }
+
+    public function testSELECTWithSubQuery()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+                  ->from('tbl_test_table');
+        $sub = $sql->select(['y'])
+                  ->from('sub')
+                  ->where(['y' => 2]);
+        $sql->where(['x' => $sub]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` = (SELECT SQL_NO_CACHE `y` FROM `sub` WHERE `y` = :i1_y)",
+            $sql->generateSQL(),
+            'Simple SQL clause with WHERE sub-query'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(2, $values['i1_y'], 'y is 2');
+        $this->assertEquals(1, count($values), '1 value');
+    }
 }
