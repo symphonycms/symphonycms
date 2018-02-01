@@ -275,16 +275,16 @@ class DatabaseStatement
      */
     final protected function appendValues(array $values)
     {
-        $this->values = array_merge($this->values, $values);
-        foreach ($this->values as $key => $value) {
+        foreach ($values as $key => $value) {
             if (is_string($key)) {
                 $safeKey = $this->convertToParameterName($key);
                 if ($key !== $safeKey) {
-                    unset($this->values[$key]);
-                    $this->values[$safeKey] = $value;
+                    unset($values[$key]);
+                    $values[$safeKey] = $value;
                 }
             }
         }
+        $this->values = array_merge($this->values, $values);
         return $this;
     }
 
@@ -505,11 +505,13 @@ class DatabaseStatement
      * This function converts a valid field name into a suitable value
      * to use as a SQL parameter name.
      *
+     * @see formatParameterName()
      * @see validateFieldName()
      * @see appendValues()
      * @param string $field
+     *  The field name, as passed in the public API of the statement
      * @return string
-     *  The sanitized for parameter name field value
+     *  The sanitized parameter name
      */
     final public function convertToParameterName($field)
     {
@@ -518,6 +520,20 @@ class DatabaseStatement
         ]);
         $field = str_replace(['-', '.'], '_', $field);
         $field = preg_replace('/[^0-9a-zA-Z_]+/', '', $field);
-        return $field;
+        return $this->formatParameterName($field);
+    }
+
+    /**
+     * @internal
+     * Formats the given $parameter name to be used as SQL parameter.
+     *
+     * @param string $parameter
+     *  The parameter name
+     * @return string
+     *  The formatted parameter name
+     */
+    protected function formatParameterName($parameter)
+    {
+        return $parameter;
     }
 }

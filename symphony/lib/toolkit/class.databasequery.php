@@ -7,9 +7,11 @@
 /**
  * This DatabaseStatement specialization class allows creation of SELECT FROM statements.
  */
-final class DatabaseQuery extends DatabaseStatement
+class DatabaseQuery extends DatabaseStatement
 {
     use DatabaseWhereDefinition;
+
+    private $selectQueryCount = 0;
 
      /**
      * Creates a new DatabaseQuery statement on table $table, with and optional projection $values
@@ -363,6 +365,20 @@ final class DatabaseQuery extends DatabaseStatement
         ]);
         return new DatabaseQueryResult($result, $stm);
     }
+
+    /**
+     * Factory method that creates a new `SELECT ...` statement to be
+     * safely used inside the current instance of DatabaseQuery.
+     *
+     * @param array $values
+     *  The columns to select. By default, it's `*`.
+     * @return DatabaseSubQuery
+     */
+    public function select(array $values = ['*'])
+    {
+        $this->selectQueryCount++;
+        return new DatabaseSubQuery($this->getDB(), $this->selectQueryCount, $values);
+    }
 }
 
 /**
@@ -438,5 +454,34 @@ class DatabaseQueryJoin
         $q = $this->q;
         $this->q = null;
         return $q;
+    }
+}
+
+class DatabaseSubQuery extends DatabaseQuery
+{
+    private $id;
+
+    public function __construct(Database $db, $id, array $values = [])
+    {
+        General::ensureType([
+            'id' => ['var' => $id, 'type' => 'integer'],
+        ]);
+        parent::__construct($db, $values);
+        $this->id = $id;
+    }
+
+    /**
+     * @internal
+     * Formats the given $parameter name to be used as SQL parameter.
+     * In this context, the $id of the sub query is prepended to the actual parameter name.
+     *
+     * @param string $parameter
+     *  The parameter name
+     * @return string
+     *  The formatted parameter name
+     */
+    protected function formatParameterName($parameter)
+    {
+        return "i{$this->id}_{$parameter}";
     }
 }

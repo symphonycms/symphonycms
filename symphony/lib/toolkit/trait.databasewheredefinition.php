@@ -51,8 +51,9 @@ trait DatabaseWhereDefinition
      * @see DatabaseUpdate
      * @param string $k
      *  Can either be an operator or a field name
-     * @param string|array $c
+     * @param string|array|DatabaseSubQuery $c
      *  Can be a single value, a list of values or nested list of valid ($k, $c) pairs.
+     *  Can also be a DatabaseSubQuery object to use as a sub-query.
      * @return string
      *  The SQL part containing logical comparison
      */
@@ -60,7 +61,10 @@ trait DatabaseWhereDefinition
     {
         $op = '=';
         if (is_object($c)) {
-            throw new DatabaseException('Objects are not allowed right now');
+            if (!($c instanceof DatabaseSubQuery)) {
+                $type = get_class($c);
+                throw new DatabaseException("Object of type `$type` can not be used in a where clause.");
+            }
         } elseif (is_array($c)) {
             // key is a logical operator
             if ($k === 'or' || $k === 'and') {
@@ -119,14 +123,19 @@ trait DatabaseWhereDefinition
         //  $c is a is not an array so it is a value:
         //      1. Scalar
         //      2. Column name
-        //      3. Inner query (TODO)
+        //      3. Sub query
         //      4. Function call
-        //      5. Something forgotten (TODO)
         $tk = $this->replaceTablePrefix($k);
         $tk = $this->asTickedString($tk);
         // 4. Function call
         if (is_string($c) && preg_match(self::FCT_PATTERN, $c) === 1) {
             $k = $this->asTickedString($c);
+        // 3. Sub query
+        } elseif (is_object($c)) {
+            foreach ($c->getValues() as $ck => $cv) {
+                $this->appendValues([$ck => $cv]);
+            }
+            $k = '(' . $c->finalize()->generateSQL() . ')';
         // 2. Column name must begin with $
         } elseif (is_string($c) && strpos($c, '$') === 0) {
             $c = substr($c, 1);
