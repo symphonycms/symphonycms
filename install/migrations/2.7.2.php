@@ -1,14 +1,14 @@
 <?php
 
-    class migration_271 extends Migration
+    class migration_272 extends Migration
     {
         public static function getVersion()
         {
-            return '2.7.1';
+            return '2.7.2';
         }
 
         public static function getReleaseNotes()
         {
-            return 'https://www.getsymphony.com/download/releases/version/2.7.1/';
+            return 'https://www.getsymphony.com/download/releases/version/2.7.2/';
         }
     }
