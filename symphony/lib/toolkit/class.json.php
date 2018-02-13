@@ -151,18 +151,20 @@ class JSON
     }
 
     /**
-     * This function takes a string and returns an empty DOMElement
-     * with a valid name. If the passed `$name` is a valid QName, the handle of
-     * this name will be the name of the element, otherwise this will fallback to 'key'.
+     * This function takes a string and returns an empty DOMElement with a valid
+     * name. If the passed `$name` is a valid QName, the handle of this name will
+     * be the name of the element, otherwise this will fallback to 'key'.
      *
      * @see toolkit.Lang#createHandle
      * @param string $name
      *  If the `$name` is not a valid QName it will be ignored and replaced with
-     *  'key'. If this happens, a `@value` attribute will be set with the original
-     *  `$name`. If `$name` is a valid QName, it will be run through `Lang::createHandle`
-     *  to create a handle for the element.
+     *  `key`. If this happens, the `$name` will be run through `Lang::createHandle`
+     *  to create a `@handle` attribute. Additionally, a `@value` attribute will be
+     *  set with the sanitized original `$name`.
+     *  If `$name` is a valid QName, it will be run through `Lang::createHandle`
+     *  to create the element name. No attributes will be added to the element.
      * @return DOMElement
-     *  An empty DOMElement with `@handle` and `@value` attributes.
+     *  An empty DOMElement, possibly with `@handle` and `@value` attributes.
      */
     private static function _valid_element_name($name)
     {
@@ -173,15 +175,12 @@ class JSON
         }
 
         if ($valid_name) {
-            $xKey = self::$dom->createElement(
-                Lang::createHandle($name)
-            );
+            $xKey = self::$dom->createElement(Lang::createHandle($name));
         } else {
             $xKey = self::$dom->createElement('key');
+            $xKey->setAttribute('handle', Lang::createHandle($name));
+            $xKey->setAttribute('value', General::sanitize($name));
         }
-
-        $xKey->setAttribute('handle', Lang::createHandle($name));
-        $xKey->setAttribute('value', General::sanitize($name));
 
         return $xKey;
     }
