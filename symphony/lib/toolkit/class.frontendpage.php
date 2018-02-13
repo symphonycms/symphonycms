@@ -257,6 +257,8 @@ class FrontendPage extends XSLTPage
             $output = parent::generate();
             $this->_param = $backup_param;
 
+            Symphony::Profiler()->sample('XSLT Transformation', PROFILE_LAP);
+
             /**
              * Immediately after generating the page. Provided with string containing page source
              * @delegate FrontendOutputPostGenerate
@@ -266,8 +268,6 @@ class FrontendPage extends XSLTPage
              *  The generated output of this page, ie. a string of HTML, passed by reference
              */
             Symphony::ExtensionManager()->notifyMembers('FrontendOutputPostGenerate', '/frontend/', array('output' => &$output));
-
-            Symphony::Profiler()->sample('XSLT Transformation', PROFILE_LAP);
 
             if (is_null($devkit) && !$output) {
                 $errstr = null;

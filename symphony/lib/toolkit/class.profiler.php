@@ -182,9 +182,7 @@ class Profiler implements Singleton
      */
     public function retrieveTotalRunningTime()
     {
-        $last = Profiler::retrieveLast();
-
-        return $last[1];
+        return precision_timer('stop', Profiler::$_starttime);
     }
 
     /**
