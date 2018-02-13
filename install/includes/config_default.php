@@ -30,7 +30,7 @@
         ###### LOG ######
         'log' => array(
             'archive' => '1',
-            'maxsize' => '102400',
+            'maxsize' => '10485760',
             'filter' => E_ALL ^ E_DEPRECATED,
         ),
         ########
