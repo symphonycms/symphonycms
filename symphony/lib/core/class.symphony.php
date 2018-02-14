@@ -32,7 +32,7 @@ abstract class Symphony implements Singleton
 
     /**
      * An instance of the `Database` class
-     * @var MySQL
+     * @var Database
      */
     private static $Database = null;
 
@@ -333,7 +333,7 @@ abstract class Symphony implements Singleton
     /**
      * Accessor for the current `$Database` instance.
      *
-     * @return MySQL
+     * @return Database
      */
     public static function Database()
     {

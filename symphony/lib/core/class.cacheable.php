@@ -7,7 +7,7 @@
  /**
   * The Cacheable class provides a wrapper around an `iCache` interface
   * and provides basic CRUD functionality for caching. Historically,
-  * this class was hardcoded to use MySQL, but since Symphony 2.4 this
+  * this class was hardcoded to use Database, but since Symphony 2.4 this
   * may not be the case anymore.
   */
 

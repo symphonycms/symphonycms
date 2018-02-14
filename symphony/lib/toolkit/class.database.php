@@ -1071,7 +1071,7 @@ class Database
     }
 
     /**
-     * Returns some basic statistics from the MySQL class about the
+     * Returns some basic statistics from the Database class about the
      * number of queries, the time it took to query and any slow queries.
      * A slow query is defined as one that took longer than 0.0999 seconds
      * This function is used by the Profile devkit
