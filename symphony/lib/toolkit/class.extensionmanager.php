@@ -271,7 +271,7 @@ class ExtensionManager implements FileResource
      * caching layer for the given `$key`. This `$key` should be stored in
      * the Symphony configuration in the caching group with a reference
      * to the class of the caching object. If the key is not found, this
-     * will return a default `Cacheable` object created with the MySQL driver.
+     * will return a default `Cacheable` object created with the Database driver.
      *
      * @since Symphony 2.4
      * @param string $key

@@ -13,8 +13,8 @@ class contentAjaxQuery extends JSONPage
     {
         $database = Symphony::Configuration()->get('db', 'database');
         $field_ids = array_map(array('General','intval'), explode(',', General::sanitize($_GET['field_id'])));
-        $search = MySQL::cleanValue(General::sanitize($_GET['query']));
-        $types = array_map(array('MySQL','cleanValue'), explode(',', General::sanitize($_GET['types'])));
+        $search = General::sanitize($_GET['query']);
+        $types = explode(',', General::sanitize($_GET['types']));
         $limit = General::intval(General::sanitize($_GET['limit']));
 
         // Entries

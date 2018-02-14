@@ -93,7 +93,7 @@ class Entry
      * Creates the initial entry row in tbl_entries and returns the resulting
      * Entry ID using `getInsertID()`.
      *
-     * @see toolkit.MySQL#getInsertID()
+     * @see toolkit.Database#getInsertID()
      * @throws DatabaseException
      * @return integer
      */
