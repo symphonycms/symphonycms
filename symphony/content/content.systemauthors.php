@@ -615,6 +615,8 @@ class contentSystemAuthors extends AdministrationPage
                      * '/system/authors/'
                      * @param Author $author
                      *  The Author object that has just been created
+                     * @param integer $author_id
+                     *  The ID of Author ID that was just created
                      * @param array $fields
                      *  The POST fields
                      *  This parameter is available @since Symphony 2.7.0
@@ -625,6 +627,7 @@ class contentSystemAuthors extends AdministrationPage
                      */
                     Symphony::ExtensionManager()->notifyMembers('AuthorPostCreate', '/system/authors/', array(
                         'author' => $this->_Author,
+                        'author_id' => $author_id,
                         'field' => $fields,
                         'errors' => &$this->_errors,
                     ));
