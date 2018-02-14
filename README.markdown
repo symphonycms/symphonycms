@@ -207,7 +207,11 @@ so make sure you have node and npm installed and in your path.
 
 		npm run build
 
-3. Optionally, you can minify script and style files upon saving source files
+3. Run the test suite
+
+		npm test
+
+4. Optionally, you can minify script and style files upon saving source files
 
 		npm run watch
 

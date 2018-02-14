@@ -9,6 +9,7 @@
   "license": "MIT",
   "scripts": {
     "build": "grunt",
+    "test": "grunt jshint phpunit",
     "watch": "grunt watch"
   },
   "devDependencies": {
