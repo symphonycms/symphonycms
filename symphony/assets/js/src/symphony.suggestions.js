@@ -135,7 +135,7 @@
 			// Enter
 			else if(event.which == 13) {
 				event.preventDefault();
-				active = input.next('.suggestions').find('li:not(.help).active')
+				active = input.next('.suggestions').find('li:not(.help).active');
 
 				if(active.length) {
 					select(active, input);
