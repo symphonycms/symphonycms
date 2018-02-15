@@ -275,6 +275,10 @@ class DatabaseQuery extends DatabaseStatement
                 $col = $dir;
                 $dir = null;
             }
+            if ($col === 'RAND()') {
+                $orders[] = 'RAND()';
+                continue;
+            }
             $dir = $dir ?: $direction;
             General::ensureType([
                 'col' => ['var' => $col, 'type' => 'string'],
