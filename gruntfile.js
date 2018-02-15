@@ -123,8 +123,16 @@ module.exports = function (grunt) {
                 },
                 files: {
                     'symphony/assets/js/symphony.min.js': [
-                        'symphony/assets/js/lib/*.js',
-                        'symphony/assets/js/src/*.js',
+                        'symphony/assets/js/lib/jquery.js',
+                        'symphony/assets/js/lib/jquery.migrate.js',
+                        'symphony/assets/js/lib/signals.js',
+                        'symphony/assets/js/lib/crossroads.js',
+                        'symphony/assets/js/lib/moment.min.js',
+                        'symphony/assets/js/lib/clndr.min.js',
+                        'symphony/assets/js/src/symphony.js',
+                        'symphony/assets/js/src/symphony.*.js',
+                        'symphony/assets/js/src/backend.js',
+                        'symphony/assets/js/src/backend.*.js',
                     ]
                 }
             }
