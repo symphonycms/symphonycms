@@ -549,13 +549,17 @@ fieldset.frame,
 	color: #bd7053;
 	background-color: #fff9a2;
 }
-#error .frame .error b {
+#error .frame .error strong {
 	display: inline-block;
 	margin: -0.2rem 0 -0.1rem;
 	padding: 0.2rem 0 0.1rem;
 	color: #fff;
 	line-height: 1.8;
 	background: rgba(167, 31, 45, 0.7);
+}
+
+#error .frame code {
+	white-space: pre;
 }
 
 #error .frame code a {
