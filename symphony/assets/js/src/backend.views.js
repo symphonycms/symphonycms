@@ -805,7 +805,7 @@ Symphony.View.add('/system/authors/:action:/:id:/:status:', function(action, id,
 	var password = $('#password');
 
 	// Add change password overlay
-	if(!password.has('.invalid').length && id && !status) {
+	if(!password.has('.invalid').length && id) {
 		var overlay = $('<div class="password" />'),
 			frame = $('<span class="frame centered" />'),
 			button = $('<button />', {
