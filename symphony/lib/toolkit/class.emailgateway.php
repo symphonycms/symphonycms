@@ -307,7 +307,7 @@ abstract class EmailGateway
      *
      * @since Symphony 3.0.0
      *   The file array can contain a 'cid' key.
-     *   When set to true, the Content-ID header field is added.
+     *   When set to true, the Content-ID header field is added with the filename as id.
      *   The file array can contain a 'disposition' key.
      *   When set, it is used in the Content-Disposition header
      *
@@ -718,7 +718,7 @@ abstract class EmailGateway
      * @param string $file optional the path of the attachment
      * @param string $filename optional the name of the attached file
      * @param string $charset optional the charset of the attached file
-     * @param boolean $cid  optional add a generated Content-ID header field
+     * @param string|boolean $cid optional add a Content-ID header field. If true, uses the filename as the cid
      * @param string $disposition optional the value of the Content-Disposition header field
      *
      * @return array
@@ -774,7 +774,7 @@ abstract class EmailGateway
             $bin['Content-Disposition'] = $disposition . '; filename="' .$filename .'"';
         }
         if ($cid) {
-            $bin['Content-ID'] = "<$filename@" .  DOMAIN . '>';
+            $bin['Content-ID'] = $cid === true ? "<$filename>" : $cid;
         }
         return $bin;
     }
