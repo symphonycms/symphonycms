@@ -308,6 +308,8 @@ abstract class EmailGateway
      * @since Symphony 3.0.0
      *   The file array can contain a 'cid' key.
      *   When set to true, the Content-ID header field is added.
+     *   The file array can contain a 'disposition' key.
+     *   When set, it is used in the Content-Disposition header
      *
      * @since Symphony 2.3.5
      *
@@ -636,7 +638,14 @@ abstract class EmailGateway
 
             if ($file_content !== false && !empty($file_content)) {
                 $output .= $this->boundaryDelimiterLine('multipart/mixed')
-                     . $this->contentInfoString($file['mime-type'], $file['file'], $file['filename'], $file['charset'], $file['cid'])
+                     . $this->contentInfoString(
+                            $file['mime-type'],
+                            $file['file'],
+                            $file['filename'],
+                            $file['charset'],
+                            $file['cid'],
+                            $file['disposition']
+                        )
                      . EmailHelper::base64ContentTransferEncode($file_content);
             } else {
                 if ($this->_validate_attachment_errors) {
@@ -710,10 +719,11 @@ abstract class EmailGateway
      * @param string $filename optional the name of the attached file
      * @param string $charset optional the charset of the attached file
      * @param boolean $cid  optional add a generated Content-ID header field
+     * @param string $disposition optional the value of the Content-Disposition header field
      *
      * @return array
      */
-    public function contentInfoArray($type = null, $file = null, $filename = null, $charset = null, $cid = false)
+    public function contentInfoArray($type = null, $file = null, $filename = null, $charset = null, $cid = false, $disposition = 'attachment')
     {
         // Common descriptions
         $description = array(
@@ -759,8 +769,10 @@ abstract class EmailGateway
         $bin = [
             'Content-Type'              => $type.';'.$charset.' name="'.$filename.'"',
             'Content-Transfer-Encoding' => 'base64',
-            'Content-Disposition'       => 'attachment; filename="' .$filename .'"',
         ];
+        if ($disposition) {
+            $bin['Content-Disposition'] = $disposition . '; filename="' .$filename .'"';
+        }
         if ($cid) {
             $bin['Content-ID'] = "<$filename@" .  DOMAIN . '>';
         }
@@ -774,9 +786,9 @@ abstract class EmailGateway
      *
      * @return string|null
      */
-    protected function contentInfoString($type = null, $file = null, $filename = null, $charset = null, $cid = false)
+    protected function contentInfoString($type = null, $file = null, $filename = null, $charset = null, $cid = false, $disposition = 'attachment')
     {
-        $data = $this->contentInfoArray($type, $file, $filename, $charset, $cid);
+        $data = $this->contentInfoArray($type, $file, $filename, $charset, $cid, $disposition);
         $fields = array();
 
         foreach ($data as $key => $value) {
