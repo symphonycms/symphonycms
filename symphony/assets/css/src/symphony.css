@@ -158,6 +158,9 @@ pre {
 	white-space: normal;
 	background: #f4f4f4;
 }
+pre:last-child {
+	margin-bottom: 1.5rem;
+}
 
 pre code {
 	display: block;
@@ -196,6 +199,9 @@ label {
 	display: block;
 	position: relative;
 	margin-bottom: 1.5rem;
+}
+label:last-child {
+	margin-bottom: 0;
 }
 
 label > i,
