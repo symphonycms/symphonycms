@@ -30,9 +30,11 @@ class DatabaseStatementResult
      * and the resulting $stm statement.
      *
      * @param bool $success
+     *  If the DatabaseStatement creating this instance succeeded or not.
      * @param PDOStatement $stm
+     *  The PDOStatement created by the execution of the DatabaseStatement.
      */
-    public function __construct($success, PDOStatement $stm = null)
+    public function __construct($success, PDOStatement $stm)
     {
         General::ensureType([
             'success' => ['var' => $success, 'type' => 'bool'],
