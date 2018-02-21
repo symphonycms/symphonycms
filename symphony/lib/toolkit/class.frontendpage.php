@@ -73,6 +73,12 @@ class FrontendPage extends XSLTPage
     private $_env = array();
 
     /**
+     * Hold all the data sources that must not output their parameters in the xml.
+     * @var array
+     */
+    private $_xml_excluded_params = array();
+
+    /**
      * Constructor function sets the `$is_logged_in` variable.
      */
     public function __construct()
@@ -466,6 +472,12 @@ class FrontendPage extends XSLTPage
             foreach ($this->_env['pool'] as $handle => $p) {
                 if (!is_array($p)) {
                     $p = array($p);
+                }
+
+                // Check if the data source is excluded from xml output
+                $dsName = current(explode('.', $handle));
+                if ($dsName && $this->_xml_excluded_params[$dsName]) {
+                    continue;
                 }
 
                 foreach ($p as $key => $value) {
@@ -893,6 +905,11 @@ class FrontendPage extends XSLTPage
             // This is deprecated and will be replaced by execute in Symphony 3.0.0
             if (is_null($xml)) {
                 $xml = $ds->grab($this->_env['pool']);
+            }
+
+            // If the data source does not want to output its xml, keep the info for later
+            if (isset($ds->dsParamPARAMXML) && $ds->dsParamPARAMXML !== 'yes') {
+                $this->_xml_excluded_params['ds-' . $ds->dsParamROOTELEMENT] = true;
             }
 
             if ($xml) {

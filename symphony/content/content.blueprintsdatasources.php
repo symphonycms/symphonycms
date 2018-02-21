@@ -75,6 +75,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             'required_url_param' => null,
             'negate_url_param' => null,
             'param' => null,
+            'paramxml' => null,
         );
 
         if (isset($_POST['fields'])) {
@@ -117,6 +118,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
             $fields['order'] = ($order == 'rand') ? 'random' : $order;
             $fields['param'] = isset($existing->dsParamPARAMOUTPUT) ? array_map('stripslashes', $existing->dsParamPARAMOUTPUT) : null;
+            $fields['paramxml'] = isset($existing->dsParamPARAMXML) ? ($existing->dsParamPARAMXML === 'yes' ? 'yes' : 'no') : 'yes';
             $fields['required_url_param'] = isset($existing->dsParamREQUIREDPARAM) ? stripslashes(trim($existing->dsParamREQUIREDPARAM)) : null;
             $fields['negate_url_param'] = isset($existing->dsParamNEGATEPARAM) ? stripslashes(trim($existing->dsParamNEGATEPARAM)) : null;
 
@@ -785,9 +787,9 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         // XML
         $group = new XMLElement('div', null, array('class' => 'two columns'));
+        $col = new XMLElement('div', null, array('class' => 'column'));
 
         $label = Widget::Label(__('Included Elements'));
-        $label->setAttribute('class', 'column');
 
         $options = array(
             array('label' => __('Authors'), 'data-label' => 'authors', 'options' => array(
@@ -839,7 +841,20 @@ class contentBlueprintsDatasources extends ResourcesPage
         }
 
         $label->appendChild(Widget::Select('fields[xml_elements][]', $options, array('multiple' => 'multiple')));
-        $group->appendChild($label);
+        $col->appendChild($label);
+
+        // Associations
+        $label = Widget::Checkbox('fields[associated_entry_counts]', $fields['associated_entry_counts'], __('Include a count of entries in associated sections'));
+        $this->setContext($label, array('sections'));
+        $col->appendChild($label);
+
+        // Encoding
+        $label = Widget::Checkbox('fields[html_encode]', $fields['html_encode'], __('HTML-encode text'));
+        $this->setContext($label, array('sections'));
+        $col->appendChild($label);
+
+        $group->appendChild($col);
+        $col = new XMLElement('div', null, array('class' => 'column'));
 
         // Support multiple parameters
         if (!isset($fields['param'])) {
@@ -848,8 +863,8 @@ class contentBlueprintsDatasources extends ResourcesPage
             $fields['param'] = array($fields['param']);
         }
 
-        $label = Widget::Label(__('Parameters'));
-        $label->setAttribute('class', 'column');
+        // Parameters
+        $label = Widget::Label(__('Output Parameters'));
         $prefix = '$ds-' . (isset($this->_context[1]) ? Lang::createHandle($fields['name']) : __('untitled')) . '.';
 
         $options = array(
@@ -917,19 +932,15 @@ class contentBlueprintsDatasources extends ResourcesPage
         }
 
         $label->appendChild(Widget::Select('fields[param][]', $options, array('multiple' => 'multiple')));
-        $group->appendChild($label);
+        $col->appendChild($label);
 
+        // Parameters in XML
+        $label = Widget::Checkbox('fields[paramxml]', $fields['paramxml'], __('Include output parameters in xml'));
+        $this->setContext($label, array('sections', 'authors'));
+        $col->appendChild($label);
+
+        $group->appendChild($col);
         $fieldset->appendChild($group);
-
-        // Associations
-        $label = Widget::Checkbox('fields[associated_entry_counts]', $fields['associated_entry_counts'], __('Include a count of entries in associated sections'));
-        $this->setContext($label, array('sections'));
-        $fieldset->appendChild($label);
-
-        // Encoding
-        $label = Widget::Checkbox('fields[html_encode]', $fields['html_encode'], __('HTML-encode text'));
-        $this->setContext($label, array('sections'));
-        $fieldset->appendChild($label);
 
         $this->Form->appendChild($fieldset);
 
@@ -1293,6 +1304,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                         $params['requiredparam'] = trim($fields['required_url_param']);
                         $params['negateparam'] = trim($fields['negate_url_param']);
                         $params['paramoutput'] = $fields['param'];
+                        $params['paramxml'] = $fields['paramxml'];
                         $params['sort'] = $fields['sort'];
 
                         break;
@@ -1349,6 +1361,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                         $params['requiredparam'] = trim($fields['required_url_param']);
                         $params['negateparam'] = trim($fields['negate_url_param']);
                         $params['paramoutput'] = $fields['param'];
+                        $params['paramxml'] = $fields['paramxml'];
                         $params['sort'] = $fields['sort'];
                         $params['htmlencode'] = $fields['html_encode'];
                         $params['associatedentrycounts'] = $fields['associated_entry_counts'];
