@@ -1,0 +1,4 @@
+# Please contact us for security related issues
+Contact: team@getsymphony.com
+Encryption: https://www.getsymphony.com/.well-known/pgp.txt
+Policy: https://github.com/symphonycms/symphony-2/wiki/Security-Bug-Disclosure
