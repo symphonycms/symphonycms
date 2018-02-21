@@ -21,6 +21,10 @@
             die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');
         }
     } else {
+        // Start with the Exception handler disable before authentication.
+        // This limits the possibility of leaking infos.
+        GenericExceptionHandler::$enabled = false;
+
         // Load configuration file:
         include CONFIG;
         Symphony::initialiseConfiguration($settings);
