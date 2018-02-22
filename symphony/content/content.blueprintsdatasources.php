@@ -797,6 +797,11 @@ class contentBlueprintsDatasources extends ResourcesPage
                 'data-label' => 'section-' . $section_data['section']->get('id'),
                 'options' => array(
                     array(
+                        'system:id',
+                        ($fields['source'] == $section_id && in_array('system:id', $fields['xml_elements'])),
+                        'system: id'
+                    ),
+                    array(
                         'system:pagination',
                         ($fields['source'] == $section_id && in_array('system:pagination', $fields['xml_elements'])),
                         'system: pagination'
