@@ -54,7 +54,7 @@ trait DatabaseWhereDefinition
      * @param string|array|DatabaseSubQuery $c
      *  Can be a single value, a list of values or nested list of valid ($k, $c) pairs.
      *  Can also be a DatabaseSubQuery object to use as a sub-query.
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @return string
      *  The SQL part containing logical comparison
      */
@@ -64,7 +64,7 @@ trait DatabaseWhereDefinition
         if (is_object($c)) {
             if (!($c instanceof DatabaseSubQuery)) {
                 $type = get_class($c);
-                throw new DatabaseSatementException("Object of type `$type` can not be used in a where clause");
+                throw new DatabaseStatementException("Object of type `$type` can not be used in a where clause");
             }
         } elseif (is_array($c)) {
             $vk = current(array_keys($c));
@@ -85,7 +85,7 @@ trait DatabaseWhereDefinition
                 $values = current(array_values($c));
                 if (is_array($values)) {
                     if (empty($values)) {
-                        throw new DatabaseSatementException("Values passed to `$op` must not be empty");
+                        throw new DatabaseStatementException("Values passed to `$op` must not be empty");
                     }
                     $this->appendValues($values);
                     $this->usePlaceholders();
@@ -96,7 +96,7 @@ trait DatabaseWhereDefinition
                     }
                     $pc = $values->finalize()->generateSQL();
                 } else {
-                    throw new DatabaseSatementException("The IN() function accepts array of scalars or a DatabaseSubQuery");
+                    throw new DatabaseStatementException("The IN() function accepts array of scalars or a DatabaseSubQuery");
                 }
                 $tk = $this->replaceTablePrefix($k);
                 $tk = $this->asTickedString($tk);
@@ -127,11 +127,11 @@ trait DatabaseWhereDefinition
                 null
             );
             if (!$op) {
-                throw new DatabaseSatementException("Operation `$k` not valid");
+                throw new DatabaseStatementException("Operation `$k` not valid");
             }
         }
         if (!is_string($k)) {
-            throw new DatabaseSatementException('Cannot use a number as a column name');
+            throw new DatabaseStatementException('Cannot use a number as a column name');
         }
         // When we get here:
         //  $op is a valid SQL operator

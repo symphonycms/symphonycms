@@ -73,7 +73,7 @@ class DatabaseQuery extends DatabaseStatement
     public function distinct()
     {
         if ($this->containsSQLParts('optimizer')) {
-            throw new DatabaseSatementException('Cannot add multiple optimizer clauses');
+            throw new DatabaseStatementException('Cannot add multiple optimizer clauses');
         }
         return $this->unsafeAppendSQLPart('optimizer', 'DISTINCT');
     }
@@ -97,7 +97,7 @@ class DatabaseQuery extends DatabaseStatement
      * Can only be called once in the lifetime of the object.
      *
      * @see alias()
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @param string $table
      *  The name of the table to act on, including the tbl_ prefix, which will be changed
      *  to the Database table prefix.
@@ -109,7 +109,7 @@ class DatabaseQuery extends DatabaseStatement
     public function from($table, $alias = null)
     {
         if ($this->containsSQLParts('table')) {
-            throw new DatabaseSatementException('DatabaseQuery can not hold more than one table clause');
+            throw new DatabaseStatementException('DatabaseQuery can not hold more than one table clause');
         }
         $table = $this->replaceTablePrefix($table);
         $table = $this->asTickedString($table);
@@ -124,7 +124,7 @@ class DatabaseQuery extends DatabaseStatement
      * Appends a AS `alias` clause.
      * Can only be called once in the lifetime of the object.
      *
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @param string $alias
      *  The name of the alias
      * @return DatabaseQuery
@@ -133,7 +133,7 @@ class DatabaseQuery extends DatabaseStatement
     public function alias($alias)
     {
         if ($this->containsSQLParts('as')) {
-            throw new DatabaseSatementException('DatabaseQuery can not hold more than one as clause');
+            throw new DatabaseStatementException('DatabaseQuery can not hold more than one as clause');
         }
         General::ensureType([
             'alias' => ['var' => $alias, 'type' => 'string'],
@@ -334,7 +334,7 @@ class DatabaseQuery extends DatabaseStatement
      * Appends one and only one LIMIT clause.
      * Can only be called once in the lifetime of the object.
      *
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @param int $limit
      *  The maximum number of records to return
      * @return DatabaseQuery
@@ -343,11 +343,11 @@ class DatabaseQuery extends DatabaseStatement
     public function limit($limit)
     {
         if ($this->containsSQLParts('limit')) {
-            throw new DatabaseSatementException('DatabaseQuery can not hold more than one limit clause');
+            throw new DatabaseStatementException('DatabaseQuery can not hold more than one limit clause');
         }
         $limit = General::intval($limit);
         if ($limit === -1) {
-            throw new DatabaseSatementException("Invalid limit value: `$limit`");
+            throw new DatabaseStatementException("Invalid limit value: `$limit`");
         }
         $this->unsafeAppendSQLPart('limit', "LIMIT $limit");
         return $this;
@@ -357,7 +357,7 @@ class DatabaseQuery extends DatabaseStatement
      * Appends one and only one OFFSET clause.
      * Can only be called once in the lifetime of the object.
      *
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @param int $offset
      *  The number at which to start returning results
      * @return DatabaseQuery
@@ -366,11 +366,11 @@ class DatabaseQuery extends DatabaseStatement
     public function offset($offset)
     {
         if ($this->containsSQLParts('offset')) {
-            throw new DatabaseSatementException('DatabaseQuery can not hold more than one offset clause');
+            throw new DatabaseStatementException('DatabaseQuery can not hold more than one offset clause');
         }
         $offset = General::intval($offset);
         if ($offset === -1) {
-            throw new DatabaseSatementException("Invalid offset value: `$offset`");
+            throw new DatabaseStatementException("Invalid offset value: `$offset`");
         }
         $this->unsafeAppendSQLPart('offset', "OFFSET $offset");
         return $this;

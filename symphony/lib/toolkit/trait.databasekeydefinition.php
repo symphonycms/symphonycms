@@ -25,16 +25,16 @@ trait DatabaseKeyDefinition
      *  If omitted, the name of the key be added as the only column in the key.
      * @return string
      *  The SQL part containing the key definition.
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      */
     public function buildKeyDefinitionFromArray($k, $options)
     {
         if (is_string($options)) {
             $options = ['type' => $options];
         } elseif (!is_array($options)) {
-            throw new DatabaseSatementException('Key value can only be a string or an array');
+            throw new DatabaseStatementException('Key value can only be a string or an array');
         } elseif (!isset($options['type'])) {
-            throw new DatabaseSatementException('Key type must be defined.');
+            throw new DatabaseStatementException('Key type must be defined.');
         }
         $type = strtolower($options['type']);
         $cols = isset($options['cols']) ? $options['cols'] : $k;
@@ -46,7 +46,7 @@ trait DatabaseKeyDefinition
             'key', 'unique', 'primary', 'fulltext', 'index'
         ]);
         if ($typeIndex === false) {
-            throw new DatabaseSatementException("Key of type `$type` is not valid");
+            throw new DatabaseStatementException("Key of type `$type` is not valid");
         }
         switch ($type) {
             case 'unique':

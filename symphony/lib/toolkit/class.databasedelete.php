@@ -72,7 +72,7 @@ final class DatabaseDelete extends DatabaseStatement
      * Appends one and only one LIMIT clause.
      * Can only be called once in the lifetime of the object.
      *
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @param int $limit
      *  The maximum number of records to return
      * @return DatabaseDelete
@@ -81,11 +81,11 @@ final class DatabaseDelete extends DatabaseStatement
     public function limit($limit)
     {
         if ($this->containsSQLParts('limit')) {
-            throw new DatabaseSatementException('DatabaseDelete can not hold more than one limit clause');
+            throw new DatabaseStatementException('DatabaseDelete can not hold more than one limit clause');
         }
         $limit = General::intval($limit);
         if ($limit === -1) {
-            throw new DatabaseSatementException("Invalid limit value: `$limit`");
+            throw new DatabaseStatementException("Invalid limit value: `$limit`");
         }
         $this->unsafeAppendSQLPart('limit', "LIMIT $limit");
         return $this;
@@ -108,14 +108,14 @@ final class DatabaseDelete extends DatabaseStatement
      * to delete all records
      *
      * @see DatabaseStatement::finalize()
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @return DatabaseDelete
      *  The current instance
      */
     public function finalize()
     {
         if (!$this->allowAll && !$this->containsSQLParts('where')) {
-            throw new DatabaseSatementException('This DatabaseDelete Statement is not allowed to delete all rows');
+            throw new DatabaseStatementException('This DatabaseDelete Statement is not allowed to delete all rows');
         }
         return $this;
     }

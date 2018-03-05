@@ -23,7 +23,7 @@ final class DatabaseShow extends DatabaseStatement
     public function __construct(Database $db, $show = 'TABLES')
     {
         if ($show !== 'COLUMNS' && $show !== 'TABLES') {
-            throw new DatabaseSatementException('Can only show TABLES or COLUMNS');
+            throw new DatabaseStatementException('Can only show TABLES or COLUMNS');
         }
         parent::__construct($db, "SHOW $show");
     }
@@ -48,7 +48,7 @@ final class DatabaseShow extends DatabaseStatement
      * Can only be called once in the lifetime of the object.
      *
      * @see alias()
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @param string $table
      *  The name of the table to act on, including the tbl prefix which will be changed
      *  to the Database table prefix.
@@ -58,7 +58,7 @@ final class DatabaseShow extends DatabaseStatement
     public function from($table)
     {
         if ($this->containsSQLParts('table')) {
-            throw new DatabaseSatementException('DatabaseShow can not hold more than one table clause');
+            throw new DatabaseStatementException('DatabaseShow can not hold more than one table clause');
         }
         $table = $this->replaceTablePrefix($table);
         $table = $this->asTickedString($table);
@@ -72,7 +72,7 @@ final class DatabaseShow extends DatabaseStatement
      * Can only be called once in the lifetime of the object.
      *
      * @see replaceTablePrefix()
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @param string $value
      *  The LIKE search pattern to look for
      * @return DatabaseShow
@@ -81,7 +81,7 @@ final class DatabaseShow extends DatabaseStatement
     public function like($value)
     {
         if ($this->containsSQLParts('like')) {
-            throw new DatabaseSatementException('DatabaseShow can not hold more than one like clause');
+            throw new DatabaseStatementException('DatabaseShow can not hold more than one like clause');
         }
         $value = $this->replaceTablePrefix($value);
         $this->usePlaceholders();

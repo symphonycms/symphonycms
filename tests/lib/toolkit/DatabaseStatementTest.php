@@ -38,7 +38,7 @@ final class DatabaseStatementTest extends TestCase
     }
 
     /**
-     * @expectedException DatabaseSatementException
+     * @expectedException DatabaseStatementException
      */
     public function testSQLInjection()
     {

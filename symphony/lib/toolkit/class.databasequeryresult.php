@@ -67,7 +67,7 @@ class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAgg
      * @param int $type
      *  The type to use
      *  Either PDO::FETCH_ASSOC or PDO::FETCH_OBJ
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @return DatabaseQueryResult
      *  The current instance
      */
@@ -77,7 +77,7 @@ class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAgg
             'type' => ['var' => $type, 'type' => 'int'],
         ]);
         if ($type !== PDO::FETCH_ASSOC && $type !== PDO::FETCH_OBJ) {
-            throw new DatabaseSatementException('Invalid fetch type');
+            throw new DatabaseStatementException('Invalid fetch type');
         }
         $this->type = $type;
         return $this;
@@ -89,7 +89,7 @@ class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAgg
      * @param int $orientation
      *  The orientation value to use.
      *  Either PDO::FETCH_ORI_NEXT or PDO::FETCH_ORI_ABS
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @return DatabaseQueryResult
      *  The current instance
      */
@@ -99,7 +99,7 @@ class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAgg
             'orientation' => ['var' => $orientation, 'type' => 'int'],
         ]);
         if ($type !== PDO::FETCH_ORI_NEXT && $type !== PDO::FETCH_ORI_ABS) {
-            throw new DatabaseSatementException('Invalid orientation type');
+            throw new DatabaseStatementException('Invalid orientation type');
         }
         $this->type = $type;
         return $this;
@@ -146,14 +146,14 @@ class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAgg
      * Retrieves all values for the specified column.
      *
      * @param string|int $col
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @return array
      *  An array containing all the values for the specified column
      */
     public function column($col)
     {
         if (!is_string($col) && !is_int($col)) {
-            throw new DatabaseSatementException('`$col must be a string or an integer');
+            throw new DatabaseStatementException('`$col must be a string or an integer');
         }
         $rows = [];
         while ($row = $this->next()) {
@@ -174,14 +174,14 @@ class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAgg
      * specified column.
      *
      * @param string|int $col
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @return array
      *  An array containing all the values indexed by the specified column
      */
     public function rowsIndexedByColumn($col)
     {
         if (!is_string($col) && !is_int($col)) {
-            throw new DatabaseSatementException('`$col must be a string or an integer');
+            throw new DatabaseStatementException('`$col must be a string or an integer');
         }
         $rows = $this->rows();
         $index = [];
@@ -190,7 +190,7 @@ class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAgg
                 $row = array_values($row);
             }
             if (!isset($row[$col])) {
-                throw new DatabaseSatementException("Row does not have column `$col`");
+                throw new DatabaseStatementException("Row does not have column `$col`");
             }
             $index[$row[$col]] = $row;
         }
@@ -216,14 +216,14 @@ class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAgg
      * @see orientation()
      * @see offset()
      * @param string|int $col
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @return mixed
      *  The value of the column
      */
     public function variable($col)
     {
         if (!is_string($col) && !is_int($col)) {
-            throw new DatabaseSatementException('`$col must be a string or an integer');
+            throw new DatabaseStatementException('`$col must be a string or an integer');
         }
         if ($row = $this->next()) {
             if ($this->type === PDO::FETCH_OBJ) {
