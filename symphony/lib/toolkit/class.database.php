@@ -83,17 +83,27 @@ class Database
 
     /**
      * The last executed query
-     *
      * @var string;
      */
     private $lastQuery;
 
     /**
      * The md5 hash of the last executed query
-     *
      * @var string;
      */
     private $lastQueryHash;
+
+    /**
+     * The values used with the last executed query
+     * @var array
+     */
+    private $lastQueryValues;
+
+    /**
+     * The unsafe mode of the last executed query
+     * @var bool
+     */
+    private $lastQuerySafe;
 
     /**
      * Creates a new Database object given an associative array of configuration
@@ -131,8 +141,9 @@ class Database
     }
 
     /**
-     * Resets `$this->lastQueryHash ` and `$this->lastQuery` to their empty
-     * values. Called on each query and when the class is destroyed.
+     * Resets `$this->lastQuery`, `$this->lastQueryHash`, `$this->lastQueryValues` and
+     * `$this->lastQuerySafe` to their empty values.
+     * Called on each query and when the class is destroyed.
      *
      * @return Database
      *  The current instance.
@@ -141,6 +152,8 @@ class Database
     {
         $this->lastQuery = null;
         $this->lastQueryHash = null;
+        $this->lastQueryValues = null;
+        $this->lastQuerySafe = null;
         return $this;
     }
 
@@ -844,6 +857,8 @@ class Database
         $this->flush();
         $this->lastQuery = $query;
         $this->lastQueryHash = md5($query . $start);
+        $this->lastQueryValues = $values;
+        $this->lastQuerySafe = $stm->isSafe();
 
         try {
             // Validate the query
@@ -1046,6 +1061,12 @@ class Database
          *  The query that has just been executed
          * @param string $query_hash
          *  The hash used by Symphony to uniquely identify this query
+         * @param array $query_values
+         *  @since Symphony 3.0.0
+         *  The values passed by Symphony to the database
+         * @param bool $query_safe
+         *  @since Symphony 3.0.0
+         *  If the query was using the unsafe mode
          * @param float $execution_time
          *  The time that it took to run `$query`
          */
@@ -1057,6 +1078,8 @@ class Database
                 [
                     'query' => $this->lastQuery, // TODO: Format
                     'query_hash' => $this->lastQueryHash,
+                    'query_values' => $this->lastQueryValues,
+                    'query_safe' => $this->lastQuerySafe,
                     'execution_time' => $stop
                 ]
             );
@@ -1066,6 +1089,8 @@ class Database
         $this->log[] = [
             'query' => $this->lastQuery, // TODO: Format
             'query_hash' => $this->lastQueryHash,
+            'query_values' => $this->lastQueryValues,
+            'query_safe' => $this->lastQuerySafe,
             'execution_time' => $stop
         ];
     }
@@ -1239,7 +1264,9 @@ class Database
         // Cleanup from last time, set some logging parameters
         $this->flush();
         $this->lastQuery = $query;
-        $this->lastQueryHash = md5($query.$start);
+        $this->lastQueryHash = md5($query . $start);
+        $this->lastQueryValues = null;
+        $this->lastQuerySafe = false;
         $query_type = $this->determineQueryType($query);
 
         // TYPE is deprecated since MySQL 4.0.18, ENGINE is preferred
