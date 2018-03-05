@@ -380,17 +380,19 @@ class DatabaseQuery extends DatabaseStatement
      * Creates a specialized version of DatabaseStatementResult to hold
      * result from the current statement.
      *
-     * @param bool $result
-     * @param PDOStatement $st
+     * @param bool $success
+     *  If the DatabaseStatement creating this instance succeeded or not.
+     * @param PDOStatement $stm
+     *  The PDOStatement created by the execution of the DatabaseStatement.
      * @return DatabaseQueryResult
      *  The wrapped result
      */
-    public function results($result, PDOStatement $stm)
+    public function results($success, PDOStatement $stm)
     {
         General::ensureType([
-            'result' => ['var' => $result, 'type' => 'bool'],
+            'success' => ['var' => $success, 'type' => 'bool'],
         ]);
-        return new DatabaseQueryResult($result, $stm);
+        return new DatabaseQueryResult($success, $stm);
     }
 
     /**
