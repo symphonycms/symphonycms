@@ -394,16 +394,18 @@ class DatabaseStatement
      * Child classes can overwrite this method to return a specialized version of the
      * DatabaseStatementResult class.
      *
-     * @param bool $result
+     * @param bool $success
+     *  If the DatabaseStatement creating this instance succeeded or not.
      * @param PDOStatement $stm
+     *  The PDOStatement created by the execution of the DatabaseStatement.
      * @return DatabaseStatementResult
      */
-    public function results($result, PDOStatement $stm)
+    public function results($success, PDOStatement $stm)
     {
         General::ensureType([
-            'result' => ['var' => $result, 'type' => 'bool'],
+            'success' => ['var' => $success, 'type' => 'bool'],
         ]);
-        return new DatabaseStatementResult($result, $stm);
+        return new DatabaseStatementResult($success, $stm);
     }
 
     /**
