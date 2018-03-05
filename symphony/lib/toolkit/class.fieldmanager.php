@@ -471,10 +471,10 @@ class FieldManager implements FileResource
 
         $result = $schema_sql->execute()->column('id');
 
-        if (!$result->rowCount()) {
+        if (empty($result)) {
             return false;
-        } elseif ($result->rowCount() === 1) {
-            return (int)$result->variable('id');
+        } elseif (count($result) === 1) {
+            return (int)$result[0];
         }
         return array_map('intval', $result);
     }
