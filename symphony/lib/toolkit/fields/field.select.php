@@ -118,12 +118,12 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
         }
 
         // Ensure that the table has a 'value' column
-        if (Symphony::Database()
+        if (count(Symphony::Database()
             ->showColumns()
             ->from('tbl_entries_data_' . $this->get('dynamic_options'))
             ->like('value')
             ->execute()
-            ->rowCount() === 1
+            ->rows()) === 1
         ) {
             $results = Symphony::Database()
                 ->select(['value'])
@@ -135,12 +135,12 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
         }
 
         // In the case of a Upload field, use 'file' instead of 'value'
-        if (!$results && Symphony::Database()
+        if (!$results && count(Symphony::Database()
             ->showColumns()
             ->from('tbl_entries_data_' . $this->get('dynamic_options'))
             ->like('file')
             ->execute()
-            ->rowCount() === 1
+            ->rows()) === 1
         ) {
             $results = Symphony::Database()
                 ->select(['value'])

@@ -143,17 +143,6 @@ class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAgg
     }
 
     /**
-     * Retrieves the number of available records.
-     *
-     * @return int
-     *  The number of available records
-     */
-    public function rowCount()
-    {
-        return $this->statement()->rowCount();
-    }
-
-    /**
      * Retrieves all values for the specified column.
      *
      * @param string|int $col

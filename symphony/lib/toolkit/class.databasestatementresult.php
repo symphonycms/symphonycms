@@ -73,4 +73,16 @@ class DatabaseStatementResult
     {
         return $this->stm;
     }
+
+    /**
+     * Retrieves the number of affected rows by this statement.
+     * Does not work with results set, i.e., it is NOT the numbers of rows returned.
+     *
+     * @return int
+     *  The number affected rows
+     */
+    public function rowCount()
+    {
+        return $this->statement()->rowCount();
+    }
 }

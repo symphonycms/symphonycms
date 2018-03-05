@@ -454,7 +454,7 @@ class Database
         return $this->describe($table)
                     ->field($field)
                     ->execute()
-                    ->rowCount() > 0;
+                    ->next() !== null;
     }
 
     /**
@@ -475,7 +475,7 @@ class Database
         return $this->show()
                     ->like($table)
                     ->execute()
-                    ->rowCount() > 0;
+                    ->next() !== null;
     }
 
     /**

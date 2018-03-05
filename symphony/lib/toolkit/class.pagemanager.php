@@ -759,14 +759,14 @@ class PageManager
      */
     public static function hasPageTypeBeenUsed($page_id = null, $type)
     {
-        return Symphony::Database()
+        return count(Symphony::Database()
             ->select(['pt.id'])
             ->from('tbl_pages_types', 'pt')
             ->where(['pt.page_id' => ['!=' => $page_id]])
             ->where(['pt.type' => $type])
             ->limit(1)
             ->execute()
-            ->rowCount() === 1;
+            ->rows()) === 1;
     }
 
     /**
@@ -780,13 +780,13 @@ class PageManager
      */
     public static function hasChildPages($page_id)
     {
-        return Symphony::Database()
+        return count(Symphony::Database()
             ->select(['p.id'])
             ->from('tbl_pages', 'p')
             ->where(['p.parent' => $page_id])
             ->limit(1)
             ->execute()
-            ->rowCount() === 1;
+            ->rows()) === 1;
     }
 
     /**
