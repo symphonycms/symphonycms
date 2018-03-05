@@ -354,10 +354,12 @@ class FieldManager implements FileResource
             if ($where) {
                 $where = $query->replaceTablePrefix($where);
                 // Replace legacy `t1` alias
-                $where = str_replace('t1.', 'f.', $where);
+                $where = str_replace('t1.', '`f`.', $where);
+                $where = str_replace('`t1`.', '`f`.', $where);
                 // Ugly hack: mysqli allowed this....
                 $where = str_replace('IN ()', 'IN (0)', $where);
-                $query->unsafe()->unsafeAppendSQLPart('where', $where);
+                $wherePrefix = $query->containsSQLParts('where') ? '' : 'WHERE 1 = 1';
+                $query->unsafe()->unsafeAppendSQLPart('where', "$wherePrefix $where");
             }
             if ($sortfield) {
                 $query->sort($sortfield);
