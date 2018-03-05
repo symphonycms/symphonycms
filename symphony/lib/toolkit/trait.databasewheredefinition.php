@@ -161,6 +161,14 @@ trait DatabaseWhereDefinition
         } else {
             $this->appendValues([$k => $c]);
             $k = $this->asPlaceholderString($k, $c);
+            // Handle null equalities
+            if ($c === null) {
+                if ($op === '=') {
+                    $op = 'IS';
+                } elseif ($op === '!=') {
+                    $op = 'IS NOT';
+                }
+            }
         }
         return "$tk $op $k";
     }

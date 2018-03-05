@@ -179,7 +179,7 @@ final class DatabaseQueryTest extends TestCase
                         'x' => null
                     ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` = :x",
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` IS :x",
             $sql->generateSQL(),
             "SQL clause with WHERE IS NULL"
         );
