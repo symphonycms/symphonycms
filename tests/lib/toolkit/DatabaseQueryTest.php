@@ -363,7 +363,7 @@ final class DatabaseQueryTest extends TestCase
     }
 
     /**
-     * @expectedException DatabaseSatementException
+     * @expectedException DatabaseStatementException
      */
     public function testSELECTEmptyIN()
     {
@@ -461,7 +461,7 @@ final class DatabaseQueryTest extends TestCase
     }
 
     /**
-     * @expectedException DatabaseSatementException
+     * @expectedException DatabaseStatementException
      */
     public function testSELECTLIMITOFFSETWRONG()
     {

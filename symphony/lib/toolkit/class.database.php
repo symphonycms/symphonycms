@@ -892,18 +892,18 @@ class Database
      * @param boolean $strict
      *  Perform extra validation. True by default.
      * @return void
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      */
     final public function validateSQLQuery($query, $strict = true)
     {
         if (strpos($query, '\'--;') !== false) {
-            throw new DatabaseSatementException('Query contains SQL injection');
+            throw new DatabaseStatementException('Query contains SQL injection');
         } elseif ($strict && strpos($query, '--') !== false) {
-            throw new DatabaseSatementException('Query contains illegal characters: `--`');
+            throw new DatabaseStatementException('Query contains illegal characters: `--`');
         } elseif ($strict && strpos($query, '\'') !== false) {
-            throw new DatabaseSatementException('Query contains illegal character: `\'`');
+            throw new DatabaseStatementException('Query contains illegal character: `\'`');
         } elseif ($strict && strpos($query, ';') !== false) {
-            throw new DatabaseSatementException('Query contains illegal character: `;`');
+            throw new DatabaseStatementException('Query contains illegal character: `;`');
         }
     }
 

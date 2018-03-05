@@ -49,7 +49,7 @@ final class DatabaseDeleteTest extends TestCase
     }
 
     /**
-     * @expectedException DatabaseSatementException
+     * @expectedException DatabaseStatementException
      */
     public function testDELETENoWhere()
     {

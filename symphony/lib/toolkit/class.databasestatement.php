@@ -25,6 +25,7 @@
  * @see DatabaseTruncate
  * @see DatabaseOptimize
  * @see DatabaseSet
+ * @see DatabaseStatementException
  */
 class DatabaseStatement
 {
@@ -245,7 +246,7 @@ class DatabaseStatement
      *  The actual SQL code part
      * @return DatabaseStatement
      *  The current instance
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      */
     final public function unsafeAppendSQLPart($type, $part)
     {
@@ -255,7 +256,7 @@ class DatabaseStatement
         ]);
         if (!General::in_array_multi($type, $this->getStatementStructure(), true)) {
             $class = get_class($this);
-            throw new DatabaseSatementException("SQL Part type `$type` is not valid for class `$class`");
+            throw new DatabaseStatementException("SQL Part type `$type` is not valid for class `$class`");
         }
         $this->sql[] = [$type => $part];
         return $this;
@@ -580,11 +581,11 @@ class DatabaseStatement
     /**
      * @internal
      * This method validates that the string $field is a valid field name
-     * in SQL. If it is not, it throws DatabaseSatementException
+     * in SQL. If it is not, it throws DatabaseStatementException
      *
      * @param string $field
      * @return void
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      * @throws Exception
      */
     final protected function validateFieldName($field)
@@ -593,7 +594,7 @@ class DatabaseStatement
             'field' => ['var' => $field, 'type' => 'string'],
         ]);
         if (preg_match('/^[0-9a-zA-Z_]+$/', $field) === false) {
-            throw new DatabaseSatementException(
+            throw new DatabaseStatementException(
                 "Field name '$field' is not valid since it contains illegal characters"
             );
         }
@@ -655,24 +656,5 @@ class DatabaseStatement
     protected function formatParameterName($parameter)
     {
         return $parameter;
-    }
-}
-
-
-/**
- * The DatabaseSatementException class extends a normal Exception to add in
- * debugging information when a DatabaseSatement is about to enter an invalid state
- */
-class DatabaseSatementException extends Exception
-{
-
-    /**
-     * Constructor takes a message.
-     * Before the message is passed to the default Exception constructor,
-     * it tries to translate the message.
-     */
-    public function __construct($message)
-    {
-        parent::__construct(__($message));
     }
 }

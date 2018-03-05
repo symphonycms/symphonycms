@@ -57,16 +57,16 @@ trait DatabaseColumnDefinition
      *  Defaults to false.
      * @return string
      *  The SQL part containing the column definition.
-     * @throws DatabaseSatementException
+     * @throws DatabaseStatementException
      */
     public function buildColumnDefinitionFromArray($k, $options)
     {
         if (is_string($options)) {
             $options = ['type' => $options];
         } elseif (!is_array($options)) {
-            throw new DatabaseSatementException('Field value can only be a string or an array');
+            throw new DatabaseStatementException('Field value can only be a string or an array');
         } elseif (!isset($options['type'])) {
-            throw new DatabaseSatementException('Field type must be defined.');
+            throw new DatabaseStatementException('Field type must be defined.');
         }
         $type = strtolower($options['type']);
         $collate = $this->getOption($options, 'collate');
