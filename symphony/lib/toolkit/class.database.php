@@ -506,13 +506,13 @@ class Database
     /**
      * Factory method that creates a new `SELECT ...` statement.
      *
-     * @param array $values
+     * @param array $projection
      *  The columns to select. By default, it's `*`.
      * @return DatabaseQuery
      */
-    public function select(array $values = ['*'])
+    public function select(array $projection = ['*'])
     {
-        return new DatabaseQuery($this, $values);
+        return new DatabaseQuery($this, $projection);
     }
 
     /**
