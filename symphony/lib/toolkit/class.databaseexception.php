@@ -23,10 +23,17 @@ class DatabaseException extends Exception
      * Constructor takes a message and an associative array to set to
      * `$_error`. Before the message is passed to the default Exception constructor,
      * it tries to translate the message.
+     * @param string $message
+     *  The exception's message
+     * @param array $error
+     *  The database error information
+     * @param Throwable $previous
+     *  If the database raised an exception, it will be added to the exception chain
      */
-    public function __construct($message, array $error = null)
+    public function __construct($message, array $error = null, $previous = null)
     {
-        parent::__construct(__($message));
+        $code = !$previous ? 0 : $previous->getCode();
+        parent::__construct(__($message), $code, $previous);
         $this->_error = $error;
     }
 
