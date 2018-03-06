@@ -13,14 +13,12 @@ class DatabaseStatementResult
 {
     /**
      * Flag to indicate if the execution was successful.
-     *
      * @var boolean
      */
     private $success;
 
     /**
      * The PDOStatement result of the execution.
-     *
      * @var PDOStatement
      */
     private $stm;
