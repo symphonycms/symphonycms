@@ -122,11 +122,8 @@ class EntryManager
         $did_lock = false;
         $exception = null;
         try {
-            // Prepare the lock statement
-            $lockStatement = new DatabaseStatement(
-                Symphony::Database(),
-                'LOCK TABLES'
-            );
+            // Create the lock statement
+            $lockStatement = Symphony::Database()->statement('LOCK TABLES');
 
             // Check if table exists
             $table_name = 'tbl_entries_data_' . General::intval($field_id);
@@ -181,11 +178,7 @@ class EntryManager
         }
 
         if ($did_lock) {
-            $unlockStatement = new DatabaseStatement(
-                Symphony::Database(),
-                "UNLOCK TABLES"
-            );
-            $unlockStatement->execute();
+            Symphony::Database()->statement("UNLOCK TABLES")->execute();
         }
 
         if ($exception) {
