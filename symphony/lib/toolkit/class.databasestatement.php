@@ -31,42 +31,36 @@ class DatabaseStatement
 {
     /**
      * List of element delimiter
-     *
      * @var string
      */
     const LIST_DELIMITER = ', ';
 
     /**
      * The SQL part delimiter
-     *
      * @var string
      */
     const STATEMENTS_DELIMITER = ' ';
 
     /**
      * Regular Expression that matches SQL functions
-     *
      * @var string
      */
     const FCT_PATTERN = '/^([A-Za-z_]+)\((.+)\)$/';
 
     /**
      * Database object reference
-     *
      * @var Database
      */
     private $db;
 
     /**
      * SQL parts array
-     *
      * @var array
      */
     private $sql = [];
 
     /**
      * SQL values array
-     *
      * @see appendValues()
      * @var array
      */
@@ -74,7 +68,6 @@ class DatabaseStatement
 
     /**
      * SQL parameters cache
-     *
      * @see convertToParameterName()
      * @var array
      */
@@ -83,7 +76,6 @@ class DatabaseStatement
     /**
      * Placeholder flag: Developer should check if the statement supports name
      * parameters, which is on by default.
-     *
      * @var bool
      */
     private $usePlaceholders = false;

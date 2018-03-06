@@ -14,21 +14,18 @@ class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAgg
 {
     /**
      * The read offset.
-     *
      * @var int
      */
     private $offset = 0;
 
     /**
      * The type of variable that should be returned.
-     *
      * @var int
      */
     private $type = PDO::FETCH_ASSOC;
 
     /**
      * The orientation of the offset.
-     *
      * @var int
      */
     private $orientation = PDO::FETCH_ORI_NEXT;
