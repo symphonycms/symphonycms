@@ -233,7 +233,7 @@ class DatabaseQuery extends DatabaseStatement
     }
 
     /**
-     * Appends one or multiple WHERE clauses.
+     * Appends a WHERE clause with one or many conditions.
      * Calling this method multiple times will join the WHERE clauses with a AND.
      *
      * @see DatabaseWhereDefinition::buildWhereClauseFromArray()
@@ -257,7 +257,8 @@ class DatabaseQuery extends DatabaseStatement
      *  The columns to order by. If the key is numeric, the value is used as the columns name.
      *  If not, the column key is used as the columns name, and the value is used as direction.
      * @param string $direction
-     *  The default direction to use, for all columns that to not specify a sorting direction
+     *  The default direction to use, for all columns that to not specify a sorting direction.
+     *  Defaults to ASC.
      * @return DatabaseQuery
      *  The current instance
      */
