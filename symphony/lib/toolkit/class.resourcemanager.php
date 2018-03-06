@@ -171,7 +171,7 @@ class ResourceManager
             if (isset($r['source']) && General::intval($r['source']) > 0) {
                 $section = SectionManager::fetch($r['source']);
 
-                if ($section !== false) {
+                if ($section) {
                     $r['source'] = array(
                         'name' => General::sanitize($section->get('name')),
                         'handle' => General::sanitize($section->get('handle')),
