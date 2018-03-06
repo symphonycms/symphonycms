@@ -110,15 +110,16 @@ class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAgg
      * @see offset()
      * @return array|object
      *  The next available record.
-     *  null if there are not more available records.
+     *  null if there are no more available record or an error happened.
      */
     public function next()
     {
-        return $this->statement()->fetch(
+        $next = $this->statement()->fetch(
             $this->type,
             $this->orientation,
             $this->offset
         );
+        return $next === false ? null : $next;
     }
 
     /**
