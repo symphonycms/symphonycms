@@ -805,6 +805,11 @@ class Database
         return $this->conn->inTransaction();
     }
 
+    public function transaction($tx)
+    {
+        return new DatabaseTransaction($this, $tx);
+    }
+
     /**
      * @internal
      * Finds the best possible PDO::PARAM_* value to bind with, based on the PHP type.
