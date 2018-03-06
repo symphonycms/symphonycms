@@ -144,6 +144,10 @@ class FieldTagList extends Field implements ExportableField, ImportableField
             ->execute()
             ->column('handle');
 
+        if (empty($handles)) {
+            return [];
+        }
+
         $ids = Symphony::Database()
             ->select(['entry_id'])
             ->from('tbl_entries_data_' . $this->get('id'))
