@@ -14,8 +14,7 @@ class DatabaseQuery extends DatabaseStatement
     private $selectQueryCount = 0;
 
      /**
-     * Creates a new DatabaseQuery statement on table $table, with and optional projection $values
-     * and an optional optimizer value.
+     * Creates a new DatabaseQuery statement with an optional projection.
      *
      * @see Database::select()
      * @see Database::selectCount()
@@ -23,7 +22,7 @@ class DatabaseQuery extends DatabaseStatement
      *  The underlying database connection
      * @param string $projection
      *  The columns names for include in the projection.
-     *  Default to an empty projection
+     *  Defaults to an empty projection.
      */
     public function __construct(Database $db, array $projection = [])
     {
