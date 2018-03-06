@@ -65,7 +65,7 @@ class ExtensionManager implements FileResource
                 ->orderBy(['t2.delegate', 't1.name'], 'ASC')
                 ->execute();
 
-            while($subscription = $subscriptions->next()) {
+            while ($subscription = $subscriptions->next()) {
                 self::$_subscriptions[$subscription['delegate']][] = $subscription;
             }
         }
