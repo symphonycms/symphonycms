@@ -95,6 +95,19 @@ final class PageQueryTest extends TestCase
         $this->assertEquals(1, count($values), '1 value');
     }
 
+    public function testParentFilter()
+    {
+        $q = (new \PageQuery($this->db))->parent('x');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `pages` AS `p` WHERE `p`.`parent` = :p_parent",
+            $q->generateSQL(),
+            'new PageQuery test ->parent()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals('x', $values['p_parent'], 'p_parentp is x');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
     public function testSort()
     {
         $q = (new \PageQuery($this->db))->sort('x', 'DESC');
