@@ -356,7 +356,13 @@ class Section implements ArrayAccess
      */
     public function fetchVisibleColumns()
     {
-        return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, null, " AND t1.show_column = 'yes' ");
+        return (new FieldManager)
+            ->select()
+            ->section($this->get('id'))
+            ->where(['show_column' => 'yes'])
+            ->sort('sortorder')
+            ->execute()
+            ->rows();
     }
 
     /**
@@ -373,7 +379,14 @@ class Section implements ArrayAccess
      */
     public function fetchFields($type = null, $location = null)
     {
-        return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', $type, $location);
+        return (new FieldManager)
+            ->select()
+            ->section($this->get('id'))
+            ->type($type)
+            ->location($location)
+            ->sort('sortorder')
+            ->execute()
+            ->rows();
     }
 
     /**
@@ -387,7 +400,14 @@ class Section implements ArrayAccess
      */
     public function fetchFilterableFields($location = null)
     {
-        return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location, null, Field::__FILTERABLE_ONLY__);
+        return (new FieldManager)
+            ->select()
+            ->section($this->get('id'))
+            ->location($location)
+            ->sort('sortorder')
+            ->execute()
+            ->restrict(Field::__FILTERABLE_ONLY__)
+            ->rows();
     }
 
     /**
@@ -403,7 +423,14 @@ class Section implements ArrayAccess
      */
     public function fetchToggleableFields($location = null)
     {
-        return FieldManager::fetch(null, $this->get('id'), 'ASC', 'sortorder', null, $location, null, Field::__TOGGLEABLE_ONLY__);
+        return (new FieldManager)
+            ->select()
+            ->section($this->get('id'))
+            ->location($location)
+            ->sort('sortorder')
+            ->execute()
+            ->restrict(Field::__TOGGLEABLE_ONLY__)
+            ->rows();
     }
 
     /**

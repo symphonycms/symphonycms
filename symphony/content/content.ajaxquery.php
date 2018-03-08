@@ -48,8 +48,16 @@ class contentAjaxQuery extends JSONPage
 
     private function getAssociationId($field_id)
     {
-        $field = FieldManager::fetch($field_id);
-        $parent_section = SectionManager::fetch($field->get('parent_section'));
+        $field = (new FieldManager)
+            ->select()
+            ->field($field_id)
+            ->execute()
+            ->next();
+        $parent_section = (new SectionManager)
+            ->select()
+            ->section($field->get('parent_section'))
+            ->execute()
+            ->next();
 
         return Symphony::Database()
             ->select(['parent_section_field_id'])
@@ -66,7 +74,7 @@ class contentAjaxQuery extends JSONPage
         $options = array();
 
         if (!empty($field_id)) {
-            $field = FieldManager::fetch($field_id);
+            $field = (new FieldManager)->select()->field($field_id)->execute()->next();
 
             if (!empty($field) && $field->canPublishFilter() === true) {
                 if (method_exists($field, 'getToggleStates')) {
@@ -127,8 +135,16 @@ class contentAjaxQuery extends JSONPage
         $data = $query->execute()->rows();
 
         if (!empty($data)) {
-            $field = FieldManager::fetch($field_id);
-            $parent_section = SectionManager::fetch($field->get('parent_section'));
+            $field = (new FieldManager)
+                ->select()
+                ->field($field_id)
+                ->execute()
+                ->next();
+            $parent_section = (new SectionManager)
+                ->select()
+                ->section($field->get('parent_section'))
+                ->execute()
+                ->next();
             $parent_section_handle = $parent_section->get('handle');
 
             foreach ($data as $field_data) {

@@ -31,7 +31,7 @@ class contentBlueprintsSections extends AdministrationPage
         $this->setTitle(__('%1$s &ndash; %2$s', array(__('Sections'), __('Symphony'))));
         $this->appendSubheading(__('Sections'), Widget::Anchor(__('Create New'), Administration::instance()->getCurrentPageURL().'new/', __('Create a section'), 'create button', null, array('accesskey' => 'c')));
 
-        $sections = SectionManager::fetch(null, 'ASC', 'sortorder');
+        $sections = (new SectionManager)->select()->sort('sortorder')->execute()->rows();
 
         $aTableHead = array(
             array(__('Name'), 'col'),
@@ -212,7 +212,7 @@ class contentBlueprintsSections extends AdministrationPage
 
         $navgroupdiv = new XMLElement('div', null, array('class' => 'column'));
 
-        $sections = SectionManager::fetch(null, 'ASC', 'sortorder');
+        $sections = (new SectionManager)->select()->sort('sortorder')->execute()->rows();
         $label = Widget::Label(__('Navigation Group'));
         $label->appendChild(Widget::Input('meta[navigation_group]', (isset($meta['navigation_group']) ? General::sanitize($meta['navigation_group']) : null)));
 
@@ -312,8 +312,9 @@ class contentBlueprintsSections extends AdministrationPage
     public function __viewEdit()
     {
         $section_id = $this->_context[1];
+        $section = (new SectionManager)->select()->section($section_id)->execute()->next();
 
-        if (!$section = SectionManager::fetch($section_id)) {
+        if (!$section) {
             Administration::instance()->throwCustomError(
                 __('The Section, %s, could not be found.', array($section_id)),
                 __('Unknown Section'),
@@ -371,7 +372,7 @@ class contentBlueprintsSections extends AdministrationPage
                 ? $_POST['action']['timestamp']
                 : $section->get('modification_date');
         } else {
-            $fields = FieldManager::fetch(null, $section_id);
+            $fields = (new FieldManager)->select()->section($section_id)->execute()->rows();
             $fields = array_values($fields);
             $timestamp = $section->get('modification_date');
         }
@@ -430,7 +431,7 @@ class contentBlueprintsSections extends AdministrationPage
 
         $navgroupdiv = new XMLElement('div', null, array('class' => 'column'));
 
-        $sections = SectionManager::fetch(null, 'ASC', 'sortorder');
+        $sections = (new SectionManager)->select()->sort('sortorder')->execute()->rows();
         $label = Widget::Label(__('Navigation Group'));
         $label->appendChild(Widget::Input('meta[navigation_group]', General::sanitize($meta['navigation_group'])));
 
@@ -574,7 +575,13 @@ class contentBlueprintsSections extends AdministrationPage
                 redirect(SYMPHONY_URL . '/blueprints/sections/');
             } elseif ($_POST['with-selected'] == 'delete-entries') {
                 foreach ($checked as $section_id) {
-                    $entries = EntryManager::fetch(null, $section_id, null, null, null, null, false, false, null, false);
+                    $entries = (new EntryManager)
+                        ->select()
+                        ->section($section_id)
+                        ->disableDefaultSort()
+                        ->execute()
+                        ->rows();
+
                     $entry_ids = array();
 
                     foreach ($entries as $entry) {
@@ -623,7 +630,7 @@ class contentBlueprintsSections extends AdministrationPage
 
             if ($edit) {
                 $section_id = $this->_context[1];
-                $existing_section = SectionManager::fetch($section_id);
+                $existing_section = (new SectionManager)->select()->section($section_id)->execute()->next();
                 $canProceed = $this->validateTimestamp($section_id, true);
                 if (!$canProceed) {
                     $this->addTimestampValidationPageAlert($this->_errors['timestamp'], $existing_section, 'save');
@@ -902,9 +909,10 @@ class contentBlueprintsSections extends AdministrationPage
             $canProceed = $this->validateTimestamp($section_id);
 
             if (!$canProceed) {
+                $section = (new SectionManager)->select()->section($section_id)->execute()->next();
                 $this->addTimestampValidationPageAlert(
                     $this->_errors['timestamp'],
-                    SectionManager::fetch($section_id),
+                    $section,
                     'delete'
                 );
                 return;

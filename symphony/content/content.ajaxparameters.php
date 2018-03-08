@@ -65,7 +65,7 @@ class contentAjaxParameters extends JSONPage
     private function __getPageParams()
     {
         $params = array();
-        $pages = PageManager::fetch(true, array('params'));
+        $pages = (new PageManager)->select(['params'])->includeTypes()->execute()->rows();
 
         foreach ($pages as $key => $pageparams) {
             if (empty($pageparams['params'])) {

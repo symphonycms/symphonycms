@@ -88,18 +88,15 @@ class contentBlueprintsPages extends AdministrationPage
         );
         $aTableBody = array();
 
+        $pagesQuery = (new PageManager)->select()->includeTypes();
         if ($nesting) {
             $aTableHead[] = array(__('Children'), 'col');
-            $where = array(
-                'parent ' . (isset($parent) ? " = {$parent['id']} " : ' IS NULL ')
-            );
-        } else {
-            $where = array();
+            $pagesQuery->where(['parent' => isset($parent) ? $parent['id'] : null]);
         }
 
-        $pages = PageManager::fetch(true, array('*'), $where);
+        $pages = $pagesQuery->execute()->rows();
 
-        if (!is_array($pages) || empty($pages)) {
+        if (empty($pages)) {
             $aTableBody = array(Widget::TableRow(array(
                 Widget::TableData(__('None found.'), 'inactive', null, count($aTableHead))
             ), 'odd'));
@@ -365,10 +362,12 @@ class contentBlueprintsPages extends AdministrationPage
 
         $label = Widget::Label(__('Parent Page'));
 
-        $where = array(
-            sprintf('id != %d', $page_id)
-        );
-        $pages = PageManager::fetch(false, array('id'), $where, 'title ASC');
+        $pages = (new PageManager)
+            ->select(['id'])
+            ->where(['id' => ['!=' => General::intval($page_id)]])
+            ->sort('title')
+            ->execute()
+            ->rows();
 
         $options = array(
             array('', false, '/')
@@ -709,20 +708,20 @@ class contentBlueprintsPages extends AdministrationPage
                     $fields['sortorder'] = PageManager::fetchNextSortOrder();
                 }
 
-                $where = array();
+                $pageQuery = (new PageManager)
+                    ->select()
+                    ->handle($fields['handle'])
+                    ->path($fields['path'])
+                    ->limit(1);
 
                 if (!empty($current)) {
-                    $where[] = "p.id != {$page_id}";
+                    $pageQuery->where(['id' => ['!=' => General::intval($current)]]);
                 }
 
-                $where[] = "p.handle = '" . $fields['handle'] . "'";
-                $where[] = (is_null($fields['path']))
-                    ? "p.path IS null"
-                    : "p.path = '" . $fields['path'] . "'";
-                $duplicate = PageManager::fetch(false, array('*'), $where);
+                $duplicate = $pageQuery->execute()->next();
 
                 // If duplicate
-                if (!empty($duplicate)) {
+                if ($duplicate) {
                     $this->_errors['handle'] = __('A page with that handle already exists');
 
                     // Create or move files:

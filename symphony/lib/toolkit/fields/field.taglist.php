@@ -273,13 +273,11 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         // Suggestions
         $label = Widget::Label(__('Suggestion List'));
 
-        $sections = SectionManager::fetch(null, 'ASC', 'name');
+        $sections = (new SectionManager)->select()->execute()->rows();
         $field_groups = array();
 
-        if (is_array($sections) && !empty($sections)) {
-            foreach ($sections as $section) {
-                $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
-            }
+        foreach ($sections as $section) {
+            $field_groups[$section->get('id')] = array('fields' => $section->fetchFields(), 'section' => $section);
         }
 
         $options = array(

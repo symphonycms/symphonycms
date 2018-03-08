@@ -19,9 +19,9 @@ class contentAjaxFilters extends JSONPage
         if (!empty($handle) && !empty($section)) {
             $section_id = SectionManager::fetchIDFromHandle($section);
             $field_id = FieldManager::fetchFieldIDFromElementName($handle, $section_id);
-            $field = FieldManager::fetch($field_id);
+            $field = (new FieldManager)->select()->field($field_id)->execute()->next();
 
-            if (!empty($field) && $field->canPublishFilter() === true) {
+            if ($field && $field->canPublishFilter()) {
                 if (method_exists($field, 'getToggleStates')) {
                     $options = $field->getToggleStates();
                 } elseif (method_exists($field, 'findAllTags')) {

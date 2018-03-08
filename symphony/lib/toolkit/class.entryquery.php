@@ -92,6 +92,26 @@ class EntryQuery extends DatabaseQuery
     }
 
     /**
+     * Adds all the fields name from the selected section in the schema.
+     *
+     * @see schema()
+     * @see section()
+     * @throws DatabaseStatementException
+     *  If section() has not been called before
+     * @return EntryQuery
+     *  The current instance
+     */
+    public function includeAllFields()
+    {
+        if (!$this->sectionId) {
+            throw new DatabaseStatementException('Cannot include all fields before calling section()');
+        }
+        return $this->schema(array_map(function ($field) {
+            return $field['element_name'];
+        }, FieldManager::fetchFieldsSchema($this->sectionId)));
+    }
+
+    /**
      * Adds a WHERE clause on the section id.
      *
      * @param int $section_id
@@ -101,8 +121,8 @@ class EntryQuery extends DatabaseQuery
      */
     public function section($section_id)
     {
-        $this->sectionId = $section_id;
-        return $this->where(['e.section_id' => General::intval($section_id)]);
+        $this->sectionId = General::intval($section_id);
+        return $this->where(['e.section_id' => $this->sectionId]);
     }
 
     /**
@@ -291,7 +311,8 @@ class EntryQuery extends DatabaseQuery
 
         // Handle when the sort field is an actual Field
         } elseif (General::intval($field) > 0) {
-            if (($f = FieldManager::fetch($field)) && $f->isSortable()) {
+            $f = (new FieldManager)->select()->field($field)->execute()->next();
+            if ($f && $f->isSortable()) {
                 $sort = $this->buildLegacySortingForField($f, $direction);
             } else {
                 // Field not found or not sortable, silence the error.
@@ -364,9 +385,11 @@ class EntryQuery extends DatabaseQuery
     {
         if ($this->addDefaultSort && !$this->containsSQLParts('order by')) {
             // Handle if the section has a default sorting field
-            if ($this->sectionId && $section = SectionManager::fetch($this->sectionId)) {
-                if ($section->getSortingField() && $field = FieldManager::fetch($section->getSortingField())) {
-                    if ($field->isSortable()) {
+            if ($this->sectionId) {
+                $section = (new SectionManager)->select()->section($this->sectionId)->execute()->next();
+                if ($section && $section->getSortingField()) {
+                    $field = (new FieldManager)->select()->field($section->getSortingField())->execute()->next();
+                    if ($field && $field->isSortable()) {
                         $sort = $this->buildLegacySortingForField($field, $direction);
                         $sort = $this->replaceTablePrefix($sort);
                         $this->unsafe()->unsafeAppendSQLPart('order by', $sort);

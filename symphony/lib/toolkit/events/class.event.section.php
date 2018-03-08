@@ -77,7 +77,7 @@ abstract class SectionEvent extends Event
         )));
 
         foreach ($errors as $field_id => $message) {
-            $field = FieldManager::fetch($field_id);
+            $field = (new FieldManager)->select()->field($field_id)->execute()->next();
 
             // Do a little bit of a check for files so that we can correctly show
             // whether they are 'missing' or 'invalid'. If it's missing, then we
@@ -315,7 +315,13 @@ abstract class SectionEvent extends Event
         }
 
         // Check to see if the Section of this Event is valid.
-        if (!$section = SectionManager::fetch($this->getSource())) {
+        $section = (new SectionManager)
+            ->select()
+            ->section($this->getSource())
+            ->execute()
+            ->next();
+
+        if (!$section) {
             $result->setAttribute('result', 'error');
             $result->appendChild(new XMLElement('message', __('The Section, %s, could not be found.', array($this->getSource())), array(
                 'message-id' => EventMessages::SECTION_MISSING
@@ -338,10 +344,9 @@ abstract class SectionEvent extends Event
         // Entry object to the delegate meaning extensions don't have to
         // do that step.
         if (isset($entry_id)) {
-            $entry = EntryManager::fetch($entry_id);
-            $entry = $entry[0];
+            $entry = (new EntryManager)->select()->entry($entry_id)->execute()->next();
 
-            if (!is_object($entry)) {
+            if (!$entry) {
                 $result->setAttribute('result', 'error');
                 $result->appendChild(new XMLElement('message', __('The Entry, %s, could not be found.', array($entry_id)), array(
                     'message-id' => EventMessages::ENTRY_MISSING

@@ -219,12 +219,12 @@ class Entry implements ArrayAccess
             }
         }
 
-        $section = SectionManager::fetch($this->get('section_id'));
+        $section = (new SectionManager)->select()->section($this->get('section_id'))->execute()->next();
         $schema = $section->fetchFieldsSchema();
 
         foreach ($schema as $info) {
             $message = null;
-            $field = FieldManager::fetch($info['id']);
+            $field = (new FieldManager)->select()->field($info['id'])->execute()->next();
 
             if ($ignore_missing_fields && !isset($data[$field->get('element_name')])) {
                 continue;
@@ -303,12 +303,12 @@ class Entry implements ArrayAccess
     public function checkPostData($data, &$errors = null, $ignore_missing_fields = false)
     {
         $status = Entry::__ENTRY_OK__;
-        $section = SectionManager::fetch($this->get('section_id'));
+        $section = (new SectionManager)->select()->section($this->get('section_id'))->execute()->next();
         $schema = $section->fetchFieldsSchema();
 
         foreach ($schema as $info) {
             $message = null;
-            $field = FieldManager::fetch($info['id']);
+            $field = (new FieldManager)->select()->field($info['id'])->execute()->next();
 
             /**
              * Prior to checking a field's post data.
@@ -358,7 +358,7 @@ class Entry implements ArrayAccess
      */
     public function findDefaultData()
     {
-        $section = SectionManager::fetch($this->get('section_id'));
+        $section = (new SectionManager)->select()->section($this->get('section_id'))->execute()->next();
         $schema = $section->fetchFields();
 
         foreach ($schema as $field) {
@@ -430,7 +430,7 @@ class Entry implements ArrayAccess
         }
 
         if (is_null($associated_sections)) {
-            $section = SectionManager::fetch($this->get('section_id'));
+            $section = (new SectionManager)->select()->section($this->get('section_id'))->execute()->next();
             $associated_sections = $section->fetchChildAssociations();
         }
 
@@ -441,7 +441,7 @@ class Entry implements ArrayAccess
         $counts = array();
 
         foreach ($associated_sections as $as) {
-            $field = FieldManager::fetch($as['child_section_field_id']);
+            $field = (new FieldManager)->select()->field($as['child_section_field_id'])->execute()->next();
             $parent_section_field_id = $as['parent_section_field_id'];
 
             if (!is_null($parent_section_field_id)) {

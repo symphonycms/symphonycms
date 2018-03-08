@@ -211,7 +211,10 @@ class FieldManager implements FileResource
      */
     public static function delete($id)
     {
-        $existing = self::fetch($id);
+        $existing = (new FieldManager)->select()->field($id)->execute()->next();
+        if (!$existing) {
+            return true;
+        }
         $existing->tearDown();
 
         Symphony::Database()
@@ -277,6 +280,8 @@ class FieldManager implements FileResource
      * Fields from a Section also. There are several parameters that can be used to fetch
      * fields by their Type, Location, by a Field Constant or with a custom WHERE query.
      *
+     * @deprecated Symphony 3.0.0
+     *  Use select() instead
      * @throws DatabaseException
      * @throws Exception
      * @param integer|array $id
@@ -308,6 +313,10 @@ class FieldManager implements FileResource
      */
     public static function fetch($id = null, $section_id = null, $order = 'ASC', $sortfield = 'sortorder', $type = null, $location = null, $where = null, $restrict = Field::__FIELD_ALL__)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('FieldManager::fetch()', 'FieldManager::select()');
+        }
+
         $fields = [];
         $returnSingle = false;
         $ids = [];

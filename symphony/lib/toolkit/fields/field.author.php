@@ -34,7 +34,7 @@ class FieldAuthor extends Field implements ExportableField
 
     public function getToggleStates()
     {
-        $authors = AuthorManager::fetch();
+        $authors = (new AuthorManager)->select()->execute()->rows();
 
         $states = array();
         foreach ($authors as $a) {
@@ -246,15 +246,18 @@ class FieldAuthor extends Field implements ExportableField
             $options[] = array(null, false, null);
         }
 
+        $authorQuery = (new AuthorManager)
+            ->select()
+            ->sort('id');
+
         // Custom where to only show Authors based off the Author Types setting
         $types = $this->get('author_types');
 
         if (!empty($types)) {
-            $types = implode('","', $this->get('author_types'));
-            $where = 'user_type IN ("' . $types . '")';
+            $authorQuery->where(['user_type' => ['in' => $types]]);
         }
 
-        $authors = AuthorManager::fetch('id', 'ASC', null, null, $where);
+        $authors = $authorQuery->execute()->rows();
         $found = false;
 
         foreach ($authors as $a) {
@@ -579,7 +582,7 @@ class FieldAuthor extends Field implements ExportableField
 
     public function getExampleFormMarkup()
     {
-        $authors = AuthorManager::fetch();
+        $authors = (new AuthorManager)->select()->execute()->rows();
         $options = array();
 
         foreach ($authors as $a) {

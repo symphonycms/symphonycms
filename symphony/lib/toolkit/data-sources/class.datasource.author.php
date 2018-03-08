@@ -30,9 +30,12 @@ class AuthorDatasource extends Datasource
 
     public function execute(array &$param_pool = null)
     {
-        $author_ids = array();
+        $authorsQuery = (new AuthorManager)
+            ->select()
+            ->sort($this->dsParamSORT, $this->dsParamORDER);
 
         if (is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)) {
+            $author_ids = [];
             foreach ($this->dsParamFILTERS as $field => $value) {
                 if (!is_array($value) && trim($value) == '') {
                     continue;
@@ -52,15 +55,16 @@ class AuthorDatasource extends Datasource
 
                 $author_ids = array_intersect($author_ids, $ret);
             }
-
-            $authors = AuthorManager::fetchByID(array_values($author_ids));
-        } else {
-            $authors = AuthorManager::fetch($this->dsParamSORT, $this->dsParamORDER);
+            if (!empty($author_ids)) {
+                $authorsQuery->authors(array_values($author_ids));
+            }
         }
 
-        if ((!is_array($authors) || empty($authors)) && $this->dsParamREDIRECTONEMPTY === 'yes') {
+        $authors = $authorsQuery->execute()->rows();
+
+        if (empty($authors) && $this->dsParamREDIRECTONEMPTY === 'yes') {
             throw new FrontendPageNotFoundException;
-        } elseif (!is_array($authors) || empty($authors)) {
+        } elseif (empty($authors)) {
             $result = $this->emptyXMLSet();
             return $result;
         } else {
@@ -151,7 +155,12 @@ class AuthorDatasource extends Datasource
                     // Default Area
                     if (in_array('default-area', $this->dsParamINCLUDEDELEMENTS) && !is_null($author->get('default_area'))) {
                         // Section
-                        if ($section = SectionManager::fetch($author->get('default_area'))) {
+                        $section = (new SectionManager)
+                            ->select()
+                            ->section($author->get('default_area'))
+                            ->execute()
+                            ->rows();
+                        if ($section) {
                             $default_area = new XMLElement('default-area', $section->get('name'));
                             $default_area->setAttributeArray(array('id' => $section->get('id'), 'handle' => $section->get('handle'), 'type' => 'section'));
                             $xAuthor->appendChild($default_area);

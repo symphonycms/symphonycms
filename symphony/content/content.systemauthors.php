@@ -17,13 +17,16 @@ class contentSystemAuthors extends AdministrationPage
 
     public function sort(&$sort, &$order, $params)
     {
+        $authorQuery = (new AuthorManager)->select();
         if (is_null($sort) || $sort == 'name') {
-            return AuthorManager::fetch("first_name $order,  last_name", $order);
+            $authorQuery
+                ->sort('first_name', $order)
+                ->sort('last_name', $order);
         } else {
-            $sort = General::sanitize($sort);
+            $authorQuery->sort($sort, $order);
         }
 
-        return AuthorManager::fetch($sort, $order);
+        return $authorQuery->execute()->rows();
     }
 
     public function __viewIndex()
@@ -418,7 +421,7 @@ class contentSystemAuthors extends AdministrationPage
 
         $label = Widget::Label(__('Default Area'));
 
-        $sections = SectionManager::fetch(null, 'ASC', 'sortorder');
+        $sections = (new SectionManager)->select()->sort('sortorder')->execute()->rows();
 
         $options = array();
 
