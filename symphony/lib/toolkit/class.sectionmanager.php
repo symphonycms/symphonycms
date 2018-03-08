@@ -466,7 +466,7 @@ class SectionManager
      *  The projection to select. By default, it's all of them, i.e. `*`.
      * @return SectionQuery
      */
-    public function select(array $projection = ['*'])
+    public function select(array $projection = ['s.*'])
     {
         return new SectionQuery(Symphony::Database(), $projection);
     }
@@ -482,6 +482,6 @@ class SectionManager
      */
     public function selectCount($col = '*')
     {
-        return new SectionQuery(Symphony::Database(), ["COUNT($col)"]);
+        return new SectionQuery(Symphony::Database(), ["COUNT(s.$col)"]);
     }
 }

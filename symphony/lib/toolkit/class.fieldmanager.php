@@ -671,7 +671,7 @@ class FieldManager implements FileResource
      *  The projection to select. By default, it's all of them, i.e. `*`.
      * @return FieldQuery
      */
-    public function select(array $projection = ['*'])
+    public function select(array $projection = ['f.*'])
     {
         return new FieldQuery(Symphony::Database(), $projection);
     }
@@ -687,6 +687,6 @@ class FieldManager implements FileResource
      */
     public function selectCount($col = '*')
     {
-        return new FieldQuery(Symphony::Database(), ["COUNT($col)"]);
+        return new FieldQuery(Symphony::Database(), ["COUNT(f.$col)"]);
     }
 }

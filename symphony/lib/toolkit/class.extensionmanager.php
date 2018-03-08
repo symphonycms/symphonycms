@@ -1123,7 +1123,7 @@ class ExtensionManager implements FileResource
      *  The projection to select. By default, it's all of them, i.e. `*`.
      * @return ExtensionQuery
      */
-    public function select(array $projection = ['*'])
+    public function select(array $projection = ['ex.*'])
     {
         return new ExtensionQuery(Symphony::Database(), $projection);
     }
@@ -1139,6 +1139,6 @@ class ExtensionManager implements FileResource
      */
     public function selectCount($col = '*')
     {
-        return new EntryQuery(Symphony::Database(), ["COUNT($col)"]);
+        return new EntryQuery(Symphony::Database(), ["COUNT(ex.$col)"]);
     }
 }

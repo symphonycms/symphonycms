@@ -972,7 +972,7 @@ class PageManager
      *  The projection to select. By default, it's all of them, i.e. `*`.
      * @return PageQuery
      */
-    public function select(array $projection = ['*'])
+    public function select(array $projection = ['p.*'])
     {
         return new PageQuery(Symphony::Database(), $projection);
     }
@@ -988,6 +988,6 @@ class PageManager
      */
     public function selectCount($col = '*')
     {
-        return new PageQuery(Symphony::Database(), ["COUNT($col)"]);
+        return new PageQuery(Symphony::Database(), ["COUNT(p.$col)"]);
     }
 }
