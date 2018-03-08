@@ -163,7 +163,8 @@ class EntryQueryResult extends DatabaseQueryResult
         if (empty($this->schema)) {
             return [];
         }
-        if (empty($this->sectionsSchemas[$section_id])) {
+        $schemaId = md5($section_id . serialize($this->schema));
+        if (empty($this->sectionsSchemas[$schemaId])) {
             $s = FieldManager::fetchFieldIDFromElementName(
                 $this->schema,
                 $section_id
@@ -173,8 +174,8 @@ class EntryQueryResult extends DatabaseQueryResult
             } else {
                 $s = is_array($s) ? array_values($s) : [$s];
             }
-            $this->sectionsSchemas[$section_id] = $s;
+            $this->sectionsSchemas[$schemaId] = $s;
         }
-        return $this->sectionsSchemas[$section_id];
+        return $this->sectionsSchemas[$schemaId];
     }
 }
