@@ -653,7 +653,7 @@ class EntryManager
      */
     public function select(array $schema = [])
     {
-        return new EntryQuery(Symphony::Database(), $schema, ['*']);
+        return new EntryQuery(Symphony::Database(), $schema, ['e.*']);
     }
 
     /**
@@ -667,6 +667,6 @@ class EntryManager
      */
     public function selectCount($col = '*')
     {
-        return (new EntryQuery(Symphony::Database()))->projection(["COUNT($col)"]);
+        return (new EntryQuery(Symphony::Database()))->projection(["COUNT(e.$col)"]);
     }
 }

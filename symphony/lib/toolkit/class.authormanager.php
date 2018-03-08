@@ -298,7 +298,7 @@ class AuthorManager
      *  The projection to select. By default, it's all of them, i.e. `*`.
      * @return AuthorQuery
      */
-    public function select(array $projection = ['*'])
+    public function select(array $projection = ['a.*'])
     {
         return new AuthorQuery(Symphony::Database(), $projection);
     }
@@ -314,6 +314,6 @@ class AuthorManager
      */
     public function selectCount($col = '*')
     {
-        return new AuthorQuery(Symphony::Database(), ["COUNT($col)"]);
+        return new AuthorQuery(Symphony::Database(), ["COUNT(a.$col)"]);
     }
 }
