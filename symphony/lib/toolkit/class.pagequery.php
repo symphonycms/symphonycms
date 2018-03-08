@@ -84,6 +84,19 @@ class PageQuery extends DatabaseQuery
     }
 
     /**
+     * Adds a WHERE clause on the page parent.
+     *
+     * @param int $parent
+     *  The page parent to fetch
+     * @return PageQuery
+     *  The current instance
+     */
+    public function parent($parent)
+    {
+        return $this->where(['p.parent' => $parent]);
+    }
+
+    /**
      * Adds a WHERE clause on the page path.
      *
      * @param int $path
