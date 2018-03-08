@@ -43,10 +43,11 @@ class contentPublish extends AdministrationPage
             EntryManager::setFetchSorting($sort, $order);
         } else {
             $sort = General::sanitize($sort);
+            $field = (new FieldManager)->select()->field($sort)->execute()->next();
 
-            // Ensure that this field is infact sortable, otherwise
+            // Ensure that this field is in fact sortable, otherwise
             // fallback to IDs
-            if (($field = FieldManager::fetch($sort)) instanceof Field && !$field->isSortable()) {
+            if (!$field || !$field->isSortable()) {
                 $sort = $section->getDefaultSortingField();
             }
 
@@ -74,7 +75,7 @@ class contentPublish extends AdministrationPage
         $context = $this->getContext();
         $handle = $context['section_handle'];
         $section_id = SectionManager::fetchIDFromHandle($handle);
-        $section = SectionManager::fetch($section_id);
+        $section = (new SectionManager)->select()->section($section_id)->execute()->next();
         $filter = $section->get('filter');
         $count = EntryManager::fetchCount($section_id);
 
@@ -373,7 +374,7 @@ class contentPublish extends AdministrationPage
             $this->pageAlert(__('The Symphony configuration file, %s, is not writable. The sort order cannot be modified.', array('<code>/manifest/config.php</code>')), Alert::NOTICE);
         }
 
-        $section = SectionManager::fetch($section_id);
+        $section = (new SectionManager)->select()->section($section_id)->execute()->next();
 
         $this->setPageType('table');
         $this->setTitle(__('%1$s &ndash; %2$s', array(General::sanitize($section->get('name')), __('Symphony'))));
@@ -424,7 +425,7 @@ class contentPublish extends AdministrationPage
                         $section->get('id')
                     );
 
-                    $field = FieldManager::fetch($field_id);
+                    $field = (new FieldManager)->select()->field($field_id)->execute()->next();
                     if ($field instanceof Field) {
                         $field->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false));
 
@@ -500,7 +501,8 @@ class contentPublish extends AdministrationPage
         } catch (DatabaseException $ex) {
             $this->pageAlert(__('An error occurred while retrieving filtered entries. Showing all entries instead.'), Alert::ERROR);
             $filter_querystring = null;
-            Symphony::Log()->pushToLog(sprintf(
+            Symphony::Log()->pushToLog(
+                sprintf(
                     '%s - %s%s%s',
                     $section->get('name') . ' Publish Index',
                     $ex->getMessage(),
@@ -551,7 +553,11 @@ class contentPublish extends AdministrationPage
 
         if (is_array($associated_sections) && !empty($associated_sections)) {
             foreach ($associated_sections as $key => $as) {
-                $child_sections[$key] = SectionManager::fetch($as['child_section_id']);
+                $child_sections[$key] = (new SectionManager)
+                    ->select()
+                    ->section($as['child_section_id'])
+                    ->execute()
+                    ->next();
                 $aTableHead[] = array($child_sections[$key]->get('name'), 'col');
             }
         }
@@ -628,7 +634,11 @@ class contentPublish extends AdministrationPage
 
                 if (is_array($child_sections) && !empty($child_sections)) {
                     foreach ($child_sections as $key => $as) {
-                        $field = FieldManager::fetch((int)$associated_sections[$key]['child_section_field_id']);
+                        $field = (new FieldManager)
+                            ->select()
+                            ->field($associated_sections[$key]['child_section_field_id'])
+                            ->execute()
+                            ->next();
                         $parent_section_field_id = (int)$associated_sections[$key]['parent_section_field_id'];
 
                         if (!is_null($parent_section_field_id)) {
@@ -898,13 +908,17 @@ class contentPublish extends AdministrationPage
                     list($option, $field_id, $value) = explode('-', $_POST['with-selected'], 3);
 
                     if ($option == 'toggle') {
-                        $field = FieldManager::fetch($field_id);
+                        $field = (new FieldManager)->select()->field($field_id)->execute()->next();
                         $fields = array($field->get('element_name') => $value);
 
-                        $section = SectionManager::fetch($field->get('parent_section'));
+                        $section = (new SectionManager)
+                            ->select()
+                            ->section($field->get('parent_section'))
+                            ->execute()
+                            ->next();
 
                         foreach ($checked as $entry_id) {
-                            $entry = EntryManager::fetch($entry_id);
+                            $entry = (new EntryManager)->select()->entry($entry_id)->execute()->next();
                             $existing_data = $entry[0]->getData($field_id);
                             $entry[0]->setData($field_id, $field->toggleFieldData(is_array($existing_data) ? $existing_data : array(), $value, $entry_id));
 
@@ -960,7 +974,7 @@ class contentPublish extends AdministrationPage
             );
         }
 
-        $section = SectionManager::fetch($section_id);
+        $section = (new SectionManager)->select()->section($section_id)->execute()->next();
 
         $this->setPageType('form');
         $this->setTitle(__('%1$s &ndash; %2$s', array(General::sanitize($section->get('name')), __('Symphony'))));
@@ -1017,7 +1031,8 @@ class contentPublish extends AdministrationPage
 
                 // The actual pre-populating should only happen if there is not existing fields post data
                 // and if the field allows it
-                if (!isset($_POST['fields']) && ($field = FieldManager::fetch($field_id)) && $field->canPrePopulate()) {
+                $field = (new FieldManager)->select()->field($field_id);
+                if (!isset($_POST['fields']) && ($field = $field->execute()->next()) && $field->canPrePopulate()) {
                     $entry->setData(
                         $field->get('id'),
                         $field->processRawFieldData($value, $error, $message, true)
@@ -1076,7 +1091,8 @@ class contentPublish extends AdministrationPage
         if (is_array($_POST['action']) && (array_key_exists('save', $_POST['action']) || array_key_exists('done', $_POST['action']))) {
             $section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle']);
 
-            if (!$section = SectionManager::fetch($section_id)) {
+            $section = (new SectionManager)->select()->section($section_id)->execute()->next();
+            if (!$section) {
                 Administration::instance()->throwCustomError(
                     __('The Section, %s, could not be found.', array('<code>' . $this->_context['section_handle'] . '</code>')),
                     __('Unknown Section'),
@@ -1180,24 +1196,38 @@ class contentPublish extends AdministrationPage
             );
         }
 
-        $section = SectionManager::fetch($section_id);
-        $entry_id = intval($this->_context['entry_id']);
-        $base = '/publish/'.$this->_context['section_handle'] . '/';
+        $section = (new SectionManager)->select()->section($section_id)->execute()->next();
+        $entry_id = $this->_context['entry_id'];
+        $base = '/publish/' . $this->_context['section_handle'] . '/';
         $new_link = $base . 'new/';
         $filter_link = $base;
         $canonical_link = $base . 'edit/' . $entry_id . '/';
 
+        if ($entry_id < 1) {
+            Administration::instance()->throwCustomError(
+                __('Unknown Entry'),
+                __('The requested Entry id is not valid.'),
+                Page::HTTP_STATUS_NOT_FOUND
+            );
+        }
+
         EntryManager::setFetchSorting('id', 'DESC');
 
-        $existingEntry = EntryManager::fetch($entry_id);
-        if (empty($existingEntry)) {
+        $existingEntry = (new EntryManager)
+            ->select()
+            ->entry($entry_id)
+            ->section($section_id)
+            ->includeAllFields()
+            ->execute()
+            ->next();
+
+        if (!$existingEntry) {
             Administration::instance()->throwCustomError(
                 __('Unknown Entry'),
                 __('The Entry, %s, could not be found.', array($entry_id)),
                 Page::HTTP_STATUS_NOT_FOUND
             );
         }
-        $existingEntry = $existingEntry[0];
 
         // If the entry does not belong in the context's section
         if ($section_id != $existingEntry->get('section_id')) {
@@ -1231,7 +1261,11 @@ class contentPublish extends AdministrationPage
             $fields = array();
 
             if (!$section) {
-                $section = SectionManager::fetch($entry->get('section_id'));
+                $section = (new SectionManager)
+                    ->select()
+                    ->section($entry->get('section_id'))
+                    ->execute()
+                    ->next();
             }
 
             $timestamp = $entry->get('modification_date');
@@ -1299,7 +1333,7 @@ class contentPublish extends AdministrationPage
             ->variable('id');
 
         if (!is_null($field_id)) {
-            $field = FieldManager::fetch($field_id);
+            $field = (new FieldManager)->select()->field($field_id)->execute()->next();
         }
 
         if ($field) {
@@ -1406,11 +1440,11 @@ class contentPublish extends AdministrationPage
 
     public function __actionEdit()
     {
-        $entry_id = intval($this->_context['entry_id']);
+        $entry_id = $this->_context['entry_id'];
 
         if (is_array($_POST['action']) && (array_key_exists('save', $_POST['action']) || array_key_exists('done', $_POST['action']))) {
-            $ret = EntryManager::fetch($entry_id);
-            if (empty($ret)) {
+            $entry = (new EntryManager)->select()->entry($entry_id)->execute()->next();
+            if (!$entry) {
                 Administration::instance()->throwCustomError(
                     __('The Entry, %s, could not be found.', array($entry_id)),
                     __('Unknown Entry'),
@@ -1418,9 +1452,11 @@ class contentPublish extends AdministrationPage
                 );
             }
 
-            $entry = $ret[0];
-
-            $section = SectionManager::fetch($entry->get('section_id'));
+            $section = (new SectionManager)
+                ->select()
+                ->section($entry->get('section_id'))
+                ->execute()
+                ->next();
 
             $post = General::getPostData();
             $fields = $post['fields'];
@@ -1517,7 +1553,7 @@ class contentPublish extends AdministrationPage
 
                 redirect(SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/');
             } else {
-                $ret = EntryManager::fetch($entry_id);
+                $ret = (new EntryManager)->select()->entry($entry_id)->execute()->next();
                 if (!empty($ret)) {
                     $entry = $ret[0];
                     $this->addTimestampValidationPageAlert($this->_errors['timestamp'], $entry, 'delete');
@@ -1667,9 +1703,14 @@ class contentPublish extends AdministrationPage
                     if (empty($as['parent_section_field_id'])) {
                         continue;
                     }
-                    if ($field = FieldManager::fetch($as['parent_section_field_id'])) {
+                    $field = (new FieldManager)->select()->field($as['parent_section_field_id'])->execute()->next();
+                    if ($field) {
                         // Get the related section
-                        $parent_section = SectionManager::fetch($as['parent_section_id']);
+                        $parent_section = (new SectionManager)
+                            ->select()
+                            ->section($as['parent_section_id'])
+                            ->execute()
+                            ->next();
 
                         if (!($parent_section instanceof Section)) {
                             continue;
@@ -1687,7 +1728,11 @@ class contentPublish extends AdministrationPage
 
                         // get associated entries if entry exists,
                         if ($entry_id) {
-                            $relation_field = FieldManager::fetch($as['child_section_field_id']);
+                            $relation_field = (new FieldManager)
+                                ->select()
+                                ->field($as['child_section_field_id'])
+                                ->execute()
+                                ->next();
                             $entry_ids = $relation_field->findParentRelatedEntries($as['parent_section_field_id'], $entry_id);
 
                             // get prepopulated entry otherwise
@@ -1754,7 +1799,11 @@ class contentPublish extends AdministrationPage
 
                 foreach ($child_associations as $as) {
                     // Get the related section
-                    $child_section = SectionManager::fetch($as['child_section_id']);
+                    $child_section = (new SectionManager)
+                        ->select()
+                        ->section($as['child_section_id'])
+                        ->execute()
+                        ->rows();
 
                     if (!($child_section instanceof Section)) {
                         continue;
@@ -1768,8 +1817,12 @@ class contentPublish extends AdministrationPage
 
                     // Get the visible field instance (using the sorting field, this is more flexible than visibleColumns())
                     // Get the link field instance
-                    $visible_field   = current($child_section->fetchVisibleColumns());
-                    $relation_field  = FieldManager::fetch($as['child_section_field_id']);
+                    $visible_field = current($child_section->fetchVisibleColumns());
+                    $relation_field = (new FieldManager)
+                        ->select()
+                        ->field($as['child_section_field_id'])
+                        ->execute()
+                        ->next();
 
                     $entry_ids = $relation_field->findRelatedEntries($entry_id, $as['parent_section_field_id']);
 
@@ -1786,7 +1839,7 @@ class contentPublish extends AdministrationPage
                     // Get the search value for filters and prepopulate
                     $filter = '';
                     $prepopulate = '';
-                    $entry = current(EntryManager::fetch($entry_id));
+                    $entry = (new EntryManager)->select()->entry($entry_id)->execute()->next();
                     if ($entry) {
                         $search_value = $relation_field->fetchAssociatedEntrySearchValue(
                             $entry->getData($as['parent_section_field_id']),

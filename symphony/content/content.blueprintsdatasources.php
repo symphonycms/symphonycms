@@ -224,11 +224,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         $sources->appendChild($label);
         $sources->appendChild($div);
 
-        $sections = SectionManager::fetch(null, 'ASC', 'name');
-
-        if (!is_array($sections)) {
-            $sections = array();
-        }
+        $sections = (new SectionManager)->select()->execute()->rows();
 
         $field_groups = array();
 
@@ -539,7 +535,11 @@ class contentBlueprintsDatasources extends ResourcesPage
         $ul->setAttribute('class', 'tags');
         $ul->setAttribute('data-interactive', 'data-interactive');
 
-        $pages = PageManager::fetch(false, array('*'), array(), 'title ASC');
+        $pages = (new PageManager)
+            ->select()
+            ->sort('title')
+            ->execute()
+            ->rows();
 
         foreach ($pages as $page) {
             $ul->appendChild(new XMLElement('li', preg_replace('/\/{2,}/i', '/', '/' . $page['path'] . '/' . $page['handle'])));
@@ -978,7 +978,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         $div = new XMLElement('div');
         $label = Widget::Label(__('Pages'));
 
-        $pages = PageManager::fetch();
+        $pages = (new PageManager)->select()->includeTypes()->execute()->rows();
         $ds_handle = str_replace('-', '_', Lang::createHandle($fields['name']));
         $connections = ResourceManager::getAttachedPages(ResourceManager::RESOURCE_TYPE_DS, $ds_handle);
         $selected = array();
@@ -1503,9 +1503,11 @@ class contentBlueprintsDatasources extends ResourcesPage
                     General::deleteFile($queueForDeletion);
 
                     // Update pages that use this DS
-                    $pages = PageManager::fetch(false, array('data_sources', 'id'), array("
-                        `data_sources` REGEXP '[[:<:]]" . $existing_handle . "[[:>:]]'
-                    "));
+                    $pages = (new PageManager)
+                        ->select(['data_sources', 'id'])
+                        ->where(['data_sources' => ['regexp' => '[[:<:]]' . $existing_handle . '[[:>:]]']])
+                        ->execute()
+                        ->rows();
 
                     if (is_array($pages) && !empty($pages)) {
                         foreach ($pages as $page) {

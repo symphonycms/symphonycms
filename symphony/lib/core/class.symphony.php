@@ -416,13 +416,15 @@ abstract class Symphony implements Singleton
         $password = trim($password);
 
         if (strlen($username) > 0 && strlen($password) > 0) {
-            $author = AuthorManager::fetch('id', 'ASC', 1, null, sprintf(
-                "`username` = '%s'",
-                $username
-            ));
+            $author = (new AuthorManager)
+                ->select()
+                ->username($username)
+                ->limit(1)
+                ->execute()
+                ->next();
 
-            if (!empty($author) && Cryptography::compare($password, current($author)->get('password'), $isHash)) {
-                self::$Author = current($author);
+            if ($author && Cryptography::compare($password, $author->get('password'), $isHash)) {
+                self::$Author = $author;
 
                 // Only migrate hashes if there is no update available as the update might change the tbl_authors table.
                 if (self::isUpgradeAvailable() === false && Cryptography::requiresMigration(self::$Author->get('password'))) {

@@ -95,7 +95,11 @@ class SectionDatasource extends Datasource
         if (is_array($group['records']) && !empty($group['records'])) {
             if (isset($group['records'][0])) {
                 $data = $group['records'][0]->getData();
-                $pool = FieldManager::fetch(array_keys($data));
+                $pool = (new FieldManager)
+                    ->select()
+                    ->fields(array_keys($data))
+                    ->execute()
+                    ->rows();
                 self::$_fieldPool += $pool;
             }
 
@@ -150,7 +154,7 @@ class SectionDatasource extends Datasource
 
         foreach ($data as $field_id => $values) {
             if (!isset(self::$_fieldPool[$field_id]) || !is_object(self::$_fieldPool[$field_id])) {
-                self::$_fieldPool[$field_id] = FieldManager::fetch($field_id);
+                self::$_fieldPool[$field_id] = (new FieldManager)->select()->field($field_id)->execute()->next();
             }
 
             $this->processOutputParameters($entry, $field_id, $values);
@@ -345,7 +349,11 @@ class SectionDatasource extends Datasource
             return;
         }
 
-        $pool = FieldManager::fetch(array_filter(array_keys($this->dsParamFILTERS), 'is_int'));
+        $pool = (new FieldManager)
+            ->select()
+            ->fields(array_filter(array_keys($this->dsParamFILTERS), 'is_int'))
+            ->execute()
+            ->rows();
         self::$_fieldPool += $pool;
 
         if (!is_string($where)) {
@@ -455,7 +463,13 @@ class SectionDatasource extends Datasource
         $joins = null;
         $group = false;
 
-        if (!$section = SectionManager::fetch((int)$this->getSource())) {
+        $section = (new SectionManager)
+            ->select()
+            ->section($this->getSource())
+            ->execute()
+            ->next();
+
+        if (!$section) {
             $about = $this->about();
             trigger_error(__('The Section, %s, associated with the Data source, %s, could not be found.', array($this->getSource(), '<code>' . $about['name'] . '</code>')), E_USER_ERROR);
         }
@@ -614,8 +628,13 @@ class SectionDatasource extends Datasource
 
                 // If the datasource require's GROUPING
                 if (isset($this->dsParamGROUP)) {
-                    self::$_fieldPool[$this->dsParamGROUP] = FieldManager::fetch($this->dsParamGROUP);
-
+                    if (!isset(self::$_fieldPool[$this->dsParamGROUP])) {
+                        self::$_fieldPool[$this->dsParamGROUP] = (new FieldManager)
+                            ->select()
+                            ->field($this->dsParamGROUP)
+                            ->execute()
+                            ->next();
+                    }
                     if (self::$_fieldPool[$this->dsParamGROUP] == null) {
                         throw new SymphonyErrorPage(vsprintf("The field used for grouping '%s' cannot be found.", $this->dsParamGROUP));
                     }
@@ -632,7 +651,11 @@ class SectionDatasource extends Datasource
                 } else {
                     if (isset($entries['records'][0])) {
                         $data = $entries['records'][0]->getData();
-                        $pool = FieldManager::fetch(array_keys($data));
+                        $pool = (new FieldManager)
+                            ->select()
+                            ->fields(array_keys($data))
+                            ->execute()
+                            ->rows();
                         self::$_fieldPool += $pool;
                     }
 

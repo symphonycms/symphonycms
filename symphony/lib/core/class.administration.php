@@ -127,14 +127,18 @@ class Administration extends Symphony
                 $default_area = null;
 
                 if (is_numeric(Symphony::Author()->get('default_area'))) {
-                    $default_section = SectionManager::fetch(Symphony::Author()->get('default_area'));
+                    $default_section = (new SectionManager)
+                        ->select()
+                        ->section(Symphony::Author()->get('default_area'))
+                        ->execute()
+                        ->next();
 
-                    if ($default_section instanceof Section) {
+                    if ($default_section) {
                         $section_handle = $default_section->get('handle');
                     }
 
                     if (!$section_handle) {
-                        $all_sections = SectionManager::fetch();
+                        $all_sections = (new SectionManager)->select()->execute()->rows();
 
                         if (!empty($all_sections)) {
                             $section_handle = $all_sections[0]->get('handle');
@@ -167,7 +171,7 @@ class Administration extends Symphony
 
         if (!$this->_callback = $this->getPageCallback($page)) {
             if ($page === '/publish/') {
-                $sections = SectionManager::fetch(null, 'ASC', 'sortorder');
+                $sections = (new SectionManager)->select()->sort('sortorder')->execute()->rows();
                 $section = current($sections);
                 redirect(SYMPHONY_URL . '/publish/' . $section->get('handle'));
             } else {
@@ -383,7 +387,7 @@ class Administration extends Symphony
                 $callback['context']['page'] = $extras[0];
 
                 if (isset($extras[1])) {
-                    $callback['context']['entry_id'] = intval($extras[1]);
+                    $callback['context']['entry_id'] = General::intval($extras[1]);
                 }
 
                 if (isset($extras[2])) {

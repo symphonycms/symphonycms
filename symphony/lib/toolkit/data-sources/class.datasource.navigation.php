@@ -56,10 +56,13 @@ class NavigationDatasource extends Datasource
         }
 
         if ($page['children'] != '0') {
-            if ($children = PageManager::fetch(false, array('id, handle, title'), array(sprintf('`parent` = %d', $page['id'])))) {
-                foreach ($children as $c) {
-                    $oPage->appendChild($this->__buildPageXML($c, $page_types));
-                }
+            $children = (new PageManager)
+                ->select(['id', 'handle', 'title'])
+                ->parent($page['id'])
+                ->execute()
+                ->rows();
+            foreach ($children as $c) {
+                $oPage->appendChild($this->__buildPageXML($c, $page_types));
             }
         }
 

@@ -146,7 +146,7 @@ class contentBlueprintsEvents extends ResourcesPage
             $sources->appendChild($label);
             $sources->appendChild($div);
 
-            $sections = SectionManager::fetch(null, 'ASC', 'name');
+            $sections = (new SectionManager)->select()->execute()->rows();
             $options = array();
             $section_options = array();
             $source = isset($fields['source']) ? $fields['source'] : null;
@@ -250,7 +250,7 @@ class contentBlueprintsEvents extends ResourcesPage
             $div = new XMLElement('div');
             $label = Widget::Label(__('Pages'));
 
-            $pages = PageManager::fetch();
+            $pages = (new PageManager)->select()->execute()->rows();
             $event_handle = str_replace('-', '_', Lang::createHandle($fields['name']));
             $connections = ResourceManager::getAttachedPages(ResourceManager::RESOURCE_TYPE_EVENT, $event_handle);
             $selected = array();
@@ -641,16 +641,17 @@ class contentBlueprintsEvents extends ResourcesPage
                 if ($queueForDeletion) {
                     General::deleteFile($queueForDeletion);
 
-                    $pages = PageManager::fetch(false, array('events', 'id'), array("
-                        `events` REGEXP '[[:<:]]" . $existing_handle . "[[:>:]]'
-                    "));
+                    // Update pages that use this event
+                    $pages = (new PageManager)
+                        ->select(['events', 'id'])
+                        ->where(['events' => ['regexp' => '[[:<:]]' . $existing_handle . '[[:>:]]']])
+                        ->execute()
+                        ->rows();
 
-                    if (is_array($pages) && !empty($pages)) {
-                        foreach ($pages as $page) {
-                            $page['events'] = preg_replace('/\b'.$existing_handle.'\b/i', $classname, $page['events']);
+                    foreach ($pages as $page) {
+                        $page['events'] = preg_replace('/\b'.$existing_handle.'\b/i', $classname, $page['events']);
 
-                            PageManager::edit($page['id'], $page);
-                        }
+                        PageManager::edit($page['id'], $page);
                     }
                 }
 

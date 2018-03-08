@@ -171,8 +171,8 @@ class contentAjaxEventDocumentation extends TextPage
         $container->appendChild(Widget::Input('MAX_FILE_SIZE', (string)min(ini_size_to_bytes(ini_get('upload_max_filesize')), Symphony::Configuration()->get('max_upload_size', 'admin')), 'hidden'));
 
         if (is_numeric($section)) {
-            $section = SectionManager::fetch($section);
-            if ($section instanceof Section) {
+            $section = (new SectionManager)->select()->section($section)->execute()->next();
+            if ($section) {
                 $section_fields = $section->fetchFields();
                 if (is_array($section_fields) && !empty($section_fields)) {
                     foreach ($section_fields as $f) {

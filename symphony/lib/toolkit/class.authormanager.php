@@ -85,6 +85,8 @@ class AuthorManager
      * The fetch method returns all Authors from Symphony with the option to sort
      * or limit the output. This method returns an array of Author objects.
      *
+     * @deprecated Symphony 3.0.0
+     *  Use select() instead
      * @param string $sortby
      *  The field to sort the authors by, defaults to 'id'
      * @param string $sortdirection
@@ -104,6 +106,10 @@ class AuthorManager
      */
     public static function fetch($sortby = 'id', $sortdirection = 'ASC', $limit = null, $start = null, $where = null, $joins = null)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('AuthorManager::fetch()', 'AuthorManager::select()');
+        }
+
         $sortby = $sortby ?: 'id';
         $sortdirection = strtoupper($sortdirection) === 'ASC' ? 'ASC' : 'DESC';
 

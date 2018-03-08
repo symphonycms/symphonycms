@@ -109,12 +109,14 @@ class SectionManager
         EntryManager::delete($entries);
 
         // Delete all the fields
-        $fields = FieldManager::fetch(null, $section_id);
+        $fields = (new FieldManager)
+            ->select()
+            ->section($this->get('id'))
+            ->execute()
+            ->rows();
 
-        if (is_array($fields) && !empty($fields)) {
-            foreach ($fields as $field) {
-                FieldManager::delete($field->get('id'));
-            }
+        foreach ($fields as $field) {
+            FieldManager::delete($field->get('id'));
         }
 
         // Delete the section
@@ -150,6 +152,8 @@ class SectionManager
      * field. By default, Sections will be order in ascending order by
      * their name
      *
+     * @deprecated Symphony 3.0.0
+     *  Use select() instead
      * @param integer|array $section_id
      *    The ID of the section to return, or an array of ID's. Defaults to null
      * @param string $order
@@ -164,6 +168,10 @@ class SectionManager
      */
     public static function fetch($section_id = null, $order = 'ASC', $sortfield = 'name')
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('SectionManager::fetch()', 'SectionManager::select()');
+        }
+
         $returnSingle = false;
         $section_ids = array();
 
@@ -273,11 +281,19 @@ class SectionManager
         }
 
         if (is_null($parent_section_id)) {
-            $parent_field = FieldManager::fetch($parent_field_id);
+            $parent_field = (new FieldManager)
+                ->select()
+                ->field($parent_field_id)
+                ->execute()
+                ->next();
             $parent_section_id = $parent_field->get('parent_section');
         }
 
-        $child_field = FieldManager::fetch($child_field_id);
+        $child_field = (new FieldManager)
+            ->select()
+            ->field($child_field_id)
+            ->execute()
+            ->next();
         $child_section_id = $child_field->get('parent_section');
 
         $fields = array(

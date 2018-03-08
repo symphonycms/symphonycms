@@ -431,6 +431,8 @@ class PageManager
      * Optionally, `$where` and `$order_by` parameters allow a developer to
      * further refine their query.
      *
+     * @deprecated Symphony 3.0.0
+     *  Use select() instead
      * @param boolean $include_types
      *  Whether to include the resulting Page's Page Types in the return array,
      *  under the key `type`. Defaults to true.
@@ -455,6 +457,10 @@ class PageManager
      */
     public static function fetch($include_types = true, array $select = array(), array $where = array(), $order_by = null, $hierarchical = false)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('PageManager::fetch()', 'PageManager::select()');
+        }
+
         if (empty($select)) {
             $select = ['*'];
         }
@@ -526,11 +532,14 @@ class PageManager
             $select = ['*'];
         }
 
-        $page = PageManager::fetch(true, $select, array(
-            sprintf("id IN (%s)", implode(',', $page_id))
-        ));
+        $page = (new PageManager)
+            ->select($select)
+            ->includeTypes()
+            ->pages($page_id)
+            ->execute()
+            ->rows();
 
-        return count($page) == 1 ? array_pop($page) : $page;
+        return count($page) == 1 ? current($page) : $page;
     }
 
     /**
@@ -547,22 +556,19 @@ class PageManager
      */
     public static function fetchPageByType($type = null)
     {
-        if (!$type) {
-            return PageManager::fetch();
+        $pageQuery = (new PageManager)->select();
+        if ($type) {
+            General::ensureType([
+                'type' => ['var' => $type, 'type' => 'string'],
+            ]);
+            $pageQuery
+                ->innerJoin('tbl_pages_types')
+                ->alias('pt')
+                ->on(['p.id' => '$pt.page_id'])
+                ->where(['pt.type' => $type]);
         }
-
-        $pages = Symphony::Database()
-            ->select(['p.*'])
-            ->from('tbl_pages')
-            ->alias('p')
-            ->leftJoin('tbl_pages_types')
-            ->alias('pt')
-            ->on(['p.id' => '$pt.page_id'])
-            ->where(['pt.type' => $type])
-            ->execute()
-            ->rows();
-
-        return count($pages) == 1 ? array_pop($pages) : $pages;
+        $pages = $pageQuery->execute()->rows();
+        return count($pages) == 1 ? current($pages) : $pages;
     }
 
     /**
@@ -589,10 +595,12 @@ class PageManager
             $select = ['*'];
         }
 
-        return PageManager::fetch(false, $select, array(
-            sprintf('id != %d', $page_id),
-            sprintf('parent = %d', $page_id)
-        ));
+        return (new PageManager)
+            ->select($select)
+            ->where(['id' => ['!=' => $page_id]])
+            ->where(['parent' => $page_id])
+            ->execute()
+            ->rows();
     }
 
     /**
@@ -732,9 +740,12 @@ class PageManager
             return null;
         }
 
-        $children = PageManager::fetch(false, array('id'), array(
-            sprintf('parent = %d', $page_id)
-        ));
+        $children = (new PageManager)
+            ->select()
+            ->where(['parent' => $page_id])
+            ->execute()
+            ->rows();
+
         $count = count($children);
 
         if ($count > 0) {

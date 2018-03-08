@@ -80,7 +80,7 @@ abstract class ResourcesPage extends AdministrationPage
      */
     public function pagesFlatView()
     {
-        $pages = PageManager::fetch(false, array('id'));
+        $pages = (new PageManager)->select(['id'])->execute()->rows();
 
         foreach ($pages as &$p) {
             $p['title'] = PageManager::resolvePageTitle($p['id']);
@@ -432,7 +432,7 @@ abstract class ResourcesPage extends AdministrationPage
                         redirect(Administration::instance()->getCurrentPageURL());
                     }
                 } elseif (preg_match('/^(at|de)?tach-all-pages$/', $_POST['with-selected'])) {
-                    $pages = PageManager::fetch(false, array('id'));
+                    $pages = (new PageManager)->select(['id'])->execute()->rows();
 
                     if (substr($_POST['with-selected'], 0, 6) == 'detach') {
                         foreach ($checked as $handle) {
