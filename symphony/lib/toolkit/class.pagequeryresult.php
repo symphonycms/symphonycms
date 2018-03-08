@@ -51,7 +51,7 @@ class PageQueryResult extends DatabaseQueryResult
     }
 
     /**
-     * Retrieves all available rows and structure them into a tree view.
+     * Retrieves all available rows and structures them into a tree view.
      * Child entries are put in the children key.
      *
      * @see rows()
@@ -64,6 +64,14 @@ class PageQueryResult extends DatabaseQueryResult
         return $this->findChildren(null, $this->rows());
     }
 
+    /**
+     * Given a $row from the database, fetches the types of page is required.
+     *
+     * @param array $row
+     *  One result from the database
+     * @return array
+     *  The page row, populated with all its types in the type key
+     */
     public function buildPage(array $row)
     {
         if ($this->includeTypes && !empty($row['id'])) {
@@ -73,6 +81,17 @@ class PageQueryResult extends DatabaseQueryResult
         return $row;
     }
 
+    /**
+     * @internal Searches into the provided $pages array and returns only those
+     * that have a matching parent id.
+     *
+     * @param int $parent_id
+     *  The page id for which to find its children
+     * @param array $pages
+     *  All the pages to search in
+     * @return array
+     *  All the children of the parent page
+     */
     public function findChildren($parent_id, array $pages)
     {
         if (!is_array($pages)) {
