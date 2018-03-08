@@ -356,7 +356,7 @@ class ResourceManager
                 $result .= $r_handle;
 
                 return PageManager::edit($page_id, array(
-                    $col => MySQL::cleanValue($result)
+                    $col => $result
                 ));
             }
         }
