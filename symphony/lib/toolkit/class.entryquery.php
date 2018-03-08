@@ -46,8 +46,7 @@ class EntryQuery extends DatabaseQuery
     public function __construct(Database $db, array $schema = [], array $projection = [])
     {
         parent::__construct($db, $projection);
-        $this->schema = $schema;
-        $this->from('tbl_entries')->alias('e');
+        $this->from('tbl_entries')->alias('e')->schema($schema);
     }
 
     /**
@@ -72,6 +71,7 @@ class EntryQuery extends DatabaseQuery
 
     /**
      * Adds field names to the schema.
+     * The schema is kept sorted to allow better cache hits.
      *
      * @param array $schema
      *  The field names to retrieve when building entries
@@ -83,11 +83,8 @@ class EntryQuery extends DatabaseQuery
         if (empty($schema)) {
             return $this;
         }
-        if (!$this->schema) {
-            $this->schema = $schema;
-            return $this;
-        }
         $this->schema = array_unique(array_merge($this->schema, $schema));
+        sort($this->schema, SORT_STRING);
         return $this;
     }
 
