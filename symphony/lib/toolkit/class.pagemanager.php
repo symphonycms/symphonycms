@@ -543,9 +543,10 @@ class PageManager
     }
 
     /**
-     * Returns Pages that match the given `$type`. If no `$type` is provided
-     * the function returns the result of `PageManager::fetch`.
+     * Returns the first Page that match the given `$type`.
      *
+     * @since Symphony 3.0.0
+     *  It returns only the first page of the specified type.
      * @param string $type
      *  Where the type is one of the available Page Types.
      * @return array|null
@@ -554,21 +555,19 @@ class PageManager
      *  are found, an array of Pages will be returned. If no Pages are found
      *  null is returned.
      */
-    public static function fetchPageByType($type = null)
+    public static function fetchPageByType($type)
     {
-        $pageQuery = (new PageManager)->select();
-        if ($type) {
-            General::ensureType([
-                'type' => ['var' => $type, 'type' => 'string'],
-            ]);
-            $pageQuery
-                ->innerJoin('tbl_pages_types')
-                ->alias('pt')
-                ->on(['p.id' => '$pt.page_id'])
-                ->where(['pt.type' => $type]);
-        }
-        $pages = $pageQuery->execute()->rows();
-        return count($pages) == 1 ? current($pages) : $pages;
+        General::ensureType([
+            'type' => ['var' => $type, 'type' => 'string'],
+        ]);
+        $pageQuery = (new PageManager)
+            ->select()
+            ->innerJoin('tbl_pages_types')
+            ->alias('pt')
+            ->on(['p.id' => '$pt.page_id'])
+            ->where(['pt.type' => $type])
+            ->limit(1);
+        return $pageQuery->execute()->next();
     }
 
     /**
