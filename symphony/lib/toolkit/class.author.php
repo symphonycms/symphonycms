@@ -272,6 +272,7 @@ class Author
      * `$this->_fields` values and adds them to the database using either the
      * `AuthorManager::edit` or `AuthorManager::add` functions. An
      * existing user is determined by if an ID is already set.
+     * When the database is updated successfully, the id of the author is set.
      *
      * @see toolkit.AuthorManager#add()
      * @see toolkit.AuthorManager#edit()
@@ -292,7 +293,11 @@ class Author
                 return false;
             }
         } else {
-            return AuthorManager::add($this->get());
+            $id = AuthorManager::add($this->get());
+            if ($id) {
+                $this->set('id', $id);
+            }
+            return $id;
         }
     }
 }
