@@ -482,6 +482,6 @@ class SectionManager
      */
     public function selectCount($col = '*')
     {
-        return new SectionQuery(Symphony::Database(), ["COUNT(s.$col)"]);
+        return new SectionQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }

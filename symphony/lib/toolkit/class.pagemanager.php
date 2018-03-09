@@ -987,6 +987,6 @@ class PageManager
      */
     public function selectCount($col = '*')
     {
-        return new PageQuery(Symphony::Database(), ["COUNT(p.$col)"]);
+        return new PageQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }
