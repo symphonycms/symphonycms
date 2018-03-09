@@ -47,7 +47,12 @@ class contentBlueprintsSections extends AdministrationPage
             );
         } else {
             foreach ($sections as $s) {
-                $entry_count = EntryManager::fetchCount($s->get('id'));
+                $entry_count = (new EntryManager)
+                    ->selectCount()
+                    ->disableDefaultSort()
+                    ->section($s->get('id'))
+                    ->execute()
+                    ->variable(0);
 
                 // Setup each cell
                 $td1 = Widget::TableData(Widget::Anchor(General::sanitize($s->get('name')), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', null, 'content'));
