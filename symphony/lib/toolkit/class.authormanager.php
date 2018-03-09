@@ -314,6 +314,6 @@ class AuthorManager
      */
     public function selectCount($col = '*')
     {
-        return new AuthorQuery(Symphony::Database(), ["COUNT(a.$col)"]);
+        return new AuthorQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }

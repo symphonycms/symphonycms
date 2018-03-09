@@ -687,6 +687,6 @@ class FieldManager implements FileResource
      */
     public function selectCount($col = '*')
     {
-        return new FieldQuery(Symphony::Database(), ["COUNT(f.$col)"]);
+        return new FieldQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }

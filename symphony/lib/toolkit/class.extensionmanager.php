@@ -1139,6 +1139,6 @@ class ExtensionManager implements FileResource
      */
     public function selectCount($col = '*')
     {
-        return new EntryQuery(Symphony::Database(), ["COUNT(ex.$col)"]);
+        return new EntryQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }
