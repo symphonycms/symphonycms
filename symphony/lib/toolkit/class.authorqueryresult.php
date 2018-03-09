@@ -37,6 +37,9 @@ class AuthorQueryResult extends DatabaseQueryResult
      */
     public function buildAuthor(array $row)
     {
+        if (!isset($row['id'], $row['username'])) {
+            return $row;
+        }
         $author = AuthorManager::create();
         $author->setFields($row);
         return $author;

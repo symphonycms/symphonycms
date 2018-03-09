@@ -78,7 +78,11 @@ class PageQueryResult extends DatabaseQueryResult
      */
     public function buildPage(array $row)
     {
-        if ($this->includeTypes && !empty($row['id'])) {
+        if (!isset($row['id'], $row['handle'])) {
+            return $row;
+        }
+
+        if ($this->includeTypes) {
             // Fetch the Page Types for each page, if required
             $row['type'] = PageManager::fetchPageTypes($row['id']);
         }

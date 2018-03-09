@@ -70,6 +70,10 @@ class EntryQueryResult extends DatabaseQueryResult
      */
     public function buildEntry(array $entry)
     {
+        if (!isset($entry['id'], $entry['creation_date'], $entry['modification_date'])) {
+            return $entry;
+        }
+
         // Create UNIX timestamp, as it has always been (Re: #2501)
         $entry['creation_date'] = DateTimeObj::get('U', $entry['creation_date']);
         $entry['modification_date'] = DateTimeObj::get('U', $entry['modification_date']);
