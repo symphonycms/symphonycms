@@ -131,6 +131,6 @@ class AuthorQuery extends DatabaseQuery
         General::ensureType([
             'success' => ['var' => $success, 'type' => 'bool'],
         ]);
-        return new AuthorQueryResult($success, $stm);
+        return new AuthorQueryResult($success, $stm, $this, $this->page);
     }
 }

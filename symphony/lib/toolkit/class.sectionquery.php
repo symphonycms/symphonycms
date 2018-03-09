@@ -105,6 +105,6 @@ class SectionQuery extends DatabaseQuery
         General::ensureType([
             'success' => ['var' => $success, 'type' => 'bool'],
         ]);
-        return new SectionQueryResult($success, $stm);
+        return new SectionQueryResult($success, $stm, $this, $this->page);
     }
 }

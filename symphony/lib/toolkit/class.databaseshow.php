@@ -117,7 +117,7 @@ final class DatabaseShow extends DatabaseStatement
      *  If the DatabaseStatement creating this instance succeeded or not.
      * @param PDOStatement $stm
      *  The PDOStatement created by the execution of the DatabaseStatement.
-     * @return DatabaseQueryResult
+     * @return DatabaseTabularResult
      *  The wrapped result
      */
     public function results($success, PDOStatement $stm)
@@ -125,6 +125,6 @@ final class DatabaseShow extends DatabaseStatement
         General::ensureType([
             'success' => ['var' => $success, 'type' => 'bool'],
         ]);
-        return new DatabaseQueryResult($success, $stm);
+        return new DatabaseTabularResult($success, $stm);
     }
 }

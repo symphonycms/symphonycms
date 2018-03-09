@@ -131,6 +131,6 @@ class ExtensionQuery extends DatabaseQuery
         General::ensureType([
             'success' => ['var' => $success, 'type' => 'bool'],
         ]);
-        return new ExtensionQueryResult($success, $stm);
+        return new ExtensionQueryResult($success, $stm, $this, $this->page);
     }
 }

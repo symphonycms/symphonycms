@@ -417,6 +417,6 @@ class EntryQuery extends DatabaseQuery
         General::ensureType([
             'success' => ['var' => $success, 'type' => 'bool'],
         ]);
-        return new EntryQueryResult($success, $stm, $this->schema);
+        return new EntryQueryResult($success, $stm, $this, $this->page, $this->schema);
     }
 }

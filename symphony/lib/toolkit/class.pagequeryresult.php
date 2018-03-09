@@ -23,12 +23,16 @@ class PageQueryResult extends DatabaseQueryResult
      *  If the DatabaseStatement creating this instance succeeded or not.
      * @param PDOStatement $stm
      *  The PDOStatement created by the execution of the DatabaseStatement.
+     * @param DatabaseQuery $query
+     * The query that created this result
+     * @param array $page
+     * The pagination information, if any.
      * @param bool $includeTypes
      *  If we need to fetch all the pages types. Defaults to false.
      */
-    public function __construct($success, PDOStatement $stm, $includeTypes = false)
+    public function __construct($success, PDOStatement $stm, DatabaseQuery $query, array $page = [], $includeTypes = false)
     {
-        parent::__construct($success, $stm);
+        parent::__construct($success, $stm, $query, $page);
         $this->includeTypes = $includeTypes;
     }
 
