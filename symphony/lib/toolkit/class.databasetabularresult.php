@@ -232,6 +232,9 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
         }
         if ($row = $this->next()) {
             if ($this->type === PDO::FETCH_OBJ) {
+                if (is_int($col)) {
+                    throw new DatabaseStatementException('`$col must be a string when using objects');
+                }
                 return $row->{$col};
             } else {
                 if (is_int($col)) {
