@@ -92,7 +92,7 @@ class contentAjaxQuery extends JSONPage
         }
     }
 
-    private function get($database, $field_id, $search, $max)
+    private function get($database, $field_id, $search, $limit)
     {
         // Build query
         $query = Symphony::Database()
@@ -114,7 +114,7 @@ class contentAjaxQuery extends JSONPage
 
             // Get columns
             $columns = Symphony::Database()
-                ->select('column_name')
+                ->select(['column_name'])
                 ->from('information_schema.columns')
                 ->where(['table_schema' => $database])
                 ->where(['table_name' => "tbl_entries_data_$field_id"])
@@ -128,7 +128,9 @@ class contentAjaxQuery extends JSONPage
             foreach ($columns as $column) {
                 $where[] = [$column => ['like' => "%$search%"]];
             }
-            $query->where(['or' => $where]);
+            if (!empty($where)) {
+                $query->where(['or' => $where]);
+            }
         }
 
         // Fetch field values
