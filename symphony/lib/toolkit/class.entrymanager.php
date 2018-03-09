@@ -511,6 +511,8 @@ class EntryManager
     /**
      * Return the count of the number of entries in a particular section.
      *
+     * @deprecated Symphony 3.0.0
+     *  Use select() instead
      * @param integer $section_id
      *  The ID of the Section where the Entries are to be counted
      * @param string $where
@@ -523,6 +525,10 @@ class EntryManager
      */
     public static function fetchCount($section_id = null, $where = null, $joins = null, $group = false)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('EntryManager::fetchCount()', 'EntryManager::selectCount()');
+        }
+
         if (is_null($section_id)) {
             return false;
         }

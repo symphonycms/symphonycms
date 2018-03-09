@@ -77,7 +77,7 @@ class contentPublish extends AdministrationPage
         $section_id = SectionManager::fetchIDFromHandle($handle);
         $section = (new SectionManager)->select()->section($section_id)->execute()->next();
         $filter = $section->get('filter');
-        $count = EntryManager::fetchCount($section_id);
+        $count = (new EntryManager)->selectCount()->disableDefaultSort()->section($section_id)->execute()->variable(0);
 
         if ($filter !== 'no' && $count > 1) {
             $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), $this->createFilteringDrawer($section));
@@ -517,10 +517,21 @@ class contentPublish extends AdministrationPage
 
         // Flag filtering
         if (isset($_REQUEST['filter'])) {
-            $filter_stats = new XMLElement('p', '<span>– ' . __('%d of %d entries (filtered)', array($entries['total-entries'], EntryManager::fetchCount($section_id))) . '</span>', array('class' => 'inactive'));
+            $totalCount = (new EntryManager)
+                ->selectCount()
+                ->disableDefaultSort()
+                ->section($section_id)
+                ->execute()
+                ->variable(0);
+            $filter_text = __('%d of %d entries (filtered)', [$entries['total-entries'], $totalCount]);
         } else {
-            $filter_stats = new XMLElement('p', '<span>– ' . __('%d entries', array($entries['total-entries'])) . '</span>', array('class' => 'inactive'));
+            $filter_text = __('%d entries', [$entries['total-entries']]);
         }
+        $filter_stats = new XMLElement(
+            'p',
+            '<span>– ' . $filter_text . '</span>',
+            ['class' => 'inactive']
+        );
         $this->Breadcrumbs->appendChild($filter_stats);
 
         // Build table
