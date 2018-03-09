@@ -1012,6 +1012,9 @@ class Database
          *  The error message provided by MySQL which includes information on why the execution failed
          * @param int $num
          *  The error number that corresponds with the MySQL error message
+         * @param Exception $exception
+         *  @since Symphony 3.0.0
+         *  The raised exception, if any
          */
         if (Symphony::ExtensionManager() instanceof ExtensionManager) {
             Symphony::ExtensionManager()->notifyMembers(
@@ -1021,7 +1024,8 @@ class Database
                     'query' => $this->lastQuery,
                     'query_hash' => $this->lastQueryHash,
                     'msg' => $msg,
-                    'num' => $errornum
+                    'num' => $errornum,
+                    'exception' => $ex,
                 ]
             );
         }
