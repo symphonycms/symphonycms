@@ -379,14 +379,18 @@ class Section implements ArrayAccess
      */
     public function fetchFields($type = null, $location = null)
     {
-        return (new FieldManager)
+        $fieldQuery = (new FieldManager)
             ->select()
             ->section($this->get('id'))
-            ->type($type)
-            ->location($location)
-            ->sort('sortorder')
-            ->execute()
-            ->rows();
+            ->sort('sortorder');
+
+        if ($type) {
+            $fieldQuery->type($type);
+        }
+        if ($location) {
+            $fieldQuery->location($location);
+        }
+        return $fieldQuery->execute()->rows();
     }
 
     /**
@@ -400,11 +404,15 @@ class Section implements ArrayAccess
      */
     public function fetchFilterableFields($location = null)
     {
-        return (new FieldManager)
+        $fieldQuery = (new FieldManager)
             ->select()
             ->section($this->get('id'))
-            ->location($location)
-            ->sort('sortorder')
+            ->sort('sortorder');
+
+        if ($location) {
+            $fieldQuery->location($location);
+        }
+        return $fieldQuery
             ->execute()
             ->restrict(Field::__FILTERABLE_ONLY__)
             ->rows();
@@ -423,11 +431,15 @@ class Section implements ArrayAccess
      */
     public function fetchToggleableFields($location = null)
     {
-        return (new FieldManager)
+        $fieldQuery = (new FieldManager)
             ->select()
             ->section($this->get('id'))
-            ->location($location)
-            ->sort('sortorder')
+            ->sort('sortorder');
+
+        if ($location) {
+            $fieldQuery->location($location);
+        }
+        return $fieldQuery
             ->execute()
             ->restrict(Field::__TOGGLEABLE_ONLY__)
             ->rows();
