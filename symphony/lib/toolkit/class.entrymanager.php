@@ -405,7 +405,7 @@ class EntryManager
 
         // SORTING
         // A single $entry_id doesn't need to be sorted on, or if it's explicitly disabled
-        if ((!is_array($entry_id) && !is_null($entry_id) && is_int($entry_id)) || !$enable_sort) {
+        if ((!is_array($entry_id) && !is_null($entry_id) && is_numeric($entry_id)) || !$enable_sort) {
             $sort = null;
 
         // Check for RAND first, since this works independently of any specific field
