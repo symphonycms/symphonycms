@@ -68,6 +68,10 @@ class FieldQueryResult extends DatabaseQueryResult
      */
     public function buildField(array $row)
     {
+        if (!isset($row['id'], $row['type'])) {
+            return $row;
+        }
+
         // We already have this field in our static store
         if ($if = FieldManager::getInitializedField($row['id'])) {
             return $if;

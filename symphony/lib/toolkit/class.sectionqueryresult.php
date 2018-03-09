@@ -38,6 +38,10 @@ class SectionQueryResult extends DatabaseQueryResult
      */
     public function buildSection(array $row)
     {
+        if (!isset($row['id'], $row['creation_date'])) {
+            return $row;
+        }
+
         $obj = SectionManager::create();
 
         foreach ($row as $name => $value) {

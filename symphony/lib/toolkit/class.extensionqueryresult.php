@@ -37,10 +37,12 @@ class ExtensionQueryResult extends DatabaseQueryResult
      */
     public function buildExtension(array $row)
     {
-        if (!empty($row['name'])) {
-            $ex = ExtensionManager::getInstance($row['name']);
-            $ex->setFields($row);
+        if (!isset($row['id'], $row['name'])) {
+            return $row;
         }
+
+        $ex = ExtensionManager::getInstance($row['name']);
+        $ex->setFields($row);
         return $row;
     }
 }
