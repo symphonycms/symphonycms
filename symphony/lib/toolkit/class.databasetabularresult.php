@@ -235,6 +235,9 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
                 return $row->{$col};
             } else {
                 if (is_int($col)) {
+                    if (!is_array($row)) {
+                        $row = $row->get();
+                    }
                     $row = array_values($row);
                 }
                 return $row[$col];
