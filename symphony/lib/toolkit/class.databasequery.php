@@ -454,10 +454,11 @@ class DatabaseQuery extends DatabaseStatement
      */
     public function countProjection($col = '*')
     {
+        $ignoredParts = ['statement', 'cache', 'projection', 'order by', 'limit', 'offset'];
         $cp = new DatabaseQuery($this->getDB(), ["COUNT($col)"]);
         foreach ($this->getSQL() as $part) {
             $type = current(array_keys($part));
-            if (in_array($type, ['statement', 'cache', 'projection'], true)) {
+            if (in_array($type, $ignoredParts, true)) {
                 continue;
             }
             $cp->unsafeAppendSQLPart($type, current(array_values($part)));
