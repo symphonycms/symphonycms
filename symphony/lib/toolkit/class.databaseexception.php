@@ -32,9 +32,9 @@ class DatabaseException extends Exception
      */
     public function __construct($message, array $error = null, $previous = null)
     {
-        $code = !$previous ? 0 : $previous->getCode();
-        parent::__construct(__($message), $code, $previous);
+        parent::__construct(__($message), 0, $previous);
         $this->_error = $error;
+        $this->code = !$previous ? 0 : $previous->getCode();
     }
 
     /**
