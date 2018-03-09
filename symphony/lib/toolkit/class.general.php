@@ -575,12 +575,12 @@ class General
     public static function deleteDirectory($dir, $silent = true)
     {
         try {
-            if (!file_exists($dir)) {
+            if (!@file_exists($dir)) {
                 return true;
             }
 
-            if (!is_dir($dir)) {
-                return unlink($dir);
+            if (!@is_dir($dir)) {
+                return @unlink($dir);
             }
 
             foreach (scandir($dir) as $item) {
@@ -1091,7 +1091,10 @@ class General
             if (static::checkFileDeletable($file) === false) {
                 throw new Exception(__('Denied by permission'));
             }
-            return unlink($file);
+            if (!@file_exists($file)) {
+                return true;
+            }
+            return @unlink($file);
         } catch (Exception $ex) {
             if ($silent === false) {
                 throw new Exception(__('Unable to remove file - %s', array($file)), 0, $ex);
