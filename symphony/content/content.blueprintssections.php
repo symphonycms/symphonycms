@@ -49,7 +49,6 @@ class contentBlueprintsSections extends AdministrationPage
             foreach ($sections as $s) {
                 $entry_count = (new EntryManager)
                     ->selectCount()
-                    ->disableDefaultSort()
                     ->section($s->get('id'))
                     ->execute()
                     ->variable(0);
