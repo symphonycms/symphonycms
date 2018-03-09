@@ -9,8 +9,10 @@
  * instances of this field type have been used in other sections and their settings.
  * They also spinoff other `tbl_entry_data_{id}` tables that actually store data for
  * entries particular to this field.
+ *
+ * @since Symphony 3.0.0 it implements the ArrayAccess interface.
  */
-class Field
+class Field implements ArrayAccess
 {
     /**
      * The desired result when creating a field in the section editor
@@ -433,6 +435,52 @@ class Field
     public function remove($setting)
     {
         unset($this->_settings[$setting]);
+    }
+
+
+    /**
+     * Implementation of ArrayAccess::offsetExists()
+     *
+     * @param mixed $offset
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->_settings[$offset]);
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetGet()
+     *
+     * @param mixed $offset
+     * @return mixed
+     */
+    public function offsetGet($offset)
+    {
+        return $this->_settings[$offset];
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetSet()
+     *
+     * @param mixed $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->_settings[$offset] = $value;
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetUnset()
+     *
+     * @param mixed $offset
+     * @return void
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->_settings[$offset]);
     }
 
     /**
