@@ -11,7 +11,17 @@ class DatabaseQuery extends DatabaseStatement
 {
     use DatabaseWhereDefinition;
 
+    /**
+     * Internal sub query counter
+     * @var integer
+     */
     private $selectQueryCount = 0;
+
+    /**
+     * The requested pagination.
+     * @var array
+     */
+    protected $page = [];
 
      /**
      * Creates a new DatabaseQuery statement with an optional projection.
@@ -377,6 +387,31 @@ class DatabaseQuery extends DatabaseStatement
     }
 
     /**
+     * Sets the offset and limit to act as if the results where paginated.
+     * The results will be limited to $size, skipping ($page - 1) * $size elements.
+     *
+     * @see DatabaseQueryResult::pagination()
+     * @param int $page
+     *  The page number to retrieve
+     * @param int $size
+     *  The number of records per page
+     * @return DatabaseQuery
+     *  The current instance
+     */
+    public function paginate($page, $size)
+    {
+        $page = max(1, General::intval($page));
+        $size = max(1, General::intval($size));
+        $this->offset(($page - 1) * $size);
+        $this->limit($page * $size);
+        $this->page = [
+            'page' => $page,
+            'size' => $size,
+        ];
+        return $this;
+    }
+
+    /**
      * Creates a specialized version of DatabaseStatementResult to hold
      * result from the current statement.
      *
@@ -392,7 +427,7 @@ class DatabaseQuery extends DatabaseStatement
         General::ensureType([
             'success' => ['var' => $success, 'type' => 'bool'],
         ]);
-        return new DatabaseQueryResult($success, $stm);
+        return new DatabaseQueryResult($success, $stm, $this, $this->page);
     }
 
     /**
@@ -407,5 +442,29 @@ class DatabaseQuery extends DatabaseStatement
     {
         $this->selectQueryCount++;
         return new DatabaseSubQuery($this->getDB(), $this->selectQueryCount, $values);
+    }
+
+    /**
+     * Creates and returns a new DatabaseQuery, identical to its creator,
+     * excepted that the projection is replaced with a count
+     *
+     * @param string $col
+     *  The column to count on. Defaults to `*`
+     * @return DatabaseQuery
+     */
+    public function countProjection($col = '*')
+    {
+        $cp = new DatabaseQuery($this->getDB(), ["COUNT($col)"]);
+        foreach ($this->getSQL() as $part) {
+            $type = current(array_keys($part));
+            if (in_array($type, ['statement', 'cache', 'projection'], true)) {
+                continue;
+            }
+            $cp->unsafeAppendSQLPart($type, current(array_values($part)));
+        }
+        foreach ($this->getValues() as $key => $value) {
+            $cp->appendValues([$key => $value]);
+        }
+        return $cp;
     }
 }

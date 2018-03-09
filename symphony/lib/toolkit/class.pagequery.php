@@ -162,6 +162,6 @@ class PageQuery extends DatabaseQuery
         General::ensureType([
             'success' => ['var' => $success, 'type' => 'bool'],
         ]);
-        return new PageQueryResult($success, $stm, $this->includeTypes);
+        return new PageQueryResult($success, $stm, $this, $this->page, $this->includeTypes);
     }
 }

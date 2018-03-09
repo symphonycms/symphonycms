@@ -30,12 +30,16 @@ class EntryQueryResult extends DatabaseQueryResult
      *  If the DatabaseStatement creating this instance succeeded or not.
      * @param PDOStatement $stm
      *  The PDOStatement created by the execution of the DatabaseStatement.
+     * @param DatabaseQuery $query
+     * The query that created this result
+     * @param array $page
+     * The pagination information, if any.
      * @param array $schema
      *  The entry schema (i.e. fields) to fetch data for when building Entry object
      */
-    public function __construct($success, PDOStatement $stm, array $schema = [])
+    public function __construct($success, PDOStatement $stm, DatabaseQuery $query, array $page = [], array $schema = [])
     {
-        parent::__construct($success, $stm);
+        parent::__construct($success, $stm, $query, $page);
         $this->schema = $schema;
     }
 

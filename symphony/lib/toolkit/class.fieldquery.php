@@ -144,6 +144,6 @@ class FieldQuery extends DatabaseQuery
         General::ensureType([
             'success' => ['var' => $success, 'type' => 'bool'],
         ]);
-        return new FieldQueryResult($success, $stm);
+        return new FieldQueryResult($success, $stm, $this, $this->page);
     }
 }
