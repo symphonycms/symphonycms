@@ -77,7 +77,7 @@ class contentPublish extends AdministrationPage
         $section_id = SectionManager::fetchIDFromHandle($handle);
         $section = (new SectionManager)->select()->section($section_id)->execute()->next();
         $filter = $section->get('filter');
-        $count = (new EntryManager)->selectCount()->disableDefaultSort()->section($section_id)->execute()->variable(0);
+        $count = (new EntryManager)->selectCount()->section($section_id)->execute()->variable(0);
 
         if ($filter !== 'no' && $count > 1) {
             $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), $this->createFilteringDrawer($section));
