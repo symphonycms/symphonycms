@@ -689,7 +689,7 @@ class contentSystemAuthors extends AdministrationPage
                 || (Symphony::Author()->isDeveloper() && $this->_Author->isPrimaryAccount() === false);
 
         if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
-            $authenticated = false;
+            $authenticated = $changing_password = $changing_email = false;
 
             if (!$isOwner && !$canEdit) {
                 Administration::instance()->throwCustomError(
@@ -770,11 +770,19 @@ class contentSystemAuthors extends AdministrationPage
              * @param array $errors
              *  The error array used to validate the Author, passed by reference.
              *  Extension should append to this array if they detect validation problems.
+             * @param bool $changing_email
+             *  @since Symphony 3.0.0
+             *  The changing email flag, so extension can act only if the email changes.
+             * @param bool $changing_password
+             *  @since Symphony 3.0.0
+             *  The changing password flag, so extension can act only if the password changes.
              */
             Symphony::ExtensionManager()->notifyMembers('AuthorPreEdit', '/system/authors/', array(
                 'author' => $this->_Author,
                 'field' => $fields,
                 'errors' => &$this->_errors,
+                'changing_email' => $changing_email,
+                'changing_password' => $changing_password,
             ));
 
             if (empty($this->_errors) && $this->_Author->validate($this->_errors)) {
