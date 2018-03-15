@@ -99,7 +99,7 @@ class SectionDatasource extends Datasource
                     ->select()
                     ->fields(array_keys($data))
                     ->execute()
-                    ->rows();
+                    ->rowsIndexedByColumn('id');
                 self::$_fieldPool += $pool;
             }
 
@@ -351,7 +351,7 @@ class SectionDatasource extends Datasource
             ->select()
             ->fields(array_filter(array_keys($this->dsParamFILTERS), 'is_numeric'))
             ->execute()
-            ->rows();
+            ->rowsIndexedByColumn('id');
         self::$_fieldPool += $pool;
 
         foreach ($this->dsParamFILTERS as $field_id => $filter) {
@@ -656,7 +656,7 @@ class SectionDatasource extends Datasource
                             ->select()
                             ->fields(array_keys($data))
                             ->execute()
-                            ->rows();
+                            ->rowsIndexedByColumn('id');
                         self::$_fieldPool += $pool;
                     }
                 }
