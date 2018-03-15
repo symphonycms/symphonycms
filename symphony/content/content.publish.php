@@ -35,12 +35,9 @@ class contentPublish extends AdministrationPage
 
         // By default, sorting information are retrieved from
         // the file system and stored inside the `Configuration` object
-        if (is_null($sort) && is_null($order)) {
+        if (!$sort && !$order) {
             $sort = $section->getSortingField();
             $order = $section->getSortingOrder();
-
-            // Set the sorting in the `EntryManager` for subsequent use
-            EntryManager::setFetchSorting($sort, $order);
         } else {
             $sort = General::sanitize($sort);
             $field = (new FieldManager)->select()->field($sort)->execute()->next();
@@ -379,9 +376,25 @@ class contentPublish extends AdministrationPage
         $this->setPageType('table');
         $this->setTitle(__('%1$s &ndash; %2$s', array(General::sanitize($section->get('name')), __('Symphony'))));
 
-        $filters = array();
         $filter_querystring = $prepopulate_querystring = $where = $joins = null;
         $current_page = (isset($_REQUEST['pg']) && is_numeric($_REQUEST['pg']) ? max(1, intval($_REQUEST['pg'])) : 1);
+
+        // get visible columns
+        $visible_columns = $section->fetchVisibleColumns();
+        // extract the needed schema
+        $element_names = array_values(array_map(function ($field) {
+            return $field->get('element_name');
+        }, $visible_columns));
+        // create the query
+        $entryQuery = (new EntryManager)
+            ->select($element_names)
+            ->distinct()
+            ->section($section_id)
+            ->sort($section->getSortingField(), $section->getSortingOrder())
+            ->paginate(
+                $current_page,
+                Symphony::Configuration()->get('pagination_maximum_rows', 'symphony')
+            );
 
         if (isset($_REQUEST['filter'])) {
             // legacy implementation, convert single filter to an array
@@ -417,7 +430,9 @@ class contentPublish extends AdministrationPage
 
                     // Replace the date field where with the `creation_date` or `modification_date`.
                     $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
-                    $where .= $date_where;
+                    $date_where = $entryQuery->replaceTablePrefix($date_where);
+                    $wherePrefix = $entryQuery->containsSQLParts('where') ? '' : 'WHERE 1 = 1';
+                    $entryQuery->unsafe()->unsafeAppendSQLPart('where', "$wherePrefix $where");
                 } else {
                     // Handle normal fields
                     $field_id = FieldManager::fetchFieldIDFromElementName(
@@ -426,8 +441,19 @@ class contentPublish extends AdministrationPage
                     );
 
                     $field = (new FieldManager)->select()->field($field_id)->execute()->next();
-                    if ($field instanceof Field) {
+                    if ($field) {
+                        $joins = $where = '';
                         $field->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false));
+
+                        if ($joins) {
+                            $joins = $entryQuery->replaceTablePrefix($joins);
+                            $entryQuery->unsafe()->unsafeAppendSQLPart('join', $joins);
+                        }
+                        if ($where) {
+                            $where = $entryQuery->replaceTablePrefix($where);
+                            $wherePrefix = $entryQuery->containsSQLParts('where') ? '' : 'WHERE 1 = 1';
+                            $entryQuery->unsafe()->unsafeAppendSQLPart('where', "$wherePrefix $where");
+                        }
 
                         $value = implode(',', $value);
                         $encoded_value = rawurlencode($value);
@@ -449,7 +475,7 @@ class contentPublish extends AdministrationPage
             $prepopulate_querystring = preg_replace("/&amp;$/", '', $prepopulate_querystring);
         }
 
-        Sortable::initialize($this, $entries, $sort, $order, array(
+        Sortable::initialize($this, $entriesUnused, $sort, $order, array(
             'current-section' => $section,
             'filters' => ($filter_querystring ? "&amp;" . $filter_querystring : ''),
             'unsort' => isset($_REQUEST['unsort'])
@@ -471,6 +497,7 @@ class contentPublish extends AdministrationPage
 
         $this->appendSubheading(General::sanitize($section->get('name')), $subheading_buttons);
 
+        $joins = $where = '';
         /**
          * Allows adjustments to be made to the SQL where and joins statements
          * before they are used to fetch the entries for the page
@@ -480,26 +507,48 @@ class contentPublish extends AdministrationPage
          * @param string $context
          * '/publish/'
          * @param integer $section_id
-         * An array of the current columns, passed by reference
+         *  The section id we are fetching
+         * @param Section $section
+         *  The section object
+         *  @since Symphony 3.0.0
+         * @param EntryQuery $query
+         *  The query object
+         *  @since Symphony 3.0.0
          * @param string $where
-         * The current where statement, or null if not set
+         *  The current where statement, or null if not set.
+         *  @deprecated Symphony 3.0.0 use $query instead
          * @param string $joins
+         *  @deprecated Symphony 3.0.0 use $query instead
          */
-        Symphony::ExtensionManager()->notifyMembers('AdjustPublishFiltering', '/publish/', array('section-id' => $section_id, 'where' => &$where, 'joins' => &$joins));
-
-        // get visible columns
-        $visible_columns = $section->fetchVisibleColumns();
-        // extract the needed schema
-        $element_names = array_values(array_map(function ($field) {
-            return $field->get('element_name');
-        }, $visible_columns));
+        Symphony::ExtensionManager()->notifyMembers(
+            'AdjustPublishFiltering',
+            '/publish/',
+            [
+                'section-id' => $section_id,
+                'section' => $section,
+                'query' => $entryQuery,
+                'where' => &$where,
+                'joins' => &$joins,
+            ]
+        );
+        if ($joins) {
+            $joins = $entryQuery->replaceTablePrefix($joins);
+            $entryQuery->unsafe()->unsafeAppendSQLPart('join', $joins);
+        }
+        if ($where) {
+            $where = $entryQuery->replaceTablePrefix($where);
+            $entryQuery->unsafe()->unsafeAppendSQLPart('where', "WHERE 1=1 AND $where");
+        }
 
         // Check that the filtered query fails that the filter is dropped and an
         // error is logged. #841 ^BA
         try {
-            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), $where, $joins, true, false, true, $element_names);
+            $pagination = $entryQuery->execute()->pagination();
         } catch (DatabaseException $ex) {
-            $this->pageAlert(__('An error occurred while retrieving filtered entries. Showing all entries instead.'), Alert::ERROR);
+            $this->pageAlert(
+                __('An error occurred while retrieving filtered entries. Showing all entries instead.'),
+                Alert::ERROR
+            );
             $filter_querystring = null;
             Symphony::Log()->pushToLog(
                 sprintf(
@@ -512,20 +561,29 @@ class contentPublish extends AdministrationPage
                 E_NOTICE,
                 true
             );
-            $entries = EntryManager::fetchByPage($current_page, $section_id, Symphony::Configuration()->get('pagination_maximum_rows', 'symphony'), null, null, true, false, true, $element_names);
+            $pagination = (new EntryManager)
+                ->select($element_names)
+                ->distinct()
+                ->disableDefaultSort()
+                ->section($section_id)
+                ->paginate(
+                    $current_page,
+                    Symphony::Configuration()->get('pagination_maximum_rows', 'symphony')
+                )
+                ->execute()->pagination();
         }
+        $entries = $pagination->rows();
 
         // Flag filtering
         if (isset($_REQUEST['filter'])) {
             $totalCount = (new EntryManager)
                 ->selectCount()
-                ->disableDefaultSort()
                 ->section($section_id)
                 ->execute()
                 ->variable(0);
-            $filter_text = __('%d of %d entries (filtered)', [$entries['total-entries'], $totalCount]);
+            $filter_text = __('%d of %d entries (filtered)', [$pagination->totalEntries(), $totalCount]);
         } else {
-            $filter_text = __('%d entries', [$entries['total-entries']]);
+            $filter_text = __('%d entries', [$pagination->totalEntries()]);
         }
         $filter_stats = new XMLElement(
             'p',
@@ -592,7 +650,7 @@ class contentPublish extends AdministrationPage
         // Table Body
         $aTableBody = array();
 
-        if (!is_array($entries['records']) || empty($entries['records'])) {
+        if (empty($entries)) {
             $aTableBody = array(
                 Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', null, count($aTableHead))), 'odd')
             );
@@ -609,7 +667,7 @@ class contentPublish extends AdministrationPage
             $link_column = end($link_column);
             reset($visible_columns);
 
-            foreach ($entries['records'] as $entry) {
+            foreach ($entries as $entry) {
                 $tableData = array();
 
                 // Setup each cell
@@ -788,7 +846,7 @@ class contentPublish extends AdministrationPage
             $this->Form->appendChild($tableActions);
         }
 
-        if ($entries['total-pages'] > 1) {
+        if ($pagination->totalPages() > 1) {
             $ul = new XMLElement('ul');
             $ul->setAttribute('class', 'page');
 
@@ -816,16 +874,18 @@ class contentPublish extends AdministrationPage
 
             // Summary
             $li = new XMLElement('li');
-
-            $li->setAttribute('title', __('Viewing %1$s - %2$s of %3$s entries', array(
-                $entries['start'],
-                ($current_page != $entries['total-pages']) ? $current_page * Symphony::Configuration()->get('pagination_maximum_rows', 'symphony') : $entries['total-entries'],
-                $entries['total-entries']
-            )));
+            $titleInfos = [
+                $pagination->currentPage(),
+                ($current_page != $pagination->totalPages())
+                    ? $current_page * Symphony::Configuration()->get('pagination_maximum_rows', 'symphony')
+                    : $pagination->totalEntries(),
+                $pagination->totalEntries(),
+            ];
+            $li->setAttribute('title', __('Viewing %1$s - %2$s of %3$s entries', $titleInfos));
 
             $pgform = Widget::Form(Administration::instance()->getCurrentPageURL(), 'get', 'paginationform');
 
-            $pgmax = max($current_page, $entries['total-pages']);
+            $pgmax = max($current_page, $pagination->totalPages());
             $pgform->appendChild(Widget::Input('pg', null, 'text', array(
                 'data-active' => __('Go to page …'),
                 'data-inactive' => __('Page %1$s of %2$s', array((string)$current_page, $pgmax)),
@@ -838,7 +898,7 @@ class contentPublish extends AdministrationPage
             // Next
             $li = new XMLElement('li');
 
-            if ($current_page < $entries['total-pages']) {
+            if ($current_page < $pagination->totalPages()) {
                 $li->appendChild(Widget::Anchor(__('Next &rarr;'), Administration::instance()->getCurrentPageURL(). '?pg=' . ($current_page + 1).($filter_querystring ? "&amp;" . $filter_querystring : '')));
             } else {
                 $li->setValue(__('Next &rarr;'));
@@ -849,8 +909,16 @@ class contentPublish extends AdministrationPage
             // Last
             $li = new XMLElement('li');
 
-            if ($current_page < $entries['total-pages']) {
-                $li->appendChild(Widget::Anchor(__('Last'), Administration::instance()->getCurrentPageURL(). '?pg=' . $entries['total-pages'].($filter_querystring ? "&amp;" . $filter_querystring : '')));
+            if ($current_page < $pagination->totalPages()) {
+                $li->appendChild(
+                    Widget::Anchor(
+                        __('Last'),
+                        Administration::instance()->getCurrentPageURL() .
+                        '?pg=' .
+                        $pagination->totalPages() .
+                        ($filter_querystring ? "&amp;" . $filter_querystring : '')
+                    )
+                );
             } else {
                 $li->setValue(__('Last'));
             }
@@ -1221,8 +1289,6 @@ class contentPublish extends AdministrationPage
                 Page::HTTP_STATUS_NOT_FOUND
             );
         }
-
-        EntryManager::setFetchSorting('id', 'DESC');
 
         $existingEntry = (new EntryManager)
             ->select()
@@ -1693,9 +1759,6 @@ class contentPublish extends AdministrationPage
             $content = new XMLElement('div', null, array('class' => 'content'));
             $content->setSelfClosingTag(false);
 
-            // backup global sorting
-            $sorting = EntryManager::getFetchSorting();
-
             // Process Parent Associations
             if (!is_null($parent_associations) && !empty($parent_associations)) {
                 $title = new XMLElement('h2', __('Linked to') . ':', array('class' => 'association-title'));
@@ -1718,12 +1781,6 @@ class contentPublish extends AdministrationPage
                             continue;
                         }
 
-                        // set global sorting for associated section
-                        EntryManager::setFetchSorting(
-                            $parent_section->getSortingField(),
-                            $parent_section->getSortingOrder()
-                        );
-
                         if (isset($_GET['prepopulate'])) {
                             $prepopulate_field = key($_GET['prepopulate']);
                         }
@@ -1745,18 +1802,33 @@ class contentPublish extends AdministrationPage
                         }
 
                         // Use $schema for perf reasons
-                        $schema = array($field->get('element_name'));
-                        $where = (!empty($entry_ids)) ? sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids)) : null;
-                        $entries = (!empty($entry_ids) || isset($_GET['prepopulate']) && $field->get('id') === $prepopulate_field)
-                            ? EntryManager::fetchByPage(1, $as['parent_section_id'], $show_entries, $where, null, false, false, true, $schema)
-                            : array();
-                        $has_entries = !empty($entries) && $entries['total-entries'] != 0;
+                        $schema = [$field->get('element_name')];
+                        $entries = [];
+                        $pagination = null;
+                        if ((!empty($entry_ids) || isset($_GET['prepopulate'])) &&
+                            $field->get('id') === $prepopulate_field) {
+                            $pagination = (new EntryManager)
+                                ->select($schema)
+                                ->distinct()
+                                ->section($parent_section->get('id'))
+                                ->sort($parent_section->getSortingField(), $parent_section->getSortingOrder())
+                                ->paginate(
+                                    1,
+                                    $show_entries ?: Symphony::Configuration()->get('pagination_maximum_rows', 'symphony')
+                                );
+                            if (!empty($entry_ids)) {
+                                $pagination->entries($entry_ids);
+                            }
+                            $pagination = $pagination->execute()->pagination();
+                            $entries = $pagination->rows();
+                        }
+                        $has_entries = !empty($entries) && $pagination && $pagination->totalEntries() != 0;
 
                         // Create link
                         $link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/';
                         $aname = General::sanitize($as['name']);
                         if ($has_entries) {
-                            $aname .= ' <span>(' . $entries['total-entries'] . ')</span>';
+                            $aname .= ' <span>(' . $pagination->totalEntries() . ')</span>';
                         }
                         $a = new XMLElement('a', $aname, array(
                             'class' => 'association-section',
@@ -1780,7 +1852,7 @@ class contentPublish extends AdministrationPage
                             'data-association-ids' => implode(', ', $entry_ids)
                         ));
 
-                        foreach ($entries['records'] as $e) {
+                        foreach ($entries as $e) {
                             // let the field create the mark up
                             $li = $field->prepareAssociationsDrawerXMLElement($e, $as);
                             // add it to the unordered list
@@ -1805,17 +1877,11 @@ class contentPublish extends AdministrationPage
                         ->select()
                         ->section($as['child_section_id'])
                         ->execute()
-                        ->rows();
+                        ->next();
 
                     if (!($child_section instanceof Section)) {
                         continue;
                     }
-
-                    // set global sorting for associated section
-                    EntryManager::setFetchSorting(
-                        $child_section->getSortingField(),
-                        $child_section->getSortingOrder()
-                    );
 
                     // Get the visible field instance (using the sorting field, this is more flexible than visibleColumns())
                     // Get the link field instance
@@ -1828,11 +1894,26 @@ class contentPublish extends AdministrationPage
 
                     $entry_ids = $relation_field->findRelatedEntries($entry_id, $as['parent_section_field_id']);
 
-                    $schema = $visible_field ? array($visible_field->get('element_name')) : array();
-                    $where = sprintf(' AND `e`.`id` IN (%s)', implode(', ', $entry_ids));
-
-                    $entries = (!empty($entry_ids)) ? EntryManager::fetchByPage(1, $as['child_section_id'], $show_entries, $where, null, false, false, true, $schema) : array();
-                    $has_entries = !empty($entries) && $entries['total-entries'] != 0;
+                    $schema = $visible_field
+                        ? [$visible_field->get('element_name')]
+                        : [$relation_field->get('element_name')];
+                    $entries = [];
+                    $pagination = null;
+                    if (!empty($entry_ids)) {
+                        $pagination = (new EntryManager)
+                            ->select($schema)
+                            ->entries($entry_ids)
+                            ->section($child_section->get('id'))
+                            ->sort($child_section->getSortingField(), $child_section->getSortingOrder())
+                            ->paginate(
+                                1,
+                                $show_entries ?: Symphony::Configuration()->get('pagination_maximum_rows', 'symphony')
+                            )
+                            ->execute()
+                            ->pagination();
+                        $entries = $pagination->rows();
+                    }
+                    $has_entries = !empty($entries) && $pagination && $pagination->totalEntries() != 0;
 
                     // Build the HTML of the relationship
                     $element = new XMLElement('section', null, array('class' => 'association child'));
@@ -1841,14 +1922,20 @@ class contentPublish extends AdministrationPage
                     // Get the search value for filters and prepopulate
                     $filter = '';
                     $prepopulate = '';
-                    $entry = (new EntryManager)->select()->entry($entry_id)->execute()->next();
+                    $entry = (new EntryManager)
+                        ->select($schema)
+                        ->section($section_id)
+                        ->entry($entry_id)
+                        ->execute()
+                        ->next();
                     if ($entry) {
                         $search_value = $relation_field->fetchAssociatedEntrySearchValue(
                             $entry->getData($as['parent_section_field_id']),
                             $as['parent_section_field_id'],
                             $entry_id
                         );
-                        if (is_array($search_value)) {
+                        unset($entry);
+                        if (is_array($search_value) || !$search_value) {
                             $search_value = $entry_id;
                         }
                         $filter = '?filter[' . $relation_field->get('element_name') . ']=' . $search_value;
@@ -1859,7 +1946,7 @@ class contentPublish extends AdministrationPage
                     $link = SYMPHONY_URL . '/publish/' . $as['handle'] . '/' . $filter;
                     $aname = General::sanitize($as['name']);
                     if ($has_entries) {
-                        $aname .= ' <span>(' . $entries['total-entries'] . ')</span>';
+                        $aname .= ' <span>(' . $pagination->totalEntries() . ')</span>';
                     }
                     $a = new XMLElement('a', $aname, array(
                         'class' => 'association-section',
@@ -1883,7 +1970,7 @@ class contentPublish extends AdministrationPage
                             'data-association-ids' => implode(', ', $entry_ids)
                         ));
 
-                        foreach ($entries['records'] as $key => $e) {
+                        foreach ($entries as $e) {
                             // let the first visible field create the mark up
                             if ($visible_field) {
                                 $li = $visible_field->prepareAssociationsDrawerXMLElement($e, $as, $prepopulate);
@@ -1900,19 +1987,19 @@ class contentPublish extends AdministrationPage
                         $element->appendChild($ul);
 
                         // If we are only showing 'some' of the entries, then show this on the UI
-                        if ($entries['total-entries'] > $show_entries) {
-                            $pagination = new XMLElement('li', null, array(
+                        if ($pagination->totalEntries() > $show_entries) {
+                            $xmlPagination = new XMLElement('li', null, array(
                                 'class' => 'association-more',
                                 'data-current-page' => '1',
-                                'data-total-pages' => ceil($entries['total-entries'] / $show_entries),
-                                'data-total-entries' => $entries['total-entries']
+                                'data-total-pages' => ceil($pagination->totalEntries() / $show_entries),
+                                'data-total-entries' => $pagination->totalEntries()
                             ));
                             $counts = new XMLElement('a', __('Show more entries'), array(
                                 'href' => $link
                             ));
 
-                            $pagination->appendChild($counts);
-                            $ul->appendChild($pagination);
+                            $xmlPagination->appendChild($counts);
+                            $ul->appendChild($xmlPagination);
                         }
 
                         // No entries
@@ -1926,12 +2013,6 @@ class contentPublish extends AdministrationPage
                     $content->appendChild($element);
                 }
             }
-
-            // reset global sorting
-            EntryManager::setFetchSorting(
-                $sorting->field,
-                $sorting->direction
-            );
         }
 
         $drawer = Widget::Drawer('section-associations', __('Show Associations'), $content);

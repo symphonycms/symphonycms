@@ -333,17 +333,15 @@ class SectionDatasource extends Datasource
     }
 
     /**
-     * This function iterates over `dsParamFILTERS` and builds the relevant
-     * `$where` and `$joins` parameters with SQL. This SQL is generated from
-     * `Field->buildDSRetrievalSQL`. A third parameter, `$group` is populated
-     * with boolean from `Field->requiresSQLGrouping()`
+     * This function iterates over `dsParamFILTERS` and appends the relevant
+     * where and join operations.
+     * This SQL is generated with the Field's query builder.
      *
-     * @param string $where
-     * @param string $joins
-     * @param boolean $group
+     * @see Field::queryBuilder()
+     * @param EntryQuery $entryQuery
      * @throws Exception
      */
-    public function processFilters(&$where, &$joins, &$group)
+    public function processFilters(&$entryQuery)
     {
         if (!is_array($this->dsParamFILTERS) || empty($this->dsParamFILTERS)) {
             return;
@@ -351,14 +349,10 @@ class SectionDatasource extends Datasource
 
         $pool = (new FieldManager)
             ->select()
-            ->fields(array_filter(array_keys($this->dsParamFILTERS), 'is_int'))
+            ->fields(array_filter(array_keys($this->dsParamFILTERS), 'is_numeric'))
             ->execute()
             ->rows();
         self::$_fieldPool += $pool;
-
-        if (!is_string($where)) {
-            $where = '';
-        }
 
         foreach ($this->dsParamFILTERS as $field_id => $filter) {
             if ((is_array($filter) && empty($filter)) || trim($filter) == '') {
@@ -384,7 +378,8 @@ class SectionDatasource extends Datasource
 
             // Support system:id as well as the old 'id'. #1691
             if ($field_id === 'system:id' || $field_id === 'id') {
-                if ($filter_type == Datasource::FILTER_AND) {
+                $op = $filter_type === Datasource::FILTER_AND ? 'and' : 'or';
+                if ($filter_type === Datasource::FILTER_AND) {
                     $value = array_map(function ($val) {
                         return explode(',', $val);
                     }, $value);
@@ -393,10 +388,10 @@ class SectionDatasource extends Datasource
                 }
 
                 foreach ($value as $v) {
-                    $c = 'IN';
+                    $c = 'in';
                     if (stripos($v[0], 'not:') === 0) {
                         $v[0] = preg_replace('/^not:\s*/', null, $v[0]);
-                        $c = 'NOT IN';
+                        $c = 'notin';
                     }
 
                     // Cast all ID's to integers. (RE: #2191)
@@ -425,7 +420,11 @@ class SectionDatasource extends Datasource
 
                     // If there are no ID's, no need to filter. RE: #1567
                     if (!empty($v)) {
-                        $where .= " AND `e`.id " . $c . " (".implode(", ", $v).") ";
+                        $entryQuery->where([
+                            $op => array_map(function ($v) {
+                                return ['e.id' => [$c => $v]];
+                            }, $v)
+                        ]);
                     }
                 }
             } elseif ($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
@@ -441,15 +440,29 @@ class SectionDatasource extends Datasource
 
                 // Replace the date field where with the `creation_date` or `modification_date`.
                 $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
-                $where .= $date_where;
+                $date_where = $entryQuery->replaceTablePrefix($date_where);
+                $wherePrefix = $entryQuery->containsSQLParts('where') ? '' : 'WHERE 1 = 1';
+                $entryQuery->unsafe()->unsafeAppendSQLPart('where', "$wherePrefix $where");
             } else {
+                $where = '';
+                $joins = '';
                 if (!self::$_fieldPool[$field_id]->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false))) {
                     $this->_force_empty_result = true;
                     return;
                 }
 
-                if (!$group) {
-                    $group = self::$_fieldPool[$field_id]->requiresSQLGrouping();
+                if ($joins) {
+                    $joins = $entryQuery->replaceTablePrefix($joins);
+                    $entryQuery->unsafe()->unsafeAppendSQLPart('join', $joins);
+                }
+                if ($where) {
+                    $where = $entryQuery->replaceTablePrefix($where);
+                    $wherePrefix = $entryQuery->containsSQLParts('where') ? '' : 'WHERE 1 = 1';
+                    $entryQuery->unsafe()->unsafeAppendSQLPart('where', "$wherePrefix $where");
+                }
+
+                if (self::$_fieldPool[$field_id]->requiresSQLGrouping()) {
+                    $entryQuery->distinct();
                 }
             }
         }
@@ -459,9 +472,9 @@ class SectionDatasource extends Datasource
     {
         $result = new XMLElement($this->dsParamROOTELEMENT);
         $this->_param_pool = $param_pool;
-        $where = null;
-        $joins = null;
-        $group = false;
+        $requiresPagination = (!isset($this->dsParamPAGINATERESULTS) ||
+            $this->dsParamPAGINATERESULTS === 'yes')
+            && isset($this->dsParamLIMIT) && General::intval($this->dsParamLIMIT) >= 0;
 
         $section = (new SectionManager)
             ->select()
@@ -518,32 +531,6 @@ class SectionDatasource extends Datasource
 
         $this->_can_process_system_parameters = $this->canProcessSystemParameters();
 
-        if (!isset($this->dsParamPAGINATERESULTS)) {
-            $this->dsParamPAGINATERESULTS = 'yes';
-        }
-
-        // Process Filters
-        $this->processFilters($where, $joins, $group);
-
-        // Process Sorting
-        if ($this->dsParamSORT == 'system:id') {
-            EntryManager::setFetchSorting('system:id', $this->dsParamORDER);
-        } elseif ($this->dsParamSORT == 'system:date' || $this->dsParamSORT == 'system:creation-date') {
-            if ($this->dsParamSORT === 'system:date' && Symphony::Log()) {
-                Symphony::Log()->pushDeprecateWarningToLog('system:date', 'system:creation-date', array(
-                    'message-format' => __('The `%s` data source sort is deprecated.')
-                ));
-            }
-            EntryManager::setFetchSorting('system:creation-date', $this->dsParamORDER);
-        } elseif ($this->dsParamSORT == 'system:modification-date') {
-            EntryManager::setFetchSorting('system:modification-date', $this->dsParamORDER);
-        } else {
-            EntryManager::setFetchSorting(
-                FieldManager::fetchFieldIDFromElementName($this->dsParamSORT, $this->getSource()),
-                $this->dsParamORDER
-            );
-        }
-
         // combine `INCLUDEDELEMENTS`, `PARAMOUTPUT` and `GROUP` into an
         // array of field handles to optimise the `EntryManager` queries
         $datasource_schema = $this->dsParamINCLUDEDELEMENTS;
@@ -556,17 +543,30 @@ class SectionDatasource extends Datasource
             $datasource_schema[] = FieldManager::fetchHandleFromID($this->dsParamGROUP);
         }
 
-        $entries = EntryManager::fetchByPage(
-            ($this->dsParamPAGINATERESULTS === 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1),
-            $this->getSource(),
-            ($this->dsParamPAGINATERESULTS === 'yes' && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : null),
-            $where,
-            $joins,
-            $group,
-            (!$include_pagination_element ? true : false),
-            true,
-            array_unique($datasource_schema)
-        );
+        // Create our query object
+        $entriesQuery = (new EntryManager)
+            ->select($datasource_schema)
+            ->section($this->getSource());
+
+        // Process Filters
+        $this->processFilters($entriesQuery);
+
+        // Process Sorting
+        $sort = $this->dsParamSORT;
+        if (General::intval($sort) === -1) {
+            // Try to fetch id from field handle
+            $sort = FieldManager::fetchFieldIDFromElementName($sort, $this->getSource());
+        }
+        $entriesQuery->sort($sort, $this->dsParamORDER);
+
+        // Configure pagination in the query
+        if ($requiresPagination) {
+            $entriesQuery->paginate($this->dsParamSTARTPAGE, $this->dsParamLIMIT);
+        }
+
+        // Execute
+        $pagination = $entriesQuery->execute()->pagination();
+        $entries = $pagination->rows();
 
         /**
          * Immediately after building entries allow modification of the Data Source entries array
@@ -584,9 +584,11 @@ class SectionDatasource extends Datasource
             'filters' => $this->dsParamFILTERS
         ));
 
-        $entries_per_page = ($this->dsParamPAGINATERESULTS === 'yes' && isset($this->dsParamLIMIT) && $this->dsParamLIMIT >= 0 ? $this->dsParamLIMIT : $entries['total-entries']);
+        $entries_per_page = $requiresPagination
+            ? $pagination->pageSize()
+            : $pagination->totalEntries();
 
-        if (($entries['total-entries'] <= 0 || $include_pagination_element === true) && (!is_array($entries['records']) || empty($entries['records'])) || $this->dsParamSTARTPAGE == '0') {
+        if (empty($entries)) {
             if ($this->dsParamREDIRECTONEMPTY === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
@@ -608,10 +610,10 @@ class SectionDatasource extends Datasource
 
                 if ($include_pagination_element) {
                     $pagination_element = General::buildPaginationElement(
-                        $entries['total-entries'],
-                        $entries['total-pages'],
+                        $pagination->totalEntries(),
+                        $pagination->totalPages(),
                         $entries_per_page,
-                        ($this->dsParamPAGINATERESULTS === 'yes' && $this->dsParamSTARTPAGE > 0 ? $this->dsParamSTARTPAGE : 1)
+                        $pagination->currentPage()
                     );
 
                     if ($pagination_element instanceof XMLElement && $result instanceof XMLElement) {
@@ -620,37 +622,36 @@ class SectionDatasource extends Datasource
                 }
             }
 
-            // If this datasource has a Limit greater than 0 or the Limit is not set
-            if (!isset($this->dsParamLIMIT) || $this->dsParamLIMIT > 0) {
-                if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS === 'yes') {
-                    $this->_associated_sections = $section->fetchChildAssociations();
+            if (!isset($this->dsParamASSOCIATEDENTRYCOUNTS) || $this->dsParamASSOCIATEDENTRYCOUNTS === 'yes') {
+                $this->_associated_sections = $section->fetchChildAssociations();
+            }
+
+            // If the datasource require's GROUPING
+            if (isset($this->dsParamGROUP)) {
+                if (!isset(self::$_fieldPool[$this->dsParamGROUP])) {
+                    self::$_fieldPool[$this->dsParamGROUP] = (new FieldManager)
+                        ->select()
+                        ->field($this->dsParamGROUP)
+                        ->execute()
+                        ->next();
+                }
+                if (self::$_fieldPool[$this->dsParamGROUP] == null) {
+                    throw new SymphonyErrorPage(vsprintf("The field used for grouping '%s' cannot be found.", $this->dsParamGROUP));
                 }
 
-                // If the datasource require's GROUPING
-                if (isset($this->dsParamGROUP)) {
-                    if (!isset(self::$_fieldPool[$this->dsParamGROUP])) {
-                        self::$_fieldPool[$this->dsParamGROUP] = (new FieldManager)
-                            ->select()
-                            ->field($this->dsParamGROUP)
-                            ->execute()
-                            ->next();
-                    }
-                    if (self::$_fieldPool[$this->dsParamGROUP] == null) {
-                        throw new SymphonyErrorPage(vsprintf("The field used for grouping '%s' cannot be found.", $this->dsParamGROUP));
-                    }
+                $groups = self::$_fieldPool[$this->dsParamGROUP]->groupRecords($entries);
 
-                    $groups = self::$_fieldPool[$this->dsParamGROUP]->groupRecords($entries['records']);
-
-                    foreach ($groups as $element => $group) {
-                        foreach ($group as $g) {
-                            $result->appendChild(
-                                $this->processRecordGroup($element, $g)
-                            );
-                        }
+                foreach ($groups as $element => $group) {
+                    foreach ($group as $g) {
+                        $result->appendChild(
+                            $this->processRecordGroup($element, $g)
+                        );
                     }
-                } else {
-                    if (isset($entries['records'][0])) {
-                        $data = $entries['records'][0]->getData();
+                }
+            } else {
+                if (isset($entries[0])) {
+                    $data = $entries[0]->getData();
+                    if (!empty($data)) {
                         $pool = (new FieldManager)
                             ->select()
                             ->fields(array_keys($data))
@@ -658,13 +659,13 @@ class SectionDatasource extends Datasource
                             ->rows();
                         self::$_fieldPool += $pool;
                     }
+                }
 
-                    foreach ($entries['records'] as $entry) {
-                        $xEntry = $this->processEntry($entry);
+                foreach ($entries as $entry) {
+                    $xEntry = $this->processEntry($entry);
 
-                        if ($xEntry instanceof XMLElement) {
-                            $result->appendChild($xEntry);
-                        }
+                    if ($xEntry instanceof XMLElement) {
+                        $result->appendChild($xEntry);
                     }
                 }
             }
