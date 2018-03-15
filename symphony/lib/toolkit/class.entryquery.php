@@ -385,12 +385,7 @@ class EntryQuery extends DatabaseQuery
             if ($this->sectionId) {
                 $section = (new SectionManager)->select()->section($this->sectionId)->execute()->next();
                 if ($section && $section->getSortingField()) {
-                    $field = (new FieldManager)->select()->field($section->getSortingField())->execute()->next();
-                    if ($field && $field->isSortable()) {
-                        $sort = $this->buildLegacySortingForField($field, $direction);
-                        $sort = $this->replaceTablePrefix($sort);
-                        $this->unsafe()->unsafeAppendSQLPart('order by', $sort);
-                    }
+                    $this->sort($section->getSortingField(), $section->getSortingOrder());
                 }
             }
             // No sort specified, so just sort on system id
