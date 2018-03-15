@@ -466,6 +466,9 @@ class DatabaseQuery extends DatabaseStatement
         foreach ($this->getValues() as $key => $value) {
             $cp->appendValues([$key => $value]);
         }
+        if (!$this->isSafe()) {
+            $cp->unsafe();
+        }
         return $cp;
     }
 }
