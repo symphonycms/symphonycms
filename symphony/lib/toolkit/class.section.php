@@ -104,12 +104,14 @@ class Section implements ArrayAccess
      * This is determined by the first visible field that is allowed to
      * to be sorted (defined by the field's `isSortable()` function).
      * If no fields exist or none of them are visible in the entries table,
-     * 'id' is returned instead.
+     * 'system:id' is returned instead.
      *
      * @since Symphony 2.3
+     * @since Symphony 3.0.0
+     *  Returns 'system:id' instead of 'id'
      * @throws Exception
      * @return string
-     *    Either the field ID or the string 'id'.
+     *  Either the field ID or the string 'system:id'.
      */
     public function getDefaultSortingField()
     {
@@ -123,7 +125,7 @@ class Section implements ArrayAccess
             return $field->get('id');
         }
 
-        return 'id';
+        return 'system:id';
     }
 
     /**

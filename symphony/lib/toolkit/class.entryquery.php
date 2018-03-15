@@ -271,9 +271,12 @@ class EntryQuery extends DatabaseQuery
      * Appends a ORDER BY clause using the $field parameter.
      *
      * @param string $field
-     *  The field to order by with
+     *  The field id, as a string, to order by with.
+     *  Can also be a system: field, i.e.
+     *  'system:creation-date', 'system:modification-date', 'system:id'
      * @param string $direction
-     *  The default direction to use.g
+     *  The default direction to use.
+     *  Supports ASC, DESC and RAND
      *  Defaults to ASC.
      * @return EntryQuery
      *  The current instance
@@ -316,11 +319,6 @@ class EntryQuery extends DatabaseQuery
                 // This prevents crashing the backend for a bad reason.
                 $sort = true;
             }
-
-        // Handle legacy id filter
-        // This is @deprecated
-        } elseif ($field === 'id') {
-            $sort = ['e.id' => $direction];
         }
 
         if ($f && $f->requiresSQLGrouping() && !$this->containsSQLParts('optimizer')) {
