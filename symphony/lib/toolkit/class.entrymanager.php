@@ -566,6 +566,8 @@ class EntryManager
      * dictates that per page, 15 entries are to be returned, by passing 2 to
      * the $page parameter you could return entries 15-30
      *
+     * @deprecated Symphony 3.0.0
+     *  Use select() instead
      * @param integer $page
      *  The page to return, defaults to 1
      * @param integer $section_id
@@ -596,6 +598,13 @@ class EntryManager
      */
     public static function fetchByPage($page = 1, $section_id, $entriesPerPage, $where = null, $joins = null, $group = false, $records_only = false, $buildentries = true, array $element_names = null)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                'EntryManager::fetchByPage()',
+                'EntryManager::select()->paginate()'
+            );
+        }
+
         if ($entriesPerPage != null && !is_string($entriesPerPage) && !is_numeric($entriesPerPage)) {
             throw new Exception(__('Entry limit specified was not a valid type. String or Integer expected.'));
         } elseif ($entriesPerPage == null) {
