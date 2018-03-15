@@ -164,7 +164,19 @@ class SectionDatasource extends Datasource
                     list($handle, $mode) = preg_split('/\s*:\s*/', $handle, 2);
 
                     if (self::$_fieldPool[$field_id]->get('element_name') == $handle) {
-                        self::$_fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE === 'yes' ? true : false), $mode, $entry->get('id'));
+                        try {
+                            self::$_fieldPool[$field_id]->appendFormattedElement($xEntry, $values, ($this->dsParamHTMLENCODE === 'yes' ? true : false), $mode, $entry->get('id'));
+                        } catch (Exception $ex) {
+                            if (Symphony::Log()) {
+                                Symphony::Log()->pushExceptionToLog($ex, true);
+                            }
+                            $this->appendFormattedError($handle, $xEntry, $ex);
+                        } catch (Throwable $ex) {
+                            if (Symphony::Log()) {
+                                Symphony::Log()->pushExceptionToLog($ex, true);
+                            }
+                            $this->appendFormattedError($handle, $xEntry, $ex);
+                        }
                     }
                 }
             }
@@ -198,6 +210,26 @@ class SectionDatasource extends Datasource
         }
 
         return $xEntry;
+    }
+
+    /**
+     * Given an handle, it will create a XMLElement from its value.
+     * The Throwable's message will be put into an error node.
+     * The newly created XMLElement will then be appended to the $xEntry XMLElement.
+     *
+     * @param string $handle
+     *  The name of the new XMLElement
+     * @param XMLElement $xEntry
+     *  The XMLElement to append a child intro
+     * @param Throwable $ex
+     *  The Throwable's message to use
+     * @return void
+     */
+    private function appendFormattedError($handle, XMLElement &$xEntry, $ex)
+    {
+        $xmlField = new XMLElement($handle);
+        $xmlField->appendChild(new XMLElement('error', General::wrapInCDATA($ex->getMessage())));
+        $xEntry->appendChild($xmlField);
     }
 
     /**
@@ -313,14 +345,26 @@ class SectionDatasource extends Datasource
                 continue;
             }
 
-            // The new style of paramater is `ds-datasource-handle.field-handle`
+            // The new style of parameter is `ds-datasource-handle.field-handle`
             $param_key = $key . '.' . str_replace(':', '-', $param);
 
             if (!isset($this->_param_pool[$param_key]) || !is_array($this->_param_pool[$param_key])) {
                 $this->_param_pool[$param_key] = array();
             }
 
-            $param_pool_values = self::$_fieldPool[$field_id]->getParameterPoolValue($data, $entry->get('id'));
+            try {
+                $param_pool_values = self::$_fieldPool[$field_id]->getParameterPoolValue($data, $entry->get('id'));
+            } catch (Exception $ex) {
+                if (Symphony::Log()) {
+                    Symphony::Log()->pushExceptionToLog($ex, true);
+                }
+                $param_pool_values = ['error' => $ex->getMessage()];
+            } catch (Throwable $ex) {
+                if (Symphony::Log()) {
+                    Symphony::Log()->pushExceptionToLog($ex, true);
+                }
+                $param_pool_values = ['error' => $ex->getMessage()];
+            }
 
             if (is_array($param_pool_values)) {
                 $this->_param_pool[$param_key] = array_merge($param_pool_values, $this->_param_pool[$param_key]);
