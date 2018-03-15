@@ -23,4 +23,18 @@ class DatabaseStatementException extends Exception
     {
         parent::__construct(__($message), 0, $previous);
     }
+
+    /**
+     * Appends the $sql code into a code block in the exception's message
+     *
+     * @param string $sql
+     * @return DatabaseStatementException
+     *  The current instance
+     */
+    public function sql($sql)
+    {
+        $sql = General::sanitize($sql);
+        $this->message .= " <pre><code>$sql</code></pre>";
+        return $this;
+    }
 }
