@@ -45,7 +45,7 @@ class DatabaseStatement
      * Regular Expression that matches SQL functions
      * @var string
      */
-    const FCT_PATTERN = '/^([A-Za-z_]+)\((.+)\)$/';
+    const FCT_PATTERN = '/^([A-Za-z_]+)\((.*)\)$/';
 
     /**
      * Database object reference
