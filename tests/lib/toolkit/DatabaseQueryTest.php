@@ -523,6 +523,19 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
+    public function testSELECTFUNCTIONNOPARAMS()
+    {
+        $db = new Database([]);
+        $sql = $db->select(['X()']);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE X()",
+            $sql->generateSQL(),
+            'SELECT X() as `x` (function projection)'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
     public function testSELECTWithSubQuery()
     {
         $db = new Database([]);
