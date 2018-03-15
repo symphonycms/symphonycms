@@ -18,6 +18,8 @@ class EntryManager
      * to null, which implies the Entry ID (id column in `tbl_entries`).
      * To order by core fields, use one of
      * 'system:creation-date', 'system:modification-date', 'system:id'.
+     * @deprecated @since Symphony 3.0.0
+     *  Use select()->sort() instead
      * @var integer|string
      */
     protected static $_fetchSortField = null;
@@ -25,6 +27,8 @@ class EntryManager
     /**
      * The direction that entries should be sorted in, available options are
      * RAND, ASC or DESC. Defaults to null, which implies ASC
+     * @deprecated @since Symphony 3.0.0
+     *  Use select()->sort() instead
      * @var string
      */
     protected static $_fetchSortDirection = null;
@@ -33,12 +37,21 @@ class EntryManager
      * Setter function for the default sorting direction of the Fetch
      * function. Available options are RAND, ASC or DESC.
      *
+     * @deprecated @since Symphony 3.0.0
+     *  Use select()->sort() instead
      * @param string $direction
      *  The direction that entries should be sorted in, available options
      *  are RAND, ASC or DESC.
      */
     public static function setFetchSortingDirection($direction)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                'EntryManager::setFetchSortingDirection()',
+                'EntryManager::select()->sort()'
+            );
+        }
+
         $direction = strtoupper($direction);
 
         if ($direction == 'RANDOM') {
@@ -52,11 +65,19 @@ class EntryManager
      * Sets the field to applying the sorting direction on when fetching
      * entries
      *
+     * @deprecated @since Symphony 3.0.0
+     *  Use select()->sort() instead
      * @param integer $field_id
      *  The ID of the Field that should be sorted on
      */
     public static function setFetchSortingField($field_id)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                'EntryManager::setFetchSortingField()',
+                'EntryManager::select()->sort()'
+            );
+        }
         self::$_fetchSortField = $field_id;
     }
 
@@ -64,6 +85,8 @@ class EntryManager
      * Convenience function that will set sorting field and direction
      * by calling `setFetchSortingField()` & `setFetchSortingDirection()`
      *
+     * @deprecated @since Symphony 3.0.0
+     *  Use select()->sort() instead
      * @see toolkit.EntryManager#setFetchSortingField()
      * @see toolkit.EntryManager#setFetchSortingDirection()
      * @param integer $field_id
@@ -82,10 +105,18 @@ class EntryManager
      * Returns an object representation of the sorting for the
      * EntryManager, with the field and direction provided
      *
+     * @deprecated @since Symphony 3.0.0
+     *  Use select()->sort() instead
      * @return StdClass
      */
     public static function getFetchSorting()
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                'EntryManager::getFetchSorting()',
+                'EntryManager::select()->sort()'
+            );
+        }
         return (object)array(
             'field' => self::$_fetchSortField,
             'direction' => self::$_fetchSortDirection
