@@ -408,7 +408,8 @@ class SectionManager
     public static function fetchChildAssociations($section_id, $respect_visibility = false)
     {
         $sql = Symphony::Database()
-            ->select()
+            ->select(['sa.*', 's.name', 's.handle'])
+            ->distinct()
             ->from('tbl_sections_association', 'sa')
             ->join('tbl_sections', 's')
             ->on(['s.id' => '$sa.child_section_id'])
@@ -444,7 +445,8 @@ class SectionManager
     public static function fetchParentAssociations($section_id, $respect_visibility = false)
     {
         $sql = Symphony::Database()
-            ->select()
+            ->select(['sa.*', 's.name', 's.handle'])
+            ->distinct()
             ->from('tbl_sections_association', 'sa')
             ->join('tbl_sections', 's')
             ->on(['s.id' => '$sa.parent_section_id'])
