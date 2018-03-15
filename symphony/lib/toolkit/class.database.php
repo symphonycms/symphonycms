@@ -917,13 +917,13 @@ class Database
     final public function validateSQLQuery($query, $strict = true)
     {
         if (strpos($query, '\'--;') !== false) {
-            throw new DatabaseStatementException('Query contains SQL injection');
+            throw (new DatabaseStatementException('Query contains SQL injection.'))->sql($query);
         } elseif ($strict && strpos($query, '--') !== false) {
-            throw new DatabaseStatementException('Query contains illegal characters: `--`');
+            throw (new DatabaseStatementException('Query contains illegal characters: `--`.'))->sql($query);
         } elseif ($strict && strpos($query, '\'') !== false) {
-            throw new DatabaseStatementException('Query contains illegal character: `\'`');
+            throw (new DatabaseStatementException('Query contains illegal character: `\'`.'))->sql($query);
         } elseif ($strict && strpos($query, ';') !== false) {
-            throw new DatabaseStatementException('Query contains illegal character: `;`');
+            throw (new DatabaseStatementException('Query contains illegal character: `;`.'))->sql($query);
         }
     }
 
