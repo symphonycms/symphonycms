@@ -161,7 +161,7 @@ class Section implements ArrayAccess
             $result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_sortby', 'sorting');
         }
 
-        return (is_null($result) ? $this->getDefaultSortingField() : $result);
+        return (!$result ? $this->getDefaultSortingField() : $result);
     }
 
     /**
@@ -194,7 +194,7 @@ class Section implements ArrayAccess
             $result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_order', 'sorting');
         }
 
-        return (is_null($result) ? 'asc' : $result);
+        return (!$result ? 'asc' : $result);
     }
 
     /**
