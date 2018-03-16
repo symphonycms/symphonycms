@@ -339,7 +339,7 @@ class contentSystemAuthors extends AdministrationPage
             $label = Widget::Label(__('User Type'), null, 'column');
 
             $options = array(
-                array('author', false, __('Author'))
+                array('author', false, __('Author')),
             );
 
             if ($isOwner || Symphony::Author()->isDeveloper() || $author->isManager()) {
