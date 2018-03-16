@@ -348,7 +348,11 @@ class contentSystemAuthors extends AdministrationPage
             }
 
             $label->appendChild(Widget::Select('fields[user_type]', $options));
-            $div->appendChild($label);
+            if (isset($this->_errors['user_type'])) {
+                $div->appendChild(Widget::Error($label, $this->_errors['user_type']));
+            } else {
+                $div->appendChild($label);
+            }
         }
 
         $group->appendChild($div);
@@ -574,8 +578,7 @@ class contentSystemAuthors extends AdministrationPage
             }
 
             if (Symphony::Author()->isManager() && $fields['user_type'] !== 'author') {
-                $this->pageAlert(__('The user type is invalid. You can only create Authors.'), Alert::ERROR);
-                return;
+                $this->_errors['user_type'] = __('The user type is invalid. You can only create Authors.');
             }
 
             $this->_Author = new Author();
@@ -685,6 +688,11 @@ class contentSystemAuthors extends AdministrationPage
         if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
             $authenticated = false;
 
+            if (!$isOwner && !$canEdit) {
+                $this->pageAlert(__('You don\'t have the rights to edit an author.'), Alert::ERROR);
+                return;
+            }
+
             if ($fields['email'] != $this->_Author->get('email')) {
                 $changing_email = true;
             }
@@ -708,13 +716,11 @@ class contentSystemAuthors extends AdministrationPage
             if ($this->_Author->isPrimaryAccount() || ($isOwner && Symphony::Author()->isDeveloper())) {
                 $this->_Author->set('user_type', 'developer'); // Primary accounts are always developer, Developers can't lower their level
             } elseif (Symphony::Author()->isManager() && isset($fields['user_type'])) { // Manager can only change user type for author and managers
-
                 if ($fields['user_type'] !== 'author' && $fields['user_type'] !== 'manager') {
-                    $this->pageAlert(__('The user type is invalid. You can only set authors and manager.'), Alert::ERROR);
-                    return;
+                    $this->_errors['user_type'] = __('The user type is invalid. You can only create Authors.');
+                } else {
+                    $this->_Author->set('user_type', $fields['user_type']);
                 }
-
-                $this->_Author->set('user_type', $fields['user_type']);
             } elseif (Symphony::Author()->isDeveloper() && isset($fields['user_type'])) {
                 $this->_Author->set('user_type', $fields['user_type']); // Only developer can change user type
             }
