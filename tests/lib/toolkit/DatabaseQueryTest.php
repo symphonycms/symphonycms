@@ -144,6 +144,28 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(2, count($values), '2 values');
     }
 
+    public function testSELECTwithORSameColumun()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->where([
+                'or' => [
+                    ['x' => 1],
+                    ['x' => ['<' => '2']],
+                ]
+            ]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE (`x` = :x OR `x` < :x2)",
+            $sql->generateSQL(),
+            "SQL clause with WHERE OR filter"
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(1, $values['x'], 'x is 1');
+        $this->assertEquals(2, $values['x2'], 'x2 is 2');
+        $this->assertEquals(2, count($values), '2 values');
+    }
+
     public function testSELECTwithNestedAND()
     {
         $db = new Database([]);
