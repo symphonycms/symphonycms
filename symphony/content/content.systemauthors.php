@@ -99,7 +99,7 @@ class contentSystemAuthors extends AdministrationPage
             foreach ($authors as $a) {
                 // Setup each cell
                 if (
-                    (Symphony::Author()->isDeveloper() || (Symphony::Author()->isManager() && !$a->isDeveloper()))
+                    (Symphony::Author()->isDeveloper() || (Symphony::Author()->isManager() && !$a->isDeveloper() && !$a->isManager()))
                     || Symphony::Author()->get('id') == $a->get('id')
                 ) {
                     $td1 = Widget::TableData(
@@ -339,9 +339,12 @@ class contentSystemAuthors extends AdministrationPage
             $label = Widget::Label(__('User Type'), null, 'column');
 
             $options = array(
-                array('author', false, __('Author')),
-                array('manager', $author->isManager(), __('Manager'))
+                array('author', false, __('Author'))
             );
+
+            if ($isOwner || Symphony::Author()->isDeveloper() || $author->isManager()) {
+                $options[] = array('manager', $author->isManager(), __('Manager'));
+            }
 
             if (Symphony::Author()->isDeveloper()) {
                 $options[] = array('developer', $author->isDeveloper(), __('Developer'));
@@ -371,16 +374,16 @@ class contentSystemAuthors extends AdministrationPage
             - Managers can edit all Authors, and their own.
             - Authors can edit their own.
         */
-        if ($isEditing && !(
-            // All accounts can edit their own
-            $isOwner
-            // Managers can edit all Authors, and their own.
-            || (Symphony::Author()->isManager() && $author->isAuthor())
+
+        $canEdit = // Managers can edit all Authors, and their own.
+                (Symphony::Author()->isManager() && $author->isAuthor())
             // Primary account can edit all accounts.
             || Symphony::Author()->isPrimaryAccount()
             // Developers can edit all developers, managers and authors, and their own.
-            || Symphony::Author()->isDeveloper() && $author->isPrimaryAccount() === false
-        )) {
+            || Symphony::Author()->isDeveloper() && $author->isPrimaryAccount() === false;
+
+
+        if ($isEditing && !($isOwner || $canEdit)) {
             $fieldset->setAttribute('class', 'three columns');
 
             $label = Widget::Label(null, null, 'column');
@@ -527,7 +530,7 @@ class contentSystemAuthors extends AdministrationPage
 
         $div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Author')), 'submit', array('accesskey' => 's')));
 
-        if ($isEditing && !$isOwner && !$author->isPrimaryAccount()) {
+        if ($isEditing && !$isOwner && !$author->isPrimaryAccount() && $canEdit) {
             $button = new XMLElement('button', __('Delete'));
             $button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this author'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this author?')));
             $div->appendChild($button);
@@ -689,6 +692,13 @@ class contentSystemAuthors extends AdministrationPage
                 || (Symphony::Author()->isDeveloper() && $this->_Author->isPrimaryAccount() === false);
 
         if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
+
+            // Validate rights
+            if (!$canEdit && !$isOwner) {
+                $this->pageAlert(__('You are not allowed to edit this author.'), Alert::ERROR);
+                return;
+            }
+
             $authenticated = $changing_password = $changing_email = false;
 
             if (!$isOwner && !$canEdit) {
