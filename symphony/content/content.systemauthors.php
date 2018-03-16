@@ -566,6 +566,18 @@ class contentSystemAuthors extends AdministrationPage
         if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
             $fields = $_POST['fields'];
 
+            $canCreate = Symphony::Author()->isDeveloper() || Symphony::Author()->isManager();
+
+            if (!$canCreate) {
+                $this->pageAlert(__('You don\'t have the rights to create a new author.'), Alert::ERROR);
+                return;
+            }
+
+            if (Symphony::Author()->isManager() && $fields['user_type'] !== 'author') {
+                $this->pageAlert(__('The user type is invalid. You can only create Authors.'), Alert::ERROR);
+                return;
+            }
+
             $this->_Author = new Author();
             $this->_Author->set('user_type', $fields['user_type']);
             $this->_Author->set('primary', 'no');
@@ -695,7 +707,15 @@ class contentSystemAuthors extends AdministrationPage
 
             if ($this->_Author->isPrimaryAccount() || ($isOwner && Symphony::Author()->isDeveloper())) {
                 $this->_Author->set('user_type', 'developer'); // Primary accounts are always developer, Developers can't lower their level
-            } elseif ((Symphony::Author()->isDeveloper() || Symphony::Author()->isManager()) && isset($fields['user_type'])) {
+            } elseif (Symphony::Author()->isManager() && isset($fields['user_type'])) { // Manager can only change user type for author and managers
+
+                if ($fields['user_type'] !== 'author' && $fields['user_type'] !== 'manager') {
+                    $this->pageAlert(__('The user type is invalid. You can only set authors and manager.'), Alert::ERROR);
+                    return;
+                }
+
+                $this->_Author->set('user_type', $fields['user_type']);
+            } elseif (Symphony::Author()->isDeveloper() && isset($fields['user_type'])) {
                 $this->_Author->set('user_type', $fields['user_type']); // Only developer can change user type
             }
 
