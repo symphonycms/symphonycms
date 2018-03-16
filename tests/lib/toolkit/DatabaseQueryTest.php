@@ -530,7 +530,20 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(
             "SELECT SQL_NO_CACHE X()",
             $sql->generateSQL(),
-            'SELECT X() as `x` (function projection)'
+            'SELECT X() (function projection)'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testSELECTFUNCTIONNOPARAMSALIASED()
+    {
+        $db = new Database([]);
+        $sql = $db->select(['X()' => 'x']);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE X() AS `x`",
+            $sql->generateSQL(),
+            'SELECT X() as `x` (function projection aliased)'
         );
         $values = $sql->getValues();
         $this->assertEquals(0, count($values), '0 value');

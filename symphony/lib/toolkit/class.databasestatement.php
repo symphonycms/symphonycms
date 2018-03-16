@@ -504,7 +504,12 @@ class DatabaseStatement
         } elseif (strpos($value, ',') !== false) {
             return $this->asTickedList(explode(',', $value));
         } elseif (preg_match(self::FCT_PATTERN, $value, $fctMatches) === 1) {
-            return $fctMatches[1] . '(' . $this->asTickedString($fctMatches[2]) . ')';
+            $fxCall = $fctMatches[1] . '(' . $this->asTickedString($fctMatches[2]) . ')';
+            if ($alias) {
+                $this->validateFieldName($alias);
+                return "$fxCall AS `$alias`";
+            }
+            return $fxCall;
         } elseif (($op = strpbrk($value, '+-*/')) !== false && preg_match("/\s{$op{0}}\s/", $value) === 1) {
             $op = $op{0};
             $parts = array_map('trim', explode($op, $value, 2));
