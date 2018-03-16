@@ -102,7 +102,7 @@ class contentSystemAuthors extends AdministrationPage
             foreach ($authors as $a) {
                 // Setup each cell
                 if (
-                    (Symphony::Author()->isDeveloper() || (Symphony::Author()->isManager() && !$a->isDeveloper()))
+                    (Symphony::Author()->isDeveloper() || (Symphony::Author()->isManager() && !$a->isDeveloper() && !$a->isManager()))
                     || Symphony::Author()->get('id') == $a->get('id')
                 ) {
                     $td1 = Widget::TableData(
@@ -343,8 +343,11 @@ class contentSystemAuthors extends AdministrationPage
 
             $options = array(
                 array('author', false, __('Author')),
-                array('manager', $author->isManager(), __('Manager'))
             );
+
+            if (Symphony::Author()->isDeveloper() || ($isOwner && $author->isManager())) {
+                $options[] = array('manager', $author->isManager(), __('Manager'));
+            }
 
             if (Symphony::Author()->isDeveloper()) {
                 $options[] = array('developer', $author->isDeveloper(), __('Developer'));
@@ -374,16 +377,16 @@ class contentSystemAuthors extends AdministrationPage
             - Managers can edit all Authors, and their own.
             - Authors can edit their own.
         */
-        if ($isEditing && !(
-            // All accounts can edit their own
-            $isOwner
-            // Managers can edit all Authors, and their own.
-            || (Symphony::Author()->isManager() && $author->isAuthor())
+
+        $canEdit = // Managers can edit all Authors, and their own.
+                (Symphony::Author()->isManager() && $author->isAuthor())
             // Primary account can edit all accounts.
             || Symphony::Author()->isPrimaryAccount()
             // Developers can edit all developers, managers and authors, and their own.
-            || Symphony::Author()->isDeveloper() && $author->isPrimaryAccount() === false
-        )) {
+            || Symphony::Author()->isDeveloper() && $author->isPrimaryAccount() === false;
+
+
+        if ($isEditing && ($isOwner || $canEdit)) {
             $fieldset->setAttribute('class', 'three columns');
 
             $label = Widget::Label(null, null, 'column');
@@ -530,7 +533,7 @@ class contentSystemAuthors extends AdministrationPage
 
         $div->appendChild(Widget::Input('action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Author')), 'submit', array('accesskey' => 's')));
 
-        if ($isEditing && !$isOwner && !$author->isPrimaryAccount()) {
+        if ($isEditing && !$isOwner && !$author->isPrimaryAccount() && $canEdit) {
             $button = new XMLElement('button', __('Delete'));
             $button->setAttributeArray(array('name' => 'action[delete]', 'class' => 'button confirm delete', 'title' => __('Delete this author'), 'type' => 'submit', 'accesskey' => 'd', 'data-message' => __('Are you sure you want to delete this author?')));
             $div->appendChild($button);
