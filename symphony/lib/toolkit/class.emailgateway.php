@@ -251,7 +251,7 @@ abstract class EmailGateway
 
     /**
      * This function sets one or multiple attachment files
-     * to the email.
+     * to the email. It deletes all previously attached files.
      *
      * Passing `null` to this function will
      * erase the current values with an empty array.
@@ -305,6 +305,13 @@ abstract class EmailGateway
     /**
      * Appends one file attachment to the attachments array.
      *
+     * @since Symphony 3.0.0
+     *   The file array can contain a 'cid' key.
+     *   When set to true, the Content-ID header field is added with the filename as id.
+     *   The file array can contain a 'disposition' key.
+     *   When set, it is used in the Content-Disposition header
+     * @throws EmailGatewayException if the parameter is not valid.
+     *
      * @since Symphony 2.3.5
      *
      * @param string|array $file
@@ -313,6 +320,7 @@ abstract class EmailGateway
      *
      *   Can also be a keyed array. This will enable more options, like setting the
      *   charset used by mail agent to open the file or a different filename.
+     *   Only the "file" key is required.
      *
      *   Example:
      *   ````
@@ -321,28 +329,22 @@ abstract class EmailGateway
      *      'filename' => 'bar.txt',
      *      'charset' => 'UTF-8',
      *      'mime-type' => 'text/csv',
+     *      'cid' => false,
+     *      'disposition' => 'inline',
      *   ));
      *   ````
      */
     public function appendAttachment($file)
     {
         if (!is_array($file)) {
-            // treat the param as string (old format)
+            // treat the param as string
             $file = array(
                 'file' => $file,
-                'filename' => null,
-                'charset' => null,
             );
 
             // is array, but not the right key
         } elseif (!isset($file['file'])) {
-            // another (un-documented) old format: key is filename
-            $keys = array_keys($file);
-            $file = array(
-                'file' => $file[$keys[0]],
-                'filename' => is_numeric($keys[0]) ? null : $keys[0],
-                'charset' => null,
-            );
+            throw new EmailGatewayException('The file key is missing from the attachment array.');
         }
 
         // push properly formatted file entry
@@ -630,7 +632,14 @@ abstract class EmailGateway
 
             if ($file_content !== false && !empty($file_content)) {
                 $output .= $this->boundaryDelimiterLine('multipart/mixed')
-                     . $this->contentInfoString($file['mime-type'], $file['file'], $file['filename'], $file['charset'])
+                     . $this->contentInfoString(
+                            isset($file['mime-type']) ? $file['mime-type'] : null,
+                            $file['file'],
+                            isset($file['filename']) ? $file['filename'] : null,
+                            isset($file['charset']) ? $file['charset'] : null,
+                            isset($file['cid']) ? $file['cid'] : null,
+                            isset($file['disposition']) ? $file['disposition'] : 'attachment'
+                        )
                      . EmailHelper::base64ContentTransferEncode($file_content);
             } else {
                 if ($this->_validate_attachment_errors) {
@@ -703,10 +712,12 @@ abstract class EmailGateway
      * @param string $file optional the path of the attachment
      * @param string $filename optional the name of the attached file
      * @param string $charset optional the charset of the attached file
+     * @param string|boolean $cid optional add a Content-ID header field. If true, uses the filename as the cid
+     * @param string $disposition optional the value of the Content-Disposition header field
      *
      * @return array
      */
-    public function contentInfoArray($type = null, $file = null, $filename = null, $charset = null)
+    public function contentInfoArray($type = null, $file = null, $filename = null, $charset = null, $cid = false, $disposition = 'attachment')
     {
         // Common descriptions
         $description = array(
@@ -749,11 +760,17 @@ abstract class EmailGateway
             $type = General::getMimeType($file);
         }
         // Return binary description
-        return array(
+        $bin = [
             'Content-Type'              => $type.';'.$charset.' name="'.$filename.'"',
             'Content-Transfer-Encoding' => 'base64',
-            'Content-Disposition'       => 'attachment; filename="' .$filename .'"',
-        );
+        ];
+        if ($disposition) {
+            $bin['Content-Disposition'] = $disposition . '; filename="' .$filename .'"';
+        }
+        if ($cid) {
+            $bin['Content-ID'] = $cid === true ? "<$filename>" : $cid;
+        }
+        return $bin;
     }
 
     /**
@@ -763,9 +780,9 @@ abstract class EmailGateway
      *
      * @return string|null
      */
-    protected function contentInfoString($type = null, $file = null, $filename = null, $charset = null)
+    protected function contentInfoString($type = null, $file = null, $filename = null, $charset = null, $cid = false, $disposition = 'attachment')
     {
-        $data = $this->contentInfoArray($type, $file, $filename, $charset);
+        $data = $this->contentInfoArray($type, $file, $filename, $charset, $cid, $disposition);
         $fields = array();
 
         foreach ($data as $key => $value) {
