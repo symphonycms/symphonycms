@@ -106,6 +106,12 @@ class Database
     private $lastQuerySafe;
 
     /**
+     * The version of the SQL server
+     * @var string
+     */
+    private $version;
+
+    /**
      * Creates a new Database object given an associative array of configuration
      * parameters in `$config`, which should include
      * `driver`, `host`, `port`, `user`, `password`, `db` and an optional
@@ -179,6 +185,16 @@ class Database
     }
 
     /**
+     * Getter for the version of the SQL server.
+     *
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    /**
      * Creates a PDO connection to the desired database given the current config.
      * This will also set the error mode to be exceptions,
      * which are handled by this class.
@@ -201,6 +217,7 @@ class Database
             );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+            $this->version = $this->select(['VERSION()'])->execute()->variable(0);
         } catch (PDOException $ex) {
             $this->throwDatabaseError($ex);
         }
