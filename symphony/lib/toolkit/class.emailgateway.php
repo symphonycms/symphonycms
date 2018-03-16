@@ -635,9 +635,9 @@ abstract class EmailGateway
                      . $this->contentInfoString(
                             isset($file['mime-type']) ? $file['mime-type'] : null,
                             $file['file'],
-                            isset($file['filename']) ? $file['filename'] : null
-                            isset($file['charset']) ? $file['charset'] : null
-                            isset($file['cid']) ? $file['cid'] : null
+                            isset($file['filename']) ? $file['filename'] : null,
+                            isset($file['charset']) ? $file['charset'] : null,
+                            isset($file['cid']) ? $file['cid'] : null,
                             isset($file['disposition']) ? $file['disposition'] : 'attachment'
                         )
                      . EmailHelper::base64ContentTransferEncode($file_content);
