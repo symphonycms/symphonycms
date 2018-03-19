@@ -318,7 +318,7 @@ class General
 
         // Trim it
         if ($max_length > 0) {
-            $string = General::limitWords($string, $max_length);
+            $string = General::limitWords($string, $max_length,null,'-');
         }
 
         // Replace spaces (tab, newline etc) with the delimiter
@@ -1388,11 +1388,14 @@ class General
      *  true if the ellipses should be appended to the result in circumstances
      *  where the result is shorter than the input string. false otherwise. this
      *  defaults to false.
+     * @param string $character (optional)
+     *  Character you want to replace, defaults to space. 
+     *  Should be `-` when using limit words on a handle
      * @return null|string
      *  if the resulting string contains only spaces then null is returned. otherwise
      *  a string that satisfies the input constraints.
      */
-    public static function limitWords($string, $maxChars = 200, $appendHellip = false)
+    public static function limitWords($string, $maxChars = 200, $appendHellip = false, $character = ' ')
     {
         if ($appendHellip) {
             $maxChars -= 1;
@@ -1408,7 +1411,7 @@ class General
         }
 
         // Find the last space before the the maxChars limit is hit.
-        $last_word_break = strrpos($string, ' ', $maxChars - $original_length);
+        $last_word_break = strrpos($string, $character, $maxChars - $original_length);
         $result = substr($string, 0, $last_word_break);
 
         if ($appendHellip) {
