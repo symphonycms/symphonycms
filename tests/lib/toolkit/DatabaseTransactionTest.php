@@ -27,7 +27,7 @@ final class DatabaseTransactionTest extends TestCase
     public function testExecute()
     {
         $called = false;
-        $tx = function () use (&$called) {
+        $tx = function (\Database $db) use (&$called) {
             $called = true;
         };
         $tx = new DatabaseTransaction($this->db, $tx);

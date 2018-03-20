@@ -64,7 +64,7 @@ class DatabaseTransaction
             throw new DatabaseTransactionException('Failed to begin the transaction');
         }
         try {
-            call_user_func($this->tx);
+            call_user_func($this->tx, $this->getDB());
             $success = $this->getDB()->commit();
         } catch (Throwable $ex) {
             $this->getDB()->rollBack();
