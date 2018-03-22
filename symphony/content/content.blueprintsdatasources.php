@@ -1143,10 +1143,14 @@ class contentBlueprintsDatasources extends ResourcesPage
              * '/blueprints/datasources/'
              * @param string $file
              *  The path to the Datasource file
+             * @param string $handle
+             *  @since Symphony 3.0.0
+             *  The handle of the Datasource
              */
             Symphony::ExtensionManager()->notifyMembers('DatasourcePreDelete', '/blueprints/datasources/', array(
-                'file' => DATASOURCES . "/data." . $this->_context[1] . ".php")
-            );
+                'file' => DATASOURCES . "/data." . $this->_context[1] . ".php",
+                'handle' => $this->_context[1],
+            ));
 
             if (!General::deleteFile(DATASOURCES . '/data.' . $this->_context[1] . '.php')) {
                 $this->pageAlert(
@@ -1160,6 +1164,23 @@ class contentBlueprintsDatasources extends ResourcesPage
                 foreach ($pages as $page) {
                     ResourceManager::detach(ResourceManager::RESOURCE_TYPE_DS, $this->_context[1], $page['id']);
                 }
+
+                /**
+                 * After deleting the Datasource file. Target file path is provided.
+                 *
+                 * @delegate DatasourcePostDelete
+                 * @since Symphony 3.0.0
+                 * @param string $context
+                 * '/blueprints/datasources/'
+                 * @param string $file
+                 *  The path to the Datasource file
+                 * @param string $handle
+                 *  The handle of the Datasource
+                 */
+                Symphony::ExtensionManager()->notifyMembers('DatasourcePostDelete', '/blueprints/datasources/', array(
+                    'file' => DATASOURCES . "/data." . $this->_context[1] . ".php",
+                    'handle' => $this->_context[1],
+                ));
 
                 redirect(SYMPHONY_URL . '/blueprints/datasources/');
             }
