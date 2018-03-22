@@ -316,6 +316,8 @@ abstract class ResourcesPage extends AdministrationPage
     public function __actionIndex($resource_type)
     {
         $manager = ResourceManager::getManagerFromType($resource_type);
+        $resource_name = str_replace('Manager', '', $manager);
+        $delegate_path = strtolower($resource_name);
         $checked = (is_array($_POST['items'])) ? array_keys($_POST['items']) : null;
         $context = Administration::instance()->getPageCallback();
 
@@ -347,7 +349,29 @@ abstract class ResourcesPage extends AdministrationPage
                         // Don't allow Extension resources to be deleted. RE: #2027
                         if (stripos($path, EXTENSIONS) === 0) {
                             continue;
-                        } elseif (!General::deleteFile($path)) {
+                        }
+                        
+                        /**
+                         * Prior to deleting the Resource file. Target file path is provided.
+                         *
+                         * @since Symphony 3.0.0
+                         * @param string $context
+                         * '/blueprints/{$resource_name}/'
+                         * @param string $file
+                         *  The path to the Resource file
+                         * @param string $handle
+                         *  The handle of the Resource
+                         */
+                        Symphony::ExtensionManager()->notifyMembers(
+                            "{$resource_name}PreDelete",
+                            "/blueprints/{$delegate_path}/",
+                            array(
+                                'file' => $path,
+                                'handle' => $handle,
+                            )
+                        );
+
+                        if (!General::deleteFile($path)) {
                             $folder = str_replace(DOCROOT, '', $path);
                             $folder = str_replace('/' . basename($path), '', $folder);
 
@@ -363,6 +387,26 @@ abstract class ResourcesPage extends AdministrationPage
                             foreach ($pages as $page) {
                                 ResourceManager::detach($resource_type, $handle, $page['id']);
                             }
+
+                            /**
+                             * After deleting the Resource file. Target file path is provided.
+                             *
+                             * @since Symphony 3.0.0
+                             * @param string $context
+                             * '/blueprints/{$resource_name}/'
+                             * @param string $file
+                             *  The path to the Resource file
+                             * @param string $handle
+                             *  The handle of the Resource
+                             */
+                            Symphony::ExtensionManager()->notifyMembers(
+                                "{$resource_name}PostDelete",
+                                "/blueprints/{$delegate_path}/",
+                                array(
+                                    'file' => $path,
+                                    'handle' => $handle,
+                                )
+                            );
                         }
                     }
 

@@ -380,8 +380,14 @@ class contentBlueprintsEvents extends ResourcesPage
              * '/blueprints/events/'
              * @param string $file
              *  The path to the Event file
+             * @param string $handle
+             *  @since Symphony 3.0.0
+             *  The handle of the Event
              */
-            Symphony::ExtensionManager()->notifyMembers('EventPreDelete', '/blueprints/events/', array('file' => EVENTS . "/event." . $this->_context[1] . ".php"));
+            Symphony::ExtensionManager()->notifyMembers('EventPreDelete', '/blueprints/events/', array(
+                'file' => EVENTS . "/event." . $this->_context[1] . ".php",
+                'handle' => $this->_context[1],
+            ));
 
             if (!General::deleteFile(EVENTS . '/event.' . $this->_context[1] . '.php')) {
                 $this->pageAlert(
@@ -395,6 +401,23 @@ class contentBlueprintsEvents extends ResourcesPage
                 foreach ($pages as $page) {
                     ResourceManager::detach(ResourceManager::RESOURCE_TYPE_EVENT, $this->_context[1], $page['id']);
                 }
+
+                /**
+                 * After deleting the Event file. Target file path is provided.
+                 *
+                 * @delegate EventPostDelete
+                 * @since Symphony 3.0.0
+                 * @param string $context
+                 * '/blueprints/events/'
+                 * @param string $file
+                 *  The path to the Event file
+                 * @param string $handle
+                 *  The handle of the Event
+                 */
+                Symphony::ExtensionManager()->notifyMembers('EventPostDelete', '/blueprints/events/', array(
+                    'file' => EVENTS . "/event." . $this->_context[1] . ".php",
+                    'handle' => $this->_context[1],
+                ));
 
                 redirect(SYMPHONY_URL . '/blueprints/events/');
             }
