@@ -268,12 +268,91 @@ class EntryQuery extends DatabaseQuery
     }
 
     /**
+     * Appends a WHERE clause using the $field parameter.
+     * Calling this method multiple times will join the WHERE clauses with a AND.
+     *
+     * @see Field::getEntryQueryFieldAdapter()
+     * @param mixed $field
+     *  The field id, as a string, the field name or a Field object to filter with.
+     *  Can also be a 'system:' field, i.e.
+     *  'system:creation-date', 'system:modification-date', 'system:id'.
+     *  If null, it simply returns.
+     * @param array $values
+     *  The values to filter with.
+     * @param string $operator
+     *  The operator to use to group all $values clauses.
+     * @return EntryQuery
+     *  The current instance
+     */
+    public function filter($field, array $values, $operator = 'or')
+    {
+        General::ensureType([
+            'operator' => ['var' => $operator, 'type' => 'string'],
+        ]);
+
+        if (!$field) {
+            return $this;
+        }
+
+        $f = null;
+
+        // Handle filter on Creation Date
+        if ($field === 'system:creation-date') {
+            return $this->where([$operator => array_map(function ($v) {
+                return ['e.creation_date_gmt' => $v];
+            }, $values)]);
+
+        // Handle filter on Modification Date sorting
+        } elseif ($field === 'system:modification-date') {
+            return $this->where([$operator => array_map(function ($v) {
+                return ['e.modification_date_gmt' => $v];
+            }, $values)]);
+
+        // Handle filter for System ID
+        } elseif ($field === 'system:id') {
+            return $this->where([$operator => array_map(function ($v) {
+                return ['e.id' => $v];
+            }, $values)]);
+
+        // Handle when the filter field is a field id
+        } elseif (is_string($field)) {
+            $f = (new FieldManager)->select()->field($field)->execute()->next();
+
+        // Handle when the filter field is a field name
+        } elseif (General::intval($field) > 0) {
+            $f = (new FieldManager)->select()->where(['element_name' => $field])->execute()->next();
+
+        // Handle when the filter field is a field object
+        } elseif ($field instanceof Field) {
+            $f = $field;
+        }
+
+        if (!$f) {
+            throw new DatabaseStatementException("Invalid filter on field `$field`");
+        } elseif (!$f->canFilter()) {
+            throw new DatabaseStatementException("Field `$field` does not allow filtering");
+        } elseif (!$f->getEntryQueryFieldAdapter()) {
+            throw new DatabaseStatementException("Field `$field` does not have an EntryQueryFieldOperation");
+        }
+
+        if ($f->requiresSQLGrouping() && !$this->containsSQLParts('optimizer')) {
+            $this->distinct();
+        }
+
+        $field->getEntryQueryFieldAdapter()->filter($this, $values, $operator);
+
+        return $this;
+    }
+
+    /**
      * Appends a ORDER BY clause using the $field parameter.
      *
+     * @see Field::getEntryQueryFieldAdapter()
      * @param string $field
      *  The field id, as a string, to order by with.
-     *  Can also be a system: field, i.e.
-     *  'system:creation-date', 'system:modification-date', 'system:id'
+     *  Can also be a 'system:' field, i.e.
+     *  'system:creation-date', 'system:modification-date', 'system:id'.
+     *  If null, it simply returns.
      * @param string $direction
      *  The default direction to use.
      *  Supports ASC, DESC and RAND
@@ -313,7 +392,13 @@ class EntryQuery extends DatabaseQuery
         } elseif (General::intval($field) > 0) {
             $f = (new FieldManager)->select()->field($field)->execute()->next();
             if ($f && $f->isSortable()) {
-                $sort = $this->buildLegacySortingForField($f, $direction);
+                if ($f->getEntryQueryFieldAdapter()) {
+                    $f->getEntryQueryFieldAdapter()->sort($this, $direction);
+                    // No need to touch the query!
+                    $sort = true;
+                } else {
+                    $sort = $this->buildLegacySortingForField($f, $direction);
+                }
             } else {
                 // Field not found or not sortable, silence the error.
                 // This prevents crashing the backend for a bad reason.
