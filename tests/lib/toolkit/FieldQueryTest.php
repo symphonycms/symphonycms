@@ -108,6 +108,19 @@ final class FieldQueryTest extends TestCase
         $this->assertEquals(1, count($values), '1 value');
     }
 
+    public function testNameFilter()
+    {
+        $q = (new \FieldQuery($this->db))->name('field');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `fields` AS `f` WHERE `f`.`element_name` = :f_element_name",
+            $q->generateSQL(),
+            'new FieldQuery test ->name()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals('field', $values['f_element_name'], 'f_element_name is `field`');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
     public function testSort()
     {
         $q = (new \FieldQuery($this->db))->sort('x', 'DESC');

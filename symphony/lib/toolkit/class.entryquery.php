@@ -320,7 +320,7 @@ class EntryQuery extends DatabaseQuery
 
         // Handle when the filter field is a field name
         } elseif (General::intval($field) > 0) {
-            $f = (new FieldManager)->select()->where(['element_name' => $field])->execute()->next();
+            $f = (new FieldManager)->select()->name($field)->execute()->next();
 
         // Handle when the filter field is a field object
         } elseif ($field instanceof Field) {
