@@ -152,7 +152,51 @@ final class EntryQueryTest extends TestCase
             'new EntryQuery with ->whereField() with a single filter'
         );
         $values = $q->getValues();
-        $this->assertEquals(4, $values['t_4_value'], 't_4_value is 4');
+        $this->assertEquals(4, $values['f4_value'], 'f4_value is 4');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
+    public function testWhereFieldComplexFilter()
+    {
+        $q = (new \EntryQuery($this->db))->whereField(4, [
+            'or' => [
+                'f4.value' => ['!=' => 4]
+            ]
+        ]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id` WHERE (`f4`.`value` != :f4_value)",
+            $q->generateSQL(),
+            'new EntryQuery with ->whereField() with a complex filter'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(4, $values['f4_value'], 'f4_value is 4');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
+    public function testFilterSystemId()
+    {
+        $q = (new \EntryQuery($this->db))->filter('system:id', [1,2], 'or');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE (`e`.`id` = :e_id OR `e`.`id` = :e_id2)",
+            $q->generateSQL(),
+            'new EntryQuery with ->filter(system:id, or, [])'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(1, $values['e_id'], 'e_id is 1');
+        $this->assertEquals(2, $values['e_id2'], 'e_id2 is 2');
+        $this->assertEquals(2, count($values), '2 values');
+    }
+
+    public function testFilterSystemCreationDate()
+    {
+        $q = (new \EntryQuery($this->db))->filter('system:creation-date', ['2018-03-16']);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE (`e`.`creation_date_gmt` = :e_creation_date_gmt)",
+            $q->generateSQL(),
+            'new EntryQuery with ->filter(system:creation-date, or, [])'
+        );
+        $values = $q->getValues();
+        $this->assertEquals('2018-03-16', $values['e_creation_date_gmt'], 'e_id is 2018-03-16');
         $this->assertEquals(1, count($values), '1 value');
     }
 

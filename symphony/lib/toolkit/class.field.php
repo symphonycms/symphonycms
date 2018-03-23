@@ -127,6 +127,15 @@ class Field implements ArrayAccess
     protected $_showassociation = false;
 
     /**
+     * The entry query field adapter object, responsible for filter and sort.
+     * The default class does not set a default EntryQueryFieldAdapter object
+     * to allow the compatibility layer to work. In later versions, this can change.
+     * @since Symphony 3.0.0
+     * @var EntryQueryFieldAdapter
+     */
+    protected $entryQueryFieldAdapter = null;
+
+    /**
      * Construct a new instance of this field.
      */
     public function __construct()
@@ -481,6 +490,17 @@ class Field implements ArrayAccess
     public function offsetUnset($offset)
     {
         unset($this->_settings[$offset]);
+    }
+
+    /**
+     * Getter for this field's EntryQuery operations object.
+     *
+     * @since Symphony 3.0.0
+     * @return EntryQueryFieldAdapter
+     */
+    public function getEntryQueryFieldAdapter()
+    {
+        return $this->entryQueryFieldAdapter;
     }
 
     /**
