@@ -113,19 +113,11 @@ trait DatabaseWhereDefinition
                 return $this->buildWhereClauseFromArray($c);
             }
             // key is an [op => value] structure
-            list($op, $c) = array_reduce(
-                ['<', '>', '=', '<=', '>=', '!=', 'like', 'regexp'],
-                function ($memo, $k) use ($c) {
-                    if ($memo) {
-                        return $memo;
-                    }
-                    if (!empty($c[$k])) {
-                        return [strtoupper($k), $c[$k]];
-                    }
-                    return null;
-                },
-                null
-            );
+            $op = null;
+            if (in_array($vk, ['<', '>', '=', '<=', '>=', '!=', 'like', 'not like', 'regexp', 'not regexp'])) {
+                $op = strtoupper($vk);
+                $c = $c[$vk];
+            }
             if (!$op) {
                 throw new DatabaseStatementException("Operation `$k` not valid");
             }

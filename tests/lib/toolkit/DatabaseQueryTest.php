@@ -210,6 +210,24 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(1, count($values), '1 value');
     }
 
+    public function testSELECTwithWHEREISNOTNULL()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->where([
+                'x' => ['!=' => null]
+            ]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` IS NOT :x",
+            $sql->generateSQL(),
+            "SQL clause with WHERE IS NOT NULL"
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(null, $values['x'], 'x is NULL');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
     public function testSELECTwithJOIN()
     {
         $db = new Database([]);
@@ -326,6 +344,22 @@ final class DatabaseQueryTest extends TestCase
             "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` LIKE :x",
             $sql->generateSQL(),
             'LIKE clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals('%test%', $values['x'], 'x is %test%');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
+    public function testSELECTNOTLIKE()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->where(['x' => ['not like' => '%test%']]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` NOT LIKE :x",
+            $sql->generateSQL(),
+            'NOT LIKE clause'
         );
         $values = $sql->getValues();
         $this->assertEquals('%test%', $values['x'], 'x is %test%');
