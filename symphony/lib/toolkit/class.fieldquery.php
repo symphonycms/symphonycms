@@ -66,6 +66,19 @@ class FieldQuery extends DatabaseQuery
     }
 
     /**
+     * Adds a WHERE clause on the field name.
+     *
+     * @param string $name
+     *  The field name to fetch
+     * @return FieldQuery
+     *  The current instance
+     */
+    public function name($name)
+    {
+        return $this->where(['f.element_name' => $name]);
+    }
+
+    /**
      * Adds a WHERE clause on the field type.
      *
      * @param string $type
