@@ -289,7 +289,7 @@ class DatabaseQuery extends DatabaseStatement
                 $orders[] = 'RAND()';
                 continue;
             }
-            $dir = $dir ?: $direction;
+            $dir = strtoupper($dir ?: $direction);
             General::ensureType([
                 'col' => ['var' => $col, 'type' => 'string'],
                 'dir' => ['var' => $dir, 'type' => 'string'],
