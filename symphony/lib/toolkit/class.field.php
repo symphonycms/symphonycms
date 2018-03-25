@@ -93,6 +93,7 @@ class Field implements ArrayAccess
 
     /**
      * Used to manage the joins when this field used in a datasource
+     * @deprecated @since Symphony 3.0.0
      * @var integer
      */
     protected $_key = 0;
@@ -1392,6 +1393,8 @@ class Field implements ArrayAccess
      * Test whether the input string is a regular expression, by searching
      * for the prefix of `regexp:` or `not-regexp:` in the given `$string`.
      *
+     * @deprecated @since Symphony 3.0.0
+     *  Use EntryQueryFieldAdapter::isFilterRegex() instead
      * @param string $string
      *  The string to test.
      * @return boolean
@@ -1399,6 +1402,12 @@ class Field implements ArrayAccess
      */
     protected static function isFilterRegex($string)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class(self) . '::isFilterRegex()',
+                'EntryQueryFieldAdapter::isFilterRegex()'
+            );
+        }
         if (preg_match('/^regexp:/i', $string) || preg_match('/^not-?regexp:/i', $string)) {
             return true;
         }
@@ -1411,6 +1420,8 @@ class Field implements ArrayAccess
      * flavours differs at times.
      *
      * @since Symphony 2.3
+     * @deprecated @since Symphony 3.0.0
+     *  Use EntryQueryFieldAdapter::createFilterRegexp() instead
      * @link https://dev.mysql.com/doc/refman/en/regexp.html
      * @param string $filter
      *  The full filter, eg. `regexp: ^[a-d]`
@@ -1429,6 +1440,12 @@ class Field implements ArrayAccess
      */
     public function buildRegexSQL($filter, array $columns, &$joins, &$where)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class($this) . '::buildRegexSQL()',
+                'EntryQueryFieldAdapter::createFilterRegexp()'
+            );
+        }
         $this->_key++;
         $field_id = $this->get('id');
         $filter = $this->cleanValue($filter);
@@ -1473,6 +1490,8 @@ class Field implements ArrayAccess
      * for the prefix of `sql:` in the given `$string`, followed by `(NOT )? NULL`
      *
      * @since Symphony 2.7.0
+     * @deprecated @since Symphony 3.0.0
+     *  Use EntryQueryFieldAdapter::isFilterSQL() instead
      * @param string $string
      *  The string to test.
      * @return boolean
@@ -1480,6 +1499,12 @@ class Field implements ArrayAccess
      */
     protected static function isFilterSQL($string)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class(self) . '::isFilterSQL()',
+                'EntryQueryFieldAdapter::isFilterSQL()'
+            );
+        }
         if (preg_match('/^sql:\s*(NOT )?NULL$/i', $string)) {
             return true;
         }
@@ -1490,6 +1515,8 @@ class Field implements ArrayAccess
      *  This function supports `sql: NULL` or `sql: NOT NULL`.
      *
      * @since Symphony 2.7.0
+     * @deprecated @since Symphony 3.0.0
+     *  Use EntryQueryFieldAdapter::createFilterSQL() instead
      * @link https://dev.mysql.com/doc/refman/en/regexp.html
      * @param string $filter
      *  The full filter, eg. `sql: NULL`
@@ -1507,6 +1534,12 @@ class Field implements ArrayAccess
      */
     public function buildFilterSQL($filter, array $columns, &$joins, &$where)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class($this) . '::buildFilterSQL()',
+                'EntryQueryFieldAdapter::createFilterSQL()'
+            );
+        }
         $this->_key++;
         $field_id = $this->get('id');
         $filter = $this->cleanValue($filter);
@@ -1543,6 +1576,8 @@ class Field implements ArrayAccess
      * Construct the SQL statement fragments to use to retrieve the data of this
      * field when utilized as a data source.
      *
+     * @deprecated @since Symphony 3.0.0
+     *  Use EntryQueryFieldAdapter::filter() instead
      * @see toolkit.Datasource#__determineFilterType
      * @param array $data
      *  An array of the data that contains the values for the filter as specified
@@ -1565,6 +1600,12 @@ class Field implements ArrayAccess
      */
     public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class($this) . '::buildDSRetrievalSQL()',
+                'EntryQueryFieldAdapter::filter()'
+            );
+        }
         $field_id = $this->get('id');
 
         // REGEX filtering is a special case, and will only work on the first item
@@ -1618,6 +1659,8 @@ class Field implements ArrayAccess
      * Determine if the requested $order is random or not.
      *
      * @since Symphony 2.7.0
+     * @deprecated @since Symphony 3.0.0
+     *  Use EntryQueryFieldAdapter::isRandomOrder() instead
      * @param string $order
      *  the sorting direction.
      * @return boolean
@@ -1625,6 +1668,12 @@ class Field implements ArrayAccess
      */
     protected function isRandomOrder($order)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class($this) . '::isRandomOrder()',
+                'EntryQueryFieldAdapter::isRandomOrder()'
+            );
+        }
         return in_array(strtolower($order), array('random', 'rand'));
     }
 
@@ -1636,6 +1685,8 @@ class Field implements ArrayAccess
      * Extension developers should always implement both `buildSortingSQL()`
      * and `buildSortingSelectSQL()`.
      *
+     * @deprecated @since Symphony 3.0.0
+     *  Use EntryQueryFieldAdapter::sort() instead
      * @uses Field::isRandomOrder()
      * @see Field::buildSortingSelectSQL()
      * @param string $joins
@@ -1651,6 +1702,12 @@ class Field implements ArrayAccess
      */
     public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class($this) . '::buildSortingSQL()',
+                'EntryQueryFieldAdapter::sort()'
+            );
+        }
         if ($this->isRandomOrder($order)) {
             $sort = 'ORDER BY RAND()';
         } else {
@@ -1673,6 +1730,8 @@ class Field implements ArrayAccess
      * Extension developers should make their Fields implement
      * `buildSortingSelectSQL()` when overriding `buildSortingSQL()`.
      *
+     * @deprecated @since Symphony 3.0.0
+     *  Use EntryQueryFieldAdapter::sort() instead
      * @since Symphony 2.7.0
      * @uses Field::isRandomOrder()
      * @see Field::buildSortingSQL()
@@ -1688,6 +1747,12 @@ class Field implements ArrayAccess
      */
     public function buildSortingSelectSQL($sort, $order = 'ASC')
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class($this) . '::buildSortingSelectSQL()',
+                'EntryQueryFieldAdapter::sort()'
+            );
+        }
         if ($this->isRandomOrder($order)) {
             return null;
         }
