@@ -87,7 +87,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->innerJoinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` INNER JOIN `entries_data_4` AS `t_4` ON `e`.`id` = `t_4`.`entry_id`",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` INNER JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with ->innerJoinField()'
         );
@@ -99,7 +99,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->joinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` JOIN `entries_data_4` AS `t_4` ON `e`.`id` = `t_4`.`entry_id`",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with ->joinField()'
         );
@@ -111,7 +111,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->leftJoinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `t_4` ON `e`.`id` = `t_4`.`entry_id`",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with ->leftJoinField()'
         );
@@ -123,7 +123,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->outerJoinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` OUTER JOIN `entries_data_4` AS `t_4` ON `e`.`id` = `t_4`.`entry_id`",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` OUTER JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with ->outerJoinField()'
         );
@@ -135,7 +135,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->rightJoinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` RIGHT JOIN `entries_data_4` AS `t_4` ON `e`.`id` = `t_4`.`entry_id`",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` RIGHT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with ->rightJoinField()'
         );
@@ -145,9 +145,9 @@ final class EntryQueryTest extends TestCase
 
     public function testWhereField()
     {
-        $q = (new \EntryQuery($this->db))->whereField(4, ['value' => 4]);
+        $q = (new \EntryQuery($this->db))->whereField(4, ['f4.value' => 4]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE `t_4`.`value` = :t_4_value",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id` WHERE `f4`.`value` = :f4_value",
             $q->generateSQL(),
             'new EntryQuery with ->whereField() with a single filter'
         );
