@@ -28,6 +28,13 @@ class EntryQuery extends DatabaseQuery
     private $sectionId = 0;
 
     /**
+     * The requested fields id via joins and used in where and order by.
+     * This allows limiting the number of generated joins.
+     * @var array
+     */
+    private $fieldIds = [];
+
+    /**
      * Creates a new EntryQuery statement on table `tbl_entries` with an optional projection.
      * The table is aliased to `e`.
      * The mandatory values are already added to the projection.
@@ -67,6 +74,34 @@ class EntryQuery extends DatabaseQuery
     public function sectionId()
     {
         return $this->sectionId;
+    }
+
+    /**
+     * Checks if the $field_id has already been joined.
+     *
+     * @see EntryQuery::fieldIds
+     * @param int $field_id
+     *  The requested Field id
+     * @return boolean
+     *  true if the field is already joined, false otherwise
+     */
+    public function isFieldJoined($field_id)
+    {
+        return !empty($this->fieldIds[$field_id]);
+    }
+
+    /**
+     * Marks this Field as joined by saving its id and join type.
+     *
+     * @param int $field_id
+     *  The requested Field id
+     * @param string $join
+     *  The type of joined used
+     * @return void
+     */
+    protected function fieldJoined($field_id, $join)
+    {
+        $this->fieldIds[$field_id] = $join;
     }
 
     /**
@@ -152,7 +187,9 @@ class EntryQuery extends DatabaseQuery
     }
 
     /**
-     * Appends a INNER JOIN `tbl_entries_data_$field_id` ON entry_id clause
+     * Appends a unique INNER JOIN `tbl_entries_data_$field_id` ON entry_id clause.
+     * The joined table is aliased as `f{$field_id}`.
+     * All other subsequent join calls will do nothing.
      *
      * @param int $field_id
      *  The field id to join with
@@ -164,13 +201,19 @@ class EntryQuery extends DatabaseQuery
         General::ensureType([
             'field_id' => ['var' => $field_id, 'type' => 'int'],
         ]);
+        if ($this->isFieldJoined($field_id)) {
+            return $this;
+        }
+        $this->fieldJoined($field_id, 'inner join');
         return $this
-            ->innerJoin("tbl_entries_data_$field_id", "t_$field_id")
-            ->on(['e.id' => "\$t_$field_id.entry_id"]);
+            ->innerJoin("tbl_entries_data_$field_id", "f{$field_id}")
+            ->on(['e.id' => "\$f{$field_id}.entry_id"]);
     }
 
     /**
-     * Appends a JOIN `tbl_entries_data_$field_id` ON entry_id clause
+     * Appends a unique JOIN `tbl_entries_data_$field_id` ON entry_id clause.
+     * The joined table is aliased as `f{$field_id}`.
+     * All other subsequent join calls will do nothing.
      *
      * @param int $field_id
      *  The field id to join with
@@ -182,13 +225,19 @@ class EntryQuery extends DatabaseQuery
         General::ensureType([
             'field_id' => ['var' => $field_id, 'type' => 'int'],
         ]);
+        if ($this->isFieldJoined($field_id)) {
+            return $this;
+        }
+        $this->fieldJoined($field_id, 'join');
         return $this
-            ->join("tbl_entries_data_$field_id", "t_$field_id")
-            ->on(['e.id' => "\$t_$field_id.entry_id"]);
+            ->join("tbl_entries_data_$field_id", "f{$field_id}")
+            ->on(['e.id' => "\$f{$field_id}.entry_id"]);
     }
 
     /**
-     * Appends a LEFT JOIN `tbl_entries_data_$field_id` ON entry_id clause
+     * Appends a unique LEFT JOIN `tbl_entries_data_$field_id` ON entry_id clause.
+     * The joined table is aliased as `f{$field_id}`.
+     * All other subsequent join calls will do nothing.
      *
      * @param int $field_id
      *  The field id to join with
@@ -200,13 +249,19 @@ class EntryQuery extends DatabaseQuery
         General::ensureType([
             'field_id' => ['var' => $field_id, 'type' => 'int'],
         ]);
+        if ($this->isFieldJoined($field_id)) {
+            return $this;
+        }
+        $this->fieldJoined($field_id, 'left join');
         return $this
-            ->leftJoin("tbl_entries_data_$field_id", "t_$field_id")
-            ->on(['e.id' => "\$t_$field_id.entry_id"]);
+            ->leftJoin("tbl_entries_data_$field_id", "f{$field_id}")
+            ->on(['e.id' => "\$f{$field_id}.entry_id"]);
     }
 
     /**
-     * Appends a OUTER JOIN `tbl_entries_data_$field_id` ON entry_id clause
+     * Appends a unique OUTER JOIN `tbl_entries_data_$field_id` ON entry_id clause.
+     * The joined table is aliased as `f{$field_id}`.
+     * All other subsequent join calls will do nothing.
      *
      * @param int $field_id
      *  The field id to join with
@@ -218,13 +273,19 @@ class EntryQuery extends DatabaseQuery
         General::ensureType([
             'field_id' => ['var' => $field_id, 'type' => 'int'],
         ]);
+        if ($this->isFieldJoined($field_id)) {
+            return $this;
+        }
+        $this->fieldJoined($field_id, 'outer join');
         return $this
-            ->outerJoin("tbl_entries_data_$field_id", "t_$field_id")
-            ->on(['e.id' => "\$t_$field_id.entry_id"]);
+            ->outerJoin("tbl_entries_data_$field_id", "f{$field_id}")
+            ->on(['e.id' => "\$f{$field_id}.entry_id"]);
     }
 
     /**
-     * Appends a RIGHT JOIN `tbl_entries_data_$field_id` ON entry_id clause
+     * Appends a unique RIGHT JOIN `tbl_entries_data_$field_id` ON entry_id clause.
+     * The joined table is aliased as `f{$field_id}`.
+     * All other subsequent join calls will do nothing.
      *
      * @param int $field_id
      *  The field id to join with
@@ -236,35 +297,37 @@ class EntryQuery extends DatabaseQuery
         General::ensureType([
             'field_id' => ['var' => $field_id, 'type' => 'int'],
         ]);
+        if ($this->isFieldJoined($field_id)) {
+            return $this;
+        }
+        $this->fieldJoined($field_id, 'right join');
         return $this
-            ->rightJoin("tbl_entries_data_$field_id", "t_$field_id")
-            ->on(['e.id' => "\$t_$field_id.entry_id"]);
+            ->rightJoin("tbl_entries_data_$field_id", "f{$field_id}")
+            ->on(['e.id' => "\$f{$field_id}.entry_id"]);
     }
 
     /**
      * Appends a WHERE clause with one or many conditions.
      * Calling this method multiple times will join the WHERE clauses with a AND.
+     * If the field as not been previously joined, it will append a left join.
      *
      * @see DatabaseQuery::where()
      * @param int $field_id
      *  The field id to filter with
-     * @param array $filters
-     *  The where filters to apply on the field table
+     * @param array $conditions
+     *  The where conditions to apply on the field table
      * @return EntryQuery
      *  The current instance
      */
-    public function whereField($field_id, array $filters)
+    public function whereField($field_id, array $conditions)
     {
         General::ensureType([
             'field_id' => ['var' => $field_id, 'type' => 'int'],
         ]);
-        foreach ($filters as $key => $filter) {
-            if (!$key) {
-                throw new DatabaseStatementException('Filter key can not be null');
-            }
-            $this->where(["t_$field_id.$key" => $filter]);
+        if (!$this->isFieldJoined($field_id)) {
+            $this->leftJoinField($field_id);
         }
-        return $this;
+        return $this->where($conditions);
     }
 
     /**
