@@ -48,6 +48,12 @@ class DatabaseStatement
     const FCT_PATTERN = '/^([A-Za-z_]+)\((.*)\)$/';
 
     /**
+     * Regular Expression that matches SQL operators +, -, *, /
+     * @var string
+     */
+    const OP_PATTERN = '/\s+([\-\+\*\/])\s+/';
+
+    /**
      * Database object reference
      * @var Database
      */
@@ -462,20 +468,89 @@ class DatabaseStatement
     }
 
     /**
+     * @internal Actually does the tick formatting on the $value string.
+     * It makes sure all ticks are removed before validating the value.
+     * If the string contains a dot, it will explode it before adding the ticks.
+     *
+     * @uses validateFieldName()
+     * @param string $value
+     *  The value to surrounded with ticks
+     * @return string
+     *  The value surrounded by ticks
+     */
+    final public function tickString($value)
+    {
+        General::ensureType([
+            'value' => ['var' => $value, 'type' => 'string'],
+        ]);
+        $value = str_replace('`', '', $value);
+        $this->validateFieldName($value);
+        if (strpos($value, '.') !== false) {
+            return implode('.', array_map([$this, 'asTickedString'], explode('.', $value)));
+        }
+        return "`$value`";
+    }
+
+    /**
+     * @internal Splits the arguments of function calls.
+     * Arguments are only separated: no formatting is made.
+     * Each value should to pass to asTickedString() before being used in SQL queries.
+     *
+     * @param string $arguments
+     *  The argument string to parse
+     * @return array
+     *  The arguments array
+     */
+    final public function splitFunctionArguments($arguments)
+    {
+        $arguments = str_split($arguments);
+        $current = [];
+        $args = [];
+        $openParenthesisCount = 0;
+        foreach ($arguments as $char) {
+            if (!trim($char)) {
+                continue;
+            } elseif ($openParenthesisCount === 0 && $char === ',') {
+                if (!empty($current)) {
+                    $args[] = implode('', $current);
+                }
+                $current = [];
+                continue;
+            }
+            $current[] = $char;
+            if ($char === '(') {
+                $openParenthesisCount++;
+            } elseif ($char === ')') {
+                $openParenthesisCount--;
+            }
+        }
+        if ($openParenthesisCount !== 0) {
+            throw new DatabaseStatementException('Imbalanced number of parenthesis in function arguments');
+        }
+        if (!empty($current)) {
+            $args[] = implode('', $current);
+        }
+        return $args;
+    }
+
+    /**
      * @internal
      * Given some value, it will create a ticked string, i.e. "`string`".
      * If the $value parameter is:
-     *  1. an array: it will call asPlaceholdersList()
-     *  2. the string '*': it will keep it as is
-     *  3. a string with comma in it: it will explode that string and call
-     *     asTickedList() with the resulting array
-     *  4. a string matching a function call
-     *  5. a string with a mathematical operator (+, -, *, /)
-     *  6. a plain string: it will surround all words with ticks
+     *  1. an array, it will call asPlaceholdersList();
+     *  2. the string '*', it will keep it as is;
+     *  3. a string matching a function call, it will parse it;
+     *  4. a string with a mathematical operator (+, -, *, /), it will parse it;
+     *  5. a string with comma, it will explode that string and call
+     *     asTickedList() with the resulting array;
+     *  6. a string starting with a colon, it will be used as named parameter;
+     *  7. a plain string, it will surround all words with ticks.
      *
-     * For other type of variable, it will throw an Exception.
+     * For other type of value, it will throw an Exception.
      *
      * @see asTickedList()
+     * @uses tickString()
+     * @uses splitFunctionArguments()
      * @param string|array $value
      *  The value or list of values to surround with ticks.
      * @param string $alias
@@ -489,6 +564,7 @@ class DatabaseStatement
         if (!$value) {
             return '';
         }
+        // 1. deal with array
         if (is_array($value)) {
             return $this->asTickedList($value);
         }
@@ -497,39 +573,55 @@ class DatabaseStatement
         ]);
 
         $fctMatches = [];
+        $opMatches = [];
         $value = trim($value);
 
+        // 2. '*'
         if ($value === '*') {
             return $value;
-        } elseif (strpos($value, ',') !== false) {
-            return $this->asTickedList(explode(',', $value));
+        // 3. function
         } elseif (preg_match(self::FCT_PATTERN, $value, $fctMatches) === 1) {
-            $fxCall = $fctMatches[1] . '(' . $this->asTickedString($fctMatches[2]) . ')';
+            $args = $this->splitFunctionArguments($fctMatches[2]);
+            $fxCall = $fctMatches[1] . '(' . $this->asTickedList($args) . ')';
             if ($alias) {
-                $this->validateFieldName($alias);
-                return "$fxCall AS `$alias`";
+                $alias = $this->tickString($alias);
+                return "$fxCall AS $alias";
             }
             return $fxCall;
-        } elseif (($op = strpbrk($value, '+-*/')) !== false && preg_match("/\s{$op{0}}\s/", $value) === 1) {
-            $op = $op{0};
+        // 4. op
+        } elseif (preg_match(self::OP_PATTERN, $value, $opMatches) === 1) {
+            $op = $opMatches[1];
+            if (!$op) {
+                throw new DatabaseStatementException("Failed to parse operator in `$value`");
+            }
             $parts = array_map('trim', explode($op, $value, 2));
-            $parts = array_map(function ($p)  {
+            $parts = array_map(function ($p) {
+                // TODO: add support for params
                 $ip = General::intval($p);
                 return $ip === -1 ? $this->asTickedString($p) : "$ip";
             }, $parts);
-            return implode(" $op ", $parts);
+            $value = implode(" $op ", $parts);
+            if ($alias) {
+                $alias = $this->tickString($alias);
+                return "($value) AS $alias";
+            }
+            return $value;
+        // 5. comma
+        } elseif (strpos($value, ',') !== false) {
+            return $this->asTickedList(explode(',', $value));
+        // 6. colon
+        } elseif (strpos($value, ':') === 0) {
+            $this->validateFieldName(substr($value, 1));
+            return $value;
         }
 
-        $this->validateFieldName($value);
-        $value = str_replace('`', '', $value);
-        if (strpos($value, '.') !== false) {
-            return implode('.', array_map([$this, 'asTickedString'], explode('.', $value)));
-        }
+        // 7. plain string
+        $value = $this->tickString($value);
         if ($alias) {
-            $this->validateFieldName($alias);
-            return "`$value` AS `$alias`";
+            $alias = $this->tickString($alias);
+            return "$value AS $alias";
         }
-        return "`$value`";
+        return $value;
     }
 
     /**
@@ -547,7 +639,7 @@ class DatabaseStatement
     final public function asTickedList(array $values)
     {
         return implode(self::LIST_DELIMITER, General::array_map(function ($key, $value) {
-            if (!is_int($key)) {
+            if (General::intval($key) === -1) {
                 return $this->asTickedString($key, $value);
             }
             return $this->asTickedString($value);
