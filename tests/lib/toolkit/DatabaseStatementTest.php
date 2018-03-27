@@ -27,6 +27,10 @@ final class DatabaseStatementTest extends TestCase
         $db = new Database([]);
         $sql = $db->statement('');
         $this->assertEquals('`x` - 1', $sql->asTickedString('x - 1'));
+        $this->assertEquals('`x` + 1', $sql->asTickedString('x + 1'));
+        $this->assertEquals('`x` * 1', $sql->asTickedString('x * 1'));
+        $this->assertEquals('`x` / 1', $sql->asTickedString('x / 1'));
+        $this->assertEquals('(`x` + 10) AS `t`', $sql->asTickedString('x + 10', 't'));
     }
 
     public function testAsTickedList()
@@ -35,6 +39,29 @@ final class DatabaseStatementTest extends TestCase
         $sql = $db->statement('');
         $this->assertEquals('`x`', $sql->asTickedList(['x']));
         $this->assertEquals('`x`, `y`', $sql->asTickedList(['x', 'y']));
+    }
+
+    public function testSplitFunctionArguments()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $args = $sql->splitFunctionArguments('X(a,  b,c),T(Z(R(a))), r,   GHZAS(a,G(b ),c),');
+        $this->assertEquals('X(a,b,c)', $args[0]);
+        $this->assertEquals('T(Z(R(a)))', $args[1]);
+        $this->assertEquals('r', $args[2]);
+        $this->assertEquals('GHZAS(a,G(b),c)', $args[3]);
+        $this->assertEquals(4, count($args));
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSplitFunctionArgumentsImbalanced()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $args = $sql->splitFunctionArguments('X(a, ( b,c)');
+        $this->assertEquals(0, count($args));
     }
 
     /**

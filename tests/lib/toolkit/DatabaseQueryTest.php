@@ -86,6 +86,20 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
+    public function testSELECTAliasedPlusOperator()
+    {
+        $db = new Database([]);
+        $sql = $db->select(['y + 1' => 'result'])
+            ->from('tbl_test_table');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE (`y` + 1) AS `result` FROM `test_table`",
+            $sql->generateSQL(),
+            'SQL clause with aliased operator in projection'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
     public function testSELECTMULTIPLEWHERE()
     {
         $db = new Database([]);
@@ -600,6 +614,36 @@ final class DatabaseQueryTest extends TestCase
             "SELECT SQL_NO_CACHE X() AS `x`",
             $sql->generateSQL(),
             'SELECT X() as `x` (function projection aliased)'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testSELECTFUNCTIONWITHPARAMSALIASED()
+    {
+        $db = new Database([]);
+        $sql = $db->select([])->projection([
+            'X(a,b,c)' => 'x'
+        ]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE X(`a`, `b`, `c`) AS `x`",
+            $sql->generateSQL(),
+            'SELECT X(a,b,c) as `x` (function projection aliased)'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testSELECTNESTEDFUNCTIONALIASED()
+    {
+        $db = new Database([]);
+        $sql = $db->select([])->projection([
+            'X(Y(a), Z(b,c), d)' => 'x'
+        ]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE X(Y(`a`), Z(`b`, `c`), `d`) AS `x`",
+            $sql->generateSQL(),
+            'SELECT X(Y(a), Z(b,c), d) as `x` (nested function projection aliased)'
         );
         $values = $sql->getValues();
         $this->assertEquals(0, count($values), '0 value');
