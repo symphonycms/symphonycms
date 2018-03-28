@@ -432,6 +432,22 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(3, count($values), '3 values');
     }
 
+    public function testSELECTMATCHBOOLEANMODE()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->where(['x' => ['boolean' => 'value']]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE MATCH (`x`) AGAINST (:x IN BOOLEAN MODE)",
+            $sql->generateSQL(),
+            'MATCH clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals('value', $values['x'], 'x is value');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
     /**
      * @expectedException DatabaseStatementException
      */
