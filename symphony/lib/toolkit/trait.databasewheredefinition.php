@@ -108,6 +108,14 @@ trait DatabaseWhereDefinition
                 $tk = $this->replaceTablePrefix($k);
                 $tk = $this->asTickedString($tk);
                 return "($tk BETWEEN ? AND ?)";
+            // first value key is the boolean expression (full-text boolean match)
+            } elseif ($vk === 'boolean') {
+                $c = current(array_values($c));
+                $this->appendValues([$k => $c]);
+                $pk = $this->asPlaceholderString($k, $c);
+                $tk = $this->replaceTablePrefix($k);
+                $tk = $this->asTickedString($tk);
+                return "MATCH ($tk) AGAINST ($pk IN BOOLEAN MODE)";
             // key is numeric
             } elseif (General::intval($k) !== -1) {
                 return $this->buildWhereClauseFromArray($c);
