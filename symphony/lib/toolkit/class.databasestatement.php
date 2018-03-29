@@ -729,6 +729,10 @@ class DatabaseStatement
             $fieldCount++;
             $fieldLookup = "$field$fieldCount";
         }
+        // Special case for null
+        if ($value === null) {
+            $fieldLookup = "_null_";
+        }
         // Saved both for later
         $this->parameters[$uniqueParameterKey] = $this->parameters[$fieldLookup] = $fieldLookup;
 
