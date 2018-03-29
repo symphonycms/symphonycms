@@ -435,7 +435,7 @@ class SectionDatasource extends Datasource
                     $c = 'in';
                     if (stripos($v[0], 'not:') === 0) {
                         $v[0] = preg_replace('/^not:\s*/', null, $v[0]);
-                        $c = 'notin';
+                        $c = 'not in';
                     }
 
                     // Cast all ID's to integers. (RE: #2191)
