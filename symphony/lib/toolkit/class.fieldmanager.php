@@ -634,7 +634,7 @@ class FieldManager implements FileResource
             ->select(['type'])
             ->distinct()
             ->from('tbl_fields')
-            ->where(['type' => ['notin' => [
+            ->where(['type' => ['not in' => [
                 'author', 'checkbox', 'date', 'input', 'select', 'taglist', 'upload'
             ]]])
             ->execute()

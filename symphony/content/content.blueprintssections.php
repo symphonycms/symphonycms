@@ -806,7 +806,7 @@ class contentBlueprintsSections extends AdministrationPage
                             ->where(['parent_section' => $section_id]);
 
                         if (!empty($id_list)) {
-                            $missing_cfs->where(['id' => ['notin' => $id_list]]);
+                            $missing_cfs->where(['id' => ['not in' => $id_list]]);
                         }
 
                         $missing_cfs = $missing_cfs->execute()->column('id');

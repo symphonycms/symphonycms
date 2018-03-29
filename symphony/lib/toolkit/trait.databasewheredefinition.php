@@ -80,8 +80,8 @@ trait DatabaseWhereDefinition
                     return $this->buildWhereClauseFromArray([$k => $c]);
                 }, $c));
             // first value key is the IN() function
-            } elseif ($vk === 'in' || $vk === 'notin') {
-                $op = $vk === 'notin' ? 'NOT IN' : 'IN';
+            } elseif ($vk === 'in' || $vk === 'not in') {
+                $op = strtoupper($vk);
                 $values = current(array_values($c));
                 if (is_array($values)) {
                     if (empty($values)) {

@@ -419,7 +419,7 @@ final class DatabaseQueryTest extends TestCase
         $db = new Database([]);
         $sql = $db->select()
                   ->from('tbl_test_table')
-                  ->where(['x' => ['notin' => [1, 2, 5]]]);
+                  ->where(['x' => ['not in' => [1, 2, 5]]]);
         $this->assertEquals(
             "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` NOT IN (?, ?, ?)",
             $sql->generateSQL(),
