@@ -215,12 +215,12 @@ final class DatabaseQueryTest extends TestCase
                         'x' => null
                     ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` IS :x",
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` IS :_null_",
             $sql->generateSQL(),
             "SQL clause with WHERE IS NULL"
         );
         $values = $sql->getValues();
-        $this->assertEquals(null, $values['x'], 'x is NULL');
+        $this->assertEquals(null, $values['_null_'], '_null_ is NULL');
         $this->assertEquals(1, count($values), '1 value');
     }
 
@@ -233,12 +233,12 @@ final class DatabaseQueryTest extends TestCase
                 'x' => ['!=' => null]
             ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` IS NOT :x",
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` IS NOT :_null_",
             $sql->generateSQL(),
             "SQL clause with WHERE IS NOT NULL"
         );
         $values = $sql->getValues();
-        $this->assertEquals(null, $values['x'], 'x is NULL');
+        $this->assertEquals(null, $values['_null_'], '_null_ is NULL');
         $this->assertEquals(1, count($values), '1 value');
     }
 
