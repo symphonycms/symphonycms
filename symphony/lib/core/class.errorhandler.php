@@ -277,7 +277,11 @@ class GenericExceptionHandler
         return self::renderHtml(
             'fatalerror.generic',
             ($e instanceof ErrorException ? GenericErrorHandler::$errorTypeStrings[$e->getSeverity()] : 'Fatal Error'),
-            $e->getMessage(),
+            $e->getMessage() .
+                ($e->getPrevious()
+                    ? '<br />' . __('Previous exception: ') . $e->getPrevious()->getMessage()
+                    : ''
+                ),
             $e->getFile(),
             $e->getLine(),
             $lines,
