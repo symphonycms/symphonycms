@@ -21,9 +21,9 @@ class FieldUpload extends Field implements ExportableField, ImportableField
     public function __construct()
     {
         parent::__construct();
-
         $this->_name = __('File Upload');
         $this->_required = true;
+        $this->entryQueryFieldAdapter = new EntryQueryUploadAdapter($this);
 
         $this->set('location', 'sidebar');
         $this->set('required', 'no');
@@ -748,8 +748,18 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         Filtering:
     -------------------------------------------------------------------------*/
 
+    /**
+     * @deprecated @since Symphony 3.0.0
+     * @see Field::buildDSRetrievalSQL()
+     */
     public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class() . '::buildDSRetrievalSQL()',
+                'EntryQueryFieldAdapter::filter()'
+            );
+        }
         $field_id = $this->get('id');
 
         if (preg_match('/^mimetype:/', $data[0])) {
@@ -807,8 +817,18 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         Sorting:
     -------------------------------------------------------------------------*/
 
+    /**
+     * @deprecated @since Symphony 3.0.0
+     * @see Field::buildSortingSQL()
+     */
     public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class() . '::buildSortingSQL()',
+                'EntryQueryFieldAdapter::sort()'
+            );
+        }
         if ($this->isRandomOrder($order)) {
             $sort = 'ORDER BY RAND()';
         } else {
@@ -826,8 +846,18 @@ class FieldUpload extends Field implements ExportableField, ImportableField
         }
     }
 
+    /**
+     * @deprecated @since Symphony 3.0.0
+     * @see Field::buildSortingSelectSQL()
+     */
     public function buildSortingSelectSQL($sort, $order = 'ASC')
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class() . '::buildSortingSelectSQL()',
+                'EntryQueryFieldAdapter::sort()'
+            );
+        }
         return null;
     }
 
