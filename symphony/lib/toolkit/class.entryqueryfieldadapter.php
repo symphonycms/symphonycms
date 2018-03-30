@@ -15,11 +15,13 @@
  * This API is used extensively in section data sources.
  *
  * The default implementation works on a field that uses a 'value' column to be in the data table.
- * It supports exact match, 'regexp:' and 'sql:' filtering modes.
+ * It supports exact match, 'not:', 'regexp:' and 'sql:' filtering modes.
  * It also supports 'asc', 'desc', 'random' sort directions.
  *
  * @see EntryQuery::sort()
  * @see EntryQuery::filter()
+ * @see Field::getEntryQueryFieldAdapter()
+ * @since Symphony 3.0.0
  */
 class EntryQueryFieldAdapter
 {
@@ -177,7 +179,50 @@ class EntryQueryFieldAdapter
     }
 
     /**
-     * Returns the columns to use when filtering
+     * Test whether the input string is a negation filter, i.e. `not:`.
+     *
+     * @param string $string
+     *  The string to test.
+     * @return boolean
+     *  true if the string is prefixed with `not:`, false otherwise.
+     */
+    public function isFilterNotEqual($string)
+    {
+        if (preg_match('/^not:\s*/i', $string)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Builds a basic negation (not equals) filter.
+     *
+     * @param string $filter
+     *  The full filter string
+     * @param array $columns
+     *  The array of columns that need the given `$filter` applied to.
+     *  The conditions will be added using `AND`.
+     * @return void
+     */
+    public function createFilterNotEqual($filter, array $columns)
+    {
+        $field_id = General::intval($this->field->get('id'));
+        $filter = preg_replace('/^not:\s*/i', null, $filter);
+        $filter = $this->field->cleanValue($filter);
+        $op = '!=';
+
+        $conditions = [];
+        foreach ($columns as $key => $col) {
+            $conditions[] = [$this->formatColumn($col, $field_id) => [$op => $filter]];
+        }
+        if (count($conditions) < 2) {
+            return $conditions;
+        }
+        return ['and' => $conditions];
+    }
+
+    /**
+     * @internal Returns the columns to use when filtering
      *
      * @return array
      */
