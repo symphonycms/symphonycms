@@ -1404,7 +1404,7 @@ class Field implements ArrayAccess
     {
         if (Symphony::Log()) {
             Symphony::Log()->pushDeprecateWarningToLog(
-                get_called_class(self) . '::isFilterRegex()',
+                get_called_class() . '::isFilterRegex()',
                 'EntryQueryFieldAdapter::isFilterRegex()'
             );
         }
@@ -1442,7 +1442,7 @@ class Field implements ArrayAccess
     {
         if (Symphony::Log()) {
             Symphony::Log()->pushDeprecateWarningToLog(
-                get_called_class($this) . '::buildRegexSQL()',
+                get_called_class() . '::buildRegexSQL()',
                 'EntryQueryFieldAdapter::createFilterRegexp()'
             );
         }
@@ -1501,7 +1501,7 @@ class Field implements ArrayAccess
     {
         if (Symphony::Log()) {
             Symphony::Log()->pushDeprecateWarningToLog(
-                get_called_class(self) . '::isFilterSQL()',
+                get_called_class() . '::isFilterSQL()',
                 'EntryQueryFieldAdapter::isFilterSQL()'
             );
         }
@@ -1536,7 +1536,7 @@ class Field implements ArrayAccess
     {
         if (Symphony::Log()) {
             Symphony::Log()->pushDeprecateWarningToLog(
-                get_called_class($this) . '::buildFilterSQL()',
+                get_called_class() . '::buildFilterSQL()',
                 'EntryQueryFieldAdapter::createFilterSQL()'
             );
         }
@@ -1602,7 +1602,7 @@ class Field implements ArrayAccess
     {
         if (Symphony::Log()) {
             Symphony::Log()->pushDeprecateWarningToLog(
-                get_called_class($this) . '::buildDSRetrievalSQL()',
+                get_called_class() . '::buildDSRetrievalSQL()',
                 'EntryQueryFieldAdapter::filter()'
             );
         }
@@ -1670,7 +1670,7 @@ class Field implements ArrayAccess
     {
         if (Symphony::Log()) {
             Symphony::Log()->pushDeprecateWarningToLog(
-                get_called_class($this) . '::isRandomOrder()',
+                get_called_class() . '::isRandomOrder()',
                 'EntryQueryFieldAdapter::isRandomOrder()'
             );
         }
@@ -1704,7 +1704,7 @@ class Field implements ArrayAccess
     {
         if (Symphony::Log()) {
             Symphony::Log()->pushDeprecateWarningToLog(
-                get_called_class($this) . '::buildSortingSQL()',
+                get_called_class() . '::buildSortingSQL()',
                 'EntryQueryFieldAdapter::sort()'
             );
         }
@@ -1749,7 +1749,7 @@ class Field implements ArrayAccess
     {
         if (Symphony::Log()) {
             Symphony::Log()->pushDeprecateWarningToLog(
-                get_called_class($this) . '::buildSortingSelectSQL()',
+                get_called_class() . '::buildSortingSelectSQL()',
                 'EntryQueryFieldAdapter::sort()'
             );
         }
