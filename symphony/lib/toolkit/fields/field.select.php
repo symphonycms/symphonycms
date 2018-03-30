@@ -16,6 +16,7 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
         $this->_name = __('Select Box');
         $this->_required = true;
         $this->_showassociation = true;
+        $this->entryQueryFieldAdapter = new EntryQueryListAdapter($this);
 
         // Set default
         $this->set('show_column', 'yes');
