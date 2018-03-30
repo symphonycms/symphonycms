@@ -19,6 +19,7 @@ class FieldAuthor extends Field implements ExportableField
         parent::__construct();
         $this->_name = __('Author');
         $this->_required = true;
+        $this->entryQueryFieldAdapter = new EntryQueryAuthorAdapter($this);
 
         $this->set('author_types', array());
     }
@@ -125,6 +126,7 @@ class FieldAuthor extends Field implements ExportableField
      * field by ID or by the Author's Username
      *
      * @since Symphony 2.2
+     * @deprecated @since Symphony 3.0.0
      * @param string $value
      * @return string
      *  Either `author_id` or `username`
@@ -443,8 +445,18 @@ class FieldAuthor extends Field implements ExportableField
         Filtering:
     -------------------------------------------------------------------------*/
 
+    /**
+     * @deprecated @since Symphony 3.0.0
+     * @see Field::buildDSRetrievalSQL()
+     */
     public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class() . '::buildDSRetrievalSQL()',
+                'EntryQueryFieldAdapter::filter()'
+            );
+        }
         $field_id = $this->get('id');
 
         if (self::isFilterRegex($data[0])) {
@@ -555,8 +567,18 @@ class FieldAuthor extends Field implements ExportableField
         Sorting:
     -------------------------------------------------------------------------*/
 
+    /**
+     * @deprecated @since Symphony 3.0.0
+     * @see Field::buildSortingSQL()
+     */
     public function buildSortingSQL(&$joins, &$where, &$sort, $order = 'ASC')
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class() . '::buildSortingSQL()',
+                'EntryQueryFieldAdapter::sort()'
+            );
+        }
         if ($this->isRandomOrder($order)) {
             $sort = 'ORDER BY RAND()';
         } else {
@@ -568,8 +590,18 @@ class FieldAuthor extends Field implements ExportableField
         }
     }
 
+    /**
+     * @deprecated @since Symphony 3.0.0
+     * @see Field::buildSortingSelectSQL()
+     */
     public function buildSortingSelectSQL($sort, $order = 'ASC')
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class() . '::buildSortingSelectSQL()',
+                'EntryQueryFieldAdapter::sort()'
+            );
+        }
         if ($this->isRandomOrder($order)) {
             return null;
         }
