@@ -448,6 +448,41 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(1, count($values), '1 value');
     }
 
+    public function testSELECTWhereStartDate()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->where(['x' => ['date' => ['start' => '2018-03-28']]]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` > :x",
+            $sql->generateSQL(),
+            'day clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals('2018-03-28', $values['x'], 'x is 2018-03-28');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
+    public function testSELECTWhereEndDateWithTimeInclusive()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->where(['x' => ['date' => [
+                'end' => '2018-03-28 11:11:11',
+                'limits' => true,
+            ]]]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` <= :x",
+            $sql->generateSQL(),
+            'day clause with time'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals('2018-03-28 11:11:11', $values['x'], 'x is 2018-03-28 11:11:11');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
     /**
      * @expectedException DatabaseStatementException
      */
