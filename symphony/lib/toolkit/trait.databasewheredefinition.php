@@ -116,6 +116,28 @@ trait DatabaseWhereDefinition
                 $tk = $this->replaceTablePrefix($k);
                 $tk = $this->asTickedString($tk);
                 return "MATCH ($tk) AGAINST ($pk IN BOOLEAN MODE)";
+            // first key is date
+            } elseif ($vk === 'date') {
+                $c = current(array_values($c));
+                if (empty($c['start']) && empty($c['end'])) {
+                    throw new DatabaseStatementException('`date` operator needs at least a start or end date');
+                }
+                $conditions = [];
+                $inclusive = isset($c['limits']) && $c['limits'] === true;
+                $start = isset($c['start']) ? $c['start'] : null;
+                if ($start && DateTimeObj::validate($start)) {
+                    $conditions[] = [$k => [$inclusive ? '>=' : '>' => $start]];
+                }
+                $end = isset($c['end']) ? $c['end'] : null;
+                if ($end && DateTimeObj::validate($end)) {
+                    $conditions[] = [$k => [$inclusive ? '<=' : '<' => $end]];
+                }
+                if (empty($conditions)) {
+                    throw new DatabaseStatementException('No validate found for `date` operator');
+                } elseif (count($conditions) > 1) {
+                    $conditions = ['or' => $conditions];
+                }
+                return $this->buildWhereClauseFromArray($conditions);
             // key is numeric
             } elseif (General::intval($k) !== -1) {
                 return $this->buildWhereClauseFromArray($c);
