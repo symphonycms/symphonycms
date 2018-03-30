@@ -191,13 +191,28 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->filter('system:creation-date', ['2018-03-16']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE (`e`.`creation_date_gmt` = :e_creation_date_gmt)",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE ((`e`.`creation_date_gmt` >= :e_creation_date_gmt AND `e`.`creation_date_gmt` <= :e_creation_date_gmt2))",
             $q->generateSQL(),
-            'new EntryQuery with ->filter(system:creation-date, or, [])'
+            'new EntryQuery with ->filter(system:creation-date, [])'
         );
         $values = $q->getValues();
-        $this->assertEquals('2018-03-16', $values['e_creation_date_gmt'], 'e_id is 2018-03-16');
-        $this->assertEquals(1, count($values), '1 value');
+        $this->assertEquals('2018-03-16 00:00:00', $values['e_creation_date_gmt'], 'e_creation_date_gmt is 2018-03-16 00:00:00');
+        $this->assertEquals('2018-03-16 23:59:59', $values['e_creation_date_gmt2'], 'e_creation_date_gmt2 is 2018-03-16 23:59:59');
+        $this->assertEquals(2, count($values), '2 values');
+    }
+
+    public function testFilterSystemModificationDate()
+    {
+        $q = (new \EntryQuery($this->db))->filter('system:modification-date', ['2018-03-16']);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE ((`e`.`modification_date_gmt` >= :e_modification_date_gmt AND `e`.`modification_date_gmt` <= :e_modification_date_gmt2))",
+            $q->generateSQL(),
+            'new EntryQuery with ->filter(system:modification-date, [])'
+        );
+        $values = $q->getValues();
+        $this->assertEquals('2018-03-16 00:00:00', $values['e_modification_date_gmt'], 'e_modification_date_gmt is 2018-03-16 00:00:00');
+        $this->assertEquals('2018-03-16 23:59:59', $values['e_modification_date_gmt2'], 'e_modification_date_gmt2 is 2018-03-16 23:59:59');
+        $this->assertEquals(2, count($values), '2 values');
     }
 
     public function testSortRand()
