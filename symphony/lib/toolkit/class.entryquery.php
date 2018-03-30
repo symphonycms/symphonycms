@@ -375,9 +375,39 @@ class EntryQuery extends DatabaseQuery
 
         // Handle filter for System ID
         } elseif ($field === 'system:id') {
-            return $this->where([$operator => array_map(function ($v) {
-                return ['e.id' => $v];
-            }, $values)]);
+            $op = '=';
+            if (stripos($values[0], 'not:') === 0) {
+                $values[0] = preg_replace('/^not:\s*/', null, $values[0]);
+                $op = '!=';
+                $operator = 'and';
+            }
+            // Reduce multi-dimension array
+            $values = array_reduce($values, function ($memo, $v) {
+                $v = array_map('trim', explode(',', $v));
+                // Cast all ID's to integers. (RE: #2191)
+                return array_merge($memo, array_filter(array_map(function ($val) {
+                    $val = General::intval($val);
+
+                    // General::intval can return -1, so reset that to 0
+                    // so there are no side effects for the following
+                    // array_filter calls. RE: #2475
+                    if ($val === -1) {
+                        $val = 0;
+                    }
+
+                    return $val;
+                }, $v)));
+            }, []);
+            // Create conditions from values
+            $conditions = array_map(function ($v) use ($op) {
+                return ['e.id' => [$op => $v]];
+            }, $values);
+
+            if (count($conditions) > 1) {
+                $conditions = [$operator => $conditions];
+            }
+
+            return $this->where($conditions);
 
         // Handle when the filter field is a field id
         } elseif (is_string($field)) {
