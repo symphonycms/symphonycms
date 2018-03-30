@@ -95,7 +95,7 @@ class DateRangeParser
         $parts = [
             'start' => null,
             'end' => null,
-            'limits' => $this->includeLimits,
+            'strict' => false,
         ];
 
         // Opened range
@@ -115,14 +115,13 @@ class DateRangeParser
             } else {
                 $parts['end'] = $date['start'];
             }
-            $parts['limits'] = $this->includeLimits;
+            $parts['strict'] = !$this->includeLimits;
         // Closed range
         } elseif (preg_match('/^(from )?(.+)\s+to\s+(.+)$/i', $this->date, $matches)) {
             $date1 = (new DateRangeParser($matches[2]))->includeLimits()->parse();
             $date2 = (new DateRangeParser($matches[3]))->includeLimits()->parse();
             $parts['start'] = $date1['start'];
             $parts['end'] = $date2['end'];
-            $parts['limits'] = $this->includeLimits = true;
         // Year
         } elseif (preg_match('/^\d{1,4}$/', $this->date, $matches)) {
             $year = current($matches);

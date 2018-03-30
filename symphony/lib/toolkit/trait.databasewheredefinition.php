@@ -123,7 +123,7 @@ trait DatabaseWhereDefinition
                     throw new DatabaseStatementException('`date` operator needs at least a start or end date');
                 }
                 $conditions = [];
-                $inclusive = isset($c['limits']) && $c['limits'] === true;
+                $inclusive = !isset($c['strict']) || !$c['strict'];
                 $start = isset($c['start']) ? $c['start'] : null;
                 if ($start && DateTimeObj::validate($start)) {
                     $conditions[] = [$k => [$inclusive ? '>=' : '>' => $start]];
@@ -133,9 +133,9 @@ trait DatabaseWhereDefinition
                     $conditions[] = [$k => [$inclusive ? '<=' : '<' => $end]];
                 }
                 if (empty($conditions)) {
-                    throw new DatabaseStatementException('No validate found for `date` operator');
+                    throw new DatabaseStatementException('No valid start or end date found for `date` operator');
                 } elseif (count($conditions) > 1) {
-                    $conditions = ['or' => $conditions];
+                    $conditions = ['and' => $conditions];
                 }
                 return $this->buildWhereClauseFromArray($conditions);
             // key is numeric
