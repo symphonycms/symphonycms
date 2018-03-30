@@ -323,7 +323,7 @@ class EntryQueryFieldAdapter
         // `not:` needs a special treatment because 'and' operation are using the 'or' notation (,)
         // In order to make the filter work, we must change 'or' to 'and'
         // and propagate the prefix to all other un-prefix $filters
-        if ($operator === 'or' && preg_match('/not[^\:]*:/', $filters[0])) {
+        if ($operator === 'or' && preg_match('/not[^\:]*:/i', $filters[0])) {
             $operator = 'and';
             $prefix = current(explode(':', $filters[0], 2));
             foreach ($filters as $i => $filter) {
