@@ -17,6 +17,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         $this->_name = __('Tag List');
         $this->_required = true;
         $this->_showassociation = true;
+        $this->entryQueryFieldAdapter = new EntryQueryListAdapter($this);
 
         $this->set('required', 'no');
     }
@@ -679,8 +680,18 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         );
     }
 
+    /**
+     * @deprecated @since Symphony 3.0.0
+     * @see Field::buildDSRetrievalSQL()
+     */
     public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class() . '::buildDSRetrievalSQL()',
+                'EntryQueryFieldAdapter::filter()'
+            );
+        }
         $field_id = $this->get('id');
 
         if (self::isFilterRegex($data[0])) {
