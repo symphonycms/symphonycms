@@ -20,13 +20,13 @@
 				</ul>
 			</li>
 			<li>
-				<header class="frame-header">Backtrace</header>
+				<header class="frame-header"><label>Backtrace <i>PHP {PHP}</i></label></header>
 				<div class="content">
 					<ul>%s</ul>
 				</div>
 			</li>
 			<li>
-				<header class="frame-header">Database Query Log</header>
+				<header class="frame-header"><label>Database Query Log <i>MYSQL {MYSQL}</i></label></header>
 				<div class="content">
 					<ul>%s</ul>
 				</div>
