@@ -381,7 +381,7 @@ class SectionDatasource extends Datasource
      * where and join operations.
      * This SQL is generated with the Field's query builder.
      *
-     * @see Field::queryBuilder()
+     * @see Field::getEntryQueryFieldAdapter()
      * @param EntryQuery $entryQuery
      * @throws Exception
      */
@@ -422,71 +422,28 @@ class SectionDatasource extends Datasource
 
             // Support system:id as well as the old 'id'. #1691
             if ($field_id === 'system:id' || $field_id === 'id') {
+                if ($field_id === 'id' && Symphony::Log()) {
+                    Symphony::Log()->pushDeprecateWarningToLog('id', 'system:id', array(
+                        'message-format' => __('The `%s` data source filter is deprecated.')
+                    ));
+                }
                 $op = $filter_type === Datasource::FILTER_AND ? 'and' : 'or';
-                if ($filter_type === Datasource::FILTER_AND) {
-                    $value = array_map(function ($val) {
-                        return explode(',', $val);
-                    }, $value);
-                } else {
-                    $value = array($value);
-                }
-
-                foreach ($value as $v) {
-                    $c = 'in';
-                    if (stripos($v[0], 'not:') === 0) {
-                        $v[0] = preg_replace('/^not:\s*/', null, $v[0]);
-                        $c = 'not in';
-                    }
-
-                    // Cast all ID's to integers. (RE: #2191)
-                    $v = array_map(function ($val) {
-                        $val = General::intval($val);
-
-                        // General::intval can return -1, so reset that to 0
-                        // so there are no side effects for the following
-                        // array_sum and array_filter calls. RE: #2475
-                        if ($val === -1) {
-                            $val = 0;
-                        }
-
-                        return $val;
-                    }, $v);
-                    $count = array_sum($v);
-                    $v = array_filter($v);
-
-                    // If the ID was cast to 0, then we need to filter on 'id' = 0,
-                    // which will of course return no results, but without it the
-                    // Datasource will return ALL results, which is not the
-                    // desired behaviour. RE: #1619
-                    if ($count === 0) {
-                        $v[] = 0;
-                    }
-
-                    // If there are no ID's, no need to filter. RE: #1567
-                    if (!empty($v)) {
-                        $entryQuery->where([
-                            $op => array_map(function ($v) {
-                                return ['e.id' => [$c => $v]];
-                            }, $v)
-                        ]);
-                    }
-                }
+                $entryQuery->filter('system:id', $value, $op);
+            // Dates
             } elseif ($field_id === 'system:creation-date' || $field_id === 'system:modification-date' || $field_id === 'system:date') {
                 if ($field_id === 'system:date' && Symphony::Log()) {
                     Symphony::Log()->pushDeprecateWarningToLog('system:date', 'system:creation-date` or `system:modification-date', array(
                         'message-format' => __('The `%s` data source filter is deprecated.')
                     ));
+                    $field_id = 'system:creation-date';
                 }
-                $date_joins = '';
-                $date_where = '';
-                $date = new FieldDate();
-                $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == Datasource::FILTER_AND ? true : false));
-
-                // Replace the date field where with the `creation_date` or `modification_date`.
-                $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
-                $date_where = $entryQuery->replaceTablePrefix($date_where);
-                $wherePrefix = $entryQuery->containsSQLParts('where') ? '' : 'WHERE 1 = 1';
-                $entryQuery->unsafe()->unsafeAppendSQLPart('where', "$wherePrefix $where");
+                $op = $filter_type === Datasource::FILTER_AND ? 'and' : 'or';
+                $entryQuery->filter($field_id, $value, $op);
+            // Field with EQFA
+            } elseif (self::$_fieldPool[$field_id]->getEntryQueryFieldAdapter()) {
+                $op = $filter_type === Datasource::FILTER_AND ? 'and' : 'or';
+                $entryQuery->filter(self::$_fieldPool[$field_id], $value, $op);
+            // Compat layer with the old API
             } else {
                 $where = '';
                 $joins = '';
