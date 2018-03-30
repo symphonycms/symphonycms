@@ -362,13 +362,15 @@ class EntryQuery extends DatabaseQuery
         // Handle filter on Creation Date
         if ($field === 'system:creation-date') {
             return $this->where([$operator => array_map(function ($v) {
-                return ['e.creation_date_gmt' => $v];
+                $date = (new DateRangeParser($v))->parse();
+                return ['e.creation_date_gmt' => ['date' => $date]];
             }, $values)]);
 
         // Handle filter on Modification Date sorting
         } elseif ($field === 'system:modification-date') {
             return $this->where([$operator => array_map(function ($v) {
-                return ['e.modification_date_gmt' => $v];
+                $date = (new DateRangeParser($v))->parse();
+                return ['e.modification_date_gmt' => ['date' => $date]];
             }, $values)]);
 
         // Handle filter for System ID
