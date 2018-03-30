@@ -14,6 +14,7 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
         parent::__construct();
         $this->_name = __('Textarea');
         $this->_required = true;
+        $this->entryQueryFieldAdapter = new EntryQueryTextareaAdapter($this);
 
         // Set default
         $this->set('show_column', 'no');
@@ -373,8 +374,18 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
         Filtering:
     -------------------------------------------------------------------------*/
 
+    /**
+     * @deprecated @since Symphony 3.0.0
+     * @see Field::buildDSRetrievalSQL()
+     */
     public function buildDSRetrievalSQL($data, &$joins, &$where, $andOperation = false)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                get_called_class() . '::buildDSRetrievalSQL()',
+                'EntryQueryFieldAdapter::filter()'
+            );
+        }
         $field_id = $this->get('id');
 
         if (self::isFilterRegex($data[0])) {
