@@ -455,7 +455,7 @@ final class DatabaseQueryTest extends TestCase
             ->from('tbl_test_table')
             ->where(['x' => ['date' => ['start' => '2018-03-28']]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` > :x",
+            "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` >= :x",
             $sql->generateSQL(),
             'day clause'
         );
@@ -471,7 +471,7 @@ final class DatabaseQueryTest extends TestCase
             ->from('tbl_test_table')
             ->where(['x' => ['date' => [
                 'end' => '2018-03-28 11:11:11',
-                'limits' => true,
+                'strict' => false,
             ]]]);
         $this->assertEquals(
             "SELECT SQL_NO_CACHE * FROM `test_table` WHERE `x` <= :x",
