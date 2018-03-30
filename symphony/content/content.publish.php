@@ -423,25 +423,17 @@ class contentPublish extends AdministrationPage
 
                 // Handle date meta data #2003
                 if (in_array($handle, array('system:creation-date', 'system:modification-date'))) {
-                    $date_joins = '';
-                    $date_where = '';
-                    $date = new FieldDate();
-                    $date->buildDSRetrievalSQL($value, $date_joins, $date_where, ($filter_type == Datasource::FILTER_AND ? true : false));
-
-                    // Replace the date field where with the `creation_date` or `modification_date`.
-                    $date_where = preg_replace('/`t\d+`.date/', ($field_id !== 'system:modification-date') ? '`e`.creation_date_gmt' : '`e`.modification_date_gmt', $date_where);
-                    $date_where = $entryQuery->replaceTablePrefix($date_where);
-                    $wherePrefix = $entryQuery->containsSQLParts('where') ? '' : 'WHERE 1 = 1';
-                    $entryQuery->unsafe()->unsafeAppendSQLPart('where', "$wherePrefix $where");
+                    $op = $filter_type === Datasource::FILTER_AND ? 'and' : 'or';
+                    $entryQuery->filter($handle, $value, $op);
+                // Handle normal fields
                 } else {
-                    // Handle normal fields
-                    $field_id = FieldManager::fetchFieldIDFromElementName(
-                        $handle,
-                        $section->get('id')
-                    );
-
-                    $field = (new FieldManager)->select()->field($field_id)->execute()->next();
-                    if ($field) {
+                    $field = (new FieldManager)->select()->name($handle)->execute()->next();
+                    // Use EQFA
+                    if ($field && $field->getEntryQueryFieldAdapter()) {
+                        $op = $filter_type === Datasource::FILTER_AND ? 'and' : 'or';
+                        $entryQuery->filter($field, $value, $op);
+                    // Compat layer with the old API
+                    } elseif ($field) {
                         $joins = $where = '';
                         $field->buildDSRetrievalSQL($value, $joins, $where, ($filter_type == Datasource::FILTER_AND ? true : false));
 
@@ -464,6 +456,7 @@ class contentPublish extends AdministrationPage
                             $encoded_value = $field->fetchIDfromValue($value);
                         }
                         $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, $encoded_value);
+                    // Invalid, ignore.
                     } else {
                         unset($filters[$handle]);
                     }
