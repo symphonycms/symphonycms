@@ -308,6 +308,41 @@ class DatabaseStatement
     }
 
     /**
+     * Statement parameter setter. This function bypasses the automatic parameter generation
+     * to allow the developer to set values as if using PDO directly.
+     * This is sometimes needed when dealing with complex custom queries.
+     * You should rather consider to sub class the DatabaseStatement and use appendValues() instead.
+     *
+     * @param mixed $key
+     *  The key of the value, either its index or name
+     * @param mixed $value
+     *  The actual user provided value
+     * @return DatabaseStatement
+     *  The current instance
+     * @throws DatabaseStatementException
+     *  If the key is not the proper type: numeric when using place holders, string if not.
+     *  If the key is already set.
+     */
+    final public function setValue($key, $value)
+    {
+        if (General::intval($key) > 0) {
+            $key = General::intval($key);
+            if (!$this->isUsingPlaceholders()) {
+                throw new DatabaseStatementException(
+                    'Can not use numeric index when using named parameters'
+                );
+            }
+        } elseif (!is_string($key)) {
+            throw new DatabaseStatementException('Key for parameter must be a string');
+        }
+        if (isset($this->values[$key])) {
+            throw new DatabaseStatementException("Value for parameter `$key` is already defined");
+        }
+        $this->values[$key] = $value;
+        return $this;
+    }
+
+    /**
      * Enable the use of placeholders (?) in the query instead of named parameters.
      *
      * @return DatabaseStatement
