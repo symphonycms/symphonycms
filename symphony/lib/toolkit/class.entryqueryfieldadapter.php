@@ -43,6 +43,25 @@ class EntryQueryFieldAdapter
     }
 
     /**
+     * Aliases the common columns name returned by getFilterColumns() and
+     * getSortColumns() according to the aliased used in joins.
+     * By default, aliases are `f{$field_id}`.
+     *
+     * @see getFilterColumns()
+     * @see getSortColumns()
+     * @param string $col
+     *  The column name
+     * @param int $field_id
+     *  The field id
+     * @return string
+     *  The aliased column name
+     */
+    public function formatColumn($col, $field_id)
+    {
+        return "f{$field_id}.$col";
+    }
+
+    /**
      * Test whether the input string is a regular expression, by searching
      * for the prefix of `regexp:` or `not-regexp:` in the given `$string`.
      *
@@ -100,7 +119,10 @@ class EntryQueryFieldAdapter
 
         $conditions = [];
         foreach ($columns as $key => $col) {
-            $conditions[] = ["f{$field_id}.$col" => [$regex => $pattern]];
+            $conditions[] = [$this->formatColumn($col, $field_id) => [$regex => $pattern]];
+        }
+        if (count($conditions) < 2) {
+            return $conditions;
         }
         return [$op => $conditions];
     }
@@ -150,19 +172,23 @@ class EntryQueryFieldAdapter
 
         $conditions = [];
         foreach ($columns as $key => $col) {
-            $conditions[] = ["f{$field_id}.$col" => [$op => null]];
+            $conditions[] = [$this->formatColumn($col, $field_id) => [$op => null]];
+        }
+        if (count($conditions) < 2) {
+            return $conditions;
         }
         return ['or' => $conditions];
     }
 
     /**
-     * Builds a basic equality filter.
+     * Builds an equality filter.
      *
+     * @see createFilterEqualityOrNull()
      * @param string $filter
      *  The full filter string
      * @param array $columns
-     *  The array of columns that need the given `$filter` applied to.
-     *  The conditions will be added using `OR`.
+     *  The array of columns that needed to implement the given `$filter`.
+     *  The conditions for each column will be added using `OR`.
      * @return void
      */
     public function createFilterEquality($filter, array $columns)
@@ -173,7 +199,41 @@ class EntryQueryFieldAdapter
 
         $conditions = [];
         foreach ($columns as $key => $col) {
-            $conditions[] = ["f{$field_id}.$col" => [$op => $filter]];
+            $conditions[] = [$this->formatColumn($col, $field_id) => [$op => $filter]];
+        }
+        if (count($conditions) < 2) {
+            return $conditions;
+        }
+        return ['or' => $conditions];
+    }
+
+    /**
+     * Builds an equal or null filter.
+     *
+     * @see createFilterEquality()
+     * @param string $filter
+     *  The full filter string
+     * @param array $columns
+     *  The array of columns that needed to implement the given `$filter`.
+     *  The conditions for each column will be added using `OR`.
+     * @return void
+     */
+    public function createFilterEqualityOrNull($filter, array $columns)
+    {
+        $field_id = General::intval($this->field->get('id'));
+        $filter = $this->field->cleanValue($filter);
+        $op = '=';
+
+        $conditions = [];
+        foreach ($columns as $key => $col) {
+            $col = $this->formatColumn($col, $field_id);
+            $conditions[] = ['or' => [
+                [$col => [$op => $filter]],
+                [$col => [$op => null]],
+            ]];
+        }
+        if (count($conditions) < 2) {
+            return $conditions;
         }
         return ['or' => $conditions];
     }
@@ -240,6 +300,7 @@ class EntryQueryFieldAdapter
      *
      * @see EntryQuery::filter()
      * @uses EntryQuery::whereField()
+     * @uses filterSingle()
      * @param EntryQuery $query
      *  The EntryQuery to operate on
      * @param array $filters
@@ -254,26 +315,72 @@ class EntryQueryFieldAdapter
         General::ensureType([
             'operator' => ['var' => $operator, 'type' => 'string'],
         ]);
+        if (empty($filters)) {
+            return;
+        }
         $field_id = General::intval($this->field->get('id'));
-        $conditions = [$operator => []];
-        foreach ($filters as $filter) {
-            $fc = null;
-            if ($this->isFilterRegex($filter)) {
-                $fc = $this->createFilterRegexp($filter, $this->getFilterColumns());
-            } elseif ($this->isFilterSQL($filter)) {
-                $fc = $this->createFilterSQL($filter, $this->getFilterColumns());
-            } else {
-                $fc = $this->createFilterEquality($filter, $this->getFilterColumns());
-            }
-            if (is_array($fc)) {
-                $conditions[$operator][] = $fc;
+        $conditions = [];
+        // `not:` needs a special treatment because 'and' operation are using the 'or' notation (,)
+        // In order to make the filter work, we must change 'or' to 'and'
+        // and propagate the prefix to all other un-prefix $filters
+        if ($operator === 'or' && preg_match('/not[^\:]*:/', $filters[0])) {
+            $operator = 'and';
+            $prefix = current(explode(':', $filters[0], 2));
+            foreach ($filters as $i => $filter) {
+                if ($i === 0) {
+                    continue;
+                }
+                if (strpos($filter, ':') === false) {
+                    $filters[$i] = "$prefix: $filter";
+                } else {
+                    break;
+                }
             }
         }
-        // Remove extra ()
-        if (count($conditions) === 1) {
-            $conditions = current($conditions);
+
+        foreach ($filters as $filter) {
+            $fc = $this->filterSingle($query, $filter);
+            if (is_array($fc)) {
+                $conditions[] = $fc;
+            }
+        }
+        if (empty($conditions)) {
+            return;
+        }
+        // Prevent adding unnecessary () when dealing with a single condition
+        if (count($conditions) > 1) {
+            $conditions = [$operator => $conditions];
         }
         $query->whereField($field_id, $conditions);
+    }
+
+    /**
+     * Converts a single string filter into a where conditions array.
+     * This is the function that responsible to handle all the filtering modes
+     * supported by the Field.
+     *
+     * @uses formatColumn()
+     * @param EntryQuery $query
+     *  The EntryQuery to operate on
+     * @param string $filter
+     *  A filter string
+     * @return array
+     *  The conditions array
+     * @throws DatabaseStatementException
+     */
+    protected function filterSingle(EntryQuery $query, $filter)
+    {
+        General::ensureType([
+            'filter' => ['var' => $filter, 'type' => 'string'],
+        ]);
+        if ($this->isFilterRegex($filter)) {
+            return $this->createFilterRegexp($filter, $this->getFilterColumns());
+        } elseif ($this->isFilterSQL($filter)) {
+            return $this->createFilterSQL($filter, $this->getFilterColumns());
+        } elseif ($this->isFilterNotEqual($filter)) {
+            return $this->createFilterNotEqual($filter, $this->getFilterColumns());
+        }
+        return $this->createFilterEquality($filter, $this->getFilterColumns());
     }
 
     /**
@@ -290,7 +397,7 @@ class EntryQueryFieldAdapter
     }
 
     /**
-     * Returns the columns to use when sorting
+     * @internal Returns the columns to use when sorting
      *
      * @return array
      */
@@ -301,9 +408,11 @@ class EntryQueryFieldAdapter
 
     /**
      * Appends the required ORDER BY clauses based on the requested sort and the reference field.
+     * In order to make MySQL strict mode work, values used in sort are added to the projection.
      *
      * This default implementation supports 'asc', 'desc', 'random' sort directions.
      *
+     * @uses formatColumn()
      * @param EntryQuery $query
      *  The EntryQuery to operate on
      * @param string $direction
@@ -323,9 +432,12 @@ class EntryQueryFieldAdapter
             $query->orderBy('RAND()');
             return;
         }
-        $query->leftJoinField($field_id);
-        foreach ($this->getSortColumns() as $column) {
-            $query->orderBy("f{$field_id}.$column", $direction);
+        $query->leftJoinField($field_id)
+            ->projection(array_map(function ($col) use ($field_id) {
+                return $this->formatColumn($col, $field_id);
+            }, $this->getSortColumns()));
+        foreach ($this->getSortColumns() as $col) {
+            $query->orderBy($this->formatColumn($col, $field_id), $direction);
         }
     }
 }
