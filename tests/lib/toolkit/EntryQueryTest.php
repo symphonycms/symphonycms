@@ -173,11 +173,39 @@ final class EntryQueryTest extends TestCase
         $this->assertEquals(1, count($values), '1 value');
     }
 
-    public function testFilterSystemId()
+    public function testFilterSystemIdOR()
     {
         $q = (new \EntryQuery($this->db))->filter('system:id', [1,2], 'or');
         $this->assertEquals(
             "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE (`e`.`id` = :e_id OR `e`.`id` = :e_id2)",
+            $q->generateSQL(),
+            'new EntryQuery with ->filter(system:id, or, [])'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(1, $values['e_id'], 'e_id is 1');
+        $this->assertEquals(2, $values['e_id2'], 'e_id2 is 2');
+        $this->assertEquals(2, count($values), '2 values');
+    }
+
+    public function testFilterSystemIdAND()
+    {
+        $q = (new \EntryQuery($this->db))->filter('system:id', [1, 2], 'and');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE (`e`.`id` = :e_id AND `e`.`id` = :e_id2)",
+            $q->generateSQL(),
+            'new EntryQuery with ->filter(system:id, or, [])'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(1, $values['e_id'], 'e_id is 1');
+        $this->assertEquals(2, $values['e_id2'], 'e_id2 is 2');
+        $this->assertEquals(2, count($values), '2 values');
+    }
+
+    public function testFilterSystemIdNotAND()
+    {
+        $q = (new \EntryQuery($this->db))->filter('system:id', ['not: 1', 2, 0, ''], 'and');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE (`e`.`id` != :e_id AND `e`.`id` != :e_id2)",
             $q->generateSQL(),
             'new EntryQuery with ->filter(system:id, or, [])'
         );
