@@ -1403,12 +1403,16 @@ class General
 
         if ($original_length == 0) {
             return null;
-        } elseif ($original_length < $maxChars) {
+        } elseif ($original_length <= $maxChars) {
             return $string;
         }
 
-        // Find the last space before the the maxChars limit is hit.
-        $last_word_break = strrpos($string, ' ', $maxChars - $original_length);
+        // Compute the negative offset
+        $offset = $maxChars - $original_length;
+        // Find the first word break char before the maxChars limit is hit.
+        $last_word_break = max(array_filter(array_map(function ($wb) use ($string, $offset) {
+            return strrpos($string, $wb, $offset);
+        }, array(' ', '-', ',', '.', '!', '?', PHP_EOL))));
         $result = substr($string, 0, $last_word_break);
 
         if ($appendHellip) {
