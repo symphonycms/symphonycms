@@ -74,6 +74,8 @@ class FieldQueryResult extends DatabaseQueryResult
 
         // We already have this field in our static store
         if ($if = FieldManager::getInitializedField($row['id'])) {
+            // Update its data
+            $if->setArray($row);
             return $if;
         }
 
