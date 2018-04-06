@@ -145,30 +145,31 @@ class FieldManager implements FileResource
      */
     public static function saveSettings($field_id, $settings)
     {
-        // Get the type of this field:
-        $type = self::fetchFieldTypeFromID($field_id);
+        return Symphony::Database()->transaction(function (Database $db) use ($field_id, $settings) {
+            // Get the type of this field:
+            $type = self::fetchFieldTypeFromID($field_id);
 
-        if (!$type) {
-            throw new Exception("Field id `$field_id` does not map to a field");
-        }
+            if (!$type) {
+                throw new Exception("Field id `$field_id` does not map to a field");
+            }
 
-        // Delete the original settings:
-        Symphony::Database()
-            ->delete("tbl_fields_$type")
-            ->where(['field_id' => $field_id])
-            ->limit(1)
-            ->execute();
+            // Delete the original settings:
+            $db
+                ->delete("tbl_fields_$type")
+                ->where(['field_id' => $field_id])
+                ->limit(1)
+                ->execute();
 
-        // Insert the new settings into the type table:
-        if (!isset($settings['field_id'])) {
-            $settings['field_id'] = $field_id;
-        }
+            // Insert the new settings into the type table:
+            if (!isset($settings['field_id'])) {
+                $settings['field_id'] = $field_id;
+            }
 
-        return Symphony::Database()
-            ->insert("tbl_fields_$type")
-            ->values($settings)
-            ->execute()
-            ->success();
+            $db
+                ->insert("tbl_fields_$type")
+                ->values($settings)
+                ->execute();
+        })->execute()->success();
     }
 
     /**
