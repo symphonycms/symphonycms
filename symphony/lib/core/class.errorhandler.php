@@ -379,7 +379,11 @@ class GenericExceptionHandler
         $html = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $html);
         $html = str_replace('{URL}', URL, $html);
         $html = str_replace('{PHP}', PHP_VERSION, $html);
-        $html = str_replace('{MYSQL}', Symphony::Database()->getVersion(), $html);
+        $html = str_replace(
+            '{MYSQL}',
+            !Symphony::Database() ? 'N/A' : Symphony::Database()->getVersion(),
+            $html
+        );
 
         return $html;
     }
