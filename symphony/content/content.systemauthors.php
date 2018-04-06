@@ -573,8 +573,11 @@ class contentSystemAuthors extends AdministrationPage
             $canCreate = Symphony::Author()->isDeveloper() || Symphony::Author()->isManager();
 
             if (!$canCreate) {
-                $this->pageAlert(__('You don\'t have the rights to create a new author.'), Alert::ERROR);
-                return;
+                Administration::instance()->throwCustomError(
+                    __('You are not authorised to create authors.'),
+                    __('Access Denied'),
+                    Page::HTTP_STATUS_UNAUTHORIZED
+                );
             }
 
             if (Symphony::Author()->isManager() && $fields['user_type'] !== 'author') {
@@ -689,8 +692,11 @@ class contentSystemAuthors extends AdministrationPage
             $authenticated = false;
 
             if (!$isOwner && !$canEdit) {
-                $this->pageAlert(__('You don\'t have the rights to edit an author.'), Alert::ERROR);
-                return;
+                Administration::instance()->throwCustomError(
+                    __('You are not authorised to modify this author.'),
+                    __('Access Denied'),
+                    Page::HTTP_STATUS_UNAUTHORIZED
+                );
             }
 
             if ($fields['email'] != $this->_Author->get('email')) {
