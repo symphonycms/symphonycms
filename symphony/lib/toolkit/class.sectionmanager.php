@@ -92,57 +92,57 @@ class SectionManager
      */
     public static function delete($section_id)
     {
-        $details = Symphony::Database()
-            ->select(['sortorder'])
-            ->from('tbl_sections')
-            ->where(['id' => $section_id])
-            ->execute()
-            ->next();
+        return Symphony::Database()->transaction(function (Database $db) use ($section_id) {
+            $details = $db
+                ->select(['sortorder'])
+                ->from('tbl_sections')
+                ->where(['id' => $section_id])
+                ->execute()
+                ->next();
 
-        // Delete all the entries
-        $entries = Symphony::Database()
-            ->select(['id'])
-            ->from('tbl_entries')
-            ->where(['section_id' => $section_id])
-            ->execute()
-            ->column('id');
-        EntryManager::delete($entries);
+            // Delete all the entries
+            $entries = $db
+                ->select(['id'])
+                ->from('tbl_entries')
+                ->where(['section_id' => $section_id])
+                ->execute()
+                ->column('id');
+            EntryManager::delete($entries);
 
-        // Delete all the fields
-        $fields = (new FieldManager)
-            ->select()
-            ->section($this->get('id'))
-            ->execute()
-            ->rows();
+            // Delete all the fields
+            $fields = (new FieldManager)
+                ->select()
+                ->section($this->get('id'))
+                ->execute()
+                ->rows();
 
-        foreach ($fields as $field) {
-            FieldManager::delete($field->get('id'));
-        }
+            foreach ($fields as $field) {
+                FieldManager::delete($field->get('id'));
+            }
 
-        // Delete the section
-        Symphony::Database()
-            ->delete('tbl_sections')
-            ->where(['id' => $section_id])
-            ->execute()
-            ->success();
+            // Delete the section
+            $db
+                ->delete('tbl_sections')
+                ->where(['id' => $section_id])
+                ->execute()
+                ->success();
 
-        // Update the sort orders
-        Symphony::Database()
-            ->update('tbl_sections')
-            ->set(['sortorder' => '$sortorder - 1'])
-            ->where(['sortorder' => ['>' => $details['sortorder']]])
-            ->execute();
+            // Update the sort orders
+            $db
+                ->update('tbl_sections')
+                ->set(['sortorder' => '$sortorder - 1'])
+                ->where(['sortorder' => ['>' => $details['sortorder']]])
+                ->execute();
 
-        // Delete the section associations
-        Symphony::Database()
-            ->delete('tbl_sections_association')
-            ->where(['or' => [
-                'parent_section_id' => $section_id,
-                'child_section_id' => $section_id,
-            ]])
-            ->execute();
-
-        return true;
+            // Delete the section associations
+            $db
+                ->delete('tbl_sections_association')
+                ->where(['or' => [
+                    'parent_section_id' => $section_id,
+                    'child_section_id' => $section_id,
+                ]])
+                ->execute();
+        })->execute()->success();
     }
 
     /**
@@ -296,7 +296,7 @@ class SectionManager
             ->next();
         $child_section_id = $child_field->get('parent_section');
 
-        $fields = array(
+        $fields = [
             'parent_section_id' => $parent_section_id,
             'parent_section_field_id' => $parent_field_id,
             'child_section_id' => $child_section_id,
@@ -304,7 +304,7 @@ class SectionManager
             'hide_association' => ($show_association ? 'no' : 'yes'),
             'interface' => $interface,
             'editor' => $editor
-        );
+        ];
 
         return Symphony::Database()
             ->insert('tbl_sections_association')
