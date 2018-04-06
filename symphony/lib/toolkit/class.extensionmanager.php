@@ -55,7 +55,7 @@ class ExtensionManager implements FileResource
      */
     public function __construct()
     {
-        if (empty(self::$_subscriptions) && Symphony::Database()->isConnected()) {
+        if (empty(self::$_subscriptions) && Symphony::Database() && Symphony::Database()->isConnected()) {
             $subscriptions = Symphony::Database()
                 ->select(['t1.name', 't2.page', 't2.delegate', 't2.callback'])
                 ->from('tbl_extensions', 't1')
@@ -142,7 +142,7 @@ class ExtensionManager implements FileResource
     private static function __buildExtensionList($update = false)
     {
         if (empty(self::$_extensions) || $update) {
-            self::$_extensions = Symphony::ExtensionManager()
+            self::$_extensions = (new ExtensionManager)
                 ->select()
                 ->execute()
                 ->rowsIndexedByColumn('name');
@@ -737,7 +737,7 @@ class ExtensionManager implements FileResource
     public static function listInstalledHandles()
     {
         if (empty(self::$_enabled_extensions) && Symphony::Database()->isConnected()) {
-            self::$_enabled_extensions = Symphony::ExtensionManager()
+            self::$_enabled_extensions = (new ExtensionManager)
                 ->select(['name'])
                 ->enabled()
                 ->execute()
