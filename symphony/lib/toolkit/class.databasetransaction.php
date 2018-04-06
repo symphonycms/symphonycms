@@ -69,6 +69,9 @@ class DatabaseTransaction
         } catch (Throwable $ex) {
             $this->getDB()->rollBack();
             throw $ex;
+        } catch (Exception $ex) {
+            $this->getDB()->rollBack();
+            throw $ex;
         }
         return new DatabaseTransactionResult($success);
     }
