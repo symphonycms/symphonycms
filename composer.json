@@ -11,9 +11,9 @@
         }
     ],
     "support": {
-      "forum": "https://www.getsymphony.com/discuss/",
-      "issues": "https://github.com/symphonycms/symphony-2/issues",
-      "wiki": "https://github.com/symphonycms/symphony-2/wiki"
+        "forum": "https://www.getsymphony.com/discuss/",
+        "issues": "https://github.com/symphonycms/symphony-2/issues",
+        "wiki": "https://github.com/symphonycms/symphony-2/wiki"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "2.*",
@@ -21,11 +21,16 @@
     },
     "minimum-stability": "stable",
     "autoload": {
-      "classmap": ["symphony/content", "symphony/lib", "symphony/template", "install"],
-      "files": [
-        "symphony/lib/boot/func.utilities.php",
-        "symphony/lib/boot/defines.php",
-        "symphony/lib/toolkit/util.validators.php"
-      ]
+        "classmap": [
+            "symphony/content",
+            "symphony/lib",
+            "symphony/template",
+            "install/lib"
+        ],
+        "files": [
+            "symphony/lib/boot/func.utilities.php",
+            "symphony/lib/boot/defines.php",
+            "symphony/lib/toolkit/util.validators.php"
+        ]
     }
 }
