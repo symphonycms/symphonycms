@@ -7,6 +7,21 @@ use PHPUnit\Framework\TestCase;
  */
 final class DatabaseAlterTest extends TestCase
 {
+    public function testALTERENGINE()
+    {
+        $db = new Database([]);
+        $sql = $db->alter('alter')
+            ->engine('InnoBD');
+        $this->assertEquals(
+            "ALTER TABLE `alter` ENGINE = :engine",
+            $sql->generateSQL(),
+            'ALTER TABLE ENGINE  clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals('InnoBD', $values['engine'], 'engine is InnoBD');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
     public function testALTERADDCOL()
     {
         $db = new Database([]);
