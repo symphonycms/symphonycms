@@ -956,6 +956,7 @@ class Database
      *  @deprecated @since Symphony 3.0.0
      *  The default engine is now InnoDb.
      *  The import script should use InnoDb as well.
+     *  The import script is also run in a transaction, resulting in a all or nothing import.
      *  Before 3.0.0:
      *  If set to true, this will set MySQL's default storage engine to MyISAM.
      *  Defaults to false, which will use MySQL's default storage engine when
@@ -975,18 +976,18 @@ class Database
             throw new Exception('The SQL string contains no queries.');
         }
 
-        foreach ($queries as $sql) {
-            if (trim($sql) !== '') {
-                $stm = new DatabaseStatement($this);
-                $sql = $stm->replaceTablePrefix($sql);
-                $stm->unsafeAppendSQLPart('statement', $sql);
-                if (!$stm->execute()->success()) {
-                    return false;
+        return $this->transaction(function (Database $db) use ($queries) {
+            foreach ($queries as $sql) {
+                if (trim($sql) !== '') {
+                    $stm = $db->statement();
+                    $sql = $stm->replaceTablePrefix($sql);
+                    $stm->unsafe()->unsafeAppendSQLPart('statement', $sql);
+                    if (!$stm->execute()->success()) {
+                        throw new DatabaseException('Failed to execute import statement');
+                    }
                 }
             }
-        }
-
-        return true;
+        })->execute()->success();
     }
 
     /**
