@@ -19,6 +19,12 @@ define_safe('DOCROOT', realpath(__DIR__ . '/../../..'));
 define_safe('__IN_SYMPHONY__', true);
 
 /**
+ * The filesystem path to the `install` folder
+ * @var string
+ */
+define('INSTALL', DOCROOT . '/install');
+
+/**
  * The filesystem path to the `manifest` folder
  * @var string
  */
