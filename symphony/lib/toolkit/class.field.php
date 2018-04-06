@@ -145,6 +145,19 @@ class Field implements ArrayAccess
     }
 
     /**
+     * Adjust the newly cloned field in order to fix circular references.
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        if ($this->entryQueryFieldAdapter) {
+            $eqfaClass = get_class($this->entryQueryFieldAdapter);
+            $this->entryQueryFieldAdapter = new $eqfaClass($this);
+        }
+    }
+
+    /**
      * Test whether this field can show the table column.
      *
      * @return boolean
