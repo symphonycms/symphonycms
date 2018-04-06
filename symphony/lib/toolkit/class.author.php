@@ -15,17 +15,10 @@ class Author implements ArrayAccess
      * the keys map directly to the `tbl_authors` columns.
      * @var array
      */
-    private $_fields = array();
+    private $fields = [];
 
     /**
-     * An array of all the sections an author can have access to. Defaults
-     * to null. This is currently unused by Symphony.
-     * @var array
-     */
-    private $_accessSections = null;
-
-    /**
-     * Stores a key=>value pair into the Author object's `$this->_fields` array.
+     * Stores a key => value pair into the Author object's `$this->fields` array.
      *
      * @param string $field
      *  Maps directly to a column in the `tbl_authors` table.
@@ -36,38 +29,38 @@ class Author implements ArrayAccess
     {
         $field = trim($field);
         if ($value === null) {
-            $this->_fields[$field] = null;
+            $this->fields[$field] = null;
         } else {
-            $this->_fields[$field] = trim($value);
+            $this->fields[$field] = trim($value);
         }
     }
 
     /**
-     * Retrieves the value from the Author object by field from `$this->_fields`
+     * Retrieves the value from the Author object by field from `$this->fields`
      * array. If field is omitted, all fields are returned.
      *
      * @param string $field
      *  Maps directly to a column in the `tbl_authors` table. Defaults to null
      * @return mixed
      *  If the field is not set or is empty, returns null.
-     *  If the field is not provided, returns the `$this->_fields` array
+     *  If the field is not provided, returns the `$this->fields` array
      *  Otherwise returns a string.
      */
     public function get($field = null)
     {
         if (is_null($field)) {
-            return $this->_fields;
+            return $this->fields;
         }
 
-        if (!isset($this->_fields[$field]) || $this->_fields[$field] == '') {
+        if (!isset($this->fields[$field]) || $this->fields[$field] == '') {
             return null;
         }
 
-        return $this->_fields[$field];
+        return $this->fields[$field];
     }
 
     /**
-     * Given a field, remove it from `$this->_fields`
+     * Given a field, remove it from `$this->fields`
      *
      * @since Symphony 2.2.1
      * @param string $field
@@ -79,7 +72,7 @@ class Author implements ArrayAccess
             return;
         }
 
-        unset($this->_fields[$field]);
+        unset($this->fields[$field]);
     }
 
     /**
@@ -90,7 +83,7 @@ class Author implements ArrayAccess
      */
     public function offsetExists($offset)
     {
-        return isset($this->_fields[$offset]);
+        return isset($this->fields[$offset]);
     }
 
     /**
@@ -101,7 +94,7 @@ class Author implements ArrayAccess
      */
     public function offsetGet($offset)
     {
-        return $this->_fields[$offset];
+        return $this->fields[$offset];
     }
 
     /**
@@ -113,7 +106,7 @@ class Author implements ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        $this->_fields[$offset] = $value;
+        $this->fields[$offset] = $value;
     }
 
     /**
@@ -124,7 +117,7 @@ class Author implements ArrayAccess
      */
     public function offsetUnset($offset)
     {
-        unset($this->_fields[$offset]);
+        unset($this->fields[$offset]);
     }
 
     /**
@@ -135,7 +128,7 @@ class Author implements ArrayAccess
      */
     public function setFields(array $fields)
     {
-        $this->_fields = $fields;
+        $this->fields = $fields;
     }
 
     /**
@@ -222,7 +215,7 @@ class Author implements ArrayAccess
 
     /**
      * Prior to saving an Author object, the validate function ensures that
-     * the values in `$this->_fields` array are correct. As of Symphony 2.3
+     * the values in `$this->fields` array are correct. As of Symphony 2.3
      * Authors must have unique username AND email address. This function returns
      * boolean, with an `$errors` array provided by reference to the callee
      * function.
@@ -334,7 +327,7 @@ class Author implements ArrayAccess
 
     /**
      * This is the insert method for the Author. This takes the current
-     * `$this->_fields` values and adds them to the database using either the
+     * `$this->fields` values and adds them to the database using either the
      * `AuthorManager::edit` or `AuthorManager::add` functions. An
      * existing user is determined by if an ID is already set.
      * When the database is updated successfully, the id of the author is set.
