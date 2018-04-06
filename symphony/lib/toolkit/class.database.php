@@ -878,7 +878,7 @@ class Database
 
         // Cleanup from last time, set some logging parameters
         $this->flush();
-        $this->lastQuery = $query;
+        $this->lastQuery = $stm->generateFormattedSQL();
         $this->lastQueryHash = md5($query . $start);
         $this->lastQueryValues = $values;
         $this->lastQuerySafe = $stm->isSafe();
@@ -888,7 +888,6 @@ class Database
             $this->validateSQLQuery($query, $stm->isSafe());
             // Prepare the query
             $pstm = $this->conn->prepare($query);
-            $this->lastQuery = $pstm->queryString;
             // Bind all values
             foreach ($values as $param => $value) {
                 if (General::intval($param) !== -1) {

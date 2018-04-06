@@ -42,6 +42,21 @@ class DatabaseStatement
     const STATEMENTS_DELIMITER = ' ';
 
     /**
+     * The SQL part end of line
+     */
+    const FORMATTED_PART_EOL = "\n";
+
+    /**
+     * The SQL part tab character
+     */
+    const FORMATTED_PART_TAB = "\t";
+
+    /**
+     * The SQL part delimiter
+     */
+    const FORMATTED_PART_DELIMITER = self::FORMATTED_PART_EOL . self::FORMATTED_PART_TAB;
+
+    /**
      * Regular Expression that matches SQL functions
      * @var string
      */
@@ -191,15 +206,79 @@ class DatabaseStatement
     }
 
     /**
-     * Merges the SQL parts array into a string, joined with the content of the
+     * Merges the ordered SQL parts array into a string, joined with the content of the
      * `STATEMENTS_DELIMITER` constant.
      * The order in which the part are merged are given by getStatementStructure().
      *
+     * @see generateOrderedSQLParts()
      * @see getStatementStructure()
      * @return string
      *  The resulting SQL string
      */
     final public function generateSQL()
+    {
+        return implode(self::STATEMENTS_DELIMITER, array_map(function ($part) {
+            return current($part);
+        }, $this->generateOrderedSQLParts()));
+    }
+
+    /**
+     * Merges the ordered SQL parts array into a string, joined with specific string in
+     * order to create a formatted, human friendly representation of the resulting SQL.
+     * The order in which the part are merged are given by getStatementStructure().
+     * The string used for each SQL part is given by getSeparatorForPartType().
+     *
+     * @see FORMATTED_PART_DELIMITER
+     * @see FORMATTED_PART_EOL
+     * @see FORMATTED_PART_TAB
+     * @see getSeparatorForPartType()
+     * @see generateOrderedSQLParts()
+     * @see getStatementStructure()
+     * @return string
+     *  The resulting formatted SQL string
+     */
+    final public function generateFormattedSQL()
+    {
+        $parts = $this->generateOrderedSQLParts();
+        return array_reduce($parts, function ($memo, $part) {
+            $type = current(array_keys($part));
+            $value = current($part);
+            $sep = $this->getSeparatorForPartType($type);
+            if (!$memo) {
+                return $value;
+            }
+            return "{$memo}{$sep}{$value}";
+        }, null);
+    }
+
+    /**
+     * Gets the proper separator string for the given $type SQL part type, when
+     * generating a formatted SQL statement.
+     * The default implementation simply returns value of the `STATEMENTS_DELIMITER` constant.
+     *
+     * @see generateFormattedSQL()
+     * @param string $type
+     *  The SQL part type.
+     * @return string
+     *  The string to use to separate the formatted SQL parts.
+     */
+    public function getSeparatorForPartType($type)
+    {
+        General::ensureType([
+            'type' => ['var' => $type, 'type' => 'string'],
+        ]);
+        return self::STATEMENTS_DELIMITER;
+    }
+
+    /**
+     * Creates the ordered SQL parts array.
+     * The order in which the part sorted are given by getStatementStructure().
+     *
+     * @see getStatementStructure()
+     * @return string
+     *  The resulting SQL string
+     */
+    final public function generateOrderedSQLParts()
     {
         $allParts = $this->getStatementStructure();
         $orderedParts = [];
@@ -220,9 +299,7 @@ class DatabaseStatement
                 $orderedParts[] = $part;
             }
         }
-        return implode(self::STATEMENTS_DELIMITER, array_map(function ($part) {
-            return current($part);
-        }, $orderedParts));
+        return $orderedParts;
     }
 
     /**

@@ -41,6 +41,31 @@ final class DatabaseStatementTest extends TestCase
         $this->assertEquals('`x`, `y`', $sql->asTickedList(['x', 'y']));
     }
 
+    public function testGenerateSQL()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('1')->unsafeAppendSQLPart('statement', '2');
+        $this->assertEquals('1 2', $sql->generateSQL());
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testGenerateSQLWithInvalidPart()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('1')->unsafeAppendSQLPart('statemen', '2');
+        $this->assertEquals('1 2', $sql->generateSQL());
+    }
+
+    public function testGenerateFormattedSQL()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('1')->unsafeAppendSQLPart('statement', '2');
+        $this->assertEquals('1 2', $sql->generateFormattedSQL());
+        $this->assertEquals($sql->generateSQL(), $sql->generateFormattedSQL(), 'Formatted == Unformatted');
+    }
+
     public function testSplitFunctionArguments()
     {
         $db = new Database([]);
