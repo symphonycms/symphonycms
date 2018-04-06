@@ -16,6 +16,8 @@ Options +SymLinksIfOwnerMatch -Indexes
 
     ### SECURITY - Protect crucial files
     RewriteRule ^manifest/(.*)$ - [F]
+    RewriteRule ^vendor/(.*)$ - [F]
+    RewriteRule ^extensions/(.+)/vendor/(.*)$ - [F]
     RewriteRule ^workspace/(pages|utilities)/(.*)\.xsl$ - [F]
     RewriteRule ^(.*)\.sql$ - [F]
     RewriteRule (^|/)\. - [F]
