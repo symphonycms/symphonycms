@@ -17,7 +17,15 @@ before_install:
 
 install:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
-  - composer install
+  - composer install -o --no-interaction
   - npm install
 
+before_script:
+  - mysql -e 'create database symphony_test;'
+
 script: npm test
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - node_modules
