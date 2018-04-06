@@ -61,6 +61,7 @@ final class DatabaseAlter extends DatabaseStatement
             'drop index',
             'add primary key',
             'drop primary key',
+            'engine',
         ];
     }
 
@@ -75,6 +76,23 @@ final class DatabaseAlter extends DatabaseStatement
     public function collate($collate)
     {
         $this->collate = $collate;
+        return $this;
+    }
+
+    /**
+     * Appends a ENGINE clause.
+     *
+     * @param string $engine
+     * @return DatabaseAlter
+     *  The current instance
+     */
+    public function engine($engine)
+    {
+        General::ensureType([
+            'engine' => ['var' => $engine, 'type' => 'string'],
+        ]);
+        $this->unsafeAppendSQLPart('engine', "ENGINE = :engine");
+        $this->appendValues(['engine' => $engine]);
         return $this;
     }
 
