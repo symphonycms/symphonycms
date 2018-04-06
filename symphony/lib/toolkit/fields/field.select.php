@@ -114,7 +114,7 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
         $results = null;
 
         // Fixes #1802
-        if (!Symphony::Database()->tableExists('tbl_entries_data_' . $this->get('dynamic_options'))) {
+        if (!Symphony::Database()->tableExists('tbl_entries_data_' . General::intval($this->get('dynamic_options')))) {
             return;
         }
 
