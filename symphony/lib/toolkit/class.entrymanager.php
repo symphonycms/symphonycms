@@ -147,73 +147,50 @@ class EntryManager
 
         // Ignore parameter when not an array
         if (!is_array($field)) {
-            $field = array();
+            $field = [];
         }
 
-        $did_lock = false;
-        $exception = null;
-        try {
-            // Create the lock statement
-            $lockStatement = Symphony::Database()->statement('LOCK TABLES');
+        // Check if table exists
+        $table_name = 'tbl_entries_data_' . General::intval($field_id);
+        if (!Symphony::Database()->tableExists($table_name)) {
+            return;
+        }
 
-            // Check if table exists
-            $table_name = 'tbl_entries_data_' . General::intval($field_id);
-            $table_name = $lockStatement->replaceTablePrefix($table_name);
-            if (!Symphony::Database()->tableExists($table_name)) {
-                return;
-            }
+        // Delete old data
+        Symphony::Database()
+            ->delete($table_name)
+            ->where(['entry_id' => $entry_id])
+            ->execute();
 
-            // Lock the table for write
-            $lockStatement->unsafeAppendSQLPart('statement', "`$table_name` WRITE");
-            $did_lock = $lockStatement->execute()->success();
+        // Insert new data
+        $data = [
+            'entry_id' => $entry_id
+        ];
 
-            // Delete old data
-            Symphony::Database()
-                ->delete($table_name)
-                ->where(['entry_id' => $entry_id])
-                ->execute();
+        $fields = [];
 
-            // Insert new data
-            $data = array(
-                'entry_id' => $entry_id
-            );
-
-            $fields = array();
-
-            foreach ($field as $key => $value) {
-                if (is_array($value)) {
-                    foreach ($value as $ii => $v) {
-                        $fields[$ii][$key] = $v;
-                    }
-                } else {
-                    $fields[max(0, count($fields) - 1)][$key] = $value;
+        foreach ($field as $key => $value) {
+            if (is_array($value)) {
+                foreach ($value as $ii => $v) {
+                    $fields[$ii][$key] = $v;
                 }
+            } else {
+                $fields[max(0, count($fields) - 1)][$key] = $value;
             }
-
-            foreach ($fields as $index => $field_data) {
-                $fields[$index] = array_merge($data, $field_data);
-            }
-
-            // Insert only if we have field data
-            if (!empty($fields)) {
-                foreach ($fields as $f) {
-                    Symphony::Database()
-                        ->insert($table_name)
-                        ->values($f)
-                        ->execute();
-                }
-            }
-        } catch (Exception $ex) {
-            $exception = $ex;
-            Symphony::Log()->pushExceptionToLog($ex, true);
         }
 
-        if ($did_lock) {
-            Symphony::Database()->statement("UNLOCK TABLES")->execute();
+        foreach ($fields as $index => $field_data) {
+            $fields[$index] = array_merge($data, $field_data);
         }
 
-        if ($exception) {
-            throw $exception;
+        // Insert only if we have field data
+        if (!empty($fields)) {
+            foreach ($fields as $f) {
+                Symphony::Database()
+                    ->insert($table_name)
+                    ->values($f)
+                    ->execute();
+            }
         }
     }
 
@@ -229,26 +206,26 @@ class EntryManager
      */
     public static function add(Entry $entry)
     {
-        $fields = $entry->get();
-        $inserted = Symphony::Database()
-            ->insert('tbl_entries')
-            ->values($fields)
-            ->execute()
-            ->success();
+        return Symphony::Database()->transaction(function (Database $db) use ($entry) {
+            $fields = $entry->get();
+            $inserted = $db
+                ->insert('tbl_entries')
+                ->values($fields)
+                ->execute()
+                ->success();
 
-        if (!$inserted || !$entry_id = Symphony::Database()->getInsertID()) {
-            return false;
-        }
+            if (!$inserted || !$entry_id = $db->getInsertID()) {
+                throw new DatabaseException('Could not insert in the entries table.');
+            }
 
-        // Iterate over all data for this entry
-        foreach ($entry->getData() as $field_id => $field) {
-            // Write data
-            static::saveFieldData($entry_id, $field_id, $field);
-        }
+            // Iterate over all data for this entry
+            foreach ($entry->getData() as $field_id => $field) {
+                // Write data
+                static::saveFieldData($entry_id, $field_id, $field);
+            }
 
-        $entry->set('id', $entry_id);
-
-        return true;
+            $entry->set('id', $entry_id);
+        })->execute()->success();
     }
 
     /**
@@ -262,29 +239,29 @@ class EntryManager
      */
     public static function edit(Entry $entry)
     {
-        // Update modification date and modification author.
-        $updated = Symphony::Database()
-            ->update('tbl_entries')
-            ->set([
-                'modification_author_id' => $entry->get('modification_author_id'),
-                'modification_date' => $entry->get('modification_date'),
-                'modification_date_gmt' => $entry->get('modification_date_gmt')
-            ])
-            ->where(['id' => $entry->get('id')])
-            ->execute()
-            ->success();
+        return Symphony::Database()->transaction(function (Database $db) use ($entry) {
+            // Update modification date and modification author.
+            $updated = $db
+                ->update('tbl_entries')
+                ->set([
+                    'modification_author_id' => $entry->get('modification_author_id'),
+                    'modification_date' => $entry->get('modification_date'),
+                    'modification_date_gmt' => $entry->get('modification_date_gmt')
+                ])
+                ->where(['id' => $entry->get('id')])
+                ->execute()
+                ->success();
 
-        if (!$updated) {
-            return false;
-        }
+            if (!$updated) {
+                throw new DatabaseException('Could not update the entries table.');
+            }
 
-        // Iterate over all data for this entry
-        foreach ($entry->getData() as $field_id => $field) {
-            // Write data
-            static::saveFieldData($entry->get('id'), $field_id, $field);
-        }
-
-        return true;
+            // Iterate over all data for this entry
+            foreach ($entry->getData() as $field_id => $field) {
+                // Write data
+                static::saveFieldData($entry->get('id'), $field_id, $field);
+            }
+        })->execute()->success();
     }
 
     /**
