@@ -502,8 +502,9 @@ class Database
      */
     public function tableExists($table)
     {
-        return $this->show()
-                    ->like($table)
+        $stm = $this->show();
+        $table = $stm->replaceTablePrefix($table);
+        return $stm->like($table)
                     ->execute()
                     ->next() !== null;
     }
