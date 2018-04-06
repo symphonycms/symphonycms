@@ -61,18 +61,19 @@ abstract class Extension implements ArrayAccess
     /**
      * Holds an associative array of all the objects this extension provides
      * to Symphony where the key is one of the Provider constants, and the
-     * value is the name of the classname
+     * value is the name of the class name.
      *
      * @since Symphony 2.5.0
      * @var array
      */
-    private static $provides = array();
+    private static $provides = [];
 
     /**
      * An associative array of basic metadata/settings for this Extension
+     * @since Symphony 3.0.0
      * @var array
      */
-    protected $fields = array();
+    private $fields = [];
 
     /**
      * Default constructor for an Extension, at this time it does nothing
