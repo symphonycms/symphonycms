@@ -148,7 +148,7 @@ class General
 
             </xsl:stylesheet>';
 
-            $xsltProcessor->process($_data, $xsl, array());
+            $xsltProcessor->process($_data, $xsl);
 
             if ($xsltProcessor->isErrors()) {
                 $errors = $xsltProcessor->getError(true);

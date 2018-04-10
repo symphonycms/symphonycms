@@ -13,16 +13,18 @@
 class XsltProcess
 {
     /**
-     * The XML for the transformation to be applied to
-     * @var string
+     * An array of all the parameters to be made available during the XSLT
+     * transform
+     * @var array
      */
-    private $_xml;
+    protected $_param = array();
 
     /**
-     * The XSL for the transformation
-     * @var string
+     * An array of the PHP functions to be made available during the XSLT
+     * transform
+     * @var array
      */
-    private $_xsl;
+    protected $_registered_php_functions = array();
 
     /**
      * Any errors that occur during the transformation are stored in this array.
@@ -31,19 +33,45 @@ class XsltProcess
     private $_errors = array();
 
     /**
-     * The `XsltProcess` constructor takes a two parameters for the
-     * XML and the XSL and initialises the `$this->_xml` and `$this->_xsl` variables.
-     * If an `XSLTProcessor` is not available, this function will return false
-     *
-     * @param string $xml
-     *  The XML for the transformation to be applied to
-     * @param string $xsl
-     *  The XSL for the transformation
+     * The last context, i.e. xml data that the system uses right now.
+     * Used when trapping errors, to be able to generate debug info.
+     * @var string
      */
-    public function __construct($xml = null, $xsl = null)
+    private $_lastContext = null;
+
+    /**
+     * Sets the parameters that will output with the resulting page
+     * and be accessible in the XSLT. This function translates all ' into
+     * `&apos;`, with the tradeoff being that a <xsl:value-of select='$param' />
+     * that has a ' will output `&apos;` but the benefit that ' and " can be
+     * in the params
+     *
+     * @link http://www.php.net/manual/en/xsltprocessor.setparameter.php#81077
+     * @param array $param
+     *  An associative array of params for this page
+     */
+    public function setRuntimeParam(array $param)
     {
-        $this->_xml = $xml;
-        $this->_xsl = $xsl;
+        $this->_param = str_replace("'", "&apos;", $param);
+    }
+
+    /**
+     * Allows the registration of PHP functions to be used on the Frontend
+     * by passing the function name or an array of function names
+     *
+     * @param mixed $function
+     *  Either an array of function names, or just the function name as a
+     *  string
+     */
+    public function registerPHPFunction($function)
+    {
+        if (is_array($function)) {
+            $this->_registered_php_functions = array_unique(
+              array_merge($this->_registered_php_functions, $function)
+            );
+        } else {
+            $this->_registered_php_functions[] = $function;
+        }
     }
 
     /**
@@ -68,23 +96,11 @@ class XsltProcess
      *  The XML for the transformation to be applied to
      * @param string $xsl
      *  The XSL for the transformation
-     * @param array $parameters
-     *  An array of available parameters the XSL will have access to
-     * @param array $register_functions
-     *  An array of available PHP functions that the XSL can use
      * @return string|boolean
      *  The string of the resulting transform, or false if there was an error
      */
-    public function process($xml = null, $xsl = null, array $parameters = array(), array $register_functions = array())
+    public function process($xml, $xsl)
     {
-        if ($xml) {
-            $this->_xml = $xml;
-        }
-
-        if ($xsl) {
-            $this->_xsl = $xsl;
-        }
-
         // dont let process continue if no xsl functionality exists
         if (!XsltProcess::isXSLTProcessorAvailable()) {
             return false;
@@ -92,15 +108,15 @@ class XsltProcess
 
         $XSLProc = new XsltProcessor;
 
-        if (!empty($register_functions)) {
-            $XSLProc->registerPHPFunctions($register_functions);
+        if (!empty($this->_registered_php_functions)) {
+            $XSLProc->registerPHPFunctions($this->_registered_php_functions);
         }
 
         $result = @$this->__process(
             $XSLProc,
-            $this->_xml,
-            $this->_xsl,
-            $parameters
+            $xml,
+            $xsl,
+            $this->_param
         );
 
         unset($XSLProc);
@@ -127,7 +143,7 @@ class XsltProcess
     {
         // Create instances of the DomDocument class
         $xmlDoc = new DomDocument;
-        $xslDoc= new DomDocument;
+        $xslDoc = new DomDocument;
 
         // Set up error handling
         if (function_exists('ini_set')) {
@@ -135,6 +151,7 @@ class XsltProcess
         }
 
         // Load the xml document
+        $this->_lastContext = $xml;
         set_error_handler(array($this, 'trapXMLError'));
         // Prevent remote entities from being loaded, RE: #1939
         $elOLD = libxml_disable_entity_loader(true);
@@ -147,6 +164,7 @@ class XsltProcess
         restore_error_handler();
 
         // Load the xsl document
+        $this->_lastContext = $xsl;
         set_error_handler(array($this, 'trapXSLError'));
         // Ensure that the XSLT can be loaded with `false`. RE: #1939
         // Note that `true` will cause `<xsl:import />` to fail.
@@ -178,31 +196,26 @@ class XsltProcess
 
         // Must restore the error handler to avoid problems
         restore_error_handler();
+        $this->_lastContext = null;
 
         return $processed;
     }
 
     /**
-     * That validate function takes an XSD to valid against `$this->_xml`
-     * returning boolean. Optionally, a second parameter `$xml` can be
-     * passed that will be used instead of `$this->_xml`.
+     * That validate function takes an XSD to valid against `$xml`
+     * returning boolean.
      *
      * @since Symphony 2.3
      * @param string $xsd
-     *  The XSD to validate `$this->_xml` against
-     * @param string $xml (optional)
-     *  If provided, this function will use this `$xml` instead of
-     *  `$this->_xml`.
+     *  The XSD to validate against
+     * @param string $xml
+     *  The XML to validate
      * @return boolean
      *  Returns true if the `$xml` validates against `$xsd`, false otherwise.
      *  If false is returned, the errors can be obtained with `XSLTProcess->getErrors()`
      */
-    public function validate($xsd, $xml = null)
+    public function validate($xsd, $xml)
     {
-        if (is_null($xml) && !is_null($this->_xml)) {
-            $xml = $this->_xml;
-        }
-
         if (is_null($xsd) || is_null($xml)) {
             return false;
         }
@@ -216,6 +229,7 @@ class XsltProcess
         }
 
         // Load the xml document
+        $this->_lastContext = $xml;
         set_error_handler(array($this, 'trapXMLError'));
         $elOLD = libxml_disable_entity_loader(true);
         $xmlDoc->loadXML($xml, LIBXML_NONET | LIBXML_DTDLOAD | LIBXML_DTDATTR | defined('LIBXML_COMPACT') ? LIBXML_COMPACT : 0);
@@ -225,6 +239,7 @@ class XsltProcess
         restore_error_handler();
 
         // Validate the XML against the XSD
+        $this->_lastContext = $xsd;
         set_error_handler(array($this, 'trapXSDError'));
         $result = $xmlDoc->schemaValidateSource($xsd);
 
@@ -235,6 +250,7 @@ class XsltProcess
 
         // Must restore the error handler to avoid problems
         restore_error_handler();
+        $this->_lastContext = null;
 
         return $result;
     }
@@ -296,23 +312,13 @@ class XsltProcess
      */
     public function __error($number, $message, $file = null, $line = null, $type = null)
     {
-        $context = null;
-
-        if ($type == 'xml' || $type == 'xsd') {
-            $context = $this->_xml;
-        }
-
-        if ($type == 'xsl') {
-            $context = $this->_xsl;
-        }
-
         $this->_errors[] = array(
             'number' => $number,
             'message' => $message,
             'file' => $file,
             'line' => $line,
             'type' => $type,
-            'context' => $context
+            'context' => $this->_lastContext,
         );
     }
 
