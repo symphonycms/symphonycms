@@ -36,6 +36,11 @@ class DatabaseStatement
     const LIST_DELIMITER = ', ';
 
     /**
+     * The SQL values delimiter
+     */
+    const VALUES_DELIMITER = ',';
+
+    /**
      * The SQL part delimiter
      * @var string
      */
@@ -61,6 +66,11 @@ class DatabaseStatement
      * @var string
      */
     const FCT_PATTERN = '/^([A-Za-z_]+)\((.*)\)$/';
+
+    /**
+     * The SQL functions arguments delimiter
+     */
+    const FCT_ARGS_DELIMITER = ',';
 
     /**
      * Regular Expression that matches SQL operators +, -, *, /
@@ -286,7 +296,7 @@ class DatabaseStatement
             if (in_array($type, ['(', ')'])) {
                 $orderedParts[] = [$type => $type];
                 continue;
-            } elseif ($type === ',') {
+            } elseif ($type === self::VALUES_DELIMITER) {
                 $before = $this->getSQLParts($allParts[$ti - 1]);
                 $after = $this->getSQLParts($allParts[$ti + 1]);
                 if (!empty($before) && !empty($after)) {
@@ -622,7 +632,7 @@ class DatabaseStatement
         foreach ($arguments as $char) {
             if (!trim($char)) {
                 continue;
-            } elseif ($openParenthesisCount === 0 && $char === ',') {
+            } elseif ($openParenthesisCount === 0 && $char === self::FCT_ARGS_DELIMITER) {
                 if (!empty($current)) {
                     $args[] = implode('', $current);
                 }
@@ -719,8 +729,8 @@ class DatabaseStatement
             }
             return $value;
         // 5. comma
-        } elseif (strpos($value, ',') !== false) {
-            return $this->asTickedList(explode(',', $value));
+        } elseif (strpos($value, self::VALUES_DELIMITER) !== false) {
+            return $this->asTickedList(explode(self::VALUES_DELIMITER, $value));
         // 6. colon
         } elseif (strpos($value, ':') === 0) {
             $this->validateFieldName(substr($value, 1));

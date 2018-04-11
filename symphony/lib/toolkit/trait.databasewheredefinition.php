@@ -74,8 +74,8 @@ trait DatabaseWhereDefinition
                 return '(' . implode(" $K ", array_map(function ($k) use ($c) {
                     return $this->buildWhereClauseFromArray([$k => $c[$k]]);
                 }, array_keys($c))) . ')';
-            // key is ,
-            } elseif ($k === ',') {
+            // key is the VALUES_DELIMITER (i.e. a comma `,`)
+            } elseif ($k === self::VALUES_DELIMITER) {
                 return implode(self::LIST_DELIMITER, General::array_map(function ($k, $c) {
                     return $this->buildWhereClauseFromArray([$k => $c]);
                 }, $c));

@@ -73,7 +73,7 @@ final class DatabaseCreate extends DatabaseStatement
             'table',
             '(',
             'fields',
-            ',',
+            self::VALUES_DELIMITER,
             'keys',
             ')',
             'engine',
