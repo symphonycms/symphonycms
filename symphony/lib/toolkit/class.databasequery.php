@@ -321,7 +321,7 @@ class DatabaseQuery extends DatabaseStatement
             $orders[] = "$col $dir";
         }
         $orders = implode(self::LIST_DELIMITER, $orders);
-        $op = $this->containsSQLParts('order by') ? ',' : 'ORDER BY';
+        $op = $this->containsSQLParts('order by') ? self::VALUES_DELIMITER : 'ORDER BY';
         $this->unsafeAppendSQLPart('order by', "$op $orders");
         return $this;
     }
@@ -340,7 +340,7 @@ class DatabaseQuery extends DatabaseStatement
             $columns = [$columns];
         }
         $group = $this->asTickedList($columns);
-        $op = $this->containsSQLParts('group by') ? ',' : 'GROUP BY';
+        $op = $this->containsSQLParts('group by') ? self::VALUES_DELIMITER : 'GROUP BY';
         $this->unsafeAppendSQLPart('group by', "$op $group");
         return $this;
     }

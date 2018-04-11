@@ -78,7 +78,7 @@ final class DatabaseUpdate extends DatabaseStatement
      */
     public function set(array $values)
     {
-        $v = $this->buildWhereClauseFromArray([',' => $values]);
+        $v = $this->buildWhereClauseFromArray([self::VALUES_DELIMITER => $values]);
         $this->unsafeAppendSQLPart('values', "SET $v");
         $this->appendValues($values);
         return $this;
