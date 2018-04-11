@@ -261,4 +261,21 @@ final class DatabaseAlterTest extends TestCase
             'ALTER DROP PRIMARY KEY'
         );
     }
+
+    public function testALTERFormattedSQL()
+    {
+        $db = new Database([]);
+        $sql = $db->alter('alter')
+            ->addIndex(['x' => 'fulltext'])
+            ->change('x', [
+                'y' => 'varchar(200)'
+            ])
+            ->addPrimaryKey('x')
+            ->dropPrimaryKey();
+        $this->assertEquals(
+            "ALTER TABLE `alter`\n\tCHANGE COLUMN `x` `y` varchar(200) NOT NULL\n\tADD FULLTEXT `x` (`x`)\n\tADD PRIMARY KEY (`x`)\n\tDROP PRIMARY KEY",
+            $sql->generateFormattedSQL(),
+            'ALTER Formatted'
+        );
+    }
 }

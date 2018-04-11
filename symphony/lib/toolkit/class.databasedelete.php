@@ -39,6 +39,7 @@ final class DatabaseDelete extends DatabaseStatement
     /**
      * Returns the parts statement structure for this specialized statement.
      *
+     * @see DatabaseStatement::getStatementStructure()
      * @return array
      */
     protected function getStatementStructure()
@@ -49,6 +50,27 @@ final class DatabaseDelete extends DatabaseStatement
             'where',
             'limit',
         ];
+    }
+
+    /**
+     * Gets the proper separator string for the given $type SQL part type, when
+     * generating a formatted SQL statement.
+     *
+     * @see DatabaseStatement::getSeparatorForPartType()
+     * @param string $type
+     *  The SQL part type.
+     * @return string
+     *  The string to use to separate the formatted SQL parts.
+     */
+    public function getSeparatorForPartType($type)
+    {
+        General::ensureType([
+            'type' => ['var' => $type, 'type' => 'string'],
+        ]);
+        if (in_array($type, ['where', 'limit'])) {
+            return self::FORMATTED_PART_DELIMITER;
+        }
+        return self::STATEMENTS_DELIMITER;
     }
 
     /**

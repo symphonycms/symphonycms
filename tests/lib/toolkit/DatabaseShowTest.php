@@ -52,4 +52,17 @@ final class DatabaseShowTest extends TestCase
         $this->assertEquals('%show%s', $values[0], '0 is %show%s');
         $this->assertEquals(1, count($values), '1 value');
     }
+
+    public function testSHOWTABLESWHERELIKEFormatted()
+    {
+        $db = new Database([]);
+        $sql = $db->show()
+            ->where(['x' => 1])
+            ->like('%show%s');
+        $this->assertEquals(
+            "SHOW TABLES\n\tLIKE ?\n\tWHERE `x` = :x",
+            $sql->generateFormattedSQL(),
+            'SHOW TABLES WHERE LIKE formatted'
+        );
+    }
 }

@@ -123,26 +123,24 @@ final class DatabaseCreateTest extends TestCase
 
     public function testCREATEKeyBeforeFields()
     {
-        {
-            $db = new Database([]);
-            $sql = $db->create('create')
-                      ->keys([
-                        'id' => 'primary',
-                        'x' => 'key',
-                      ])
-                      ->fields([
-                        'x' => 'varchar(100)',
-                        'id' => [
-                            'type' => 'int(11)',
-                            'auto' => true
-                        ]
-                      ]);
-            $this->assertEquals(
-                "CREATE TABLE `create` ( `x` varchar(100) NOT NULL, `id` int(11) unsigned NOT NULL AUTO_INCREMENT , PRIMARY KEY (`id`), KEY `x` (`x`) )",
-                $sql->generateSQL(),
-                'CREATE clause with KEYS'
-            );
-        }
+        $db = new Database([]);
+        $sql = $db->create('create')
+                    ->keys([
+                    'id' => 'primary',
+                    'x' => 'key',
+                    ])
+                    ->fields([
+                    'x' => 'varchar(100)',
+                    'id' => [
+                        'type' => 'int(11)',
+                        'auto' => true
+                    ]
+                    ]);
+        $this->assertEquals(
+            "CREATE TABLE `create` ( `x` varchar(100) NOT NULL, `id` int(11) unsigned NOT NULL AUTO_INCREMENT , PRIMARY KEY (`id`), KEY `x` (`x`) )",
+            $sql->generateSQL(),
+            'CREATE clause with KEYS'
+        );
     }
 
     public function testCREATENoFields()
@@ -157,6 +155,33 @@ final class DatabaseCreateTest extends TestCase
             "CREATE TABLE `create` ( ) ENGINE=engine DEFAULT CHARSET=utf8 COLLATE=utf8",
             $sql->generateSQL(),
             'CREATE clause with finalize()'
+        );
+    }
+
+
+    public function testCREATEFormattedSQL()
+    {
+        $db = new Database([]);
+        $sql = $db->create('create')
+            ->charset('utf8')
+            ->collate('utf8')
+            ->engine('engine')
+            ->keys([
+                'id' => 'primary',
+                'x' => 'key',
+            ])
+            ->fields([
+                'x' => 'varchar(100)',
+                'id' => [
+                    'type' => 'int(11)',
+                    'auto' => true
+                ]
+            ])
+            ->finalize();
+        $this->assertEquals(
+            "CREATE TABLE `create` (\n\t`x` varchar(100) COLLATE utf8 NOT NULL, `id` int(11) unsigned NOT NULL AUTO_INCREMENT ,\n\tPRIMARY KEY (`id`), KEY `x` (`x`)\n) ENGINE=engine DEFAULT CHARSET=utf8 COLLATE=utf8",
+            $sql->generateFormattedSQL(),
+            'CREATE clause formatted'
         );
     }
 }
