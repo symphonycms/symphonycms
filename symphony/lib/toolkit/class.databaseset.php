@@ -31,6 +31,7 @@ final class DatabaseSet extends DatabaseStatement
     /**
      * Returns the parts statement structure for this specialized statement.
      *
+     * @see DatabaseStatement::getStatementStructure()
      * @return array
      */
     protected function getStatementStructure()

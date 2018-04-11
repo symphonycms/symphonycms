@@ -284,13 +284,13 @@ class DatabaseStatement
         $orderedParts = [];
         foreach ($allParts as $ti => $type) {
             if (in_array($type, ['(', ')'])) {
-                $orderedParts[] = [$type];
+                $orderedParts[] = [$type => $type];
                 continue;
             } elseif ($type === ',') {
                 $before = $this->getSQLParts($allParts[$ti - 1]);
                 $after = $this->getSQLParts($allParts[$ti + 1]);
                 if (!empty($before) && !empty($after)) {
-                    $orderedParts[] = [$type];
+                    $orderedParts[] = [$type => $type];
                 }
                 continue;
             }

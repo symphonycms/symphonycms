@@ -62,6 +62,7 @@ final class DatabaseCreate extends DatabaseStatement
     /**
      * Returns the parts statement structure for this specialized statement.
      *
+     * @see DatabaseStatement::getStatementStructure()
      * @return array
      */
     protected function getStatementStructure()
@@ -79,6 +80,29 @@ final class DatabaseCreate extends DatabaseStatement
             'charset',
             'collate',
         ];
+    }
+
+    /**
+     * Gets the proper separator string for the given $type SQL part type, when
+     * generating a formatted SQL statement.
+     *
+     * @see DatabaseStatement::getSeparatorForPartType()
+     * @param string $type
+     *  The SQL part type.
+     * @return string
+     *  The string to use to separate the formatted SQL parts.
+     */
+    public function getSeparatorForPartType($type)
+    {
+        General::ensureType([
+            'type' => ['var' => $type, 'type' => 'string'],
+        ]);
+        if (in_array($type, ['fields', 'keys'])) {
+            return self::FORMATTED_PART_DELIMITER;
+        } elseif ($type === ')') {
+            return self::FORMATTED_PART_EOL;
+        }
+        return self::STATEMENTS_DELIMITER;
     }
 
     /**

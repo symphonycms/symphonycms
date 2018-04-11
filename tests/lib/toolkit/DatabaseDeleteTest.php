@@ -69,4 +69,17 @@ final class DatabaseDeleteTest extends TestCase
         $values = $sql->getValues();
         $this->assertEquals(0, count($values), '0 value');
     }
+
+    public function testDELETEFormattedSQL()
+    {
+        $db = new Database([]);
+        $sql = $db->delete('delete')
+            ->where(['x' => 1])
+            ->limit(1);
+        $this->assertEquals(
+            "DELETE FROM `delete`\n\tWHERE `x` = :x\n\tLIMIT 1",
+            $sql->generateFormattedSQL(),
+            'DELETE WHERE formatted'
+        );
+    }
 }

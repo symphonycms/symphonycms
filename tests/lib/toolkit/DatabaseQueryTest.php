@@ -760,4 +760,34 @@ final class DatabaseQueryTest extends TestCase
         $values = $sql->getValues();
         $this->assertEquals(0, count($values), '0 value');
     }
+
+    public function testSELECTFormattedSQL()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->where(['x' => 1])
+            ->where(['y' => 1]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE *\n\tFROM `test_table`\n\tWHERE `x` = :x\n\tAND `y` = :y",
+            $sql->generateFormattedSQL(),
+            'Formatted SQL query test'
+        );
+    }
+
+    public function testSELECTWithSubQueryFormatted()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table');
+        $sub = $sql->select(['y'])
+            ->from('sub')
+            ->where(['y' => 2]);
+        $sql->where(['x' => $sub]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE *\n\tFROM `test_table`\n\tWHERE `x` = (SELECT SQL_NO_CACHE `y` FROM `sub` WHERE `y` = :i1_y)",
+            $sql->generateFormattedSQL(),
+            'Formatted SQL sub-query test'
+        );
+    }
 }
