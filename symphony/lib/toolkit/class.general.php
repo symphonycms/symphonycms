@@ -14,6 +14,7 @@ class General
      * Symphony 2.3, this function assumes UTF-8 and will not double
      * encode strings.
      *
+     * @uses htmlspecialchars()
      * @param string $source
      *  a string to operate on.
      * @return string
@@ -22,6 +23,24 @@ class General
     public static function sanitize($source)
     {
         $source = htmlspecialchars($source, ENT_COMPAT, 'UTF-8', false);
+
+        return $source;
+    }
+
+    /**
+     * Convert any special characters into their entity equivalents.
+     * Contrary to `sanitize()`, this version does double encode existing entities.
+     *
+     * @since Symphony 2.7.5
+     * @uses htmlspecialchars()
+     * @param string $source
+     *  a string to operate on.
+     * @return string
+     *  the fully encoded version of the string.
+     */
+    public static function sanitizeDouble($source)
+    {
+        $source = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', true);
 
         return $source;
     }
