@@ -151,7 +151,7 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
         }
 
         $value = isset($data['value']) ? $data['value'] : null;
-        $textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (int)$this->get('size'), 50, (strlen($value) != 0 ? General::sanitize($value) : null));
+        $textarea = Widget::Textarea('fields'.$fieldnamePrefix.'['.$this->get('element_name').']'.$fieldnamePostfix, (int)$this->get('size'), 50, (strlen($value) != 0 ? General::sanitizeDouble($value) : null));
 
         if ($this->get('formatter') != 'none') {
             $textarea->setAttribute('class', $this->get('formatter'));
