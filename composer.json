@@ -1,6 +1,6 @@
 {
     "name": "symphonycms/symphony-2",
-    "version": "2.7.5",
+    "version": "2.7.6",
     "description": "Symphony is a PHP & MySQL based CMS that utilises XML and XSLT as its core technologies.",
     "homepage": "https://www.getsymphony.com",
     "license": "MIT",
