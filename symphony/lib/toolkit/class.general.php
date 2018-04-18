@@ -40,7 +40,7 @@ class General
      */
     public static function sanitizeDouble($source)
     {
-        $source = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', true);
+        $source = htmlspecialchars($source, ENT_COMPAT, 'UTF-8', true);
 
         return $source;
     }
