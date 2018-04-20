@@ -38,22 +38,15 @@ final class DatabaseCreate extends DatabaseStatement
      * optimizer value.
      *
      * @see Database::create()
-     * @see Database::createIfNotExists()
      * @param Database $db
      *  The underlying database connection
      * @param string $table
      *  The name of the table to act on, including the tbl prefix which will be changed
      *  to the Database table prefix.
-     * @param string $optimizer
-     *  An optional optimizer hint.
-     *  Currently, only IF NOT EXISTS is supported
      */
-    public function __construct(Database $db, $table, $optimizer = null)
+    public function __construct(Database $db, $table)
     {
         parent::__construct($db, 'CREATE TABLE');
-        if ($optimizer === 'IF NOT EXISTS') {
-            $this->unsafeAppendSQLPart('optimizer', 'IF NOT EXISTS');
-        }
         $table = $this->replaceTablePrefix($table);
         $table = $this->asTickedString($table);
         $this->unsafeAppendSQLPart('table', $table);
@@ -103,6 +96,17 @@ final class DatabaseCreate extends DatabaseStatement
             return self::FORMATTED_PART_EOL;
         }
         return self::STATEMENTS_DELIMITER;
+    }
+
+    /**
+     * IF NOT EXISTS
+     *
+     * @return DatabaseCreate
+     *  The current instance
+     */
+    public function ifNotExists()
+    {
+        return $this->unsafeAppendSQLPart('optimizer', 'IF NOT EXISTS');
     }
 
     /**
