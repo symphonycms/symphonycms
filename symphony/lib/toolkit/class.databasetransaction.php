@@ -24,8 +24,9 @@ class DatabaseTransaction
     private $tx;
 
     /**
-     * Creates a new DatabaseStatement object, linked to the $db parameter
-     * and containing the optional $statement.
+     * Creates a new DatabaseTransaction object, linked to the $db parameter, in which
+     * to execute the statements contained in the $tx callable.
+     * $tx will be called with a single parameter: the instance of the linked Database object.
      *
      * @param Database $db
      *  The Database reference
