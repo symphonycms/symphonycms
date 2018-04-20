@@ -13,7 +13,6 @@ class ExtensionQuery extends DatabaseQuery
      * The table is aliased to `ex`.
      *
      * @see ExtensionManager::select()
-     * @see ExtensionManager::selectCount()
      * @param Database $db
      *  The underlying database connection
      * @param array $projection
@@ -24,6 +23,17 @@ class ExtensionQuery extends DatabaseQuery
     {
         parent::__construct($db, $projection);
         $this->from('tbl_extensions')->alias('ex');
+    }
+
+    /**
+     * Gets the default projection to use if no projection is added.
+     *
+     * @see DatabaseQuery::getDefaultProjection()
+     * @return array
+     */
+    public function getDefaultProjection()
+    {
+        return ['ex.*'];
     }
 
     /**

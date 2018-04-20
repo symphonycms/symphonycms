@@ -534,7 +534,7 @@ class EntryManager
     public static function fetchCount($section_id = null, $where = null, $joins = null, $group = false)
     {
         if (Symphony::Log()) {
-            Symphony::Log()->pushDeprecateWarningToLog('EntryManager::fetchCount()', 'EntryManager::selectCount()');
+            Symphony::Log()->pushDeprecateWarningToLog('EntryManager::fetchCount()', 'EntryManager::select()->count()');
         }
 
         if (is_null($section_id)) {
@@ -547,7 +547,7 @@ class EntryManager
             return false;
         }
 
-        $sql = (new EntryManager)->selectCount()->section($section_id);
+        $sql = (new EntryManager)->select()->count()->section($section_id);
 
         if ($group) {
             $sql->distinct();
@@ -676,23 +676,6 @@ class EntryManager
      */
     public function select(array $schema = [])
     {
-        return new EntryQuery(Symphony::Database(), $schema, ['e.*']);
-    }
-
-    /**
-     * Factory method that creates a new EntryQuery that only counts results.
-     * It disables the default sort since it is not required.
-     *
-     * @since Symphony 3.0.0
-     * @see select()
-     * @param string $col
-     *  The column to count on. Defaults to `*`
-     * @return EntryQuery
-     */
-    public function selectCount($col = '*')
-    {
-        return (new EntryQuery(Symphony::Database()))
-            ->projection(["COUNT($col)"])
-            ->disableDefaultSort();
+        return new EntryQuery(Symphony::Database(), $schema);
     }
 }

@@ -18,7 +18,7 @@ calling `commit()` as usual.
 Fetching is made easier by deprecating `fetch()` and implementing specialized `DatabaseQuery` classes.
 This allows for a infinite number of possible configurations and also make it possible to set default values,
 like the name of the table or a default sort.
-The specialized `DatabaseQuery` objects are created by calling the `select()` and `selectCount()` methods.
+The specialized `DatabaseQuery` objects are created by calling the `select()` method.
 
 ```php
 $query = (new EntryManager)->select();

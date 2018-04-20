@@ -1120,25 +1120,12 @@ class ExtensionManager implements FileResource
      *
      * @since Symphony 3.0.0
      * @param array $projection
-     *  The projection to select. By default, it's all of them, i.e. `*`.
+     *  The projection to select.
+     *  If no projection gets added, it defaults to `DatabaseQuery::getDefaultProjection()`.
      * @return ExtensionQuery
      */
-    public function select(array $projection = ['ex.*'])
+    public function select(array $projection = [])
     {
         return new ExtensionQuery(Symphony::Database(), $projection);
-    }
-
-    /**
-     * Factory method that creates a new ExtensionQuery that only counts results.
-     *
-     * @since Symphony 3.0.0
-     * @see select()
-     * @param string $col
-     *  The column to count on. Defaults to `*`
-     * @return ExtensionQuery
-     */
-    public function selectCount($col = '*')
-    {
-        return new EntryQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }

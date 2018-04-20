@@ -84,7 +84,8 @@ class NavigationDatasource extends Datasource
 
         // Build the Query appending the Parent and/or Type WHERE clauses
         $childrenStm = Symphony::Database()
-            ->selectCount('id')
+            ->select()
+            ->count('id')
             ->from('tbl_pages', 'c')
             ->where(['c.parent' => '$p.id']);
         $stm = Symphony::Database()

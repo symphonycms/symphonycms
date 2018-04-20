@@ -13,7 +13,6 @@ class SectionQuery extends DatabaseQuery
      * The table is aliased to `s`.
      *
      * @see SectionManager::select()
-     * @see SectionManager::selectCount()
      * @param Database $db
      *  The underlying database connection
      * @param array $projection
@@ -24,6 +23,17 @@ class SectionQuery extends DatabaseQuery
     {
         parent::__construct($db, $projection);
         $this->from('tbl_sections')->alias('s');
+    }
+
+    /**
+     * Gets the default projection to use if no projection is added.
+     *
+     * @see DatabaseQuery::getDefaultProjection()
+     * @return array
+     */
+    public function getDefaultProjection()
+    {
+        return ['s.*'];
     }
 
     /**

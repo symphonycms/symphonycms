@@ -20,7 +20,6 @@ class PageQuery extends DatabaseQuery
      * The table is aliased to `p`.
      *
      * @see PageManager::select()
-     * @see PageManager::selectCount()
      * @param Database $db
      *  The underlying database connection
      * @param array $projection
@@ -42,6 +41,17 @@ class PageQuery extends DatabaseQuery
     {
         $this->includeTypes = true;
         return $this;
+    }
+
+    /**
+     * Gets the default projection to use if no projection is added.
+     *
+     * @see DatabaseQuery::getDefaultProjection()
+     * @return array
+     */
+    public function getDefaultProjection()
+    {
+        return ['p.*'];
     }
 
     /**

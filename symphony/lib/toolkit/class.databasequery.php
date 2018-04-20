@@ -27,7 +27,6 @@ class DatabaseQuery extends DatabaseStatement
      * Creates a new DatabaseQuery statement with an optional projection.
      *
      * @see Database::select()
-     * @see Database::selectCount()
      * @param Database $db
      *  The underlying database connection
      * @param string $projection
@@ -121,6 +120,33 @@ class DatabaseQuery extends DatabaseStatement
     {
         $op = $this->containsSQLParts('projection') ? ', ' : '';
         return $this->unsafeAppendSQLPart('projection', $op . $this->asProjectionList($projection));
+    }
+
+    /**
+     * Gets the default projection to use if no projection is added.
+     *
+     * @see finalize()
+     * @return array
+     */
+    public function getDefaultProjection()
+    {
+        return ['*'];
+    }
+
+    /**
+     * Appends COUNT($col) to the projection.
+     *
+     * @param string $col
+     *  The column to count on. Defaults to the first value from
+     *  `getDefaultProjection()`
+     * @return DatabaseQuery
+     */
+    public function count($col = null)
+    {
+        if (!$col) {
+            $col = current($this->getDefaultProjection());
+        }
+        return $this->projection(["COUNT($col)"]);
     }
 
     /**
@@ -434,6 +460,25 @@ class DatabaseQuery extends DatabaseStatement
     }
 
     /**
+     * @internal
+     * Appends any remaining part of the statement.
+     * If the projection is empty, the project from getDefaultProjection() will be used.
+     *
+     * @uses getDefaultProjection()
+     * @see DatabaseStatement::finalize()
+     * @see DatabaseStatement::execute()
+     * @return DatabaseStatement
+     *  The current instance
+     */
+    public function finalize()
+    {
+        if (!$this->containsSQLParts('projection')) {
+            $this->projection($this->getDefaultProjection());
+        }
+        return $this;
+    }
+
+    /**
      * Creates a specialized version of DatabaseStatementResult to hold
      * result from the current statement.
      *
@@ -457,10 +502,10 @@ class DatabaseQuery extends DatabaseStatement
      * safely used inside the current instance of DatabaseQuery.
      *
      * @param array $values
-     *  The columns to select. By default, it's `*`.
+     *  The columns to select. By default, it's `*` if no projection gets added.
      * @return DatabaseSubQuery
      */
-    public function select(array $values = ['*'])
+    public function select(array $values = [])
     {
         $this->selectQueryCount++;
         return new DatabaseSubQuery($this->getDB(), $this->selectQueryCount, $values);

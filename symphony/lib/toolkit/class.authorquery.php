@@ -13,7 +13,6 @@ class AuthorQuery extends DatabaseQuery
      * The table is aliased to `a`.
      *
      * @see AuthorManager::select()
-     * @see AuthorManager::selectCount()
      * @param Database $db
      *  The underlying database connection
      * @param array $projection
@@ -24,6 +23,17 @@ class AuthorQuery extends DatabaseQuery
     {
         parent::__construct($db, $projection);
         $this->from('tbl_authors')->alias('a');
+    }
+
+    /**
+     * Gets the default projection to use if no projection is added.
+     *
+     * @see DatabaseQuery::getDefaultProjection()
+     * @return array
+     */
+    public function getDefaultProjection()
+    {
+        return ['a.*'];
     }
 
     /**

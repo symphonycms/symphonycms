@@ -40,7 +40,6 @@ class EntryQuery extends DatabaseQuery
      * The mandatory values are already added to the projection.
      *
      * @see EntryManager::select()
-     * @see EntryManager::selectCount()
      * @param Database $db
      *  The underlying database connection
      * @param string $schema
@@ -65,6 +64,17 @@ class EntryQuery extends DatabaseQuery
     {
         $this->addDefaultSort = false;
         return $this;
+    }
+
+    /**
+     * Gets the default projection to use if no projection is added.
+     *
+     * @see DatabaseQuery::getDefaultProjection()
+     * @return array
+     */
+    public function getDefaultProjection()
+    {
+        return ['e.*'];
     }
 
     /**

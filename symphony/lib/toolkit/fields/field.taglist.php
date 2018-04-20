@@ -94,7 +94,8 @@ class FieldTagList extends Field implements ExportableField, ImportableField
         $value = array_map(trim, array_map([$this, 'cleanValue'], explode(',', $value)));
 
         return (int)Symphony::Database()
-            ->selectCount('handle')
+            ->select()
+            ->count('handle')
             ->from('tbl_entries_data_' . $this->get('id'))
             ->where(['handle' => ['in' => $value]])
             ->execute()
