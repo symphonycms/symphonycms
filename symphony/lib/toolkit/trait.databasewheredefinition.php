@@ -34,6 +34,10 @@ trait DatabaseWhereDefinition
      *
      * ('<=', ['x' => 'SUM(total)']) -> `x` <= SUM(`total`)
      *
+     * Sub queries are first class citizens
+     *
+     * ('in', $stm->select()->from()->where())
+     *
      * Everything can be nested
      *
      * ('or', [

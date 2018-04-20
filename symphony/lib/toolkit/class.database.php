@@ -784,6 +784,14 @@ class Database
         return $this->conn->inTransaction();
     }
 
+    /**
+     * Factory method that creates a new DatabaseTransaction object.
+     * $tx will be called with a single parameter: the instance of the current Database object.
+     *
+     * @param callable $tx
+     *  The code to execute in the transaction
+     * @return DatabaseTransaction
+     */
     public function transaction($tx)
     {
         return new DatabaseTransaction($this, $tx);
