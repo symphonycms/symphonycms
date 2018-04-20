@@ -14,22 +14,15 @@ final class DatabaseDrop extends DatabaseStatement
      * optimizer value.
      *
      * @see Database::drop()
-     * @see Database::dropIfExists()
      * @param Database $db
      *  The underlying database connection
      * @param string $table
      *  The name of the table to act on, including the tbl prefix which will be changed
      *  to the Database table prefix.
-     * @param string $optimizer
-     *  An optional optimizer hint.
-     *  Currently, only IF EXISTS is supported
      */
-    public function __construct(Database $db, $table, $optimizer = null)
+    public function __construct(Database $db, $table)
     {
         parent::__construct($db, 'DROP TABLE');
-        if ($optimizer === 'IF EXISTS') {
-            $this->unsafeAppendSQLPart('optimizer', 'IF EXISTS');
-        }
         $table = $this->replaceTablePrefix($table);
         $table = $this->asTickedString($table);
         $this->unsafeAppendSQLPart('table', $table);
@@ -48,6 +41,17 @@ final class DatabaseDrop extends DatabaseStatement
             'optimizer',
             'table',
         ];
+    }
+
+    /**
+     * Currently, only IF EXISTS is supported->ifExists()
+     *
+     * @return DatabaseDrop
+     *  The current instance
+     */
+    public function ifExists()
+    {
+        return $this->unsafeAppendSQLPart('optimizer', 'IF EXISTS');
     }
 
     /**

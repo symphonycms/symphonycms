@@ -676,17 +676,6 @@ class Database
     }
 
     /**
-     * Factory method that creates a new `DROP IF EXISTS` statement.
-     *
-     * @param string $table
-     * @return DatabaseDrop
-     */
-    public function dropIfExists($table)
-    {
-        return new DatabaseDrop($this, $table, 'IF EXISTS');
-    }
-
-    /**
      * Factory method that creates a new `DESCRIBE` statement.
      *
      * @param string $table
@@ -708,22 +697,6 @@ class Database
     public function create($table)
     {
         return (new DatabaseCreate($this, $table))
-            ->charset($this->config['charset'])
-            ->collate($this->config['collate'])
-            ->engine($this->config['engine']);
-    }
-
-    /**
-     * Factory method that creates a new `CREATE TABLE IF NOT EXISTS` statement.
-     * Also sets the charset, collate and engine values using the
-     * instance configuration.
-     *
-     * @param string $table
-     * @return DatabaseCreate
-     */
-    public function createIfNotExists($table)
-    {
-        return (new DatabaseCreate($this, $table, 'IF NOT EXISTS'))
             ->charset($this->config['charset'])
             ->collate($this->config['collate'])
             ->engine($this->config['engine']);

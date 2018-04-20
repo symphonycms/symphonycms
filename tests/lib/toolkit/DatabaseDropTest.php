@@ -21,7 +21,7 @@ final class DatabaseDropTest extends TestCase
     public function testDROPIFEXISTS()
     {
         $db = new Database([]);
-        $sql = $db->dropIfExists('drop.drop');
+        $sql = $db->drop('drop.drop')->ifExists();
         $this->assertEquals(
             "DROP TABLE IF EXISTS `drop`.`drop`",
             $sql->generateSQL(),

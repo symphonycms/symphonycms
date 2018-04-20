@@ -84,7 +84,8 @@ class FieldAuthor extends Field implements ExportableField
     public function createTable()
     {
         return Symphony::Database()
-            ->createIfNotExists('tbl_entries_data_' . General::intval($this->get('id')))
+            ->create('tbl_entries_data_' . General::intval($this->get('id')))
+            ->ifNotExists()
             ->fields([
                 'id' => [
                     'type' => 'int(11)',

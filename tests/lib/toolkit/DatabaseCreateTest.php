@@ -25,6 +25,22 @@ final class DatabaseCreateTest extends TestCase
         );
     }
 
+    public function testCREATEIFNOTEXISTS()
+    {
+        $db = new Database([]);
+        $sql = $db->create('create')
+            ->ifNotExists()
+            ->fields([
+                'x' => 'varchar(100)'
+            ])
+            ->finalize(); // this would by called by execute()
+        $this->assertEquals(
+            "CREATE TABLE IF NOT EXISTS `create` ( `x` varchar(100) NOT NULL )",
+            $sql->generateSQL(),
+            'CREATE IF NOT EXISTS clause'
+        );
+    }
+
     public function testCREATEMULTIPLE()
     {
         $db = new Database([]);

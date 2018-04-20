@@ -180,27 +180,6 @@ Symphony::Database()
     ->success();
 ```
 
-### `createIfNotExists()` -> `DatabaseCreate`
-```php
-Symphony::Database()
-    ->createIfNotExists('table')
-    ->fields([
-        'x' => [
-            'type' => 'varchar(100)',
-            'default' => 'TATA',
-        ],
-        'id' => [
-            'type' => 'int(11)',
-            'auto' => true
-        ]
-    ])
-    ->keys([
-        'id' => 'primary',
-    ])
-    ->execute()
-    ->success();
-```
-
 ### `alter()` -> `DatabaseAlter`
 ```php
 Symphony::Database()

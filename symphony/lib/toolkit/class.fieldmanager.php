@@ -230,7 +230,8 @@ class FieldManager implements FileResource
 
         if ($existing->requiresTable()) {
             return Symphony::Database()
-                ->dropIfExists("tbl_entries_data_$id")
+                ->drop("tbl_entries_data_$id")
+                ->ifExists()
                 ->execute()
                 ->success();
         }
