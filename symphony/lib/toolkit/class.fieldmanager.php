@@ -614,7 +614,8 @@ class FieldManager implements FileResource
     public static function isFieldUsed($field_type)
     {
         return (int)Symphony::Database()
-            ->selectCount()
+            ->select()
+            ->count()
             ->from('tbl_fields')
             ->where(['type' => $field_type])
             ->execute()
@@ -647,7 +648,8 @@ class FieldManager implements FileResource
                 $table = 0;
                 try {
                     $table = (int)Symphony::Database()
-                        ->selectCount()
+                        ->select()
+                        ->count()
                         ->from("tbl_fields_$field")
                         ->where(['formatter' => $text_formatter_handle])
                         ->execute()
@@ -670,25 +672,12 @@ class FieldManager implements FileResource
      *
      * @since Symphony 3.0.0
      * @param array $projection
-     *  The projection to select. By default, it's all of them, i.e. `*`.
+     *  The projection to select.
+     *  If no projection gets added, it defaults to `FieldQuery::getDefaultProjection()`.
      * @return FieldQuery
      */
-    public function select(array $projection = ['f.*'])
+    public function select(array $projection = [])
     {
         return new FieldQuery(Symphony::Database(), $projection);
-    }
-
-    /**
-     * Factory method that creates a new FieldQuery that only counts results.
-     *
-     * @since Symphony 3.0.0
-     * @see select()
-     * @param string $col
-     *  The column to count on. Defaults to `*`
-     * @return FieldQuery
-     */
-    public function selectCount($col = '*')
-    {
-        return new FieldQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }

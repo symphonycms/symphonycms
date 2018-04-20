@@ -942,7 +942,8 @@ class PageManager
     public static function isDataSourceUsed($handle)
     {
         return (new PageManager)
-            ->selectCount()
+            ->select()
+            ->count()
             ->where(['p.data_sources' => ['regexp' => "[[:<:]]{$handle}[[:>:]]"]])
             ->variable(0) > 0;
     }
@@ -958,7 +959,8 @@ class PageManager
     public static function isEventUsed($handle)
     {
         return (new PageManager)
-            ->selectCount()
+            ->select()
+            ->count()
             ->where(['p.events' => ['regexp' => "[[:<:]]{$handle}[[:>:]]"]])
             ->variable(0) > 0;
     }
@@ -968,25 +970,12 @@ class PageManager
      *
      * @since Symphony 3.0.0
      * @param array $projection
-     *  The projection to select. By default, it's all of them, i.e. `*`.
+     *  The projection to select.
+     *  If no projection gets added, it defaults to `PageQuery::getDefaultProjection()`.
      * @return PageQuery
      */
-    public function select(array $projection = ['p.*'])
+    public function select(array $projection = [])
     {
         return new PageQuery(Symphony::Database(), $projection);
-    }
-
-    /**
-     * Factory method that creates a new PageQuery that only counts results.
-     *
-     * @since Symphony 3.0.0
-     * @see select()
-     * @param string $col
-     *  The column to count on. Defaults to `*`
-     * @return PageQuery
-     */
-    public function selectCount($col = '*')
-    {
-        return new PageQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }

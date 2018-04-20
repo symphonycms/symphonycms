@@ -525,25 +525,13 @@ class Database
      * Factory method that creates a new `SELECT ...` statement.
      *
      * @param array $projection
-     *  The columns to select. By default, it's `*`.
+     *  The columns to select.
+     *  If no projection gets added, it defaults to `DatabaseQuery::getDefaultProjection()`.
      * @return DatabaseQuery
      */
-    public function select(array $projection = ['*'])
+    public function select(array $projection = [])
     {
         return new DatabaseQuery($this, $projection);
-    }
-
-    /**
-     * Factory method that creates a new `SELECT COUNT(...)` statement.
-     *
-     * @see select()
-     * @param string $col
-     *  The column to count on. Defaults to `*`
-     * @return DatabaseQuery
-     */
-    public function selectCount($col = '*')
-    {
-        return new DatabaseQuery($this, ["COUNT($col)"]);
     }
 
     /**

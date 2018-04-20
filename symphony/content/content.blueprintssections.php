@@ -48,7 +48,8 @@ class contentBlueprintsSections extends AdministrationPage
         } else {
             foreach ($sections as $s) {
                 $entry_count = (new EntryManager)
-                    ->selectCount()
+                    ->select()
+                    ->count()
                     ->section($s->get('id'))
                     ->execute()
                     ->variable(0);

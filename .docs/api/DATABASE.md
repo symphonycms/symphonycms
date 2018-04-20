@@ -73,19 +73,6 @@ Symphony::Database()
     ->rows();
 ```
 
-### `selectCount()` -> `DatabaseQuery`
-```php
-Symphony::Database()
-    ->selectCount()
-    ->from('table')
-    ->as('t')
-    ->leftJoin('join', 'j')
-    ->on(['t.id' => '$j.other_id'])
-    ->where(['j.x' => 2])
-    ->execute()
-    ->variable(0);
-```
-
 ### `show()` -> `DatabaseShow`
 ```php
 Symphony::Database()->show()->like('tbl_%')->execute()->rows();

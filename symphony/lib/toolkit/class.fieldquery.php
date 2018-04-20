@@ -13,7 +13,6 @@ class FieldQuery extends DatabaseQuery
      * The table is aliased to `f`.
      *
      * @see ExtensionManager::select()
-     * @see ExtensionManager::selectCount()
      * @param Database $db
      *  The underlying database connection
      * @param array $projection
@@ -24,6 +23,17 @@ class FieldQuery extends DatabaseQuery
     {
         parent::__construct($db, $projection);
         $this->from('tbl_fields')->alias('f');
+    }
+
+    /**
+     * Gets the default projection to use if no projection is added.
+     *
+     * @see DatabaseQuery::getDefaultProjection()
+     * @return array
+     */
+    public function getDefaultProjection()
+    {
+        return ['f.*'];
     }
 
     /**

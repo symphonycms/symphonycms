@@ -266,7 +266,8 @@ class Author implements ArrayAccess
             if (
                 $current_author['email'] !== $this->get('email') &&
                 (int)Symphony::Database()
-                    ->selectCount()
+                    ->select()
+                    ->count()
                     ->from('tbl_authors')
                     ->where(['email' => $this->get('email')])
                     ->limit(1)
@@ -297,7 +298,8 @@ class Author implements ArrayAccess
             if (
                 $current_author['username'] !== $this->get('username') &&
                 (int)Symphony::Database()
-                    ->selectCount()
+                    ->select()
+                    ->count()
                     ->from('tbl_authors')
                     ->where(['username' => $this->get('username')])
                     ->limit(1)

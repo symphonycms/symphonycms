@@ -22,7 +22,6 @@ class DatabaseSubQuery extends DatabaseQuery
      * It also requires a identifier $id on that will be used in a prefix in the resulting SQL.
      *
      * @see DatabaseQuery::select()
-     * @see DatabaseQuery::selectCount()
      * @param Database $db
      *  The underlying database connection
      * @param int $id
