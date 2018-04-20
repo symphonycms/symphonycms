@@ -8,8 +8,10 @@
  * include the installation updating and uninstallation, as well as a
  * delegate subscription hook so an extension can perform custom logic
  * at various times during Symphony execution.
+ *
+ * @since Symphony 3.0.0 it implements the ArrayAccess interface.
  */
-abstract class Extension
+abstract class Extension implements ArrayAccess
 {
     /**
      * Determines that a new navigation group is to created in the Symphony backend
@@ -67,6 +69,12 @@ abstract class Extension
     protected static $provides = array();
 
     /**
+     * An associative array of basic metadata/settings for this Extension
+     * @var array
+     */
+    protected $fields = array();
+
+    /**
      * Default constructor for an Extension, at this time it does nothing
      */
     public function __construct()
@@ -74,8 +82,64 @@ abstract class Extension
     }
 
     /**
+     * Implementation of ArrayAccess::offsetExists()
+     *
+     * @param mixed $offset
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->fields[$offset]);
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetGet()
+     *
+     * @param mixed $offset
+     * @return mixed
+     */
+    public function offsetGet($offset)
+    {
+        return $this->fields[$offset];
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetSet()
+     *
+     * @param mixed $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->fields[$offset] = $value;
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetUnset()
+     *
+     * @param mixed $offset
+     * @return void
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->fields[$offset]);
+    }
+
+    /**
+     * Sets all the fields values from the database for this extension.
+     *
+     * @param array $fields
+     * @return void
+     */
+    public function setFields(array $fields)
+    {
+        $this->fields = $fields;
+    }
+
+    /**
      * Any logic that assists this extension in being installed such as
-     * table creation, checking for dependancies etc.
+     * table creation, checking for dependencies etc.
      *
      * @see toolkit.ExtensionManager#install()
      * @return boolean

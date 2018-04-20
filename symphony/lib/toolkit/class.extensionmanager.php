@@ -142,9 +142,8 @@ class ExtensionManager implements FileResource
     private static function __buildExtensionList($update = false)
     {
         if (empty(self::$_extensions) || $update) {
-            self::$_extensions = Symphony::Database()
+            self::$_extensions = Symphony::ExtensionManager()
                 ->select()
-                ->from('tbl_extensions')
                 ->execute()
                 ->rowsIndexedByColumn('name');
         }
@@ -738,10 +737,9 @@ class ExtensionManager implements FileResource
     public static function listInstalledHandles()
     {
         if (empty(self::$_enabled_extensions) && Symphony::Database()->isConnected()) {
-            self::$_enabled_extensions = Symphony::Database()
+            self::$_enabled_extensions = Symphony::ExtensionManager()
                 ->select(['name'])
-                ->from('tbl_extensions')
-                ->where(['status' => 'enabled'])
+                ->enabled()
                 ->execute()
                 ->column('name');
         }
@@ -816,6 +814,7 @@ class ExtensionManager implements FileResource
      * Optionally, `$where` (not implemented) and `$order_by` parameters allow a developer to
      * further refine their query.
      *
+     * @see listAll()
      * @param array $select (optional)
      *  Accepts an array of keys to return from the listAll() method. If omitted, all keys
      *  will be returned.
@@ -1114,5 +1113,32 @@ class ExtensionManager implements FileResource
                 }
             }
         }
+    }
+
+    /**
+     * Factory method that creates a new ExtensionQuery.
+     *
+     * @since Symphony 3.0.0
+     * @param array $projection
+     *  The projection to select. By default, it's all of them, i.e. `*`.
+     * @return ExtensionQuery
+     */
+    public function select(array $projection = ['*'])
+    {
+        return new ExtensionQuery(Symphony::Database(), $projection);
+    }
+
+    /**
+     * Factory method that creates a new ExtensionQuery that only counts results.
+     *
+     * @since Symphony 3.0.0
+     * @see select()
+     * @param string $col
+     *  The column to count on. Defaults to `*`
+     * @return ExtensionQuery
+     */
+    public function selectCount($col = '*')
+    {
+        return new EntryQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }

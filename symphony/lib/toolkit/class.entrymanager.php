@@ -11,7 +11,6 @@
  * is generated when the Section is saved. This Manager provides basic
  * add, edit, delete and fetching methods for Entries.
  */
-
 class EntryManager
 {
     /**
@@ -123,19 +122,20 @@ class EntryManager
         $did_lock = false;
         $exception = null;
         try {
+            // Prepare the lock statement
+            $lockStatement = new DatabaseStatement(
+                Symphony::Database(),
+                'LOCK TABLES'
+            );
 
             // Check if table exists
             $table_name = 'tbl_entries_data_' . General::intval($field_id);
+            $table_name = $lockStatement->replaceTablePrefix($table_name);
             if (!Symphony::Database()->tableExists($table_name)) {
                 return;
             }
 
             // Lock the table for write
-            $lockStatement = new DatabaseStatement(
-                Symphony::Database(),
-                'LOCK TABLES'
-            );
-            $table_name = $lockStatement->replaceTablePrefix($table_name);
             $lockStatement->unsafeAppendSQLPart('statement', "`$table_name` WRITE");
             $did_lock = $lockStatement->execute()->success();
 
@@ -415,11 +415,8 @@ class EntryManager
      */
     public static function fetch($entry_id = null, $section_id = null, $limit = null, $start = null, $where = null, $joins = null, $group = false, $buildentries = true, $element_names = null, $enable_sort = true)
     {
-        $sort = null;
-        $sortSelectClause = null;
-
         if (!$entry_id && !$section_id) {
-            return array();
+            return [];
         }
 
         if (!$section_id) {
@@ -428,51 +425,20 @@ class EntryManager
 
         $section = SectionManager::fetch($section_id);
         if (!is_object($section)) {
-            return array();
+            return [];
         }
 
-        // SORTING
+        $query = (new EntryManager)->select();
+
+        if ($group) {
+            $query->distinct();
+        }
+
         // A single $entry_id doesn't need to be sorted on, or if it's explicitly disabled
         if ((!is_array($entry_id) && General::intval($entry_id) > 0) || !$enable_sort) {
-            $sort = null;
-
-        // Check for RAND first, since this works independently of any specific field
-        } elseif (self::$_fetchSortDirection == 'RAND') {
-            $sort = ['e.id' => 'RAND()'];
-
-        // Handle Creation Date or the old Date sorting
-        } elseif (self::$_fetchSortField === 'system:creation-date' || self::$_fetchSortField === 'date') {
-            $sort = ['e.creation_date_gmt' => self::$_fetchSortDirection];
-
-        // Handle Modification Date sorting
-        } elseif (self::$_fetchSortField === 'system:modification-date') {
-            $sort = ['e.modification_date_gmt' => self::$_fetchSortDirection];
-
-        // Handle sorting for System ID
-        } elseif (self::$_fetchSortField == 'system:id' || self::$_fetchSortField == 'id') {
-            $sort = ['e.id' => self::$_fetchSortDirection];
-
-        // Handle when the sort field is an actual Field
-        } elseif (self::$_fetchSortField && $field = FieldManager::fetch(self::$_fetchSortField)) {
-            if ($field->isSortable()) {
-                $field->buildSortingSQL($joins, $where, $sort, self::$_fetchSortDirection);
-                $sortSelectClause = $field->buildSortingSelectSQL($sort, self::$_fetchSortDirection);
-            }
-
-        // Handle if the section has a default sorting field
-        } elseif ($section->getSortingField() && $field = FieldManager::fetch($section->getSortingField())) {
-            if ($field->isSortable()) {
-                $field->buildSortingSQL($joins, $where, $sort, $section->getSortingOrder());
-                $sortSelectClause = $field->buildSortingSelectSQL($sort, $section->getSortingOrder());
-            }
-
-        // No sort specified, so just sort on system id
-        } else {
-            $sort = ['e.id' => self::$_fetchSortDirection];
-        }
-
-        if ($field && !$group) {
-            $group = $field->requiresSQLGrouping();
+            $query->disableDefaultSort();
+        } elseif (self::$_fetchSortField) {
+            $query->sort(self::$_fetchSortField, self::$_fetchSortDirection);
         }
 
         if ($entry_id && !is_array($entry_id)) {
@@ -485,205 +451,37 @@ class EntryManager
         if ($entry_id) {
             $entry_id = array_map(array('General', 'intval'), $entry_id);
         }
-
-        $projection = [
-            'e.id',
-            'e.section_id',
-            'e.author_id',
-            'e.modification_author_id',
-            'e.creation_date' => 'creation_date',
-            'e.modification_date' => 'modification_date'
-        ];
-        $sql = Symphony::Database()
-                ->select($projection)
-                ->from('tbl_entries')->alias('e');
-
-        if ($group) {
-            $sql->distinct();
-        }
-        if ($sortSelectClause) {
-            $sql->projection(array_map('trim', explode(',', $sortSelectClause)));
-        }
-        if ($joins) {
-            $joins = $sql->replaceTablePrefix($joins);
-            $sql->unsafeAppendSQLPart('join', $joins);
-        }
-        if ($where) {
-            $where = $sql->replaceTablePrefix($where);
-            $sql->unsafe()->unsafeAppendSQLPart('where', "WHERE 1=1 $where");
-        }
-        if ($entry_id) {
-            $sql->where(['e.id' => ['in' => $entry_id]]);
-        }
-        if ($section_id) {
-            $sql->where(['e.section_id' => $section_id]);
+        if (!empty($entry_id)) {
+            $query->entries($entry_id);
         }
         if ($limit) {
-            $sql->limit($limit);
+            $query->limit($limit);
         }
         if ($start) {
-            $sql->offset($start);
+            $query->offset($start);
         }
-        if (is_array($sort)) {
-            $sql->orderBy($sort);
-        } elseif (is_string($sort)) {
-            $sort = $sql->replaceTablePrefix($sort);
-            $sql->unsafe()->unsafeAppendSQLPart('order by', $sort);
+        if ($element_names === null) {
+            $element_names = array_map(function ($field) {
+                return $field['element_name'];
+            }, $section->fetchFieldsSchema());
         }
-
-        $rows = $sql->execute()->rows();
-
-        // Create UNIX timestamps, as it has always been (Re: #2501)
-        foreach ($rows as &$entry) {
-            $entry['creation_date'] = DateTimeObj::get('U', $entry['creation_date']);
-            $entry['modification_date'] = DateTimeObj::get('U', $entry['modification_date']);
+        if ($buildentries && is_array($element_names)) {
+            $query->schema($element_names);
         }
-        unset($entry);
+        if ($joins) {
+            $joins = $query->replaceTablePrefix($joins);
+            $query->unsafeAppendSQLPart('join', $joins);
+        }
+        if ($where) {
+            $where = $query->replaceTablePrefix($where);
+            // Ugly hack: mysqli allowed this....
+            $where = str_replace('IN ()', 'IN (0)', $where);
+            $query->unsafe()->unsafeAppendSQLPart('where', "WHERE 1=1 $where");
+        }
+        $query->section($section_id);
 
-        return ($buildentries && !empty($rows)) ? self::__buildEntries($rows, $section_id, $element_names) : $rows;
+        return $query->execute()->rows();
     }
-
-    /**
-     * Given an array of Entry data from `tbl_entries` and a section ID, return an
-     * array of Entry objects. For performance reasons, it's possible to pass an array
-     * of field handles via `$element_names`, so that only a subset of the section schema
-     * will be queried. This function currently only supports Entry from one section at a
-     * time.
-     *
-     * @param array $rows
-     *  An array of Entry data from `tbl_entries` including the Entry ID, Entry section,
-     *  the ID of the Author who created the Entry, and a Unix timestamp of creation
-     * @param integer $section_id
-     *  The section ID of the entries in the `$rows`
-     * @param array $element_names
-     *  Choose whether to get data from a subset of fields or all fields in a section,
-     *  by providing an array of field names. Defaults to null, which will load data
-     *  from all fields in a section.
-     * @throws DatabaseException
-     * @return array
-     *  An array of Entry objects
-     */
-    public static function __buildEntries(array $rows, $section_id, $element_names = null)
-    {
-        $entries = array();
-
-        if (empty($rows)) {
-            return $entries;
-        }
-
-        $schema = FieldManager::fetchFieldIDFromElementName($element_names, $section_id);
-
-        if (is_int($schema)) {
-            $schema = array($schema);
-        }
-
-        $raw = [];
-        $entry_ids = [];
-
-        // Append meta data:
-        foreach ($rows as $entry) {
-            $raw[$entry['id']]['meta'] = $entry;
-            $entry_ids[] = $entry['id'];
-        }
-
-        $rows_string = trim($rows_string, ',');
-
-        // Append field data:
-        if (is_array($schema)) {
-            foreach ($schema as $field_id) {
-                try {
-                    $field_id = General::intval($field_id);
-                    if ($field_id < 1 || !Symphony::Database()->tableExists("tbl_entries_data_$field_id")) {
-                        continue;
-                    }
-                    $row = Symphony::Database()
-                        ->select()
-                        ->from("tbl_entries_data_$field_id")
-                        ->where(['entry_id' => ['in' => $entry_ids]])
-                        ->orderBy(['id' => 'ASC'])
-                        ->execute()
-                        ->rows();
-
-                } catch (DatabaseException $e) {
-                    // No data due to error
-                    continue;
-                }
-
-                if (empty($row)) {
-                    continue;
-                }
-
-                foreach ($row as $r) {
-                    $entry_id = $r['entry_id'];
-
-                    unset($r['id']);
-                    unset($r['entry_id']);
-
-                    if (!isset($raw[$entry_id]['fields'][$field_id])) {
-                        $raw[$entry_id]['fields'][$field_id] = $r;
-                    } else {
-                        foreach (array_keys($r) as $key) {
-                            // If this field already has been set, we need to take the existing
-                            // value and make it array, adding the current value to it as well
-                            // There is a special check incase the the field's value has been
-                            // purposely set to null in the database.
-                            if (
-                                (
-                                    isset($raw[$entry_id]['fields'][$field_id][$key])
-                                    || is_null($raw[$entry_id]['fields'][$field_id][$key])
-                                )
-                                && !is_array($raw[$entry_id]['fields'][$field_id][$key])
-                            ) {
-                                $raw[$entry_id]['fields'][$field_id][$key] = array(
-                                    $raw[$entry_id]['fields'][$field_id][$key],
-                                    $r[$key]
-                                );
-
-                                // This key/value hasn't been set previously, so set it
-                            } elseif (!isset($raw[$entry_id]['fields'][$field_id][$key])) {
-                                $raw[$entry_id]['fields'][$field_id] = array($r[$key]);
-
-                                // This key has been set and it's an array, so just append
-                                // this value onto the array
-                            } else {
-                                $raw[$entry_id]['fields'][$field_id][$key][] = $r[$key];
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Loop over the array of entry data and convert it to an array of Entry objects
-        foreach ($raw as $entry) {
-            $obj = self::create();
-
-            $obj->set('id', $entry['meta']['id']);
-            $obj->set('author_id', $entry['meta']['author_id']);
-            $obj->set('modification_author_id', $entry['meta']['modification_author_id']);
-            $obj->set('section_id', $entry['meta']['section_id']);
-            $obj->set('creation_date', DateTimeObj::get('c', $entry['meta']['creation_date']));
-
-            if (isset($entry['meta']['modification_date'])) {
-                $obj->set('modification_date', DateTimeObj::get('c', $entry['meta']['modification_date']));
-            } else {
-                $obj->set('modification_date', $obj->get('creation_date'));
-            }
-
-            $obj->creationDate = $obj->get('creation_date');
-
-            if (isset($entry['fields']) && is_array($entry['fields'])) {
-                foreach ($entry['fields'] as $field_id => $data) {
-                    $obj->setData($field_id, $data);
-                }
-            }
-
-            $entries[] = $obj;
-        }
-
-        return $entries;
-    }
-
 
     /**
      * Given an Entry ID, return the Section ID that it belongs to
@@ -743,6 +541,8 @@ class EntryManager
         }
         if ($where) {
             $where = $sql->replaceTablePrefix($where);
+            // Ugly hack: mysqli allowed this....
+            $where = str_replace('IN ()', 'IN (0)', $where);
             $sql->unsafe()->unsafeAppendSQLPart('where', $where);
         }
 
@@ -837,5 +637,33 @@ class EntryManager
     public static function create()
     {
         return new Entry;
+    }
+
+    /**
+     * Factory method that creates a new EntryQuery.
+     *
+     * @since Symphony 3.0.0
+     * @param array $values
+     *  The fields to select. By default it's none of them, so the query
+     *  only populates the object with its data.
+     * @return EntryQuery
+     */
+    public function select(array $schema = [])
+    {
+        return new EntryQuery(Symphony::Database(), $schema, ['*']);
+    }
+
+    /**
+     * Factory method that creates a new EntryQuery that only counts results.
+     *
+     * @since Symphony 3.0.0
+     * @see select()
+     * @param string $col
+     *  The column to count on. Defaults to `*`
+     * @return EntryQuery
+     */
+    public function selectCount($col = '*')
+    {
+        return (new EntryQuery(Symphony::Database()))->projection(["COUNT($col)"]);
     }
 }

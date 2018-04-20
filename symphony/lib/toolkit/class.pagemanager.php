@@ -463,60 +463,37 @@ class PageManager
             $order_by = ['sortorder' => 'ASC'];
         }
 
-        $sql = Symphony::Database()
-            ->select($select)
-            ->from('tbl_pages')
-            ->alias('p');
+        $query = (new PageManager)->select($select);
 
         if ($hierarchical && !in_array('*', $select)) {
-            $sql->projection(['id', 'parent']);
+            $query->projection(['id', 'parent']);
         }
         if (is_array($where)) {
             foreach ($where as $w) {
-                $where = $sql->replaceTablePrefix($w);
-                $op = $sql->containsSQLParts('where') ? 'AND' : 'WHERE';
-                $sql->unsafe()->unsafeAppendSQLPart('where', "$op ($w)");
+                $where = $query->replaceTablePrefix($w);
+                $op = $query->containsSQLParts('where') ? 'AND' : 'WHERE';
+                $query->unsafe()->unsafeAppendSQLPart('where', "$op ($w)");
             }
         }
         if (is_array($order_by)) {
-            $sql->orderBy($order_by);
+            $query->orderBy($order_by);
         } elseif (is_string($order_by)) {
-            $order_by = $sql->replaceTablePrefix($order_by);
-            $sql->unsafe()->unsafeAppendSQLPart('order by', "ORDER BY $order_by");
+            $order_by = $query->replaceTablePrefix($order_by);
+            $query->unsafe()->unsafeAppendSQLPart('order by', "ORDER BY $order_by");
         }
-
-        $pages = $sql->execute()->rows();
 
         // Fetch the Page Types for each page, if required
         if ($include_types) {
-            foreach ($pages as &$page) {
-                $page['type'] = PageManager::fetchPageTypes($page['id']);
-            }
+            $query->includeTypes();
         }
+
+        $pages = $query->execute();
 
         if ($hierarchical) {
-            $output = array();
-
-            self::__buildTreeView(null, $pages, $output);
-            $pages = $output;
+            return $pages->tree();
         }
 
-        return $pages;
-    }
-
-    private function __buildTreeView($parent_id, $pages, &$results)
-    {
-        if (!is_array($pages)) {
-            return;
-        }
-
-        foreach ($pages as $page) {
-            if ($page['parent'] == $parent_id) {
-                $results[] = $page;
-
-                self::__buildTreeView($page['id'], $pages, $results[count($results) - 1]['children']);
-            }
-        }
+        return $pages->rows();
     }
 
     /**
@@ -840,6 +817,7 @@ class PageManager
      *  The ID of the Page that currently being viewed, or the handle of the
      *  current Page
      * @param string $column
+     *  The column to return
      * @return array
      *  An array of the current Page, containing the `$column`
      *  requested. The current page will be the last item the array, as all
@@ -847,16 +825,17 @@ class PageManager
      */
     public static function resolvePage($page_id, $column)
     {
-        $page = Symphony::Database()
+        $query = (new PageManager)
             ->select(['p.parent', "p.$column"])
-            ->from('tbl_pages', 'p')
-            ->where(['or' => [
-                'p.id' => $page_id,
-                'p.handle' => $page_id
-            ]])
-            ->limit(1)
-            ->execute()
-            ->next();
+            ->limit(1);
+
+        if (General::intval($page_id) > 0) {
+            $query->page($page_id);
+        } else {
+            $query->handle($page_id);
+        }
+
+        $page = $query->execute()->next();
 
         if (empty($page)) {
             return $page;
@@ -867,11 +846,10 @@ class PageManager
         if (!empty($page['parent'])) {
             $next_parent = $page['parent'];
 
-            while (
-                $parent = Symphony::Database()
+            while ($next_parent &&
+                $parent = (new PageManager)
                     ->select(['p.parent', "p.$column"])
-                    ->from('tbl_pages', 'p')
-                    ->where(['p.id' => $next_parent])
+                    ->page($next_parent)
                     ->limit(1)
                     ->execute()
                     ->next()
@@ -934,35 +912,28 @@ class PageManager
      */
     public static function resolvePageByPath($handle, $path = false)
     {
-        $sql = Symphony::Database()
+        return (new PageManager)
             ->select()
-            ->from('tbl_pages')
-            ->where(['handle' => $handle])
-            ->limit(1);
-
-        if ($path) {
-            $sql->where(['path' => $path]);
-        } else {
-            $sql->where(['path' => null]);
-        }
-
-        return $sql->execute()->next();
+            ->handle($handle)
+            ->path(!$path ? null : $path)
+            ->limit(1)
+            ->execute()
+            ->next();
     }
 
     /**
-     * Check whether a datasource is used or not
+     * Check whether a data source is used or not
      *
      * @param string $handle
-     *  The datasource handle
+     *  The data source handle
      * @return boolean
      *  true if used, false if not
      */
     public static function isDataSourceUsed($handle)
     {
-        return Symphony::Database()
+        return (new PageManager)
             ->selectCount()
-            ->from('tbl_pages')
-            ->where(['data_sources' => ['regexp' => "[[:<:]]{$handle}[[:>:]]"]])
+            ->where(['p.data_sources' => ['regexp' => "[[:<:]]{$handle}[[:>:]]"]])
             ->variable(0) > 0;
     }
 
@@ -976,10 +947,36 @@ class PageManager
      */
     public static function isEventUsed($handle)
     {
-        return Symphony::Database()
+        return (new PageManager)
             ->selectCount()
-            ->from('tbl_pages')
-            ->where(['events' => ['regexp' => "[[:<:]]{$handle}[[:>:]]"]])
+            ->where(['p.events' => ['regexp' => "[[:<:]]{$handle}[[:>:]]"]])
             ->variable(0) > 0;
+    }
+
+    /**
+     * Factory method that creates a new PageQuery.
+     *
+     * @since Symphony 3.0.0
+     * @param array $projection
+     *  The projection to select. By default, it's all of them, i.e. `*`.
+     * @return PageQuery
+     */
+    public function select(array $projection = ['*'])
+    {
+        return new PageQuery(Symphony::Database(), $projection);
+    }
+
+    /**
+     * Factory method that creates a new PageQuery that only counts results.
+     *
+     * @since Symphony 3.0.0
+     * @see select()
+     * @param string $col
+     *  The column to count on. Defaults to `*`
+     * @return PageQuery
+     */
+    public function selectCount($col = '*')
+    {
+        return new PageQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }

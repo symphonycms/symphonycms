@@ -9,9 +9,10 @@
  * Authors of Symphony and hold all the content for the website.
  * Entries are typically created from the Symphony backend, but
  * can also be created using Events from the Frontend.
+ *
+ * @since Symphony 3.0.0 it implements the ArrayAccess interface.
  */
-
-class Entry
+class Entry implements ArrayAccess
 {
     /**
      * The constant for when an Entry is ok, that is, no errors have
@@ -87,6 +88,51 @@ class Entry
         }
 
         return $this->_fields[$setting];
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetExists()
+     *
+     * @param mixed $offset
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->_fields[$offset]);
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetGet()
+     *
+     * @param mixed $offset
+     * @return mixed
+     */
+    public function offsetGet($offset)
+    {
+        return $this->_fields[$offset];
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetSet()
+     *
+     * @param mixed $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->_fields[$offset] = $value;
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetUnset()
+     *
+     * @param mixed $offset
+     * @return void
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->_fields[$offset]);
     }
 
     /**
