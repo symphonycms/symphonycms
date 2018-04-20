@@ -292,7 +292,7 @@ class Datasource
      * @return XMLElement
      *  the constructed XML fragment.
      */
-    public static function buildPaginationElement(array $infos = array())
+    public function buildPaginationElement(array $infos = array())
     {
         $defaults = array(
             'total-entries' => 0,
