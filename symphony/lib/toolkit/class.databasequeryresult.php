@@ -10,7 +10,7 @@
  * It implements the IteratorAggregate interface but also provide its own API with more control
  * built in.
  */
-final class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAggregate
+class DatabaseQueryResult extends DatabaseStatementResult implements IteratorAggregate
 {
     /**
      * The read offset.

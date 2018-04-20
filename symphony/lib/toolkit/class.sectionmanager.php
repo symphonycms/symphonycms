@@ -180,47 +180,21 @@ class SectionManager
             return self::$_pool[$section_id];
         }
 
-        $sql = Symphony::Database()
-            ->select()
-            ->from('tbl_sections', 's');
+        $query = (new SectionManager)->select();
 
         // Ensure they are always an ID
         $section_ids = array_map('intval', $section_ids);
 
         if (!empty($section_id)) {
-            $sql->where(['s.id' => ['in' => $section_ids]]);
-        }
-        else {
-            $sql->orderBy([$sortfield => $order]);
-        }
-
-        $result = $sql->execute();
-
-        if (!$result->rowCount()) {
-            return ($returnSingle ? false : array());
+            $query->sections($section_ids);
+        } else {
+            $query->sort($sortfield, $order);
         }
 
-        $ret = array();
+        $ret = $query->execute()->rows();
 
-        while ($s = $result->next()) {
-            $obj = self::create();
-
-            foreach ($s as $name => $value) {
-                $obj->set($name, $value);
-            }
-
-            $obj->set('creation_date', DateTimeObj::get('c', $obj->get('creation_date')));
-
-            $modDate = $obj->get('modification_date');
-            if (!empty($modDate)) {
-                $obj->set('modification_date', DateTimeObj::get('c', $obj->get('modification_date')));
-            } else {
-                $obj->set('modification_date', $obj->get('creation_date'));
-            }
-
+        foreach ($ret as $obj) {
             self::$_pool[$obj->get('id')] = $obj;
-
-            $ret[] = $obj;
         }
 
         return (count($ret) == 1 && $returnSingle ? $ret[0] : $ret);
@@ -466,5 +440,32 @@ class SectionManager
         }
 
         return $sql->execute()->rows();
+    }
+
+    /**
+     * Factory method that creates a new SectionQuery.
+     *
+     * @since Symphony 3.0.0
+     * @param array $projection
+     *  The projection to select. By default, it's all of them, i.e. `*`.
+     * @return SectionQuery
+     */
+    public function select(array $projection = ['*'])
+    {
+        return new SectionQuery(Symphony::Database(), $projection);
+    }
+
+    /**
+     * Factory method that creates a new SectionQuery that only counts results.
+     *
+     * @since Symphony 3.0.0
+     * @see select()
+     * @param string $col
+     *  The column to count on. Defaults to `*`
+     * @return SectionQuery
+     */
+    public function selectCount($col = '*')
+    {
+        return new SectionQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }

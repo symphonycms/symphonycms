@@ -235,6 +235,43 @@ class FieldManager implements FileResource
     }
 
     /**
+     * @internal Checks if we already have a Field object for this $field_id.
+     *
+     * @since Symphony 3.0.0
+     * @param int $field_id
+     *  The field id to look for
+     * @return Field
+     *  The Field object instance, if it exists. null otherwise.
+     */
+    public static function getInitializedField($field_id)
+    {
+        if (isset(self::$_initialiased_fields[$field_id]) &&
+            self::$_initialiased_fields[$field_id] instanceof Field) {
+            return self::$_initialiased_fields[$field_id];
+        }
+        return null;
+    }
+
+    /**
+     * @internal Sets a Field object in the static store.
+     *
+     * @since Symphony 3.0.0
+     * @throws Exception
+     *  If the Field is already in the cache, an Exception is thrown.
+     * @param Field $field
+     *  The Field object to store
+     * @return void
+     */
+    public static function setInitializedField(Field $field)
+    {
+        $field_id = $field->get('id');
+        if (self::getInitializedField($field_id)) {
+            throw new Exception('Field is already in the cache');
+        }
+        self::$_initialiased_fields[$field_id] = $field;
+    }
+
+    /**
      * The fetch method returns a instance of a Field from tbl_fields. The most common
      * use of this function is to retrieve a Field by ID, but it can be used to retrieve
      * Fields from a Section also. There are several parameters that can be used to fetch
@@ -290,11 +327,8 @@ class FieldManager implements FileResource
             // Loop over the `$field_ids` and check to see we have
             // instances of the request fields
             foreach ($field_ids as $key => $field_id) {
-                if (
-                    isset(self::$_initialiased_fields[$field_id])
-                    && self::$_initialiased_fields[$field_id] instanceof Field
-                ) {
-                    $fields[$field_id] = self::$_initialiased_fields[$field_id];
+                if ($if = self::getInitializedField($field_id)) {
+                    $fields[$field_id] = $if;
                     unset($field_ids[$key]);
                 }
             }
@@ -303,102 +337,39 @@ class FieldManager implements FileResource
         // If there is any `$field_ids` left to be resolved lets do that, otherwise
         // if `$id` wasn't provided in the first place, we'll also continue
         if (!empty($field_ids) || is_null($id)) {
-            $sql = Symphony::Database()
-                ->select(['t1.*'])
-                ->from('tbl_fields', 't1')
-                ->unsafeAppendSQLPart('where', 'WHERE 1 = 1')
-                ->orderBy(["t1.$sortfield" => $order]);
+            $query = (new FieldManager)->select();
 
             if ($type) {
-                $sql->where(['t1.type' => $type]);
+                $query->type($type);
             }
             if ($location) {
-                $sql->where(['t1.location' => $location]);
+                $query->location($location);
             }
             if ($section_id) {
-                $sql->where(['t1.parent_section' => $section_id]);
+                $query->section($section_id);
             }
             if ($field_ids) {
-                $sql->where(['t1.id' => ['in' => $field_ids]]);
+                $query->fields($field_ids);
             }
             if ($where) {
-                $where = $sql->replaceTablePrefix($where);
+                $where = $query->replaceTablePrefix($where);
+                // Replace legacy `t1` alias
+                $where = str_replace('t1.', 'f.', $where);
                 // Ugly hack: mysqli allowed this....
                 $where = str_replace('IN ()', 'IN (0)', $where);
-                $sql->unsafe()->unsafeAppendSQLPart('where', $where);
+                $query->unsafe()->unsafeAppendSQLPart('where', $where);
+            }
+            if ($sortfield) {
+                $query->sort($sortfield);
             }
 
-            $result = $sql->execute();
+            $result = $query->execute()->rows();
 
-            if (!$result->rowCount()) {
+            if (empty($result)) {
                 return ($returnSingle ? null : []);
             }
-
-            $result = $result->rows();
-
-            // Loop over the resultset building an array of type, field_id
-            foreach ($result as $f) {
-                $ids[$f['type']][] = $f['id'];
-            }
-
-            // Loop over the `ids` array, which is grouped by field type
-            // and get the field context.
-            foreach ($ids as $type => $field_id) {
-                $field_contexts[$type] = Symphony::Database()
-                    ->select()
-                    ->from("tbl_fields_$type")
-                    ->where(['field_id' => ['in' => array_map(['General', 'intval'], $field_id)]])
-                    ->execute()
-                    ->rowsIndexedByColumn('field_id');
-            }
-
-            foreach ($result as $f) {
-                // We already have this field in our static store
-                if (
-                    isset(self::$_initialiased_fields[$f['id']])
-                    && self::$_initialiased_fields[$f['id']] instanceof Field
-                ) {
-                    $field = self::$_initialiased_fields[$f['id']];
-
-                    // We don't have an instance of this field, so let's set one up
-                } else {
-                    $field = self::create($f['type']);
-                    $field->setArray($f);
-                    // If the field has said that's going to have associations, then go find the
-                    // association setting value. In future this check will be most robust with
-                    // an interface, but for now, this is what we've got. RE: #2082
-                    if ($field->canShowAssociationColumn()) {
-                        $field->set('show_association', SectionManager::getSectionAssociationSetting($f['id']));
-                    }
-
-                    // Get the context for this field from our previous queries.
-                    $context = $field_contexts[$f['type']][$f['id']];
-
-                    if (is_array($context) && !empty($context)) {
-                        try {
-                            unset($context['id']);
-                            $field->setArray($context);
-                        } catch (Exception $e) {
-                            throw new Exception(__(
-                                'Settings for field %s could not be found in table tbl_fields_%s.',
-                                array($f['id'], $f['type'])
-                            ));
-                        }
-                    }
-
-                    self::$_initialiased_fields[$f['id']] = $field;
-                }
-
-                // Check to see if there was any restricts imposed on the fields
-                if (
-                    $restrict == Field::__FIELD_ALL__
-                    || ($restrict == Field::__TOGGLEABLE_ONLY__ && $field->canToggle())
-                    || ($restrict == Field::__UNTOGGLEABLE_ONLY__ && !$field->canToggle())
-                    || ($restrict == Field::__FILTERABLE_ONLY__ && $field->canFilter())
-                    || ($restrict == Field::__UNFILTERABLE_ONLY__ && !$field->canFilter())
-                ) {
-                    $fields[$f['id']] = $field;
-                }
+            foreach ($result as $field) {
+                $fields[$field->get('id')] = $field;
             }
         }
 
@@ -467,10 +438,8 @@ class FieldManager implements FileResource
             ->orderBy(['sortorder' => 'ASC'])
             ->usePlaceholders();
 
-        if (!$element_name) {
-            $schema_sql->where(['parent_section' => $section_id]);
-        } else {
-            $element_names = !is_array($element_name) ? array($element_name) : $element_name;
+        if ($element_name) {
+            $element_names = !is_array($element_name) ? [$element_name] : $element_name;
 
             // allow for pseudo-fields containing colons (e.g. Textarea formatted/unformatted)
             foreach ($element_names as $index => $name) {
@@ -491,23 +460,23 @@ class FieldManager implements FileResource
                 $element_names[] = trim($parts[0]);
             }
 
-            if ($section_id) {
-                $schema_sql->where(['parent_section' => $section_id]);
-            }
-
             if (!empty($element_names)) {
                 $schema_sql->where(['element_name' => ['in' => array_unique($element_names)]]);
             }
         }
 
-        $result = $schema_sql->execute();
+        if ($section_id) {
+            $schema_sql->where(['parent_section' => $section_id]);
+        }
+
+        $result = $schema_sql->execute()->column('id');
 
         if (!$result->rowCount()) {
             return false;
         } elseif ($result->rowCount() === 1) {
             return (int)$result->variable('id');
         }
-        return array_map('intval', $result->column('id'));
+        return array_map('intval', $result);
     }
 
     /**
@@ -681,5 +650,32 @@ class FieldManager implements FileResource
         }
 
         return false;
+    }
+
+    /**
+     * Factory method that creates a new FieldQuery.
+     *
+     * @since Symphony 3.0.0
+     * @param array $projection
+     *  The projection to select. By default, it's all of them, i.e. `*`.
+     * @return FieldQuery
+     */
+    public function select(array $projection = ['*'])
+    {
+        return new FieldQuery(Symphony::Database(), $projection);
+    }
+
+    /**
+     * Factory method that creates a new FieldQuery that only counts results.
+     *
+     * @since Symphony 3.0.0
+     * @see select()
+     * @param string $col
+     *  The column to count on. Defaults to `*`
+     * @return FieldQuery
+     */
+    public function selectCount($col = '*')
+    {
+        return new FieldQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }

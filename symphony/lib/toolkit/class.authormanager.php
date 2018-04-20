@@ -107,48 +107,34 @@ class AuthorManager
         $sortby = $sortby ?: 'id';
         $sortdirection = strtoupper($sortdirection) === 'ASC' ? 'ASC' : 'DESC';
 
-        $sql = Symphony::Database()
-            ->select(['a.*'])
-            ->from('tbl_authors', 'a');
+        $query = (new AuthorManager)->select();
 
         $orderBy = [];
         foreach (explode(',', $sortby) as $sortby) {
             $sortby = trim($sortby);
             $orderBy["a.$sortby"] = $sortdirection;
         }
-        $sql->orderBy($orderBy);
+        $query->orderBy($orderBy);
 
         if ($joins) {
-            $joins = $sql->replaceTablePrefix($joins);
-            $sql->unsafeAppendSQLPart('join', $joins);
+            $joins = $query->replaceTablePrefix($joins);
+            $query->unsafeAppendSQLPart('join', $joins);
         }
         if ($where) {
-            $where = $sql->replaceTablePrefix($where);
-            $sql->unsafe()->unsafeAppendSQLPart('where', "WHERE $where");
+            $where = $query->replaceTablePrefix($where);
+            $query->unsafe()->unsafeAppendSQLPart('where', "WHERE $where");
         }
         if ($limit) {
-            $sql->limit($limit);
+            $query->limit($limit);
         }
         if ($start) {
-            $sql->offset($start);
+            $query->offset($start);
         }
 
-        $records = $sql->execute();
-        $authors = [];
+        $authors = $query->execute()->rows();
 
-        if ($records->rowCount() === 0) {
-            return $authors;
-        }
-
-        while ($row = $records->next()) {
-            $author = new Author;
-
-            foreach ($row as $field => $val) {
-                $author->set($field, $val);
-            }
-
+        foreach ($authors as $author) {
             self::$_pool[$author->get('id')] = $author;
-            $authors[] = $author;
         }
 
         return $authors;
@@ -200,25 +186,14 @@ class AuthorManager
             return ($return_single ? $authors[0] : $authors);
         }
 
-        $records = Symphony::Database()
+        $authors = (new AuthorManager)
             ->select()
-            ->from('tbl_authors')
-            ->where(['id' => ['in' => $id]])
-            ->execute();
+            ->authors($id)
+            ->execute()
+            ->rows();
 
-        if ($records->rowCount() === 0) {
-            return ($return_single ? $authors[0] : $authors);
-        }
-
-        while ($row = $records->next()) {
-            $author = new Author;
-
-            foreach ($row as $field => $val) {
-                $author->set($field, $val);
-            }
-
+        foreach ($authors as $author) {
             self::$_pool[$author->get('id')] = $author;
-            $authors[] = $author;
         }
 
         return ($return_single ? $authors[0] : $authors);
@@ -235,23 +210,16 @@ class AuthorManager
      */
     public static function fetchByUsername($username)
     {
-        if(!isset(self::$_pool[$username])) {
-            $records = Symphony::Database()
+        if (!isset(self::$_pool[$username])) {
+            $author = (new AuthorManager)
                 ->select()
-                ->from('tbl_authors')
-                ->where(['username' => $username])
+                ->username($username)
                 ->limit(1)
-                ->execute();
+                ->execute()
+                ->next();
 
-            if ($records->rowCount() === 0) {
+            if (!$author) {
                 return null;
-            }
-
-            $records = $records->next();
-            $author = new Author;
-
-            foreach ($records as $field => $val) {
-                $author->set($field, $val);
             }
 
             self::$_pool[$username] = $author;
@@ -304,5 +272,42 @@ class AuthorManager
             ->where(['id' => $author_id])
             ->execute()
             ->success();
+    }
+
+    /**
+     * Creates a new Author object.
+     *
+     * @return Author
+     */
+    public static function create()
+    {
+        return new Author;
+    }
+
+    /**
+     * Factory method that creates a new AuthorQuery.
+     *
+     * @since Symphony 3.0.0
+     * @param array $projection
+     *  The projection to select. By default, it's all of them, i.e. `*`.
+     * @return AuthorQuery
+     */
+    public function select(array $projection = ['*'])
+    {
+        return new AuthorQuery(Symphony::Database(), $projection);
+    }
+
+    /**
+     * Factory method that creates a new AuthorQuery that only counts results.
+     *
+     * @since Symphony 3.0.0
+     * @see select()
+     * @param string $col
+     *  The column to count on. Defaults to `*`
+     * @return AuthorQuery
+     */
+    public function selectCount($col = '*')
+    {
+        return new AuthorQuery(Symphony::Database(), ["COUNT($col)"]);
     }
 }

@@ -9,9 +9,10 @@
  * and are used as repositories for Entry objects, which are a model for this data
  * structure. This class contains functions for finding Fields within a Section and
  * saving a Section's settings.
+ *
+ * @since Symphony 3.0.0 it implements the ArrayAccess interface.
  */
-
-class Section
+class Section implements ArrayAccess
 {
     /**
      * An array of the Section's settings
@@ -51,6 +52,51 @@ class Section
         }
 
         return $this->_data[$setting];
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetExists()
+     *
+     * @param mixed $offset
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->_data[$offset]);
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetGet()
+     *
+     * @param mixed $offset
+     * @return mixed
+     */
+    public function offsetGet($offset)
+    {
+        return $this->_data[$offset];
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetSet()
+     *
+     * @param mixed $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->_data[$offset] = $value;
+    }
+
+    /**
+     * Implementation of ArrayAccess::offsetUnset()
+     *
+     * @param mixed $offset
+     * @return void
+     */
+    public function offsetUnset($offset)
+    {
+        unset($this->_data[$offset]);
     }
 
     /**
