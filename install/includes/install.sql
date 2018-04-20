@@ -2,7 +2,7 @@
 DROP TABLE IF EXISTS `tbl_authors`;
 CREATE TABLE `tbl_authors` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `password` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `first_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `last_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE `tbl_authors` (
   `language` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
-  UNIQUE KEY `email` (`email`)
+  UNIQUE KEY `email` (`email`(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- *** STRUCTURE: `tbl_cache` ***
@@ -60,7 +60,7 @@ CREATE TABLE `tbl_extensions` (
   `status` enum('enabled','disabled') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'enabled',
   `version` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `name` (`name`)
+  KEY `name` (`name`(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- *** STRUCTURE: `tbl_extensions_delegates` ***
@@ -113,7 +113,7 @@ CREATE TABLE `tbl_fields_checkbox` (
   `default_state` enum('on','off') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'on',
   `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `field_id` (`field_id`)
+  UNIQUE KEY `field_id` (`field_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- *** STRUCTURE: `tbl_fields_date` ***
@@ -125,7 +125,7 @@ CREATE TABLE `tbl_fields_date` (
   `calendar` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'no',
   `time` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'yes',
   PRIMARY KEY (`id`),
-  KEY `field_id` (`field_id`)
+  UNIQUE KEY `field_id` (`field_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- *** STRUCTURE: `tbl_fields_input` ***
@@ -135,7 +135,7 @@ CREATE TABLE `tbl_fields_input` (
   `field_id` int(11) unsigned NOT NULL,
   `validator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `field_id` (`field_id`)
+  UNIQUE KEY `field_id` (`field_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- *** STRUCTURE: `tbl_fields_select` ***
@@ -148,7 +148,7 @@ CREATE TABLE `tbl_fields_select` (
   `static_options` text COLLATE utf8mb4_unicode_ci,
   `dynamic_options` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `field_id` (`field_id`)
+  UNIQUE KEY `field_id` (`field_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- *** STRUCTURE: `tbl_fields_taglist` ***
@@ -159,7 +159,7 @@ CREATE TABLE `tbl_fields_taglist` (
   `validator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `pre_populate_source` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `field_id` (`field_id`),
+  UNIQUE KEY `field_id` (`field_id`),
   KEY `pre_populate_source` (`pre_populate_source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -171,7 +171,7 @@ CREATE TABLE `tbl_fields_textarea` (
   `formatter` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `size` int(3) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `field_id` (`field_id`)
+  UNIQUE KEY `field_id` (`field_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- *** STRUCTURE: `tbl_fields_upload` ***
@@ -182,7 +182,7 @@ CREATE TABLE `tbl_fields_upload` (
   `destination` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `validator` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `field_id` (`field_id`)
+  UNIQUE KEY `field_id` (`field_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- *** STRUCTURE: `tbl_forgotpass` ***
@@ -237,7 +237,7 @@ CREATE TABLE `tbl_sections` (
   `modification_date` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
   `modification_date_gmt` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `handle` (`handle`),
+  UNIQUE KEY `handle` (`handle`(191)),
   KEY `creation_date` (`creation_date`),
   KEY `creation_date_gmt` (`creation_date_gmt`),
   KEY `modification_date` (`modification_date`),
