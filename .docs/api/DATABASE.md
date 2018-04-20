@@ -254,6 +254,12 @@ You can now pass user submitted input directly to the database API (except when 
 Call to `determineQueryType()` must be remove, since it should not be needed anymore.
 Finally, `debug()` has been renamed `getLogs()`.
 
+## API Stability
+
+Even if the API is new, the public PHP API should be pretty stable.
+Developers should not depend on public method marked as `@internal`.
+Developers should also not depend on the string of generated SQL statement, as this can change overtime.
+
 ## Array syntax
 
 Almost all methods expects a single arguments, which is either a value or an array.
