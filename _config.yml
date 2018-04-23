@@ -1,0 +1,8 @@
+title: Symphony 2
+description: This is the official Symphony 2 repository.
+google_analytics: UA-8707166-3
+show_downloads: true
+theme: jekyll-theme-minimal
+
+gems:
+  - jekyll-mentions
