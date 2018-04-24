@@ -493,7 +493,7 @@ class Installer extends Administration
             $this->abort(
                 __('There was an error while trying to import data to the database. MySQL returned: ') .
                 $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage() .
-                __(' in query ') . $e->getQuery(),
+                __(' in query ') . PHP_EOL . $e->getQuery(),
                 $start
             );
         }
