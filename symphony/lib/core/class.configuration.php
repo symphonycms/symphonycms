@@ -270,6 +270,10 @@ class Configuration
 
         $string = "<?php$eol$tab\$settings = " . (string)$this . ";$eol";
 
+        if (function_exists('opcache_invalidate')) {
+            @opcache_invalidate($file, true);
+        }
+
         return General::writeFile($file, $string, $permissions);
     }
 }
