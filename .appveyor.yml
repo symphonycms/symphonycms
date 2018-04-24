@@ -1,0 +1,61 @@
+# Copied from https://github.com/phpmd/phpmd/blob/f1c145e538d7cf8c2d1a45fd8fb723eca64005f4/appveyor.yml
+clone_folder: C:\projects\symphonycms
+branches:
+  except:
+    - gh-pages
+
+# Test against the latest version of this Node.js version
+environment:
+  nodejs_version: "8"
+  php_version: "7.1.16"
+  matrix:
+    - platform: 'x86'
+    - platform: 'x64'
+
+matrix:
+  fast_finish: true 
+
+# Install scripts. (runs after repo cloning)
+install:
+  # Get the latest stable version of Node.js
+  - ps: Install-Product node $env:nodejs_version
+  # install modules
+  - npm install
+  - npm install -g grunt-cli
+  # install php
+  - cinst -y OpenSSL.Light
+  - SET PATH=C:\Program Files\OpenSSL;%PATH%
+  - sc config wuauserv start= auto
+  - net start wuauserv
+  - cinst -y php --version %php_version%
+  - cd c:\tools\php71
+  - copy php.ini-production php.ini
+  - echo date.timezone="UTC" >> php.ini
+  - echo extension_dir=ext >> php.ini
+  - echo extension=php_openssl.dll >> php.ini
+  - echo extension=php_pdo_mysql.dll >> php.ini
+  - echo extension=php_mbstring.dll >> php.ini
+  - echo extension=php_intl.dll >> php.ini
+  - echo extension=php_fileinfo.dll >> php.ini
+  - echo extension=php_curl.dll >> php.ini
+  - echo extension=php_xsl.dll >> php.ini
+  - cd C:\projects\symphonycms
+  - SET PATH=c:\tools\php71;%PATH%
+  - php -r "readfile('http://getcomposer.org/installer');" | php
+  - php composer.phar install --prefer-source --no-interaction
+
+# Post-install test scripts.
+test_script:
+  # Output useful info for debugging.
+  - node --version
+  - npm --version
+  - php --version
+  # run tests
+  - cd C:\projects\symphonycms
+  - npm test
+
+# Don't actually build.
+build: off
+
+# Fetch all
+shallow_clone: false
