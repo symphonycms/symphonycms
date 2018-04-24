@@ -55,16 +55,6 @@ class EntryQueryDateAdapter extends EntryQueryFieldAdapter
     }
 
     /**
-     * @internal Returns the columns to use when filtering
-     *
-     * @return array
-     */
-    public function getFilterColumns()
-    {
-        return ['date'];
-    }
-
-    /**
      * @see EntryQueryFieldAdapter::filterSingle()
      *
      * @param EntryQuery $query

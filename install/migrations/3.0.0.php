@@ -143,6 +143,23 @@ final class migration_300 extends Migration
             ]])
             ->execute();
 
+        // Drop the 'date' column in date fields
+        $dateFields = (new FieldManager)->select(['id'])->type('date')->execute()->column('id');
+        foreach ($dateField as $dateFieldId) {
+            if (!Symphony::Database()
+                ->showColumns()
+                ->from("tbl_entries_data_$dateFieldId")
+                ->like('date')
+                ->execute()
+                ->next()) {
+                continue;
+            }
+            Symphony::Database()
+                ->alter("tbl_entries_data_$dateFieldId")
+                ->drop('date')
+                ->execute();
+        }
+
         // Update the version information
         return parent::upgrade();
     }

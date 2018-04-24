@@ -160,16 +160,11 @@ class FieldDate extends Field implements ExportableField, ImportableField
                     'type' => 'varchar(80)',
                     'null' => true,
                 ],
-                'date' => [
-                    'type' => 'datetime',
-                    'null' => true,
-                ],
             ])
             ->keys([
                 'id' => 'primary',
                 'entry_id' => 'unique',
                 'value' => 'key',
-                'date' => 'key',
             ])
             ->execute()
             ->success();
@@ -614,16 +609,14 @@ class FieldDate extends Field implements ExportableField, ImportableField
 
         // Valid date
         if (!is_null($timestamp)) {
-            return array(
+            return  [
                 'value' => DateTimeObj::get('c', $timestamp),
-                'date' => DateTimeObj::getGMT('Y-m-d H:i:s', $timestamp)
-            );
+            ];
 
             // Invalid date
         } else {
             return array(
-                'value' => null,
-                'date' => null
+                'value' => null
             );
         }
     }
