@@ -223,7 +223,7 @@ Most methods are named by the associated SQL keywords they create.
 ## Statements safety
 
 All `DatabaseStatement` makes sure that they generate SAFE SQL, by escaping all values and checking the
-resulting SQL string to invalid characters, such as `'`, `\`` and `--`.
+resulting SQL string to invalid characters, such as `'`, `\` and `--`.
 In order to make it the compatibility layer work, SQL string can be added using the `unsafeAppendSQLPart()` method and then flagged as unsafe by calling `unsafe()`.
 This turns off most of the validity checks.
 Developers should always try to avoid using `statement()` and `unsafeAppendSQLPart()`.
