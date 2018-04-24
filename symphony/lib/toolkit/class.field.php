@@ -2081,27 +2081,6 @@ class Field implements ArrayAccess
     }
 
     /**
-     * Fetch the Entry ID's associated with this field instance given a `$value`,
-     * where the `$value` can be anything. This function is unused by Symphony core
-     * but should be implemented by Fields that maintain relationships.
-     *
-     * @param mixed $value
-     *  the value to find the associated entry ID's for.
-     * @return void|array
-     *  this default implementation returns void. overriding implementations should
-     *  return an array of the associated entry ids.
-     * @deprecated Since Symphony 2.5.0 this method is not called anymore in the core. Please use
-     *  `Field::findRelatedEntries` and `Field::findParentRelatedEntries` instead. This method
-     *  will be removed in Symphony 3.0
-     */
-    public function fetchAssociatedEntryIDs($value)
-    {
-        if (Symphony::Log()) {
-            Symphony::Log()->pushDeprecateWarningToLog('Field::fetchAssociatedEntryIDs()', 'Field::findRelatedEntries()` or Field::findParentRelatedEntries()`');
-        }
-    }
-
-    /**
      * Find related entries from a linking field's data table. Default implementation uses
      * column names `entry_id` and `relation_id` as with the Select Box Link
      *

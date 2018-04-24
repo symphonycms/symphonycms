@@ -102,18 +102,6 @@ class FieldTagList extends Field implements ExportableField, ImportableField
             ->variable(0);
     }
 
-    public function fetchAssociatedEntryIDs($value)
-    {
-        $value = array_map(trim, array_map([$this, 'cleanValue'], explode(',', $value)));
-
-        return Symphony::Database()
-            ->select(['entry_id'])
-            ->from('tbl_entries_data_' . $this->get('id'))
-            ->where(['handle' => ['in' => $value]])
-            ->execute()
-            ->column('entry_id');
-    }
-
     public function fetchAssociatedEntrySearchValue($data, $field_id = null, $parent_entry_id = null)
     {
         if (!is_array($data)) {
