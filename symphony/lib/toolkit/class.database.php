@@ -1019,8 +1019,8 @@ class Database
 
         throw new DatabaseException(
             __(
-                'Database Error (%1$s): %2$s in query: %3$s',
-                [$errornum, $msg, $this->lastQuery]
+                'Database Error (%1$s): %2$s in query:%4$s%3$s',
+                [$errornum, $msg, $this->lastQuery, PHP_EOL]
             ),
             [
                 'msg' => $msg,
