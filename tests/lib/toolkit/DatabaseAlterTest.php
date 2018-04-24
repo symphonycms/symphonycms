@@ -104,7 +104,7 @@ final class DatabaseAlterTest extends TestCase
                     ])
                   ->after('y');
         $this->assertEquals(
-            "ALTER TABLE `alter` ADD COLUMN `x` varchar(100) NOT NULL FIRST ADD COLUMN `x` varchar(100) NOT NULL AFTER `y`",
+            "ALTER TABLE `alter` ADD COLUMN `x` varchar(100) NOT NULL FIRST , ADD COLUMN `x` varchar(100) NOT NULL AFTER `y`",
             $sql->generateSQL(),
             'ALTER ADD COLUMN FIRST ADD COLUMN AFTER clause'
         );
@@ -131,7 +131,7 @@ final class DatabaseAlterTest extends TestCase
                   ])
                   ->drop('x');
         $this->assertEquals(
-            "ALTER TABLE `alter` ADD COLUMN `x` varchar(100) NOT NULL DROP COLUMN `x`",
+            "ALTER TABLE `alter` ADD COLUMN `x` varchar(100) NOT NULL , DROP COLUMN `x`",
             $sql->generateSQL(),
             'ALTER ADD COLUMN DROP COLUMN clause'
         );
@@ -273,8 +273,32 @@ final class DatabaseAlterTest extends TestCase
             ->addPrimaryKey('x')
             ->dropPrimaryKey();
         $this->assertEquals(
-            "ALTER TABLE `alter`\n\tCHANGE COLUMN `x` `y` varchar(200) NOT NULL\n\tADD FULLTEXT `x` (`x`)\n\tADD PRIMARY KEY (`x`)\n\tDROP PRIMARY KEY",
+            "ALTER TABLE `alter`\n\tADD FULLTEXT `x` (`x`)\n\t, CHANGE COLUMN `x` `y` varchar(200) NOT NULL\n\t, ADD PRIMARY KEY (`x`)\n\t, DROP PRIMARY KEY",
             $sql->generateFormattedSQL(),
+            'ALTER Formatted'
+        );
+    }
+
+    public function testMultipleCalls()
+    {
+        $db = new Database([]);
+        $sql = $db->alter('alter')
+            ->change('y', ['z' => [
+                'type' => 'int(11)',
+                'signed' => false,
+                'default' => 0
+            ]])
+            ->add([
+                'o' => [
+                    'type' => 'int(10)',
+                    'default' => 1
+                ]
+            ])
+            ->after('callback')
+            ->dropPrimaryKey();
+        $this->assertEquals(
+            "ALTER TABLE `alter` CHANGE COLUMN `y` `z` int(11) unsigned NOT NULL DEFAULT :z_default , ADD COLUMN `o` int(10) unsigned NOT NULL DEFAULT :o_default AFTER `callback` , DROP PRIMARY KEY",
+            $sql->generateSQL(),
             'ALTER Formatted'
         );
     }

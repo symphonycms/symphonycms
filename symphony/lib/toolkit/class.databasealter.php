@@ -49,20 +49,20 @@ final class DatabaseAlter extends DatabaseStatement
         return [
             'statement',
             'table',
+            'engine',
             [
                 'add columns',
                 'first',
                 'after',
+                'drop columns',
+                'change columns',
+                'add key',
+                'drop key',
+                'add index',
+                'drop index',
+                'add primary key',
+                'drop primary key',
             ],
-            'drop columns',
-            'change columns',
-            'add key',
-            'drop key',
-            'add index',
-            'drop index',
-            'add primary key',
-            'drop primary key',
-            'engine',
         ];
     }
 
@@ -85,6 +85,17 @@ final class DatabaseAlter extends DatabaseStatement
             return self::FORMATTED_PART_DELIMITER;
         }
         return self::STATEMENTS_DELIMITER;
+    }
+
+    /**
+     * Checks if a 'add', 'drop' or 'change' statement was already add to the statement.
+     *
+     * @uses getStatementStructure()
+     * @return bool
+     */
+    public function containsAddDropOrChange()
+    {
+        return $this->containsSQLParts($this->getStatementStructure()[3]);
     }
 
     /**
@@ -163,6 +174,9 @@ final class DatabaseAlter extends DatabaseStatement
             $column = $this->buildColumnDefinitionFromArray($k, $column);
             return "ADD COLUMN $column";
         }, $columns));
+        if ($this->containsAddDropOrChange()) {
+            $columns  = self::LIST_DELIMITER .  $columns;
+        }
         $this->unsafeAppendSQLPart('add columns', $columns);
         return $this;
     }
@@ -184,6 +198,9 @@ final class DatabaseAlter extends DatabaseStatement
             $column = $this->asTickedString($column);
             return "DROP COLUMN $column";
         }, $columns));
+        if ($this->containsAddDropOrChange()) {
+            $columns  = self::LIST_DELIMITER . $columns;
+        }
         $this->unsafeAppendSQLPart('drop columns', $columns);
         return $this;
     }
@@ -214,6 +231,9 @@ final class DatabaseAlter extends DatabaseStatement
             );
             return "CHANGE COLUMN $old_column $new_column";
         }, $old_columns));
+        if ($this->containsAddDropOrChange()) {
+            $columns  = self::LIST_DELIMITER . $columns;
+        }
         $this->unsafeAppendSQLPart('change columns', $columns);
         return $this;
     }
@@ -236,6 +256,9 @@ final class DatabaseAlter extends DatabaseStatement
             $key = $this->buildKeyDefinitionFromArray($k, $column);
             return "ADD $key";
         }, $keys));
+        if ($this->containsAddDropOrChange()) {
+            $keys  = self::LIST_DELIMITER . $keys;
+        }
         $this->unsafeAppendSQLPart('add key', $keys);
         return $this;
     }
@@ -257,6 +280,9 @@ final class DatabaseAlter extends DatabaseStatement
             $key = $this->asTickedString($key);
             return "DROP KEY $key";
         }, $keys));
+        if ($this->containsAddDropOrChange()) {
+            $keys  = self::LIST_DELIMITER . $keys;
+        }
         $this->unsafeAppendSQLPart('drop key', $keys);
         return $this;
     }
@@ -279,6 +305,9 @@ final class DatabaseAlter extends DatabaseStatement
             $key = $this->buildKeyDefinitionFromArray($k, $column);
             return "ADD $key";
         }, $keys));
+        if ($this->containsAddDropOrChange()) {
+            $keys  = self::LIST_DELIMITER . $keys;
+        }
         $this->unsafeAppendSQLPart('add index', $keys);
         return $this;
     }
@@ -300,6 +329,9 @@ final class DatabaseAlter extends DatabaseStatement
             $key = $this->asTickedString($key);
             return "DROP INDEX $key";
         }, $keys));
+        if ($this->containsAddDropOrChange()) {
+            $keys  = self::LIST_DELIMITER . $keys;
+        }
         $this->unsafeAppendSQLPart('drop index', $keys);
         return $this;
     }
@@ -322,6 +354,9 @@ final class DatabaseAlter extends DatabaseStatement
             $key = $this->buildKeyDefinitionFromArray($k, $column);
             return "ADD $key";
         }, $keys));
+        if ($this->containsAddDropOrChange()) {
+            $keys  = self::LIST_DELIMITER . $keys;
+        }
         $this->unsafeAppendSQLPart('add primary key', $keys);
         return $this;
     }
@@ -334,7 +369,11 @@ final class DatabaseAlter extends DatabaseStatement
      */
     public function dropPrimaryKey()
     {
-        $this->unsafeAppendSQLPart('drop primary key', 'DROP PRIMARY KEY');
+        $keys = 'DROP PRIMARY KEY';
+        if ($this->containsAddDropOrChange()) {
+            $keys  = self::LIST_DELIMITER . $keys;
+        }
+        $this->unsafeAppendSQLPart('drop primary key', $keys);
         return $this;
     }
 }
