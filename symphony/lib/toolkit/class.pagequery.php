@@ -153,7 +153,7 @@ class PageQuery extends DatabaseQuery
         if (!$this->containsSQLParts('order by')) {
             $this->sort('sortorder');
         }
-        return $this;
+        return parent::finalize();
     }
 
     /**

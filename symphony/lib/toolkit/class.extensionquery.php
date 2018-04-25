@@ -122,7 +122,7 @@ class ExtensionQuery extends DatabaseQuery
         if (!$this->containsSQLParts('order by')) {
             $this->sort('name');
         }
-        return $this;
+        return parent::finalize();
     }
 
     /**
