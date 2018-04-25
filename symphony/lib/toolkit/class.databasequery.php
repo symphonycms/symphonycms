@@ -138,13 +138,17 @@ class DatabaseQuery extends DatabaseStatement
      *
      * @param string $col
      *  The column to count on. Defaults to the first value from
-     *  `getDefaultProjection()`
+     *  `getDefaultProjection()`.
+     *  If the column contains a '*', it will use '*' directly.
      * @return DatabaseQuery
      */
     public function count($col = null)
     {
         if (!$col) {
             $col = current($this->getDefaultProjection());
+        }
+        if (strpos($col, '*') > 0) {
+            $col = '*';
         }
         return $this->projection(["COUNT($col)"]);
     }

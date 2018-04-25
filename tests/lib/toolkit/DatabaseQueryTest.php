@@ -630,6 +630,21 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
+    public function testSELECTCOUNTSTARCOL()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+                  ->count('t.*')
+                  ->from('tbl_test_table');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE COUNT(*) FROM `test_table`",
+            $sql->generateSQL(),
+            'SELECT COUNT(t.*) clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
     public function testSELECTHAVINGCOUNT()
     {
         $db = new Database([]);
