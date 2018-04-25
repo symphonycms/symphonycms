@@ -91,7 +91,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
 
     public function fetchAssociatedEntryCount($value)
     {
-        $value = array_map(trim, array_map([$this, 'cleanValue'], explode(',', $value)));
+        $value = array_map('trim', array_map([$this, 'cleanValue'], explode(',', $value)));
 
         return (int)Symphony::Database()
             ->select()
