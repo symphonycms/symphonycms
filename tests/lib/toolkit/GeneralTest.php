@@ -19,13 +19,13 @@ final class GeneralTest extends TestCase
         $this->assertEquals(1, \General::intval(1));
         $this->assertEquals(1000, \General::intval(1000));
         if (defined('PHP_INT_MIN')) {
-            $this->assertEquals(PHP_INT_MIN, \General::intval(PHP_INT_MIN));
+            $this->assertEquals(-1, \General::intval(PHP_INT_MIN));
         }
         if (defined('PHP_INT_MAX')) {
             $this->assertEquals(PHP_INT_MAX, \General::intval(PHP_INT_MAX));
         }
         if (defined('PHP_INT_MAX') && defined('PHP_INT_MIN')) {
-            $this->assertEquals(PHP_INT_MIN, \General::intval(PHP_INT_MAX + 1));
+            $this->assertEquals(-1, \General::intval(PHP_INT_MAX + 1));
         }
         $this->assertEquals(1, \General::intval('1'));
         $this->assertEquals(-1, \General::intval(-1));
