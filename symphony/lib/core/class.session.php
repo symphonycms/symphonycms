@@ -112,7 +112,7 @@ class Session
         if (empty($path)) {
             return '/';
         }
-        $path = array_map(rawurlencode, $path);
+        $path = array_map('rawurlencode', $path);
         return '/' . implode('/', $path);
     }
 
