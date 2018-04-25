@@ -78,6 +78,22 @@ class EntryQuery extends DatabaseQuery
     }
 
     /**
+     * Appends COUNT($col) to the projection.
+     * Prevents the default ORDER BY clause to be added.
+     *
+     * @uses disableDefaultSort();
+     * @see DatabaseQuery::count()
+     * @param string $col
+     *  The column to count on.
+     * @return DatabaseQuery
+     */
+    public function count($col = null)
+    {
+        $this->disableDefaultSort();
+        return parent::count($col);
+    }
+
+    /**
      * Getter for the current section id
      * @return int
      */
@@ -171,7 +187,7 @@ class EntryQuery extends DatabaseQuery
      * Adds a WHERE clause on the entry id.
      * Prevents the default ORDER BY clause to be added.
      *
-     * @see disableDefaultSort()
+     * @uses disableDefaultSort()
      * @param int $entry_id
      *  The entry id to fetch
      * @return EntryQuery
