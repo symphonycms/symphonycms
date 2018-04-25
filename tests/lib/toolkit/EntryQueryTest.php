@@ -295,7 +295,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with ->sort(system:id)'
         );

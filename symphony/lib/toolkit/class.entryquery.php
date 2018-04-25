@@ -581,7 +581,7 @@ class EntryQuery extends DatabaseQuery
                 $this->sort('system:id');
             }
         }
-        return $this;
+        return parent::finalize();
     }
 
     /**

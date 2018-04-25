@@ -122,7 +122,7 @@ class AuthorQuery extends DatabaseQuery
         if (!$this->containsSQLParts('order by')) {
             $this->sort('id');
         }
-        return $this;
+        return parent::finalize();
     }
 
     /**
