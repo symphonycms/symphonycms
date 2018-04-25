@@ -163,7 +163,18 @@ class GenericExceptionHandler
         exit;
     }
 
-    protected static function sendHeaders(Exception $e)
+    /**
+     * Sends out the proper HTTP headers when rendering an error page.
+     * It sets the page status to the proper code, depending on the Throwable received.
+     * If the Throwable is a SymphonyErrorPage, additional headers are also sent.
+     *
+     * @uses SymphonyErrorPage::getAdditional()
+     * @uses SymphonyErrorPage::getHttpStatusCode()
+     * @param Throwable $e
+     *  The Throwable object
+     * @return void
+     */
+    protected static function sendHeaders($e)
     {
         if (!headers_sent()) {
             cleanup_session_cookies();
