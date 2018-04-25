@@ -178,8 +178,8 @@ module.exports = function (grunt) {
             },
             options: {
                 bin: 'vendor/bin/phpunit',
-                bootstrap: 'tests/boot.php',
-                colors: true
+                coverageClover: 'clover.xml',
+                configuration: 'tests/phpunit.xml'
             }
         },
 
