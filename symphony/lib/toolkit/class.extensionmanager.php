@@ -56,14 +56,7 @@ class ExtensionManager implements FileResource
     public function __construct()
     {
         if (empty(self::$_subscriptions) && Symphony::Database() && Symphony::Database()->isConnected()) {
-            $subscriptions = Symphony::Database()
-                ->select(['t1.name', 't2.page', 't2.delegate', 't2.callback', 't2.order'])
-                ->from('tbl_extensions', 't1')
-                ->innerJoin('tbl_extensions_delegates', 't2')
-                ->on(['t1.id' => '$t2.extension_id'])
-                ->where(['t1.status' => 'enabled'])
-                ->orderBy(['t2.delegate', 't2.order', 't1.name'], 'ASC')
-                ->execute();
+            $subscriptions = $this->getDelegateSubscriptions();
 
             while ($subscription = $subscriptions->next()) {
                 self::$_subscriptions[$subscription['delegate']][] = $subscription;
@@ -496,6 +489,45 @@ class ExtensionManager implements FileResource
             ->where(['name' => $name])
             ->execute()
             ->success();
+    }
+
+    /**
+     * Retrieves all subscribed delegates from the database.
+     *
+     * @return DatabaseQueryResult
+     */
+    public function getDelegateSubscriptions()
+    {
+        $projection = ['t1.name', 't2.page', 't2.delegate', 't2.callback', 't2.order'];
+        $orderBy = ['t2.delegate', 't2.order', 't1.name'];
+        $removeOrder = false;
+        try {
+            $removeOrder = !(Symphony::Database()
+                ->showColumns()
+                ->from('tbl_extensions_delegates')
+                ->like('order')
+                ->execute()
+                ->next());
+        } catch (DatabaseException $ex) {
+            $removeOrder = true;
+            // Ignore for now
+            // This catch and check will be removed in Symphony 5.0.0
+        }
+
+        // Remove order col from projection and order by
+        if ($removeOrder) {
+            array_pop($projection);
+            $orderBy = ['t2.delegate', 't1.name'];
+        }
+
+        return Symphony::Database()
+            ->select($projection)
+            ->from('tbl_extensions', 't1')
+            ->innerJoin('tbl_extensions_delegates', 't2')
+            ->on(['t1.id' => '$t2.extension_id'])
+            ->where(['t1.status' => 'enabled'])
+            ->orderBy($orderBy, 'ASC')
+            ->execute();
     }
 
     /**
