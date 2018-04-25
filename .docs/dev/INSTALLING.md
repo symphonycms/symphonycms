@@ -17,7 +17,7 @@ Before installation, read the [notes on file permissions](#file-permissions).
 
 1. Run composer to install the dependencies and generate the auto-loader:
 
-		composer install -o
+		composer install --no-dev -o
 
 1.	_(Optional)_ If you would like to add the bundled optional extensions, run the following commands to checkout the `bundle` branch which contains the Git submodules references and update the submodules:
 
