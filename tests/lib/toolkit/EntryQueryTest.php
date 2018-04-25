@@ -317,4 +317,60 @@ final class EntryQueryTest extends TestCase
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');
     }
+
+    public function testDefaultProjectionNotAddedWithoutSchema()
+    {
+        $q = (new \EntryQuery($this->db));
+        $q->projection(['f.test']);
+        $q->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `f`.`test` FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            $q->generateSQL(),
+            'new EntryQuery with ->sort(system:id)'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testDefaultProjectionNotAddedWithoutSchemaNorDefaultSort()
+    {
+        $q = (new \EntryQuery($this->db));
+        $q->projection(['f.test']);
+        $q->disableDefaultSort();
+        $q->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `f`.`test` FROM `entries` AS `e`",
+            $q->generateSQL(),
+            'new EntryQuery with ->sort(system:id)'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testDefaultProjectionAddedWithSchema()
+    {
+        $q = (new \EntryQuery($this->db, ['schema'], ['f.test']));
+        $q->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `f`.`test` , `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            $q->generateSQL(),
+            'new EntryQuery with ->sort(system:id)'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testDefaultProjectionAddedWithSchemaNorDefaultSort()
+    {
+        $q = (new \EntryQuery($this->db, ['schema'], ['f.test']));
+        $q->disableDefaultSort();
+        $q->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `f`.`test` , `e`.* FROM `entries` AS `e`",
+            $q->generateSQL(),
+            'new EntryQuery with ->sort(system:id)'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
 }

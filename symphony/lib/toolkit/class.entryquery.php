@@ -597,7 +597,18 @@ class EntryQuery extends DatabaseQuery
                 $this->sort('system:id');
             }
         }
-        return parent::finalize();
+        // Add default projection to make sure we are able to build Entry objects when a schema is restricted
+        if (!empty($this->schema)) {
+            $projection = $this->getSQLParts('projection');
+            $hasDefault = in_array($this->getDefaultProjection(), $projection);
+            $hasCols = in_array(['e.id', 'e.creation_date', 'e.modification_date'], $projection);
+            if (!$hasDefault && !$hasCols) {
+                $this->projection($this->getDefaultProjection());
+            }
+        } else {
+            return parent::finalize();
+        }
+        return $this;
     }
 
     /**
