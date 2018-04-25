@@ -101,21 +101,29 @@ final class migration_300 extends Migration
 
         // Make extensions delegates extension_id unsigned
         // and add the order column
-        Symphony::Database()
+        $edStm = Symphony::Database()
             ->alter('tbl_extensions_delegates')
             ->change('extension_id', ['extension_id' => [
                 'type' => 'int(11)',
                 'signed' => false,
-            ]])
-            ->add([
+            ]]);
+        if (!Symphony::Database()
+            ->showColumns()
+            ->from('tbl_extensions_delegates')
+            ->like('order')
+            ->execute()
+            ->next()) {
+            $edStm->add([
                 'order' => [
                     'type' => 'int(11)',
                     'signed' => true,
                     'default' => 0
                 ]
             ])
-            ->after('callback')
-            ->execute();
+            ->after('callback');
+        }
+        $edStm->execute();
+        unset($edStm);
 
         // Make parent_section unsigned and sortorder signed
         Symphony::Database()
@@ -130,22 +138,31 @@ final class migration_300 extends Migration
             ]])
             ->execute();
 
-        // Make author id and parent unsigned
+        // Make author id unsigned
         Symphony::Database()
             ->alter('tbl_forgotpass')
             ->change('author_id', ['author_id' => [
                 'type' => 'int(11)',
                 'signed' => false,
             ]])
+            ->execute();
+
+        // Make parent unsigned and sortorder signed
+        Symphony::Database()
+            ->alter('tbl_pages')
             ->change('parent', ['parent' => [
                 'type' => 'int(11)',
                 'signed' => false,
+            ]])
+            ->change('sortorder', ['sortorder' => [
+                'type' => 'int(11)',
+                'signed' => true,
             ]])
             ->execute();
 
         // Drop the 'date' column in date fields
         $dateFields = (new FieldManager)->select(['id'])->type('date')->execute()->column('id');
-        foreach ($dateField as $dateFieldId) {
+        foreach ($dateFields as $dateFieldId) {
             if (!Symphony::Database()
                 ->showColumns()
                 ->from("tbl_entries_data_$dateFieldId")
