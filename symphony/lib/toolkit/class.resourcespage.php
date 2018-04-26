@@ -56,7 +56,7 @@ abstract class ResourcesPage extends AdministrationPage
 
         // By default, sorting information are retrieved from
         // the filesystem and stored inside the `Configuration` object
-        if (is_null($sort) && is_null($order)) {
+        if (is_null($sort)) {
             $sort = ResourceManager::getSortingField($type);
             $order = ResourceManager::getSortingOrder($type);
 
