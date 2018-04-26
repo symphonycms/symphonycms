@@ -22,7 +22,7 @@ define_safe('__IN_SYMPHONY__', true);
  * The filesystem path to the `install` folder
  * @var string
  */
-define('INSTALL', DOCROOT . '/install');
+define_safe('INSTALL', DOCROOT . '/install');
 
 /**
  * The filesystem path to the `manifest` folder
