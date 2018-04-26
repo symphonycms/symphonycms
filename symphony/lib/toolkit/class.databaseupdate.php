@@ -12,6 +12,14 @@ final class DatabaseUpdate extends DatabaseStatement
     use DatabaseWhereDefinition;
 
     /**
+     * By default, disable DatabaseWhereDefinition's ability to transform == null syntax.
+     * `set()` needs it disable, `where()` needs it enabled.
+     *
+     * @var boolean
+     */
+    private $enableIsNullSyntax = false;
+
+    /**
      * Creates a new DatabaseUpdate statement on table $table.
      *
      * @see Database::update()
@@ -78,6 +86,7 @@ final class DatabaseUpdate extends DatabaseStatement
      */
     public function set(array $values)
     {
+        $this->enableIsNullSyntax = false;
         $v = $this->buildWhereClauseFromArray([self::VALUES_DELIMITER => $values]);
         $this->unsafeAppendSQLPart('values', "SET $v");
         $this->appendValues($values);
@@ -96,6 +105,7 @@ final class DatabaseUpdate extends DatabaseStatement
      */
     public function where(array $conditions)
     {
+        $this->enableIsNullSyntax = true;
         $op = $this->containsSQLParts('where') ? 'AND' : 'WHERE';
         $where = $this->buildWhereClauseFromArray($conditions);
         $this->unsafeAppendSQLPart('where', "$op $where");

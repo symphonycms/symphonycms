@@ -12,6 +12,13 @@ class DatabaseQuery extends DatabaseStatement
     use DatabaseWhereDefinition;
 
     /**
+     * Enable DatabaseWhereDefinition's ability to transform == null syntax
+     *
+     * @var boolean
+     */
+    private $enableIsNullSyntax = true;
+
+    /**
      * Internal sub query counter
      * @var integer
      */
