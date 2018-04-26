@@ -17,13 +17,16 @@ before_install:
 
 install:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
-  - composer install -o --no-interaction
+  - travis_retry composer install -o --no-interaction
   - npm install
 
 before_script:
   - mysql -e 'create database symphony_test;'
 
 script: npm test
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 cache:
   directories:
