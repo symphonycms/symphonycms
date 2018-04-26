@@ -56,6 +56,7 @@ final class DatabaseAlter extends DatabaseStatement
                 'after',
                 'drop columns',
                 'change columns',
+                'modify columns',
                 'add key',
                 'drop key',
                 'add index',
@@ -235,6 +236,28 @@ final class DatabaseAlter extends DatabaseStatement
             $columns  = self::LIST_DELIMITER . $columns;
         }
         $this->unsafeAppendSQLPart('change columns', $columns);
+        return $this;
+    }
+
+    /**
+     * Appends a MODIFY COLUMN `column` clause.
+     *
+     * @see DatabaseColumnDefinition::buildColumnDefinitionFromArray()
+     * @param array $columns
+     *  The new columns definitions
+     * @return DatabaseAlter
+     *  The current instance
+     */
+    public function modify(array $columns)
+    {
+        $columns = implode(self::LIST_DELIMITER, General::array_map(function ($k, $column) {
+            $column = $this->buildColumnDefinitionFromArray($k, $column);
+            return "MODIFY COLUMN $column";
+        }, $columns));
+        if ($this->containsAddDropOrChange()) {
+            $columns  = self::LIST_DELIMITER . $columns;
+        }
+        $this->unsafeAppendSQLPart('modify columns', $columns);
         return $this;
     }
 
