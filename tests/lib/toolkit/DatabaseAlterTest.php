@@ -178,6 +178,21 @@ final class DatabaseAlterTest extends TestCase
         );
     }
 
+    public function testALTERMODIFYCOLS()
+    {
+        $db = new Database([]);
+        $sql = $db->alter('alter')
+                  ->modify([
+                        'y' => 'varchar(200)',
+                        'a' => 'datetime',
+                  ]);
+        $this->assertEquals(
+            "ALTER TABLE `alter` MODIFY COLUMN `y` varchar(200) NOT NULL, MODIFY COLUMN `a` datetime NOT NULL",
+            $sql->generateSQL(),
+            'ALTER MODIFY COLUMN multiple clause'
+        );
+    }
+
     public function testALTERADDKEY()
     {
         $db = new Database([]);
