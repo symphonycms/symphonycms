@@ -1,6 +1,10 @@
 # Symphony 2
 
-[![Join the chat at https://gitter.im/symphonycms/symphony-2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/symphonycms/symphony-2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master) [![Build Status](https://travis-ci.org/symphonycms/symphony-2.svg?branch=master)](https://travis-ci.org/symphonycms/symphony-2) ![Build status](https://ci.appveyor.com/api/projects/status/1mx5r9befuode1e9?svg=true)
+[![Join the chat at https://gitter.im/symphonycms/symphony-2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/symphonycms/symphony-2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg?style=flat-square)](https://php.net/)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
+[![Build Status](https://travis-ci.org/symphonycms/symphony-2.svg?branch=master)](https://travis-ci.org/symphonycms/symphony-2)
+![Build status](https://ci.appveyor.com/api/projects/status/1mx5r9befuode1e9?svg=true)
 
 - Version: 2.7.10
 - Date: 8th April 2019
