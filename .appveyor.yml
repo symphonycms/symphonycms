@@ -22,11 +22,13 @@ install:
   # install modules
   - npm install
   - npm install -g grunt-cli
-  # install php
+  # install openssl
   - cinst -y OpenSSL.Light
   - SET PATH=C:\Program Files\OpenSSL;%PATH%
-  - sc config wuauserv start= auto
+  # start windows update
+  - sc config wuauserv start=auto
   - net start wuauserv
+  # install php
   - cinst -y php --version %php_version%
   - cd c:\tools\php71
   - copy php.ini-production php.ini
@@ -39,10 +41,12 @@ install:
   - echo extension=php_fileinfo.dll >> php.ini
   - echo extension=php_curl.dll >> php.ini
   - echo extension=php_xsl.dll >> php.ini
-  - cd C:\projects\symphonycms
   - SET PATH=c:\tools\php71;%PATH%
-  - php -r "readfile('http://getcomposer.org/installer');" | php
-  - php composer.phar install --prefer-source --no-interaction
+  - cd C:\projects\symphonycms
+  # install composer
+  - php -r "readfile('https://getcomposer.org/installer');" | php
+  # install packages
+  - php composer.phar install --prefer-source --no-interaction -o
 
 # Post-install test scripts.
 test_script:
