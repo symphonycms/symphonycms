@@ -35,7 +35,7 @@ class contentPublish extends AdministrationPage
 
         // By default, sorting information are retrieved from
         // the file system and stored inside the `Configuration` object
-        if (!$sort && !$order) {
+        if (!$sort) {
             $sort = $section->getSortingField();
             $order = $section->getSortingOrder();
         } else {
