@@ -188,7 +188,7 @@ trait DatabaseWhereDefinition
             $this->appendValues([$k => $c]);
             $k = $this->asPlaceholderString($k, $c);
             // Handle null equalities
-            if ($c === null) {
+            if ($c === null && isset($this->enableIsNullSyntax) && $this->enableIsNullSyntax) {
                 if ($op === '=') {
                     $op = 'IS';
                 } elseif ($op === '!=') {

@@ -36,17 +36,41 @@ final class DatabaseUpdateTest extends TestCase
                         'x' => 1,
                         'y' => 'TEST',
                     ])
-                  ->where(['z' => 'id']);
+                  ->where(['a' => 'id']);
         $this->assertEquals(
-            "UPDATE `update` SET `x` = :x, `y` = :y WHERE `z` = :z",
+            "UPDATE `update` SET `x` = :x, `y` = :y WHERE `a` = :a",
             $sql->generateSQL(),
             'UPDATE clause'
         );
         $values = $sql->getValues();
         $this->assertEquals(1, $values['x'], 'x is 1');
         $this->assertEquals('TEST', $values['y'], 'y is TEST');
-        $this->assertEquals('id', $values['z'], 'z is id');
+        $this->assertEquals('id', $values['a'], 'a is id');
         $this->assertEquals(3, count($values), '3 values');
+    }
+
+    public function testUPDATENULLWHERENULL()
+    {
+        $db = new Database([]);
+        $sql = $db->update('update')
+                  ->set([
+                        'x' => 1,
+                        'y' => 'TEST',
+                        'z' => null
+                    ])
+                  ->where(['a' => 'id'])
+                  ->where(['b' => ['!=' => null]]);
+        $this->assertEquals(
+            "UPDATE `update` SET `x` = :x, `y` = :y, `z` = :_null_ WHERE `a` = :a AND `b` IS NOT :_null_",
+            $sql->generateSQL(),
+            'UPDATE NULL WHERE NULL clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(1, $values['x'], 'x is 1');
+        $this->assertEquals('TEST', $values['y'], 'y is TEST');
+        $this->assertEquals('id', $values['a'], 'a is id');
+        $this->assertEquals(null, $values['_null_'], '_null_ is null');
+        $this->assertEquals(4, count($values), '4 values');
     }
 
     public function testUPDATEWHEREFormatted()
