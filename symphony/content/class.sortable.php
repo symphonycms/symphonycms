@@ -48,7 +48,7 @@ class Sortable
         if (isset($_REQUEST['order'])) {
             $order = ($_REQUEST['order'] == 'desc' ? 'desc' : 'asc');
         } else {
-            $order = null;
+            $order = 'asc';
         }
 
         $result = $object->sort($sort, $order, $params);
