@@ -122,7 +122,7 @@ class Section implements ArrayAccess
                 continue;
             }
 
-            return $field->get('id');
+            return (string)$field->get('id');
         }
 
         return 'system:id';
@@ -136,7 +136,7 @@ class Section implements ArrayAccess
      * @since Symphony 2.3
      * @throws Exception
      * @return string
-     *    Either the field ID or the string 'id'.
+     *  Either the field ID or the string 'id'.
      */
     public function getSortingField()
     {
@@ -163,7 +163,7 @@ class Section implements ArrayAccess
             $result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_sortby', 'sorting');
         }
 
-        return (!$result ? $this->getDefaultSortingField() : $result);
+        return (!$result ? $this->getDefaultSortingField() : (string)$result);
     }
 
     /**
@@ -196,7 +196,7 @@ class Section implements ArrayAccess
             $result = Symphony::Configuration()->get('section_' . $this->get('handle') . '_order', 'sorting');
         }
 
-        return (!$result ? 'asc' : $result);
+        return (!$result ? 'asc' : (string)$result);
     }
 
     /**

@@ -373,7 +373,7 @@ class FieldManager implements FileResource
                 $query->unsafe()->unsafeAppendSQLPart('where', "$wherePrefix $where");
             }
             if ($sortfield) {
-                $query->sort($sortfield);
+                $query->sort((string)$sortfield);
             }
 
             $result = $query->execute()->rows();

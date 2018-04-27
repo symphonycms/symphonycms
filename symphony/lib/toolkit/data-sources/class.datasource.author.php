@@ -32,7 +32,7 @@ class AuthorDatasource extends Datasource
     {
         $authorsQuery = (new AuthorManager)
             ->select()
-            ->sort($this->dsParamSORT, $this->dsParamORDER);
+            ->sort((string)$this->dsParamSORT, $this->dsParamORDER);
 
         if (is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)) {
             $author_ids = [];

@@ -553,12 +553,7 @@ class SectionDatasource extends Datasource
         $this->processFilters($entriesQuery);
 
         // Process Sorting
-        $sort = $this->dsParamSORT;
-        if (General::intval($sort) === -1) {
-            // Try to fetch id from field handle
-            $sort = FieldManager::fetchFieldIDFromElementName($sort, $this->getSource());
-        }
-        $entriesQuery->sort($sort, $this->dsParamORDER);
+        $entriesQuery->sort((string)$this->dsParamSORT, $this->dsParamORDER);
 
         // Configure pagination in the query
         if ($requiresPagination) {
