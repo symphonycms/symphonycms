@@ -385,8 +385,9 @@ class contentSystemAuthors extends AdministrationPage
             // Developers can edit all developers, managers and authors, and their own.
             || Symphony::Author()->isDeveloper() && $author->isPrimaryAccount() === false;
 
-
-        if ($isEditing && ($isOwner || $canEdit)) {
+        // At this point, only developers, managers and owner are authorized
+        // Make sure all users except developers needs to input the old password
+        if ($isEditing && ($canEdit || $isOwner) && !Symphony::Author()->isDeveloper()) {
             $fieldset->setAttribute('class', 'three columns');
 
             $label = Widget::Label(null, null, 'column');
