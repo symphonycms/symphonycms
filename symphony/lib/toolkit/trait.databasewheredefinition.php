@@ -204,7 +204,7 @@ trait DatabaseWhereDefinition
      * This method maps all $conditions [$k => $c] pairs on `buildSingleWhereClauseFromArray()`
      *
      * @param array $conditions
-     * @return void
+     * @return string
      */
     final public function buildWhereClauseFromArray(array $conditions)
     {
