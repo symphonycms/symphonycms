@@ -1,0 +1,120 @@
+tools:
+  php_sim: true
+  php_pdepend: true
+  php_analyzer: true
+  php_cs_fixer:
+    config: { level: psr1 }
+
+filter:
+  paths: ["symphony/*"]
+  excluded_paths:
+    - "tests/*"
+    - "symphony/assets/css/*.min.css"
+    - "symphony/assets/js/lib/*"
+    - "symphony/assets/js/*.min.js"
+checks:
+  php:
+    duplication: true
+    verify_access_scope_valid: true
+    unused_properties: true
+    unused_variables: true
+    unused_parameters: true
+    unused_methods: true
+    simplify_boolean_return: true
+    no_short_open_tag: true
+    missing_arguments: true
+    code_rating: true
+    avoid_closing_tag: true
+    return_doc_comments: true
+    phpunit_assertions: true
+    parameter_doc_comments: true
+    param_doc_comment_if_not_inferrable: true
+    return_doc_comment_if_not_inferrable: true
+    overriding_parameter: true
+    no_long_variable_names:
+        maximum: '20'
+    no_goto: true
+    fix_line_ending: true
+    check_method_contracts:
+        verify_interface_like_constraints: true
+        verify_documented_constraints: true
+        verify_parent_constraints: true
+  javascript:
+    var_sometimes_initialized: true
+    var_never_initialized: true
+    valid_typeof: true
+    use_isnan: true
+    unsafe_undefined: true
+    unsafe_mutable_variable_usage: true
+    nsp_vulnerabilities: true
+    no_with: true
+    no_void: true
+    no_use_before_define: true
+    no_unused_vars: true
+    no_unused_function: true
+    no_unused_expressions: true
+    no_unused_const: true
+    no_unused_assignment: true
+    no_unreachable: true
+    no_undef: true
+    no_shadow_builtins: true
+    no_sequences: true
+    no_return_assign: true
+    no_redeclared_const: true
+    no_redeclare: true
+    no_param_assign: true
+    no_new_func: true
+    no_negated_in_lhs: true
+    no_native_reassign: true
+    no_loop_var_assign: true
+    no_label_var: true
+    no_invalid_regexp: true
+    no_inner_declarations: true
+    no_implied_eval: true
+    no_eval: true
+    no_empty_label: true
+    no_else_return: true
+    no_dupe_keys: true
+    no_delete_var: true
+    no_debugger: true
+    no_constant_condition: true
+    no_console: true
+    no_comma_dangle: true
+    no_caller: true
+    no_bitwise: true
+    new_cap: true
+    no_alert: false
+    jsdoc_non_existent_params: false
+    jsdoc_no_duplicate_params: true
+    guard_for_in: true
+    eqeqeq: true
+    duplicate_code: true
+    curly: true
+    consistent_return: true
+    check_unused_parameters: true
+    check_unused_object_creation: true
+    check_unused_member_calls: true
+    check_unnecessary_return: true
+    check_unnecessary_continue: true
+    check_undeclared_vars: true
+    check_try_statement: true
+    check_too_many_arguments: true
+    'check_switch_unintended label': true
+    'check_switch_no_uncommented_fallthrough"': true
+    check_switch_no_default: true
+    check_switch_default_only: true
+    check_switch_default_not_last: true
+    check_switch_ambiguous_test: true
+    check_loop_no_body: true
+    check_for_loops_test: true
+
+build:
+  nodes:
+    tests: true
+    analysis:
+      tests:
+        override:
+          -
+              command: phpcs-run
+              use_website_config: true
+          - php-scrutinizer-run
