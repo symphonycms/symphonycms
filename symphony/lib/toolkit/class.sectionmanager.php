@@ -196,7 +196,7 @@ class SectionManager
         if (!empty($section_id)) {
             $query->sections($section_ids);
         } else {
-            $query->sort($sortfield, $order);
+            $query->sort((string)$sortfield, $order);
         }
 
         $ret = $query->execute()->rows();

@@ -23,7 +23,7 @@ class contentSystemAuthors extends AdministrationPage
                 ->sort('first_name', $order)
                 ->sort('last_name', $order);
         } else {
-            $authorQuery->sort($sort, $order);
+            $authorQuery->sort((string)$sort, $order);
         }
 
         return $authorQuery->execute()->rows();

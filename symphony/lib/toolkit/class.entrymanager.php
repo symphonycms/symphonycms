@@ -453,7 +453,7 @@ class EntryManager
         if ((!is_array($entry_id) && General::intval($entry_id) > 0) || !$enable_sort) {
             $query->disableDefaultSort();
         } elseif (self::$_fetchSortField) {
-            $query->sort(self::$_fetchSortField, self::$_fetchSortDirection);
+            $query->sort((string)self::$_fetchSortField, self::$_fetchSortDirection);
         }
 
         if ($entry_id && !is_array($entry_id)) {
