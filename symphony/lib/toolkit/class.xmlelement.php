@@ -23,13 +23,13 @@ class XMLElement implements IteratorAggregate
      * The name of the HTML Element, eg. 'p'
      * @var string
      */
-    private $_name;
+    private $name;
 
     /**
-     * The value of this `XMLElement` as a string
-     * @var string
+     * The value of this `XMLElement` as an array or a string
+     * @var string|array
      */
-    private $_value = array();
+    private $value = [];
 
     /**
      * Any additional attributes can be included in an associative array
@@ -37,52 +37,52 @@ class XMLElement implements IteratorAggregate
      * attribute.
      * @var array
      */
-    private $_attributes = array();
+    private $attributes = [];
 
     /**
      * Children of this `XMLElement`, which will also be `XMLElement`'s
      * @var array
      */
-    private $_children = array();
+    private $children = [];
 
     /**
      * Any processing instructions that the XSLT should know about when a
      * `XMLElement` is generated
      * @var array
      */
-    private $_processingInstructions = array();
+    private $processingInstructions = [];
 
     /**
      * The DTD the should be output when a `XMLElement` is generated, defaults to null.
      * @var string
      */
-    private $_dtd = null;
+    private $dtd = null;
 
     /**
      * The encoding of the `XMLElement`, defaults to 'utf-8'
      * @var string
      */
-    private $_encoding = 'utf-8';
+    private $encoding = 'utf-8';
 
     /**
      * The version of the XML that is used for generation, defaults to '1.0'
      * @var string
      */
-    private $_version = '1.0';
+    private $version = '1.0';
 
     /**
      * The type of element, defaults to 'xml'. Used when determining the style
      * of end tag for this element when generated
      * @var string
      */
-    private $_elementStyle = 'xml';
+    private $elementStyle = 'xml';
 
     /**
      * When set to true this will include the XML declaration will be
      * output when the `XMLElement` is generated. Defaults to `false`.
      * @var boolean
      */
-    private $_includeHeader = false;
+    private $includeHeader = false;
 
     /**
      * Specifies whether this HTML element has an closing element, or if
@@ -90,7 +90,7 @@ class XMLElement implements IteratorAggregate
      *  eg. `<p></p>` or `<input />`
      * @var boolean
      */
-    private $_selfclosing = true;
+    private $selfclosing = true;
 
     /**
      * Specifies whether attributes need to have a value or if they can
@@ -98,7 +98,7 @@ class XMLElement implements IteratorAggregate
      *  `<option selected>Value</option>`
      * @var boolean
      */
-    private $_allowEmptyAttributes = true;
+    private $allowEmptyAttributes = true;
 
     /**
      * The constructor for the `XMLElement`
@@ -117,7 +117,7 @@ class XMLElement implements IteratorAggregate
      *  Whether this function should convert the `$name` to a handle. Defaults to
      *  `false`.
      */
-    public function __construct($name, $value = null, array $attributes = array(), $createHandle = false)
+    public function __construct($name, $value = null, array $attributes = [], $createHandle = false)
     {
         $this->setName($name, $createHandle);
         $this->setValue($value);
@@ -128,34 +128,34 @@ class XMLElement implements IteratorAggregate
     }
 
     /**
-     * Accessor for `$_name`
+     * Accessor for `$name`
      *
      * @return string
      */
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     /**
-     * Accessor for `$_value`
+     * Accessor for `$value`, converted to a string
      *
-     * @return string|XMLElement
+     * @return string
      */
     public function getValue()
     {
         $value = '';
 
-        if (is_array($this->_value)) {
-            foreach ($this->_value as $v) {
+        if (is_array($this->value)) {
+            foreach ($this->value as $v) {
                 if ($v instanceof XMLElement) {
                     $value .= $v->generate();
                 } else {
                     $value .= $v;
                 }
             }
-        } elseif (!is_null($this->_value)) {
-            $value = $this->_value;
+        } elseif (!is_null($this->value)) {
+            $value = $this->value;
         }
 
         return $value;
@@ -169,21 +169,21 @@ class XMLElement implements IteratorAggregate
      */
     public function getAttribute($name)
     {
-        if (!isset($this->_attributes[$name])) {
+        if (!isset($this->attributes[$name])) {
             return null;
         }
 
-        return $this->_attributes[$name];
+        return $this->attributes[$name];
     }
 
     /**
-     * Accessor for `$this->_attributes`
+     * Accessor for `$this->attributes`
      *
      * @return array
      */
     public function getAttributes()
     {
-        return $this->_attributes;
+        return $this->attributes;
     }
 
     /**
@@ -195,32 +195,32 @@ class XMLElement implements IteratorAggregate
      */
     public function getChild($position)
     {
-        if (!isset($this->_children[$this->getRealIndex($position)])) {
+        if (!isset($this->children[$this->getRealIndex($position)])) {
             return null;
         }
 
-        return $this->_children[$this->getRealIndex($position)];
+        return $this->children[$this->getRealIndex($position)];
     }
 
     /**
-     * Accessor for `$this->_children`
+     * Accessor for `$this->children`
      *
      * @return array
      */
     public function getChildren()
     {
-        return $this->_children;
+        return $this->children;
     }
 
     /**
-     * Accessor for `$this->_children`, returning only `XMLElement` children,
+     * Accessor for `$this->children`, returning only `XMLElement` children,
      * not text nodes.
      *
      * @return XMLElementChildrenFilter
      */
     public function getIterator()
     {
-        return new XMLElementChildrenFilter(new ArrayIterator($this->_children));
+        return new XMLElementChildrenFilter(new ArrayIterator($this->children));
     }
 
     /**
@@ -244,7 +244,7 @@ class XMLElement implements IteratorAggregate
     }
 
     /**
-     * Accessor to return an associative array of all `$this->_children`
+     * Accessor to return an associative array of all `$this->children`
      * whose's name matches the given `$name`. If no children are found,
      * an empty array will be returned.
      *
@@ -252,11 +252,11 @@ class XMLElement implements IteratorAggregate
      * @param string $name
      * @return array
      *  An associative array where the key is the `$index` of the child
-     *  in `$this->_children`
+     *  in `$this->children`
      */
     public function getChildrenByName($name)
     {
-        $result = array();
+        $result = [];
 
         foreach ($this as $i => $child) {
             if ($child->getName() != $name) {
@@ -276,7 +276,7 @@ class XMLElement implements IteratorAggregate
      */
     public function addProcessingInstruction($pi)
     {
-        $this->_processingInstructions[] = $pi;
+        $this->processingInstructions[] = $pi;
     }
 
     /**
@@ -286,7 +286,7 @@ class XMLElement implements IteratorAggregate
      */
     public function setDTD($dtd)
     {
-        $this->_dtd = $dtd;
+        $this->dtd = $dtd;
     }
 
     /**
@@ -297,7 +297,7 @@ class XMLElement implements IteratorAggregate
      */
     public function setEncoding($value)
     {
-        $this->_encoding = $value;
+        $this->encoding = $value;
     }
 
     /**
@@ -308,7 +308,7 @@ class XMLElement implements IteratorAggregate
      */
     public function setVersion($value)
     {
-        $this->_version = $value;
+        $this->version = $value;
     }
 
     /**
@@ -323,7 +323,7 @@ class XMLElement implements IteratorAggregate
      */
     public function setElementStyle($style = 'xml')
     {
-        $this->_elementStyle = $style;
+        $this->elementStyle = $style;
     }
 
     /**
@@ -336,7 +336,7 @@ class XMLElement implements IteratorAggregate
      */
     public function setIncludeHeader($value = false)
     {
-        $this->_includeHeader = $value;
+        $this->includeHeader = $value;
     }
 
     /**
@@ -347,7 +347,7 @@ class XMLElement implements IteratorAggregate
      */
     public function setSelfClosingTag($value = true)
     {
-        $this->_selfclosing = $value;
+        $this->selfclosing = $value;
     }
 
     /**
@@ -359,7 +359,7 @@ class XMLElement implements IteratorAggregate
      */
     public function setAllowEmptyAttributes($value = true)
     {
-        $this->_allowEmptyAttributes = $value;
+        $this->allowEmptyAttributes = $value;
     }
 
     /**
@@ -374,7 +374,7 @@ class XMLElement implements IteratorAggregate
      */
     public function setName($name, $createHandle = false)
     {
-        $this->_name = ($createHandle) ? Lang::createHandle($name) : $name;
+        $this->name = ($createHandle) ? Lang::createHandle($name) : $name;
     }
 
     /**
@@ -392,7 +392,7 @@ class XMLElement implements IteratorAggregate
         }
 
         if (!is_null($value)) {
-            $this->_value = $value;
+            $this->value = $value;
             $this->appendChild($value);
         }
     }
@@ -406,12 +406,12 @@ class XMLElement implements IteratorAggregate
      */
     public function replaceValue($value)
     {
-        foreach ($this->_children as $i => $child) {
+        foreach ($this->children as $i => $child) {
             if ($child instanceof XMLElement) {
                 continue;
             }
 
-            unset($this->_children[$i]);
+            unset($this->children[$i]);
         }
 
         $this->setValue($value);
@@ -427,7 +427,7 @@ class XMLElement implements IteratorAggregate
      */
     public function setAttribute($name, $value)
     {
-        $this->_attributes[$name] = $value;
+        $this->attributes[$name] = $value;
     }
 
     /**
@@ -467,7 +467,7 @@ class XMLElement implements IteratorAggregate
 
     /**
      * This function expects an array of `XMLElement` that will completely
-     * replace the contents of `$this->_children`. Take care when using
+     * replace the contents of `$this->children`. Take care when using
      * this function.
      *
      * @since Symphony 2.2.2
@@ -481,7 +481,7 @@ class XMLElement implements IteratorAggregate
         foreach ($children as $child) {
             $this->validateChild($child);
         }
-        $this->_children = $children;
+        $this->children = $children;
 
         return true;
     }
@@ -495,7 +495,7 @@ class XMLElement implements IteratorAggregate
     public function appendChild($child)
     {
         $this->validateChild($child);
-        $this->_children[] = $child;
+        $this->children[] = $child;
 
         return true;
     }
@@ -524,7 +524,7 @@ class XMLElement implements IteratorAggregate
      */
     public function prependChild(XMLElement $child)
     {
-        array_unshift($this->_children, $child);
+        array_unshift($this->children, $child);
     }
 
     /**
@@ -571,19 +571,19 @@ class XMLElement implements IteratorAggregate
      */
     public function getNumberOfChildren()
     {
-        return count($this->_children);
+        return count($this->children);
     }
 
     /**
-     * Given the position of the child in the `$this->_children`,
+     * Given the position of the child in the `$this->children`,
      * this function will unset the child at that position. This function
      * is not reversible. This function does not alter the key's of
-     * `$this->_children` after removing a child
+     * `$this->children` after removing a child
      *
      * @since Symphony 2.2.2
      * @param integer $index
      *  The index of the child to be removed. If the index given is negative
-     *  it will be calculated from the end of `$this->_children`.
+     *  it will be calculated from the end of `$this->children`.
      * @return boolean
      *  true if child was successfully removed, false otherwise.
      */
@@ -595,26 +595,26 @@ class XMLElement implements IteratorAggregate
 
         $index = $this->getRealIndex($index);
 
-        if (!isset($this->_children[$index])) {
+        if (!isset($this->children[$index])) {
             return false;
         }
 
-        unset($this->_children[$index]);
+        unset($this->children[$index]);
 
         return true;
     }
 
     /**
      * Given a desired index, and an `XMLElement`, this function will insert
-     * the child at that index in `$this->_children` shuffling all children
+     * the child at that index in `$this->children` shuffling all children
      * greater than `$index` down one. If the `$index` given is greater then
      * the number of children for this `XMLElement`, the `$child` will be
-     * appended to the current `$this->_children` array.
+     * appended to the current `$this->children` array.
      *
      * @since Symphony 2.2.2
      * @param integer $index
      *  The index where the `$child` should be inserted. If this is negative
-     *  the index will be calculated from the end of `$this->_children`.
+     *  the index will be calculated from the end of `$this->children`.
      * @param XMLElement $child
      *  The XMLElement to insert at the desired `$index`
      * @return boolean
@@ -631,8 +631,8 @@ class XMLElement implements IteratorAggregate
             return $this->appendChild($child);
         }
 
-        $start = array_slice($this->_children, 0, $index);
-        $end = array_slice($this->_children, $index);
+        $start = array_slice($this->children, 0, $index);
+        $end = array_slice($this->children, $index);
 
         $merge = array_merge($start, array(
             $index => $child
@@ -649,7 +649,7 @@ class XMLElement implements IteratorAggregate
      * @since Symphony 2.2.2
      * @param integer $index
      *  The index of the child to be replaced. If the index given is negative
-     *  it will be calculated from the end of `$this->_children`.
+     *  it will be calculated from the end of `$this->children`.
      * @param XMLElement $child
      *  An XMLElement of the new child
      * @return boolean
@@ -664,24 +664,24 @@ class XMLElement implements IteratorAggregate
 
         $index = $this->getRealIndex($index);
 
-        if (!isset($this->_children[$index])) {
+        if (!isset($this->children[$index])) {
             return false;
         }
 
-        $this->_children[$index] = $child;
+        $this->children[$index] = $child;
 
         return true;
     }
 
     /**
-     * Given an `$index`, return the real index in `$this->_children`
+     * Given an `$index`, return the real index in `$this->children`
      * depending on if the value is negative or not. Negative values
      * will work from the end of an array.
      *
      * @since Symphony 2.2.2
      * @param integer $index
      *  Positive indexes are returned as is, negative indexes are deducted
-     *  from the end of `$this->_children`
+     *  from the end of `$this->children`
      * @return integer
      */
     private function getRealIndex($index)
@@ -744,7 +744,7 @@ class XMLElement implements IteratorAggregate
      * @param boolean $has_parent
      *  Defaults to false, set to true when the children are being
      *  generated. Only the parent will output an XML declaration
-     *  if `$this->_includeHeader` is set to true.
+     *  if `$this->includeHeader` is set to true.
      * @return string
      */
     public function generate($indent = false, $tab_depth = 0, $has_parent = false)
@@ -753,21 +753,21 @@ class XMLElement implements IteratorAggregate
         $newline = ($indent ? PHP_EOL : null);
 
         if (!$has_parent) {
-            if ($this->_includeHeader) {
+            if ($this->includeHeader) {
                 $result .= sprintf(
                     '<?xml version="%s" encoding="%s" ?>%s',
-                    $this->_version,
-                    $this->_encoding,
+                    $this->version,
+                    $this->encoding,
                     $newline
                 );
             }
 
-            if ($this->_dtd) {
-                $result .= $this->_dtd . $newline;
+            if ($this->dtd) {
+                $result .= $this->dtd . $newline;
             }
 
-            if (is_array($this->_processingInstructions) && !empty($this->_processingInstructions)) {
-                $result .= implode(PHP_EOL, $this->_processingInstructions);
+            if (is_array($this->processingInstructions) && !empty($this->processingInstructions)) {
+                $result .= implode(PHP_EOL, $this->processingInstructions);
             }
         }
 
@@ -778,7 +778,7 @@ class XMLElement implements IteratorAggregate
         if (!empty($attributes)) {
             foreach ($attributes as $attribute => $value) {
                 $length = strlen($value);
-                if ($length !== 0 || $length === 0 && $this->_allowEmptyAttributes) {
+                if ($length !== 0 || $length === 0 && $this->allowEmptyAttributes) {
                     $result .= sprintf(' %s="%s"', $attribute, $value);
                 }
             }
@@ -787,10 +787,10 @@ class XMLElement implements IteratorAggregate
         $value = $this->getValue();
         $added_newline = false;
 
-        if ($this->getNumberOfChildren() > 0 || strlen($value) !== 0 || !$this->_selfclosing) {
+        if ($this->getNumberOfChildren() > 0 || strlen($value) !== 0 || !$this->selfclosing) {
             $result .= '>';
 
-            foreach ($this->_children as $i => $child) {
+            foreach ($this->children as $i => $child) {
                 if (!($child instanceof XMLElement)) {
                     $result .= $child;
                 } else {
@@ -799,7 +799,7 @@ class XMLElement implements IteratorAggregate
                         $result .= $newline;
                     }
 
-                    $child->setElementStyle($this->_elementStyle);
+                    $child->setElementStyle($this->elementStyle);
                     $result .= $child->generate($indent, $tab_depth + 1, true);
                 }
             }
@@ -813,9 +813,9 @@ class XMLElement implements IteratorAggregate
 
             // Empty elements:
         } else {
-            if ($this->_elementStyle === 'xml') {
+            if ($this->elementStyle === 'xml') {
                 $result .= ' />';
-            } elseif (in_array($this->_name, XMLElement::$no_end_tags) || (substr($this->getName(), 0, 3) === '!--')) {
+            } elseif (in_array($this->name, XMLElement::$no_end_tags) || (substr($this->getName(), 0, 3) === '!--')) {
                 $result .= '>';
             } else {
                 $result .= sprintf("></%s>", $this->getName());
