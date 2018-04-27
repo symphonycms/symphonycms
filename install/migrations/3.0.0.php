@@ -216,7 +216,7 @@ final class migration_300 extends Migration
             // Create tokens for active users
             foreach ($activeTokenAuthors as $ata) {
                 unset($ata['auth_token_active']);
-                $ata->set('auth_token', Cryptography::randomBytes(40));
+                $ata->set('auth_token', Cryptography::randomBytes());
                 $ata->commit();
             }
             unset($activeTokenAuthors);

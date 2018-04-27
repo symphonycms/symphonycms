@@ -255,7 +255,7 @@ class contentLogin extends HTMLPage
                         ->variable('token');
 
                     if (!$token) {
-                        $token = Cryptography::randomBytes(40);
+                        $token = Cryptography::randomBytes();
 
                         Symphony::Database()
                             ->insert('tbl_forgotpass')->values([

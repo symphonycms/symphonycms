@@ -82,38 +82,50 @@ class AuthorManager
     }
 
     /**
-     * Undocumented function
+     * Fetch a single author by its reset password token
      *
-     * @param [type] $token
-     * @return void
+     * @param string $token
+     * @return Author
+     * @throws Exception
+     *  If the token is not a string
      */
     public function fetchByPasswordResetToken($token)
     {
         if (!$token) {
             return null;
         }
+        General::ensureType([
+            'token' => ['var' => $token, 'type' => 'string'],
+        ]);
         return $this->select()
-            ->innerjoin('tbl_forgotpass')->alias('f')
+            ->innerJoin('tbl_forgotpass')->alias('f')
             ->on(['a.id' => '$f.author_id'])
             ->where(['f.expiry' => ['>' => DateTimeObj::getGMT('c')]])
             ->where(['f.token' => $token])
+            ->limit(1)
             ->execute()
             ->next();
     }
 
     /**
-     * Undocumented function
+     * Fetch a single author by its auth token
      *
-     * @param [type] $token
-     * @return void
+     * @param string $token
+     * @return Author
+     * @throws Exception
+     *  If the token is not a string
      */
     public function fetchByAuthToken($token)
     {
         if (!$token) {
             return null;
         }
+        General::ensureType([
+            'token' => ['var' => $token, 'type' => 'string'],
+        ]);
         return $this->select()
             ->where(['a.auth_token' => $token])
+            ->limit(1)
             ->execute()
             ->next();
     }

@@ -615,7 +615,7 @@ class contentSystemAuthors extends AdministrationPage
             $this->_Author->set('password', (trim($fields['password']) == '' ? '' : Cryptography::hash($fields['password'])));
             $this->_Author->set('default_area', $fields['default_area']);
             if ($this->isRemoteLoginActionChecked() && !$this->_Author->isTokenActive()) {
-                $this->_Author->set('auth_token', Cryptography::randomBytes(40));
+                $this->_Author->set('auth_token', Cryptography::randomBytes());
             } elseif (!$this->isRemoteLoginActionChecked()) {
                 $this->_Author->set('auth_token', null);
             }
@@ -779,7 +779,7 @@ class contentSystemAuthors extends AdministrationPage
             }
 
             if ($authenticated && $this->isRemoteLoginActionChecked() && !$this->_Author->isTokenActive()) {
-                $this->_Author->set('auth_token', Cryptography::randomBytes(40));
+                $this->_Author->set('auth_token', Cryptography::randomBytes());
             } elseif (!$this->isRemoteLoginActionChecked()) {
                 $this->_Author->set('auth_token', null);
             }

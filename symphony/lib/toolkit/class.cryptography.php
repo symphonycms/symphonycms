@@ -106,12 +106,14 @@ class Cryptography
      *
      * @uses Cryptography::generateSalt()
      * @param integer $length
-     *  The number of random bytes to get. The minimum is 16. Defaults to 20.
+     *  The number of random bytes to get.
+     *  The minimum is 16.
+     *  Defaults to 40, which is 160 bits of entropy.
      * @return string
      * @throws Exception
      *  If the requested length is smaller than 16.
      */
-    public static function randomBytes($length = 20)
+    public static function randomBytes($length = 40)
     {
         if ($length < 16) {
             throw new Exception('Can not generate less than 16 random bytes');
