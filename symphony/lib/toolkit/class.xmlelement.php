@@ -844,21 +844,21 @@ class XMLElement implements IteratorAggregate
      *
      * @param boolean $indent
      *  Defaults to false
-     * @param integer $tab_depth
+     * @param integer $tabDepth
      *  Defaults to 0, indicates the number of tabs (\t) that this
      *  element should be indented by in the output string
-     * @param boolean $has_parent
+     * @param boolean $hasParent
      *  Defaults to false, set to true when the children are being
      *  generated. Only the parent will output an XML declaration
      *  if `$this->includeHeader` is set to true.
      * @return string
      */
-    public function generate($indent = false, $tab_depth = 0, $has_parent = false)
+    public function generate($indent = false, $tabDepth = 0, $hasParent = false)
     {
         $result = null;
         $newline = ($indent ? PHP_EOL : null);
 
-        if (!$has_parent) {
+        if (!$hasParent) {
             if ($this->includeHeader) {
                 $result .= sprintf(
                     '<?xml version="%s" encoding="%s" ?>%s',
@@ -877,7 +877,7 @@ class XMLElement implements IteratorAggregate
             }
         }
 
-        $result .= ($indent ? str_repeat("\t", $tab_depth) : null) . '<' . $this->getName();
+        $result .= ($indent ? str_repeat("\t", $tabDepth) : null) . '<' . $this->getName();
 
         $attributes = $this->getAttributes();
 
@@ -906,13 +906,13 @@ class XMLElement implements IteratorAggregate
                     }
 
                     $child->setElementStyle($this->elementStyle);
-                    $result .= $child->generate($indent, $tab_depth + 1, true);
+                    $result .= $child->generate($indent, $tabDepth + 1, true);
                 }
             }
 
             $result .= sprintf(
                 "%s</%s>%s",
-                ($indent && $added_newline ? str_repeat("\t", $tab_depth) : null),
+                ($indent && $added_newline ? str_repeat("\t", $tabDepth) : null),
                 $this->getName(),
                 $newline
             );
