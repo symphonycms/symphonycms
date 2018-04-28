@@ -978,17 +978,13 @@ class XMLElement implements IteratorAggregate
      * @param DOMNode $node
      * @return XMLElement
      */
-    private static function convert(XMLElement $root = null, DOMNode $node)
+    private static function convert(XMLElement $root, DOMNode $node)
     {
         $el = new XMLElement($node->tagName);
 
         self::convertNode($el, $node);
 
-        if (is_null($root)) {
-            return $el;
-        } else {
-            $root->appendChild($el);
-        }
+        $root->appendChild($el);
     }
 
     /**
