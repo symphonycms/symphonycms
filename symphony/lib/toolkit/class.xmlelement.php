@@ -15,9 +15,18 @@ class XMLElement implements IteratorAggregate
      * This is an array of HTML elements that are self closing.
      * @var array
      */
-    protected static $no_end_tags = array(
-        'area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param'
-    );
+    protected static $no_end_tags = [
+        'area',
+        'base',
+        'br',
+        'col',
+        'hr',
+        'img',
+        'input',
+        'link',
+        'meta',
+        'param',
+    ];
 
     /**
      * The name of the HTML Element, eg. 'p'
