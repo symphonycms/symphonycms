@@ -954,7 +954,7 @@ class XMLElement implements IteratorAggregate
      *
      * @since Symphony 2.4
      * @param string $root_element
-     * @param DOMDOcument $doc
+     * @param DOMDocument $doc
      * @return XMLElement
      */
     public static function convertFromDOMDocument($root_element, DOMDocument $doc)
@@ -975,7 +975,7 @@ class XMLElement implements IteratorAggregate
      *
      * @since Symphony 2.4
      * @param XMLElement $root
-     * @param DOMNOde $node
+     * @param DOMNode $node
      * @return XMLElement
      */
     private static function convert(XMLElement $root = null, DOMNode $node)
