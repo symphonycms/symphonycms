@@ -90,7 +90,7 @@ class XMLElement implements IteratorAggregate
      *  eg. `<p></p>` or `<input />`
      * @var boolean
      */
-    private $selfclosing = true;
+    private $selfClosing = true;
 
     /**
      * Specifies whether attributes need to have a value or if they can
@@ -273,20 +273,26 @@ class XMLElement implements IteratorAggregate
      * Adds processing instructions to this `XMLElement`
      *
      * @param string $pi
+     * @return XMLElement
+     *  The current instance
      */
     public function addProcessingInstruction($pi)
     {
         $this->processingInstructions[] = $pi;
+        return $this;
     }
 
     /**
      * Sets the DTD for this `XMLElement`
      *
      * @param string $dtd
+     * @return XMLElement
+     *  The current instance
      */
     public function setDTD($dtd)
     {
         $this->dtd = $dtd;
+        return $this;
     }
 
     /**
@@ -294,10 +300,13 @@ class XMLElement implements IteratorAggregate
      * it's generated.
      *
      * @param string $value
+     * @return XMLElement
+     *  The current instance
      */
     public function setEncoding($value)
     {
         $this->encoding = $value;
+        return $this;
     }
 
     /**
@@ -305,10 +314,13 @@ class XMLElement implements IteratorAggregate
      * `XMLElement`
      *
      * @param string $value
+     * @return XMLElement
+     *  The current instance
      */
     public function setVersion($value)
     {
         $this->version = $value;
+        return $this;
     }
 
     /**
@@ -316,14 +328,16 @@ class XMLElement implements IteratorAggregate
      * `XMLElement` is being generated to determine whether
      * needs to be closed, is self closing or is standalone.
      *
-     * @param string $style (optional)
-     *  Defaults to 'xml', any other value will trigger the
-     *  XMLElement to be closed by itself or left standalone
-     *  if it is in the `XMLElement::no_end_tags`.
+     * @param string $style
+     *  If not 'xml', will trigger the
+     *  XMLElement to be closed by itself or left standalone.
+     * @return XMLElement
+     *  The current instance
      */
-    public function setElementStyle($style = 'xml')
+    public function setElementStyle($style)
     {
         $this->elementStyle = $style;
+        return $this;
     }
 
     /**
@@ -331,35 +345,80 @@ class XMLElement implements IteratorAggregate
      * XML declaration or not. This normally is only set to
      * true for the parent `XMLElement`, eg. 'html'.
      *
-     * @param bool|string $value (optional)
-     *  Defaults to false
+     * @param bool $value
+     * @return XMLElement
+     *  The current instance
      */
-    public function setIncludeHeader($value = false)
+    public function setIncludeHeader($value)
     {
         $this->includeHeader = $value;
+        return $this;
+    }
+
+    /**
+     * Makes this `XMLElement` output an XML declaration.
+     *
+     * @since Symphony 3.0.0
+     * @uses setIncludeHeader()
+     * @return XMLElement
+     *  The current instance
+     */
+    public function renderHeader()
+    {
+        return $this->setIncludeHeader(true);
     }
 
     /**
      * Sets whether this `XMLElement` is self closing or not.
      *
-     * @param bool|string $value (optional)
-     *  Defaults to true
+     * @param bool $value
+     * @return XMLElement
+     *  The current instance
      */
-    public function setSelfClosingTag($value = true)
+    public function setSelfClosingTag($value)
     {
-        $this->selfclosing = $value;
+        $this->selfClosing = $value;
+        return $this;
+    }
+
+    /**
+     * Makes this `XMLElement` to self close.
+     *
+     * @since Symphony 3.0.0
+     * @uses setSelfClosingTag()
+     * @return XMLElement
+     *  The current instance
+     */
+    public function renderSelfClosingTag()
+    {
+        return $this->setSelfClosingTag(true);
     }
 
     /**
      * Specifies whether attributes need to have a value
      * or if they can be shorthand on this `XMLElement`.
      *
-     * @param bool|string $value (optional)
-     *  Defaults to true
+     * @param bool $value
+     * @return XMLElement
+     *  The current instance
      */
-    public function setAllowEmptyAttributes($value = true)
+    public function setAllowEmptyAttributes($value)
     {
         $this->allowEmptyAttributes = $value;
+        return $this;
+    }
+
+    /**
+     * Makes this `XMLElement` render empty attributes.
+     *
+     * @since Symphony 3.0.0
+     * @uses setAllowEmptyAttributes()
+     * @return XMLElement
+     *  The current instance
+     */
+    public function renderEmptyAttributes()
+    {
+        return $this->setAllowEmptyAttributes(true);
     }
 
     /**
@@ -369,21 +428,23 @@ class XMLElement implements IteratorAggregate
      * @param string $name
      *  The name of the `XMLElement`, 'p'.
      * @param boolean $createHandle
-     *  Whether this function should convert the `$name` to a handle. Defaults to
-     *  `false`.
+     *  Whether this function should convert the `$name` to a handle.
+     *  Defaults to `false`.
+     * @return XMLElement
+     *  The current instance
      */
     public function setName($name, $createHandle = false)
     {
         $this->name = ($createHandle) ? Lang::createHandle($name) : $name;
+        return $this;
     }
 
     /**
-     * Sets the value of the `XMLElement`. Checks to see
-     * whether the value should be prepended or appended
-     * to the children.
+     * Sets and appends the value of the `XMLElement`.
      *
      * @param string|XMLElement|array $value
-     *  Defaults to true.
+     * @return XMLElement
+     *  The current instance
      */
     public function setValue($value)
     {
@@ -395,6 +456,8 @@ class XMLElement implements IteratorAggregate
             $this->value = $value;
             $this->appendChild($value);
         }
+
+        return $this;
     }
 
     /**
@@ -403,6 +466,8 @@ class XMLElement implements IteratorAggregate
      *
      * @since Symphony 2.4
      * @param string|XMLElement|array $value
+     * @return XMLElement
+     *  The current instance
      */
     public function replaceValue($value)
     {
@@ -415,6 +480,8 @@ class XMLElement implements IteratorAggregate
         }
 
         $this->setValue($value);
+
+        return $this;
     }
 
     /**
@@ -424,10 +491,13 @@ class XMLElement implements IteratorAggregate
      *  The name of the attribute
      * @param string $value
      *  The value of the attribute
+     * @return XMLElement
+     *  The current instance
      */
     public function setAttribute($name, $value)
     {
         $this->attributes[$name] = $value;
+        return $this;
     }
 
     /**
@@ -437,6 +507,8 @@ class XMLElement implements IteratorAggregate
      * @param array $attributes
      *  Associative array with the key being the name and
      *  the value being the value of the attribute.
+     * @return XMLElement
+     *  The current instance
      */
     public function setAttributeArray(array $attributes = null)
     {
@@ -447,6 +519,8 @@ class XMLElement implements IteratorAggregate
         foreach ($attributes as $name => $value) {
             $this->setAttribute($name, $value);
         }
+
+        return $this;
     }
 
     /**
@@ -456,13 +530,17 @@ class XMLElement implements IteratorAggregate
      * @since Symphony 2.5.0
      * @param XMLElement $child
      *  The child to validate
-     *
+     * @return XMLElement
+     *  The current instance
+     * @throws Exception
+     *  If the child is not valid
      */
     private function validateChild($child)
     {
         if ($this === $child) {
             throw new Exception(__('Can not add the element itself as one of its child'));
         }
+        return $this;
     }
 
     /**
@@ -471,10 +549,12 @@ class XMLElement implements IteratorAggregate
      * this function.
      *
      * @since Symphony 2.2.2
+     * @uses validateChild()
      * @param array $children
      *  An array of XMLElement's to act as the children for the current
      *  XMLElement instance
-     * @return boolean
+     * @return XMLElement
+     *  The current instance
      */
     public function setChildren(array $children = null)
     {
@@ -482,29 +562,32 @@ class XMLElement implements IteratorAggregate
             $this->validateChild($child);
         }
         $this->children = $children;
-
-        return true;
+        return $this;
     }
 
     /**
      * Adds an `XMLElement` to the children array
      *
+     * @uses validateChild()
      * @param XMLElement|string $child
-     * @return boolean
+     * @return XMLElement
+     *  The current instance
      */
     public function appendChild($child)
     {
         $this->validateChild($child);
         $this->children[] = $child;
-
-        return true;
+        return $this;
     }
 
     /**
      * A convenience method to add children to an `XMLElement`
      * quickly.
      *
+     * @uses appendChild()
      * @param array $children
+     * @return XMLElement
+     *  The current instance
      */
     public function appendChildArray(array $children = null)
     {
@@ -513,6 +596,7 @@ class XMLElement implements IteratorAggregate
                 $this->appendChild($child);
             }
         }
+        return $this;
     }
 
     /**
@@ -520,21 +604,30 @@ class XMLElement implements IteratorAggregate
      * array, this will mean it is output before any other
      * children when the `XMLElement` is generated
      *
+     * @uses validateChild()
      * @param XMLElement $child
+     * @return XMLElement
+     *  The current instance
      */
     public function prependChild(XMLElement $child)
     {
+        $this->validateChild($child);
         array_unshift($this->children, $child);
+        return $this;
     }
 
     /**
      * A convenience method to quickly add a CSS class to this `XMLElement`'s
      * existing class attribute. If the attribute does not exist, it will
      * be created.
+     * It also make sure that classes are separated by a single space.
      *
      * @since Symphony 2.2.2
+     * @uses setAttribute()
      * @param string $class
-     *  The CSS classname to add to this `XMLElement`
+     *  The CSS class name to add to this `XMLElement`
+     * @return XMLElement
+     *  The current instance
      */
     public function addClass($class)
     {
@@ -542,18 +635,21 @@ class XMLElement implements IteratorAggregate
         $added = preg_split('%\s+%', $class, 0, PREG_SPLIT_NO_EMPTY);
         $current = array_merge($current, $added);
         $classes = implode(' ', $current);
-
-        $this->setAttribute('class', $classes);
+        return $this->setAttribute('class', $classes);
     }
 
     /**
      * A convenience method to quickly remove a CSS class from an
      * `XMLElement`'s existing class attribute. If the attribute does not
      * exist, this method will do nothing.
+     * It also make sure that classes are separated by a single space.
      *
      * @since Symphony 2.2.2
+     * @uses setAttribute()
      * @param string $class
-     *  The CSS classname to remove from this `XMLElement`
+     *  The CSS class name to remove from this `XMLElement`
+     * @return XMLElement
+     *  The current instance
      */
     public function removeClass($class)
     {
@@ -561,8 +657,7 @@ class XMLElement implements IteratorAggregate
         $removed = preg_split('%\s+%', $class, 0, PREG_SPLIT_NO_EMPTY);
         $classes = array_diff($classes, $removed);
         $classes = implode(' ', $classes);
-
-        $this->setAttribute('class', $classes);
+        return $this->setAttribute('class', $classes);
     }
 
     /**
@@ -584,24 +679,26 @@ class XMLElement implements IteratorAggregate
      * @param integer $index
      *  The index of the child to be removed. If the index given is negative
      *  it will be calculated from the end of `$this->children`.
-     * @return boolean
-     *  true if child was successfully removed, false otherwise.
+     * @return XMLElement
+     *  The current instance
+     * @throws Exception
+     *  If the $index is not an integer or the index is not valid.
      */
     public function removeChildAt($index)
     {
-        if (!is_numeric($index)) {
-            return false;
-        }
+        General::ensureType([
+            'index' => ['var' => $index, 'type' => 'int'],
+        ]);
 
         $index = $this->getRealIndex($index);
 
         if (!isset($this->children[$index])) {
-            return false;
+            throw new Exception("Index out of range. No child at index `$index`.");
         }
 
         unset($this->children[$index]);
 
-        return true;
+        return $this;
     }
 
     /**
@@ -617,13 +714,16 @@ class XMLElement implements IteratorAggregate
      *  the index will be calculated from the end of `$this->children`.
      * @param XMLElement $child
      *  The XMLElement to insert at the desired `$index`
-     * @return boolean
+     * @return XMLElement
+     *  The current instance
+     * @throws Exception
+     *  If the $index is not an integer.
      */
     public function insertChildAt($index, XMLElement $child = null)
     {
-        if (!is_numeric($index)) {
-            return false;
-        }
+        General::ensureType([
+            'index' => ['var' => $index, 'type' => 'int'],
+        ]);
         
         $this->validateChild($child);
 
@@ -652,25 +752,28 @@ class XMLElement implements IteratorAggregate
      *  it will be calculated from the end of `$this->children`.
      * @param XMLElement $child
      *  An XMLElement of the new child
-     * @return boolean
+     * @return XMLElement
+     *  The current instance
+     * @throws Exception
+     *  If the $index is not an integer or the index is not valid.
      */
     public function replaceChildAt($index, XMLElement $child = null)
     {
-        if (!is_numeric($index)) {
-            return false;
-        }
+        General::ensureType([
+            'index' => ['var' => $index, 'type' => 'int'],
+        ]);
 
         $this->validateChild($child);
 
         $index = $this->getRealIndex($index);
 
         if (!isset($this->children[$index])) {
-            return false;
+            throw new Exception("Index out of range. No child at index `$index`.");
         }
 
         $this->children[$index] = $child;
 
-        return true;
+        return $this;
     }
 
     /**
@@ -787,7 +890,7 @@ class XMLElement implements IteratorAggregate
         $value = $this->getValue();
         $added_newline = false;
 
-        if ($this->getNumberOfChildren() > 0 || strlen($value) !== 0 || !$this->selfclosing) {
+        if ($this->getNumberOfChildren() > 0 || strlen($value) !== 0 || !$this->selfClosing) {
             $result .= '>';
 
             foreach ($this->children as $i => $child) {
