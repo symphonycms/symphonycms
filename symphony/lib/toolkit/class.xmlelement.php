@@ -519,12 +519,8 @@ class XMLElement implements IteratorAggregate
      * @return XMLElement
      *  The current instance
      */
-    public function setAttributeArray(array $attributes = null)
+    public function setAttributeArray(array $attributes)
     {
-        if (!is_array($attributes) || empty($attributes)) {
-            return;
-        }
-
         foreach ($attributes as $name => $value) {
             $this->setAttribute($name, $value);
         }
@@ -565,7 +561,7 @@ class XMLElement implements IteratorAggregate
      * @return XMLElement
      *  The current instance
      */
-    public function setChildren(array $children = null)
+    public function setChildren(array $children)
     {
         foreach ($children as $child) {
             $this->validateChild($child);
@@ -598,12 +594,10 @@ class XMLElement implements IteratorAggregate
      * @return XMLElement
      *  The current instance
      */
-    public function appendChildArray(array $children = null)
+    public function appendChildArray(array $children)
     {
-        if (is_array($children) && !empty($children)) {
-            foreach ($children as $child) {
-                $this->appendChild($child);
-            }
+        foreach ($children as $child) {
+            $this->appendChild($child);
         }
         return $this;
     }
