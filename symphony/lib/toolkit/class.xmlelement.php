@@ -712,6 +712,8 @@ class XMLElement implements IteratorAggregate
      * appended to the current `$this->children` array.
      *
      * @since Symphony 2.2.2
+     * @uses validateChild()
+     * @uses setChildren()
      * @param integer $index
      *  The index where the `$child` should be inserted. If this is negative
      *  the index will be calculated from the end of `$this->children`.
@@ -722,7 +724,7 @@ class XMLElement implements IteratorAggregate
      * @throws Exception
      *  If the $index is not an integer.
      */
-    public function insertChildAt($index, XMLElement $child = null)
+    public function insertChildAt($index, XMLElement $child)
     {
         General::ensureType([
             'index' => ['var' => $index, 'type' => 'int'],
@@ -737,9 +739,7 @@ class XMLElement implements IteratorAggregate
         $start = array_slice($this->children, 0, $index);
         $end = array_slice($this->children, $index);
 
-        $merge = array_merge($start, array(
-            $index => $child
-        ), $end);
+        $merge = array_merge($start, [$index => $child], $end);
 
         return $this->setChildren($merge);
     }
@@ -760,7 +760,7 @@ class XMLElement implements IteratorAggregate
      * @throws Exception
      *  If the $index is not an integer or the index is not valid.
      */
-    public function replaceChildAt($index, XMLElement $child = null)
+    public function replaceChildAt($index, XMLElement $child)
     {
         General::ensureType([
             'index' => ['var' => $index, 'type' => 'int'],
