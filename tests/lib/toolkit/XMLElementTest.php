@@ -96,6 +96,28 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('<br>', $x->generate());
     }
 
+    public function testGetChildrenByName()
+    {
+        $x = (new \XMLElement('xml'))
+            ->appendChild((new \XMLElement('child'))->setValue('1'))
+            ->appendChild((new \XMLElement('child-not'))->setValue('2'))
+            ->appendChild((new \XMLElement('child'))->setValue('3'));
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(3, $x->getNumberOfChildren());
+        $this->assertEquals('3', $x->getChildByName('child', 1)->getValue());
+    }
+
+    public function testGetChildrenByNameWithValue()
+    {
+        $x = (new \XMLElement('xml', 'value'))
+            ->appendChild((new \XMLElement('child'))->setValue('1'))
+            ->appendChild((new \XMLElement('child-not'))->setValue('2'))
+            ->appendChild((new \XMLElement('child'))->setValue('3'));
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(4, $x->getNumberOfChildren());
+        $this->assertEquals('3', $x->getChildByName('child', 1)->getValue());
+    }
+
     public function testWithChildrenFormatted()
     {
         $x = (new \XMLElement('xml'))
