@@ -30,6 +30,9 @@
     define('VERSION', '3.0.0');
     define('INSTALL', DOCROOT . '/install');
 
+    // Disable DB
+    define('SYMPHONY_LAUNCHER_NO_DB', true);
+
     // Include autoloader:
     require_once DOCROOT . '/vendor/autoload.php';
 

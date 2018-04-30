@@ -52,6 +52,10 @@ final class migration_300 extends Migration
         Symphony::Configuration()->setArray(['database' => $db]);
         Symphony::Configuration()->write();
 
+        // Init DB
+        Symphony::initialiseDatabase();
+        Symphony::initialiseExtensionManager();
+
         // Update tables storage engine
         $prefix = Symphony::Database()->getPrefix();
         $tables = Symphony::Database()->show();

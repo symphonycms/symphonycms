@@ -29,8 +29,10 @@
         include CONFIG;
         Symphony::initialiseConfiguration($settings);
         Symphony::initialiseErrorHandler();
-        Symphony::initialiseDatabase();
-        Symphony::initialiseExtensionManager();
+        if (!defined('SYMPHONY_LAUNCHER_NO_DB')) {
+            Symphony::initialiseDatabase();
+            Symphony::initialiseExtensionManager();
+        }
 
         // Report all errors
         if (Symphony::Configuration()->get('error_reporting_all', 'symphony') === 'yes') {
@@ -61,16 +63,18 @@
          */
         define_safe('SYMPHONY_URL', URL . '/' . $adminPath);
 
-        /**
-         * Overload the default Symphony launcher logic.
-         * @delegate ModifySymphonyLauncher
-         * @since Symphony 2.5.0
-         * @param string $context
-         * '/all/'
-         */
-        Symphony::ExtensionManager()->notifyMembers(
-            'ModifySymphonyLauncher', '/all/'
-        );
+        if (!defined('SYMPHONY_LAUNCHER_NO_DB')) {
+            /**
+             * Overload the default Symphony launcher logic.
+             * @delegate ModifySymphonyLauncher
+             * @since Symphony 2.5.0
+             * @param string $context
+             * '/all/'
+             */
+            Symphony::ExtensionManager()->notifyMembers(
+                'ModifySymphonyLauncher', '/all/'
+            );
+        }
 
         // Use default launcher:
         if (defined('SYMPHONY_LAUNCHER') === false) {
