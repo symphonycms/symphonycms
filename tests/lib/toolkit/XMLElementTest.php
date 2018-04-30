@@ -103,4 +103,151 @@ final class XMLElementTest extends TestCase
             ->appendChild((new \XMLElement('child'))->setValue('y'));
         $this->assertEquals("<xml>\n\t<child>x</child>\n\t<child>y</child>\n</xml>\n", $x->generate(true));
     }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testInvalidSetChildren()
+    {
+        $x = (new \XMLElement('xml'));
+        $x->setChildren([$x]);
+    }
+
+    public function testAppend()
+    {
+        $x = (new \XMLElement('xml'))
+            ->appendChild((new \XMLElement('child'))->setValue('1'))
+            ->appendChild((new \XMLElement('child'))->setValue('2'))
+            ->appendChild((new \XMLElement('child'))->setValue('3'));
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(3, $x->getNumberOfChildren());
+        $this->assertEquals('<xml><child>1</child><child>2</child><child>3</child></xml>', $x->generate());
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testInvalidAppend()
+    {
+        $x = (new \XMLElement('xml'));
+        $x->appendChild($x);
+    }
+
+    public function testAppendArray()
+    {
+        $x = (new \XMLElement('xml'))
+            ->appendChildArray([
+                (new \XMLElement('child'))->setValue('1'),
+                (new \XMLElement('child'))->setValue('2'),
+                (new \XMLElement('child'))->setValue('3'),
+            ]);
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(3, $x->getNumberOfChildren());
+        $this->assertEquals('<xml><child>1</child><child>2</child><child>3</child></xml>', $x->generate());
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testInvalidAppendArray()
+    {
+        $x = (new \XMLElement('xml'));
+        $x->appendChildArray([$x]);
+    }
+
+    public function testPrepend()
+    {
+        $x = (new \XMLElement('xml'))
+            ->prependChild((new \XMLElement('child'))->setValue('3'))
+            ->prependChild((new \XMLElement('child'))->setValue('2'))
+            ->prependChild((new \XMLElement('child'))->setValue('1'));
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(3, $x->getNumberOfChildren());
+        $this->assertEquals('<xml><child>1</child><child>2</child><child>3</child></xml>', $x->generate());
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testInvalidPrepend()
+    {
+        $x = (new \XMLElement('xml'));
+        $x->prependChild($x);
+    }
+
+    public function testRemoveAt()
+    {
+        $x = (new \XMLElement('xml'))
+            ->appendChild((new \XMLElement('child'))->setValue('1'))
+            ->appendChild((new \XMLElement('child'))->setValue('2'))
+            ->appendChild((new \XMLElement('child'))->setValue('3'))
+            ->removeChildAt(1);
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(2, $x->getNumberOfChildren());
+        $this->assertEquals('<xml><child>1</child><child>3</child></xml>', $x->generate());
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testInvalidRemoveAt()
+    {
+        $x = (new \XMLElement('xml'));
+        $x->removeChildAt(0);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testInvalidRemoveAtUnsetIndex()
+    {
+        $x = (new \XMLElement('xml'))
+            ->appendChild((new \XMLElement('child'))->setValue('1'))
+            ->appendChild((new \XMLElement('child'))->setValue('2'))
+            ->appendChild((new \XMLElement('child'))->setValue('3'))
+            ->removeChildAt(1);
+        $x->removeChildAt(1);
+    }
+
+    public function testInsertAt()
+    {
+        $x = (new \XMLElement('xml'))
+            ->appendChild((new \XMLElement('child'))->setValue('1'))
+            ->appendChild((new \XMLElement('child'))->setValue('2'))
+            ->appendChild((new \XMLElement('child'))->setValue('3'))
+            ->removeChildAt(1);
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(2, $x->getNumberOfChildren());
+        $this->assertEquals('<xml><child>1</child><child>3</child></xml>', $x->generate());
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testInvalidInsertAt()
+    {
+        $x = (new \XMLElement('xml'));
+        $x->insertChildAt(2, $x);
+    }
+
+    public function testReplaceAt()
+    {
+        $x = (new \XMLElement('xml'))
+            ->appendChild((new \XMLElement('child'))->setValue('1'))
+            ->appendChild((new \XMLElement('child'))->setValue('2'))
+            ->appendChild((new \XMLElement('child'))->setValue('3'))
+            ->replaceChildAt(1, (new \XMLElement('child'))->setValue('4'));
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(3, $x->getNumberOfChildren());
+        $this->assertEquals('<xml><child>1</child><child>4</child><child>3</child></xml>', $x->generate());
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testInvalidReplaceAt()
+    {
+        $x = (new \XMLElement('xml'));
+        $x->removeChildAt(2, $x);
+    }
 }
