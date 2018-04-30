@@ -7,13 +7,21 @@
  * The Datasource class provides functionality to mainly process any parameters
  * that the fields will use in filters find the relevant Entries and return these Entries
  * data as XML so that XSLT can be applied on it to create your website. In Symphony,
- * there are four Datasource types provided, Section, Author, Navigation and Dynamic
- * XML. Section is the mostly commonly used Datasource, which allows the filtering
- * and searching for Entries in a Section to be returned as XML. Navigation datasources
- * expose the Symphony Navigation structure of the Pages in the installation. Authors
- * expose the Symphony Authors that are registered as users of the backend. Finally,
- * the Dynamic XML datasource allows XML pages to be retrieved. This is especially
- * helpful for working with Restful XML API's. Datasources are saved through the
+ * there are four Datasource types provided, Section, Author, Navigation and Static XML.
+ *
+ * Section is the mostly commonly used Datasource, which allows the filtering
+ * and searching for Entries in a Section to be returned as XML.
+ *
+ * Navigation datasources
+ * expose the Symphony Navigation structure of the Pages in the installation.
+ *
+ * Authors datasources
+ * expose the Symphony Authors that are registered as users of the backend.
+ *
+ * Static XML datasources
+ * exposes some static XML to add to the page XML.
+ *
+ * Datasources are saved through the
  * Symphony backend, which uses a Datasource template defined in
  * `TEMPLATE . /datasource.tpl`.
  */
