@@ -12,6 +12,7 @@ filter:
     - "symphony/assets/css/*.min.css"
     - "symphony/assets/js/lib/*"
     - "symphony/assets/js/*.min.js"
+    - "gruntfile.js"
 checks:
   php:
     duplication: true
