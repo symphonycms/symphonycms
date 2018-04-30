@@ -574,7 +574,7 @@ class contentSystemAuthors extends AdministrationPage
 
     public function __actionNew()
     {
-        if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
+        if (is_array($_POST['action']) && array_key_exists('save', $_POST['action'])) {
             $fields = $_POST['fields'];
 
             $canCreate = Symphony::Author()->isDeveloper() || Symphony::Author()->isManager();
@@ -695,7 +695,7 @@ class contentSystemAuthors extends AdministrationPage
                 // but not the primary account
                 || (Symphony::Author()->isDeveloper() && $this->_Author->isPrimaryAccount() === false);
 
-        if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
+        if (is_array($_POST['action']) && array_key_exists('save', $_POST['action'])) {
             $authenticated = $changing_password = $changing_email = false;
 
             if (!$isOwner && !$canEdit) {
@@ -882,7 +882,7 @@ class contentSystemAuthors extends AdministrationPage
             if (is_array($this->_errors) && !empty($this->_errors)) {
                 $this->pageAlert(__('There were some problems while attempting to save. Please check below for problem fields.'), Alert::ERROR);
             }
-        } elseif (@array_key_exists('delete', $_POST['action'])) {
+        } elseif (is_array($_POST['action']) && array_key_exists('delete', $_POST['action'])) {
             // Validate rights
             if (!$canEdit) {
                 $this->pageAlert(__('You are not allowed to delete this author.'), Alert::ERROR);

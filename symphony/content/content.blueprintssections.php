@@ -625,7 +625,7 @@ class contentBlueprintsSections extends AdministrationPage
 
     public function __actionNew()
     {
-        if (@array_key_exists('save', $_POST['action']) || @array_key_exists('done', $_POST['action'])) {
+        if (is_array($_POST['action']) && array_key_exists('save', $_POST['action'])) {
             $canProceed = true;
             $edit = ($this->_context[0] == "edit");
             $this->_errors = array();
@@ -909,7 +909,7 @@ class contentBlueprintsSections extends AdministrationPage
             }
         }
 
-        if (@array_key_exists('delete', $_POST['action'])) {
+        if (is_array($_POST['action']) && array_key_exists('delete', $_POST['action'])) {
             $section_id = $this->_context[1];
             $canProceed = $this->validateTimestamp($section_id);
 

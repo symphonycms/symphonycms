@@ -1112,9 +1112,9 @@ class contentBlueprintsDatasources extends ResourcesPage
 
     public function __actionEdit()
     {
-        if (array_key_exists('save', $_POST['action'])) {
+        if (is_array($_POST['action']) && array_key_exists('save', $_POST['action'])) {
             return $this->__formAction();
-        } elseif (array_key_exists('delete', $_POST['action'])) {
+        } elseif (is_array($_POST['action']) && array_key_exists('delete', $_POST['action'])) {
             /**
              * Prior to deleting the Datasource file. Target file path is provided.
              *
@@ -1170,7 +1170,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
     public function __actionNew()
     {
-        if (array_key_exists('save', $_POST['action'])) {
+        if (is_array($_POST['action']) && array_key_exists('save', $_POST['action'])) {
             return $this->__formAction();
         }
     }

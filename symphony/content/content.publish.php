@@ -1161,7 +1161,7 @@ class contentPublish extends AdministrationPage
 
     public function __actionNew()
     {
-        if (is_array($_POST['action']) && (array_key_exists('save', $_POST['action']) || array_key_exists('done', $_POST['action']))) {
+        if (is_array($_POST['action']) && array_key_exists('save', $_POST['action'])) {
             $section_id = SectionManager::fetchIDFromHandle($this->_context['section_handle']);
 
             $section = (new SectionManager)->select()->section($section_id)->execute()->next();
@@ -1513,7 +1513,7 @@ class contentPublish extends AdministrationPage
     {
         $entry_id = $this->_context['entry_id'];
 
-        if (is_array($_POST['action']) && (array_key_exists('save', $_POST['action']) || array_key_exists('done', $_POST['action']))) {
+        if (is_array($_POST['action']) && array_key_exists('save', $_POST['action'])) {
             $entry = (new EntryManager)->select()->entry($entry_id)->execute()->next();
             if (!$entry) {
                 Administration::instance()->throwCustomError(
