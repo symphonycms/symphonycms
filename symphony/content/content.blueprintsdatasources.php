@@ -169,20 +169,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                         $fields['filter']['navigation'] = $existing->dsParamFILTERS;
                         break;
                     case 'static_xml':
-                        // Symphony 2.3+
-                        if (isset($existing->dsParamSTATIC)) {
-                            $fields['static_xml'] = stripslashes(trim($existing->dsParamSTATIC));
-
-                            // Handle Symphony 2.2.2 to 2.3 DS's
-                            // This is deprecated and will be removed in Symphony 3.0.0
-                        } elseif (isset($existing->dsSTATIC)) {
-                            $fields['static_xml'] = stripslashes(trim($existing->dsSTATIC));
-
-                            // Handle pre Symphony 2.2.1 Static DS's
-                            // This is deprecated and will be removed in Symphony 3.0.0
-                        } else {
-                            $fields['static_xml'] = trim($existing->grab());
-                        }
+                        $fields['static_xml'] = stripslashes(trim($existing->dsParamSTATIC));
                         break;
                     default:
                         $fields['filter'][$fields['source']] = $existing->dsParamFILTERS;
