@@ -5,6 +5,7 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
 [![Build Status](https://travis-ci.org/symphonycms/symphony-2.svg?branch=master)](https://travis-ci.org/symphonycms/symphony-2)
 ![Build status](https://ci.appveyor.com/api/projects/status/1mx5r9befuode1e9?svg=true)
+[![Maintainability](https://api.codeclimate.com/v1/badges/97c662e3526c6dbce239/maintainability)](https://codeclimate.com/github/symphonycms/symphony-2/maintainability)
 [![Code coverage](https://codecov.io/gh/symphonycms/symphony-2/branch/master/graph/badge.svg)](https://codecov.io/gh/symphonycms/symphony-2)
 
 - Version: 2.7.10
