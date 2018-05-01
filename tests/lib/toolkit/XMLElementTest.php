@@ -78,6 +78,16 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('<xml class="test test test2" />', $x->generate());
     }
 
+    public function testRemoveClass()
+    {
+        $x = (new \XMLElement('xml'))
+            ->addClass('test')
+            ->addClass('test')
+            ->addClass('test2')
+            ->removeClass('test');
+        $this->assertEquals('<xml class="test2" />', $x->generate());
+    }
+
     public function testGenerateWithSelfClosing()
     {
         $x = (new \XMLElement('xml', 'value'));
