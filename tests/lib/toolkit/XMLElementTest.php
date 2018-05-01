@@ -110,10 +110,11 @@ final class XMLElementTest extends TestCase
 
     public function testWithChildrenFormatted()
     {
+        $nl = PHP_EOL;
         $x = (new \XMLElement('xml'))
             ->appendChild((new \XMLElement('child'))->setValue('x'))
             ->appendChild((new \XMLElement('child'))->setValue('y'));
-        $this->assertEquals("<xml>\n\t<child>x</child>\n\t<child>y</child>\n</xml>\n", $x->generate(true));
+        $this->assertEquals("<xml>$nl\t<child>x</child>$nl\t<child>y</child>$nl</xml>$nl", $x->generate(true));
     }
 
     /**
