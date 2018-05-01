@@ -347,7 +347,7 @@ final class XMLElementTest extends TestCase
     public function testInvalidReplaceAt()
     {
         $x = (new \XMLElement('xml'));
-        $x->removeChildAt(2, $x);
+        $x->replaceChildAt(2, $x);
     }
 
     public function testFromXMLString()
