@@ -56,14 +56,26 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('<x-m-l attr="yes" null="">value</x-m-l>', $x->generate());
     }
 
-    public function testNoEmptyAttributes()
+    public function testEmptyAttributes()
     {
         $x = (new \XMLElement('xml'))
             ->setAttribute('null', null)
-            ->setAttributeArray(['empty' => '', 'not-empty' => '1'])
+            ->setAttributeArray(['not-empty' => '1', 'empty' => ''])
             ->setAllowEmptyAttributes(false);
         $this->assertNotEmpty($x->getAttributes());
         $this->assertEquals('<xml not-empty="1" />', $x->generate());
+        $x->renderEmptyAttributes();
+        $this->assertEquals('<xml null="" not-empty="1" empty="" />', $x->generate());
+    }
+
+    public function testAddClass()
+    {
+        $x = (new \XMLElement('xml'))->addClass('test');
+        $this->assertEquals('<xml class="test" />', $x->generate());
+        $x->addClass('test');
+        $this->assertEquals('<xml class="test test" />', $x->generate());
+        $x->addClass('test2');
+        $this->assertEquals('<xml class="test test test2" />', $x->generate());
     }
 
     public function testGenerateWithSelfClosing()
@@ -125,6 +137,13 @@ final class XMLElementTest extends TestCase
     {
         $x = (new \XMLElement('xml'))->setValue('value');
         $this->assertEquals('value', $x->getValue());
+    }
+
+    public function testSetAttribute()
+    {
+        $x = (new \XMLElement('xml'))->setAttribute('value', 'yes');
+        $this->assertEquals('yes', $x->getAttribute('value'));
+        $this->assertNull($x->getAttribute('undefined'));
     }
 
     public function testWithChildrenFormatted()
