@@ -454,7 +454,7 @@ class FrontendPage extends XSLTPage
 
         $xml_build_start = precision_timer();
 
-        $xml = new XMLElement('data');
+        $xml = new XMLDocument('data');
         $xml->renderHeader();
 
         $events = new XMLElement('events');

@@ -17,9 +17,7 @@ final class XMLElementTest extends TestCase
         $this->assertEquals(0, $x->getNumberOfChildren());
         $this->assertEmpty($x->getChildren());
         $this->assertEmpty($x->getAttributes());
-        //$this->assertEquals('1.0', $x->getVersion());
-        //$this->assertEquals('utf-8', $x->getEncoding());
-        //$this->assertEquals('xml', $x->getElementStyle());
+        $this->assertEquals('xml', $x->getElementStyle());
         $this->assertEquals('<xml />', $x->generate());
     }
 
@@ -66,14 +64,6 @@ final class XMLElementTest extends TestCase
             ->setAllowEmptyAttributes(false);
         $this->assertNotEmpty($x->getAttributes());
         $this->assertEquals('<xml not-empty="1" />', $x->generate());
-    }
-
-    public function testGenerateWithHeader()
-    {
-        $x = (new \XMLElement('xml', 'value'));
-        $this->assertEquals('<xml>value</xml>', $x->generate());
-        $x->renderHeader();
-        $this->assertEquals('<?xml version="1.0" encoding="utf-8" ?><xml>value</xml>', $x->generate());
     }
 
     public function testGenerateWithSelfClosing()
@@ -271,24 +261,6 @@ final class XMLElementTest extends TestCase
     {
         $x = (new \XMLElement('xml'));
         $x->removeChildAt(2, $x);
-    }
-
-    public function testAddProcessingInstruction()
-    {
-        $x = (new \XMLElement('xml'))
-            ->addProcessingInstruction('this is a test')
-            ->appendChild((new \XMLElement('child'))->setValue('1'))
-            ->appendChild((new \XMLElement('child'))->setValue('2'));
-        $this->assertEquals('this is a test<xml><child>1</child><child>2</child></xml>', $x->generate());
-    }
-
-    public function testSetDTD()
-    {
-        $x = (new \XMLElement('xml'))
-            ->setDTD('test-dtd')
-            ->appendChild((new \XMLElement('child'))->setValue('1'))
-            ->appendChild((new \XMLElement('child'))->setValue('2'));
-        $this->assertEquals('test-dtd<xml><child>1</child><child>2</child></xml>', $x->generate());
     }
 
     public function testFromXMLString()
