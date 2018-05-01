@@ -108,6 +108,14 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('<br>', $x->generate());
     }
 
+    public function testGenerateHtmlStyle()
+    {
+        $x = (new \XMLElement('div', null));
+        $this->assertEquals('<div />', $x->generate());
+        $x->setElementStyle('html');
+        $this->assertEquals('<div></div>', $x->generate());
+    }
+
     public function testGetChild()
     {
         $x = (new \XMLElement('xml'))
