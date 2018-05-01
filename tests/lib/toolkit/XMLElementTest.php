@@ -163,6 +163,18 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('value', $x->getValue());
     }
 
+    public function testReplaceValue()
+    {
+        $x = (new \XMLElement('xml'))
+            ->setValue('value')
+            ->appendChild('string')
+            ->appendChild(new \XMLElement('child'))
+            ->replaceValue('new value');
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(2, $x->getNumberOfChildren());
+        $this->assertEquals('new value', $x->getValue());
+    }
+
     public function testSetAttribute()
     {
         $x = (new \XMLElement('xml'))->setAttribute('value', 'yes');
