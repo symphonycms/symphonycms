@@ -358,11 +358,7 @@ class Log
             $message .= ' ' . sprintf($opts['alternative-format'], $alternative);
         }
         if ($opts['addtrace'] === true) {
-            if (version_compare(phpversion(), '5.4', '<')) {
-                $trace = debug_backtrace(0);
-            } else {
-                $trace = debug_backtrace(0, 3);
-            }
+            $trace = debug_backtrace(0, 3);
             $index = isset($trace[2]['class']) ? 2 : 1;
             $caller = $trace[$index]['class'] . '::' . $trace[$index]['function'] . '()';
             $file = basename($trace[$index - 1]['file']);

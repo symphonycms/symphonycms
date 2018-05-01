@@ -194,7 +194,7 @@ class Installer extends Administration
         $errors = [];
 
         // Check for PHP 5.6+
-        if (version_compare(phpversion(), '5.6', '<=')) {
+        if (\Composer\Semver\Comparator::lessThan(phpversion(), '5.6')) {
             $errors[] = array(
                 'msg' => __('PHP Version is not correct'),
                 'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.', array('<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.3</code>', '<code>' . phpversion() . '</code>'))
@@ -318,7 +318,7 @@ class Installer extends Administration
             // Check the database credentials
             elseif ($db && $db->isConnected()) {
                 // Incorrect MySQL version
-                if (version_compare($db->getVersion(), '5.5', '<')) {
+                if (\Composer\Semver\Comparator::lessThan($db->getVersion(), '5.6')) {
                     $errors['database-incorrect-version']  = array(
                         'msg' => 'MySQL Version is not correct. '. $version . ' detected.',
                         'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.', array('<code>MySQL 5.5</code>', '<code>' . $version . '</code>'))

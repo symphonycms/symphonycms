@@ -156,8 +156,7 @@ abstract class Extension implements ArrayAccess
      * when a user runs the 'Enable' action from the backend. The currently
      * installed version of this extension is provided so that it can be
      * compared to the current version of the extension in the file system.
-     * This is commonly done using PHP's version_compare function. Common
-     * logic done by this method is to update differences between extension
+     * Logic done by this method is to update differences between extension
      * tables.
      *
      * @see toolkit.ExtensionManager#update()
