@@ -273,6 +273,24 @@ final class XMLElementTest extends TestCase
         $x->removeChildAt(2, $x);
     }
 
+    public function testAddProcessingInstruction()
+    {
+        $x = (new \XMLElement('xml'))
+            ->addProcessingInstruction('this is a test')
+            ->appendChild((new \XMLElement('child'))->setValue('1'))
+            ->appendChild((new \XMLElement('child'))->setValue('2'));
+        $this->assertEquals('this is a test<xml><child>1</child><child>2</child></xml>', $x->generate());
+    }
+
+    public function testSetDTD()
+    {
+        $x = (new \XMLElement('xml'))
+            ->setDTD('test-dtd')
+            ->appendChild((new \XMLElement('child'))->setValue('1'))
+            ->appendChild((new \XMLElement('child'))->setValue('2'));
+        $this->assertEquals('test-dtd<xml><child>1</child><child>2</child></xml>', $x->generate());
+    }
+
     public function testConvertFromXMLString()
     {
         $xml = '<xml test="xml-string"><child>1</child><child>4</child><child>3</child></xml>';
