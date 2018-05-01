@@ -57,4 +57,20 @@ final class XMLDocumentTest extends TestCase
         $c = new \XMLElement('child');
         $c->appendChild($x);
     }
+
+    public function testFromDOMDocument()
+    {
+        $xml = '<xml test="dom-doc"><child>1</child><child>4</child><child>3</child></xml>';
+        $doc = new \DOMDocument();
+        $doc->loadXML($xml);
+        $x = \XMLDocument::fromDOMDocument($doc);
+        $this->assertTrue($x instanceof \XMLElement);
+        $this->assertTrue($x instanceof \XMLDocument);
+        $this->assertNotEmpty($x);
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(3, $x->getNumberOfChildren());
+        $this->assertEquals('xml', $x->getName());
+        $this->assertEquals('dom-doc', $x->getAttribute('test'));
+        $this->assertEquals('4', $x->getChild(1)->getValue());
+    }
 }

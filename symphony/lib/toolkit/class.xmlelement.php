@@ -908,7 +908,7 @@ class XMLElement implements IteratorAggregate
      * @param XMLElement $element
      * @param DOMNode $node
      */
-    private static function copyDOMNode(XMLElement $element, DOMNode $node)
+    protected static function copyDOMNode(XMLElement $element, DOMNode $node)
     {
         if ($node->hasAttributes()) {
             foreach ($node->attributes as $name => $attrEl) {
