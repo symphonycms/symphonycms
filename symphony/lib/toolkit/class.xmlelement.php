@@ -872,8 +872,8 @@ class XMLElement implements IteratorAggregate
                 $result .= $this->dtd . $newline;
             }
 
-            if (is_array($this->processingInstructions) && !empty($this->processingInstructions)) {
-                $result .= implode(PHP_EOL, $this->processingInstructions);
+            if (!empty($this->processingInstructions)) {
+                $result .= implode($newline, $this->processingInstructions);
             }
         }
 
