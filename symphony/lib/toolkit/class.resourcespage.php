@@ -106,6 +106,7 @@ abstract class ResourcesPage extends AdministrationPage
     {
         $manager = ResourceManager::getManagerFromType($resource_type);
         $friendly_resource = ($resource_type === ResourceManager::RESOURCE_TYPE_EVENT) ? __('Event') : __('DataSource');
+        $context = Administration::instance()->getPageCallback();
 
         $this->setPageType('table');
 
@@ -135,6 +136,37 @@ abstract class ResourcesPage extends AdministrationPage
             )
         );
 
+        /**
+         * Allows the creation of custom table columns for each resource. Called
+         * after all the table headers columns have been added.
+         *
+         * @delegate AddCustomResourceColumn
+         * @since Symphony 3.0.0
+         * @param string $context
+         *  '/blueprints/datasources/' or '/blueprints/events/'
+         * @param array $columns
+         *  An array of the current columns, passed by reference
+         * @param string $sort
+         *  The sort field
+         * @param string $order
+         *  The sort order
+         * @param int $resource_type
+         *  The resource type, i.e. `ResourceManager::RESOURCE_TYPE_EVENT` or
+         *  `ResourceManager::RESOURCE_TYPE_DATASOURCE`.
+         * @param array $resources
+         *  The resources array
+         * @param object $manager
+         *  The resources manager
+         */
+        Symphony::ExtensionManager()->notifyMembers('AddCustomResourceColumn', $context['pageroot'], [
+            'columns' => &$columns,
+            'sort' => $sort,
+            'order' => $order,
+            'resource_type' => $resource_type,
+            'resources' => $resources,
+            'manager' => $manager,
+        ]);
+
         $aTableHead = Sortable::buildTableHeaders($columns, $sort, $order, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : ''));
 
         $aTableBody = array();
@@ -142,18 +174,13 @@ abstract class ResourcesPage extends AdministrationPage
         if (!is_array($resources) || empty($resources)) {
             $aTableBody = array(Widget::TableRow(array(Widget::TableData(__('None found.'), 'inactive', null, count($aTableHead))), 'odd'));
         } else {
-            $context = Administration::instance()->getPageCallback();
-
             foreach ($resources as $r) {
                 $action = 'edit';
                 $status = null;
                 $locked = null;
 
                 // Locked resources
-                if (
-                    isset($r['can_parse']) && $r['can_parse'] !== true ||
-                    ($resource_type === ResourceManager::RESOURCE_TYPE_DS && $r['source']['name'] === 'Dynamic_xml')
-                ) {
+                if (isset($r['can_parse']) && $r['can_parse'] !== true) {
                     $action = 'info';
                     $status = 'status-notice';
                     $locked = array(
@@ -231,8 +258,43 @@ abstract class ResourcesPage extends AdministrationPage
                 }
 
                 $author = Widget::TableData($author);
+                $tableData = [$name, $section, $pagelinks, $author];
 
-                $aTableBody[] = Widget::TableRow(array($name, $section, $pagelinks, $author), $status);
+                /**
+                 * Allows Extensions to inject custom table data for each Resource
+                 * into the Resource Index
+                 *
+                 * @delegate AddCustomResourceColumnData
+                 * @since Symphony 3.0.0
+                 * @param string $context
+                 *  '/blueprints/datasources/' or '/blueprints/events/'
+                 * @param array $tableData
+                 *  An array of `Widget::TableData`, passed by reference
+                 * @param array $columns
+                 *  An array of the current columns
+                 * @param int $resource_type
+                 *  The resource type, i.e. `ResourceManager::RESOURCE_TYPE_EVENT` or
+                 *  `ResourceManager::RESOURCE_TYPE_DATASOURCE`.
+                 * @param array $resource
+                 *  The resource array
+                 * @param string $action
+                 *  The name of the action
+                 * @param string $status
+                 *  The status of the row
+                 * @param bool $locked
+                 *  If the resource is locked, i.e., read-only
+                 */
+                Symphony::ExtensionManager()->notifyMembers('AddCustomResourceColumnData', '/system/authors/', [
+                    'tableData' => &$tableData,
+                    'columns' => $columns,
+                    'resource_type' => $resource_type,
+                    'resource' => $r,
+                    'action' => $action,
+                    'status' => $status,
+                    'locked' => $locked,
+                ]);
+
+                $aTableBody[] = Widget::TableRow($tableData, $status);
             }
         }
 
@@ -284,7 +346,7 @@ abstract class ResourcesPage extends AdministrationPage
          * @delegate AddCustomActions
          * @since Symphony 2.3.2
          * @param string $context
-         * '/blueprints/datasources/' or '/blueprints/events/'
+         *  '/blueprints/datasources/' or '/blueprints/events/'
          * @param array $options
          *  An array of arrays, where each child array represents an option
          *  in the With Selected menu. Options should follow the same format
@@ -364,7 +426,7 @@ abstract class ResourcesPage extends AdministrationPage
                          */
                         Symphony::ExtensionManager()->notifyMembers(
                             "{$resource_name}PreDelete",
-                            "/blueprints/{$delegate_path}/",
+                            $context['pageroot'],
                             array(
                                 'file' => $path,
                                 'handle' => $handle,
