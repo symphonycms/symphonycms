@@ -288,12 +288,14 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('4', $x->getChild(1)->getValue());
     }
 
-    public function testfromDOMDocument()
+    public function testFromDOMDocument()
     {
         $xml = '<xml test="dom-doc"><child>1</child><child>4</child><child>3</child></xml>';
         $doc = new \DOMDocument();
         $doc->loadXML($xml);
         $x = \XMLElement::fromDOMDocument($doc);
+        $this->assertTrue($x instanceof \XMLElement);
+        $this->assertFalse($x instanceof \XMLDocument);
         $this->assertNotEmpty($x);
         $this->assertNotEmpty($x->getChildren());
         $this->assertEquals(3, $x->getNumberOfChildren());
