@@ -311,11 +311,12 @@ final class XMLElementTest extends TestCase
             ->appendChild((new \XMLElement('child'))->setValue('1'))
             ->appendChild((new \XMLElement('child'))->setValue('2'))
             ->appendChild((new \XMLElement('child'))->setValue('3'))
-            ->insertChildAt(1, (new \XMLElement('child'))->setValue('4'));
+            ->insertChildAt(1, (new \XMLElement('child'))->setValue('4'))
+            ->insertChildAt(5, (new \XMLElement('child'))->setValue('5'));
         $this->assertNotEmpty($x->getChildren());
-        $this->assertEquals(4, $x->getNumberOfChildren());
+        $this->assertEquals(5, $x->getNumberOfChildren());
         $this->assertEquals(
-            '<xml><child>1</child><child>4</child><child>2</child><child>3</child></xml>',
+            '<xml><child>1</child><child>4</child><child>2</child><child>3</child><child>5</child></xml>',
             $x->generate()
         );
     }
