@@ -4,7 +4,7 @@
  */
 /**
  * `XMLElement` is a class used to simulate PHP's `DOMElement`
- * class. Each object is a representation of a HTML element
+ * class. Each object is a representation of a XML element
  * and can store it's children in an array. When an `XMLElement`
  * is generated, it is output as an XML string.
  */
@@ -55,43 +55,11 @@ class XMLElement implements IteratorAggregate
     private $children = [];
 
     /**
-     * Any processing instructions that the XSLT should know about when a
-     * `XMLElement` is generated
-     * @var array
-     */
-    private $processingInstructions = [];
-
-    /**
-     * The DTD the should be output when a `XMLElement` is generated, defaults to null.
-     * @var string
-     */
-    private $dtd = null;
-
-    /**
-     * The encoding of the `XMLElement`, defaults to 'utf-8'
-     * @var string
-     */
-    private $encoding = 'utf-8';
-
-    /**
-     * The version of the XML that is used for generation, defaults to '1.0'
-     * @var string
-     */
-    private $version = '1.0';
-
-    /**
      * The type of element, defaults to 'xml'. Used when determining the style
      * of end tag for this element when generated
      * @var string
      */
     private $elementStyle = 'xml';
-
-    /**
-     * When set to true this will include the XML declaration will be
-     * output when the `XMLElement` is generated. Defaults to `false`.
-     * @var boolean
-     */
-    private $includeHeader = false;
 
     /**
      * Specifies whether this HTML element has an closing element, or if
@@ -279,57 +247,13 @@ class XMLElement implements IteratorAggregate
     }
 
     /**
-     * Adds processing instructions to this `XMLElement`
+     * Accessor for `$elementStyle`
      *
-     * @param string $pi
-     * @return XMLElement
-     *  The current instance
+     * @return string
      */
-    public function addProcessingInstruction($pi)
+    public function getElementStyle()
     {
-        $this->processingInstructions[] = $pi;
-        return $this;
-    }
-
-    /**
-     * Sets the DTD for this `XMLElement`
-     *
-     * @param string $dtd
-     * @return XMLElement
-     *  The current instance
-     */
-    public function setDTD($dtd)
-    {
-        $this->dtd = $dtd;
-        return $this;
-    }
-
-    /**
-     * Sets the encoding for this `XMLElement` for when
-     * it's generated.
-     *
-     * @param string $value
-     * @return XMLElement
-     *  The current instance
-     */
-    public function setEncoding($value)
-    {
-        $this->encoding = $value;
-        return $this;
-    }
-
-    /**
-     * Sets the version for the XML declaration of this
-     * `XMLElement`
-     *
-     * @param string $value
-     * @return XMLElement
-     *  The current instance
-     */
-    public function setVersion($value)
-    {
-        $this->version = $value;
-        return $this;
+        return $this->elementStyle;
     }
 
     /**
@@ -347,34 +271,6 @@ class XMLElement implements IteratorAggregate
     {
         $this->elementStyle = $style;
         return $this;
-    }
-
-    /**
-     * Sets whether this `XMLElement` needs to output an
-     * XML declaration or not. This normally is only set to
-     * true for the parent `XMLElement`, eg. 'html'.
-     *
-     * @param bool $value
-     * @return XMLElement
-     *  The current instance
-     */
-    public function setIncludeHeader($value)
-    {
-        $this->includeHeader = $value;
-        return $this;
-    }
-
-    /**
-     * Makes this `XMLElement` output an XML declaration.
-     *
-     * @since Symphony 3.0.0
-     * @uses setIncludeHeader()
-     * @return XMLElement
-     *  The current instance
-     */
-    public function renderHeader()
-    {
-        return $this->setIncludeHeader(true);
     }
 
     /**
@@ -540,10 +436,12 @@ class XMLElement implements IteratorAggregate
      * @throws Exception
      *  If the child is not valid
      */
-    private function validateChild($child)
+    protected function validateChild($child)
     {
         if ($this === $child) {
             throw new Exception(__('Can not add the element itself as one of its child'));
+        } elseif ($child instanceof XMLDocument) {
+            throw new Exception(__('Can not add an `XMLDocument` object as a child'));
         }
         return $this;
     }
@@ -847,61 +745,33 @@ class XMLElement implements IteratorAggregate
      * @param integer $tabDepth
      *  Defaults to 0, indicates the number of tabs (\t) that this
      *  element should be indented by in the output string
-     * @param boolean $hasParent
-     *  Defaults to false, set to true when the children are being
-     *  generated. Only the parent will output an XML declaration
-     *  if `$this->includeHeader` is set to true.
      * @return string
+     *  The XML string
      */
-    public function generate($indent = false, $tabDepth = 0, $hasParent = false)
+    public function generate($indent = false, $tabDepth = 0)
     {
         $result = null;
         $newline = ($indent ? PHP_EOL : null);
 
-        if (!$hasParent) {
-            if ($this->includeHeader) {
-                $result .= sprintf(
-                    '<?xml version="%s" encoding="%s" ?>%s',
-                    $this->version,
-                    $this->encoding,
-                    $newline
-                );
-            }
-
-            if ($this->dtd) {
-                $result .= $this->dtd . $newline;
-            }
-
-            if (!empty($this->processingInstructions)) {
-                $result .= implode($newline, $this->processingInstructions);
-            }
-        }
-
         $result .= ($indent ? str_repeat("\t", $tabDepth) : null) . '<' . $this->getName();
 
-        $attributes = $this->getAttributes();
-
-        if (!empty($attributes)) {
-            foreach ($attributes as $attribute => $value) {
-                $length = strlen($value);
-                if ($length !== 0 || $length === 0 && $this->allowEmptyAttributes) {
-                    $result .= sprintf(' %s="%s"', $attribute, $value);
-                }
+        foreach ($this->attributes as $attribute => $value) {
+            if (!empty($value) || $this->allowEmptyAttributes) {
+                $result .= sprintf(' %s="%s"', $attribute, $value);
             }
         }
 
-        $value = $this->getValue();
-        $added_newline = false;
+        $addedNewline = false;
 
-        if ($this->getNumberOfChildren() > 0 || strlen($value) !== 0 || !$this->selfClosing) {
+        if ($this->getNumberOfChildren() > 0 || !empty($this->value) || !$this->selfClosing) {
             $result .= '>';
 
             foreach ($this->children as $i => $child) {
                 if (!($child instanceof XMLElement)) {
                     $result .= $child;
                 } else {
-                    if ($added_newline === false) {
-                        $added_newline = true;
+                    if ($addedNewline === false) {
+                        $addedNewline = true;
                         $result .= $newline;
                     }
 
@@ -912,8 +782,8 @@ class XMLElement implements IteratorAggregate
 
             $result .= sprintf(
                 "%s</%s>%s",
-                ($indent && $added_newline ? str_repeat("\t", $tabDepth) : null),
-                $this->getName(),
+                ($indent && $addedNewline ? str_repeat("\t", $tabDepth) : null),
+                $this->name,
                 $newline
             );
 
@@ -921,10 +791,10 @@ class XMLElement implements IteratorAggregate
         } else {
             if ($this->elementStyle === 'xml') {
                 $result .= ' />';
-            } elseif (in_array($this->name, XMLElement::$no_end_tags) || (substr($this->getName(), 0, 3) === '!--')) {
+            } elseif (in_array($this->name, static::$no_end_tags) || (substr($this->name, 0, 3) === '!--')) {
                 $result .= '>';
             } else {
-                $result .= sprintf("></%s>", $this->getName());
+                $result .= sprintf("></%s>", $this->name);
             }
 
             $result .= $newline;

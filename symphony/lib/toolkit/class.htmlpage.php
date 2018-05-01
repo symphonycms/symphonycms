@@ -64,11 +64,8 @@ class HTMLPage extends Page
     {
         parent::__construct();
 
-        $this->Html = new XMLElement('html');
-        $this->Html->setIncludeHeader(false);
-
+        $this->Html = (new XMLDocument('html'))->setIncludeHeader(false);
         $this->Head = new XMLElement('head');
-
         $this->Body = new XMLElement('body');
     }
 
