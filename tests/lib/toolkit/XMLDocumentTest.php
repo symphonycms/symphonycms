@@ -22,6 +22,20 @@ final class XMLDocumentTest extends TestCase
         $this->assertEquals('<xml />', $x->generate());
     }
 
+    public function testSetVersion()
+    {
+        $x = (new \XMLDocument('xml'))->setVersion('test')->renderHeader();
+        $this->assertEquals('test', $x->getVersion());
+        $this->assertEquals('<?xml version="test" encoding="utf-8" ?><xml />', $x->generate());
+    }
+
+    public function testSetEncoding()
+    {
+        $x = (new \XMLDocument('xml'))->setEncoding('test')->renderHeader();
+        $this->assertEquals('test', $x->getEncoding());
+        $this->assertEquals('<?xml version="1.0" encoding="test" ?><xml />', $x->generate());
+    }
+
     public function testGenerateWithHeader()
     {
         $x = (new \XMLDocument('xml', 'value'));
