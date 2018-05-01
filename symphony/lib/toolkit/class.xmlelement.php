@@ -122,17 +122,17 @@ class XMLElement implements IteratorAggregate
     public function getValue()
     {
         $value = '';
+        $values = $this->value;
 
-        if (is_array($this->value)) {
-            foreach ($this->value as $v) {
-                if ($v instanceof XMLElement) {
-                    $value .= $v->generate();
-                } else {
-                    $value .= $v;
-                }
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+        foreach ($values as $v) {
+            if ($v instanceof XMLElement) {
+                $value .= $v->generate();
+            } elseif ($v) {
+                $value .= $v;
             }
-        } elseif (!is_null($this->value)) {
-            $value = $this->value;
         }
 
         return $value;

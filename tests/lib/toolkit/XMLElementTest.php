@@ -108,6 +108,25 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('3', $x->getChildByName('child', 1)->getValue());
     }
 
+    public function testGetValue()
+    {
+        $x = new \XMLElement('xml', 'value');
+        $this->assertEquals('value', $x->getValue());
+        $x = new \XMLElement('xml', ['value', 'value2']);
+        $this->assertEquals('value, value2', $x->getValue());
+        $x = new \XMLElement('xml', new \XMLElement('value', 'value'));
+        $this->assertEquals('<value>value</value>', $x->getValue());
+        // TODO: make this work
+        //$x = new \XMLElement('xml', [new \XMLElement('value', 'value')]);
+        //$this->assertEquals('<value>value</value>', $x->getValue());
+    }
+
+    public function testSetValue()
+    {
+        $x = (new \XMLElement('xml'))->setValue('value');
+        $this->assertEquals('value', $x->getValue());
+    }
+
     public function testWithChildrenFormatted()
     {
         $nl = PHP_EOL;
