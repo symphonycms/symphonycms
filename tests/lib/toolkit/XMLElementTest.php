@@ -169,6 +169,15 @@ final class XMLElementTest extends TestCase
         $this->assertEquals("<xml>$nl\t<child>x</child>$nl\t<child>y</child>$nl</xml>$nl", $x->generate(true));
     }
 
+    public function testSetChildren()
+    {
+        $x = (new \XMLElement('xml'))->appendChild(new \XMLElement('test-child', 'value'));
+        $x->setChildren([new \XMLElement('test-child')]);
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(1, $x->getNumberOfChildren());
+        $this->assertEquals('', $x->getChild(0)->getValue());
+    }
+
     /**
      * @expectedException Exception
      */
