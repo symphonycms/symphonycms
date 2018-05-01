@@ -934,10 +934,35 @@ class XMLElement implements IteratorAggregate
     }
 
     /**
+     * Given a string of XML, this function will create a new `XMLElement`
+     * object, copy all attributes and children and return the result.
+     *
+     * @uses fromDOMDocument()
+     * @since Symphony 3.0.0
+     * @param string $xml
+     *  A string of XML
+     * @return XMLElement
+     *  The new `XMLElement` derived from `string $xml`.
+     */
+    public static function fromXMLString($xml)
+    {
+        General::ensureType([
+            'xml' => ['var' => $xml, 'type' => 'string'],
+        ]);
+
+        $doc = new DOMDocument('1.0', 'utf-8');
+        $doc->loadXML($xml);
+
+        return static::fromDOMDocument($doc);
+    }
+
+    /**
      * Given a string of XML, this function will convert it to an `XMLElement`
      * object and return the result.
      *
      * @since Symphony 2.4
+     * @deprecated @since Symphony 3.0.0
+     *  Use `fromXMLString()`
      * @param string $root_element
      * @param string $xml
      *  A string of XML
@@ -945,6 +970,13 @@ class XMLElement implements IteratorAggregate
      */
     public static function convertFromXMLString($root_element, $xml)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                'XMLElement::convertFromXMLString()',
+                'XMLElement::fromXMLString()'
+            );
+        }
+
         $doc = new DOMDocument('1.0', 'utf-8');
         $doc->loadXML($xml);
 
@@ -952,42 +984,50 @@ class XMLElement implements IteratorAggregate
     }
 
     /**
+     * Given a `DOMDocument`, this function will create a new `XMLElement`
+     * object, copy all attributes and children and return the result.
+     *
+     * @since Symphony 3.0.0
+     * @param DOMDocument $doc
+     *  A DOMDocument to copy from
+     * @return XMLElement
+     *  The new `XMLElement` derived from `DOMDocument $doc`.
+     */
+    public static function fromDOMDocument(DOMDocument $doc)
+    {
+        $root = new XMLElement($doc->documentElement->nodeName);
+        static::copyDOMNode($root, $doc->documentElement);
+        return $root;
+    }
+
+    /**
      * Given a `DOMDocument`, this function will convert it to an `XMLElement`
      * object and return the result.
      *
      * @since Symphony 2.4
+     * @deprecated @since Symphony 3.0.0
+     *  Use `fromDOMDocument()`
      * @param string $root_element
      * @param DOMDocument $doc
      * @return XMLElement
      */
     public static function convertFromDOMDocument($root_element, DOMDocument $doc)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                'XMLElement::convertFromDOMDocument()',
+                'XMLElement::fromDOMDocument()'
+            );
+        }
+
         $xpath = new DOMXPath($doc);
         $root = new XMLElement($root_element);
 
         foreach ($xpath->query('.') as $node) {
-            self::convertNode($root, $node);
+            static::copyDOMNode($root, $node);
         }
 
         return $root;
-    }
-
-    /**
-     * This helper function is used by `XMLElement::convertFromDOMDocument`
-     * to recursively convert `DOMNode` into an `XMLElement` structure
-     *
-     * @since Symphony 2.4
-     * @param XMLElement $root
-     * @param DOMNode $node
-     * @return XMLElement
-     */
-    private static function convert(XMLElement $root, DOMNode $node)
-    {
-        $el = new XMLElement($node->tagName);
-
-        self::convertNode($el, $node);
-
-        $root->appendChild($el);
     }
 
     /**
@@ -998,7 +1038,7 @@ class XMLElement implements IteratorAggregate
      * @param XMLElement $element
      * @param DOMNode $node
      */
-    private static function convertNode(XMLElement $element, DOMNode $node)
+    private static function copyDOMNode(XMLElement $element, DOMNode $node)
     {
         if ($node->hasAttributes()) {
             foreach ($node->attributes as $name => $attrEl) {
@@ -1015,7 +1055,9 @@ class XMLElement implements IteratorAggregate
                         $element->setValue(General::sanitize($childNode->data));
                     }
                 } elseif ($childNode instanceof DOMElement) {
-                    self::convert($element, $childNode);
+                    $el = new XMLElement($childNode->tagName);
+                    static::copyDOMNode($el, $childNode);
+                    $element->appendChild($el);
                 }
             }
         }

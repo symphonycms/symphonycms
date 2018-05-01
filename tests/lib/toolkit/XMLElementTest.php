@@ -291,6 +291,18 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('test-dtd<xml><child>1</child><child>2</child></xml>', $x->generate());
     }
 
+    public function testFromXMLString()
+    {
+        $xml = '<xml test="xml-string"><child>1</child><child>4</child><child>3</child></xml>';
+        $x = \XMLElement::fromXMLString($xml);
+        $this->assertNotEmpty($x);
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(3, $x->getNumberOfChildren());
+        $this->assertEquals('xml', $x->getName());
+        $this->assertEquals('xml-string', $x->getAttribute('test'));
+        $this->assertEquals('4', $x->getChild(1)->getValue());
+    }
+
     public function testConvertFromXMLString()
     {
         $xml = '<xml test="xml-string"><child>1</child><child>4</child><child>3</child></xml>';
@@ -300,6 +312,20 @@ final class XMLElementTest extends TestCase
         $this->assertEquals(3, $x->getNumberOfChildren());
         $this->assertEquals('xml-test', $x->getName());
         $this->assertEquals('xml-string', $x->getAttribute('test'));
+        $this->assertEquals('4', $x->getChild(1)->getValue());
+    }
+
+    public function testfromDOMDocument()
+    {
+        $xml = '<xml test="dom-doc"><child>1</child><child>4</child><child>3</child></xml>';
+        $doc = new \DOMDocument();
+        $doc->loadXML($xml);
+        $x = \XMLElement::fromDOMDocument($doc);
+        $this->assertNotEmpty($x);
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(3, $x->getNumberOfChildren());
+        $this->assertEquals('xml', $x->getName());
+        $this->assertEquals('dom-doc', $x->getAttribute('test'));
         $this->assertEquals('4', $x->getChild(1)->getValue());
     }
 
