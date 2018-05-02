@@ -258,13 +258,17 @@ abstract class Page
     }
 
     /**
-     * This function calls `__renderHeaders()`.
+     * This function should generate the content to send to the client.
+     * The base implementation returns an empty body.
+     * This function calls `renderHeaders()`.
      *
-     * @see __renderHeaders()
+     * @see renderHeaders()
+     * @return string
      */
     public function generate($page = null)
     {
-        $this->__renderHeaders();
+        $this->renderHeaders();
+        return '';
     }
 
     /**
@@ -284,7 +288,7 @@ abstract class Page
      * Iterates over the `$_headers` for this page
      * and outputs them using PHP's header() function.
      */
-    protected function __renderHeaders()
+    protected function renderHeaders()
     {
         if (!is_array($this->_headers) || empty($this->_headers)) {
             return;
