@@ -310,8 +310,8 @@ class ExtensionManager implements FileResource
     }
 
     /**
-     * Determines whether an extension needs to be updated or not using
-     * PHP's `version_compare` function. This function will return the
+     * Determines whether an extension needs to be updated or not.
+     * This function will return the
      * installed version if the extension requires an update, or
      * false otherwise.
      *
@@ -328,11 +328,13 @@ class ExtensionManager implements FileResource
     {
         $installed_version = self::fetchInstalledVersion($name);
 
-        if (is_null($installed_version)) {
+        if (!$installed_version) {
             return false;
+        } elseif (\Composer\Semver\Comparator::lessThan($installed_version, $file_version)) {
+            return $installed_version;
         }
 
-        return (version_compare($installed_version, $file_version, '<') ? $installed_version : false);
+        return false;
     }
 
     /**
@@ -1010,7 +1012,7 @@ class ExtensionManager implements FileResource
             foreach ($xpath->query('//ext:release', $extension) as $release) {
                 $version = $xpath->evaluate('string(@version)', $release);
 
-                if (version_compare($version, $latest_release_version, '>')) {
+                if (\Composer\Semver\Comparator::greaterThan($version, $latest_release_version)) {
                     $latest_release_version = $version;
                 }
             }
@@ -1027,27 +1029,17 @@ class ExtensionManager implements FileResource
                 $required_max_version = $xpath->evaluate('string(@max)', $release);
                 $current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
 
-                // Remove pre-release notes from the current Symphony version so that
-                // we don't get false erros in the backend
-                $current_symphony_version = preg_replace(array('/dev/i', '/-?beta\.?\d/i', '/-?rc\.?\d/i', '/\.0(?:\.0)?$/'), '', $current_symphony_version);
-
-                // Munge the version number so that it makes sense in the backend.
-                // Consider, 2.3.x. As the min version, this means 2.3 onwards,
-                // for the max it implies any 2.3 release. RE: #1019
-                // Also remove any .0 when doing the comparison to prevent extensions
-                // that don't use semver yet. RE: #2146
-                $required_min_version = preg_replace(array('/\.x/', '/\.0$/'), '', $required_min_version);
-                $required_max_version = preg_replace(array('/\.x/', '/\.0$/'), 'p', $required_max_version);
-
                 // Min version
-                if (!empty($required_min_version) && version_compare($current_symphony_version, $required_min_version, '<')) {
+                if (!empty($required_min_version) &&
+                    \Composer\Semver\Comparator::lessThan($current_symphony_version, $required_min_version)) {
                     $about['status'][] = Extension::EXTENSION_NOT_COMPATIBLE;
                     $about['required_version'] = $required_min_version;
 
-                    // Max version
-                } elseif (!empty($required_max_version) && version_compare($current_symphony_version, $required_max_version, '>')) {
+                // Max version
+                } elseif (!empty($required_max_version) &&
+                    \Composer\Semver\Comparator::greaterThan($current_symphony_version, $required_max_version)) {
                     $about['status'][] = Extension::EXTENSION_NOT_COMPATIBLE;
-                    $about['required_version'] = str_replace('p', '.x', $required_max_version);
+                    $about['required_version'] = $required_max_version;
                 }
             }
 

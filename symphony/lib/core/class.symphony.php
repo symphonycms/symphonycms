@@ -536,8 +536,9 @@ abstract class Symphony implements Singleton
 
     /**
      * Returns the most recent version found in the `/install/migrations` folder.
-     * Returns a version string to be used in `version_compare()` if an updater
-     * has been found. Returns `false` otherwise.
+     * Returns a semver version string if an updater
+     * has been found.
+     * Returns `false` otherwise.
      *
      * @since Symphony 2.3.1
      * @return string|boolean
@@ -568,7 +569,7 @@ abstract class Symphony implements Singleton
             $migration_version = self::getMigrationVersion();
             $current_version = Symphony::Configuration()->get('version', 'symphony');
 
-            return version_compare($current_version, $migration_version, '<');
+            return \Composer\Semver\Comparator::lessThan($current_version, $migration_version);
         }
 
         return false;
