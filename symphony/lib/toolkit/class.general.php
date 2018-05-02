@@ -1018,31 +1018,6 @@ class General
     }
 
     /**
-     * Checks that the file and its folder are readable and writable.
-     *
-     * @deprecated @since Symphony 2.7.0
-     * @since Symphony 2.6.3
-     * @return boolean
-     */
-    public static function checkFile($file)
-    {
-        if (Symphony::Log()) {
-            Symphony::Log()->pushDeprecateWarningToLog('General::checkFile()', '`General::checkFileWritable()');
-        }
-        clearstatcache();
-        $dir = dirname($file);
-
-        if (
-            (!is_writable($dir) || !is_readable($dir)) // Folder
-            || (file_exists($file) && (!is_readable($file) || !is_writable($file))) // File
-        ) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Checks that the file is readable.
      * It first checks to see if the $file path exists
      * and if it does, checks that it is readable.
