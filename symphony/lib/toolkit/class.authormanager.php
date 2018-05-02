@@ -82,6 +82,43 @@ class AuthorManager
     }
 
     /**
+     * Undocumented function
+     *
+     * @param [type] $token
+     * @return void
+     */
+    public function fetchByPasswordResetToken($token)
+    {
+        if (!$token) {
+            return null;
+        }
+        return $this->select()
+            ->innerjoin('tbl_forgotpass')->alias('f')
+            ->on(['a.id' => '$f.author_id'])
+            ->where(['f.expiry' => ['>' => DateTimeObj::getGMT('c')]])
+            ->where(['f.token' => $token])
+            ->execute()
+            ->next();
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param [type] $token
+     * @return void
+     */
+    public function fetchByAuthToken($token)
+    {
+        if (!$token) {
+            return null;
+        }
+        return $this->select()
+            ->where(['a.auth_token' => $token])
+            ->execute()
+            ->next();
+    }
+
+    /**
      * The fetch method returns all Authors from Symphony with the option to sort
      * or limit the output. This method returns an array of Author objects.
      *
@@ -232,52 +269,6 @@ class AuthorManager
         }
 
         return self::$_pool[$username];
-    }
-
-    /**
-     * This function will allow an Author to sign into Symphony by using their
-     * authentication token as well as username/password.
-     *
-     * @param integer $author_id
-     *  The Author ID to allow to use their authentication token.
-     * @throws DatabaseException
-     * @return boolean
-     */
-    public static function activateAuthToken($author_id)
-    {
-        if (!is_int($author_id)) {
-            return false;
-        }
-
-        return Symphony::Database()
-            ->update('tbl_authors')
-            ->set(['auth_token_active' => 'yes'])
-            ->where(['id' => $author_id])
-            ->execute()
-            ->success();
-    }
-
-    /**
-     * This function will remove the ability for an Author to sign into Symphony
-     * by using their authentication token
-     *
-     * @param integer $author_id
-     *  The Author ID to allow to use their authentication token.
-     * @throws DatabaseException
-     * @return boolean
-     */
-    public static function deactivateAuthToken($author_id)
-    {
-        if (!is_int($author_id)) {
-            return false;
-        }
-
-        return Symphony::Database()
-            ->update('tbl_authors')
-            ->set(['auth_token_active' => 'no'])
-            ->where(['id' => $author_id])
-            ->execute()
-            ->success();
     }
 
     /**

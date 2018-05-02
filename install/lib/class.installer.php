@@ -513,7 +513,7 @@ class Installer extends Administration
                 'user_type'             => 'developer',
                 'primary'               => 'yes',
                 'default_area'          => '/blueprints/sections/',
-                'auth_token_active'     => 'no'
+                'auth_token'            => null,
             ])->execute();
         } catch (DatabaseException $e) {
             $this->abort(
