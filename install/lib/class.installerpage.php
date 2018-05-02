@@ -325,6 +325,7 @@ class InstallerPage extends HTMLPage
 
         $this->__appendError(array('no-database-connection'), $Div);
         $Fieldset->appendChild($Div);
+        $Fieldset->appendChild(new XMLElement('p', __('It is recommend to use <code>localhost</code> or <code>unix_socket</code> over <code>127.0.0.1</code> as the host on production servers.') . ' ' . __('The port field can be used to specify the UNIX socket path.')));
 
         // Advanced configuration: Table Prefix
         $label = Widget::Label(__('Table Prefix'), Widget::Input('fields[database][tbl_prefix]', $fields['database']['tbl_prefix']));
