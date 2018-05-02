@@ -50,7 +50,7 @@ final class CryptographyTest extends TestCase
 
     public function testHash()
     {
-        $this->assertStringStartsWith('PBKDF2v1|sha256|10000|', \Cryptography::hash('test'));
+        $this->assertStringStartsWith('PBKDF2v1|sha256|100000|', \Cryptography::hash('test'));
     }
 
     public function testCompare()
@@ -63,7 +63,8 @@ final class CryptographyTest extends TestCase
 
     public function testRequiresMigration()
     {
-        $this->assertFalse(\Cryptography::requiresMigration('PBKDF2v1|sha256|10000|8cbf91f04f2604380122|OXQB+sx6n4nE14xpyDTdODUZyGROAYBKhFMP7DgqOa3RxLWavSU41w=='));
+        $this->assertTrue(\Cryptography::requiresMigration('PBKDF2v1|sha256|10000|8cbf91f04f2604380122|OXQB+sx6n4nE14xpyDTdODUZyGROAYBKhFMP7DgqOa3RxLWavSU41w=='));
         $this->assertTrue(\Cryptography::requiresMigration('PBKDF2v1|10000|8cbf91f04f2604380122|OXQB+sx6n4nE14xpyDTdODUZyGROAYBKhFMP7DgqOa3RxLWavSU41w=='));
+        $this->assertFalse(\Cryptography::requiresMigration('PBKDF2v1|sha256|100000|this is 20 char salt|' . base64_encode('this is a hash xxxxxxxxxxxxxxxxxxxxxxxxx')));
     }
 }
