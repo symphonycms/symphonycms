@@ -174,12 +174,21 @@ class Database
     public function getDSN()
     {
         $config = &$this->config;
+        if ($config['host'] === 'unix_socket') {
+           return sprintf(
+                '%s:unix_socket=%s;dbname=%s;charset=%s',
+                $config['driver'],
+                General::intval($config['port']) === -1 ? $config['port'] : '',
+                $config['db'],
+                $config['charset']
+            );
+        }
         return sprintf(
             '%s:dbname=%s;host=%s;port=%d;charset=%s',
             $config['driver'],
             $config['db'],
             $config['host'],
-            $config['port'],
+            General::intval($config['port']),
             $config['charset']
         );
     }
