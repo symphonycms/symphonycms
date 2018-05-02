@@ -25,7 +25,7 @@ class PBKDF2 extends Cryptography
     /**
      * Key length
      */
-    const ITERATIONS = 10000;
+    const ITERATIONS = 100000;
 
     /**
      * Algorithm to be used
