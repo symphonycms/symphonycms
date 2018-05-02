@@ -421,7 +421,8 @@ abstract class Symphony implements Singleton
                 self::$Author = $author;
 
                 // Only migrate hashes if there is no update available as the update might change the tbl_authors table.
-                if (self::isUpgradeAvailable() === false && Cryptography::requiresMigration(self::$Author->get('password'))) {
+                // Also, only upgrade if the password is clear text.
+                if (!self::isUpgradeAvailable() && !$isHash && Cryptography::requiresMigration(self::$Author->get('password'))) {
                     self::$Author->set('password', Cryptography::hash($password));
 
                     self::Database()
