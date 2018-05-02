@@ -58,17 +58,18 @@ class Frontend extends Symphony
     /**
      * Overrides the Symphony `isLoggedIn()` function to allow Authors
      * to become logged into the frontend when `$_REQUEST['auth-token']`
-     * is present. This logs an Author in using the loginFromToken function.
+     * is present.
+     * This logs an Author in using the loginFromToken function.
      * This function allows the use of 'admin' type pages, where a Frontend
-     * page requires that the viewer be a Symphony Author
+     * page requires that the viewer be a Symphony Author.
      *
-     * @see core.Symphony#loginFromToken()
-     * @see core.Symphony#isLoggedIn()
+     * @uses Symphony::loginFromToken()
+     * @uses Symphony::isLoggedIn()
      * @return boolean
      */
     public static function isLoggedIn()
     {
-        if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && strlen($_REQUEST['auth-token']) == 8) {
+        if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token']) {
             return self::loginFromToken($_REQUEST['auth-token']);
         }
 

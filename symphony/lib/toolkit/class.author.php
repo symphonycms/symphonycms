@@ -178,14 +178,24 @@ class Author implements ArrayAccess
     }
 
     /**
-     * Returns boolean if the current Author's authentication token
-     * is active or not.
+     * Returns boolean if the current Author's authentication token is valid.
      *
      * @return boolean
      */
     public function isTokenActive()
     {
-        return ($this->get('auth_token_active') === 'yes' ? true : false);
+        return !empty($this->get('auth_token'));
+    }
+
+    /**
+     * Returns the current Author's auth token.
+     *
+     * @return mixed
+     *  The auth token or null
+     */
+    public function getAuthToken()
+    {
+        return $this->get('auth_token');
     }
 
     /**
@@ -196,21 +206,6 @@ class Author implements ArrayAccess
     public function getFullName()
     {
         return $this->get('first_name') . ' ' . $this->get('last_name');
-    }
-
-    /**
-     * Creates an author token using the `Cryptography::hash` function and the
-     * current Author's username and password. The default hash function
-     * is SHA1
-     *
-     * @see toolkit.Cryptography#hash()
-     * @see toolkit.General#substrmin()
-     *
-     * @return string
-     */
-    public function createAuthToken()
-    {
-        return General::substrmin(sha1($this->get('username') . $this->get('password')), 8);
     }
 
     /**
@@ -334,8 +329,8 @@ class Author implements ArrayAccess
      * existing user is determined by if an ID is already set.
      * When the database is updated successfully, the id of the author is set.
      *
-     * @see toolkit.AuthorManager#add()
-     * @see toolkit.AuthorManager#edit()
+     * @uses AuthorManager::add()
+     * @uses AuthorManager::edit()
      * @return integer|boolean
      *  When a new Author is added or updated, an integer of the Author ID
      *  will be returned, otherwise false will be returned for a failed update.

@@ -97,7 +97,7 @@ final class migration_300 extends Migration
         // Make extensions id unsigned
         Symphony::Database()
             ->alter('tbl_extensions')
-            ->change('id', ['id' => [
+            ->modify(['id' => [
                 'type' => 'int(11)',
                 'signed' => false,
             ]])
@@ -107,7 +107,7 @@ final class migration_300 extends Migration
         // and add the order column
         $edStm = Symphony::Database()
             ->alter('tbl_extensions_delegates')
-            ->change('extension_id', ['extension_id' => [
+            ->modify(['extension_id' => [
                 'type' => 'int(11)',
                 'signed' => false,
             ]]);
@@ -132,11 +132,11 @@ final class migration_300 extends Migration
         // Make parent_section unsigned and sortorder signed
         Symphony::Database()
             ->alter('tbl_fields')
-            ->change('parent_section', ['parent_section' => [
+            ->modify( ['parent_section' => [
                 'type' => 'int(11)',
                 'signed' => false,
             ]])
-            ->change('sortorder', ['sortorder' => [
+            ->modify(['sortorder' => [
                 'type' => 'int(11)',
                 'signed' => true,
             ]])
@@ -145,22 +145,29 @@ final class migration_300 extends Migration
         // Make author id unsigned
         Symphony::Database()
             ->alter('tbl_forgotpass')
-            ->change('author_id', ['author_id' => [
-                'type' => 'int(11)',
-                'signed' => false,
-            ]])
+            ->modify([
+                'author_id' => [
+                    'type' => 'int(11)',
+                    'signed' => false,
+                ],
+                'token' => [
+                    'type' => 'varchar(255)',
+                ]
+            ])
             ->execute();
 
         // Make parent unsigned and sortorder signed
         Symphony::Database()
             ->alter('tbl_pages')
-            ->change('parent', ['parent' => [
+            ->modify(['parent' => [
                 'type' => 'int(11)',
                 'signed' => false,
+                'null' => true,
             ]])
-            ->change('sortorder', ['sortorder' => [
+            ->modify(['sortorder' => [
                 'type' => 'int(11)',
                 'signed' => true,
+                'null' => true,
             ]])
             ->execute();
 
@@ -179,6 +186,40 @@ final class migration_300 extends Migration
                 ->alter("tbl_entries_data_$dateFieldId")
                 ->drop('date')
                 ->execute();
+        }
+        unset($dateFields);
+
+        // Change auth_token_active to auth_token
+        if (Symphony::Database()
+            ->showColumns()
+            ->from('tbl_authors')
+            ->like('auth_token_active')
+            ->execute()
+            ->next()) {
+            // Get active tokens
+            $activeTokenAuthors = (new AuthorManager)
+                ->select()
+                ->where(['auth_token_active' => 'yes'])
+                ->execute()
+                ->rows();
+            // Drop and add
+            Symphony::Database()
+                ->alter('tbl_authors')
+                ->drop('auth_token_active')
+                ->add([
+                    'auth_token' => [
+                        'type' => 'varchar(255)',
+                        'null' => true,
+                    ]
+                ])
+                ->execute();
+            // Create tokens for active users
+            foreach ($activeTokenAuthors as $ata) {
+                unset($ata['auth_token_active']);
+                $ata->set('auth_token', Cryptography::randomBytes());
+                $ata->commit();
+            }
+            unset($activeTokenAuthors);
         }
 
         // Update the version information

@@ -11,11 +11,12 @@ CREATE TABLE `tbl_authors` (
   `user_type` enum('author','manager','developer') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'author',
   `primary` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'no',
   `default_area` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `auth_token_active` enum('yes','no') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'no',
+  `auth_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `language` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
-  UNIQUE KEY `email` (`email`(191))
+  UNIQUE KEY `email` (`email`(191)),
+  KEY `auth_token` (`auth_token`(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- *** STRUCTURE: `tbl_cache` ***
@@ -190,9 +191,10 @@ CREATE TABLE `tbl_fields_upload` (
 DROP TABLE IF EXISTS `tbl_forgotpass`;
 CREATE TABLE `tbl_forgotpass` (
   `author_id` int(11) unsigned NOT NULL DEFAULT '0',
-  `token` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiry` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`author_id`)
+  PRIMARY KEY (`author_id`),
+  KEY `token` (`token`(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- *** STRUCTURE: `tbl_pages` ***

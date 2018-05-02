@@ -29,6 +29,13 @@ class contentSystemAuthors extends AdministrationPage
         return $authorQuery->execute()->rows();
     }
 
+    public function isRemoteLoginActionChecked()
+    {
+        return is_array($_POST['action']) &&
+            array_key_exists('remote_login', $_POST['action']) &&
+            $_POST['action']['remote_login'] === 'yes';
+    }
+
     public function __viewIndex()
     {
         $this->setPageType('table');
@@ -409,17 +416,24 @@ class contentSystemAuthors extends AdministrationPage
         $group->appendChild($fieldset);
 
         // Auth token
-        if (Symphony::Author()->isDeveloper() || Symphony::Author()->isManager()) {
+        if (Symphony::Author()->isDeveloper() || Symphony::Author()->isManager() || $isOwner) {
             $label = Widget::Label();
-            $group->appendChild(Widget::Input('fields[auth_token_active]', 'no', 'hidden'));
-            $input = Widget::Input('fields[auth_token_active]', 'yes', 'checkbox');
+            $group->appendChild(Widget::Input('action[remote_login]', 'no', 'hidden'));
+            $input = Widget::Input('action[remote_login]', 'yes', 'checkbox');
 
             if ($author->isTokenActive()) {
                 $input->setAttribute('checked', 'checked');
+                $tokenUrl = SYMPHONY_URL . '/login/' . $author->getAuthToken() . '/';
+                $label->setValue(__('%s Remote login with the token %s is enabled.', [
+                     $input->generate(),
+                     '<a href="' . $tokenUrl . '">' . $author->getAuthToken() . '</a>',
+                ]));
+            } else {
+                $label->setValue(__('%s Remote login is currently disabled.', [
+                    $input->generate(),
+                ]) . ' ' . __('Check the box to generate a new token.'));
             }
 
-            $temp = SYMPHONY_URL . '/login/' . $author->createAuthToken() . '/';
-            $label->setValue(__('%s Allow remote login via', array($input->generate())) . ' <a href="' . $temp . '">' . $temp . '</a>');
             $group->appendChild($label);
         }
 
@@ -576,7 +590,6 @@ class contentSystemAuthors extends AdministrationPage
     {
         if (is_array($_POST['action']) && array_key_exists('save', $_POST['action'])) {
             $fields = $_POST['fields'];
-
             $canCreate = Symphony::Author()->isDeveloper() || Symphony::Author()->isManager();
 
             if (!$canCreate) {
@@ -601,7 +614,11 @@ class contentSystemAuthors extends AdministrationPage
             $this->_Author->set('last_seen', null);
             $this->_Author->set('password', (trim($fields['password']) == '' ? '' : Cryptography::hash($fields['password'])));
             $this->_Author->set('default_area', $fields['default_area']);
-            $this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
+            if ($this->isRemoteLoginActionChecked() && !$this->_Author->isTokenActive()) {
+                $this->_Author->set('auth_token', Cryptography::randomBytes());
+            } elseif (!$this->isRemoteLoginActionChecked()) {
+                $this->_Author->set('auth_token', null);
+            }
             $this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
 
             /**
@@ -695,16 +712,16 @@ class contentSystemAuthors extends AdministrationPage
                 // but not the primary account
                 || (Symphony::Author()->isDeveloper() && $this->_Author->isPrimaryAccount() === false);
 
+        if (!$isOwner && !$canEdit) {
+            Administration::instance()->throwCustomError(
+                __('You are not authorised to modify this author.'),
+                __('Access Denied'),
+                Page::HTTP_STATUS_UNAUTHORIZED
+            );
+        }
+
         if (is_array($_POST['action']) && array_key_exists('save', $_POST['action'])) {
             $authenticated = $changing_password = $changing_email = false;
-
-            if (!$isOwner && !$canEdit) {
-                Administration::instance()->throwCustomError(
-                    __('You are not authorised to modify this author.'),
-                    __('Access Denied'),
-                    Page::HTTP_STATUS_UNAUTHORIZED
-                );
-            }
 
             if ($fields['email'] != $this->_Author->get('email')) {
                 $changing_email = true;
@@ -761,7 +778,11 @@ class contentSystemAuthors extends AdministrationPage
                 $this->_Author->set('default_area', $fields['default_area']);
             }
 
-            $this->_Author->set('auth_token_active', ($fields['auth_token_active'] ? $fields['auth_token_active'] : 'no'));
+            if ($authenticated && $this->isRemoteLoginActionChecked() && !$this->_Author->isTokenActive()) {
+                $this->_Author->set('auth_token', Cryptography::randomBytes());
+            } elseif (!$this->isRemoteLoginActionChecked()) {
+                $this->_Author->set('auth_token', null);
+            }
 
             /**
              * Before editing an author, provided with the Author object
