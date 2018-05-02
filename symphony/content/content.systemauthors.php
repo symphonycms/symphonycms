@@ -92,9 +92,17 @@ class contentSystemAuthors extends AdministrationPage
          * '/system/authors/'
          * @param array $columns
          * An array of the current columns, passed by reference
+         * @param string $sort
+         *  @since Symphony 3.0.0
+         *  The sort field
+         * @param string $order
+         *  @since Symphony 3.0.0
+         *  The sort order
          */
         Symphony::ExtensionManager()->notifyMembers('AddCustomAuthorColumn', '/system/authors/', array(
             'columns' => &$columns,
+            'sort' => $sort,
+            'order' => $order,
         ));
 
         $aTableHead = Sortable::buildTableHeaders($columns, $sort, $order, (isset($_REQUEST['filter']) ? '&amp;filter=' . $_REQUEST['filter'] : ''));
