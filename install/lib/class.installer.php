@@ -114,9 +114,9 @@ class Installer extends Administration
                 );
             }
 
-            $this->render(new InstallerPage('requirements', array(
+            $this->render(new InstallerPage('requirements', [
                 'errors'=> $errors
-            )));
+            ]));
         }
 
         // Check for unattended installation
@@ -149,17 +149,17 @@ class Installer extends Administration
             } elseif (isset(self::$POST['action']['install'])) {
                 $disabled_extensions = $this->install();
 
-                $this->render(new InstallerPage('success', array(
+                $this->render(new InstallerPage('success', [
                     'disabled-extensions' => $disabled_extensions
-                )));
+                ]));
             }
         }
 
         // Display the Installation page
-        $this->render(new InstallerPage('configuration', array(
+        $this->render(new InstallerPage('configuration', [
             'errors' => $errors,
             'default-config' => !empty($unattended) ? $unattended['fields'] : Symphony::Configuration()->get()
-        )));
+        ]));
     }
 
     /**
@@ -194,75 +194,75 @@ class Installer extends Administration
         $errors = [];
 
         // Check for PHP 5.6+
-        if (version_compare(phpversion(), '5.6', '<=')) {
-            $errors[] = array(
+        if (\Composer\Semver\Comparator::lessThan(phpversion(), '5.6')) {
+            $errors[] = [
                 'msg' => __('PHP Version is not correct'),
-                'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.', array('<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.3</code>', '<code>' . phpversion() . '</code>'))
-            );
+                'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected.', ['<code><abbr title="PHP: Hypertext Pre-processor">PHP</abbr> 5.6</code>', '<code>' . phpversion() . '</code>'])
+            ];
         }
 
         // Make sure the install.sql file exists
         if (!file_exists(INSTALL . '/includes/install.sql') || !is_readable(INSTALL . '/includes/install.sql')) {
-            $errors[] = array(
+            $errors[] = [
                 'msg' => __('Missing install.sql file'),
-                'details'  => __('It appears that %s is either missing or not readable. This is required to populate the database and must be uploaded before installation can commence. Ensure that PHP has read permissions.', array('<code>install.sql</code>'))
-            );
+                'details'  => __('It appears that %s is either missing or not readable. This is required to populate the database and must be uploaded before installation can commence. Ensure that PHP has read permissions.', ['<code>install.sql</code>'])
+            ];
         }
 
         // Is PDO available?
         if (!class_exists('PDO') || !extension_loaded('pdo_mysql')) {
-            $errors[] = array(
+            $errors[] = [
                 'msg' => __('PDO extension not present'),
                 'details'  => __('Symphony requires PHP to be configured with PDO for MySQL to work.')
-            );
+            ];
         }
 
         // Is ZLib available?
         if (!extension_loaded('zlib')) {
-            $errors[] = array(
+            $errors[] = [
                 'msg' => __('ZLib extension not present'),
                 'details' => __('Symphony uses the ZLib compression library for log rotation.')
-            );
+            ];
         }
 
         // Is libxml available?
         if (!extension_loaded('xml') && !extension_loaded('libxml')) {
-            $errors[] = array(
+            $errors[] = [
                 'msg' => __('XML extension not present'),
                 'details'  => __('Symphony needs the XML extension to pass data to the site frontend.')
-            );
+            ];
         }
 
         // Is libxslt available?
         if (!extension_loaded('xsl') && !extension_loaded('xslt') && !function_exists('domxml_xslt_stylesheet')) {
-            $errors[] = array(
+            $errors[] = [
                 'msg' => __('XSLT extension not present'),
-                'details'  => __('Symphony needs an XSLT processor such as %s or Sablotron to build pages.', array('Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>'))
-            );
+                'details'  => __('Symphony needs an XSLT processor such as %s or Sablotron to build pages.', ['Lib<abbr title="eXtensible Stylesheet Language Transformation">XSLT</abbr>'])
+            ];
         }
 
         // Is json_encode available?
         if (!function_exists('json_decode')) {
-            $errors[] = array(
+            $errors[] = [
                 'msg' => __('JSON functionality is not present'),
                 'details'  => __('Symphony uses JSON functionality throughout the backend for translations and the interface.')
-            );
+            ];
         }
 
         // Cannot write to root folder.
         if (!is_writable(DOCROOT)) {
-            $errors['no-write-permission-root'] = array(
+            $errors['no-write-permission-root'] = [
                 'msg' => 'Root folder not writable: ' . DOCROOT,
-                'details' => __('Symphony does not have write permission to the root directory. Please modify permission settings on %s. This can be reverted once installation is complete.', array('<code>' . DOCROOT . '</code>'))
-            );
+                'details' => __('Symphony does not have write permission to the root directory. Please modify permission settings on %s. This can be reverted once installation is complete.', ['<code>' . DOCROOT . '</code>'])
+            ];
         }
 
         // Cannot write to workspace
         if (is_dir(DOCROOT . '/workspace') && !is_writable(DOCROOT . '/workspace')) {
-            $errors['no-write-permission-workspace'] = array(
+            $errors['no-write-permission-workspace'] = [
                 'msg' => 'Workspace folder not writable: ' . DOCROOT . '/workspace',
-                'details' => __('Symphony does not have write permission to the existing %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.', array('<code>/workspace</code>', '<code>chmod -R</code>'))
-            );
+                'details' => __('Symphony does not have write permission to the existing %1$s directory. Please modify permission settings on this directory and its contents to allow this, such as with a recursive %2$s command.', ['<code>/workspace</code>', '<code>chmod -R</code>'])
+            ];
         }
 
         return $errors;
@@ -291,10 +291,10 @@ class Installer extends Administration
             // Invalid credentials
             // @link http://dev.mysql.com/doc/refman/5.5/en/error-messages-server.html
             if ($e->getDatabaseErrorCode() === 1044 || $e->getDatabaseErrorCode() === 1045) {
-                $errors['database-invalid-credentials'] = array(
+                $errors['database-invalid-credentials'] = [
                     'msg' => 'Database credentials were denied',
                     'details' => __('Symphony was unable to access the database with these credentials.'),
-                );
+                ];
             }
             // Connection related
             else {
@@ -310,19 +310,22 @@ class Installer extends Administration
         try {
             // Check the database table prefix is legal. #1815
             if (!preg_match('/^[0-9a-zA-Z_]+$/', $fields['database']['tbl_prefix'])) {
-                $errors['database-table-prefix']  = array(
+                $errors['database-table-prefix'] = [
                     'msg' => 'Invalid database table prefix: ‘' . $fields['database']['tbl_prefix'] . '’',
-                    'details' =>  __('The table prefix %s is invalid. The table prefix must only contain numbers, letters or underscore characters.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
-                );
+                    'details' =>  __('The table prefix %s is invalid. The table prefix must only contain numbers, letters or underscore characters.', ['<code>' . $fields['database']['tbl_prefix'] . '</code>'])
+                ];
             }
             // Check the database credentials
             elseif ($db && $db->isConnected()) {
                 // Incorrect MySQL version
-                if (version_compare($db->getVersion(), '5.5', '<')) {
-                    $errors['database-incorrect-version']  = array(
-                        'msg' => 'MySQL Version is not correct. '. $version . ' detected.',
-                        'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.', array('<code>MySQL 5.5</code>', '<code>' . $version . '</code>'))
-                    );
+                if (\Composer\Semver\Comparator::lessThan($db->getVersion(), '5.6')) {
+                    $errors['database-incorrect-version'] = [
+                        'msg' => 'MySQL Version is not correct. '. $db->getVersion() . ' detected.',
+                        'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.', [
+                            '<code>MySQL 5.6</code>',
+                            '<code>' . $db->getVersion() . '</code>'
+                        ])
+                    ];
                 } else {
                     // Existing table prefix
                     $tables = $db->show()
@@ -332,74 +335,74 @@ class Installer extends Administration
                         ->rows();
 
                     if (!empty($tables)) {
-                        $errors['database-table-prefix']  = array(
+                        $errors['database-table-prefix'] = [
                             'msg' => 'Database table prefix clash with ‘' . $fields['database']['db'] . '’',
-                            'details' =>  __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', array('<code>' . $fields['database']['tbl_prefix'] . '</code>'))
-                        );
+                            'details' =>  __('The table prefix %s is already in use. Please choose a different prefix to use with Symphony.', ['<code>' . $fields['database']['tbl_prefix'] . '</code>'])
+                        ];
                     }
                 }
             }
         } catch (DatabaseException $e) {
-            $errors['unknown-database']  = array(
-                    'msg' => 'Database ‘' . $fields['database']['db'] . '’ not found.',
-                    'details' =>  __('Symphony was unable to connect to the specified database.')
-                );
+            $errors['unknown-database'] = [
+                'msg' => 'Database ‘' . $fields['database']['db'] . '’ not found.',
+                'details' =>  __('Symphony was unable to connect to the specified database.')
+            ];
         }
 
         // Website name not entered
         if (trim($fields['general']['sitename']) == '') {
-            $errors['general-no-sitename']  = array(
+            $errors['general-no-sitename'] = [
                 'msg' => 'No sitename entered.',
                 'details' => __('You must enter a Site name. This will be shown at the top of your backend.')
-            );
+            ];
         }
 
         // Username Not Entered
         if (trim($fields['user']['username']) == '') {
-            $errors['user-no-username']  = array(
+            $errors['user-no-username'] = [
                 'msg' => 'No username entered.',
                 'details' => __('You must enter a Username. This will be your Symphony login information.')
-            );
+            ];
         }
 
         // Password Not Entered
         if (trim($fields['user']['password']) == '') {
-            $errors['user-no-password']  = array(
+            $errors['user-no-password'] = [
                 'msg' => 'No password entered.',
                 'details' => __('You must enter a Password. This will be your Symphony login information.')
-            );
+            ];
         }
 
         // Password mismatch
         elseif ($fields['user']['password'] != $fields['user']['confirm-password']) {
-            $errors['user-password-mismatch']  = array(
+            $errors['user-password-mismatch'] = [
                 'msg' => 'Passwords did not match.',
                 'details' => __('The password and confirmation did not match. Please retype your password.')
-            );
+            ];
         }
 
         // No Name entered
         if (trim($fields['user']['firstname']) == '' || trim($fields['user']['lastname']) == '') {
-            $errors['user-no-name']  = array(
+            $errors['user-no-name'] = [
                 'msg' => 'Did not enter First and Last names.',
                 'details' =>  __('You must enter your name.')
-            );
+            ];
         }
 
         // Invalid Email
         if (!preg_match('/^\w(?:\.?[\w%+-]+)*@\w(?:[\w-]*\.)+?[a-z]{2,}$/i', $fields['user']['email'])) {
-            $errors['user-invalid-email']  = array(
+            $errors['user-invalid-email'] = [
                 'msg' => 'Invalid email address supplied.',
                 'details' =>  __('This is not a valid email address. You must provide an email address since you will need it if you forget your password.')
-            );
+            ];
         }
 
         // Admin path not entered
         if (trim($fields['symphony']['admin-path']) == '') {
-            $errors['no-symphony-path']  = array(
+            $errors['no-symphony-path'] = [
                 'msg' => 'No Symphony path entered.',
                 'details' => __('You must enter a path for accessing Symphony, or leave the default. This will be used to access Symphony\'s backend.')
-            );
+            ];
         }
 
         return $errors;

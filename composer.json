@@ -32,5 +32,8 @@
             "symphony/lib/boot/defines.php",
             "symphony/lib/toolkit/util.validators.php"
         ]
+    },
+    "require": {
+        "composer/semver": "^1.4"
     }
 }
