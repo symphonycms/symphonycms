@@ -454,15 +454,13 @@ abstract class Symphony implements Singleton
 
     /**
      * Symphony allows Authors to login via the use of tokens instead of
-     * a username and password. A token is derived from concatenating the
-     * Author's username and password and applying the sha1 hash to
-     * it, from this, a portion of the hash is used as the token. This is a useful
-     * feature often used when setting up other Authors accounts or if an
-     * Author forgets their password.
+     * a username and password.
+     * A token is a random string of characters.
+     * This is a useful feature often used when setting up other Authors accounts or
+     * if an Author forgets their password.
      *
      * @param string $token
-     *  The Author token, which is a portion of the hashed string concatenation
-     *  of the Author's username and password
+     *  The Author token
      * @throws DatabaseException
      * @return boolean
      *  true if the Author is logged in, false otherwise
@@ -475,35 +473,23 @@ abstract class Symphony implements Singleton
             return false;
         }
 
-        $row = null;
-        if (strlen($token) === 6 || strlen($token) === 16) {
-            $row = self::Database()
-                ->select(['a.id', 'a.username', 'a.password'])
-                ->from('tbl_authors')->alias('a')
-                ->join('tbl_forgotpass')->alias('f')
-                ->on(['a.id' => '$f.author_id'])
-                ->where(['f.expiry' => ['>' => DateTimeObj::getGMT('c')]])
-                ->where(['f.token' => $token])
-                ->execute()
-                ->next();
-
+        $am = new AuthorManager;
+        // Try with the password reset
+        $rowByResetPass = $am->fetchByPasswordResetToken($token);
+        if ($rowByResetPass) {
+            $row = $rowByResetPass;
+            // consume the token
             self::Database()
                 ->delete('tbl_forgotpass')
                 ->where(['token' => $token])
                 ->execute();
         } else {
-            $row = self::Database()
-                ->select(['a.id', 'a.username', 'a.password'])
-                ->from('tbl_authors')->alias('a')
-                ->where(['SUBSTR(SHA1(CONCAT(username, password)), 1, 8)' => $token])
-                ->where(['auth_token_active' => 'yes'])
-                ->limit(1)
-                ->execute()
-                ->next();
+            // Fallback to auth token
+            $row = $am->fetchByAuthToken($token);
         }
 
         if ($row) {
-            self::$Author = AuthorManager::fetchByID($row['id']);
+            self::$Author = $row;
             self::$Cookie->set('username', $row['username']);
             self::$Cookie->set('pass', $row['password']);
             return self::Database()

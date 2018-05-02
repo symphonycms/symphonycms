@@ -61,11 +61,18 @@ class contentLogin extends HTMLPage
 
     public function view()
     {
-        if (isset($this->_context[0]) && in_array(strlen($this->_context[0]), array(6, 8, 16))) {
-            if (!$this->__loginFromToken($this->_context[0])) {
+        if (isset($this->_context[1]) && $this->_context[0] === 'reset-password') {
+            if (Administration::instance()->loginFromToken($this->_context[1])) {
                 if (Administration::instance()->isLoggedIn()) {
                     // Redirect to the Author's profile. RE: #1801
                     redirect(SYMPHONY_URL . '/system/authors/edit/' . Symphony::Author()->get('id') . '/reset-password/');
+                }
+            }
+        } elseif (isset($this->_context[0])) {
+            if (Administration::instance()->loginFromToken($this->_context[0])) {
+                if (Administration::instance()->isLoggedIn()) {
+                    // Regular token-based login
+                    redirect(SYMPHONY_URL . '/');
                 }
             }
         }
@@ -248,14 +255,7 @@ class contentLogin extends HTMLPage
                         ->variable('token');
 
                     if (!$token) {
-                        // More secure password token generation
-                        if (function_exists('openssl_random_pseudo_bytes')) {
-                            $seed = openssl_random_pseudo_bytes(16);
-                        } else {
-                            $seed = mt_rand();
-                        }
-
-                        $token = substr(SHA1::hash($seed), 0, 16);
+                        $token = Cryptography::randomBytes();
 
                         Symphony::Database()
                             ->insert('tbl_forgotpass')->values([
@@ -273,7 +273,7 @@ class contentLogin extends HTMLPage
                         $email->subject = __('New Symphony Account Password');
                         $email->text_plain = __('Hi %s,', array($author['first_name'])) . PHP_EOL .
                                 __('A new password has been requested for your account. Login using the following link, and change your password via the Authors area:') . PHP_EOL .
-                                PHP_EOL . '    ' . SYMPHONY_URL . "/login/{$token}/" . PHP_EOL . PHP_EOL .
+                                PHP_EOL . '    ' . SYMPHONY_URL . "/login/reset-password/{$token}/" . PHP_EOL . PHP_EOL .
                                 __('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . PHP_EOL . PHP_EOL .
                                 __('Best Regards,') . PHP_EOL .
                                 __('The Symphony Team');
@@ -317,20 +317,5 @@ class contentLogin extends HTMLPage
                 }
             }
         }
-    }
-
-    public function __loginFromToken($token)
-    {
-        // If token is invalid, return to login page
-        if (!Administration::instance()->loginFromToken($token)) {
-            return false;
-        }
-
-        // If token is valid and is an 8 char shortcut
-        if (!in_array(strlen($token), array(6, 16))) {
-            redirect(SYMPHONY_URL . '/'); // Regular token-based login
-        }
-
-        return false;
     }
 }

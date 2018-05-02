@@ -96,4 +96,33 @@ class Cryptography
         mt_srand(intval(microtime(true)*100000 + memory_get_usage(true)));
         return substr(sha1(uniqid(mt_rand(), true)), 0, $length);
     }
+
+    /**
+     * Returns a string generated from random bytes.
+     * It requires a minimum length of 16.
+     * It first tries to call PHP's random_byte.
+     * If not available, it will try openssl_random_pseudo_bytes.
+     * If not available, it will revert to `Cryptography::generateSalt()`.
+     *
+     * @uses Cryptography::generateSalt()
+     * @param integer $length
+     *  The number of random bytes to get.
+     *  The minimum is 16.
+     *  Defaults to 40, which is 160 bits of entropy.
+     * @return string
+     * @throws Exception
+     *  If the requested length is smaller than 16.
+     */
+    public static function randomBytes($length = 40)
+    {
+        if ($length < 16) {
+            throw new Exception('Can not generate less than 16 random bytes');
+        }
+        if (function_exists('random_bytes')) {
+            return bin2hex(random_bytes($length / 2));
+        } elseif (function_exists('openssl_random_pseudo_bytes')) {
+            return bin2hex(openssl_random_pseudo_bytes($length / 2));
+        }
+        return self::generateSalt($length);
+    }
 }

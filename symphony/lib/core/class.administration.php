@@ -84,20 +84,18 @@ class Administration extends Symphony
      * Overrides the Symphony isLoggedIn function to allow Authors
      * to become logged into the backend when `$_REQUEST['auth-token']`
      * is present. This logs an Author in using the loginFromToken function.
-     * A token may be 6 or 8 characters in length in the backend. A 6 or 16 character token
-     * is used for forget password requests, whereas the 8 character token is used to login
-     * an Author into the page
      *
-     * @see core.Symphony#loginFromToken()
+     * @uses Symphony::loginFromToken()
+     * @uses Symphony::isLoggedIn()
      * @return boolean
      */
     public static function isLoggedIn()
     {
-        if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token'] && in_array(strlen($_REQUEST['auth-token']), array(6, 8, 16))) {
+        if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token']) {
             return self::loginFromToken($_REQUEST['auth-token']);
         }
 
-        return parent::isLoggedIn();
+        return Symphony::isLoggedIn();
     }
 
     /**
@@ -173,7 +171,7 @@ class Administration extends Symphony
             if ($page === '/publish/') {
                 $sections = (new SectionManager)->select()->sort('sortorder')->execute()->rows();
                 $section = current($sections);
-                redirect(SYMPHONY_URL . '/publish/' . $section->get('handle'));
+                redirect(SYMPHONY_URL . '/publish/' . $section->get('handle') . '/');
             } else {
                 $this->errorPageNotFound();
             }
