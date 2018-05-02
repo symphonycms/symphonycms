@@ -319,10 +319,13 @@ class Installer extends Administration
             elseif ($db && $db->isConnected()) {
                 // Incorrect MySQL version
                 if (\Composer\Semver\Comparator::lessThan($db->getVersion(), '5.6')) {
-                    $errors['database-incorrect-version']  = array(
-                        'msg' => 'MySQL Version is not correct. '. $version . ' detected.',
-                        'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.', array('<code>MySQL 5.6</code>', '<code>' . $version . '</code>'))
-                    );
+                    $errors['database-incorrect-version'] = [
+                        'msg' => 'MySQL Version is not correct. '. $db->getVersion() . ' detected.',
+                        'details' => __('Symphony requires %1$s or greater to work, however version %2$s was detected. This requirement must be met before installation can proceed.', [
+                            '<code>MySQL 5.6</code>',
+                            '<code>' . $db->getVersion() . '</code>'
+                        ])
+                    ];
                 } else {
                     // Existing table prefix
                     $tables = $db->show()
