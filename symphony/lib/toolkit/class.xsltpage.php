@@ -119,7 +119,7 @@ class XSLTPage extends Page
 
         if ($this->Proc->isErrors()) {
             $this->setHttpStatus(Page::HTTP_STATUS_ERROR);
-            return false;
+            return '';
         }
 
         parent::generate($page);
