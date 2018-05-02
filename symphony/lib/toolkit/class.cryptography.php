@@ -9,8 +9,7 @@
  * `SHA1` and `PBKDF2`.
  *
  * @since Symphony 2.3.1
- * @see cryptography.SHA1
- * @see cryptography.PBKDF2
+ * @see PBKDF2
  */
 
 class Cryptography
@@ -19,10 +18,7 @@ class Cryptography
      * Uses an instance of `PBKDF2` to create a hash. If you require other
      * hashes, see the related functions of the `MD5` or `SHA1` classes
      *
-     * @see cryptography.MD5#hash()
-     * @see cryptography.SHA1#hash()
-     * @see cryptography.PBKDF2#hash()
-     *
+     * @uses PBKDF2::hash()
      * @param string $input
      * the string to be hashed
      * @return string
@@ -37,30 +33,31 @@ class Cryptography
      * Compares a given hash with a clean text password by figuring out the
      * algorithm that has been used and then calling the appropriate sub-class
      *
-     * @see cryptography.SHA1#compare()
-     * @see cryptography.PBKDF2#compare()
-     *
+     * @uses hash_equals()
+     * @uses PBKDF2::compare()
      * @param string $input
-     *  the cleartext password
+     *  the clear text password
      * @param string $hash
      *  the hash the password should be checked against
      * @param boolean $isHash
+     *  if the $input is already a hash
      * @return boolean
      *  the result of the comparison
      */
     public static function compare($input, $hash, $isHash = false)
     {
         $version = substr($hash, 0, 8);
-
-        if ($isHash === true) {
-            return $input == $hash;
-        } elseif ($version == 'PBKDF2v1') { // salted PBKDF2
-            return PBKDF2::compare($input, $hash);
-        } elseif (strlen($hash) == 40) { // legacy, unsalted SHA1
-            return SHA1::compare($input, $hash);
-        } else { // the hash provided doesn't make any sense
+        if (!$input || !$hash) {
             return false;
         }
+
+        if ($isHash === true) {
+            return hash_equals($hash, $input);
+        } elseif ($version === PBKDF2::PREFIX) { // salted PBKDF2
+            return PBKDF2::compare($input, $hash);
+        }
+        // the hash provided doesn't make any sense
+        return false;
     }
 
     /**
@@ -76,11 +73,10 @@ class Cryptography
     {
         $version = substr($hash, 0, 8);
 
-        if ($version == PBKDF2::PREFIX) { // salted PBKDF2, let the responsible class decide
+        if ($version === PBKDF2::PREFIX) { // salted PBKDF2, let the responsible class decide
             return PBKDF2::requiresMigration($hash);
-        } else { // everything else
-            return true;
         }
+        return true;
     }
 
     /**
