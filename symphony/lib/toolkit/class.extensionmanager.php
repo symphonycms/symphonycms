@@ -1030,12 +1030,14 @@ class ExtensionManager implements FileResource
                 $current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
 
                 // Min version
-                if (!empty($required_min_version) && \Composer\Semver\Comparator::lessThan($current_symphony_version, $required_min_version)) {
+                if (!empty($required_min_version) &&
+                    \Composer\Semver\Comparator::lessThan($current_symphony_version, $required_min_version)) {
                     $about['status'][] = Extension::EXTENSION_NOT_COMPATIBLE;
                     $about['required_version'] = $required_min_version;
 
                 // Max version
-                } elseif (!empty($required_max_version) && \Composer\Semver\Comparator::lessThan($current_symphony_version, $required_max_version)) {
+                } elseif (!empty($required_max_version) &&
+                    \Composer\Semver\Comparator::greaterThan($current_symphony_version, $required_max_version)) {
                     $about['status'][] = Extension::EXTENSION_NOT_COMPATIBLE;
                     $about['required_version'] = $required_max_version;
                 }
