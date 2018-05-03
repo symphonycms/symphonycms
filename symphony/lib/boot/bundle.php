@@ -15,7 +15,7 @@
         $bInsideInstaller = (bool)preg_match('%(/|\\\\)install(/|\\\\)index.php$%', server_safe('SCRIPT_FILENAME'));
 
         if (!$bInsideInstaller && Symphony::isInstallerAvailable()) {
-            header(sprintf('Location: %s/install/', URL));
+            redirect(URL);
             exit;
         } elseif (!$bInsideInstaller) {
             die('<h2>Error</h2><p>Could not locate Symphony configuration file. Please check <code>manifest/config.php</code> exists.</p>');

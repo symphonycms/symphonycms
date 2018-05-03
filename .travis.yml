@@ -5,25 +5,47 @@ php:
   - 7.1
   - 7.0
   - 5.6
-  - hhvm
+  - nightly
+  #- hhvm # until phpunit supports it
 
 matrix:
   fast_finish: true
   allow_failures:
+    - php: nightly
     - php: hhvm
 
+# we need sudo to install apache
+sudo: required
+
 before_install:
+  # update apt
+  - travis_retry sudo apt-get update
+  # use node 8
   - nvm use 8
 
 install:
+  # install apache
+  - travis_retry sudo apt-get install apache2 libapache2-mod-fastcgi
+  # add composer to PATH
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  # install php dependancies
   - travis_retry composer install -o --no-interaction
+  # install node dependancies
   - npm install
 
 before_script:
-  - mysql -e 'create database symphony_test;'
+  # create database
+  - mysql -e "CREATE DATABASE symphony_test CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_unicode_ci';"
+  # install and configure apache
+  - ./tests/ci/travis-configure-apache.sh
 
-script: npm test
+script:
+  # run unit tests
+  - npm test
+  # clean up unit tests
+  - php tests/shutdown.php
+  # install symphony
+  - ./tests/ci/travis-install-symphony.sh
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

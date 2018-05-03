@@ -400,7 +400,7 @@ class InstallerPage extends HTMLPage
 
         $this->Form->appendChild($Submit);
 
-        if (isset($this->params['errors'])) {
+        if (!empty($this->params['errors'])) {
             $this->setHttpStatus(Page::HTTP_STATUS_BAD_REQUEST);
         }
     }
