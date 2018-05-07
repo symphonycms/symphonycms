@@ -17,5 +17,13 @@
     "grunt-csso": "~1.0.0",
     "grunt-git-rev-parse": "^0.1.5",
     "grunt-phpcs": "^0.4.0"
+  },
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "snyk": true,
+  "dependencies": {
+    "snyk": "^1.78.1"
   }
 }

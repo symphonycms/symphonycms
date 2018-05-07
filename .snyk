@@ -1,0 +1,15 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.12.0
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:debug:20170905':
+    - grunt-contrib-watch > tiny-lr > debug:
+        patched: '2018-05-07T21:03:27.988Z'
+    - grunt-contrib-watch > tiny-lr > body-parser > debug:
+        patched: '2018-05-07T21:03:27.988Z'
+  'npm:ms:20170412':
+    - grunt-contrib-watch > tiny-lr > debug > ms:
+        patched: '2018-05-07T21:03:27.988Z'
+    - grunt-contrib-watch > tiny-lr > body-parser > debug > ms:
+        patched: '2018-05-07T21:03:27.988Z'
