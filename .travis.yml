@@ -27,7 +27,7 @@ install:
   # install apache
   - travis_retry sudo apt-get install apache2 libapache2-mod-fastcgi
   # add composer to PATH
-  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - export PATH="$HOME/.composer/vendor/bin:./vendor/bin:$PATH"
   # install php dependancies
   - travis_retry composer install -o --no-interaction
   # install node dependancies
@@ -46,8 +46,13 @@ script:
   - php tests/shutdown.php
   # install symphony
   - ./tests/ci/travis-install-symphony.sh
+  # run integration tests
+  - npm run integration
 
 after_success:
+  # merge code coverage reports
+  - phpcov merge . --clover coverage.xml
+  # send it to codecov
   - bash <(curl -s https://codecov.io/bash)
 
 cache:

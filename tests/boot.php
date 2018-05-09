@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 // Define version
 $package = json_decode(file_get_contents('composer.json'));
 define_safe('VERSION', $package->version);

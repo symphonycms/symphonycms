@@ -173,12 +173,20 @@ module.exports = function (grunt) {
         },
 
         phpunit: {
-            classes: {
-                dir: 'tests'
+            unit: {
+                testsuite: 'unit',
+                coverageClover: 'unit-cov.xml',
+                coveragePhp: 'unit.cov',
+                bootstrap: 'tests/boot.php'
+            },
+            integration: {
+                testsuite: 'integration',
+                coverageClover: 'integration-cov.xml',
+                coveragePhp: 'integration.cov',
+                bootstrap: 'tests/int/boot.php'
             },
             options: {
                 bin: 'vendor/bin/phpunit',
-                coverageClover: 'clover.xml',
                 configuration: 'tests/phpunit.xml'
             }
         },
@@ -207,6 +215,8 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', ['css', 'js']);
     grunt.registerTask('css', ['git-rev-parse', 'concat', 'autoprefixer', 'csso']);
-    grunt.registerTask('php', ['phpcs', 'phpunit']);
+    grunt.registerTask('php', ['phpcs', 'phpunit:unit']);
     grunt.registerTask('js', ['git-rev-parse', 'jshint', 'uglify']);
+    grunt.registerTask('unit', ['jshint', 'phpunit:unit']);
+    grunt.registerTask('integration', ['phpunit:integration']);
 };
