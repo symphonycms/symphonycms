@@ -143,7 +143,7 @@ class contentAjaxEventDocumentation extends TextPage
             $code->appendChild(new XMLElement('field-name', null, array('type' => 'invalid | missing')));
         }
 
-        $code->setValue('...');
+        $code->setValue("\t...\n");
         $doc_parts[] = self::processDocumentationCode($code);
     }
 
@@ -156,7 +156,7 @@ class contentAjaxEventDocumentation extends TextPage
             $code->appendChild(new XMLElement('message', __('Entry encountered errors when saving.')));
             $code->appendChild(new XMLElement('filter', null, array('name' => 'admin-only', 'status' => 'failed')));
             $code->appendChild(new XMLElement('filter', __('Recipient not found'), array('name' => 'send-email', 'status' => 'failed')));
-            $code->setValue('...');
+            $code->setValue("\t...\n");
 
             $doc_parts[] = self::processDocumentationCode($code);
         }
@@ -220,17 +220,17 @@ class contentAjaxEventDocumentation extends TextPage
             $doc_parts[] = new XMLElement('p', __('All of these fields can be set dynamically using the exact field name of another field in the form as shown below in the example form:'));
             $doc_parts[] = self::processDocumentationCode('<form action="" method="post">
 <fieldset>
-<label>'.__('Name').' <input type="text" name="fields[author]" value="" /></label>
-<label>'.__('Email').' <input type="text" name="fields[email]" value="" /></label>
-<label>'.__('Message').' <textarea name="fields[message]" rows="5" cols="21"></textarea></label>
-<input name="send-email[sender-email]" value="fields[email]" type="hidden" />
-<input name="send-email[sender-name]" value="fields[author]" type="hidden" />
-<input name="send-email[reply-to-email]" value="fields[email]" type="hidden" />
-<input name="send-email[reply-to-name]" value="fields[author]" type="hidden" />
-<input name="send-email[subject]" value="You are being contacted" type="hidden" />
-<input name="send-email[body]" value="fields[message]" type="hidden" />
-<input name="send-email[recipient]" value="fred" type="hidden" />
-<input id="submit" type="submit" name="action[save-contact-form]" value="Send" />
+    <label>'.__('Name').' <input type="text" name="fields[author]" value="" /></label>
+    <label>'.__('Email').' <input type="text" name="fields[email]" value="" /></label>
+    <label>'.__('Message').' <textarea name="fields[message]" rows="5" cols="21"></textarea></label>
+    <input name="send-email[sender-email]" value="fields[email]" type="hidden" />
+    <input name="send-email[sender-name]" value="fields[author]" type="hidden" />
+    <input name="send-email[reply-to-email]" value="fields[email]" type="hidden" />
+    <input name="send-email[reply-to-name]" value="fields[author]" type="hidden" />
+    <input name="send-email[subject]" value="You are being contacted" type="hidden" />
+    <input name="send-email[body]" value="fields[message]" type="hidden" />
+    <input name="send-email[recipient]" value="fred" type="hidden" />
+    <input id="submit" type="submit" name="action[save-contact-form]" value="Send" />
 </fieldset>
 </form>'
 );
