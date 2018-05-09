@@ -398,6 +398,7 @@ class Database
      */
     public function setTimeZone($timezone = null)
     {
+        // This should throw, default value should be removed
         if (!$timezone) {
             return true;
         }
@@ -511,9 +512,8 @@ class Database
      */
     public function tableExists($table)
     {
-        $stm = $this->show();
-        $table = $stm->replaceTablePrefix($table);
-        return $stm->like($table)
+        return $this->show()
+                    ->like($table)
                     ->execute()
                     ->next() !== null;
     }

@@ -19,4 +19,8 @@ so make sure you have node and npm installed and in your path.
 
 		npm run watch
 
+5. Optionally, if you run a local install, you can run the integration tests
+
+		npm run integration
+
 More information: [Contributing to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony).

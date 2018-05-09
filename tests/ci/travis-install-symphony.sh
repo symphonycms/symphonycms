@@ -8,6 +8,7 @@ else
     echo 'Redirect to installer';
 fi;
 # copy unattend file
+mkdir -p manifest
 cp tests/ci/unattend.php manifest/
 # test for install http status
 INSTALL="$(curl --retry 0 -sI http://localhost:80/install/ | grep '200 OK')"
