@@ -25,7 +25,7 @@ class ExceptionHandler
      * An instance of the Symphony Log class, used to write errors to the log
      * @var Log
      */
-    private static $_Log = null;
+    private static $log = null;
 
     /**
      * Whether to log errors or not.
@@ -50,7 +50,7 @@ class ExceptionHandler
     public static function initialise(Log $Log = null)
     {
         if (!is_null($Log)) {
-            self::$_Log = $Log;
+            self::$log = $Log;
         }
 
         set_exception_handler(array(__CLASS__, 'handler'));
@@ -132,8 +132,8 @@ class ExceptionHandler
             }
 
             // Exceptions should be logged if they are not caught.
-            if (!self::$logDisabled && self::$_Log instanceof Log) {
-                self::$_Log->pushExceptionToLog($e, true);
+            if (!self::$logDisabled && self::$log instanceof Log) {
+                self::$log->pushExceptionToLog($e, true);
             }
 
             $output = call_user_func(array($class, 'render'), $e);
@@ -321,8 +321,8 @@ class ExceptionHandler
 
             try {
                 // Log the error message
-                if (!self::$logDisabled && self::$_Log instanceof Log) {
-                    self::$_Log->pushToLog(sprintf(
+                if (!self::$logDisabled && self::$log instanceof Log) {
+                    self::$log->pushToLog(sprintf(
                         '%s %s: %s%s%s',
                         __CLASS__,
                         $code,
