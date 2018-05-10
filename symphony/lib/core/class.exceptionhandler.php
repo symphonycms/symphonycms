@@ -42,6 +42,14 @@ class ExceptionHandler
     public static $logDisabled = false;
 
     /**
+     * Enables the shutdown function.
+     * Defaults to true.
+     *
+     * @var boolean
+     */
+    public static $shutdownEnabled = true;
+
+    /**
      * Initialise will set the error handler to be the `__CLASS__::handler` function.
      *
      * @param Log $Log
@@ -307,9 +315,14 @@ class ExceptionHandler
      * usual Symphony page.
      *
      * @since Symphony 2.4
+     *
+     * @since Symphony 3.0.0 the shutdown function can be disabled with $shutdownEnabled
      */
     public static function shutdown()
     {
+        if (!self::$shutdownEnabled) {
+            return;
+        }
 
         $last_error = error_get_last();
 
