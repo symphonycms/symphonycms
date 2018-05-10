@@ -39,7 +39,7 @@ class DatabaseExceptionHandler extends ExceptionHandler
             );
         }
 
-        if (is_object(Symphony::Database())) {
+        if (Symphony::Database()) {
             $debug = Symphony::Database()->getLogs();
 
             if (!empty($debug)) {
