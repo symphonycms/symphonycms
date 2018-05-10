@@ -103,7 +103,7 @@ abstract class Symphony implements Singleton
         self::initialiseCookie();
 
         // If the user is not a logged in Author, turn off the verbose error messages.
-        GenericExceptionHandler::$enabled = self::isLoggedIn() && !is_null(self::$Author);
+        ExceptionHandler::$enabled = self::isLoggedIn() && !is_null(self::$Author);
 
         // Engine is ready.
         self::$Profiler->sample('Engine Initialisation');
@@ -118,8 +118,8 @@ abstract class Symphony implements Singleton
     {
         // Initialise logging
         self::initialiseLog();
-        GenericExceptionHandler::initialise(self::Log());
-        GenericErrorHandler::initialise(self::Log());
+        ExceptionHandler::initialise(self::Log());
+        ErrorHandler::initialise(self::Log());
     }
 
     /**
@@ -345,7 +345,7 @@ abstract class Symphony implements Singleton
      * using the connection details provided in the Symphony configuration. If any
      * errors occur whilst doing so, a Symphony Error Page is displayed.
      *
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @return boolean
      *  This function will return true if the `$Database` was
      *  initialised successfully.
@@ -596,7 +596,7 @@ abstract class Symphony implements Singleton
     /**
      * A wrapper for throwing a new Symphony Error page.
      *
-     * @see core.SymphonyErrorPage
+     * @see core.SymphonyException
      * @param string|XMLElement $message
      *  A description for this error, which can be provided as a string
      *  or as an XMLElement.
@@ -612,11 +612,11 @@ abstract class Symphony implements Singleton
      * @param array $additional
      *  Allows custom information to be passed to the Symphony Error Page
      *  that the template may want to expose, such as custom Headers etc.
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      */
     public static function throwCustomError($message, $heading = 'Symphony Fatal Error', $status = Page::HTTP_STATUS_ERROR, $template = 'generic', array $additional = array())
     {
-        throw new SymphonyErrorPage($message, $heading, $template, $additional, $status);
+        throw new SymphonyException($message, $heading, $template, $additional, $status);
     }
 
     /**
@@ -697,266 +697,3 @@ abstract class Symphony implements Singleton
     }
 }
 
-/**
- * The `SymphonyErrorPageHandler` extends the `GenericExceptionHandler`
- * to allow the template for the exception to be provided from the `TEMPLATES`
- * directory
- */
-class SymphonyErrorPageHandler extends GenericExceptionHandler
-{
-    /**
-     * The render function will take a `SymphonyErrorPage` exception and
-     * output a HTML page. This function first checks to see if the `GenericExceptionHandler`
-     * is enabled and pass control to it if not. After that, the method checks if there is a custom
-     * template for this exception otherwise it reverts to using the default
-     * `usererror.generic.php`. If the template is not found, it will call
-     * `GenericExceptionHandler::render()`.
-     *
-     * @param Throwable $e
-     *  The Throwable object
-     * @return string
-     *  An HTML string
-     */
-    public static function render($e)
-    {
-        // Validate the type, resolve to a 404 if not valid
-        if (!static::isValidThrowable($e)) {
-            $e = new FrontendPageNotFoundException();
-        }
-
-        if (!GenericExceptionHandler::$enabled) {
-            return GenericExceptionHandler::render($e);
-        }
-        else if ($e->getTemplate() === false) {
-            return GenericExceptionHandler::render($e);
-        }
-
-        self::sendHeaders($e);
-        include $e->getTemplate();
-    }
-}
-
-/**
- * `SymphonyErrorPage` extends the default `Exception` class. All
- * of these exceptions will halt execution immediately and return the
- * exception as a HTML page. By default the HTML template is `usererror.generic.php`
- * from the `TEMPLATES` directory.
- */
-
-class SymphonyErrorPage extends Exception
-{
-    /**
-     * A heading for the error page, this will be prepended to
-     * "Symphony Fatal Error".
-     * @return string
-     */
-    private $_heading;
-
-    /**
-     * A string for the error page template to use, defaults to 'generic'. This
-     * can be the name of any template file in the `TEMPLATES` directory.
-     * A template using the naming convention of `usererror.*.php`.
-     * @var string
-     */
-    private $_template = 'generic';
-
-    /**
-     * If the message as provided as an `XMLElement`, it will be saved to
-     * this parameter
-     * @var XMLElement
-     */
-    private $_messageObject = null;
-
-    /**
-     * An object of an additional information for this error page. Note that
-     * this is provided as an array and then typecast to an object
-     * @var StdClass
-     */
-    private $_additional = null;
-
-    /**
-     * A simple container for the response status code.
-     * Full value is setted usign `$Page->setHttpStatus()`
-     * in the template.
-     */
-    private $_status = Page::HTTP_STATUS_ERROR;
-
-    /**
-     * Constructor for SymphonyErrorPage sets it's class variables
-     *
-     * @param string|XMLElement $message
-     *  A description for this error, which can be provided as a string
-     *  or as an XMLElement.
-     * @param string $heading
-     *  A heading for the error page, by default this is "Symphony Fatal Error"
-     * @param string $template
-     *  A string for the error page template to use, defaults to 'generic'. This
-     *  can be the name of any template file in the `TEMPLATES` directory.
-     *  A template using the naming convention of `tpl.*.php`.
-     * @param array $additional
-     *  Allows custom information to be passed to the Symphony Error Page
-     *  that the template may want to expose, such as custom Headers etc.
-     * @param integer $status
-     *  Properly sets the HTTP status code for the response. Defaults to
-     *  `Page::HTTP_STATUS_ERROR`
-     */
-    public function __construct($message, $heading = 'Symphony Fatal Error', $template = 'generic', array $additional = array(), $status = Page::HTTP_STATUS_ERROR)
-    {
-        if ($message instanceof XMLElement) {
-            $this->_messageObject = $message;
-            $message = $this->_messageObject->generate();
-        }
-
-        parent::__construct($message);
-
-        $this->_heading = $heading;
-        $this->_template = $template;
-        $this->_additional = (object)$additional;
-        $this->_status = $status;
-    }
-
-    /**
-     * Accessor for the `$_heading` of the error page
-     *
-     * @return string
-     */
-    public function getHeading()
-    {
-        return $this->_heading;
-    }
-
-    /**
-     * Accessor for `$_messageObject`
-     *
-     * @return XMLElement
-     */
-    public function getMessageObject()
-    {
-        return $this->_messageObject;
-    }
-
-    /**
-     * Accessor for `$_additional`
-     *
-     * @return StdClass
-     */
-    public function getAdditional()
-    {
-        return $this->_additional;
-    }
-
-    /**
-     * Accessor for `$_status`
-     *
-     * @since Symphony 2.3.2
-     * @return integer
-     */
-    public function getHttpStatusCode()
-    {
-        return $this->_status;
-    }
-
-    /**
-     * Returns the path to the current template by looking at the
-     * `WORKSPACE/template/` directory, then at the `TEMPLATES`
-     * directory for the convention `usererror.*.php`. If the template
-     * is not found, `false` is returned
-     *
-     * @since Symphony 2.3
-     * @return string|false
-     *  String, which is the path to the template if the template is found,
-     *  false otherwise
-     */
-    public function getTemplate()
-    {
-        $format = '%s/usererror.%s.php';
-
-        if (file_exists($template = sprintf($format, WORKSPACE . '/template', $this->_template))) {
-            return $template;
-        } elseif (file_exists($template = sprintf($format, TEMPLATE, $this->_template))) {
-            return $template;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * A simple getter to the template name in order to be able
-     * to identify which type of exception this is.
-     *
-     * @since Symphony 2.3.2
-     * @return string
-     */
-    public function getTemplateName()
-    {
-        return $this->_template;
-    }
-}
-
-/**
- * The `DatabaseExceptionHandler` provides a render function to provide
- * customised output for database exceptions. It displays the exception
- * message as provided by the Database.
- */
-class DatabaseExceptionHandler extends GenericExceptionHandler
-{
-    /**
-     * The render function will take a `DatabaseException` and output a
-     * HTML page.
-     *
-     * @param Throwable $e
-     *  The Throwable object
-     * @return string
-     *  An HTML string
-     */
-    public static function render($e)
-    {
-        // Validate the type, resolve to a 404 if not valid
-        if (!static::isValidThrowable($e)) {
-            $e = new FrontendPageNotFoundException();
-        }
-
-        $trace = $queries = null;
-
-        foreach ($e->getTrace() as $t) {
-            $trace .= sprintf(
-                '<li><code><em>[%s:%d]</em></code></li><li><code>&#160;&#160;&#160;&#160;%s%s%s();</code></li>',
-                $t['file'],
-                $t['line'],
-                (isset($t['class']) ? $t['class'] : null),
-                (isset($t['type']) ? $t['type'] : null),
-                $t['function']
-            );
-        }
-
-        if (is_object(Symphony::Database())) {
-            $debug = Symphony::Database()->getLogs();
-
-            if (!empty($debug)) {
-                foreach ($debug as $query) {
-                    $queries .= sprintf(
-                        '<li><em>[%01.4f]</em><code> %s;</code> </li>',
-                        (isset($query['execution_time']) ? $query['execution_time'] : null),
-                        htmlspecialchars($query['query'])
-                    );
-                }
-            }
-        }
-
-        $html = sprintf(
-            file_get_contents(self::getTemplate('fatalerror.database')),
-            !self::$enabled ? 'Database error' : $e->getDatabaseErrorMessage(),
-            !self::$enabled ? '' : $e->getQuery(),
-            !self::$enabled ? '' : $trace,
-            !self::$enabled ? '' : $queries
-        );
-
-        $html = str_replace('{ASSETS_URL}', ASSETS_URL, $html);
-        $html = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $html);
-        $html = str_replace('{URL}', URL, $html);
-        $html = str_replace('{PHP}', PHP_VERSION, $html);
-        $html = str_replace('{MYSQL}', Symphony::Database()->getVersion(), $html);
-
-        return $html;
-    }
-}

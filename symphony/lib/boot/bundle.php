@@ -23,7 +23,7 @@
     } else {
         // Start with the Exception handler disable before authentication.
         // This limits the possibility of leaking infos.
-        GenericExceptionHandler::$enabled = false;
+        ExceptionHandler::$enabled = false;
 
         // Load configuration file:
         include CONFIG;

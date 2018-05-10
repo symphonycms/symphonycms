@@ -32,7 +32,7 @@ class XSLTPage extends Page
     /**
      * The constructor for the `XSLTPage` ensures that an `XSLTProcessor`
      * is available, and then sets an instance of it to `$this->Proc`, otherwise
-     * it will throw a `SymphonyErrorPage` exception.
+     * it will throw a `SymphonyException` exception.
      */
     public function __construct()
     {

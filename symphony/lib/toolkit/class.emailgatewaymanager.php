@@ -3,11 +3,9 @@
 /**
  * @package toolkit
  */
-
 /**
  * A manager to standardize the finding and listing of installed gateways.
  */
-
 class EmailGatewayManager implements FileResource
 {
     /**

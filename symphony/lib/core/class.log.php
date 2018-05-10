@@ -159,10 +159,10 @@ class Log
 
     /**
      * Given a PHP error constant, return a human readable name. Uses the
-     * `GenericErrorHandler::$errorTypeStrings` array to return
+     * `ErrorHandler::$errorTypeStrings` array to return
      * the name
      *
-     * @see core.GenericErrorHandler::$errorTypeStrings
+     * @see core.ErrorHandler::$errorTypeStrings
      * @param integer $type
      *  A PHP error constant
      * @return string
@@ -171,8 +171,8 @@ class Log
      */
     private function __defineNameString($type)
     {
-        if (isset(GenericErrorHandler::$errorTypeStrings[$type])) {
-            return GenericErrorHandler::$errorTypeStrings[$type];
+        if (isset(ErrorHandler::$errorTypeStrings[$type])) {
+            return ErrorHandler::$errorTypeStrings[$type];
         }
 
         return is_string($type) ? $type : 'UNKNOWN';

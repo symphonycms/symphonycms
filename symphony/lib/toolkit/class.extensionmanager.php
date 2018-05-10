@@ -113,7 +113,7 @@ class ExtensionManager implements FileResource
      *
      * @param string $name
      *  The name of the Extension Class minus the extension prefix.
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @throws Exception
      * @return Extension
      */
@@ -218,7 +218,7 @@ class ExtensionManager implements FileResource
      *  This will only return Providers of this type. If null, which is
      *  default, all providers will be returned.
      * @throws Exception
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @return array
      *  An array of objects
      */
@@ -346,7 +346,7 @@ class ExtensionManager implements FileResource
      * @see toolkit.ExtensionManager#__canUninstallOrDisable()
      * @param string $name
      *  The name of the Extension Class minus the extension prefix.
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @throws Exception
      * @return boolean
      */
@@ -415,7 +415,7 @@ class ExtensionManager implements FileResource
      * @param string $name
      *  The name of the Extension Class minus the extension prefix.
      * @throws DatabaseException
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @throws Exception
      * @return boolean
      */
@@ -460,7 +460,7 @@ class ExtensionManager implements FileResource
      * @param string $name
      *  The name of the Extension Class minus the extension prefix.
      * @throws Exception
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @throws DatabaseException
      * @throws Exception
      * @return boolean
@@ -475,7 +475,7 @@ class ExtensionManager implements FileResource
             $obj = self::getInstance($name);
             self::__canUninstallOrDisable($obj);
             $obj->uninstall();
-        } catch (SymphonyErrorPage $ex) {
+        } catch (SymphonyException $ex) {
             // Create a consistant key
             $key = str_replace('-', '_', $ex->getTemplateName());
 
@@ -537,7 +537,7 @@ class ExtensionManager implements FileResource
      * @param string $name
      *  The name of the Extension Class minus the extension prefix.
      * @throws Exception
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @return integer
      *  The Extension ID
      */
@@ -620,7 +620,7 @@ class ExtensionManager implements FileResource
      *
      * @param Extension $obj
      *  An extension object
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @throws Exception
      */
     private static function __canUninstallOrDisable(Extension $obj)
@@ -706,7 +706,7 @@ class ExtensionManager implements FileResource
      *        'delegate' => $delegate
      *    );
      * @throws Exception
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @return null|void
      */
     public static function notifyMembers($delegate, $page, array $context = array())
@@ -800,7 +800,7 @@ class ExtensionManager implements FileResource
      * @param string $filter
      *  Allows a regular expression to be passed to return only extensions whose
      *  folders match the filter.
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @throws Exception
      * @return array
      *  An associative array with the key being the extension folder and the value
@@ -872,7 +872,7 @@ class ExtensionManager implements FileResource
      *  Allows a developer to return the extensions in a particular order. The syntax is the
      *  same as other `fetch` methods. If omitted this will return resources ordered by `name`.
      * @throws Exception
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @return array
      *  An associative array of Extension information, formatted in the same way as the
      *  listAll() method.
@@ -952,7 +952,7 @@ class ExtensionManager implements FileResource
      *  file. If the file is not available, the extension will return the normal
      *  `about()` results. By default this is false.
      * @throws Exception
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @return array
      *  An associative array describing this extension
      */
@@ -1068,7 +1068,7 @@ class ExtensionManager implements FileResource
      * @param string $name
      *  The name of the Extension Class minus the extension prefix.
      * @throws Exception
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @return Extension
      */
     public static function create($name)

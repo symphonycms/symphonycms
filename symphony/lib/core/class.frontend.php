@@ -85,7 +85,7 @@ class Frontend extends Symphony
      * @param string $page
      *  The result of getCurrentPage, which returns the `$_GET['symphony-page']`
      * @throws FrontendPageNotFoundException
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @return string
      *  The HTML of the page to return
      */
@@ -107,93 +107,5 @@ class Frontend extends Symphony
         $output = self::$_page->generate($page);
 
         return $output;
-    }
-}
-
-/**
- * `FrontendPageNotFoundException` extends a default Exception, it adds nothing
- * but allows a different Handler to be used to render the Exception
- *
- * @see core.FrontendPageNotFoundExceptionHandler
- */
-class FrontendPageNotFoundException extends Exception
-{
-    /**
-     * The constructor for `FrontendPageNotFoundException` sets the default
-     * error message and code for Logging purposes
-     */
-    public function __construct()
-    {
-        parent::__construct();
-        $pagename = getCurrentPage();
-
-        if (empty($pagename)) {
-            $this->message = __('The page you requested does not exist.');
-        } else {
-            $this->message = __('The page you requested, %s, does not exist.', array('<code>' . $pagename . '</code>'));
-        }
-
-        $this->code = E_USER_NOTICE;
-    }
-}
-
-/**
- * The `FrontendPageNotFoundExceptionHandler` attempts to find a Symphony
- * page that has been given the '404' page type to render the SymphonyErrorPage
- * error, instead of using the Symphony default.
- */
-class FrontendPageNotFoundExceptionHandler extends SymphonyErrorPageHandler
-{
-    /**
-     * The render function will take a `FrontendPageNotFoundException` Exception and
-     * output a HTML page. This function first checks to see if their is a page in Symphony
-     * that has been given the '404' page type, otherwise it will just use the default
-     * Symphony error page template to output the exception
-     *
-     * @param Throwable $e
-     *  The Throwable object
-     * @throws FrontendPageNotFoundException
-     * @throws SymphonyErrorPage
-     * @return string
-     *  An HTML string
-     */
-    public static function render($e)
-    {
-        $page = PageManager::fetchPageByType('404');
-        $previous_exception = Frontend::instance()->getException();
-
-        // No 404 detected, throw default Symphony error page
-        if (is_null($page['id'])) {
-            self::sendHeaders($e);
-            $e = new SymphonyErrorPage(
-                $e->getMessage(),
-                __('Page Not Found'),
-                'generic',
-                array(),
-                Page::HTTP_STATUS_NOT_FOUND
-            );
-            include $e->getTemplate();
-
-            // Recursive 404
-        } elseif (isset($previous_exception)) {
-            self::sendHeaders($e);
-            $e = new SymphonyErrorPage(
-                __('This error occurred whilst attempting to resolve the 404 page for the original request.') . ' ' . $e->getMessage(),
-                __('Page Not Found'),
-                'generic',
-                array(),
-                Page::HTTP_STATUS_NOT_FOUND
-            );
-            include $e->getTemplate();
-
-            // Handle 404 page
-        } else {
-            $url = '/' . PageManager::resolvePagePath($page['id']) . '/';
-
-            Frontend::instance()->setException($e);
-            $output = Frontend::instance()->display($url);
-            echo $output;
-        }
-        exit;
     }
 }
