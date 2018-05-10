@@ -152,6 +152,7 @@ class ExceptionHandler
                 if (self::$enabled === true) {
                     echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
                 }
+                echo "</pre>";
                 exit;
             }
         }
@@ -309,6 +310,7 @@ class ExceptionHandler
      */
     public static function shutdown()
     {
+
         $last_error = error_get_last();
 
         if (!is_null($last_error) && $last_error['type'] === E_ERROR) {
@@ -346,6 +348,7 @@ class ExceptionHandler
                 if (self::$enabled === true) {
                     echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
                 }
+                echo "</pre>";
             }
         }
     }
