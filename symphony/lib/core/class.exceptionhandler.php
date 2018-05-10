@@ -78,7 +78,7 @@ class ExceptionHandler
      *  to show
      * @return array
      */
-    protected static function __nearbyLines($line, $file, $window = 5)
+    protected static function getNearbyLines($line, $file, $window = 5)
     {
         if (!file_exists($file)) {
             return array();
@@ -256,7 +256,7 @@ class ExceptionHandler
     {
         $lines = null;
 
-        foreach (self::__nearByLines($e->getLine(), $e->getFile()) as $line => $string) {
+        foreach (self::getNearbyLines($e->getLine(), $e->getFile()) as $line => $string) {
             $lines .= sprintf(
                 '<li%s><strong>%d</strong> <code>%s</code></li>',
                 (($line+1) == $e->getLine() ? ' class="error"' : null),
