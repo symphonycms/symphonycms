@@ -23,7 +23,7 @@ class ErrorHandler
      * An instance of the Log class, used to write errors to the log
      * @var Log
      */
-    private static $_Log = null;
+    private static $log = null;
 
     /**
      * Whether to log errors or not.
@@ -74,7 +74,7 @@ class ErrorHandler
     public static function initialise(Log $Log = null)
     {
         if (!is_null($Log)) {
-            self::$_Log = $Log;
+            self::$log = $Log;
         }
 
         set_error_handler(array(__CLASS__, 'handler'), error_reporting());
@@ -115,8 +115,8 @@ class ErrorHandler
     final public static function handler($code, $message, $file = null, $line = null)
     {
         // Only log if the error won't be raised to an exception and the error is not `E_STRICT`
-        if (!self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$_Log instanceof Log) {
-            self::$_Log->pushToLog(sprintf(
+        if (!self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$log instanceof Log) {
+            self::$log->pushToLog(sprintf(
                 '%s %s: %s%s%s',
                 __CLASS__,
                 $code,
