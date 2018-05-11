@@ -1,0 +1,10 @@
+ignore:
+  - "symphony/content"
+  - "symphony/lib/boot"
+  - "symphony/lib/lang"
+  - "symphony/lib/toolkit/data-sources"
+  - "symphony/lib/toolkit/email-gateways"
+  - "symphony/lib/toolkit/events"
+  - "symphony/lib/toolkit/fields"
+  - "symphony/lib/toolkit/util.*"
+  - "symphony/template"
