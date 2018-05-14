@@ -37,11 +37,8 @@ trait DatabaseKeyDefinition
             throw new DatabaseStatementException('Key type must be defined.');
         }
         $type = strtolower($options['type']);
-        $cols = isset($options['cols']) ? $options['cols'] : $k;
-        if (!is_array($cols)) {
-            $cols = [$cols];
-        }
         $k = $this->asTickedString($k);
+        $cols = isset($options['cols']) ? $options['cols'] : $k;
         $typeIndex = in_array($type, [
             'key', 'unique', 'primary', 'fulltext', 'index'
         ]);
@@ -61,7 +58,25 @@ trait DatabaseKeyDefinition
                 $type = strtoupper($type);
                 break;
         }
-        $cols = $this->asTickedList($cols);
-        return "$type $k ($cols)";
+
+        // Format columns including size
+        $colsFormatted = [];
+
+        if (!is_array($cols)) {
+            $cols = [$cols];
+        }
+
+        foreach ($cols as $key => $value) {
+            // No Size
+            if (General::intval($key) !== -1) {
+                $colsFormatted[] = $this->asTickedString($value);
+            // Size
+            } else {
+                $colsFormatted[] = $this->asTickedString($key) . '(' . $value . ')';
+            }
+        }
+        $colsFormatted = implode(self::LIST_DELIMITER, $colsFormatted);
+
+        return "$type $k ($colsFormatted)";
     }
 }

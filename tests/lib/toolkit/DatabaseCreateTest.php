@@ -119,11 +119,11 @@ final class DatabaseCreateTest extends TestCase
                     'x' => 'key',
                     'x1' => [
                         'type' => 'unique',
-                        'cols' => 'x',
+                        'cols' => ['x'],
                     ],
                     'x2' => [
                         'type' => 'index',
-                        'cols' => ['x', 'id']
+                        'cols' => ['x' => 333, 'id']
                     ],
                     'x3' => [
                         'type' => 'fulltext',
@@ -131,7 +131,7 @@ final class DatabaseCreateTest extends TestCase
                     ]
                   ]);
         $this->assertEquals(
-            "CREATE TABLE `create` ( `x` varchar(100) NOT NULL, `id` int(11) unsigned NOT NULL AUTO_INCREMENT , PRIMARY KEY (`id`), KEY `x` (`x`), UNIQUE KEY `x1` (`x`), INDEX `x2` (`x`, `id`), FULLTEXT `x3` (`x`) )",
+            "CREATE TABLE `create` ( `x` varchar(100) NOT NULL, `id` int(11) unsigned NOT NULL AUTO_INCREMENT , PRIMARY KEY (`id`), KEY `x` (`x`), UNIQUE KEY `x1` (`x`), INDEX `x2` (`x`(333), `id`), FULLTEXT `x3` (`x`) )",
             $sql->generateSQL(),
             'CREATE clause with KEYS'
         );
