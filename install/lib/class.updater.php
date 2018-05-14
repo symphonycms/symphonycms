@@ -37,6 +37,7 @@ class Updater extends Installer
         if (!$version) {
             $version = Symphony::Configuration()->get('version', 'symphony');
         }
+        $vc = new VersionComparator($version);
 
         if (!@file_exists(INSTALL . '/migrations')) {
             return $migrations;
@@ -55,20 +56,17 @@ class Updater extends Installer
             $className = 'migration_' . str_replace('.', '', $migrationVersion);
             $m = new $className($version);
 
-            if (\Composer\Semver\Comparator::lessThan($version, $m->getVersion())) {
+            if ($vc->lessThan($m->getVersion())) {
                 $migrations[$m->getVersion()] = $m;
             }
         }
 
         // The DirectoryIterator may return files in a sporadic order
         // on different servers. This will ensure the array is sorted
-        // correctly using `\Composer\Semver\Semver`
-        $sortedMigrations = [];
-        foreach (\Composer\Semver\Semver::sort(array_keys($migrations)) as $v) {
-            $sortedMigrations[$v]  = $migrations[$v];
-        }
+        // correctly as per the semver spec.
+        uksort($migrations, ['VersionComparator', 'compare']);
 
-        return $sortedMigrations;
+        return $migrations;
     }
 
     /**
@@ -113,6 +111,7 @@ class Updater extends Installer
     public function run()
     {
         $currentSymphony = Symphony::Configuration()->get('version', 'symphony');
+        $vc = new VersionComparator($currentSymphony);
 
         // Initialize log
         if (is_null(Symphony::Log()) || !file_exists(Symphony::Log()->getLogPath())) {
@@ -130,7 +129,7 @@ class Updater extends Installer
             );
 
             $this->render(new UpdaterPage('uptodate'));
-        } elseif (\Composer\Semver\Comparator::lessThan($currentSymphony, '2.7.0')) {
+        } elseif ($vc->lessThan('2.7.0')) {
             Symphony::Log()->pushToLog(
                 'Updater - Can not update',
                 E_ERROR,

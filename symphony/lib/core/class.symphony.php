@@ -568,9 +568,9 @@ abstract class Symphony implements Singleton
     {
         if (self::isInstallerAvailable()) {
             $migration_version = self::getMigrationVersion();
-            $current_version = Symphony::Configuration()->get('version', 'symphony');
+            $vc = new VersionComparator(Symphony::Configuration()->get('version', 'symphony'));
 
-            return \Composer\Semver\Comparator::lessThan($current_version, $migration_version);
+            return $vc->lessThan($migration_version);
         }
 
         return false;
