@@ -65,4 +65,20 @@ final class DatabaseShowTest extends TestCase
             'SHOW TABLES WHERE LIKE formatted'
         );
     }
+
+    public function testSHOWINDEX()
+    {
+        $db = new Database([]);
+        $sql = $db->showIndex()
+                ->from('tbl')
+                ->where(['x' => 'PRIMARY']);
+        $this->assertEquals(
+            "SHOW INDEX FROM `tbl` WHERE `x` = :x",
+            $sql->generateSQL(),
+            'SHOW INDEX clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals('PRIMARY', $values['x'], 'x is PRIMARY');
+        $this->assertEquals(1, count($values), '1 value');
+    }
 }

@@ -18,12 +18,12 @@ final class DatabaseShow extends DatabaseStatement
      * @param Database $db
      *  The underlying database connection.
      * @param string $show
-     *  Configure what to show, either TABLES or COLUMNS. Defaults to TABLES.
+     *  Configure what to show, either TABLES, COLUMNS or INDEX. Defaults to TABLES.
      */
     public function __construct(Database $db, $show = 'TABLES')
     {
-        if ($show !== 'COLUMNS' && $show !== 'TABLES') {
-            throw new DatabaseStatementException('Can only show TABLES or COLUMNS');
+        if ($show !== 'TABLES' && $show !== 'COLUMNS' && $show !== 'INDEX') {
+            throw new DatabaseStatementException('Can only show TABLES, COLUMNS or INDEX');
         }
         parent::__construct($db, "SHOW $show");
     }
