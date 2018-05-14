@@ -112,7 +112,7 @@ class SectionManager
             // Delete all the fields
             $fields = (new FieldManager)
                 ->select()
-                ->section($this->get('id'))
+                ->section($section_id)
                 ->execute()
                 ->rows();
 
