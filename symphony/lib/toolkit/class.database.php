@@ -564,6 +564,16 @@ class Database
     }
 
     /**
+     * Factory method that creates a new `SHOW INDEX` statement.
+     *
+     * @return DatabaseShow
+     */
+    public function showIndex()
+    {
+        return new DatabaseShow($this, 'INDEX');
+    }
+
+    /**
      * Factory method that creates a new `INSERT` statement.
      *
      * @param string $table
