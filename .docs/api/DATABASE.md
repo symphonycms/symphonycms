@@ -83,6 +83,11 @@ Symphony::Database()->show()->like('tbl_%')->execute()->rows();
 Symphony::Database()->showColumns()->where(['x' => 'name'])->execute()->rows();
 ```
 
+### `showIndex()` -> `DatabaseShow`
+```php
+Symphony::Database()->showIndex()->where(['x' => 'name'])->execute()->rows();
+```
+
 ### `insert()` -> `DatabaseInsert`
 ```php
 Symphony::Database()
@@ -160,7 +165,7 @@ Symphony::Database()
         'id' => 'primary',
         'x1' => [
             'type' => 'unique',
-            'cols' => 'x',
+            'cols' => ['x', 'y']
         ],
     ])
     ->execute()
@@ -323,7 +328,7 @@ $sub = $stm->select(['col'])->from('table');
 $stm->where(['x' => ['in' => $sub]]);
 
 // Note that calling where() multiple times on the same statement will
-// join all filters with an AND operations.
+// join all filters with an AND operation.
 ```
 
 ## keys()
@@ -355,6 +360,15 @@ $stm->keys(['col' => [
 $stm->keys(['xid' => [
     'type' => 'index',
     'cols' => ['x', 'id']
+]]);
+
+// Which can also accept a size definition
+$stm->keys(['xid' => [
+    'type' => 'index',
+    'cols' => [
+        'x' => 333,
+        'id' => 333
+    ]
 ]]);
 
 // When using alter
