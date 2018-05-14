@@ -330,11 +330,10 @@ class ExtensionManager implements FileResource
 
         if (!$installed_version) {
             return false;
-        } elseif (\Composer\Semver\Comparator::lessThan($installed_version, $file_version)) {
-            return $installed_version;
         }
 
-        return false;
+        $vc = new VersionComparator($installed_version);
+        return $vc->lessThan($file_version);
     }
 
     /**
@@ -1011,8 +1010,9 @@ class ExtensionManager implements FileResource
             $latest_release_version = '0.0.0';
             foreach ($xpath->query('//ext:release', $extension) as $release) {
                 $version = $xpath->evaluate('string(@version)', $release);
+                $vc = new VersionComparator($version);
 
-                if (\Composer\Semver\Comparator::greaterThan($version, $latest_release_version)) {
+                if ($vc->greaterThan($latest_release_version)) {
                     $latest_release_version = $version;
                 }
             }
@@ -1027,17 +1027,15 @@ class ExtensionManager implements FileResource
                 // If it exists, load in the 'min/max' version data for this release
                 $required_min_version = $xpath->evaluate('string(@min)', $release);
                 $required_max_version = $xpath->evaluate('string(@max)', $release);
-                $current_symphony_version = Symphony::Configuration()->get('version', 'symphony');
+                $symphonyVc = new VersionComparator(Symphony::Configuration()->get('version', 'symphony'));
 
                 // Min version
-                if (!empty($required_min_version) &&
-                    \Composer\Semver\Comparator::lessThan($current_symphony_version, $required_min_version)) {
+                if (!empty($required_min_version) && $symphonyVc->lessThan($required_min_version)) {
                     $about['status'][] = Extension::EXTENSION_NOT_COMPATIBLE;
                     $about['required_version'] = $required_min_version;
 
                 // Max version
-                } elseif (!empty($required_max_version) &&
-                    \Composer\Semver\Comparator::greaterThan($current_symphony_version, $required_max_version)) {
+                } elseif (!empty($required_max_version) && $symphonyVc->greaterThan($required_max_version)) {
                     $about['status'][] = Extension::EXTENSION_NOT_COMPATIBLE;
                     $about['required_version'] = $required_max_version;
                 }
