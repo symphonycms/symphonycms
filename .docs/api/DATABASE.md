@@ -406,5 +406,6 @@ $stm = Symphony::Database()->alter('table');
 // The syntax for the key definition is the same, but the right method must be used
 $stm->add([...])->after('col')
     ->drop('col')
-    ->change('col', [...]);
+    ->change('col', [...])
+    ->modify([...]);
 ```
