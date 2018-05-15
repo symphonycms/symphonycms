@@ -401,7 +401,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             $li->setAttribute('data-type', 'system:id');
             $li->appendChild(new XMLElement('header', '<h4>' . __('System ID') . '</h4>'));
             $label = Widget::Label(__('Value'));
-            $input = Widget::Input('fields[filter]['.$section_id.'][system:id]', General::sanitize($id));
+            $input = Widget::Input('fields[filter]['.$section_id.'][system:id]');
             $input->setAttribute('data-search-types', 'parameters');
             $input->setAttribute('data-trigger', '{$');
             $label->appendChild($input);
