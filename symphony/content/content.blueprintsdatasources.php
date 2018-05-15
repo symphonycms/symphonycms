@@ -510,23 +510,48 @@ class contentBlueprintsDatasources extends ResourcesPage
         $ol->setAttribute('data-add', __('Add filter'));
         $ol->setAttribute('data-remove', __('Remove filter'));
 
-        if (!isset($fields['filter']['author'])) {
-            $fields['filter']['author'] = array(
-                'id' => null,
-                'username' => null,
-                'first_name' => null,
-                'last_name' => null,
-                'email' => null,
-                'user_type' => null
-            );
-        }
-
-        $this->__appendAuthorFilter($ol, __('ID'), 'id', $fields['filter']['author']['id'], (!isset($fields['filter']['author']['id'])));
-        $this->__appendAuthorFilter($ol, __('Username'), 'username', $fields['filter']['author']['username'], (!isset($fields['filter']['author']['username'])));
-        $this->__appendAuthorFilter($ol, __('First Name'), 'first_name', $fields['filter']['author']['first_name'], (!isset($fields['filter']['author']['first_name'])));
-        $this->__appendAuthorFilter($ol, __('Last Name'), 'last_name', $fields['filter']['author']['last_name'], (!isset($fields['filter']['author']['last_name'])));
-        $this->__appendAuthorFilter($ol, __('Email'), 'email', $fields['filter']['author']['email'], (!isset($fields['filter']['author']['email'])));
-        $this->__appendAuthorFilter($ol, __('User Type'), 'user_type', $fields['filter']['author']['user_type'], (!isset($fields['filter']['author']['user_type'])));
+        $this->__appendAuthorFilter(
+            $ol,
+            __('ID'),
+            'id',
+            isset($fields['filter']['author']['id']) ? $fields['filter']['author']['id'] : null,
+            !isset($fields['filter']['author']['id'])
+        );
+        $this->__appendAuthorFilter(
+            $ol,
+            __('Username'),
+            'username',
+            isset($fields['filter']['author']['username']) ? $fields['filter']['author']['username'] : null,
+            !isset($fields['filter']['author']['username'])
+        );
+        $this->__appendAuthorFilter(
+            $ol,
+            __('First Name'),
+            'first_name',
+            isset($fields['filter']['author']['first_name']) ? $fields['filter']['author']['first_name'] : null,
+            !isset($fields['filter']['author']['first_name'])
+        );
+        $this->__appendAuthorFilter(
+            $ol,
+            __('Last Name'),
+            'last_name',
+            isset($fields['filter']['author']['last_name']) ? $fields['filter']['author']['last_name'] : null,
+            !isset($fields['filter']['author']['last_name'])
+        );
+        $this->__appendAuthorFilter(
+            $ol,
+            __('Email'),
+            'email',
+            isset($fields['filter']['author']['email']) ? $fields['filter']['author']['email'] : null,
+            !isset($fields['filter']['author']['email'])
+        );
+        $this->__appendAuthorFilter(
+            $ol,
+            __('User Type'),
+            'user_type',
+            isset($fields['filter']['author']['user_type']) ? $fields['filter']['author']['user_type'] : null,
+            !isset($fields['filter']['author']['user_type'])
+        );
 
         $div->appendChild($ol);
 
