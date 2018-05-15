@@ -127,6 +127,42 @@ class ExceptionRenderer
     }
 
     /**
+     * Sends out the proper HTTP headers when rendering an error page.
+     * It sets the page status to the proper code, depending on the Throwable received.
+     * If the Throwable is a SymphonyException, additional headers are also sent.
+     *
+     * @uses SymphonyException::getAdditional()
+     * @uses SymphonyException::getHttpStatusCode()
+     * @param Throwable $e
+     *  The Throwable object
+     * @return void
+     */
+    public static function sendHeaders($e)
+    {
+        if (!headers_sent()) {
+            cleanup_session_cookies();
+
+            // Inspect the exception to determine the best status code
+            $httpStatus = null;
+            if ($e instanceof SymphonyException) {
+                $httpStatus = $e->getHttpStatusCode();
+                if (isset($e->getAdditional()->header)) {
+                    header($e->getAdditional()->header);
+                }
+            } elseif ($e instanceof FrontendPageNotFoundException) {
+                $httpStatus = Page::HTTP_STATUS_NOT_FOUND;
+            }
+
+            if (!$httpStatus || $httpStatus == Page::HTTP_STATUS_OK) {
+                $httpStatus = Page::HTTP_STATUS_ERROR;
+            }
+
+            Page::renderStatusCode($httpStatus);
+            header('Content-Type: text/html; charset=utf-8');
+        }
+    }
+
+    /**
      * This function will fetch the desired `$template`, and output the
      * Throwable in a user friendly way.
      *

@@ -101,6 +101,7 @@ class ExceptionHandler
     final public static function handler($e)
     {
         $output = '';
+        $class = 'ExceptionRenderer';
 
         try {
             // Validate the type, resolve to a 404 if not valid
@@ -114,8 +115,6 @@ class ExceptionHandler
                 $class = "{$exception_type}Handler";
             } elseif (class_exists("{$exception_type}Renderer") && method_exists("{$exception_type}Renderer", 'render')) {
                 $class = "{$exception_type}Renderer";
-            } else {
-                $class = 'ExceptionRenderer';
             }
 
             // Exceptions should be logged if they are not caught.
@@ -123,13 +122,20 @@ class ExceptionHandler
                 self::$log->pushExceptionToLog($e, true);
             }
 
+            // Send headers
+            call_user_func([$class, 'sendHeaders'], $e);
+            // Get output
             $output = call_user_func([$class, 'render'], $e);
 
         // If an exception was raised trying to render the exception, fall back
         // to the generic exception handler
         } catch (Exception $e) {
             try {
-                $output = call_user_func(array('ExceptionHandler', 'render'), $e);
+                if ($class != 'ExceptionRenderer') {
+                    $output = call_user_func(['ExceptionRenderer', 'render'], $e);
+                } else {
+                    throw $e;
+                }
 
             // If the generic exception handler couldn't do it, well we're in bad
             // shape, just output a plaintext response!
@@ -139,9 +145,7 @@ class ExceptionHandler
             }
         }
 
-        // Pending nothing disasterous, we should have `$e` and `$output` values here.
-        self::sendHeaders($e);
-
+        // Pending nothing disasterous, we should have `$output` values here.
         echo $output;
         exit;
     }
@@ -163,42 +167,6 @@ class ExceptionHandler
             echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
         }
         echo "</pre>";
-    }
-
-    /**
-     * Sends out the proper HTTP headers when rendering an error page.
-     * It sets the page status to the proper code, depending on the Throwable received.
-     * If the Throwable is a SymphonyException, additional headers are also sent.
-     *
-     * @uses SymphonyException::getAdditional()
-     * @uses SymphonyException::getHttpStatusCode()
-     * @param Throwable $e
-     *  The Throwable object
-     * @return void
-     */
-    protected static function sendHeaders($e)
-    {
-        if (!headers_sent()) {
-            cleanup_session_cookies();
-
-            // Inspect the exception to determine the best status code
-            $httpStatus = null;
-            if ($e instanceof SymphonyException) {
-                $httpStatus = $e->getHttpStatusCode();
-                if (isset($e->getAdditional()->header)) {
-                    header($e->getAdditional()->header);
-                }
-            } elseif ($e instanceof FrontendPageNotFoundException) {
-                $httpStatus = Page::HTTP_STATUS_NOT_FOUND;
-            }
-
-            if (!$httpStatus || $httpStatus == Page::HTTP_STATUS_OK) {
-                $httpStatus = Page::HTTP_STATUS_ERROR;
-            }
-
-            Page::renderStatusCode($httpStatus);
-            header('Content-Type: text/html; charset=utf-8');
-        }
     }
 
     /**
