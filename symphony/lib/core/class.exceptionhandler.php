@@ -134,12 +134,7 @@ class ExceptionHandler
             // If the generic exception handler couldn't do it, well we're in bad
             // shape, just output a plaintext response!
             } catch (Exception $e) {
-                echo "<pre>";
-                echo 'A severe error occurred whilst trying to handle an exception, check the Symphony log for more details' . PHP_EOL;
-                if (self::$enabled === true) {
-                    echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
-                }
-                echo "</pre>";
+                self::echoRendererError($e);
                 exit;
             }
         }
@@ -149,6 +144,25 @@ class ExceptionHandler
 
         echo $output;
         exit;
+    }
+
+    /**
+     * Writes an error to stdout.
+     * This is used as the last attempt to display and error to the end user,
+     * if our custom error handling code failed.
+     *
+     * @param Throwable $e
+     * @return void
+     */
+    final public static function echoRendererError($e)
+    {
+        echo "<pre>";
+        echo 'A severe error occurred whilst trying to handle an exception, check the Symphony log for more details';
+        echo PHP_EOL;
+        if (self::$enabled === true) {
+            echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
+        }
+        echo "</pre>";
     }
 
     /**
@@ -233,12 +247,7 @@ class ExceptionHandler
                     $line
                 );
             } catch (Exception $e) {
-                echo "<pre>";
-                echo 'A severe error occurred whilst trying to handle an exception, check the Symphony log for more details' . PHP_EOL;
-                if (self::$enabled === true) {
-                    echo $e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile() . PHP_EOL;
-                }
-                echo "</pre>";
+                self::echoRendererError($e);
             }
         }
     }
