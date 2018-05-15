@@ -9,7 +9,7 @@ use \Composer\Semver\Comparator;
 /**
  * The VersionComparator provides functions to compare semver compatible versions.
  * It uses \Composer\Semver\Comparator under the hood but translate the `.x`
- * notation used in Symphony in `.*` for semver.
+ * notation used in Symphony for semver.
  * @since Symphony 3.0.0
  */
 class VersionComparator
