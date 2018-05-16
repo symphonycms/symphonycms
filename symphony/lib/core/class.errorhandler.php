@@ -10,7 +10,7 @@
  * depends on the `error_reporting` level. All errors raised, except
  * `E_STRICT` are written to the Symphony log.
  */
-class ErrorHandler
+final class ErrorHandler
 {
     /**
      * Whether the error handler is enabled or not, defaults to true.
