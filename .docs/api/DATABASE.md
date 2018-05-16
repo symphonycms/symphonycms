@@ -183,6 +183,15 @@ Symphony::Database()
     ->success();
 ```
 
+### `rename()` -> `DatabaseRename`
+```php
+Symphony::Database()
+    ->rename('table')
+    ->to('new_table_name')
+    ->execute()
+    ->success();
+```
+
 ### `optimize()` -> `DatabaseOptimize`
 ```php
 Symphony::Database()->optimize('table')->execute()->success();
