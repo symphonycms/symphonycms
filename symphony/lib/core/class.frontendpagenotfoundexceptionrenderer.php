@@ -4,11 +4,11 @@
  * @package core
  */
 /**
- * The `FrontendPageNotFoundExceptionHandler` attempts to find a Symphony
- * page that has been given the '404' page type to render the SymphonyException
- * error, instead of using the Symphony default.
+ * The `FrontendPageNotFoundExceptionRenderer` attempts to find a Symphony
+ * page that has been given the '404' page type to render the Exception,
+ * instead of using the Symphony default.
  */
-class FrontendPageNotFoundExceptionHandler extends SymphonyExceptionHandler
+class FrontendPageNotFoundExceptionRenderer extends ExceptionRenderer
 {
     /**
      * The render function will take a `FrontendPageNotFoundException` Exception and
@@ -30,7 +30,7 @@ class FrontendPageNotFoundExceptionHandler extends SymphonyExceptionHandler
 
         // No 404 detected, throw default Symphony error page
         if (is_null($page['id'])) {
-            self::sendHeaders($e);
+            static::sendHeaders($e);
             $e = new SymphonyException(
                 $e->getMessage(),
                 __('Page Not Found'),
@@ -40,9 +40,9 @@ class FrontendPageNotFoundExceptionHandler extends SymphonyExceptionHandler
             );
             include $e->getTemplate();
 
-            // Recursive 404
+        // Recursive 404
         } elseif (isset($previous_exception)) {
-            self::sendHeaders($e);
+            static::sendHeaders($e);
             $e = new SymphonyException(
                 __('This error occurred whilst attempting to resolve the 404 page for the original request.') . ' ' . $e->getMessage(),
                 __('Page Not Found'),
@@ -52,7 +52,7 @@ class FrontendPageNotFoundExceptionHandler extends SymphonyExceptionHandler
             );
             include $e->getTemplate();
 
-            // Handle 404 page
+        // Handle 404 page
         } else {
             $url = '/' . PageManager::resolvePagePath($page['id']) . '/';
 
@@ -61,5 +61,25 @@ class FrontendPageNotFoundExceptionHandler extends SymphonyExceptionHandler
             echo $output;
         }
         exit;
+    }
+}
+
+/**
+ * Compat Layer
+ *
+ * @deprecated Symphony 3.0.0
+ *  Use FrontendPageNotFoundExceptionRenderer instead
+ */
+class FrontendPageNotFoundExceptionHandler extends FrontendPageNotFoundExceptionRenderer
+{
+    public static function render($e)
+    {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog(
+                'FrontendPageNotFoundExceptionHandler::render()',
+                'FrontendPageNotFoundExceptionRenderer::render()'
+            );
+        }
+        parent::render($e);
     }
 }

@@ -4,11 +4,11 @@
  * @package core
  */
 /**
- * The `SymphonyExceptionHandler` extends the `ExceptionHandler`
+ * The `SymphonyExceptionRenderer` extends the `ExceptionRenderer`
  * to allow the template for the exception to be provided from the `TEMPLATES`
- * directory
+ * directory.
  */
-class SymphonyExceptionHandler extends ExceptionHandler
+class SymphonyExceptionRenderer extends ExceptionRenderer
 {
     /**
      * The render function will take a `SymphonyException` exception and
@@ -16,7 +16,7 @@ class SymphonyExceptionHandler extends ExceptionHandler
      * is enabled and pass control to it if not. After that, the method checks if there is a custom
      * template for this exception otherwise it reverts to using the default
      * `usererror.generic.php`. If the template is not found, it will call
-     * `ExceptionHandler::render()`.
+     * `ExceptionRenderer::render()`.
      *
      * @param Throwable $e
      *  The Throwable object
@@ -33,7 +33,7 @@ class SymphonyExceptionHandler extends ExceptionHandler
         if (!ExceptionHandler::$enabled) {
             return ExceptionHandler::render($e);
         }
-        else if ($e->getTemplate() === false) {
+        elseif ($e->getTemplate() === false) {
             return ExceptionHandler::render($e);
         }
 
