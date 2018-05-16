@@ -10,7 +10,7 @@
  * It is possible for Exceptions to be caught by their own `ExceptionRenderer` which can
  * provide the `render` function so that it can be displayed to the user appropriately.
  */
-class ExceptionHandler
+final class ExceptionHandler
 {
     /**
      * Whether the `ExceptionHandler` should handle exceptions. Defaults to true.
