@@ -574,6 +574,19 @@ class Database
     }
 
     /**
+     * Factory method that creates a new `RENAME TABLE` statement.
+     *
+     * @param string $table
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
+     * @return DatabaseRename
+     */
+    public function rename($table)
+    {
+        return new DatabaseRename($this, $table);
+    }
+
+    /**
      * Factory method that creates a new `INSERT` statement.
      *
      * @param string $table
