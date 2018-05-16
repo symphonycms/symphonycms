@@ -4,11 +4,12 @@
  * @package toolkit
  */
 /**
- * The `DatabaseExceptionHandler` provides a render function to provide
+ * The `DatabaseExceptionRenderer` provides a render function to provide
  * customised output for database exceptions. It displays the exception
  * message as provided by the Database.
+ * It also displays information about all the executed SQL.
  */
-class DatabaseExceptionHandler extends ExceptionHandler
+class DatabaseExceptionRenderer extends ExceptionRenderer
 {
     /**
      * The render function will take a `DatabaseException` and output a

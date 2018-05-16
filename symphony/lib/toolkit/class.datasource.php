@@ -181,7 +181,7 @@ class Datasource
         } catch (FrontendPageNotFoundException $e) {
             // Work around. This ensures the 404 page is displayed and
             // is not picked up by the default catch() statement below
-            FrontendPageNotFoundExceptionHandler::render($e);
+            FrontendPageNotFoundExceptionRenderer::render($e);
         } catch (Exception $e) {
             $result->appendChild(new XMLElement('error', General::wrapInCDATA($e->getMessage())));
             return $result;

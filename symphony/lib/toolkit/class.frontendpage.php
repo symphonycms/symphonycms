@@ -874,7 +874,7 @@ class FrontendPage extends XSLTPage
             } catch (FrontendPageNotFoundException $e) {
                 // Work around. This ensures the 404 page is displayed and
                 // is not picked up by the default catch() statement below
-                FrontendPageNotFoundExceptionHandler::render($e);
+                FrontendPageNotFoundExceptionRenderer::render($e);
             }
 
             /**

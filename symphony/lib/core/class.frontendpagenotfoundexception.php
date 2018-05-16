@@ -2,9 +2,9 @@
 
 /**
  * `FrontendPageNotFoundException` extends a default Exception, it adds nothing
- * but allows a different Handler to be used to render the Exception
+ * but allows a different ExceptionRenderer to be used to render the Exception
  *
- * @see core.FrontendPageNotFoundExceptionHandler
+ * @see core.FrontendPageNotFoundExceptionRenderer
  */
 class FrontendPageNotFoundException extends Exception
 {
