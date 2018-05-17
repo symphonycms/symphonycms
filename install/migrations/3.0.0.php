@@ -100,6 +100,7 @@ final class migration_300 extends Migration
             ->modify(['id' => [
                 'type' => 'int(11)',
                 'signed' => false,
+                'auto' => true,
             ]])
             ->execute();
 
