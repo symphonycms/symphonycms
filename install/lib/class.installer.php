@@ -39,8 +39,8 @@ class Installer extends Administration
         static::initialiseLog(INSTALL_LOGS . '/install');
 
         // Initialize error handlers
-        GenericExceptionHandler::initialise(Symphony::Log());
-        GenericErrorHandler::initialise(Symphony::Log());
+        ExceptionHandler::initialise(Symphony::Log());
+        ErrorHandler::initialise(Symphony::Log());
 
         // Copy POST
         self::$POST = $_POST;
