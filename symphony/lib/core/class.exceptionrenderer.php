@@ -61,16 +61,12 @@ class ExceptionRenderer
                 return false;
             }
             return $template;
-        }
-        else if (file_exists($template = sprintf($format, WORKSPACE . '/template', $name))) {
+        } elseif (file_exists($template = sprintf($format, WORKSPACE . '/template', $name))) {
+            return $template;
+        } elseif (file_exists($template = sprintf($format, TEMPLATE, $name))) {
             return $template;
         }
-        else if (file_exists($template = sprintf($format, TEMPLATE, $name))) {
-            return $template;
-        }
-        else {
-            return false;
-        }
+        return false;
     }
 
     /**
