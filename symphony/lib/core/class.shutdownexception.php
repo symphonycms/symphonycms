@@ -10,10 +10,22 @@
 
 class ShutdownException extends Exception
 {
+    /**
+     * The html template to use to render the exception.
+     *
+     * @var string
+     */
+    protected $template = 'fatalerror.fatal';
+
     public function __construct($message, $code, $file, $line)
     {
         parent::__construct($message, $code);
         $this->file = $file;
         $this->line = $line;
+    }
+
+    public function getTemplate()
+    {
+        return $this->template;
     }
 }

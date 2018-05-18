@@ -172,8 +172,13 @@ class ExceptionRenderer
             }
         }
 
+        $template = 'fatalerror.generic';
+        if (is_callable([$e, 'getTemplate'])) {
+            $template = $e->getTemplate();
+        }
+
         $html = sprintf(
-            file_get_contents(self::getTemplate('fatalerror.generic')),
+            file_get_contents(self::getTemplate($template)),
             $heading,
             !ExceptionHandler::$enabled ? 'Something unexpected occurred.' : General::unwrapCDATA($message),
             !ExceptionHandler::$enabled ? '' : $e->getFile(),
