@@ -192,28 +192,9 @@ final class ExceptionHandler
             $line = $last_error['line'];
 
             try {
-                // Log the error message
-                if (!self::$logDisabled && self::$log instanceof Log) {
-                    self::$log->pushToLog(sprintf(
-                        '%s %s: %s%s%s',
-                        __CLASS__,
-                        $code,
-                        $message,
-                        ($line ? " on line $line" : null),
-                        ($file ? " of file $file" : null)
-                    ), $code, true);
-                }
-
                 ob_clean();
-
-                // Display the error message
-                echo ExceptionRenderer::renderHtml(
-                    'fatalerror.fatal',
-                    'Fatal Error',
-                    $message,
-                    $file,
-                    $line
-                );
+                $ex = new ShutdownException($message, $code, $file, $line);
+                ExceptionRenderer::render($e);
             } catch (Exception $e) {
                 self::echoRendererError($e);
             }
