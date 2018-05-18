@@ -3,18 +3,23 @@
 class ExceptionRenderer
 {
     /**
-     * The render function will take an Throwable and output a HTML page
+     * The render function will take an Throwable and output a formatted message.
      *
      * @since Symphony 2.7.0
      *  This function works with both Exception and Throwable
+     * @since Symphony 3.0.0
+     *  This function support both html (default) and text (cli) format
      *
      * @param Throwable $e
      *  The Throwable object
      * @return string
-     *  An HTML string
+     *  An formatted message string
      */
     public static function render($e)
     {
+        if (php_sapi_name() === 'cli') {
+            return static::renderText($e);
+        }
         return static::renderHtml($e);
     }
 
@@ -56,7 +61,7 @@ class ExceptionRenderer
     {
         $format = '%s/%s.tpl';
 
-        if (!ExceptionHandler::$enabled) {
+        if (!ExceptionHandler::$enabled && php_sapi_name() !== 'cli') {
             if (!file_exists($template = sprintf($format, TEMPLATE, 'fatalerror.disabled'))) {
                 return false;
             }
@@ -195,5 +200,83 @@ class ExceptionRenderer
         );
 
         return $html;
+    }
+
+    /**
+     * This function will output the Throwable in a user friendly way.
+     *
+     * @since Symphony 3.0.0
+     * @param Throwable $e
+     *  The Throwable object
+     * @return string
+     *  The formatted error message.
+     */
+    protected static function renderText($e)
+    {
+        $message = $e->getMessage() . ($e->getPrevious()
+            ? PHP_EOL . __('Previous exception: ') . $e->getPrevious()->getMessage()
+            : '');
+        $lines = null;
+
+        foreach (self::getNearbyLines($e->getLine(), $e->getFile()) as $line => $string) {
+            $lines .= sprintf(
+                '%s %d %s',
+                (($line + 1) == $e->getLine() ? '>' : ' '),
+                ++$line,
+                $string
+            );
+        }
+
+        $trace = null;
+
+        foreach ($e->getTrace() as $t) {
+            $trace .= sprintf(
+                '[%s:%d]%s  %s%s%s();%s',
+                (isset($t['file']) ? $t['file'] : null),
+                (isset($t['line']) ? $t['line'] : null),
+                PHP_EOL,
+                (isset($t['class']) ? $t['class'] : null),
+                (isset($t['type']) ? $t['type'] : null),
+                $t['function'],
+                PHP_EOL
+            );
+        }
+
+        $queries = null;
+
+        if (is_object(Symphony::Database())) {
+            $debug = Symphony::Database()->getLogs();
+
+            if (!empty($debug)) {
+                foreach ($debug as $query) {
+                    $queries .= sprintf(
+                        '[%01.4f] %s;',
+                        (isset($query['execution_time']) ? $query['execution_time'] : null),
+                        $query['query']
+                    );
+                }
+            }
+        }
+
+        $template = 'fatalerror.cli';
+
+        $text = sprintf(
+            file_get_contents(self::getTemplate($template)),
+            $message,
+            $e->getFile(),
+            $e->getLine()
+        );
+
+        $text = str_replace('{LINES}', $lines, $text);
+        $text = str_replace('{TRACE}', $trace, $text);
+        $text = str_replace('{QUERIES}', $queries, $text);
+        $text = str_replace('{PHP}', PHP_VERSION, $text);
+        $text = str_replace(
+            '{MYSQL}',
+            !Symphony::Database() ? 'N/A' : Symphony::Database()->getVersion(),
+            $text
+        );
+
+        return $text . PHP_EOL;
     }
 }
