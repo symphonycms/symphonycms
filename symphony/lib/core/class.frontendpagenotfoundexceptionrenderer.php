@@ -11,7 +11,7 @@
 class FrontendPageNotFoundExceptionRenderer extends ExceptionRenderer
 {
     /**
-     * The render function will take a `FrontendPageNotFoundException` Exception and
+     * The renderHtml function will take a `FrontendPageNotFoundException` Exception and
      * output a HTML page. This function first checks to see if their is a page in Symphony
      * that has been given the '404' page type, otherwise it will just use the default
      * Symphony error page template to output the exception
@@ -23,7 +23,7 @@ class FrontendPageNotFoundExceptionRenderer extends ExceptionRenderer
      * @return string
      *  An HTML string
      */
-    public static function render($e)
+    protected static function renderHtml($e)
     {
         $page = PageManager::fetchPageByType('404');
         $previous_exception = Frontend::instance()->getException();

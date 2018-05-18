@@ -4,7 +4,7 @@
  * @package toolkit
  */
 /**
- * The `DatabaseExceptionRenderer` provides a render function to provide
+ * The `DatabaseExceptionRenderer` provides a renderHtml function to provide
  * customised output for database exceptions. It displays the exception
  * message as provided by the Database.
  * It also displays information about all the executed SQL.
@@ -12,7 +12,7 @@
 class DatabaseExceptionRenderer extends ExceptionRenderer
 {
     /**
-     * The render function will take a `DatabaseException` and output a
+     * The renderHtml function will take a `DatabaseException` and output a
      * HTML page.
      *
      * @param Throwable $e
@@ -20,7 +20,7 @@ class DatabaseExceptionRenderer extends ExceptionRenderer
      * @return string
      *  An HTML string
      */
-    public static function render($e)
+    protected static function renderHtml($e)
     {
         // Validate the type, resolve to a 404 if not valid
         if (!static::isValidThrowable($e)) {
