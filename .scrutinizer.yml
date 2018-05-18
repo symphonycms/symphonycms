@@ -111,7 +111,9 @@ checks:
 
 build:
   nodes:
-    tests: true
+    tests:
+      override:
+        - npm test
     analysis:
       tests:
         override:
