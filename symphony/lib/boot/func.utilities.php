@@ -246,7 +246,7 @@ function symphony_launcher()
 
     // #1808
     if (server_safe('HTTP_MOD_REWRITE') != null) {
-        $output = file_get_contents(ExceptionHandler::getTemplate('fatalerror.rewrite'));
+        $output = file_get_contents(ExceptionRenderer::getTemplate('fatalerror.rewrite'));
         $output = str_replace('{ASSETS_URL}', ASSETS_URL, $output);
         $output = str_replace('{SYMPHONY_URL}', SYMPHONY_URL, $output);
         $output = str_replace('{URL}', URL, $output);
