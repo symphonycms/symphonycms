@@ -15,7 +15,7 @@ class ExceptionRenderer
      */
     public static function render($e)
     {
-        return self::renderHtml($e);
+        return static::renderHtml($e);
     }
 
     /**

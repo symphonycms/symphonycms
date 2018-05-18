@@ -11,7 +11,7 @@
 class SymphonyExceptionRenderer extends ExceptionRenderer
 {
     /**
-     * The render function will take a `SymphonyException` exception and
+     * The renderHtml function will take a `SymphonyException` exception and
      * output a HTML page. This function first checks to see if the `ExceptionHandler`
      * is enabled and pass control to it if not. After that, the method checks if there is a custom
      * template for this exception otherwise it reverts to using the default
@@ -23,7 +23,7 @@ class SymphonyExceptionRenderer extends ExceptionRenderer
      * @return string
      *  An HTML string
      */
-    public static function render($e)
+    protected static function renderHtml($e)
     {
         // Validate the type, resolve to a 404 if not valid
         if (!static::isValidThrowable($e)) {
@@ -32,12 +32,12 @@ class SymphonyExceptionRenderer extends ExceptionRenderer
 
         if (!ExceptionHandler::$enabled) {
             return ExceptionHandler::render($e);
-        }
-        elseif ($e->getTemplate() === false) {
+        } elseif (!$e->getTemplate()) {
             return ExceptionHandler::render($e);
         }
 
         self::sendHeaders($e);
         include $e->getTemplate();
+        exit; // safety
     }
 }
