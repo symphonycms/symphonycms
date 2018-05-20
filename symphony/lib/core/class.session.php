@@ -63,6 +63,9 @@ class Session
                 ini_set('session.gc_maxlifetime', $lifetime);
                 ini_set('session.gc_probability', '1');
                 ini_set('session.gc_divisor', Symphony::Configuration()->get('session_gc_divisor', 'symphony'));
+                if ($name = static::getName($domain)) {
+                    ini_set('session.name', $name);
+                }
             }
 
             session_set_save_handler(
@@ -105,7 +108,9 @@ class Session
      * with setups with special characters in their paths.
      *
      * @since Symphony 2.7.0
-     **/
+     * @param string $path
+     * @return string
+     */
     protected static function createCookieSafePath($path)
     {
         $path = array_filter(explode('/', $path));
@@ -137,6 +142,22 @@ class Session
         }
 
         return null;
+    }
+
+    /**
+     * Returns the session name, based off the domain. Used to help prevent issues
+     * with sessions on subdomains.
+     *
+     * @link http://php.net/manual/en/function.session-name.php
+     * @since Symphony 2.7.7
+     * @param  string $domain
+     * @return string
+     */
+    public static function getName($domain = null)
+    {
+        $domain = $domain ?: static::getDomain();
+
+        return preg_replace('/\W/', null, $domain);
     }
 
     /**
