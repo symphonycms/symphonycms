@@ -185,15 +185,21 @@ class Session
         $session_data = Session::read($id);
         if (!$session_data) {
             $empty = true;
-            $unserialized_data = Session::unserialize($data);
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                $unserialized_data = Session::unserialize($data);
 
-            foreach ($unserialized_data as $d) {
-                if (!empty($d)) {
-                    $empty = false;
+                foreach ($unserialized_data as $d) {
+                    if (!empty($d)) {
+                        $empty = false;
+                    }
                 }
-            }
 
-            if ($empty) {
+                if ($empty) {
+                    return true;
+                }
+            // PHP 7.0 makes the session inactive in write callback,
+            // so we try to detect empty sessions without decoding them
+            } elseif ($data === Symphony::Configuration()->get('cookie_prefix', 'symphony') . '|a:0:{}') {
                 return true;
             }
         }
