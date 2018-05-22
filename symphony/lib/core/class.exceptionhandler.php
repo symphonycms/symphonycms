@@ -111,6 +111,8 @@ final class ExceptionHandler
 
             $exception_type = get_class($e);
 
+            // TODO: @deprecated @since Symphony 3.0.0
+            // Use Renderer instead
             if (class_exists("{$exception_type}Handler") && method_exists("{$exception_type}Handler", 'render')) {
                 $class = "{$exception_type}Handler";
             } elseif (class_exists("{$exception_type}Renderer") && method_exists("{$exception_type}Renderer", 'render')) {
