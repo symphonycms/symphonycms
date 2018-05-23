@@ -13,8 +13,4 @@
     require_once DOCROOT . '/symphony/lib/boot/bundle.php';
 
     // Begin Symphony proper:
-    symphony(
-        isset($_GET['mode'])
-            ? $_GET['mode']
-            : null
-    );
+    symphony(APP_MODE);
