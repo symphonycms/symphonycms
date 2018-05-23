@@ -1098,6 +1098,13 @@ class ExtensionManager implements FileResource
                 }
             }
 
+            // Load optional auto-loader
+            $autoLoader = basename($path) . '/vendor/autoload.php';
+            if (file_exists($autoLoader)) {
+                require_once($autoLoader);
+            }
+
+            // Load missing file if class does not exists
             if (!class_exists($classname)) {
                 require_once($path);
             }
