@@ -63,6 +63,16 @@
          */
         define_safe('SYMPHONY_URL', URL . '/' . $adminPath);
 
+        /**
+         * Returns the app mode
+         * @since Symphony 3.0.0
+         */
+        define_safe('APP_MODE', (
+            isset($_GET['mode'])
+                ? $_GET['mode']
+                : 'frontend'
+        ));
+
         if (!defined('SYMPHONY_LAUNCHER_NO_DB')) {
             /**
              * Overload the default Symphony launcher logic.
