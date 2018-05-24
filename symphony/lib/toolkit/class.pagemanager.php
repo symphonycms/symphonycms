@@ -257,6 +257,11 @@ class PageManager
             unset($fields['id']);
         }
 
+        // Force parent to be null if empty
+        if (empty($fields['parent'])) {
+            $fields['parent'] = null;
+        }
+
         if (Symphony::Database()
                 ->update('tbl_pages')
                 ->set($fields)
