@@ -175,7 +175,7 @@ class Log
             return GenericErrorHandler::$errorTypeStrings[$type];
         }
 
-        return 'UNKNOWN';
+        return is_string($type) ? $type : 'UNKNOWN';
     }
 
     /**
@@ -231,6 +231,10 @@ class Log
         } else {
             array_push($this->_log, array('type' => $type, 'time' => time(), 'message' => $message));
             $message = DateTimeObj::get($this->_datetime_format) . ' > ' . $this->__defineNameString($type) . ': ' . $message;
+        }
+
+        if (!is_numeric($type)) {
+            $type = E_ERROR;
         }
 
         if ($writeToLog && ($this->_filter === -1 || ($this->_filter & $type))) {
