@@ -309,7 +309,7 @@ class Administration extends Symphony
         if (!$page && $this->_callback) {
             return $this->_callback;
         } elseif (!$page && !$this->_callback) {
-            trigger_error(__('Cannot request a page callback without first specifying the page.'));
+            $this->throwCustomError(__('Cannot request a page callback without first specifying the page.'));
         }
 
         $this->_currentPage = SYMPHONY_URL . preg_replace('/\/{2,}/', '/', $page);
