@@ -3,7 +3,7 @@
 The database API shipped with Symphony leverages the capabilities given by php's
 [PDO database abstraction extension](http://php.net/manual/en/book.pdo.php).
 But, since it is not possible to get truly safe dynamic SQL statement, even with PDO, it was
-important to build a new API with Symphony's needs in mind, which requires dynamic table and columns names.
+important to build a new API with Symphony's needs in mind, which requires dynamic table and column names.
 
 Hence, the API was designed with the following goals, in that order:
 
@@ -28,19 +28,19 @@ Developers could either call `fetchCol()`, `fetchRow()` or `fetchVar()` to reduc
 This was less than optimal, because the signatures of those functions where hard to remember and error prone.
 Developers could also call `update()`, `insert()` and `delete()` to issue quick write statements.
 But again, this was not flexible.
-Those six functions still exists and worked as they used to, but they got refactored.
+Those six functions still exist and work as they used to, but they got refactored.
 This compatibility layer will be removed in future versions, so make sure to update your code with the new API.
 
 ## API
 
 In order to execute SQL statements, the first thing to do is to create a `DatabaseStatement` object.
-The `Database` class provides factory methods that allows creation of all derived `DatabaseStatement` classes.
-Once the statement object is created, configuration and execution of the statement is left to the caller.
+The `Database` class provides factory methods that allow the creation of all derived `DatabaseStatement` classes.
+Once the statement object is created, configuration and execution of the statement are left to the caller.
 This makes it possible to pass statements around before the statement gets executed.
-It also removes the needs to concat and parse string, since all this heavy lifting is done under the hood.
+It also removes the need to concat and parse strings, since all this heavy lifting is done under the hood.
 
-The API uses chains of command that returns the current instance.
-This often eliminate the need to create statement variable and go strait to the result.
+The API uses chains of command that return the current instance.
+This often eliminates the need to create statement variables and go straight to the result.
 
 In order to execute the statement, developers needs to call the `execute()` method, which returns
 a `DatabaseStatementResult` object.
@@ -54,8 +54,8 @@ if (!$result->success()) {
 }
 ```
 
-Note that if there was a SQL error, `PDO` is configured to throw.
-We wrap does errors in a `DatabaseStatementException` in order to provide more context.
+Note that if there was a SQL error, `PDO` is configured to throw an exception.
+We wrap those errors in a `DatabaseStatementException` in order to provide more context.
 
 Here is the list of all factory methods, the type of object they create and their basic usage:
 
@@ -217,14 +217,14 @@ Symphony::Database()->statement('Raw SQL')->execute()->success();
 ```
 
 Each specialized `DatabaseStatement` exposes methods that are specific to its usage.
-By example, `DatabaseQuery`, `DatabaseUpdate` and `DatabaseDelete` all share a [`where()`](#where) method.
+For example, `DatabaseQuery`, `DatabaseUpdate` and `DatabaseDelete` all share a [`where()`](#where) method.
 Most methods are named by the associated SQL keywords they create.
 
 ## Statements safety
 
-All `DatabaseStatement` makes sure that they generate SAFE SQL, by escaping all values and checking the
+All `DatabaseStatement` make sure that they generate SAFE SQL, by escaping all values and checking the
 resulting SQL string to invalid characters, such as `'`, `\` and `--`.
-In order to make it the compatibility layer work, SQL string can be added using the `unsafeAppendSQLPart()` method and then flagged as unsafe by calling `unsafe()`.
+In order to make the compatibility layer work, SQL strings can be added using the `unsafeAppendSQLPart()` method and then flagged as unsafe by calling `unsafe()`.
 This turns off most of the validity checks.
 Developers should always try to avoid using `statement()` and `unsafeAppendSQLPart()`.
 
@@ -251,22 +251,22 @@ Calls to `quote()`, `quoteFields()`, `cleanValue()`, `cleanFields()` can be remo
 is made automatically when using the safe methods.
 You can now pass user submitted input directly to the database API (except when using raw SQL statement).
 
-Call to `determineQueryType()` must be remove, since it should not be needed anymore.
+Calls to `determineQueryType()` must be removed, since it shouldn't be needed anymore.
 Finally, `debug()` has been renamed `getLogs()`.
 
 ## API Stability
 
 Even if the API is new, the public PHP API should be pretty stable.
-Developers should not depend on public method marked as `@internal`.
+Developers should not depend on public methods marked as `@internal`.
 Developers should also not depend on the string of generated SQL statement, as this can change overtime.
 
 ## Array syntax
 
-Almost all methods expects a single arguments, which is either a value or an array.
-The basic rule of thumb when dealing with array is that keys represent column names and values are literals.
+Almost all methods expect a single argument, which is either a value or an array.
+The basic rule of thumb when dealing with arrays is that keys represent column names and values are literals.
 
 There are 3 more complex syntaxes, that are defined in `DatabaseWhereDefinition`,
-`DatabaseKeyDefinition` and `DatabaseColumnDefinition`, which respectively describes
+`DatabaseKeyDefinition` and `DatabaseColumnDefinition`, which respectively describe
 `WHERE`, `KEY` and `COLUMN` definitions.
 
 For a more complete overview of the possibilities, you should check the unit tests under the `tests` directory.
@@ -274,7 +274,7 @@ For a more complete overview of the possibilities, you should check the unit tes
 ### where()
 
 `where()` uses an "array syntax" to express the filters.
-For a more information, check the PHP doc.
+For more information, check the PHP doc.
 
 ```php
 // With a basic query
@@ -320,7 +320,7 @@ $stm->where(['x' => ['in' => $sub]]);
 ## keys()
 
 `keys()` uses an "array syntax" to express all the values needed to create table keys.
-For a more information, check the PHP doc.
+For more information, check the PHP doc.
 
 ```php
 // With a statement (alter or create)
@@ -363,7 +363,7 @@ $stm->addKey([...])
 ## fields()
 
 `fields()` uses an "array syntax" to express all the values needed to create table fields.
-For a more information, check the PHP doc.
+For more information, check the PHP doc.
 
 ```php
 // With a statement (alter or create)

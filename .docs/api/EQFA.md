@@ -6,7 +6,7 @@
 - [Filtering](#Filtering)
 - [Sorting](#Sorting)
 
-New in `3.0.0`, Fields now delegate filtering and sorting to another class, which must
+New in `3.0.0`, Field now delegate filtering and sorting to another class, which must
 inherits from `EntryQueryFieldAdapter`.
 
 ## Changes
@@ -31,7 +31,7 @@ The base `EntryQueryFieldAdapter` also have new helper methods that were not in 
     1. `createFilterNotEqual()`
 
 The `EntryQuery` class leverages `EntryQueryFieldAdapter` and simply calls `filter()` and `sort()`, passing itself as a parameter.
-`filter()` and `sort()` also brings the datasource filtering syntax deep into the core.
+`filter()` and `sort()` also bring the datasource filtering syntax deep into the core.
 This makes it a lot easier to write queries against the database.
 
 ```php
@@ -83,8 +83,8 @@ public function getFilterColumns()
 }
 ```
 
-If more filtering modes are required, or if you can to remove support for the default one, overriding `filterSingle()` is the way to go.
-This method is responsible to parse and create filters passed to `filter()` one by one.
+If more filtering modes are required, or if you want to remove support for the default one, overriding `filterSingle()` is the way to go.
+This method is responsible for parsing and creating filters passed to `filter()` one by one.
 
 ```php
 protected function filterSingle(EntryQuery $query, $filter)
@@ -102,7 +102,7 @@ protected function filterSingle(EntryQuery $query, $filter)
 
 Finally, if the filtering requires checking the whole filter array, it is always possible to override `filter()`.
 Doing so bypasses both `getFilterColumns()` and `filterSingle()`.
-Developers are encourage to still use them in their custom implementation.
+Developers are encouraged to continue using them in their custom implementation.
 The following is a simplified version of the base implementation.
 
 ```php
@@ -145,9 +145,9 @@ public function getSortColumns()
 }
 ```
 
-If you want to customize the sort further, the `sort()` method can be overridden.
+If you want to customize the sorting further, the `sort()` method can be overridden.
 This even bypasses `getSortColumns()`.
-Developers are encouraged to still use it.
+Developers are encouraged to continue using it.
 Developers should also use the `isRandomOrder()` and `formatColumn()` helpers to jump start their implementation.
 
 ```php
