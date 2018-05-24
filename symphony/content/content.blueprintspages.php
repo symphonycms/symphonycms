@@ -609,62 +609,6 @@ class contentBlueprintsPages extends AdministrationPage
         }
     }
 
-    public function __actionTemplate()
-    {
-        $filename = $this->_context['handle'] . '.xsl';
-        $file_abs = PAGES . '/' . $filename;
-        $fields = $_POST['fields'];
-        $this->_errors = array();
-
-        if (!isset($fields['body']) || trim($fields['body']) == '') {
-            $this->_errors['body'] = __('This is a required field.');
-        } elseif (!General::validateXML($fields['body'], $errors, false, new XSLTProcess())) {
-            $this->_errors['body'] = __('This document is not well formed.') . ' ' . __('The following error was returned:') . ' <code>' . $errors[0]['message'] . '</code>';
-        }
-
-        if (empty($this->_errors)) {
-            /**
-             * Just before a Page Template is about to written to disk
-             *
-             * @delegate PageTemplatePreEdit
-             * @since Symphony 2.2.2
-             * @param string $context
-             * '/blueprints/pages/template/'
-             * @param string $file
-             *  The path to the Page Template file
-             * @param string $contents
-             *  The contents of the `$fields['body']`, passed by reference
-             */
-            Symphony::ExtensionManager()->notifyMembers('PageTemplatePreEdit', '/blueprints/pages/template/', array('file' => $file_abs, 'contents' => &$fields['body']));
-
-            if (!PageManager::writePageFiles($file_abs, $fields['body'])) {
-                $this->pageAlert(
-                    __('Page Template could not be written to disk.')
-                    . ' ' . __('Please check permissions on %s.', array('<code>/workspace/pages</code>')),
-                    Alert::ERROR
-                );
-            } else {
-                /**
-                 * Just after a Page Template has been edited and written to disk
-                 *
-                 * @delegate PageTemplatePostEdit
-                 * @since Symphony 2.2.2
-                 * @param string $context
-                 * '/blueprints/pages/template/'
-                 * @param string $file
-                 *  The path to the Page Template file
-                 */
-                Symphony::ExtensionManager()->notifyMembers(
-                    'PageTemplatePostEdit',
-                    '/blueprints/pages/template/',
-                    ['file' => $file_abs]
-                );
-
-                redirect(SYMPHONY_URL . '/blueprints/pages/template/' . $this->_context['id'] . '/saved/');
-            }
-        }
-    }
-
     public function __actionNew()
     {
         $this->__actionEdit();
