@@ -768,7 +768,7 @@ class contentBlueprintsPages extends AdministrationPage
                     ->limit(1);
 
                 if (!empty($current)) {
-                    $pageQuery->where(['id' => ['!=' => General::intval($current)]]);
+                    $pageQuery->where(['id' => ['!=' => $page_id]]);
                 }
 
                 $duplicate = $pageQuery->execute()->next();
