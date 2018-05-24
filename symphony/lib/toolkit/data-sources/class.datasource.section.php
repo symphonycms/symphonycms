@@ -485,7 +485,12 @@ class SectionDatasource extends Datasource
 
         if (!$section) {
             $about = $this->about();
-            trigger_error(__('The Section, %s, associated with the Data source, %s, could not be found.', array($this->getSource(), '<code>' . $about['name'] . '</code>')), E_USER_ERROR);
+            throw new Exception(
+                __(
+                    'The Section, %s, associated with the Data source, %s, could not be found.',
+                    [$this->getSource(), '<code>' . $about['name'] . '</code>']
+                )
+            );
         }
 
         $sectioninfo = new XMLElement('section', General::sanitize($section->get('name')), array(

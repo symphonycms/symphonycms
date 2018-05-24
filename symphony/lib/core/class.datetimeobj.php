@@ -139,18 +139,19 @@ class DateTimeObj
 
     /**
      * Uses PHP's date_default_timezone_set function to set the system
-     * timezone. If the timezone provided is invalid, a `E_USER_WARNING` will be
-     * raised.
+     * timezone. If the timezone provided is invalid, an exception is thrown.
      *
      * @link http://php.net/manual/en/function.date-default-timezone-set.php
      * @link http://www.php.net/manual/en/timezones.php
      * @param string $timezone
      *  A valid timezone identifier, such as UTC or Europe/Lisbon
+     * @throws Exception
+     *  If the timezone is not valid.
      */
     public static function setDefaultTimezone($timezone)
     {
         if (!@date_default_timezone_set($timezone)) {
-            trigger_error(__('Invalid timezone %s', array($timezone)), E_USER_WARNING);
+            throw new Exception(__('Invalid timezone %s', array($timezone)));
         }
     }
 
