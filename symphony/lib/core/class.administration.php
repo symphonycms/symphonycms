@@ -391,6 +391,11 @@ class Administration extends Symphony
 
         // Parse the context
         if (isset($callback['classname'])) {
+            // Check if the class exists
+            if (!class_exists($callback['classname'])) {
+                $this->errorPageNotFound();
+            }
+            // Create the page
             $page = new $callback['classname'];
 
             // Named context
