@@ -334,6 +334,7 @@ class DatabaseQuery extends DatabaseStatement
     public function orderBy($cols, $direction = 'ASC')
     {
         $orders = [];
+        $randoms = ['RAND()', 'RANDOM()'];
         if (!is_array($cols)) {
             $cols = [$cols => $direction];
         }
@@ -344,7 +345,7 @@ class DatabaseQuery extends DatabaseStatement
                 $col = $dir;
                 $dir = null;
             }
-            if ($col === 'RAND()') {
+            if (in_array($col, $randoms) || in_array($dir, $randoms)) {
                 $orders[] = 'RAND()';
                 continue;
             }
