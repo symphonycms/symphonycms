@@ -247,7 +247,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->sort('system:id', 'RAND');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`id` RAND()",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY RAND()",
             $q->generateSQL(),
             'new EntryQuery with ->sort(system:id, RAND)'
         );

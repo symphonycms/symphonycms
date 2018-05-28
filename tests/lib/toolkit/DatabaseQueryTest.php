@@ -307,7 +307,7 @@ final class DatabaseQueryTest extends TestCase
                   ->orderBy('tbl1.tbl_test', 'RANDOM()')
                   ->orderBy('tbl1.x', 'RAND()');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = :x ORDER BY `tbl1`.`test` RANDOM() , `tbl1`.`x` RAND()",
+            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = :x ORDER BY RAND() , RAND()",
             $sql->generateSQL(),
             'SQL clause with ORDER BY'
         );
