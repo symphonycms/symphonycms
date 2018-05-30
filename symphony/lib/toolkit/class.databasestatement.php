@@ -412,9 +412,9 @@ class DatabaseStatement
      */
     final public function setValue($key, $value)
     {
-        if (General::intval($key) > -1) {
+        if ($this->isUsingPlaceholders()) {
             $key = General::intval($key);
-            if (!$this->isUsingPlaceholders()) {
+            if ($key === -1) {
                 throw new DatabaseStatementException(
                     'Can not use numeric index when using named parameters'
                 );
