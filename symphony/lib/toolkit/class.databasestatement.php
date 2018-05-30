@@ -573,8 +573,8 @@ class DatabaseStatement
     final public function asPlaceholderString($key, $value)
     {
         if (!$this->isUsingPlaceholders() && General::intval($key) === -1) {
-            $this->validateFieldName($key);
             $key = $this->convertToParameterName($key, $value);
+            $this->validateFieldName($key);
             return ":$key";
         }
         return '?';
@@ -599,7 +599,7 @@ class DatabaseStatement
      * It makes sure all ticks are removed before validating the value.
      * If the string contains a dot, it will explode it before adding the ticks.
      *
-     * @uses validateFieldName()
+     * @uses validateTickedString()
      * @param string $value
      *  The value to surrounded with ticks
      * @return string
@@ -611,10 +611,10 @@ class DatabaseStatement
             'value' => ['var' => $value, 'type' => 'string'],
         ]);
         $value = str_replace('`', '', $value);
-        $this->validateFieldName($value);
         if (strpos($value, '.') !== false) {
             return implode('.', array_map([$this, 'asTickedString'], explode('.', $value)));
         }
+        $this->validateTickedString($value);
         return "`$value`";
     }
 
@@ -811,9 +811,34 @@ class DatabaseStatement
         General::ensureType([
             'field' => ['var' => $field, 'type' => 'string'],
         ]);
-        if (preg_match('/^[0-9a-zA-Z_]+$/', $field) === false) {
+        if (!preg_match('/^[0-9a-zA-Z_]+$/', $field)) {
             throw new DatabaseStatementException(
                 "Field name '$field' is not valid since it contains illegal characters"
+            );
+        }
+    }
+
+    /**
+     * @internal
+     * This method validates that the string $value is a valid string to tick
+     * in SQL. If it is not, it throws DatabaseStatementException
+     *
+     * @param string $value
+     * @return void
+     * @throws DatabaseStatementException
+     * @throws Exception
+     */
+    final protected function validateTickedString($value)
+    {
+        General::ensureType([
+            'value' => ['var' => $value, 'type' => 'string'],
+        ]);
+        if ($value === '*') {
+            return;
+        }
+        if (!preg_match('/^[a-zA-Z_][0-9a-zA-Z_\-]*$/', $value)) {
+            throw new DatabaseStatementException(
+                "Value '$value' is not valid since it contains illegal characters"
             );
         }
     }
