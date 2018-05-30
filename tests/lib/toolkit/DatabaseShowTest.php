@@ -11,6 +11,7 @@ final class DatabaseShowTest extends TestCase
     {
         $db = new Database([]);
         $sql = $db->show()
+                  ->usePlaceholders()
                   ->like('%show%s');
         $this->assertEquals(
             "SHOW TABLES LIKE ?",
@@ -44,12 +45,12 @@ final class DatabaseShowTest extends TestCase
                   ->from('tbl')
                   ->like('%show%s');
         $this->assertEquals(
-            "SHOW COLUMNS FROM `tbl` LIKE ?",
+            "SHOW COLUMNS FROM `tbl` LIKE :like",
             $sql->generateSQL(),
             'SHOW COLUMNS LIKE clause'
         );
         $values = $sql->getValues();
-        $this->assertEquals('%show%s', $values[0], '0 is %show%s');
+        $this->assertEquals('%show%s', $values['like'], 'like is %show%s');
         $this->assertEquals(1, count($values), '1 value');
     }
 
@@ -60,7 +61,7 @@ final class DatabaseShowTest extends TestCase
             ->where(['x' => 1])
             ->like('%show%s');
         $this->assertEquals(
-            "SHOW TABLES\n\tLIKE ?\n\tWHERE `x` = :x",
+            "SHOW TABLES\n\tLIKE :like\n\tWHERE `x` = :x",
             $sql->generateFormattedSQL(),
             'SHOW TABLES WHERE LIKE formatted'
         );

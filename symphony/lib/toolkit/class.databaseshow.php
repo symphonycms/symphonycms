@@ -92,6 +92,7 @@ final class DatabaseShow extends DatabaseStatement
      * Appends a LIKE clause.
      * This clause will likely be a table name, so it calls replaceTablePrefix().
      * Can only be called once in the lifetime of the object.
+     * Uses the named parameter 'like' to hold the value when not using placeholders.
      *
      * @see replaceTablePrefix()
      * @throws DatabaseStatementException
@@ -106,9 +107,13 @@ final class DatabaseShow extends DatabaseStatement
             throw new DatabaseStatementException('DatabaseShow can not hold more than one like clause');
         }
         $value = $this->replaceTablePrefix($value);
-        $this->usePlaceholders();
-        $this->appendValues([$value]);
-        $this->unsafeAppendSQLPart('like', "LIKE ?");
+        if ($this->isUsingPlaceholders()) {
+            $this->appendValues([$value]);
+            $this->unsafeAppendSQLPart('like', 'LIKE ?');
+        } else {
+            $this->appendValues(['like' => $value]);
+            $this->unsafeAppendSQLPart('like', 'LIKE :like');
+        }
         return $this;
     }
 
