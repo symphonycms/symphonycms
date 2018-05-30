@@ -437,6 +437,11 @@ class DatabaseStatement
      */
     final public function usePlaceholders()
     {
+        if (!empty($this->getValues())) {
+            throw new DatabaseStatementException(
+                'Can not use placeholders if values have already been added.'
+            );
+        }
         $this->usePlaceholders = true;
         return $this;
     }

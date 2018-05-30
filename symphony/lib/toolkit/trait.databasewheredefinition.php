@@ -91,8 +91,8 @@ trait DatabaseWhereDefinition
                     if (empty($values)) {
                         throw new DatabaseStatementException("Values passed to `$op` must not be empty");
                     }
-                    $this->appendValues($values);
                     $this->usePlaceholders();
+                    $this->appendValues($values);
                     $pc = $this->asPlaceholdersList($values);
                 } elseif ($values instanceof DatabaseSubQuery) {
                     foreach ($values->getValues() as $ck => $cv) {
@@ -107,8 +107,8 @@ trait DatabaseWhereDefinition
                 return "$tk $op ($pc)";
             // first value key is the BETWEEN expression
             } elseif ($vk === 'between') {
-                $this->appendValues(current(array_values($c)));
                 $this->usePlaceholders();
+                $this->appendValues(current(array_values($c)));
                 $tk = $this->replaceTablePrefix($k);
                 $tk = $this->asTickedString($tk);
                 return "($tk BETWEEN ? AND ?)";
