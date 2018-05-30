@@ -412,7 +412,7 @@ class DatabaseStatement
      */
     final public function setValue($key, $value)
     {
-        if (General::intval($key) > 0) {
+        if (General::intval($key) > -1) {
             $key = General::intval($key);
             if (!$this->isUsingPlaceholders()) {
                 throw new DatabaseStatementException(
