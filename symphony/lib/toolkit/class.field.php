@@ -99,6 +99,18 @@ class Field implements ArrayAccess
     protected $_key = 0;
 
     /**
+     * The handle of this field object
+     * @var string
+     */
+    protected $_handle = null;
+
+    /**
+     * The name of this field object
+     * @var string
+     */
+    protected $_name = null;
+
+    /**
      * An associative array of the settings for this `Field` instance
      * @var array
      */
