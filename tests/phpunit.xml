@@ -8,9 +8,11 @@
     <testsuites>
         <testsuite name="unit">
             <directory suffix="Test.php">lib</directory>
+            <directory suffix="Test.php">../extensions/*/tests/unit</directory>
         </testsuite>
         <testsuite name="integration">
             <directory suffix="Test.php">int</directory>
+            <directory suffix="Test.php">../extensions/*/tests/int</directory>
         </testsuite>
     </testsuites>
     <filter>
