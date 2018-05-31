@@ -436,16 +436,23 @@ class EntryQuery extends DatabaseQuery
             return $this->where($conditions);
 
         // Handle when the filter field is a field id
-        } elseif (is_string($field)) {
+        } elseif (General::intval($field) > 0) {
             $f = (new FieldManager)->select()->field($field)->execute()->next();
+            if ($f) {
+                $field = $f->name();
+            }
 
         // Handle when the filter field is a field name
-        } elseif (General::intval($field) > 0) {
+        } elseif (is_string($field)) {
             $f = (new FieldManager)->select()->name($field)->execute()->next();
+            if ($f) {
+                $field = $f->name();
+            }
 
         // Handle when the filter field is a field object
         } elseif ($field instanceof Field) {
             $f = $field;
+            $field = $f->name();
         }
 
         if (!$f) {
@@ -460,7 +467,7 @@ class EntryQuery extends DatabaseQuery
             $this->distinct();
         }
 
-        $field->getEntryQueryFieldAdapter()->filter($this, $values, $operator);
+        $f->getEntryQueryFieldAdapter()->filter($this, $values, $operator);
 
         return $this;
     }
