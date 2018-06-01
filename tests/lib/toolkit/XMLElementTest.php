@@ -68,6 +68,17 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('<xml null="" not-empty="1" empty="" />', $x->generate());
     }
 
+    public function testEmptyAttributesHtml()
+    {
+        $x = (new \XMLElement('xml'))
+            ->setElementStyle('html')
+            ->setAttribute('null', null)
+            ->setAttributeArray(['not-empty' => '1', 'empty' => ''])
+            ->setAllowEmptyAttributes(true);
+        $this->assertNotEmpty($x->getAttributes());
+        $this->assertEquals('<xml null not-empty="1" empty></xml>', $x->generate());
+    }
+
     public function testAddClass()
     {
         $x = (new \XMLElement('xml'))->addClass('test');
@@ -114,6 +125,19 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('<div />', $x->generate());
         $x->setElementStyle('html');
         $this->assertEquals('<div></div>', $x->generate());
+    }
+
+    public function testSingleQuotes()
+    {
+        $x = (new \XMLElement('xml', 'value'))
+            ->setAttribute('test', '1')
+            ->setAttribute('test1', 'test test')
+            ->setAttribute('test2', 't"est test')
+            ->setAttribute('test3', 't"est \'test');
+        $this->assertEquals(
+            ' test="1" test1="test test" test2=\'t"est test\' test3="t&quot;est \'test"',
+            $x->generateAttributes()
+        );
     }
 
     public function testGetChild()
