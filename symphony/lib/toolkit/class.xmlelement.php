@@ -712,10 +712,46 @@ class XMLElement implements IteratorAggregate
     }
 
     /**
+     * Generates the string representing all the element's attributes.
+     * Values are enclosed in double quotes (") by default, unless there are
+     * double quotes in the value but no single quotes.
+     * In that case, single quotes are used.
+     * If the value contains both single and double quotes, double quotes in the
+     * value gets transformed to their xml equivalent, i.e., &quot;.
+     *
+     * @return string
+     *  The attributes string.
+     */
+    public function generateAttributes()
+    {
+        $result = null;
+        foreach ($this->attributes as $attribute => $value) {
+            if (!empty($value) || $this->allowEmptyAttributes) {
+                $attrFormat = ' %s="%s"';
+                if (!empty($value)) {
+                    $hasSingleQuotes = strpos($value, "'")  !== false;
+                    $hasDoubleQuotes = strpos($value, '"') !== false;
+                    if (!$hasSingleQuotes && $hasDoubleQuotes) {
+                        $attrFormat = " %s='%s'";
+                    } elseif ($hasSingleQuotes && $hasDoubleQuotes) {
+                        $value = str_replace('"', '&quot;', $value);
+                    }
+                } elseif ($this->elementStyle !== 'xml') {
+                    $attrFormat = ' %s%s';
+                    $value = '';
+                }
+                $result .= sprintf($attrFormat, $attribute, $value);
+            }
+        }
+        return $result;
+    }
+
+    /**
      * This function will turn the `XMLElement` into a string
      * representing the element as it would appear in the markup.
      * The result is valid XML.
      *
+     * @uses generateAttributes()
      * @param boolean $indent
      *  Defaults to false
      * @param integer $tabDepth
@@ -728,17 +764,15 @@ class XMLElement implements IteratorAggregate
     {
         $result = null;
         $newline = ($indent ? PHP_EOL : null);
-
-        $result .= ($indent ? str_repeat("\t", $tabDepth) : null) . '<' . $this->getName();
-
-        foreach ($this->attributes as $attribute => $value) {
-            if (!empty($value) || $this->allowEmptyAttributes) {
-                $result .= sprintf(' %s="%s"', $attribute, $value);
-            }
-        }
-
         $addedNewline = false;
 
+        // Start with the tag name
+        $result .= ($indent ? str_repeat("\t", $tabDepth) : null) . '<' . $this->getName();
+
+        // Generate all attributes
+        $result .= $this->generateAttributes();
+
+        // Render children if needed
         if ($this->getNumberOfChildren() > 0 || !empty($this->value) || !$this->selfClosing) {
             $result .= '>';
 
@@ -763,7 +797,7 @@ class XMLElement implements IteratorAggregate
                 $newline
             );
 
-            // Empty elements:
+        // Close empty element
         } else {
             if ($this->elementStyle === 'xml') {
                 $result .= ' />';
