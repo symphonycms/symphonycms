@@ -89,7 +89,6 @@ final class DatabaseUpdate extends DatabaseStatement
         $this->enableIsNullSyntax = false;
         $v = $this->buildWhereClauseFromArray([self::VALUES_DELIMITER => $values]);
         $this->unsafeAppendSQLPart('values', "SET $v");
-        $this->appendValues($values);
         return $this;
     }
 
