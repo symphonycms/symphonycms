@@ -28,6 +28,25 @@ final class DatabaseUpdateTest extends TestCase
         $this->assertEquals(3, count($values), '3 values');
     }
 
+    public function testUPDATESelfReference()
+    {
+        $db = new Database([]);
+        $sql = $db->update('update')
+            ->set([
+                'x' => '$x - 1',
+            ])
+            ->where([
+                'y' => '$y + 1',
+            ]);
+        $this->assertEquals(
+            "UPDATE `update` SET `x` = `x` - 1 WHERE `y` = `y` + 1",
+            $sql->generateSQL(),
+            'UPDATE clause self reference'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
     public function testUPDATEWHERE()
     {
         $db = new Database([]);
