@@ -76,12 +76,12 @@ trait DatabaseWhereDefinition
             if ($k === 'or' || $k === 'and') {
                 $K = strtoupper($k);
                 return '(' . implode(" $K ", array_map(function ($k) use ($c) {
-                    return $this->buildWhereClauseFromArray([$k => $c[$k]]);
+                    return $this->buildSingleWhereClauseFromArray($k, $c[$k]);
                 }, array_keys($c))) . ')';
             // key is the VALUES_DELIMITER (i.e. a comma `,`)
             } elseif ($k === self::VALUES_DELIMITER) {
                 return implode(self::LIST_DELIMITER, General::array_map(function ($k, $c) {
-                    return $this->buildWhereClauseFromArray([$k => $c]);
+                    return $this->buildSingleWhereClauseFromArray($k, $c);
                 }, $c));
             // first value key is the IN() function
             } elseif ($vk === 'in' || $vk === 'not in') {
