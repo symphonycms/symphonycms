@@ -9,6 +9,12 @@
 class AuthorQuery extends DatabaseQuery
 {
     /**
+     * Flag to indicate if the statement needs to add the default ORDER BY clause
+     * @var boolean
+     */
+    private $addDefaultSort = true;
+
+    /**
      * Creates a new AuthorQuery statement on table `tbl_authors` with an optional projection.
      * The table is aliased to `a`.
      *
@@ -23,6 +29,17 @@ class AuthorQuery extends DatabaseQuery
     {
         parent::__construct($db, $projection);
         $this->from('tbl_authors')->alias('a');
+    }
+
+    /**
+     * Disables the default sort
+     * @return AuthorQuery
+     *  The current instance
+     */
+    public function disableDefaultSort()
+    {
+        $this->addDefaultSort = false;
+        return $this;
     }
 
     /**
@@ -119,7 +136,7 @@ class AuthorQuery extends DatabaseQuery
      */
     public function finalize()
     {
-        if (!$this->containsSQLParts('order by')) {
+        if ($this->addDefaultSort && !$this->containsSQLParts('order by')) {
             $this->sort('id');
         }
         return parent::finalize();

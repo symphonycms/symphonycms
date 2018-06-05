@@ -9,6 +9,12 @@
 class FieldQuery extends DatabaseQuery
 {
     /**
+     * Flag to indicate if the statement needs to add the default ORDER BY clause
+     * @var boolean
+     */
+    private $addDefaultSort = true;
+
+    /**
      * Creates a new FieldQuery statement on table `tbl_fields` with an optional projection.
      * The table is aliased to `f`.
      *
@@ -23,6 +29,17 @@ class FieldQuery extends DatabaseQuery
     {
         parent::__construct($db, $projection);
         $this->from('tbl_fields')->alias('f');
+    }
+
+    /**
+     * Disables the default sort
+     * @return FieldQuery
+     *  The current instance
+     */
+    public function disableDefaultSort()
+    {
+        $this->addDefaultSort = false;
+        return $this;
     }
 
     /**
@@ -145,7 +162,7 @@ class FieldQuery extends DatabaseQuery
      */
     public function finalize()
     {
-        if (!$this->containsSQLParts('order by')) {
+        if ($this->addDefaultSort && !$this->containsSQLParts('order by')) {
             $this->sort('sortorder');
         }
         return parent::finalize();
