@@ -9,6 +9,12 @@
 class SectionQuery extends DatabaseQuery
 {
     /**
+     * Flag to indicate if the statement needs to add the default ORDER BY clause
+     * @var boolean
+     */
+    private $addDefaultSort = true;
+
+    /**
      * Creates a new SectionQuery statement on table `tbl_sections` with an optional projection.
      * The table is aliased to `s`.
      *
@@ -23,6 +29,17 @@ class SectionQuery extends DatabaseQuery
     {
         parent::__construct($db, $projection);
         $this->from('tbl_sections')->alias('s');
+    }
+
+    /**
+     * Disables the default sort
+     * @return SectionQuery
+     *  The current instance
+     */
+    public function disableDefaultSort()
+    {
+        $this->addDefaultSort = false;
+        return $this;
     }
 
     /**
@@ -93,7 +110,7 @@ class SectionQuery extends DatabaseQuery
      */
     public function finalize()
     {
-        if (!$this->containsSQLParts('order by')) {
+        if ($this->addDefaultSort && !$this->containsSQLParts('order by')) {
             $this->sort('name');
         }
         return parent::finalize();

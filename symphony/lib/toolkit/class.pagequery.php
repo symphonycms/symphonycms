@@ -16,6 +16,12 @@ class PageQuery extends DatabaseQuery
     private $includeTypes = false;
 
     /**
+     * Flag to indicate if the statement needs to add the default ORDER BY clause
+     * @var boolean
+     */
+    private $addDefaultSort = true;
+
+    /**
      * Creates a new PageQuery statement on table `tbl_pages` with an optional projection.
      * The table is aliased to `p`.
      *
@@ -30,6 +36,17 @@ class PageQuery extends DatabaseQuery
     {
         parent::__construct($db, $projection);
         $this->from('tbl_pages')->alias('p');
+    }
+
+    /**
+     * Disables the default sort
+     * @return PageQuery
+     *  The current instance
+     */
+    public function disableDefaultSort()
+    {
+        $this->addDefaultSort = false;
+        return $this;
     }
 
     /**
@@ -150,7 +167,7 @@ class PageQuery extends DatabaseQuery
      */
     public function finalize()
     {
-        if (!$this->containsSQLParts('order by')) {
+        if ($this->addDefaultSort && !$this->containsSQLParts('order by')) {
             $this->sort('sortorder');
         }
         return parent::finalize();
