@@ -955,6 +955,7 @@ class PageManager
             ->select()
             ->count()
             ->where(['p.data_sources' => ['regexp' => "[[:<:]]{$handle}[[:>:]]"]])
+            ->execute()
             ->variable(0) > 0;
     }
 
@@ -972,6 +973,7 @@ class PageManager
             ->select()
             ->count()
             ->where(['p.events' => ['regexp' => "[[:<:]]{$handle}[[:>:]]"]])
+            ->execute()
             ->variable(0) > 0;
     }
 
