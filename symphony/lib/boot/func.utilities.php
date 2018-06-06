@@ -227,30 +227,22 @@ function is_session_empty()
 /**
  * Responsible for picking the launcher function and starting it.
  *
- *  @param string $mode (optional)
  */
-function symphony($mode)
+function symphony()
 {
     $launcher = SYMPHONY_LAUNCHER;
-    $launcher($mode);
+    $launcher();
 }
 
 /**
  * Responsible for launching a standard symphony instance and
  * sending output to the browser.
  *
- *  @param string $mode (optional)
  *  @return integer
  */
-function symphony_launcher($mode)
+function symphony_launcher()
 {
-    if (is_string($mode) && strtolower($mode) == 'administration') {
-        $renderer = Administration::instance();
-    } else {
-        $renderer = Frontend::instance();
-    }
-
-    $output = $renderer->display(getCurrentPage());
+    $output = Symphony::Engine()->display(getCurrentPage());
 
     // #1808
     if (server_safe('HTTP_MOD_REWRITE') != null) {

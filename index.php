@@ -13,4 +13,4 @@
     require_once DOCROOT . '/symphony/lib/boot/bundle.php';
 
     // Begin Symphony proper:
-    symphony(APP_MODE);
+    symphony();
