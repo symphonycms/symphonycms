@@ -82,4 +82,35 @@ final class DatabaseShowTest extends TestCase
         $this->assertEquals('PRIMARY', $values['x'], 'x is PRIMARY');
         $this->assertEquals(1, count($values), '1 value');
     }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSHOWINVALID()
+    {
+        $db = new Database([]);
+        $sql = new DatabaseShow($db, 'TEST');
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSHOWDOUBLEFROM()
+    {
+        $db = new Database([]);
+        $sql = $db->show()
+            ->from('tbl_test_table')
+            ->from('other');
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSHOWDOUBLELIKE()
+    {
+        $db = new Database([]);
+        $sql = $db->showColumns()
+            ->like('tbl_test_table')
+            ->like('other');
+    }
 }

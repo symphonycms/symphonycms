@@ -51,6 +51,28 @@ final class DatabaseDeleteTest extends TestCase
     /**
      * @expectedException DatabaseStatementException
      */
+    public function testDELETEDOUBLELIMIT()
+    {
+        $db = new Database([]);
+        $sql = $db->delete('delete')->limit(1)->limit(2);
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testDELETEINVALIDLIMIT()
+    {
+        $db = new Database([]);
+        $sql = $db->delete('delete')->limit('');
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
     public function testDELETENoWhere()
     {
         $db = new Database([]);

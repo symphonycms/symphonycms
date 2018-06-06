@@ -77,4 +77,18 @@ final class EntryQueryAuthorAdapterTest extends TestCase
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');
     }
+
+    public function testSortRand()
+    {
+        $q = (new \EntryQuery($this->db));
+        $o = $this->createAdapter();
+        $o->sort($q, 'random');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY RAND()",
+            $q->generateSQL(),
+            'Simple asc sort ->sort(random)'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
 }

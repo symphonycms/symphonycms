@@ -7,11 +7,346 @@ use PHPUnit\Framework\TestCase;
  */
 final class DatabaseStatementTest extends TestCase
 {
+    public function testGetDB()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $class = new ReflectionClass($sql);
+        $method = $class->getMethod('getDB');
+        $method->setAccessible(true);
+        $this->assertInstanceOf('\Database', $method->invoke($sql));
+        $this->assertEquals($db, $method->invoke($sql));
+    }
+
+    public function testGetSQLParts()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $sql->unsafeAppendSQLPart('statement', 'part');
+        $this->assertNotEmpty($sql->getSQLParts('statement'));
+        $this->assertNotEmpty($sql->getSQLParts(['statement', 'test']));
+        $this->assertEmpty($sql->getSQLParts('test'));
+        $this->assertEmpty($sql->getSQLParts(['test1', 'test']));
+    }
+
+    public function testContainsSQLParts()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $sql->unsafeAppendSQLPart('statement', 'part');
+        $this->assertTrue($sql->containsSQLParts('statement'));
+        $this->assertTrue($sql->containsSQLParts(['statement', 'test']));
+        $this->assertFalse($sql->containsSQLParts('test'));
+        $this->assertFalse($sql->containsSQLParts(['test1', 'test']));
+    }
+
+    public function testGetValues()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $this->assertTrue(is_array($sql->getValues()));
+        $this->assertEmpty($sql->getValues());
+    }
+
+    public function testAppendValuesStringKeys()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $class = new ReflectionClass($sql);
+        $method = $class->getMethod('appendValues');
+        $method->setAccessible(true);
+        $method->invokeArgs($sql, [[
+            'test' => 1,
+            'null' => null,
+            'string' => 'test',
+        ]]);
+        $this->assertNotEmpty($sql->getValues());
+        $this->assertEquals(3, count($sql->getValues()));
+        $this->assertArrayHasKey('test', $sql->getValues());
+        $this->assertArrayHasKey('_null_', $sql->getValues());
+        $this->assertArrayHasKey('string', $sql->getValues());
+    }
+
+    public function testAppendValuesStringKeysMultipleCalls()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $class = new ReflectionClass($sql);
+        $method = $class->getMethod('appendValues');
+        $method->setAccessible(true);
+        $method->invokeArgs($sql, [[
+            'test' => 1,
+        ]]);
+        $method->invokeArgs($sql, [[
+            'null' => null,
+        ]]);
+        $method->invokeArgs($sql, [[
+            'string' => 'test',
+        ]]);
+        $this->assertNotEmpty($sql->getValues());
+        $this->assertEquals(3, count($sql->getValues()));
+        $this->assertArrayHasKey('test', $sql->getValues());
+        $this->assertArrayHasKey('_null_', $sql->getValues());
+        $this->assertArrayHasKey('string', $sql->getValues());
+    }
+
+    public function testAppendValuesNumericKeys()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $class = new ReflectionClass($sql);
+        $method = $class->getMethod('appendValues');
+        $method->setAccessible(true);
+        $method->invokeArgs($sql, [[1, null, 'test']]);
+        $this->assertNotEmpty($sql->getValues());
+        $this->assertEquals(3, count($sql->getValues()));
+        $this->assertArrayHasKey(0, $sql->getValues());
+        $this->assertArrayHasKey(1, $sql->getValues());
+        $this->assertArrayHasKey(2, $sql->getValues());
+    }
+
+    public function testAppendValuesNumericKeysMultipleCalls()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $class = new ReflectionClass($sql);
+        $method = $class->getMethod('appendValues');
+        $method->setAccessible(true);
+        $method->invokeArgs($sql, [[1]]);
+        $method->invokeArgs($sql, [[null]]);
+        $method->invokeArgs($sql, [['test']]);
+        $this->assertNotEmpty($sql->getValues());
+        $this->assertEquals(3, count($sql->getValues()));
+        $this->assertArrayHasKey(0, $sql->getValues());
+        $this->assertArrayHasKey(1, $sql->getValues());
+        $this->assertArrayHasKey(2, $sql->getValues());
+    }
+
+    public function testAppendValuesStringKeysMultipleCallsWithPlaceholders()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST')->usePlaceholders();
+        $class = new ReflectionClass($sql);
+        $method = $class->getMethod('appendValues');
+        $method->setAccessible(true);
+        $method->invokeArgs($sql, [[
+            'test' => 1,
+        ]]);
+        $method->invokeArgs($sql, [[
+            'null' => null,
+        ]]);
+        $method->invokeArgs($sql, [[
+            'string' => 'test',
+        ]]);
+        $this->assertNotEmpty($sql->getValues());
+        $this->assertEquals(3, count($sql->getValues()));
+        $this->assertArrayHasKey(0, $sql->getValues());
+        $this->assertArrayHasKey(1, $sql->getValues());
+        $this->assertArrayHasKey(2, $sql->getValues());
+    }
+
+    public function testSetValue()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $sql->setValue('test', 1);
+        $sql->setValue('null', null);
+        $sql->setValue('string', 'test');
+        $this->assertNotEmpty($sql->getValues());
+        $this->assertEquals(3, count($sql->getValues()));
+        $this->assertArrayHasKey('test', $sql->getValues());
+        $this->assertArrayHasKey('null', $sql->getValues());
+        $this->assertArrayHasKey('string', $sql->getValues());
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSetValueDuplicate()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $sql->setValue('test', 1);
+        $sql->setValue('test', 2);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSetValueArrayAsKey()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $sql->setValue([], 1);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSetValueObjectAsKey()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $sql->setValue($sql, 1);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSetValueBoolAsKey()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $sql->setValue(true, 1);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSetValueIntAsKey()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $sql->setValue(0, 1);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSetValueStringAsKeyWithPlaceholders()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST')->usePlaceholders();
+        $sql->setValue('test', 1);
+    }
+
+    public function testSetValueIntAsKeyWithPlaceholders()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST')->usePlaceholders();
+        $sql->setValue(0, 1);
+        $sql->setValue(1, 0);
+        $this->assertNotEmpty($sql->getValues());
+        $this->assertEquals(2, count($sql->getValues()));
+        $this->assertArrayHasKey(0, $sql->getValues());
+        $this->assertArrayHasKey(1, $sql->getValues());
+    }
+
+    public function testUsePlaceholders()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST')->usePlaceholders();
+        $this->assertTrue($sql->isUsingPlaceholders());
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testUsePlaceholdersAfterValuesAdded()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $class = new ReflectionClass($sql);
+        $method = $class->getMethod('appendValues');
+        $method->setAccessible(true);
+        $method->invokeArgs($sql, [['x' => 'x']]);
+        $sql->usePlaceholders();
+    }
+
+    public function testUnsafe()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST')->unsafe();
+        $this->assertFalse($sql->isSafe());
+    }
+
+    public function testFinalize()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $this->assertInstanceOf('\DatabaseStatement', $sql->finalize());
+        $this->assertEquals($sql, $sql->finalize());
+    }
+
+    public function testReplaceTablePrefix()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $this->assertEquals('test', $sql->replaceTablePrefix('tbl_test'));
+        $db->setPrefix('sym_');
+        $this->assertEquals('sym_test', $sql->replaceTablePrefix('tbl_test'));
+        $this->assertEquals('sym_tbl_test', $sql->replaceTablePrefix('tbl_tbl_test'));
+        $this->assertEquals('sym_tbl_test sym_test2', $sql->replaceTablePrefix('tbl_tbl_test tbl_test2'));
+        $db->setPrefix('tbl_');
+        $this->assertEquals('tbl_test', $sql->replaceTablePrefix('tbl_test'));
+    }
+
+    public function testAsPlaceholderStringStringAsKeys()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $this->assertEquals(':name', $sql->asPlaceholderString('name', 1));
+        $this->assertEquals(':test', $sql->asPlaceholderString('test', ''));
+        $this->assertEquals(':_null_', $sql->asPlaceholderString('null', null));
+    }
+
+    public function testAsPlaceholderStringIntAsKeys()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $this->assertEquals(':name', $sql->asPlaceholderString('name', 1));
+        $this->assertEquals(':test', $sql->asPlaceholderString('test', ''));
+        $this->assertEquals(':_null_', $sql->asPlaceholderString('null', null));
+    }
+
+    public function testAsPlaceholderStringIntAsKeysWithPlaceholders()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST')->usePlaceholders();
+        $this->assertEquals('?', $sql->asPlaceholderString(0, 1));
+        $this->assertEquals('?', $sql->asPlaceholderString(1, ''));
+        $this->assertEquals('?', $sql->asPlaceholderString(2, null));
+    }
+
+    public function testAsPlaceholderStringStringAsKeysWithPlaceholders()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST')->usePlaceholders();
+        $this->assertEquals('?', $sql->asPlaceholderString('name', 1));
+        $this->assertEquals('?', $sql->asPlaceholderString('test', ''));
+        $this->assertEquals('?', $sql->asPlaceholderString('null', null));
+    }
+
+    public function testAsPlaceholdersListStringAsKeys()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $list = $sql->asPlaceholdersList([
+            'name' => 1,
+            'null' => null,
+            'test' => '',
+        ]);
+        $this->assertEquals(':name, :_null_, :test', $list);
+    }
+
+    public function testAsPlaceholdersListIntAsKeys()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $list = $sql->asPlaceholdersList([1, null, '']);
+        $this->assertEquals('?, ?, ?', $list);
+    }
+
     public function testAsTickedString()
     {
         $db = new Database([]);
         $sql = $db->statement('');
         $this->assertEquals('`x`', $sql->asTickedString('x'));
+        $this->assertEquals('`x`', $sql->asTickedString(['x']));
+        $this->assertEquals('`x`, `y`', $sql->asTickedString(['x', 'y']));
+        $this->assertEquals('`x`, `y`', $sql->asTickedString(['x,y']));
+        $this->assertEquals('*', $sql->asTickedString('*'));
+        $this->assertEquals(null, $sql->asTickedString(null));
         $this->assertEquals('`x`', $sql->asTickedString('x`'));
         $this->assertEquals('`x`', $sql->asTickedString('`x`'));
         $this->assertEquals('`xtest`', $sql->asTickedString('x`test'));
@@ -20,6 +355,20 @@ final class DatabaseStatementTest extends TestCase
         $this->assertEquals('`x`.`y`.`z`', $sql->asTickedString('x.y.z'));
         $this->assertEquals('`x-test`', $sql->asTickedString('x-test'));
         $this->assertEquals('`x_test`', $sql->asTickedString('x_test'));
+        $this->assertEquals('COUNT(*)', $sql->asTickedString('COUNT(*)'));
+        $this->assertEquals('COUNT(`x`)', $sql->asTickedString('COUNT(x)'));
+        $this->assertEquals('COUNT(`x`) AS `c`', $sql->asTickedString('COUNT(x)', 'c'));
+        $this->assertEquals(':x', $sql->asTickedString(':x'));
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testAsTickedStringInvalidParameterName()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $this->assertEquals(':é', $sql->asTickedString(':é'));
     }
 
     public function testAsTickedStringWithOperator()
@@ -33,12 +382,103 @@ final class DatabaseStatementTest extends TestCase
         $this->assertEquals('(`x` + 10) AS `t`', $sql->asTickedString('x + 10', 't'));
     }
 
-    public function testAsTickedList()
+    public function testAsTickedListStringAsKeys()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $this->assertEquals('`x` AS `x`', $sql->asTickedList(['x' => 'x']));
+        $this->assertEquals('`x` AS `a`, `y` AS `b`', $sql->asTickedList(['x' => 'a', 'y' => 'b']));
+    }
+
+    public function testAsTickedListIntAsKeys()
     {
         $db = new Database([]);
         $sql = $db->statement('');
         $this->assertEquals('`x`', $sql->asTickedList(['x']));
         $this->assertEquals('`x`, `y`', $sql->asTickedList(['x', 'y']));
+    }
+
+    public function testAsProjectionList()
+    {
+        $db = new Database([]);
+        $sql = $db->select();
+        $sub = $sql->select();
+        $this->assertEquals('`x`, (SELECT SQL_NO_CACHE) AS `y`', $sql->asProjectionList(['x', 'y' => $sub]));
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testValidateFieldName()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $class = new ReflectionClass($sql);
+        $method = $class->getMethod('validateFieldName');
+        $method->setAccessible(true);
+        $method->invokeArgs($sql, [' ']);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testValidateTickedStringWithSpace()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $class = new ReflectionClass($sql);
+        $method = $class->getMethod('validateTickedString');
+        $method->setAccessible(true);
+        $method->invokeArgs($sql, [' ']);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testValidateTickedStringWithValidNonFirstChar()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $class = new ReflectionClass($sql);
+        $method = $class->getMethod('validateTickedString');
+        $method->setAccessible(true);
+        $method->invokeArgs($sql, ['-']);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testValidateTickedStringWithLeadingDidgit()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $class = new ReflectionClass($sql);
+        $method = $class->getMethod('validateTickedString');
+        $method->setAccessible(true);
+        $method->invokeArgs($sql, ['0']);
+    }
+
+    public function testConvertToParameterName()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $this->assertEquals('x', $sql->convertToParameterName('x', 'x'));
+        $this->assertEquals('x', $sql->convertToParameterName('x', 'x'));
+        $this->assertEquals('x2', $sql->convertToParameterName('x', 'xx'));
+        $this->assertEquals('x', $sql->convertToParameterName('x', 'x'));
+        $this->assertEquals('_null_', $sql->convertToParameterName('x', null));
+        $this->assertEquals('x_x', $sql->convertToParameterName('x-x', 'x'));
+        $this->assertEquals('x_x', $sql->convertToParameterName('x.x', 'x'));
+    }
+
+    public function testFormatParameterName()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $class = new ReflectionClass($sql);
+        $method = $class->getMethod('formatParameterName');
+        $method->setAccessible(true);
+        $this->assertEquals('x', $method->invokeArgs($sql, ['x']));
     }
 
     public function testGenerateSQL()

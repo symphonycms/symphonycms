@@ -66,4 +66,28 @@ final class DatabaseInsertTest extends TestCase
             'INSERT ... UPDATE ON DUPLICATE KEY Formatted'
         );
     }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testINSERTDOUBLEVALUES()
+    {
+        $db = new Database([]);
+        $sql = $db->insert('tbl_insert')
+            ->values([
+                'x' => 1,
+            ])
+            ->values([]);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testINSERTDOUBLEDUPLICATE()
+    {
+        $db = new Database([]);
+        $sql = $db->insert('tbl_insert')
+            ->updateOnDuplicateKey()
+            ->updateOnDuplicateKey();
+    }
 }

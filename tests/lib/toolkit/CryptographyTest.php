@@ -28,6 +28,15 @@ final class CryptographyTest extends TestCase
         $this->assertNotEquals($r1, $r2);
     }
 
+    /**
+     * @expectedException Exception
+     */
+    public function test15RandomBytes()
+    {
+        $length = 15;
+        $r1 = \Cryptography::randomBytes($length);
+    }
+
     public function test32RandomBytes()
     {
         $length = 32;
@@ -59,6 +68,12 @@ final class CryptographyTest extends TestCase
         $this->assertTrue(\Cryptography::compare('test', 'PBKDF2v1|10000|8cbf91f04f2604380122|OXQB+sx6n4nE14xpyDTdODUZyGROAYBKhFMP7DgqOa3RxLWavSU41w=='));
         $this->assertTrue(\Cryptography::compare('PBKDF2v1|10000|8cbf91f04f2604380122|OXQB+sx6n4nE14xpyDTdODUZyGROAYBKhFMP7DgqOa3RxLWavSU41w==', 'PBKDF2v1|10000|8cbf91f04f2604380122|OXQB+sx6n4nE14xpyDTdODUZyGROAYBKhFMP7DgqOa3RxLWavSU41w==', true));
         $this->assertTrue(\Cryptography::compare('PBKDF2v1|sha256|10000|8cbf91f04f2604380122|OXQB+sx6n4nE14xpyDTdODUZyGROAYBKhFMP7DgqOa3RxLWavSU41w==', 'PBKDF2v1|sha256|10000|8cbf91f04f2604380122|OXQB+sx6n4nE14xpyDTdODUZyGROAYBKhFMP7DgqOa3RxLWavSU41w==', true));
+        $this->assertFalse(\Cryptography::compare('PBKDF2v1|sha256|10000|8cbf91f04f2604380122|OXQB+sx6n4nE14xpyDTdODUZyGROAYBKhFMP7DgqOa3RxLWavSU41w==', '', true));
+        $this->assertFalse(\Cryptography::compare(null, 'PBKDF2v1|sha256|10000|8cbf91f04f2604380122|OXQB+sx6n4nE14xpyDTdODUZyGROAYBKhFMP7DgqOa3RxLWavSU41w==', true));
+        $this->assertFalse(\Cryptography::compare(null, null, true));
+        $this->assertFalse(\Cryptography::compare(null, null, false));
+        $this->assertTrue(\Cryptography::compare('test', 'test', true));
+        $this->assertFalse(\Cryptography::compare('test', 'test', false));
     }
 
     public function testRequiresMigration()
@@ -66,5 +81,8 @@ final class CryptographyTest extends TestCase
         $this->assertTrue(\Cryptography::requiresMigration('PBKDF2v1|sha256|10000|8cbf91f04f2604380122|OXQB+sx6n4nE14xpyDTdODUZyGROAYBKhFMP7DgqOa3RxLWavSU41w=='));
         $this->assertTrue(\Cryptography::requiresMigration('PBKDF2v1|10000|8cbf91f04f2604380122|OXQB+sx6n4nE14xpyDTdODUZyGROAYBKhFMP7DgqOa3RxLWavSU41w=='));
         $this->assertFalse(\Cryptography::requiresMigration('PBKDF2v1|sha256|100000|this is 20 char salt|' . base64_encode('this is a hash xxxxxxxxxxxxxxxxxxxxxxxxx')));
+        $this->assertTrue(\Cryptography::requiresMigration(null));
+        $this->assertTrue(\Cryptography::requiresMigration(''));
+        $this->assertTrue(\Cryptography::requiresMigration('test'));
     }
 }

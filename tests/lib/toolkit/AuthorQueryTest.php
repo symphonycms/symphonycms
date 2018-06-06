@@ -29,6 +29,30 @@ final class AuthorQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
+    public function testDefaultSchemaWithDefaultProjection()
+    {
+        $q = (new \AuthorQuery($this->db))->disableDefaultSort()->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `a`.* FROM `authors` AS `a`",
+            $q->generateSQL(),
+            'new AuthorQuery with Default schema and Default projection'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testDefaultSchemaWithDefaultProjectionDefaultSort()
+    {
+        $q = (new \AuthorQuery($this->db))->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `a`.* FROM `authors` AS `a` ORDER BY `a`.`id` ASC",
+            $q->generateSQL(),
+            'new AuthorQuery with Default schema, Default projection and default sort'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
     public function testDefaultCount()
     {
         $q = new \AuthorQuery($this->db, ['COUNT(*)']);
@@ -75,7 +99,7 @@ final class AuthorQueryTest extends TestCase
         $this->assertEquals(
             "SELECT SQL_NO_CACHE FROM `authors` AS `a` WHERE `a`.`username` = :a_username",
             $q->generateSQL(),
-            'new AuthorQuery with ->section()'
+            'new AuthorQuery with ->username()'
         );
         $values = $q->getValues();
         $this->assertEquals('user', $values['a_username'], 'a_username is user');
@@ -88,10 +112,34 @@ final class AuthorQueryTest extends TestCase
         $this->assertEquals(
             "SELECT SQL_NO_CACHE FROM `authors` AS `a` WHERE `a`.`email` = :a_email",
             $q->generateSQL(),
-            'new AuthorQuery with ->section()'
+            'new AuthorQuery with ->email()'
         );
         $values = $q->getValues();
         $this->assertEquals('email', $values['a_email'], 'a_email is email');
         $this->assertEquals(1, count($values), '1 value');
+    }
+
+    public function testSort()
+    {
+        $q = (new \AuthorQuery($this->db))->sort('email');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `authors` AS `a` ORDER BY `a`.`email` ASC",
+            $q->generateSQL(),
+            'new AuthorQuery with ->sort()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testDefaultSort()
+    {
+        $q = (new \AuthorQuery($this->db))->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `a`.* FROM `authors` AS `a` ORDER BY `a`.`id` ASC",
+            $q->generateSQL(),
+            'new AuthorQuery with ->finalize()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
     }
 }

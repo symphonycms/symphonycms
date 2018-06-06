@@ -77,4 +77,18 @@ final class EntryQueryUploadAdapterTest extends TestCase
         $this->assertEquals('jpe?g', $values['f1_mimetype'], 'f1_mimetype is jpe?g');
         $this->assertEquals(1, count($values), '1 value');
     }
+
+    public function testSortAsc()
+    {
+        $q = (new \EntryQuery($this->db));
+        $o = $this->createAdapter();
+        $o->sort($q, 'asc');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `f1`.`file` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` ORDER BY `f1`.`file` ASC",
+            $q->generateSQL(),
+            'Simple asc sort ->sort(asc)'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
 }

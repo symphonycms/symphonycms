@@ -29,6 +29,30 @@ final class FieldQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
+    public function testDefaultSchemaDefaultProjection()
+    {
+        $q = (new \FieldQuery($this->db))->disableDefaultSort()->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `f`.* FROM `fields` AS `f`",
+            $q->generateSQL(),
+            'new FieldQuery with Default schema and Default projection'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testDefaultSchemaDefaultProjectionDefaultSort()
+    {
+        $q = (new \FieldQuery($this->db))->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `f`.* FROM `fields` AS `f` ORDER BY `f`.`sortorder` ASC",
+            $q->generateSQL(),
+            'new FieldQuery with Default schema, Default projection and Default Sort'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
     public function testDefaultCount()
     {
         $q = new \FieldQuery($this->db, ['COUNT(*)']);

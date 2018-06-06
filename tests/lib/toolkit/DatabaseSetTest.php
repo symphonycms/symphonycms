@@ -19,4 +19,15 @@ final class DatabaseSetTest extends TestCase
         $values = $sql->getValues();
         $this->assertEquals('value', $values['value'], 'value is value');
     }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSETDOUBLEVALUE()
+    {
+        $db = new Database([]);
+        $sql = $db->set('t')
+            ->value('v')
+            ->value('other');
+    }
 }
