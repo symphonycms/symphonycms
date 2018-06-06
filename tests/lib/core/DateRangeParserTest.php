@@ -47,6 +47,13 @@ final class DateRangeParserTest extends TestCase
         $this->assertEquals('2018-03-31 23:59:59', $d['end']);
     }
 
+    public function testRelativeDateNoDirection()
+    {
+        $dp = new \DateRangeParser('+1 year');
+        $d = $dp->parse();
+        $this->assertEquals($d['end'], $d['start']);
+    }
+
     public function testEarlierThan2016()
     {
         $dp = new \DateRangeParser('earlier than 2016');
@@ -77,5 +84,21 @@ final class DateRangeParserTest extends TestCase
         $d = $dp->parse();
         $this->assertEquals('2018-03-31 23:59:59', $d['start']);
         $this->assertEquals(null, $d['end']);
+    }
+
+    public function testEarlierThan2018()
+    {
+        $dp = new \DateRangeParser('earlier than 2018');
+        $d = $dp->parse();
+        $this->assertEquals('2018-01-01 00:00:00', $d['end']);
+        $this->assertEquals(null, $d['start']);
+    }
+
+    public function testEarlierThanMarch312018()
+    {
+        $dp = new \DateRangeParser('earlier than 2018-03-31');
+        $d = $dp->parse();
+        $this->assertEquals('2018-03-31 00:00:00', $d['end']);
+        $this->assertEquals(null, $d['start']);
     }
 }

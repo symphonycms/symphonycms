@@ -29,6 +29,30 @@ final class SectionQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
+    public function testDefaultSchemaDefaultProjection()
+    {
+        $q = (new \SectionQuery($this->db))->disableDefaultSort()->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `s`.* FROM `sections` AS `s`",
+            $q->generateSQL(),
+            'new SectionQuery with Default schema and Default projection'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testDefaultSchemaDefaultProjectionDefaultSort()
+    {
+        $q = (new \SectionQuery($this->db))->disableDefaultSort()->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `s`.* FROM `sections` AS `s`",
+            $q->generateSQL(),
+            'new SectionQuery with Default schema, Default projection and Default Sort'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
     public function testDefaultCount()
     {
         $q = new \SectionQuery($this->db, ['COUNT(*)']);

@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers DatabaseQuery
+ * @covers DatabaseQueryJoin
  */
 final class DatabaseQueryTest extends TestCase
 {
@@ -36,6 +37,32 @@ final class DatabaseQueryTest extends TestCase
         );
         $values = $sql->getValues();
         $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testSELECTDefaultProjection()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE * FROM `test_table`",
+            $sql->generateSQL(),
+            'Simple SQL clause with default projection'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSELECTDOUBLEFROM()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->from('other');
     }
 
     public function testSELECTWithPlaceholders()
@@ -95,6 +122,33 @@ final class DatabaseQueryTest extends TestCase
             "SELECT SQL_NO_CACHE (`y` + 1) AS `result` FROM `test_table`",
             $sql->generateSQL(),
             'SQL clause with aliased operator in projection'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSELECTDOUBLEALIAS()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->alias('t')
+            ->alias('f');
+    }
+
+    public function testSELECTSelfReference()
+    {
+        $db = new Database([]);
+        $sql = $db->select(['`z` + 1' => 't'])
+            ->from('tbl_test_table')
+            ->where(['x' => ['<=' => '$x * 8']]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE (`z` + 1) AS `t` FROM `test_table` WHERE `x` <= `x` * 8",
+            $sql->generateSQL(),
+            'SQL clause with self reference WHERE filter'
         );
         $values = $sql->getValues();
         $this->assertEquals(0, count($values), '0 value');
@@ -246,6 +300,22 @@ final class DatabaseQueryTest extends TestCase
     {
         $db = new Database([]);
         $sql = $db->select(['a'])
+            ->from('tbl_test_table')
+            ->join('sym.tbl_test1')
+            ->on(['tbl_test_table.id' => '$sym.tbl_test1.other-id']);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `a` FROM `test_table` JOIN `sym`.`test1` ON `test_table`.`id` = `sym`.`test1`.`other-id`",
+            $sql->generateSQL(),
+            "SQL clause with JOIN"
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testSELECTwithLEFTJOIN()
+    {
+        $db = new Database([]);
+        $sql = $db->select(['a'])
                   ->from('tbl_test_table')
                   ->leftJoin('sym.tbl_test1')
                   ->on(['tbl_test_table.id' => '$sym.tbl_test1.other-id'])
@@ -267,18 +337,32 @@ final class DatabaseQueryTest extends TestCase
         $db = new Database([]);
         $sql = $db->select(['a'])
                   ->from('tbl_test_table')
-                  ->leftJoin('sym.tbl_test1')
+                  ->outerJoin('sym.tbl_test1')
                   ->on(['tbl_test_table.id' => '$sym.tbl_test1.other-id'])
                   ->rightJoin('sym.tbl_test2')
                   ->on(['tbl_test_table.x' => ['>' => '4']]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `a` FROM `test_table` LEFT JOIN `sym`.`test1` ON `test_table`.`id` = `sym`.`test1`.`other-id` RIGHT JOIN `sym`.`test2` ON `test_table`.`x` > :tbl_test_table_x",
+            "SELECT SQL_NO_CACHE `a` FROM `test_table` OUTER JOIN `sym`.`test1` ON `test_table`.`id` = `sym`.`test1`.`other-id` RIGHT JOIN `sym`.`test2` ON `test_table`.`x` > :tbl_test_table_x",
             $sql->generateSQL(),
             "SQL clause with WHERE LEFT JOIN"
         );
         $values = $sql->getValues();
         $this->assertEquals(4, $values['tbl_test_table_x'], 'tbl_test_table_x is 4');
         $this->assertEquals(1, count($values), '1 value');
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSELECTDOUBLEALIASONJOIN()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->alias('t')
+            ->outerJoin('sym.tbl_test1')
+            ->alias('f')
+            ->alias('t');
     }
 
     public function testSELECTwithORDERBY()
@@ -565,6 +649,18 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSELECTDOUBLEDISTINCT()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->distinct()
+            ->distinct();
+    }
+
     public function testSELECTLIMITOFFSET()
     {
         $db = new Database([]);
@@ -584,17 +680,59 @@ final class DatabaseQueryTest extends TestCase
     /**
      * @expectedException DatabaseStatementException
      */
-    public function testSELECTLIMITOFFSETWRONG()
+    public function testSELECTDOUBLELIMIT()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->limit(1)
+            ->limit(10);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSELECTLIMITWRONG()
     {
         $db = new Database([]);
         $sql = $db->select()
                   ->from('tbl_test_table')
-                  ->limit('wrong')
-                  ->offset(['invalide']);
+                  ->limit('wrong');
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSELECTOFFSETWRONG()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->offset(['invalid']);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSELECTDOUBLEOFFSET()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->offset(1)
+            ->offset(10);
+    }
+
+    public function testSELECTPaginate()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->paginate(2, 10);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` LIMIT -1 OFFSET -1",
+            "SELECT SQL_NO_CACHE FROM `test_table` LIMIT 20 OFFSET 10",
             $sql->generateSQL(),
-            'LIMIT OFFSET clause WRONG data'
+            'Paginate clause'
         );
         $values = $sql->getValues();
         $this->assertEquals(0, count($values), '0 value');
@@ -806,5 +944,33 @@ final class DatabaseQueryTest extends TestCase
             $sql->generateFormattedSQL(),
             'Formatted SQL sub-query test'
         );
+    }
+
+    public function testCountProjection()
+    {
+        $db = new Database([]);
+        $original = $db->select()
+            ->from('tbl_test_table')
+            ->where([
+                'or' => [
+                    ['x' => 1],
+                    ['x' => ['<' => '2']],
+                ]
+            ])
+            ->where(['z' => 'tata'])
+            ->unsafe();
+        $sql = $original->countProjection();
+        $this->assertNotEquals($original, $sql);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE COUNT(*) FROM `test_table` WHERE (`x` = :x OR `x` < :x2) AND `z` = :z",
+            $sql->generateSQL(),
+            "SQL count clause clause from projection"
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(1, $values['x'], 'x is 1');
+        $this->assertEquals(2, $values['x2'], 'x2 is 2');
+        $this->assertEquals('tata', $values['z'], 'z is tata');
+        $this->assertEquals(3, count($values), '3 values');
+        $this->assertFalse($sql->isSafe());
     }
 }

@@ -29,6 +29,30 @@ final class ExtensionQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
+    public function testDefaultSchemaDefaultProjection()
+    {
+        $q = (new \ExtensionQuery($this->db))->disableDefaultSort()->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `ex`.* FROM `extensions` AS `ex`",
+            $q->generateSQL(),
+            'new ExtensionQuery with Default schema and Default projection'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testDefaultSchemaDefaultProjectionDefaultSort()
+    {
+        $q = (new \ExtensionQuery($this->db))->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `ex`.* FROM `extensions` AS `ex` ORDER BY `ex`.`name` ASC",
+            $q->generateSQL(),
+            'new ExtensionQuery with Default schema, Default projection and Default Sort'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
     public function testDefaultCount()
     {
         $q = new \ExtensionQuery($this->db, ['COUNT(*)']);

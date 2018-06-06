@@ -29,6 +29,30 @@ final class PageQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
+    public function testDefaultSchemaDefaultProjection()
+    {
+        $q = (new \PageQuery($this->db))->disableDefaultSort()->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `p`.* FROM `pages` AS `p`",
+            $q->generateSQL(),
+            'new PageQuery with Default schema and Default projection'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testDefaultSchemaDefaultProjectionDefaultSort()
+    {
+        $q = (new \PageQuery($this->db))->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `p`.* FROM `pages` AS `p` ORDER BY `p`.`sortorder` ASC",
+            $q->generateSQL(),
+            'new PageQuery with Default schema, Default projection and Default Sort'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
     public function testDefaultCount()
     {
         $q = new \PageQuery($this->db, ['COUNT(*)']);

@@ -82,4 +82,35 @@ final class EntryQueryListAdapterTest extends TestCase
         $this->assertEquals(null, $values['_null_'], '_null_ is NULL');
         $this->assertEquals(5, count($values), '4 values');
     }
+
+    public function testRegExpFilter()
+    {
+        $q = (new \EntryQuery($this->db));
+        $o = $this->createAdapter();
+        $o->filter($q, ['regexp: ^test[\d]']);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` REGEXP :f1_value OR `f1`.`handle` REGEXP :f1_handle)",
+            $q->generateSQL(),
+            'RegExp match ->filter([regexp: test])'
+        );
+        $values = $q->getValues();
+        $this->assertEquals('^test[\d]', $values['f1_value'], 'f1_value is ^test[\d]');
+        $this->assertEquals('^test[\d]', $values['f1_handle'], 'f1_value is ^test[\d]');
+        $this->assertEquals(2, count($values), '2 values');
+    }
+
+    public function testSQLFilter()
+    {
+        $q = (new \EntryQuery($this->db));
+        $o = $this->createAdapter();
+        $o->filter($q, ['sql: null']);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` IS :_null_ OR `f1`.`handle` IS :_null_)",
+            $q->generateSQL(),
+            'SQL null match ->filter([sql: null])'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(null, $values['_null_'], '_null_ is null');
+        $this->assertEquals(1, count($values), '1 value');
+    }
 }

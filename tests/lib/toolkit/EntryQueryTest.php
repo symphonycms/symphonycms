@@ -29,13 +29,49 @@ final class EntryQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
-    public function testCount()
+    public function testDefaultSchemaDefaultProjection()
+    {
+        $q = (new \EntryQuery($this->db))->disableDefaultSort()->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e`",
+            $q->generateSQL(),
+            'new EntryQuery with Default schema and Default projection'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testDefaultSchemaDefaultProjectionDefaultSort()
+    {
+        $q = (new \EntryQuery($this->db))->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            $q->generateSQL(),
+            'new EntryQuery with Default schema Default projection and Default sort'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testCountProjection()
     {
         $q = (new \EntryQuery($this->db))->projection(['COUNT(*)']);
         $this->assertEquals(
             "SELECT SQL_NO_CACHE COUNT(*) FROM `entries` AS `e`",
             $q->generateSQL(),
             'new EntryQuery test with COUNT(*) projection'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testCount()
+    {
+        $q = (new \EntryQuery($this->db))->count();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE COUNT(*) FROM `entries` AS `e`",
+            $q->generateSQL(),
+            'new EntryQuery test with ->count()'
         );
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');
@@ -93,6 +129,14 @@ final class EntryQueryTest extends TestCase
         );
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');
+        $q->innerJoinField(4);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` INNER JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            $q->generateSQL(),
+            'new EntryQuery test with DOUBLE ->innerJoinField()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
     }
 
     public function testJoinField()
@@ -102,6 +146,14 @@ final class EntryQueryTest extends TestCase
             "SELECT SQL_NO_CACHE FROM `entries` AS `e` JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with ->joinField()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+        $q->joinField(4);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            $q->generateSQL(),
+            'new EntryQuery test with DOUBLE ->joinField()'
         );
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');
@@ -117,6 +169,14 @@ final class EntryQueryTest extends TestCase
         );
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');
+        $q->leftJoinField(4);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            $q->generateSQL(),
+            'new EntryQuery test with DOUBLE ->leftJoinField()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
     }
 
     public function testOuterJoinField()
@@ -129,6 +189,14 @@ final class EntryQueryTest extends TestCase
         );
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');
+        $q->outerJoinField(4);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` OUTER JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            $q->generateSQL(),
+            'new EntryQuery test with DOUBLE ->outerJoinField()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
     }
 
     public function testRightJoinField()
@@ -138,6 +206,14 @@ final class EntryQueryTest extends TestCase
             "SELECT SQL_NO_CACHE FROM `entries` AS `e` RIGHT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with ->rightJoinField()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+        $q->rightJoinField(4);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` RIGHT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            $q->generateSQL(),
+            'new EntryQuery test with DOUBLE ->rightJoinField()'
         );
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');
@@ -171,6 +247,18 @@ final class EntryQueryTest extends TestCase
         $values = $q->getValues();
         $this->assertEquals(4, $values['f4_value'], 'f4_value is 4');
         $this->assertEquals(1, count($values), '1 value');
+    }
+
+    public function testFilterEmpty()
+    {
+        $q = (new \EntryQuery($this->db))->filter('', []);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e`",
+            $q->generateSQL(),
+            'new EntryQuery with ->filter("", [])'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
     }
 
     public function testFilterSystemIdOR()
@@ -243,6 +331,14 @@ final class EntryQueryTest extends TestCase
         $this->assertEquals(2, count($values), '2 values');
     }
 
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testFilterFieldObject()
+    {
+        $q = (new \EntryQuery($this->db))->filter(new \Field(), []);
+    }
+
     public function testSortRand()
     {
         $q = (new \EntryQuery($this->db))->sort('system:id', 'RAND');
@@ -298,6 +394,18 @@ final class EntryQueryTest extends TestCase
             "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with ->sort(system:id)'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testSortEmpty()
+    {
+        $q = (new \EntryQuery($this->db))->sort('');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e`",
+            $q->generateSQL(),
+            'new EntryQuery with ->sort("")'
         );
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');

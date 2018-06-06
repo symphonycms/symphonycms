@@ -157,12 +157,13 @@ final class XMLElementTest extends TestCase
     public function testGetChildrenByName()
     {
         $x = (new \XMLElement('xml'))
-            ->appendChild((new \XMLElement('child'))->setValue('1'))
-            ->appendChild((new \XMLElement('child-not'))->setValue('2'))
-            ->appendChild((new \XMLElement('child'))->setValue('3'));
+            ->appendChild((new \XMLElement('child')))
+            ->appendChild((new \XMLElement('child-not')))
+            ->appendChild((new \XMLElement('child')));
         $this->assertNotEmpty($x->getChildren());
         $this->assertEquals(3, $x->getNumberOfChildren());
-        $this->assertEquals('3', $x->getChildByName('child', 1)->getValue());
+        $this->assertEquals(null, $x->getChildByName('child', 1)->getValue());
+        $this->assertEquals(null, $x->getChildByName('child', 8));
     }
 
     public function testGetChildrenByNameWithValue()
@@ -174,6 +175,7 @@ final class XMLElementTest extends TestCase
         $this->assertNotEmpty($x->getChildren());
         $this->assertEquals(4, $x->getNumberOfChildren());
         $this->assertEquals('3', $x->getChildByName('child', 1)->getValue());
+        $this->assertEquals(null, $x->getChildByName('child', 8));
     }
 
     public function testGetValue()
@@ -235,10 +237,19 @@ final class XMLElementTest extends TestCase
     /**
      * @expectedException Exception
      */
-    public function testInvalidSetChildren()
+    public function testInvalidSetChildrenSelfRef()
     {
         $x = (new \XMLElement('xml'));
         $x->setChildren([$x]);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testInvalidSetChildrenDocument()
+    {
+        $x = (new \XMLElement('xml'));
+        $x->setChildren([new \XMLDocument('xml')]);
     }
 
     public function testAppend()
@@ -421,6 +432,7 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('xml', $x->getName());
         $this->assertEquals('dom-doc', $x->getAttribute('test'));
         $this->assertEquals('4', $x->getChild(1)->getValue());
+        $this->assertEquals($xml, $x->generate());
     }
 
     public function testConvertFromDOMDocument()
@@ -435,5 +447,18 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('xml-test', $x->getName());
         $this->assertEquals('dom-doc', $x->getAttribute('test'));
         $this->assertEquals('4', $x->getChild(1)->getValue());
+    }
+
+    public function testFromXMLStringWithCDATA()
+    {
+        $xml = '<xml test="xml-string"><child><![CDATA[1]]></child><child>4</child><child>3</child></xml>';
+        $x = \XMLElement::fromXMLString($xml);
+        $this->assertNotEmpty($x);
+        $this->assertNotEmpty($x->getChildren());
+        $this->assertEquals(3, $x->getNumberOfChildren());
+        $this->assertEquals('xml', $x->getName());
+        $this->assertEquals('xml-string', $x->getAttribute('test'));
+        $this->assertEquals('4', $x->getChild(1)->getValue());
+        $this->assertEquals($xml, $x->generate());
     }
 }
