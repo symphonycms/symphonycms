@@ -31,6 +31,11 @@ class PageManager
             $fields['sortorder'] = self::fetchNextSortOrder();
         }
 
+        // Force parent to be null if empty
+        if (empty($fields['parent'])) {
+            $fields['parent'] = null;
+        }
+
         $inserted = Symphony::Database()
             ->insert('tbl_pages')
             ->values($fields)
