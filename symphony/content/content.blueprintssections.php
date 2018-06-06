@@ -304,8 +304,8 @@ class contentBlueprintsSections extends AdministrationPage
             }
         }
 
-        uasort($types, function($a, $b) {
-            return strnatcasecmp($a->_name, $b->_name);
+        uasort($types, function (Field $a, Field $b) {
+            return strnatcasecmp($a->name(), $b->name());
         });
 
         foreach ($types as $type) {
@@ -520,8 +520,8 @@ class contentBlueprintsSections extends AdministrationPage
             }
         }
 
-        uasort($types, function($a, $b) {
-            return strnatcasecmp($a->_name, $b->_name);
+        uasort($types, function (Field $a, Field $b) {
+            return strnatcasecmp($a->name(), $b->name());
         });
 
         foreach ($types as $type) {
