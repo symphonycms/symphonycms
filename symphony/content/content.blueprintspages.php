@@ -30,7 +30,7 @@ class contentBlueprintsPages extends AdministrationPage
             // to the parent's Page Editor.
             if ($this->_context[0] == 'edit') {
                 $page = Widget::Anchor(
-                    PageManager::fetchTitleFromHandle($page),
+                    General::sanitize(PageManager::fetchTitleFromHandle($page)),
                     SYMPHONY_URL . '/blueprints/pages/edit/' . PageManager::fetchIDFromHandle($page) . '/'
                 );
 
@@ -38,14 +38,14 @@ class contentBlueprintsPages extends AdministrationPage
                 // Pages Index filtered by parent
             } elseif (Symphony::Configuration()->get('pages_table_nest_children', 'symphony') == 'yes') {
                 $page = Widget::Anchor(
-                    PageManager::fetchTitleFromHandle($page),
+                    General::sanitize(PageManager::fetchTitleFromHandle($page)),
                     SYMPHONY_URL . '/blueprints/pages/?parent=' . PageManager::fetchIDFromHandle($page)
                 );
 
                 // If there is no nesting on the Pages Index, the breadcrumb is
                 // not a link, just plain text
             } else {
-                $page = new XMLElement('span', PageManager::fetchTitleFromHandle($page));
+                $page = new XMLElement('span', General::sanitize(PageManager::fetchTitleFromHandle($page)));
             }
         }
 
@@ -70,10 +70,19 @@ class contentBlueprintsPages extends AdministrationPage
             $parent = PageManager::fetchPageByID((int)$_GET['parent'], array('title', 'id'));
         }
 
-        $this->appendSubheading(isset($parent) ? $parent['title'] : __('Pages'), Widget::Anchor(
-            __('Create New'), Administration::instance()->getCurrentPageURL() . 'new/' . ($nesting && isset($parent) ? "?parent={$parent['id']}" : null),
-            __('Create a new page'), 'create button', null, array('accesskey' => 'c')
-        ));
+        $this->appendSubheading(
+            isset($parent)
+                ? General::sanitize($parent['title'])
+                : __('Pages'),
+            Widget::Anchor(
+                __('Create New'),
+                Administration::instance()->getCurrentPageURL() . 'new/' . ($nesting && isset($parent) ? "?parent={$parent['id']}" : null),
+                __('Create a new page'),
+                'create button',
+                null,
+                ['accesskey' => 'c']
+            )
+        );
 
         if (isset($parent)) {
             $this->insertBreadcrumbsUsingPageIdentifier($parent['id'], false);
@@ -112,10 +121,18 @@ class contentBlueprintsPages extends AdministrationPage
                 $page_edit_url = Administration::instance()->getCurrentPageURL() . 'edit/' . $page['id'] . '/';
                 $page_template = PageManager::createFilePath($page['path'], $page['handle']);
 
-                $col_title = Widget::TableData(Widget::Anchor($page_title, $page_edit_url, $page['handle']));
-                $col_title->appendChild(Widget::Label(__('Select Page %s', array($page_title)), null, 'accessible', null, array(
-                    'for' => 'page-' . $page['id']
-                )));
+                $col_title = Widget::TableData(
+                    Widget::Anchor(General::sanitize($page_title), $page_edit_url, $page['handle'])
+                );
+                $col_title->appendChild(
+                    Widget::Label(
+                        __('Select Page %s', [General::sanitize($page_title)]),
+                        null,
+                        'accessible',
+                        null,
+                        ['for' => 'page-' . $page['id']]
+                    )
+                );
                 $col_title->appendChild(Widget::Input('items['.$page['id'].']', 'on', 'checkbox', array(
                     'id' => 'page-' . $page['id']
                 )));
@@ -125,13 +142,13 @@ class contentBlueprintsPages extends AdministrationPage
                 $col_url = Widget::TableData(Widget::Anchor($page_url, $page_url));
 
                 if ($page['params']) {
-                    $col_params = Widget::TableData(trim($page['params'], '/'));
+                    $col_params = Widget::TableData(trim(General::sanitize($page['params']), '/'));
                 } else {
                     $col_params = Widget::TableData(__('None'), 'inactive');
                 }
 
                 if (!empty($page['type'])) {
-                    $col_types = Widget::TableData(implode(', ', $page['type']));
+                    $col_types = Widget::TableData(implode(', ', array_map(['General', 'sanitize'], $page['type'])));
                 } else {
                     $col_types = Widget::TableData(__('None'), 'inactive');
                 }
@@ -294,14 +311,14 @@ class contentBlueprintsPages extends AdministrationPage
             $title = $existing['title'];
         }
 
-        $this->setTitle(__(
-            ($title ? '%1$s &ndash; %2$s &ndash; %3$s' : '%2$s &ndash; %3$s'),
-            array(
-                $title,
-                __('Pages'),
-                __('Symphony')
+        $this->setTitle(
+            __(
+                $title
+                    ? '%1$s &ndash; %2$s &ndash; %3$s'
+                    : '%2$s &ndash; %3$s',
+                [General::sanitize($title), __('Pages'), __('Symphony')]
             )
-        ));
+        );
         $this->addElementToHead(new XMLElement('link', null, array(
             'rel' => 'canonical',
             'href' => SYMPHONY_URL . $canonical_link,
@@ -312,11 +329,19 @@ class contentBlueprintsPages extends AdministrationPage
         if (!empty($title)) {
             $page_url = URL . '/' . PageManager::resolvePagePath($page_id) . '/';
 
-            $this->appendSubheading($title, array(
-                Widget::Anchor(__('View Page'), $page_url, __('View Page on Frontend'), 'button', null, array('target' => '_blank', 'accesskey' => 'v'))
-            ));
+            $this->appendSubheading(
+                General::sanitize($title),
+                Widget::Anchor(
+                    __('View Page'),
+                    $page_url,
+                    __('View Page on Frontend'),
+                    'button',
+                    null,
+                    ['target' => '_blank', 'accesskey' => 'v']
+                )
+            );
         } else {
-            $this->appendSubheading(!empty($title) ? $title : __('Untitled'));
+            $this->appendSubheading(!empty($title) ? General::sanitize($title) : __('Untitled'));
         }
 
         if (isset($page_id)) {
@@ -420,7 +445,7 @@ class contentBlueprintsPages extends AdministrationPage
         $types = PageManager::fetchAvailablePageTypes();
 
         foreach ($types as $type) {
-            $tags->appendChild(new XMLElement('li', $type));
+            $tags->appendChild(new XMLElement('li', General::sanitize($type)));
         }
 
         $column->appendChild($tags);
@@ -509,8 +534,10 @@ class contentBlueprintsPages extends AdministrationPage
         $div = new XMLElement('div');
         $div->setAttribute('class', 'actions');
         $div->appendChild(Widget::Input(
-            'action[save]', ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Page')),
-            'submit', array('accesskey' => 's')
+            'action[save]',
+            ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Page')),
+            'submit',
+            ['accesskey' => 's']
         ));
 
         if ($this->_context[0] == 'edit') {
