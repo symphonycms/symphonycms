@@ -132,8 +132,14 @@ abstract class Symphony implements Singleton
      */
     public static function Engine()
     {
-        if (class_exists('Administration', false)) {
+        if (defined('APP_MODE') && APP_MODE === 'administration') {
             return Administration::instance();
+        } elseif (defined('APP_MODE') && APP_MODE === 'frontend') {
+            return Frontend::instance();
+        // @deprecated 3.0.0 - This acts as a compat layer. Will be removed.
+        } elseif (class_exists('Administration', false)) {
+            return Administration::instance();
+        // @deprecated 3.0.0 - This acts as a compat layer. Will be removed.
         } elseif (class_exists('Frontend', false)) {
             return Frontend::instance();
         } else {
