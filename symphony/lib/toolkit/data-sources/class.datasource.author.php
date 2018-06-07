@@ -159,7 +159,7 @@ class AuthorDatasource extends Datasource
                             ->select()
                             ->section($author->get('default_area'))
                             ->execute()
-                            ->rows();
+                            ->next();
                         if ($section) {
                             $default_area = new XMLElement('default-area', $section->get('name'));
                             $default_area->setAttributeArray(array('id' => $section->get('id'), 'handle' => $section->get('handle'), 'type' => 'section'));
