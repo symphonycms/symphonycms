@@ -415,6 +415,24 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
+    public function testSELECTBETWEENWithPlaceholders()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+                  ->usePlaceholders()
+                  ->from('tbl_test_table')
+                  ->where(['x' => ['between' => [1, 10]]]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `test_table` WHERE (`x` BETWEEN ? AND ?)",
+            $sql->generateSQL(),
+            'BETWEEN clause with placeholders'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(1, $values[0], '0 is 1');
+        $this->assertEquals(10, $values[1], '1 is 10');
+        $this->assertEquals(2, count($values), '2 values');
+    }
+
     public function testSELECTBETWEEN()
     {
         $db = new Database([]);
@@ -422,13 +440,13 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => ['between' => [1, 10]]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE (`x` BETWEEN ? AND ?)",
+            "SELECT SQL_NO_CACHE FROM `test_table` WHERE (`x` BETWEEN :xl AND :xu)",
             $sql->generateSQL(),
             'BETWEEN clause'
         );
         $values = $sql->getValues();
-        $this->assertEquals(1, $values[0], '0 is 1');
-        $this->assertEquals(10, $values[1], '1 is 10');
+        $this->assertEquals(1, $values['xl'], '0 is 1');
+        $this->assertEquals(10, $values['xu'], '1 is 10');
         $this->assertEquals(2, count($values), '2 values');
     }
 
