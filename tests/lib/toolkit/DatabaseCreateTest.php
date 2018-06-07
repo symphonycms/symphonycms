@@ -19,9 +19,22 @@ final class DatabaseCreateTest extends TestCase
                   ])
                   ->finalize(); // this would by called by execute()
         $this->assertEquals(
-            "CREATE TABLE `create` ( `x` varchar(100) COLLATE utf8 NOT NULL ) ENGINE=engine DEFAULT CHARSET=utf8 COLLATE=utf8",
+            "CREATE TABLE `create` ( `x` varchar(100) CHARACTER SET utf8 COLLATE utf8 NOT NULL ) ENGINE=engine DEFAULT CHARSET=utf8 COLLATE=utf8",
             $sql->generateSQL(),
             'CREATE clause'
+        );
+    }
+
+    public function testCREATEWITHARRAYMERGE()
+    {
+        $db = new Database([]);
+        $sql = $db->create('create')
+                  ->fields(array_merge(['x' => 'varchar(100)'], ['y' => 'varchar(100)']))
+                  ->finalize(); // this would by called by execute()
+        $this->assertEquals(
+            "CREATE TABLE `create` ( `x` varchar(100) NOT NULL, `y` varchar(100) NOT NULL )",
+            $sql->generateSQL(),
+            'CREATE WITH ARRAY MERGE clause'
         );
     }
 
@@ -174,7 +187,6 @@ final class DatabaseCreateTest extends TestCase
         );
     }
 
-
     public function testCREATEFormattedSQL()
     {
         $db = new Database([]);
@@ -195,7 +207,7 @@ final class DatabaseCreateTest extends TestCase
             ])
             ->finalize();
         $this->assertEquals(
-            "CREATE TABLE `create` (\n\t`x` varchar(100) COLLATE utf8 NOT NULL, `id` int(11) unsigned NOT NULL AUTO_INCREMENT ,\n\tPRIMARY KEY (`id`), KEY `x` (`x`)\n) ENGINE=engine DEFAULT CHARSET=utf8 COLLATE=utf8",
+            "CREATE TABLE `create` (\n\t`x` varchar(100) CHARACTER SET utf8 COLLATE utf8 NOT NULL, `id` int(11) unsigned NOT NULL AUTO_INCREMENT ,\n\tPRIMARY KEY (`id`), KEY `x` (`x`)\n) ENGINE=engine DEFAULT CHARSET=utf8 COLLATE=utf8",
             $sql->generateFormattedSQL(),
             'CREATE clause formatted'
         );

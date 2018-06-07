@@ -7,6 +7,48 @@
 trait DatabaseColumnDefinition
 {
     /**
+     * The default charset option value for this statement
+     *
+     * @var string
+     */
+    private $charset;
+
+    /**
+     * The default collate option value for this statement
+     *
+     * @var string
+     */
+    private $collate;
+
+    /**
+     * Sets the charset to use in this table.
+     *
+     * @param string $charset
+     *  The charset to use
+     * @return DatabaseColumnDefinition
+     *  The current instance
+     */
+    public function charset($charset)
+    {
+        $this->charset = $charset;
+        return $this;
+    }
+
+    /**
+     * Set the default collate for all textual columns being altered.
+     *
+     * @param string $collate
+     *  The collate to use by default
+     * @return DatabaseColumnDefinition
+     *  The current instance
+     */
+    public function collate($collate)
+    {
+        $this->collate = $collate;
+        return $this;
+    }
+
+    /**
      * @internal
      * This method checks if the $key index is not empty in the $options array.
      * If it is not empty, it will return its value. If is it, it will lookup a
@@ -20,7 +62,7 @@ trait DatabaseColumnDefinition
      */
     protected function getOption(array $options, $key)
     {
-        return !empty($options[$key]) ? $options[$key] : !empty($this->{$key}) ? $this->{$key} : null;
+        return !empty($options[$key]) ? $options[$key] : (!empty($this->{$key}) ? $this->{$key} : null);
     }
 
     /**
@@ -43,6 +85,8 @@ trait DatabaseColumnDefinition
      *  When the value is a string, it is considered as the column's type.
      * @param string $options.type
      *  The SQL type of the column.
+     * @param string $options.charset
+     *  The charset to use with this column. Only used for character based columns.
      * @param string $options.collate
      *  The collate to use with this column. Only used for character based columns.
      * @param bool $options.null
@@ -68,11 +112,18 @@ trait DatabaseColumnDefinition
         } elseif (!isset($options['type'])) {
             throw new DatabaseStatementException('Field type must be defined.');
         }
+
         $type = strtolower($options['type']);
+
+        $charset = $this->getOption($options, 'charset');
+        if ($charset) {
+            $charset = ' CHARACTER SET ' . $charset;
+        }
         $collate = $this->getOption($options, 'collate');
         if ($collate) {
             $collate = ' COLLATE ' . $collate;
         }
+
         $notNull = !isset($options['null']) || $options['null'] === false;
         $null = $notNull ? ' NOT NULL' : ' DEFAULT NULL';
         $default = $notNull && isset($options['default']) ?
@@ -81,8 +132,9 @@ trait DatabaseColumnDefinition
         if ($default) {
             $this->appendValues(["{$k}_default" => $options['default']]);
         }
+
         $unsigned = !isset($options['signed']) || $options['signed'] === false;
-        $stringOptions = $collate . $null . $default;
+        $stringOptions = $charset . $collate . $null . $default;
 
         if (strpos($type, 'varchar') === 0 || strpos($type, 'text') === 0) {
             $type .= $stringOptions;
