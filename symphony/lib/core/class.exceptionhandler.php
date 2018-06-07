@@ -106,7 +106,7 @@ final class ExceptionHandler
      * @return string
      *  The result of the Throwable's render function
      */
-    public static function handler($e)
+    public function handler($e)
     {
         $output = '';
         $class = 'ExceptionRenderer';
@@ -128,8 +128,8 @@ final class ExceptionHandler
             }
 
             // Exceptions should be logged if they are not caught.
-            if (!self::$logDisabled && self::$log instanceof Log) {
-                self::$log->pushExceptionToLog($e, true);
+            if (!$this->logDisabled && $this->log instanceof Log) {
+                $this->log->pushExceptionToLog($e, true);
             }
 
             // Send headers

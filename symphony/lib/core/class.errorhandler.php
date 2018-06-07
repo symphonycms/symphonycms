@@ -73,7 +73,7 @@ final class ErrorHandler
     private function __construct(Log $log = null)
     {
         if ($log) {
-            $handler->log = $log;
+            $this->log = $log;
         }
     }
 
@@ -121,8 +121,8 @@ final class ErrorHandler
     public function handler($code, $message, $file = null, $line = null)
     {
         // Only log if the error won't be raised to an exception and the error is not `E_STRICT`
-        if (!self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$log instanceof Log) {
-            self::$log->pushToLog(sprintf(
+        if (!self::$logDisabled && !in_array($code, array(E_STRICT)) && $this->log instanceof Log) {
+            $this->log->pushToLog(sprintf(
                 '%s %s: %s%s%s',
                 __CLASS__,
                 $code,
