@@ -200,7 +200,7 @@ final class ExceptionHandler
             try {
                 ob_clean();
                 $ex = new ShutdownException($message, $code, $file, $line);
-                ExceptionRenderer::render($e);
+                ExceptionRenderer::render($ex);
             } catch (Exception $e) {
                 $this->echoRendererError($e);
             }
