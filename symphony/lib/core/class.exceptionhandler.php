@@ -51,23 +51,27 @@ final class ExceptionHandler
 
     /**
      * Disallow public construction
+     *
+     * @param Log $log (optional)
+     *  An instance of a Symphony Log object to write errors to
      */
-    private function __construct()
+    private function __construct(Log $log = null)
     {
+        if ($log) {
+            $this->log = $log;
+        }
     }
 
     /**
-     * Initialise will set the error handler to be the `handler()` function.
+     * Initialise will set the exception handler to be the `handler()` function.
+     * Also set the shutdown function to be the `shutdown()` function.
      *
      * @param Log $log (optional)
      *  An instance of a Symphony Log object to write errors to
      */
     public static function initialise(Log $log = null)
     {
-        $handler = new ExceptionHandler;
-        if ($log) {
-            $handler->log = $log;
-        }
+        $handler = new ExceptionHandler($log);
         set_exception_handler([$handler, 'handler']);
         register_shutdown_function([$handler, 'shutdown']);
     }
@@ -200,7 +204,7 @@ final class ExceptionHandler
             try {
                 ob_clean();
                 $ex = new ShutdownException($message, $code, $file, $line);
-                ExceptionRenderer::render($ex);
+                echo ExceptionRenderer::render($ex);
             } catch (Exception $e) {
                 $this->echoRendererError($e);
             }

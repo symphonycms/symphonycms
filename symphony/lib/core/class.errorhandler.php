@@ -66,24 +66,26 @@ final class ErrorHandler
 
     /**
      * Disallow public construction
+     *
+     * @param Log $log (optional)
+     *  An instance of a Symphony Log object to write errors to
      */
-    private function __construct()
+    private function __construct(Log $log = null)
     {
+        if ($log) {
+            $handler->log = $log;
+        }
     }
 
     /**
-     * Initialise will set the error handler to be the `__CLASS__::handler`
-     * function.
+     * Initialise will set the error handler to be the `handler()` function.
      *
      * @param Log $log (optional)
      *  An instance of a Symphony Log object to write errors to
      */
     public static function initialise(Log $log = null)
     {
-        $handler = new ErrorHandler;
-        if ($log) {
-            $handler->log = $log;
-        }
+        $handler = new ErrorHandler($log);
         set_error_handler([$handler, 'handler'], error_reporting());
     }
 
