@@ -674,7 +674,12 @@ class contentBlueprintsSections extends AdministrationPage
                 $this->_errors['name'] = __('This is a required field.');
                 $canProceed = false;
 
-                // Check for duplicate section handle during edit
+            // Check name label starts with a letter
+            } elseif (!preg_match('/^\p{L}/u', $meta['name'])) {
+                $this->_errors['name'] = __('The name of the section must begin with a letter.');
+                $canProceed = false;
+
+            // Check for duplicate section handle during edit
             } elseif ($edit) {
                 $s = SectionManager::fetchIDFromHandle(Lang::createHandle($meta['handle']));
 
@@ -686,7 +691,7 @@ class contentBlueprintsSections extends AdministrationPage
                     $canProceed = false;
                 }
 
-                // Existing section during creation
+            // Existing section during creation
             } elseif (SectionManager::fetchIDFromHandle(Lang::createHandle($meta['handle'])) !== 0) {
                 $this->_errors['handle'] = __('A Section with the handle %s already exists', array('<code>' . $meta['handle'] . '</code>'));
                 $canProceed = false;
@@ -702,15 +707,23 @@ class contentBlueprintsSections extends AdministrationPage
             if (is_array($fields) && !empty($fields)) {
                 // Check for duplicate CF names
                 if ($canProceed) {
-                    $name_list = array();
+                    $name_list = [];
 
                     foreach ($fields as $position => $data) {
-                        if (trim($data['element_name']) == '') {
-                            $data['element_name'] = $fields[$position]['element_name'] = $_POST['fields'][$position]['element_name'] = Lang::createHandle($data['label'], 255, '-', false, true, array('@^[\d-]+@i' => ''));
+                        $data['element_name'] = trim($data['element_name']);
+                        // Create element name if needed
+                        if ($data['element_name'] === '') {
+                            $data['element_name'] = $fields[$position]['element_name'] = $_POST['fields'][$position]['element_name'] = Lang::createHandle($data['label'], 255, '-', false, true, ['@^[\d-]+@i' => '']);
                         }
 
-                        if (trim($data['element_name']) != '' && in_array($data['element_name'], $name_list)) {
-                            $this->_errors[$position] = array('element_name' => __('A field with this handle already exists. All handle must be unique.'));
+                        // Check unique element name
+                        if (in_array($data['element_name'], $name_list)) {
+                            $this->_errors[$position]['element_name'] = __('A field with this handle already exists. All handle must be unique.');
+                            $canProceed = false;
+                            break;
+                        // Check label starts with a letter
+                        } elseif (!preg_match('/^\p{L}/u', $data['label'])) {
+                            $this->_errors[$position]['label'] = __('The label of the field must begin with a letter.');
                             $canProceed = false;
                             break;
                         }

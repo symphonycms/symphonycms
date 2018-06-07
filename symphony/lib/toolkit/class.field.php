@@ -1001,19 +1001,21 @@ class Field implements ArrayAccess
         $parent_section = $this->get('parent_section');
         $label = $this->get('label');
         $element_name = $this->get('element_name');
-        $valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $element_name);
 
         if ($label === '') {
             $errors['label'] = __('This is a required field.');
         } elseif (strtolower($label) === 'id') {
             $errors['label'] = __('%s is a reserved name used by the system and is not allowed for a field handle. Try using %s instead.', array('<code>ID</code>', '<code>UID</code>'));
+        // Check label starts with a letter
+        } elseif (!preg_match('/^\p{L}/u', $label)) {
+            $errors['label'] = __('The label of the field must begin with a letter.');
         }
 
         if ($element_name === '') {
             $errors['element_name'] = __('This is a required field.');
         } elseif ($element_name === 'id') {
             $errors['element_name'] = __('%s is a reserved name used by the system and is not allowed for a field handle. Try using %s instead.', array('<code>id</code>', '<code>uid</code>'));
-        } elseif (!$valid_name) {
+        } elseif (!preg_match('/^[a-z]/i', $element_name)) {
             $errors['element_name'] = __('Invalid element name. Must be valid %s.', array('<code>QName</code>'));
         } elseif ($checkForDuplicates) {
             if (FieldManager::fetchFieldIDFromElementName($element_name, $parent_section) !== $this->get('id')) {
