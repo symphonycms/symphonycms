@@ -108,14 +108,14 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->entries([4, 5, 6]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE `e`.`id` IN (?, ?, ?)",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE `e`.`id` IN (:e_id, :e_id2, :e_id3)",
             $q->generateSQL(),
             'new EntryQuery test ->entries()'
         );
         $values = $q->getValues();
-        $this->assertEquals(4, $values[0], 'e_id[0] is 4');
-        $this->assertEquals(5, $values[1], 'e_id[1] is 5');
-        $this->assertEquals(6, $values[2], 'e_id[2] is 6');
+        $this->assertEquals(4, $values['e_id'], 'e_id is 4');
+        $this->assertEquals(5, $values['e_id2'], 'e_id2 is 5');
+        $this->assertEquals(6, $values['e_id3'], 'e_id3 is 6');
         $this->assertEquals(3, count($values), '3 values');
     }
 

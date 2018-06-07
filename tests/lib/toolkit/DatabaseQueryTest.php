@@ -498,6 +498,25 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(1, count($values), '1 value');
     }
 
+    public function testSELECTINWithPlaceholders()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+                  ->usePlaceholders()
+                  ->from('tbl_test_table')
+                  ->where(['x' => ['in' => [1, 2, 5]]]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` IN (?, ?, ?)",
+            $sql->generateSQL(),
+            'IN clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(1, $values[0], '0 is 1');
+        $this->assertEquals(2, $values[1], '1 is 2');
+        $this->assertEquals(5, $values[2], '2 is 5');
+        $this->assertEquals(3, count($values), '3 values');
+    }
+
     public function testSELECTIN()
     {
         $db = new Database([]);
@@ -505,7 +524,26 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => ['in' => [1, 2, 5]]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` IN (?, ?, ?)",
+            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` IN (:x, :x2, :x3)",
+            $sql->generateSQL(),
+            'IN clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(1, $values['x'], 'x is 1');
+        $this->assertEquals(2, $values['x2'], 'x2 is 2');
+        $this->assertEquals(5, $values['x3'], 'x3 is 5');
+        $this->assertEquals(3, count($values), '3 values');
+    }
+
+    public function testSELECTNOTINWithPlaceholders()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+                  ->usePlaceholders()
+                  ->from('tbl_test_table')
+                  ->where(['x' => ['not in' => [1, 2, 5]]]);
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` NOT IN (?, ?, ?)",
             $sql->generateSQL(),
             'IN clause'
         );
@@ -523,14 +561,14 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => ['not in' => [1, 2, 5]]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` NOT IN (?, ?, ?)",
+            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` NOT IN (:x, :x2, :x3)",
             $sql->generateSQL(),
             'IN clause'
         );
         $values = $sql->getValues();
-        $this->assertEquals(1, $values[0], '0 is 1');
-        $this->assertEquals(2, $values[1], '1 is 2');
-        $this->assertEquals(5, $values[2], '2 is 5');
+        $this->assertEquals(1, $values['x'], 'x is 1');
+        $this->assertEquals(2, $values['x2'], 'x2 is 2');
+        $this->assertEquals(5, $values['x3'], 'x3 is 5');
         $this->assertEquals(3, count($values), '3 values');
     }
 
