@@ -99,7 +99,7 @@ Symphony::Database()
 ### `update()` -> `DatabaseUpdate`
 ```php
 Symphony::Database()
-    ->insert('table')
+    ->update('table')
     ->set([
         'x' => 1,
         'y' => 'TEST',
@@ -170,7 +170,7 @@ Symphony::Database()
 ### `alter()` -> `DatabaseAlter`
 ```php
 Symphony::Database()
-    ->alter('alter')
+    ->alter('table')
     ->add([
         'x' => 'varchar(100)'
     ])

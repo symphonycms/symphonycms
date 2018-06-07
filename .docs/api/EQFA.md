@@ -13,22 +13,22 @@ inherits from `EntryQueryFieldAdapter`.
 
 This class replaces a lot of methods in the `Field` class.
 
-    1. `isFilterRegex()`
-    1. `buildRegexSQL()` renamed as `createFilterRegexp()`
-    1. `isFilterSQL()`
-    1. `buildFilterSQL()` renamed as `createFilterSQL()`
-    1. `buildDSRetrievalSQL()` renamed as `filter()`
-    1. `isRandomOrder()`
-    1. `buildSortingSQL()` renamed as `sort()`
-    1. `buildSortingSelectSQL()` dropped as it is not needed anymore.
+1. `isFilterRegex()`
+1. `buildRegexSQL()` renamed as `createFilterRegexp()`
+1. `isFilterSQL()`
+1. `buildFilterSQL()` renamed as `createFilterSQL()`
+1. `buildDSRetrievalSQL()` renamed as `filter()`
+1. `isRandomOrder()`
+1. `buildSortingSQL()` renamed as `sort()`
+1. `buildSortingSelectSQL()` dropped as it is not needed anymore.
 
 The base `EntryQueryFieldAdapter` also have new helper methods that were not in the `Field` class.
 
-    1. `formatColumn()`
-    1. `createFilterEquality()`
-    1. `createFilterEqualityOrNull()`
-    1. `isFilterNotEqual()`
-    1. `createFilterNotEqual()`
+1. `formatColumn()`
+1. `createFilterEquality()`
+1. `createFilterEqualityOrNull()`
+1. `isFilterNotEqual()`
+1. `createFilterNotEqual()`
 
 The `EntryQuery` class leverages `EntryQueryFieldAdapter` and simply calls `filter()` and `sort()`, passing itself as a parameter.
 `filter()` and `sort()` also bring the datasource filtering syntax deep into the core.
@@ -66,7 +66,7 @@ Instances will hold a reference to the Field accessible via the protected member
 ## API Stability
 
 Even if the API is new, the public PHP API should be pretty stable.
-Developers should not depend on public method marked as `@internal`.
+Developers should not depend on public methods marked as `@internal`.
 Filtering string syntax may change overtime.
 
 ## Filtering
