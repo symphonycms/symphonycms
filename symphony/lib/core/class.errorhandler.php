@@ -23,7 +23,7 @@ final class ErrorHandler
      * An instance of the Log class, used to write errors to the log
      * @var Log
      */
-    private static $log = null;
+    private $log = null;
 
     /**
      * Whether to log errors or not.
@@ -65,19 +65,26 @@ final class ErrorHandler
     );
 
     /**
+     * Disallow public construction
+     */
+    private function __construct()
+    {
+    }
+
+    /**
      * Initialise will set the error handler to be the `__CLASS__::handler`
      * function.
      *
-     * @param Log|null $Log (optional)
+     * @param Log $log (optional)
      *  An instance of a Symphony Log object to write errors to
      */
-    public static function initialise(Log $Log = null)
+    public static function initialise(Log $log = null)
     {
-        if (!is_null($Log)) {
-            self::$log = $Log;
+        $handler = new ErrorHandler;
+        if ($log) {
+            $handler->log = $log;
         }
-
-        set_error_handler(array(__CLASS__, 'handler'), error_reporting());
+        set_error_handler([$handler, 'handler'], error_reporting());
     }
 
     /**
@@ -96,9 +103,6 @@ final class ErrorHandler
      * `E_STRICT` before raising the error as an Exception. This allows all `E_WARNING`
      * to actually be captured by an Exception handler.
      *
-     * @since Symphony 3.0.0
-     *  The method is final
-     *
      * @param integer $code
      *  The error code, one of the PHP error constants
      * @param string $message
@@ -112,7 +116,7 @@ final class ErrorHandler
      * @return boolean
      *  Usually a string of HTML that will displayed to a user
      */
-    final public static function handler($code, $message, $file = null, $line = null)
+    public function handler($code, $message, $file = null, $line = null)
     {
         // Only log if the error won't be raised to an exception and the error is not `E_STRICT`
         if (!self::$logDisabled && !in_array($code, array(E_STRICT)) && self::$log instanceof Log) {

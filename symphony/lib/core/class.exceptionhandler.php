@@ -25,7 +25,7 @@ final class ExceptionHandler
      * An instance of the Symphony Log class, used to write errors to the log
      * @var Log
      */
-    private static $log = null;
+    private $log = null;
 
     /**
      * Whether to log errors or not.
@@ -50,19 +50,26 @@ final class ExceptionHandler
     public static $shutdownEnabled = true;
 
     /**
-     * Initialise will set the error handler to be the `__CLASS__::handler` function.
+     * Disallow public construction
+     */
+    private function __construct()
+    {
+    }
+
+    /**
+     * Initialise will set the error handler to be the `handler()` function.
      *
-     * @param Log $Log
+     * @param Log $log (optional)
      *  An instance of a Symphony Log object to write errors to
      */
-    public static function initialise(Log $Log = null)
+    public static function initialise(Log $log = null)
     {
-        if (!is_null($Log)) {
-            self::$log = $Log;
+        $handler = new ExceptionHandler;
+        if ($log) {
+            $handler->log = $log;
         }
-
-        set_exception_handler(array(__CLASS__, 'handler'));
-        register_shutdown_function(array(__CLASS__, 'shutdown'));
+        set_exception_handler([$handler, 'handler']);
+        register_shutdown_function([$handler, 'shutdown']);
     }
 
     /**
@@ -90,15 +97,12 @@ final class ExceptionHandler
      *  This function works with both Exception and Throwable
      *  Supporting both PHP 5.6 and 7 forces use to not qualify the $e parameter
      *
-     * @since Symphony 3.0.0
-     *  The method is final
-     *
      * @param Throwable $e
      *  The Throwable object
      * @return string
      *  The result of the Throwable's render function
      */
-    final public static function handler($e)
+    public static function handler($e)
     {
         $output = '';
         $class = 'ExceptionRenderer';
@@ -134,7 +138,7 @@ final class ExceptionHandler
         } catch (Exception $e) {
             try {
                 if ($class != 'ExceptionRenderer') {
-                    $output = call_user_func(['ExceptionRenderer', 'render'], $e);
+                    $output = ExceptionRenderer::render($e);
                 } else {
                     throw $e;
                 }
@@ -142,7 +146,7 @@ final class ExceptionHandler
             // If the generic exception handler couldn't do it, well we're in bad
             // shape, just output a plaintext response!
             } catch (Exception $e) {
-                self::echoRendererError($e);
+                $this->echoRendererError($e);
                 exit;
             }
         }
@@ -160,7 +164,7 @@ final class ExceptionHandler
      * @param Throwable $e
      * @return void
      */
-    final public static function echoRendererError($e)
+    public function echoRendererError($e)
     {
         echo "<pre>";
         echo 'A severe error occurred whilst trying to handle an exception, check the Symphony log for more details';
@@ -179,7 +183,7 @@ final class ExceptionHandler
      *
      * @since Symphony 3.0.0 the shutdown function can be disabled with $shutdownEnabled
      */
-    public static function shutdown()
+    public function shutdown()
     {
         if (!self::$shutdownEnabled) {
             return;
@@ -198,7 +202,7 @@ final class ExceptionHandler
                 $ex = new ShutdownException($message, $code, $file, $line);
                 ExceptionRenderer::render($e);
             } catch (Exception $e) {
-                self::echoRendererError($e);
+                $this->echoRendererError($e);
             }
         }
     }

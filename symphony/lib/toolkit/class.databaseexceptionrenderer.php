@@ -23,7 +23,7 @@ class DatabaseExceptionRenderer extends ExceptionRenderer
     protected static function renderHtml($e)
     {
         // Validate the type, resolve to a 404 if not valid
-        if (!static::isValidThrowable($e)) {
+        if (!ExceptionHandler::isValidThrowable($e)) {
             $e = new FrontendPageNotFoundException();
         }
 
