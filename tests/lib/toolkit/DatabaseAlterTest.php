@@ -317,4 +317,26 @@ final class DatabaseAlterTest extends TestCase
             'ALTER Formatted'
         );
     }
+
+    public function testALTERADDCOLSWITHCHARSETANDCOLATE()
+    {
+        $db = new Database([]);
+        $sql = $db->alter('alter')
+                  ->add([
+                        'x' => [
+                            'type' => 'varchar(100)',
+                            'default' => 'TATA',
+                            'charset' => 'utf8',
+                            'collate' => 'utf8_unicode_ci',
+                        ],
+                    ]);
+        $this->assertEquals(
+            "ALTER TABLE `alter` ADD COLUMN `x` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT :x_default",
+            $sql->generateSQL(),
+            'ALTER ADD COLUMN COLLATE CHARSET'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals('TATA', $values['x_default'], 'x_default is "TATA"');
+        $this->assertEquals(1, count($values), '1 value');
+    }
 }

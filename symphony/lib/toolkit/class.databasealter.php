@@ -13,13 +13,6 @@ final class DatabaseAlter extends DatabaseStatement
     use DatabaseKeyDefinition;
 
     /**
-     * The default collate option value for this statement
-     *
-     * @var string
-     */
-    private $collate;
-
-    /**
      * Creates a new DatabaseAlter statement on table $table, with an optional
      * optimizer value.
      *
@@ -97,20 +90,6 @@ final class DatabaseAlter extends DatabaseStatement
     public function containsAddDropOrChange()
     {
         return $this->containsSQLParts($this->getStatementStructure()[3]);
-    }
-
-    /**
-     * Set the default collate for all textual columns being altered.
-     *
-     * @param string $collate
-     *  The collate to use by default
-     * @return DatabaseAlter
-     *  The current instance
-     */
-    public function collate($collate)
-    {
-        $this->collate = $collate;
-        return $this;
     }
 
     /**

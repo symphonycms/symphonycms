@@ -13,20 +13,6 @@ final class DatabaseCreate extends DatabaseStatement
     use DatabaseKeyDefinition;
 
     /**
-     * The default charset option value for this statement
-     *
-     * @var string
-     */
-    private $charset;
-
-    /**
-     * The default collate option value for this statement
-     *
-     * @var string
-     */
-    private $collate;
-
-    /**
      * The default engine option value for this statement
      *
      * @var string
@@ -107,34 +93,6 @@ final class DatabaseCreate extends DatabaseStatement
     public function ifNotExists()
     {
         return $this->unsafeAppendSQLPart('optimizer', 'IF NOT EXISTS');
-    }
-
-    /**
-     * Sets the charset to use in this table.
-     *
-     * @param string $charset
-     *  The charset to use
-     * @return DatabaseCreate
-     *  The current instance
-     */
-    public function charset($charset)
-    {
-        $this->charset = $charset;
-        return $this;
-    }
-
-    /**
-     * Sets the default collate to use for all textual columns being created.
-     *
-     * @param string $collate
-     *  The collate to use by default
-     * @return DatabaseCreate
-     *  The current instance
-     */
-    public function collate($collate)
-    {
-        $this->collate = $collate;
-        return $this;
     }
 
     /**
