@@ -95,14 +95,14 @@ final class FieldQueryTest extends TestCase
     {
         $q = (new \FieldQuery($this->db))->fields([4, 5, 6]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `fields` AS `f` WHERE `f`.`id` IN (?, ?, ?)",
+            "SELECT SQL_NO_CACHE FROM `fields` AS `f` WHERE `f`.`id` IN (:f_id, :f_id2, :f_id3)",
             $q->generateSQL(),
             'new FieldQuery test ->fields()'
         );
         $values = $q->getValues();
-        $this->assertEquals(4, $values[0], 'f_id[0] is 4');
-        $this->assertEquals(5, $values[1], 'f_id[1] is 5');
-        $this->assertEquals(6, $values[2], 'f_id[2] is 6');
+        $this->assertEquals(4, $values['f_id'], 'f_id is 4');
+        $this->assertEquals(5, $values['f_id2'], 'f_id2 is 5');
+        $this->assertEquals(6, $values['f_id3'], 'f_id3 is 6');
         $this->assertEquals(3, count($values), '3 values');
     }
 

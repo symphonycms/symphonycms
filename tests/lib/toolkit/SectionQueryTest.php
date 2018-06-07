@@ -82,14 +82,14 @@ final class SectionQueryTest extends TestCase
     {
         $q = (new \SectionQuery($this->db))->sections([4, 5, 6]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `sections` AS `s` WHERE `s`.`id` IN (?, ?, ?)",
+            "SELECT SQL_NO_CACHE FROM `sections` AS `s` WHERE `s`.`id` IN (:s_id, :s_id2, :s_id3)",
             $q->generateSQL(),
             'new SectionQuery test ->sections()'
         );
         $values = $q->getValues();
-        $this->assertEquals(4, $values[0], 's_id[0] is 4');
-        $this->assertEquals(5, $values[1], 's_id[1] is 5');
-        $this->assertEquals(6, $values[2], 's_id[2] is 6');
+        $this->assertEquals(4, $values['s_id'], 's_id is 4');
+        $this->assertEquals(5, $values['s_id2'], 's_id2 is 5');
+        $this->assertEquals(6, $values['s_id3'], 's_id3 is 6');
         $this->assertEquals(3, count($values), '3 values');
     }
 

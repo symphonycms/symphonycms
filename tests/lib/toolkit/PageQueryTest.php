@@ -82,14 +82,14 @@ final class PageQueryTest extends TestCase
     {
         $q = (new \PageQuery($this->db))->pages([4, 5, 6]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `pages` AS `p` WHERE `p`.`id` IN (?, ?, ?)",
+            "SELECT SQL_NO_CACHE FROM `pages` AS `p` WHERE `p`.`id` IN (:p_id, :p_id2, :p_id3)",
             $q->generateSQL(),
             'new PageQuery test ->pages()'
         );
         $values = $q->getValues();
-        $this->assertEquals(4, $values[0], 'p_id[0] is 4');
-        $this->assertEquals(5, $values[1], 'p_id[1] is 5');
-        $this->assertEquals(6, $values[2], 'p_id[2] is 6');
+        $this->assertEquals(4, $values['p_id'], 'p_id is 4');
+        $this->assertEquals(5, $values['p_id2'], 'p_id2 is 5');
+        $this->assertEquals(6, $values['p_id3'], 'p_id3 is 6');
         $this->assertEquals(3, count($values), '3 values');
     }
 

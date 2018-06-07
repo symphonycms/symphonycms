@@ -88,19 +88,31 @@ trait DatabaseWhereDefinition
                 $op = strtoupper($vk);
                 $values = current(array_values($c));
                 if (is_array($values)) {
+                    $values = array_unique($values);
                     if (empty($values)) {
                         throw new DatabaseStatementException("Values passed to `$op` must not be empty");
                     }
-                    $this->usePlaceholders();
-                    $this->appendValues($values);
-                    $pc = $this->asPlaceholdersList($values);
+                    if (!$this->isUsingPlaceholders()) {
+                        $pc = [];
+                        foreach ($values as $v) {
+                            $this->appendValues([$k => $v]);
+                            $pc[] = $this->asPlaceholdersList([$k => $v]);
+                        }
+                        $pc = implode(self::LIST_DELIMITER, $pc);
+                    } else {
+                        $this->appendValues($values);
+                        $pc = $this->asPlaceholdersList($values);
+                    }
                 } elseif ($values instanceof DatabaseSubQuery) {
+                    if ($this->isUsingPlaceholders() !== $values->isUsingPlaceholders()) {
+                        throw new DatabaseStatementException('The IN() function only accepts DatabaseSubQuery that uses the same placeholders mode as the parent query');
+                    }
                     foreach ($values->getValues() as $ck => $cv) {
                         $this->appendValues([$ck => $cv]);
                     }
                     $pc = $values->finalize()->generateSQL();
                 } else {
-                    throw new DatabaseStatementException("The IN() function accepts array of scalars or a DatabaseSubQuery");
+                    throw new DatabaseStatementException('The IN() function accepts array of scalars or a DatabaseSubQuery');
                 }
                 $tk = $this->replaceTablePrefix($k);
                 $tk = $this->asTickedString($tk);
@@ -112,6 +124,7 @@ trait DatabaseWhereDefinition
                     throw new DatabaseStatementException("The BETWEEN expression must be provided 2 values");
                 }
                 $p = $this->convertToParameterName($k, implode('-', $c));
+                $this->validateFieldName($p);
                 if ($this->isUsingPlaceholders()) {
                     $this->appendValues($c);
                 } else {

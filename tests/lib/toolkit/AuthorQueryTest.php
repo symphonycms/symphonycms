@@ -82,14 +82,14 @@ final class AuthorQueryTest extends TestCase
     {
         $q = (new \AuthorQuery($this->db))->authors([4, 5, 6]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `authors` AS `a` WHERE `a`.`id` IN (?, ?, ?)",
+            "SELECT SQL_NO_CACHE FROM `authors` AS `a` WHERE `a`.`id` IN (:a_id, :a_id2, :a_id3)",
             $q->generateSQL(),
             'new AuthorQuery with ->authors()'
         );
         $values = $q->getValues();
-        $this->assertEquals(4, $values[0], 'a_id[0] is 4');
-        $this->assertEquals(5, $values[1], 'a_id[1] is 5');
-        $this->assertEquals(6, $values[2], 'a_id[2] is 6');
+        $this->assertEquals(4, $values['a_id'], 'a_id is 4');
+        $this->assertEquals(5, $values['a_id2'], 'a_id2 is 5');
+        $this->assertEquals(6, $values['a_id3'], 'a_id3 is 6');
         $this->assertEquals(3, count($values), '3 values');
     }
 
