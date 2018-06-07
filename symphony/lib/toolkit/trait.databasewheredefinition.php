@@ -107,11 +107,24 @@ trait DatabaseWhereDefinition
                 return "$tk $op ($pc)";
             // first value key is the BETWEEN expression
             } elseif ($vk === 'between') {
-                $this->usePlaceholders();
-                $this->appendValues(current(array_values($c)));
+                $c = current(array_values($c));
+                if (count($c) !== 2 || !isset($c[0]) || !isset($c[1])) {
+                    throw new DatabaseStatementException("The BETWEEN expression must be provided 2 values");
+                }
+                $p = $this->convertToParameterName($k, implode('-', $c));
+                if ($this->isUsingPlaceholders()) {
+                    $this->appendValues($c);
+                } else {
+                    $this->appendValues([
+                        "{$p}l" => $c[0],
+                        "{$p}u" => $c[1],
+                    ]);
+                }
+                $p1 = $this->asPlaceholderString("{$p}l", $c[0]);
+                $p2 = $this->asPlaceholderString("{$p}u", $c[1]);
                 $tk = $this->replaceTablePrefix($k);
                 $tk = $this->asTickedString($tk);
-                return "($tk BETWEEN ? AND ?)";
+                return "($tk BETWEEN $p1 AND $p2)";
             // first value key is the boolean expression (full-text boolean match)
             } elseif ($vk === 'boolean') {
                 $c = current(array_values($c));
