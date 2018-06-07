@@ -22,6 +22,7 @@ final class migration_300 extends Migration
             'Make sure you have an up to date backup in case something goes wrong.',
             'The update process can take a long time if you have many tables. ' .
             'If it ever times out, start the update process again: it will continue where it stopped.',
+            'Please, make sure you have a complete database and file backup BEFORE doing the upgrade.',
         ];
     }
 
@@ -221,6 +222,20 @@ final class migration_300 extends Migration
                 $ata->commit();
             }
             unset($activeTokenAuthors);
+        }
+
+        // Re-save all data sources
+        foreach (DatasourceManager::listAll() as $ds) {
+            if (!$ds['can_parse']) {
+                continue;
+            }
+            $path = DatasourceManager::__getDriverPath($ds['handle']);
+            $ds = @file_get_contents($path);
+            $ds = str_replace("\t", '    ', $ds);
+            $ds = trim(substr($ds, 0, strpos($ds, '    public function execute')));
+            if ($ds) {
+                @file_put_contents($path, $ds . "\n}\n");
+            }
         }
 
         // Update the version information

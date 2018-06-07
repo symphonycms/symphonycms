@@ -472,6 +472,40 @@ class SectionDatasource extends Datasource
     public function execute(array &$param_pool = null)
     {
         $result = new XMLElement($this->dsParamROOTELEMENT);
+
+        try {
+            $result = $this->generate($param_pool);
+        } catch (FrontendPageNotFoundException $e) {
+            // Work around. This ensures the 404 page is displayed and
+            // is not picked up by the default catch() statement below
+            FrontendPageNotFoundExceptionRenderer::render($e);
+        } catch (Exception $e) {
+            $result->appendChild(new XMLElement('error',
+                General::wrapInCDATA($e->getMessage() . ' on ' . $e->getLine() . ' of file ' . $e->getFile())
+            ));
+            return $result;
+        }
+
+        if ($this->_force_empty_result) {
+            $result = $this->emptyXMLSet();
+        }
+
+        if ($this->_negate_result) {
+            $result = $this->negateXMLSet();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Creates the XML representation of this data source.
+     *
+     * @param array $param_pool
+     * @return XMLElement
+     */
+    public function generate(array &$param_pool = null)
+    {
+        $result = new XMLElement($this->dsParamROOTELEMENT);
         $this->_param_pool = $param_pool;
         $requiresPagination = (!isset($this->dsParamPAGINATERESULTS) ||
             $this->dsParamPAGINATERESULTS === 'yes')
