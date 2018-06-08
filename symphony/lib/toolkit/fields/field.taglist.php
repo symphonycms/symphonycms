@@ -77,7 +77,7 @@ class FieldTagList extends Field implements ExportableField, ImportableField
             ])
             ->keys([
                 'id' => 'primary',
-                'entry_id' => 'unique',
+                'entry_id' => 'key',
                 'handle' => 'key',
                 'value' => 'key',
             ])
