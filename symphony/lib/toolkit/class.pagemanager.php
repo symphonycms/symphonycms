@@ -50,7 +50,7 @@ class PageManager
      *
      * @param string $handle
      *  The handle of the page
-     * @return integer
+     * @return string
      *  The Page title
      */
     public static function fetchTitleFromHandle($handle)
@@ -61,7 +61,7 @@ class PageManager
             ->where(['handle' => $handle])
             ->limit(1)
             ->execute()
-            ->variable('title');
+            ->string('title');
     }
 
     /**
@@ -69,7 +69,7 @@ class PageManager
      *
      * @param string $handle
      *  The handle of the page
-     * @return integer
+     * @return int
      *  The Page ID
      */
     public static function fetchIDFromHandle($handle)
@@ -80,7 +80,7 @@ class PageManager
             ->where(['handle' => $handle])
             ->limit(1)
             ->execute()
-            ->variable('id');
+            ->integer('id');
     }
 
     /**
@@ -665,13 +665,11 @@ class PageManager
      */
     public static function fetchNextSortOrder()
     {
-        $next = (int)Symphony::Database()
+        return Symphony::Database()
             ->select(['MAX(sortorder)'])
             ->from('tbl_pages')
             ->execute()
-            ->variable(0);
-
-        return $next + 1;
+            ->integer(0) + 1;
     }
 
     /**
@@ -956,7 +954,7 @@ class PageManager
             ->count()
             ->where(['p.data_sources' => ['regexp' => "[[:<:]]{$handle}[[:>:]]"]])
             ->execute()
-            ->variable(0) > 0;
+            ->integer(0) > 0;
     }
 
     /**
@@ -974,7 +972,7 @@ class PageManager
             ->count()
             ->where(['p.events' => ['regexp' => "[[:<:]]{$handle}[[:>:]]"]])
             ->execute()
-            ->variable(0) > 0;
+            ->integer(0) > 0;
     }
 
     /**

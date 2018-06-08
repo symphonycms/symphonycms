@@ -74,7 +74,7 @@ class contentBlueprintsSections extends AdministrationPage
                     ->count()
                     ->section($s->get('id'))
                     ->execute()
-                    ->variable(0);
+                    ->integer(0);
 
                 // Setup each cell
                 $td1 = Widget::TableData(Widget::Anchor(General::sanitize($s->get('name')), Administration::instance()->getCurrentPageURL() . 'edit/' . $s->get('id') .'/', null, 'content'));

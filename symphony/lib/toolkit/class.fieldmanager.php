@@ -403,7 +403,7 @@ class FieldManager implements FileResource
             ->where(['id' => (int)$id])
             ->limit(1)
             ->execute()
-            ->variable('type');
+            ->string('type');
     }
 
     /**
@@ -420,7 +420,7 @@ class FieldManager implements FileResource
             ->where(['id' => (int)$id])
             ->limit(1)
             ->execute()
-            ->variable('element_name');
+            ->string('element_name');
     }
 
     /**
@@ -500,11 +500,11 @@ class FieldManager implements FileResource
      */
     public static function fetchNextSortOrder()
     {
-        $next = (int)Symphony::Database()
+        $next = Symphony::Database()
             ->select(['MAX(sortorder)'])
             ->from('tbl_fields')
             ->execute()
-            ->variable(0);
+            ->integer(0);
 
         return $next + 1;
     }
@@ -613,13 +613,13 @@ class FieldManager implements FileResource
      */
     public static function isFieldUsed($field_type)
     {
-        return (int)Symphony::Database()
+        return Symphony::Database()
             ->select()
             ->count()
             ->from('tbl_fields')
             ->where(['type' => $field_type])
             ->execute()
-            ->variable(0) > 0;
+            ->integer(0) > 0;
     }
 
     /**
@@ -647,13 +647,13 @@ class FieldManager implements FileResource
             foreach ($fields as $field) {
                 $table = 0;
                 try {
-                    $table = (int)Symphony::Database()
+                    $table = Symphony::Database()
                         ->select()
                         ->count()
                         ->from("tbl_fields_$field")
                         ->where(['formatter' => $text_formatter_handle])
                         ->execute()
-                        ->variable(0);
+                        ->integer(0);
                 } catch (DatabaseException $ex) {
                     // Table probably didn't have that column
                 }

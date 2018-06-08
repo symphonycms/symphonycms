@@ -99,7 +99,7 @@ class contentPublish extends AdministrationPage
         $section_id = SectionManager::fetchIDFromHandle($handle);
         $section = (new SectionManager)->select()->section($section_id)->execute()->next();
         $filter = $section->get('filter');
-        $count = (new EntryManager)->select()->count()->section($section_id)->execute()->variable(0);
+        $count = (new EntryManager)->select()->count()->section($section_id)->execute()->integer(0);
 
         if ($filter !== 'no' && $count > 1) {
             $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), $this->createFilteringDrawer($section));
@@ -599,7 +599,7 @@ class contentPublish extends AdministrationPage
                 ->count()
                 ->section($section_id)
                 ->execute()
-                ->variable(0);
+                ->integer(0);
             $filter_text = __('%d of %d entries (filtered)', [$pagination->totalEntries(), $totalCount]);
         } else {
             $filter_text = __('%d entries', [$pagination->totalEntries()]);
@@ -1426,9 +1426,9 @@ class contentPublish extends AdministrationPage
             ->orderBy('sortorder')
             ->limit(1)
             ->execute()
-            ->variable('id');
+            ->integer('id');
 
-        if (!is_null($field_id)) {
+        if (!$field_id) {
             $field = (new FieldManager)->select()->field($field_id)->execute()->next();
         }
 

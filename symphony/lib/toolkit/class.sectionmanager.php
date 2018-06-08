@@ -213,18 +213,18 @@ class SectionManager
      *
      * @param string $handle
      *  The handle of the section
-     * @return integer
+     * @return int
      *  The Section ID
      */
     public static function fetchIDFromHandle($handle)
     {
-        return (int)Symphony::Database()
+        return Symphony::Database()
             ->select(['id'])
             ->from('tbl_sections')
             ->where(['handle' => $handle])
             ->limit(1)
             ->execute()
-            ->variable('id');
+            ->integer('id');
     }
 
     /**
@@ -235,13 +235,11 @@ class SectionManager
      */
     public static function fetchNextSortOrder()
     {
-        $next = (int)Symphony::Database()
+        return Symphony::Database()
             ->select(['MAX(sortorder)'])
             ->from('tbl_sections')
             ->execute()
-            ->variable(0);
-
-        return $next + 1;
+            ->integer(0) + 1;
     }
 
     /**
@@ -351,7 +349,7 @@ class SectionManager
             ->from('tbl_sections_association')
             ->where(['child_section_field_id' => $field_id])
             ->execute()
-            ->variable('hide_association');
+            ->string('hide_association');
 
         // We must inverse the setting. The database stores 'hide', whereas the UI
         // refers to 'show'. Hence if the database says 'yes', it really means, hide

@@ -248,4 +248,73 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
         }
         return null;
     }
+
+    /**
+     * int returning version of variable()
+     *
+     * @see variable()
+     * @param string|int $col
+     * @throws DatabaseStatementException
+     * @return int
+     *  The value of the column
+     */
+    public function integer($col)
+    {
+        return (int)$this->variable($col);
+    }
+
+    /**
+     * float returning version of variable()
+     *
+     * @see variable()
+     * @param string|int $col
+     * @throws DatabaseStatementException
+     * @return float
+     *  The value of the column
+     */
+    public function float($col)
+    {
+        return (float)$this->variable($col);
+    }
+
+    /**
+     * float returning version of variable()
+     * If it is a bool, returns it as is.
+     * If is is a string, checks for 'yes', 'true' and '1'.
+     * If it is an int, returns true is it is not equal to 0.
+     * Otherwise, returns false.
+     *
+     * @see variable()
+     * @param string|int $col
+     * @throws DatabaseStatementException
+     * @return bool
+     *  The value of the column
+     */
+    public function boolean($col)
+    {
+        $v = $this->variable($col);
+        if (is_bool($v)) {
+            return $v;
+        } elseif (is_string($v)) {
+            $v = strtolower($v);
+            return in_array($v, ['yes', 'true', '1']);
+        } elseif (is_int($v)) {
+            return $v !== 0;
+        }
+        return false;
+    }
+
+    /**
+     * string returning version of variable()
+     *
+     * @see variable()
+     * @param string|int $col
+     * @throws DatabaseStatementException
+     * @return string
+     *  The value of the column
+     */
+    public function string($col)
+    {
+        return (string)$this->variable($col);
+    }
 }

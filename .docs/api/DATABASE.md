@@ -54,9 +54,19 @@ if (!$result->success()) {
 }
 ```
 
+When the query returns tabular data, `execute()` will return a `DatabaseTabularResult` instance.
+This class inherits from `DatabaseStatementResult` and add methods to be able to access the data with ease.
+When possible, the old vocabulary is used.
+This makes `DatabaseTabularResult` expose methods like `rows()`, `next()`, `column()`, `rowsIndexedByColumn()`, `variable()`, `integer()`, `float()`, `boolean()` and `string()`.
+
 Note that if there was a SQL error, `PDO` is configured to throw an exception.
 We wrap those errors in a `DatabaseStatementException` in order to provide more context.
 
+Each specialized `DatabaseStatement` exposes methods that are specific to its usage.
+For example, `DatabaseQuery`, `DatabaseUpdate` and `DatabaseDelete` all share a [`where()`](#where) method.
+Most methods are named by the associated SQL keywords they create.
+
+Specialized `DatabaseStatement` are created via factory methods on the `Database` object.
 Here is the list of all factory methods, the type of object they create and their basic usage:
 
 ### `select()` -> `DatabaseQuery`
@@ -230,10 +240,6 @@ Symphony::Database()
 Symphony::Database()->statement('Raw SQL')->execute()->success();
 ```
 
-Each specialized `DatabaseStatement` exposes methods that are specific to its usage.
-For example, `DatabaseQuery`, `DatabaseUpdate` and `DatabaseDelete` all share a [`where()`](#where) method.
-Most methods are named by the associated SQL keywords they create.
-
 ## Statements safety
 
 All `DatabaseStatement` make sure that they generate SAFE SQL, by escaping all values and checking the
@@ -283,7 +289,7 @@ There are 3 more complex syntaxes, that are defined in `DatabaseWhereDefinition`
 `DatabaseKeyDefinition` and `DatabaseColumnDefinition`, which respectively describe
 `WHERE`, `KEY` and `COLUMN` definitions.
 
-For a more complete overview of the possibilities, you should check the unit tests under the `tests` directory.
+For a more complete overview of the possibilities, you should check the tests under the `tests` directory.
 
 ### where()
 

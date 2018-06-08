@@ -93,13 +93,13 @@ class FieldTagList extends Field implements ExportableField, ImportableField
     {
         $value = array_map('trim', array_map([$this, 'cleanValue'], explode(',', $value)));
 
-        return (int)Symphony::Database()
+        return Symphony::Database()
             ->select()
             ->count('handle')
             ->from('tbl_entries_data_' . $this->get('id'))
             ->where(['handle' => ['in' => $value]])
             ->execute()
-            ->variable(0);
+            ->integer(0);
     }
 
     public function fetchAssociatedEntrySearchValue($data, $field_id = null, $parent_entry_id = null)

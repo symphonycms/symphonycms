@@ -260,14 +260,14 @@ class Author implements ArrayAccess
         } elseif ($this->get('id')) {
             if (
                 $current_author['email'] !== $this->get('email') &&
-                (int)Symphony::Database()
+                Symphony::Database()
                     ->select()
                     ->count()
                     ->from('tbl_authors')
                     ->where(['email' => $this->get('email')])
                     ->limit(1)
                     ->execute()
-                    ->variable(0) !== 0
+                    ->integer(0) !== 0
             ) {
                 $errors['email'] = __('E-mail address is already taken');
             }
@@ -279,7 +279,7 @@ class Author implements ArrayAccess
                   ->where(['email' => $this->get('email')])
                   ->limit(1)
                   ->execute()
-                  ->variable('id')) {
+                  ->integer('id')) {
             $errors['email'] = __('E-mail address is already taken');
         }
 
@@ -292,14 +292,14 @@ class Author implements ArrayAccess
         } elseif ($this->get('id')) {
             if (
                 $current_author['username'] !== $this->get('username') &&
-                (int)Symphony::Database()
+                Symphony::Database()
                     ->select()
                     ->count()
                     ->from('tbl_authors')
                     ->where(['username' => $this->get('username')])
                     ->limit(1)
                     ->execute()
-                    ->variable(0) !== 0
+                    ->integer(0) !== 0
             ) {
                 $errors['username'] = __('Username is already taken');
             }
@@ -311,7 +311,7 @@ class Author implements ArrayAccess
                     ->where(['username' => $this->get('username')])
                     ->limit(1)
                     ->execute()
-                    ->variable('id')) {
+                    ->integer('id')) {
             $errors['username'] = __('Username is already taken');
         }
 

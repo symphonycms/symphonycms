@@ -258,13 +258,13 @@ class Session
             return null;
         }
 
-        return (string)Symphony::Database()
+        return Symphony::Database()
             ->select(['session_data'])
             ->from('tbl_sessions')
             ->where(['session' => $id])
             ->limit(1)
             ->execute()
-            ->variable('session_data');
+            ->string('session_data');
     }
 
     /**
