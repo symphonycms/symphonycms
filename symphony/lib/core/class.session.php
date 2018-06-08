@@ -133,6 +133,7 @@ class Session
                 return null; // prevent problems on local setups
             }
 
+            // Remove leading www and ending :port
             return preg_replace('/(^www\.|:\d+$)/i', null, HTTP_HOST);
         }
 
