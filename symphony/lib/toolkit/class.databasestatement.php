@@ -775,29 +775,6 @@ class DatabaseStatement
 
     /**
      * @internal
-     * Given an array, this method will call asTickedList() on each values and
-     * then implode the results with LIST_DELIMITER.
-     * If the value is a DatabaseQuery object, the key is used as the alias.
-     *
-     * @see asTickedList()
-     * @param array $values
-     * @return string
-     *  The resulting list of ticked strings
-     */
-    final public function asProjectionList(array $values)
-    {
-        return implode(self::LIST_DELIMITER, General::array_map(function ($key, $value) {
-            if ($value instanceof DatabaseSubQuery) {
-                $sql = $value->generateSQL();
-                $key = $this->asTickedString($key);
-                return "($sql) AS $key";
-            }
-            return $this->asTickedList([$key => $value]);
-        }, $values));
-    }
-
-    /**
-     * @internal
      * This method validates that the string $field is a valid field name
      * in SQL. If it is not, it throws DatabaseStatementException
      *
