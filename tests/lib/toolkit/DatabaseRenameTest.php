@@ -19,4 +19,13 @@ final class DatabaseRenameTest extends TestCase
         $values = $sql->getValues();
         $this->assertEquals(0, count($values), '0 value');
     }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testRENAMEDOUBLETO()
+    {
+        $db = new Database([]);
+        $sql = $db->rename('x')->to('y')->to('z');
+    }
 }
