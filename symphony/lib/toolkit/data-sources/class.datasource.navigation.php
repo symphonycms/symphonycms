@@ -83,18 +83,19 @@ class NavigationDatasource extends Datasource
         }
 
         // Build the Query appending the Parent and/or Type WHERE clauses
-        $childrenStm = Symphony::Database()
-            ->select()
-            ->count('id')
-            ->from('tbl_pages', 'c')
-            ->where(['c.parent' => '$p.id']);
         $stm = Symphony::Database()
-            ->select(['p.id', 'p.title', 'p.handle', 'p.sortorder', 'children' => $childrenStm])
+            ->select()
             ->distinct()
             ->from('tbl_pages', 'p')
             ->leftJoin('tbl_pages_types', 'pt')
             ->on(['p.id' => '$pt.page_id'])
             ->orderBy('p.sortorder');
+        $childrenStm = $stm
+            ->select()
+            ->count('id')
+            ->from('tbl_pages', 'c')
+            ->where(['c.parent' => '$p.id']);
+        $stm = $stm->projection(['p.id', 'p.title', 'p.handle', 'p.sortorder', 'children' => $childrenStm]);
 
         if ($parent_sql) {
             $parent_sql = $stm->replaceTablePrefix($parent_sql);
