@@ -66,7 +66,7 @@ class contentAjaxQuery extends JSONPage
             ->where(['child_section_id' => $parent_section->get('id')])
             ->limit(1)
             ->execute()
-            ->variable('parent_section_field_id');
+            ->integer('parent_section_field_id');
     }
 
     private function getStatic($field_id, $search = null)

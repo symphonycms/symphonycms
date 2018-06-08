@@ -52,7 +52,7 @@ class DatabaseQueryResult extends DatabaseTabularResult
     public function pagination()
     {
         $countQuery = $this->query->countProjection();
-        $this->page['total-entries'] = (int)$countQuery->execute()->variable(0);
+        $this->page['total-entries'] = $countQuery->execute()->integer(0);
         return new DatabaseQueryPaginationResult($this, $this->page);
     }
 }

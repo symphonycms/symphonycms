@@ -226,7 +226,7 @@ class Database
             );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
-            $this->version = $this->select(['VERSION()'])->execute()->variable(0);
+            $this->version = $this->select(['VERSION()'])->execute()->string(0);
         } catch (PDOException $ex) {
             $this->throwDatabaseError($ex);
         }

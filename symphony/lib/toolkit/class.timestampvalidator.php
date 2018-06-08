@@ -50,13 +50,13 @@ class TimestampValidator
         if ($id < 1) {
             return false;
         }
-        $results = Symphony::Database()
+        $result = Symphony::Database()
             ->select(['id'])
             ->from($this->table)
             ->where(['id' => $id])
             ->where(['modification_date' => $timestamp])
             ->execute()
-            ->variable('id');
-        return !empty($results) && General::intval($results) === $id;
+            ->integer('id');
+        return $result === $id;
     }
 }

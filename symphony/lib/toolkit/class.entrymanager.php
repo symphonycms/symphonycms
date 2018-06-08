@@ -506,7 +506,7 @@ class EntryManager
             ->entry($entry_id)
             ->limit(1)
             ->execute()
-            ->variable('section_id');
+            ->integer('section_id');
     }
 
     /**
@@ -556,7 +556,7 @@ class EntryManager
             $sql->unsafe()->unsafeAppendSQLPart('where', $where);
         }
 
-        return (int)$sql->execute()->variable(0);
+        return $sql->execute()->integer(0);
     }
 
     /**

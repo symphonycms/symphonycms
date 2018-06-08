@@ -278,7 +278,7 @@ class contentLogin extends HTMLPage
                         ->where(['expiry' => ['>' => DateTimeObj::getGMT('c')]])
                         ->where(['author_id' => $author['id']])
                         ->execute()
-                        ->variable('token');
+                        ->string('token');
 
                     if (!$token) {
                         $token = Cryptography::randomBytes();

@@ -73,7 +73,7 @@ final class migration_300 extends Migration
                     ->where(['ENGINE' => ['!=' => null]])
                     ->where(['TABLE_NAME'=> $t])
                     ->execute()
-                    ->variable(0);
+                    ->string(0);
                 if ($engine === 'InnoDB') {
                     continue;
                 }
