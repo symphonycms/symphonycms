@@ -56,10 +56,10 @@ class DatabaseExceptionRenderer extends ExceptionRenderer
 
         $html = sprintf(
             file_get_contents(self::getTemplate('fatalerror.database')),
-            !self::$enabled ? 'Database error' : $e->getDatabaseErrorMessage(),
-            !self::$enabled ? '' : $e->getQuery(),
-            !self::$enabled ? '' : $trace,
-            !self::$enabled ? '' : $queries
+            !ExceptionHandler::$enabled ? 'Database error' : $e->getDatabaseErrorMessage(),
+            !ExceptionHandler::$enabled ? '' : $e->getQuery(),
+            !ExceptionHandler::$enabled ? '' : $trace,
+            !ExceptionHandler::$enabled ? '' : $queries
         );
 
         $html = str_replace('{ASSETS_URL}', ASSETS_URL, $html);
