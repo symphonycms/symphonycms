@@ -100,7 +100,9 @@ abstract class Symphony implements Singleton
         Lang::initialize();
         Lang::set(self::$Configuration->get('lang', 'symphony'));
 
-        self::initialiseCookie();
+        // Initialize session support
+        static::initialiseSessionHandler();
+        static::initialiseCookie();
 
         // If the user is not a logged in Author, turn off the verbose error messages.
         ExceptionHandler::$enabled = static::isLoggedIn() && static::Author();
@@ -120,6 +122,24 @@ abstract class Symphony implements Singleton
         self::initialiseLog();
         ExceptionHandler::initialise(self::Log());
         ErrorHandler::initialise(self::Log());
+    }
+
+    /**
+     * Setter for the Symphony Session Handling system.
+     *
+     * This function also defines a constant, `__SYM_COOKIE_PATH__`.
+     *
+     * @since Symphony 3.0.0
+     * @throws Exception
+     */
+    public static function initialiseSessionHandler()
+    {
+        define_safe('__SYM_COOKIE_PATH__', DIRROOT === '' ? '/' : DIRROOT);
+
+        $session = Session::start(TWO_WEEKS, __SYM_COOKIE_PATH__);
+        if (!$session) {
+            throw new Exception('Session failed to start, no session id found');
+        }
     }
 
     /**
@@ -258,15 +278,13 @@ abstract class Symphony implements Singleton
      * defined in the Symphony configuration. The cookie will last two
      * weeks.
      *
-     * This function also defines two constants, `__SYM_COOKIE_PATH__`
-     * and `__SYM_COOKIE_PREFIX__`.
+     * This function also defines a constant, `__SYM_COOKIE_PREFIX__`.
      */
     public static function initialiseCookie()
     {
-        define_safe('__SYM_COOKIE_PATH__', DIRROOT === '' ? '/' : DIRROOT);
         define_safe('__SYM_COOKIE_PREFIX__', self::Configuration()->get('cookie_prefix', 'symphony'));
 
-        self::$Cookie = new Cookie(__SYM_COOKIE_PREFIX__, TWO_WEEKS, __SYM_COOKIE_PATH__);
+        self::$Cookie = new Cookie(__SYM_COOKIE_PREFIX__);
     }
 
     /**
