@@ -40,6 +40,14 @@ class DatabaseSubQuery extends DatabaseQuery
     }
 
     /**
+     * @see DatabaseQuery::appendCacheModifier()
+     */
+    protected function appendCacheModifier()
+    {
+        // Do not add cache modifier in sub queries
+    }
+
+    /**
      * @internal
      * Formats the given $parameter name to be used as SQL parameter.
      * In this context, the $id of the sub query is prepend to the actual parameter name.

@@ -43,10 +43,20 @@ class DatabaseQuery extends DatabaseStatement
     public function __construct(Database $db, array $projection = [])
     {
         parent::__construct($db, 'SELECT');
-        $this->unsafeAppendSQLPart('cache', $db->isCachingEnabled() ? 'SQL_CACHE' : 'SQL_NO_CACHE');
+        $this->appendCacheModifier();
         if (!empty($projection)) {
             $this->unsafeAppendSQLPart('projection', $this->asProjectionList($projection));
         }
+    }
+
+    /**
+     * Appends the SQL_CACHE or SQL_NO_CACHE in the query
+     *
+     * @return void
+     */
+    protected function appendCacheModifier()
+    {
+        $this->unsafeAppendSQLPart('cache', $this->getDB()->isCachingEnabled() ? 'SQL_CACHE' : 'SQL_NO_CACHE');
     }
 
     /**
