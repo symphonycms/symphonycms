@@ -921,7 +921,7 @@ final class DatabaseQueryTest extends TestCase
                   ->where(['y' => 2]);
         $sql->where(['x' => $sub]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = (SELECT SQL_NO_CACHE `y` FROM `sub` WHERE `y` = :i1_y)",
+            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = (SELECT `y` FROM `sub` WHERE `y` = :i1_y)",
             $sql->generateSQL(),
             'Simple SQL clause with WHERE sub-query'
         );
@@ -944,7 +944,7 @@ final class DatabaseQueryTest extends TestCase
         $sql->where(['x' => $sub1]);
         $sql->where(['y' => ['in' => $sub2]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = (SELECT SQL_NO_CACHE `y` FROM `sub` WHERE `y` = :i1_y) AND `y` IN (SELECT SQL_NO_CACHE `y` FROM `sub` WHERE `y` = :i2_y)",
+            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = (SELECT `y` FROM `sub` WHERE `y` = :i1_y) AND `y` IN (SELECT `y` FROM `sub` WHERE `y` = :i2_y)",
             $sql->generateSQL(),
             'Simple SQL clause with WHERE two sub-queries'
         );
@@ -964,7 +964,7 @@ final class DatabaseQueryTest extends TestCase
                   ->where(['y' => '$x']);
         $sql->projection(['inner' => $sub, 'x']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE (SELECT SQL_NO_CACHE `y` FROM `sub` WHERE `y` = `x`) AS `inner`, `x` FROM `test_table`",
+            "SELECT SQL_NO_CACHE (SELECT `y` FROM `sub` WHERE `y` = `x`) AS `inner`, `x` FROM `test_table`",
             $sql->generateSQL(),
             'Simple SQL with sub-query in the projection'
         );
@@ -996,7 +996,7 @@ final class DatabaseQueryTest extends TestCase
             ->where(['y' => 2]);
         $sql->where(['x' => $sub]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE\n\tFROM `test_table`\n\tWHERE `x` = (SELECT SQL_NO_CACHE `y` FROM `sub` WHERE `y` = :i1_y)",
+            "SELECT SQL_NO_CACHE\n\tFROM `test_table`\n\tWHERE `x` = (SELECT `y` FROM `sub` WHERE `y` = :i1_y)",
             $sql->generateFormattedSQL(),
             'Formatted SQL sub-query test'
         );

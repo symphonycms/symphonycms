@@ -403,7 +403,7 @@ final class DatabaseStatementTest extends TestCase
         $db = new Database([]);
         $sql = $db->select();
         $sub = $sql->select();
-        $this->assertEquals('`x`, (SELECT SQL_NO_CACHE) AS `y`', $sql->asProjectionList(['x', 'y' => $sub]));
+        $this->assertEquals('`x`, (SELECT) AS `y`', $sql->asProjectionList(['x', 'y' => $sub]));
     }
 
     /**
