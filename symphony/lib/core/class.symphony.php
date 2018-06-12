@@ -288,7 +288,7 @@ abstract class Symphony implements Singleton
      *  When set to true, this function will always create a new
      *  instance of ExtensionManager, replacing self::$ExtensionManager.
      */
-    public static function initialiseExtensionManager($force=false)
+    public static function initialiseExtensionManager($force = false)
     {
         if (!$force && self::$ExtensionManager instanceof ExtensionManager) {
             return true;
