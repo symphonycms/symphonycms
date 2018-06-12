@@ -95,6 +95,20 @@ class Cookie
         // as Symphony authentication or the Members extension, only delete the $_SESSION if it empty!
         if (empty($_SESSION)) {
             session_destroy();
+        } else {
+            // Since session is not empty, we still need to rotate the session id.
+            $this->regenerate();
         }
+    }
+
+    /**
+     * Regenerates the session id.
+     * This is used to prevent session fixation.
+     *
+     * @return void
+     */
+    public function regenerate()
+    {
+        session_regenerate_id(false);
     }
 }
