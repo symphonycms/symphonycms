@@ -268,10 +268,11 @@ define_safe('HTTP_USER_AGENT', server_safe('HTTP_USER_AGENT'));
  * If HTTPS is on, `__SECURE__` will be set to true, otherwise false. Use union of
  * the `HTTPS` environmental variable and the X-Forwarded-Proto header to allow
  * downstream proxies to inform the webserver of secured downstream connections
- * @var string|boolean
+ * @var boolean
  */
-define_safe('__SECURE__',
-    (HTTPS == 'on' || server_safe('HTTP_X_FORWARDED_PROTO') == 'https')
+define_safe(
+    '__SECURE__',
+    (HTTPS === 'on' || server_safe('HTTP_X_FORWARDED_PROTO') === 'https')
 );
 
 /**
