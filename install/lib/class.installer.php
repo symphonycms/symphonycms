@@ -22,6 +22,7 @@ class Installer extends Administration
             General::cleanArray($_COOKIE);
             General::cleanArray($_GET);
             General::cleanArray($_POST);
+            General::cleanArray($_REQUEST);
         }
 
         // Include the default Config for installation.
