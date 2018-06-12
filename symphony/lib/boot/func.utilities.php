@@ -40,17 +40,6 @@ function redirect($url)
 }
 
 /**
- * Returns the current working directory, replacing any \
- *  with /. Use for Windows compatibility.
- *
- *  @return string
- */
-function getcwd_safe()
-{
-    return str_replace('\\', '/', getcwd());
-}
-
-/**
  * Checks that a constant has not been defined before defining
  * it. If the constant is already defined, this function will do
  * nothing, otherwise, it will set the constant
@@ -260,7 +249,6 @@ function symphony_launcher()
 
     return $renderer;
 }
-
 
 /**
  * The translation function accepts an English string and returns its translation
