@@ -247,7 +247,7 @@ class Datasource
     }
 
     /**
-     * If there is no results to return this function calls `Datasource::__noRecordsFound`
+     * If there is no results to return this function calls `Datasource::noRecordsFound`
      * which appends an XMLElement to the current root element.
      *
      * @param XMLElement $xml
@@ -261,13 +261,13 @@ class Datasource
             $xml = new XMLElement($this->dsParamROOTELEMENT);
         }
 
-        $xml->appendChild($this->__noRecordsFound());
+        $xml->appendChild($this->noRecordsFound());
 
         return $xml;
     }
 
     /**
-     * If the datasource has been negated this function calls `Datasource::__negateResult`
+     * If the datasource has been negated this function calls `Datasource::negateResult`
      * which appends an XMLElement to the current root element.
      *
      * @param XMLElement $xml
@@ -281,7 +281,7 @@ class Datasource
             $xml = new XMLElement($this->dsParamROOTELEMENT);
         }
 
-        $xml->appendChild($this->__negateResult());
+        $xml->appendChild($this->negateResult());
 
         return $xml;
     }
@@ -291,7 +291,7 @@ class Datasource
      *
      * @return XMLElement
      */
-    public function __noRecordsFound()
+    public function noRecordsFound()
     {
         return new XMLElement('error', __('No records found.'));
     }
@@ -301,7 +301,7 @@ class Datasource
      *
      * @return XMLElement
      */
-    public function __negateResult()
+    public function negateResult()
     {
         $error = new XMLElement('error', __("Data source not executed, forbidden parameter was found."), array(
             'forbidden-param' => $this->dsParamNEGATEPARAM
@@ -329,7 +329,7 @@ class Datasource
         if ((isset($this->_env) && is_array($this->_env)) && isset($this->dsParamFILTERS) && is_array($this->dsParamFILTERS) && !empty($this->dsParamFILTERS)) {
             foreach ($this->dsParamFILTERS as $key => $value) {
                 $value = stripslashes($value);
-                $new_value = $this->__processParametersInString($value, $this->_env);
+                $new_value = $this->processParametersInString($value, $this->_env);
 
                 // If a filter gets evaluated to nothing, eg. ` + ` or ``, then remove
                 // the filter. Respects / as this may be real from current-path. RE: #1759
@@ -342,28 +342,28 @@ class Datasource
         }
 
         if (isset($this->dsParamORDER)) {
-            $this->dsParamORDER = $this->__processParametersInString($this->dsParamORDER, $this->_env);
+            $this->dsParamORDER = $this->processParametersInString($this->dsParamORDER, $this->_env);
         }
 
         if (isset($this->dsParamSORT)) {
-            $this->dsParamSORT = $this->__processParametersInString($this->dsParamSORT, $this->_env);
+            $this->dsParamSORT = $this->processParametersInString($this->dsParamSORT, $this->_env);
         }
 
         if (isset($this->dsParamSTARTPAGE)) {
-            $this->dsParamSTARTPAGE = $this->__processParametersInString($this->dsParamSTARTPAGE, $this->_env);
+            $this->dsParamSTARTPAGE = $this->processParametersInString($this->dsParamSTARTPAGE, $this->_env);
             if ($this->dsParamSTARTPAGE === '') {
                 $this->dsParamSTARTPAGE = '1';
             }
         }
 
         if (isset($this->dsParamLIMIT)) {
-            $this->dsParamLIMIT = $this->__processParametersInString($this->dsParamLIMIT, $this->_env);
+            $this->dsParamLIMIT = $this->processParametersInString($this->dsParamLIMIT, $this->_env);
         }
 
         if (
             isset($this->dsParamREQUIREDPARAM)
             && strlen(trim($this->dsParamREQUIREDPARAM)) > 0
-            && $this->__processParametersInString(trim($this->dsParamREQUIREDPARAM), $this->_env, false) === ''
+            && $this->processParametersInString(trim($this->dsParamREQUIREDPARAM), $this->_env, false) === ''
         ) {
             $this->_force_empty_result = true; // don't output any XML
             $this->dsParamPARAMOUTPUT = null; // don't output any parameters
@@ -374,7 +374,7 @@ class Datasource
         if (
             isset($this->dsParamNEGATEPARAM)
             && strlen(trim($this->dsParamNEGATEPARAM)) > 0
-            && $this->__processParametersInString(trim($this->dsParamNEGATEPARAM), $this->_env, false) !== ''
+            && $this->processParametersInString(trim($this->dsParamNEGATEPARAM), $this->_env, false) !== ''
         ) {
             $this->_negate_result = true; // don't output any XML
             $this->dsParamPARAMOUTPUT = null; // don't output any parameters
@@ -418,7 +418,7 @@ class Datasource
         }
 
         foreach ($params as $key => $info) {
-            $replacement = $this->__processParametersInString($info['param'], $this->_env, false);
+            $replacement = $this->processParametersInString($info['param'], $this->_env, false);
             if ($info['encode'] == true) {
                 $replacement = urlencode($replacement);
             }
@@ -452,7 +452,7 @@ class Datasource
      *  The string with all parameters evaluated. If a parameter is not found, it will
      *  not be replaced and remain in the `$value`.
      */
-    public function __processParametersInString($value, array $env, $includeParenthesis = true, $escape = false)
+    public function processParametersInString($value, array $env, $includeParenthesis = true, $escape = false)
     {
         if (trim($value) == '') {
             return null;
