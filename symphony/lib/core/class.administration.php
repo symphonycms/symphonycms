@@ -85,17 +85,26 @@ class Administration extends Symphony
      * to become logged into the backend when `$_REQUEST['auth-token']`
      * is present. This logs an Author in using the loginFromToken function.
      *
-     * @uses Symphony::loginFromToken()
-     * @uses Symphony::isLoggedIn()
+     * @uses loginFromToken()
+     * @uses isLoggedIn()
      * @return boolean
      */
     public static function isLoggedIn()
     {
         if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token']) {
-            return self::loginFromToken($_REQUEST['auth-token']);
+            return static::loginFromToken($_REQUEST['auth-token']);
         }
 
-        return Symphony::isLoggedIn();
+        return parent::isLoggedIn();
+    }
+
+    public static function login($username, $password, $isHash = false)
+    {
+        $loggedin = parent::login($username, $password, $isHash);
+        if ($loggedin) {
+            Lang::set(static::Author()->get('language'));
+        }
+        return $loggedin;
     }
 
     /**
@@ -113,7 +122,7 @@ class Administration extends Symphony
      */
     private function __buildPage($page)
     {
-        $is_logged_in = self::isLoggedIn();
+        $is_logged_in = static::isLoggedIn();
 
         if (empty($page) || is_null($page)) {
             if (!$is_logged_in) {
@@ -281,7 +290,7 @@ class Administration extends Symphony
      */
     private function __canAccessAlerts()
     {
-        if ($this->Page instanceof AdministrationPage && self::isLoggedIn() && Symphony::Author()->isDeveloper()) {
+        if ($this->Page instanceof AdministrationPage && static::isLoggedIn() && static::Author()->isDeveloper()) {
             return true;
         }
 

@@ -63,17 +63,17 @@ class Frontend extends Symphony
      * This function allows the use of 'admin' type pages, where a Frontend
      * page requires that the viewer be a Symphony Author.
      *
-     * @uses Symphony::loginFromToken()
-     * @uses Symphony::isLoggedIn()
+     * @uses loginFromToken()
+     * @uses isLoggedIn()
      * @return boolean
      */
     public static function isLoggedIn()
     {
         if (isset($_REQUEST['auth-token']) && $_REQUEST['auth-token']) {
-            return self::loginFromToken($_REQUEST['auth-token']);
+            return static::loginFromToken($_REQUEST['auth-token']);
         }
 
-        return Symphony::isLoggedIn();
+        return parent::isLoggedIn();
     }
 
     /**
