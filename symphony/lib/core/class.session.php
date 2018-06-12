@@ -53,7 +53,7 @@ class Session
     {
         if (!self::$_initialized) {
             if (!is_object(Symphony::Database()) || !Symphony::Database()->isConnected()) {
-                return false;
+                throw new Exception('Failed to start session, no Database found.');
             }
 
             if (session_id() == '') {

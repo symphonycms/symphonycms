@@ -3,17 +3,12 @@
 /**
  * @package core
  */
-if (!defined('__IN_SYMPHONY__')) {
-    die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
-}
-
 /**
- * The Cookie class is a wrapper to save Symphony cookies. Typically this
+ * The Cookie class is a wrapper to save Symphony "cookies". Typically this
  * is used to maintain if an Author is logged into Symphony, or by extensions
  * to determine similar things. The Cookie class is tightly integrated with
  * PHP's `$_SESSION` global and it's related functions.
  */
-
 class Cookie
 {
     /**
@@ -27,114 +22,21 @@ class Cookie
     private $_index;
 
     /**
-     * This variable determines if the Cookie was set by the Symphony Session
-     * class, or if it was set directly. By default, this is false as the Symphony cookie
-     * created directly in the Symphony constructor, otherwise it will be an instance
-     * of the Session class
+     * Constructor for the Cookie class. Creates an empty slot in $_SESSION if required.
      *
-     * @see core.Symphony#__construct()
-     * @var Session|boolean
-     */
-    private $_session = false;
-
-    /**
-     * How long this cookie is valid for. By default, this is 0 if used by an extension,
-     * but it is usually set for 2 weeks in the Symphony context.
-     *
-     * @var integer
-     */
-    private $_timeout = 0;
-
-    /**
-     * The path that this cookie is valid for, by default Symphony makes this the whole
-     * domain using /
-     *
-     * @var string
-     */
-    private $_path;
-
-    /**
-     * The domain that this cookie is valid for. This is null by default which implies
-     * the entire domain and all subdomains created will have access to this cookie.
-     *
-     * @var string
-     */
-    private $_domain;
-
-    /**
-     * Determines whether this cookie can be read by Javascript or not, by default
-     * this is set to true, meaning cookies written by Symphony cannot be read by Javascript
-     *
-     * @var boolean
-     */
-    private $_httpOnly = true;
-
-    /**
-     * Determines whether this cookie will be sent over a secure connection or not. If
-     * true, this cookie will only be sent on a secure connection. Defaults to false
-     * but will automatically be set if `__SECURE__` is true
-     *
-     * @since Symphony 2.3.3
-     * @see boot
-     * @var boolean
-     */
-    private $_secure = false;
-
-    /**
-     * Constructor for the Cookie class intialises all class variables with the
-     * given parameters. Most of the parameters map to PHP's setcookie
-     * function. It creates a new Session object via the `$this->__init()`
-     *
-     * @see __init()
-     * @link http://php.net/manual/en/function.setcookie.php
      * @param string $index
-     *  The prefix to used to namespace all Symphony cookies
-     * @param integer $timeout
-     *  The Time to Live for a cookie, by default this is zero, meaning the
-     *  cookie never expires
-     * @param string $path
-     *  The path the cookie is valid for on the domain
-     * @param string $domain
-     *  The domain this cookie is valid for
-     * @param boolean $httpOnly
-     *  Whether this cookie can be read by Javascript. By default the cookie
-     *  cannot be read by Javascript
+     *  The prefix to used to namespace all Symphony cookies in $_SESSION
      * @throws Exception
      */
-    public function __construct($index, $timeout = 0, $path = '/', $domain = null, $httpOnly = true)
+    public function __construct($index)
     {
+        if (!$index) {
+            throw new Exception('Cookie index cannot be null');
+        }
         $this->_index = $index;
-        $this->_timeout = $timeout;
-        $this->_path = $path;
-        $this->_domain = $domain;
-        $this->_httpOnly = $httpOnly;
-
-        if (defined('__SECURE__')) {
-            $this->_secure = __SECURE__;
-        }
-
-        $this->_session = $this->__init();
-    }
-
-    /**
-     * Initialises a new Session instance using this cookie's params
-     *
-     * @throws Throwable
-     * @return string|boolean
-     */
-    private function __init()
-    {
-        $this->_session = Session::start($this->_timeout, $this->_path, $this->_domain, $this->_httpOnly, $this->_secure);
-
-        if (!$this->_session) {
-            return false;
-        }
-
         if (!isset($_SESSION[$this->_index])) {
-            $_SESSION[$this->_index] = array();
+            $_SESSION[$this->_index] = [];
         }
-
-        return $this->_session;
     }
 
     /**
