@@ -11,7 +11,7 @@
  */
 class AuthorDatasource extends Datasource
 {
-    public function __processAuthorFilter($field, $filter)
+    public function processAuthorFilter($field, $filter)
     {
         if (!is_array($filter)) {
             $filter = preg_split('/,\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
@@ -41,7 +41,7 @@ class AuthorDatasource extends Datasource
                     continue;
                 }
 
-                $ret = $this->__processAuthorFilter($field, $value);
+                $ret = $this->processAuthorFilter($field, $value);
 
                 if (empty($ret)) {
                     $author_ids = array();
