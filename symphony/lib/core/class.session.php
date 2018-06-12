@@ -60,15 +60,21 @@ class Session
                 throw new Exception('Failed to start session, no Database found.');
             }
 
+            // Get config
+            $gcDivisor = Symphony::Configuration()->get('session_gc_divisor', 'symphony');
+            $strictDomain = Symphony::Configuration()->get('session_strict_domain', 'symphony') === 'yes';
+
+            // Set php parameters
             if (session_id() == '') {
                 ini_set('session.use_trans_sid', '0');
                 ini_set('session.use_strict_mode', '1');
                 ini_set('session.use_only_cookies', '1');
                 ini_set('session.gc_maxlifetime', $lifetime);
                 ini_set('session.gc_probability', '1');
-                ini_set('session.gc_divisor', Symphony::Configuration()->get('session_gc_divisor', 'symphony'));
+                ini_set('session.gc_divisor', $gcDivisor);
             }
 
+            // Register handler
             $handler = new Session;
             session_set_save_handler(
                 [$handler ,'open'],
@@ -79,16 +85,24 @@ class Session
                 [$handler ,'gc']
             );
 
+            // Set cookie parameters
+            if ($strictDomain) {
+                // setting the domain to null makes the cookie valid for the current host only
+                $domain = null;
+            } else {
+                $domain = $domain ? : $handler->getDomain();
+            }
+
             session_set_cookie_params(
                 $lifetime,
                 $handler->createCookieSafePath($path),
-                ($domain ? $domain : $handler->getDomain()),
+                $domain,
                 defined('__SECURE__') && __SECURE__,
                 $httpOnly
             );
             session_cache_limiter('');
 
-            if (session_id() == '') {
+            if (!session_id()) {
                 if (headers_sent()) {
                     throw new Exception('Headers already sent. Cannot start session.');
                 }
