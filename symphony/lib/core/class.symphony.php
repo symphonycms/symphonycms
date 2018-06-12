@@ -59,13 +59,13 @@ abstract class Symphony implements Singleton
      * An instance of the Cookie class
      * @var Cookie
      */
-    public static $Cookie = null;
+    private static $Cookie = null;
 
     /**
      * An instance of the currently logged in Author
      * @var Author
      */
-    public static $Author = null;
+    private static $Author = null;
 
     /**
      * A previous exception that has been fired. Defaults to null.
@@ -103,10 +103,10 @@ abstract class Symphony implements Singleton
         self::initialiseCookie();
 
         // If the user is not a logged in Author, turn off the verbose error messages.
-        ExceptionHandler::$enabled = self::isLoggedIn() && !is_null(self::$Author);
+        ExceptionHandler::$enabled = static::isLoggedIn() && static::Author();
 
         // Engine is ready.
-        self::$Profiler->sample('Engine Initialisation');
+        static::Profiler()->sample('Engine Initialisation');
     }
 
     /**
@@ -297,7 +297,7 @@ abstract class Symphony implements Singleton
         self::$ExtensionManager = new ExtensionManager;
 
         if (!(self::$ExtensionManager instanceof ExtensionManager)) {
-            self::throwCustomError(__('Error creating Symphony extension manager.'));
+            static::throwCustomError(__('Error creating Symphony extension manager.'));
         }
     }
 
@@ -356,15 +356,15 @@ abstract class Symphony implements Singleton
         self::$Database = new Database($details);
 
         try {
-            self::Database()->connect();
+            static::Database()->connect();
 
-            if (!self::Database()->isConnected()) {
+            if (!static::Database()->isConnected()) {
                 return false;
             }
 
-            self::Database()->setTimeZone(self::Configuration()->get('timezone', 'region'));
+            static::Database()->setTimeZone(self::Configuration()->get('timezone', 'region'));
         } catch (DatabaseException $e) {
-            self::throwCustomError(
+            static::throwCustomError(
                 $e->getDatabaseErrorCode() . ': ' . $e->getDatabaseErrorMessage(),
                 __('Symphony Database Error'),
                 Page::HTTP_STATUS_ERROR,
@@ -431,28 +431,22 @@ abstract class Symphony implements Singleton
                 if (!self::isUpgradeAvailable() && !$isHash && Cryptography::requiresMigration(self::$Author->get('password'))) {
                     self::$Author->set('password', Cryptography::hash($password));
 
-                    self::Database()
+                    static::Database()
                         ->update('tbl_authors')
                         ->set(['password' => self::$Author->get('password')])
                         ->where(['id' => self::$Author->get('id')])
                         ->execute();
                 }
 
-                self::$Cookie->set('username', $username);
-                self::$Cookie->set('pass', self::$Author->get('password'));
+                static::Cookie()->set('username', $username);
+                static::Cookie()->set('pass', self::$Author->get('password'));
 
-                self::Database()
+                return static::Database()
                     ->update('tbl_authors')
                     ->set(['last_seen' => DateTimeObj::get('Y-m-d H:i:s')])
                     ->where(['id' => self::$Author->get('id')])
-                    ->execute();
-
-                // Only set custom author language in the backend
-                if (class_exists('Administration', false)) {
-                    Lang::set(self::$Author->get('language'));
-                }
-
-                return true;
+                    ->execute()
+                    ->success();
             }
         }
 
@@ -486,7 +480,7 @@ abstract class Symphony implements Singleton
         if ($rowByResetPass) {
             $row = $rowByResetPass;
             // consume the token
-            self::Database()
+            static::Database()
                 ->delete('tbl_forgotpass')
                 ->where(['token' => $token])
                 ->execute();
@@ -497,9 +491,9 @@ abstract class Symphony implements Singleton
 
         if ($row) {
             self::$Author = $row;
-            self::$Cookie->set('username', $row['username']);
-            self::$Cookie->set('pass', $row['password']);
-            return self::Database()
+            static::Cookie()->set('username', $row['username']);
+            static::Cookie()->set('pass', $row['password']);
+            return static::Database()
                 ->update('tbl_authors')
                 ->set(['last_seen' => DateTimeObj::get('Y-m-d H:i:s')])
                 ->where(['id' => $row['id']])
@@ -518,7 +512,7 @@ abstract class Symphony implements Singleton
      */
     public static function logout()
     {
-        self::$Cookie->expire();
+        static::Cookie()->expire();
     }
 
     /**
@@ -533,12 +527,12 @@ abstract class Symphony implements Singleton
     public static function isLoggedIn()
     {
         // Check to see if we already have an Author instance.
-        if (self::$Author) {
+        if (static::Author()) {
             return true;
         }
 
         // No author instance found, attempt to log in with the cookied credentials
-        return self::login(self::$Cookie->get('username'), self::$Cookie->get('pass'), true);
+        return static::login(static::Cookie()->get('username'), static::Cookie()->get('pass'), true);
     }
 
     /**
