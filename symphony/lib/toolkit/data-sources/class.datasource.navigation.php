@@ -109,7 +109,7 @@ class NavigationDatasource extends Datasource
             if ($this->dsParamREDIRECTONEMPTY === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
-            $result->appendChild($this->__noRecordsFound());
+            $result->appendChild($this->noRecordsFound());
         } else {
             // Build an array of all the types so that the page's don't have to do
             // individual lookups.
