@@ -16,7 +16,7 @@ class SymphonyExceptionRenderer extends ExceptionRenderer
      * is enabled and pass control to it if not. After that, the method checks if there is a custom
      * template for this exception otherwise it reverts to using the default
      * `usererror.generic.php`. If the template is not found, it will call
-     * `ExceptionRenderer::render()`.
+     * `ExceptionRenderer::renderHtml()`.
      *
      * @param Throwable $e
      *  The Throwable object
@@ -31,9 +31,9 @@ class SymphonyExceptionRenderer extends ExceptionRenderer
         }
 
         if (!ExceptionHandler::$enabled) {
-            return ExceptionHandler::render($e);
+            return parent::renderHtml($e);
         } elseif (!$e->getTemplate()) {
-            return ExceptionHandler::render($e);
+            return parent::renderHtml($e);
         }
 
         self::sendHeaders($e);
