@@ -306,18 +306,20 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
         if ($mode === $modes->getPostdata) {
             return (
                 isset($data['value'])
-                && $data['value'] === 'yes'
-                    ? 'yes'
-                    : 'no'
+                    ? ($data['value'] === 'yes'
+                        ? 'yes'
+                        : 'no')
+                    : null
             );
 
             // Export formatted:
         } elseif ($mode === $modes->getValue) {
             return (
                 isset($data['value'])
-                && $data['value'] === 'yes'
-                    ? __('Yes')
-                    : __('No')
+                    ? ($data['value'] === 'yes'
+                        ? __('Yes')
+                        : __('No'))
+                    : __('None')
             );
 
             // Export boolean:
