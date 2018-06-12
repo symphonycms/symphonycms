@@ -12,33 +12,34 @@
  */
 class NavigationDatasource extends Datasource
 {
-    public function __processNavigationParentFilter($parent)
+    public function processNavigationParentFilter($parent, $stm)
     {
         $parent_paths = preg_split('/,\s*/', $parent, -1, PREG_SPLIT_NO_EMPTY);
-        $parent_paths = array_map(function($a) { return trim($a, ' /');}, $parent_paths);
+        $parent_paths = array_map(function($a) {
+            return trim($a, ' /');
+        }, $parent_paths);
 
-        return (is_array($parent_paths) && !empty($parent_paths) ? " AND p.`path` IN ('".implode("', '", $parent_paths)."')" : null);
+        if (!empty($parent_paths)) {
+            $stm->where(['p.path' => ['in' => $parent_paths]]);
+        }
     }
 
-    public function __processNavigationTypeFilter($filter, $filter_type = Datasource::FILTER_OR)
+    public function processNavigationTypeFilter($filter, $stm)
     {
+        $filter_type = Datasource::determineFilterType($filter);
         $types = preg_split('/'.($filter_type == Datasource::FILTER_AND ? '\+' : '(?<!\\\\),').'\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
         $types = array_map('trim', $types);
-
         $types = array_map(array('Datasource', 'removeEscapedCommas'), $types);
+        $op = ($filter_type === Datasource::FILTER_OR) ? 'or' : 'and';
 
-        if ($filter_type == Datasource::FILTER_OR) {
-            $type_sql = " AND pt.type IN ('" . implode("', '", $types) . "')";
-        } else {
-            foreach ($types as $type) {
-                $type_sql = " AND pt.type = '" . $type . "'";
-            }
-        }
-
-        return $type_sql;
+        $stm->where([
+            $op => array_map(function ($filter) {
+                return ['pt.type' => $filter];
+            }, $types),
+        ]);
     }
 
-    public function __buildPageXML($page, $page_types)
+    public function buildPageXML($page, $page_types)
     {
         $oPage = new XMLElement('page');
         $oPage->setAttribute('handle', $page['handle']);
@@ -62,7 +63,7 @@ class NavigationDatasource extends Datasource
                 ->execute()
                 ->rows();
             foreach ($children as $c) {
-                $oPage->appendChild($this->__buildPageXML($c, $page_types));
+                $oPage->appendChild($this->buildPageXML($c, $page_types));
             }
         }
 
@@ -72,17 +73,8 @@ class NavigationDatasource extends Datasource
     public function execute(array &$param_pool = null)
     {
         $result = new XMLElement($this->dsParamROOTELEMENT);
-        $type_sql = $parent_sql = null;
 
-        if (trim($this->dsParamFILTERS['type']) != '') {
-            $type_sql = $this->__processNavigationTypeFilter($this->dsParamFILTERS['type'], Datasource::determineFilterType($this->dsParamFILTERS['type']));
-        }
-
-        if (trim($this->dsParamFILTERS['parent']) != '') {
-            $parent_sql = $this->__processNavigationParentFilter($this->dsParamFILTERS['parent']);
-        }
-
-        // Build the Query appending the Parent and/or Type WHERE clauses
+        // Build the query
         $stm = Symphony::Database()
             ->select()
             ->distinct()
@@ -90,25 +82,30 @@ class NavigationDatasource extends Datasource
             ->leftJoin('tbl_pages_types', 'pt')
             ->on(['p.id' => '$pt.page_id'])
             ->orderBy('p.sortorder');
+        // Create sub query from query
         $childrenStm = $stm
             ->select()
             ->count('id')
             ->from('tbl_pages', 'c')
             ->where(['c.parent' => '$p.id']);
+        // Add projection to query, including the sub query
         $stm = $stm->projection(['p.id', 'p.title', 'p.handle', 'p.sortorder', 'children' => $childrenStm]);
 
-        if ($parent_sql) {
-            $parent_sql = $stm->replaceTablePrefix($parent_sql);
-            $stm->unsafe()->unsafeAppendSQLPart('where', "1 = 1 $parent_sql");
+        // Add type filters
+        if (trim($this->dsParamFILTERS['type']) != '') {
+            $this->processNavigationTypeFilter($this->dsParamFILTERS['type'], $stm);
+        }
+        // Add parent filters
+        if (trim($this->dsParamFILTERS['parent']) != '') {
+            $this->processNavigationParentFilter($this->dsParamFILTERS['parent'], $stm);
         } else {
             $stm->where(['p.parent' => null]);
         }
-        if ($type_sql) {
-            $type_sql = $stm->replaceTablePrefix($type_sql);
-            $stm->unsafe()->unsafeAppendSQLPart('where', "1 = 1 $type_sql");
-        }
 
-        if ((!is_array($pages) || empty($pages))) {
+        // Execute
+        $pages = $stm->execute()->rows();
+
+        if (empty($pages)) {
             if ($this->dsParamREDIRECTONEMPTY === 'yes') {
                 throw new FrontendPageNotFoundException;
             }
@@ -119,7 +116,7 @@ class NavigationDatasource extends Datasource
             $page_types = PageManager::fetchAllPagesPageTypes();
 
             foreach ($pages as $page) {
-                $result->appendChild($this->__buildPageXML($page, $page_types));
+                $result->appendChild($this->buildPageXML($page, $page_types));
             }
         }
 
