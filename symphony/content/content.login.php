@@ -222,7 +222,9 @@ class contentLogin extends HTMLPage
 
             // Login Attempted
             if ($action == 'login') {
-                if (empty($_POST['username']) || empty($_POST['password']) || !Administration::instance()->login($_POST['username'], $_POST['password'])) {
+                if (empty($_POST['username']) ||
+                    empty($_POST['password']) ||
+                    !Administration::login($_POST['username'], $_POST['password'])) {
                     /**
                      * A failed login attempt into the Symphony backend
                      *
@@ -233,7 +235,11 @@ class contentLogin extends HTMLPage
                      * @param string $username
                      *  The username of the Author who attempted to login.
                      */
-                    Symphony::ExtensionManager()->notifyMembers('AuthorLoginFailure', '/login/', array('username' => $_POST['username']));
+                    Symphony::ExtensionManager()->notifyMembers(
+                        'AuthorLoginFailure',
+                        '/login/',
+                        ['username' => $_POST['username']]
+                    );
                     $this->failedLoginAttempt = true;
                 } else {
                     /**
@@ -246,7 +252,11 @@ class contentLogin extends HTMLPage
                      * @param string $username
                      *  The username of the Author who logged in.
                      */
-                    Symphony::ExtensionManager()->notifyMembers('AuthorLoginSuccess', '/login/', array('username' => $_POST['username']));
+                    Symphony::ExtensionManager()->notifyMembers(
+                        'AuthorLoginSuccess',
+                        '/login/',
+                        ['username' => $_POST['username']]
+                    );
 
                     isset($_POST['redirect']) ? redirect($_POST['redirect']) : redirect(SYMPHONY_URL . '/');
                 }
