@@ -458,6 +458,10 @@ abstract class Symphony implements Singleton
 
                 static::Cookie()->set('username', $username);
                 static::Cookie()->set('pass', self::$Author->get('password'));
+                // Is this a real login ?
+                if (!$isHash) {
+                    static::Cookie()->regenerate();
+                }
 
                 return static::Database()
                     ->update('tbl_authors')
@@ -511,6 +515,8 @@ abstract class Symphony implements Singleton
             self::$Author = $row;
             static::Cookie()->set('username', $row['username']);
             static::Cookie()->set('pass', $row['password']);
+            static::Cookie()->regenerate();
+
             return static::Database()
                 ->update('tbl_authors')
                 ->set(['last_seen' => DateTimeObj::get('Y-m-d H:i:s')])
