@@ -20,6 +20,7 @@
             'version' => VERSION,
             'cookie_prefix' => 'sym-',
             'session_gc_divisor' => '10',
+            'session_strict_domain' => 'yes',
             'cell_truncation_length' => '75',
             'enable_xsrf' => 'yes',
             'error_reporting_all' => 'no',
