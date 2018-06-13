@@ -1,10 +1,12 @@
 # Contributing to Symphony
 
-This is a TL;DR version of the [complete contribution guide](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony).
+This is a TL;DR version of the [complete contribution guide](../.docs/dev/CONTRIBUTING.md).
 
-The two most important things are [comments](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony#commenting) and [https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony#code-style](code style).
+The two most important things are [comments](../.docs/dev/CONTRIBUTING.md#commenting) and [code style](../.docs/dev/CONTRIBUTING.md#code-style).
 
 Please insure that any new method is properly documented and that the code style is respected.
+
+Also, fix any problems found in the CI runs.
 
 Thanks!
 
@@ -12,4 +14,4 @@ Thanks!
 
 ### Legal
 
-This submitting your code to the community, you agree to release all copyrights on the code you submit.
+By submitting your code to the community, you agree to release all copyrights on the code you submit.
