@@ -29,8 +29,10 @@ Before updating, be sure to consult the [extension compatibility table](https://
 
 1. Manually add those lines to your `.htaccess` file under the security group
 
-	RewriteRule ^vendor/(.*)$ - [F]
-	RewriteRule ^extensions/(.+)/vendor/(.*)$ - [F]
+```
+RewriteRule ^vendor/(.*)$ - [F]
+RewriteRule ^extensions/(.+)/vendor/(.*)$ - [F]
+```
 
 1. If running on a remote server, make sure all those changes are replicated on the server.
 
