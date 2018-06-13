@@ -1026,9 +1026,15 @@ class contentPublish extends AdministrationPage
                             ->next();
 
                         foreach ($checked as $entry_id) {
-                            $entry = (new EntryManager)->select()->entry($entry_id)->execute()->next();
-                            $existing_data = $entry[0]->getData($field_id);
-                            $entry[0]->setData($field_id, $field->toggleFieldData(is_array($existing_data) ? $existing_data : array(), $value, $entry_id));
+                            $entry = (new EntryManager)
+                                ->select()
+                                ->section($section->get('id'))
+                                ->includeAllFields()
+                                ->entry($entry_id)
+                                ->execute()
+                                ->next();
+                            $existing_data = $entry->getData($field_id);
+                            $entry->setData($field_id, $field->toggleFieldData(is_array($existing_data) ? $existing_data : array(), $value, $entry_id));
 
                             /**
                              * Just prior to editing of an Entry
@@ -1042,11 +1048,11 @@ class contentPublish extends AdministrationPage
                              */
                             Symphony::ExtensionManager()->notifyMembers('EntryPreEdit', '/publish/edit/', array(
                                 'section' => $section,
-                                'entry' => &$entry[0],
+                                'entry' => &$entry,
                                 'fields' => $fields
                             ));
 
-                            $entry[0]->commit();
+                            $entry->commit();
 
                             /**
                              * Editing an entry. Entry object is provided.
@@ -1060,7 +1066,7 @@ class contentPublish extends AdministrationPage
                              */
                             Symphony::ExtensionManager()->notifyMembers('EntryPostEdit', '/publish/edit/', array(
                                 'section' => $section,
-                                'entry' => $entry[0],
+                                'entry' => $entry,
                                 'fields' => $fields
                             ));
                         }
