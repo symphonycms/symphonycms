@@ -168,6 +168,25 @@ abstract class Symphony implements Singleton
     }
 
     /**
+     * Returns the current engine namespace.
+     * This is used when firing delegates, to scope them properly.
+     * Currently, it returns '/backend/' when the APP_MODE is 'administration'.
+     * Otherwise, it returns '/APP_MODE/'.
+     *
+     * @since Symphony 3.0.0
+     * @see getPageNamespace()
+     * @return string
+     *  The name of the engine's namespace
+     */
+    public static function getEngineNamespace()
+    {
+        if (APP_MODE === 'administration') {
+            return '/backend/';
+        }
+        return '/' . APP_MODE . '/';
+    }
+
+    /**
      * Setter for `$Configuration`. This function initialise the configuration
      * object and populate its properties based on the given `$array`. Since
      * Symphony 2.6.5, it will also set Symphony's date constants.
