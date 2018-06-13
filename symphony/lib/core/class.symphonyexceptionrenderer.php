@@ -30,7 +30,7 @@ class SymphonyExceptionRenderer extends ExceptionRenderer
             $e = new FrontendPageNotFoundException();
         }
 
-        if (!ExceptionHandler::$enabled) {
+        if ($e->getTemplateName() !== 'generic' && !ExceptionHandler::$enabled) {
             return parent::renderHtml($e);
         } elseif (!$e->getTemplate()) {
             return parent::renderHtml($e);
