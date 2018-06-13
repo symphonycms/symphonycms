@@ -471,19 +471,29 @@ class contentPublish extends AdministrationPage
                             $wherePrefix = $entryQuery->containsSQLParts('where') ? '' : 'WHERE 1 = 1';
                             $entryQuery->unsafe()->unsafeAppendSQLPart('where', "$wherePrefix $where");
                         }
-
-                        $value = implode(',', $value);
-                        $encoded_value = rawurlencode($value);
-                        $filter_querystring .= sprintf("filter[%s]=%s&amp;", $handle, $encoded_value);
-
-                        // Some fields require that prepopulation be done via ID. RE: #2331
-                        if (!is_numeric($value) && method_exists($field, 'fetchIDfromValue')) {
-                            $encoded_value = $field->fetchIDfromValue($value);
-                        }
-                        $prepopulate_querystring .= sprintf("prepopulate[%d]=%s&amp;", $field_id, $encoded_value);
                     // Invalid, ignore.
                     } else {
                         unset($filters[$handle]);
+                    }
+                    if ($field && ($field->canPrePopulate() || $field->canFilter())) {
+                        // Some fields require that prepopulation be done via ID. RE: #2331
+                        $value = $field->convertValuesToFilters($value);
+                        $value = implode(',', $value);
+                        $encoded_value = rawurlencode($value);
+                        if ($field->canFilter()) {
+                            $filter_querystring .= sprintf(
+                                'filter[%s]=%s&amp;',
+                                $handle,
+                                $encoded_value
+                            );
+                        }
+                        if ($field->canPrePopulate()) {
+                            $prepopulate_querystring .= sprintf(
+                                'prepopulate[%d]=%s&amp;',
+                                $field->get('id'),
+                                $encoded_value
+                            );
+                        }
                     }
                     unset($field);
                 }
@@ -2062,7 +2072,7 @@ class contentPublish extends AdministrationPage
             foreach ($_REQUEST['prepopulate'] as $field_id => $value) {
                 // Properly decode and re-encode value for output
                 $value = rawurlencode(rawurldecode($value));
-                $prepopulate_querystring .= sprintf("prepopulate[%s]=%s&", $field_id, $value);
+                $prepopulate_querystring .= sprintf('prepopulate[%s]=%s&', $field_id, $value);
             }
             $prepopulate_querystring = trim($prepopulate_querystring, '&');
         }
