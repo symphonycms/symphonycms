@@ -1567,10 +1567,6 @@ class General
      */
     public static function createXMLDateObject($timestamp, $element = 'date', $date_format = 'Y-m-d', $time_format = 'H:i', $namespace = null)
     {
-        if (!class_exists('XMLElement')) {
-            return false;
-        }
-
         if (empty($date_format)) {
             $date_format = DateTimeObj::getSetting('date_format');
         }

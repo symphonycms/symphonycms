@@ -278,9 +278,12 @@ class Lang
             self::$_lang = 'en';
 
             // Log error, if possible
-            if ($code !== 'en' && class_exists('Symphony', false) && Symphony::Log() instanceof Log) {
+            if ($code !== 'en' && Symphony::Log() instanceof Log) {
                 Symphony::Log()->pushToLog(
-                    __('The selected language, %s, could not be found. Using default English dictionary instead.', array($code)),
+                    __(
+                        'The selected language, %s, could not be found. Using default English dictionary instead.',
+                        [$code]
+                    ),
                     E_ERROR,
                     true
                 );
@@ -307,7 +310,7 @@ class Lang
         $enabled_extensions = array();
 
         // Fetch list of active extensions
-        if (class_exists('Symphony', false) && (!is_null(Symphony::ExtensionManager()))) {
+        if (Symphony::ExtensionManager()) {
             $enabled_extensions = Symphony::ExtensionManager()->listInstalledHandles();
         }
 
@@ -365,7 +368,7 @@ class Lang
      */
     public static function translate($string, array $inserts = null, $namespace = null)
     {
-        if (is_null($namespace) && class_exists('Symphony', false)) {
+        if (!$namespace) {
             $namespace = Symphony::getPageNamespace();
         }
 
