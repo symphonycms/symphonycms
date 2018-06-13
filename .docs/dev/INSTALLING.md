@@ -10,7 +10,7 @@ Before installation, read the [notes on file permissions](#file-permissions).
 
 1. Clone the Symphony Git repository to the desired location:
 
-		git clone git://github.com/symphonycms/symphony-2.git target-directory
+		git clone git://github.com/symphonycms/symphonycms.git target-directory
 		cd target-directory
 
 	(Replace `target-directory` with your chosen new directory name.)
@@ -40,7 +40,7 @@ Before installation, read the [notes on file permissions](#file-permissions).
 		git clone git://github.com/symphonycms/workspace.git
 
 1. _(Optional)_ You can also provide the `manifest/unattended.php` file to pre-fill information.
-The is an empty unattended.php file [in the code source](https://github.com/symphonycms/symphony-2/blob/master/install/includes/unattend.php).
+The is an empty unattended.php file [in the code source](https://github.com/symphonycms/symphonycms/blob/master/install/includes/unattend.php).
 
 1. Point your web browser at the `install` subdirectory (e.g., `http://example.com/install/`) and provide details on establishing a database connection and your server environment.
 
@@ -64,7 +64,7 @@ The is an empty unattended.php file [in the code source](https://github.com/symp
 	- `/vendor`
 
 1. _(Optional)_ You can also provide the `manifest/unattended.php` file to pre-fill information.
-The is an empty unattended.php file [in the code source](https://github.com/symphonycms/symphony-2/blob/master/install/includes/unattend.php).
+The is an empty unattended.php file [in the code source](https://github.com/symphonycms/symphonycms/blob/master/install/includes/unattend.php).
 
 1. Point your web browser at the `install` subdirectory (e.g., `http://example.com/install/`) and provide details on establishing a database connection and your server environment.
 

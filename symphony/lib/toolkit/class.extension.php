@@ -347,7 +347,7 @@ abstract class Extension implements ArrayAccess
      * this is not possible through this function and rather it should be done using the
      * `NavigationPreRender` delegate.
      *
-     * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
+     * @link http://github.com/symphonycms/symphonycms/blob/master/symphony/assets/xml/navigation.xml
      * @return array
      *  An associative array of navigation items to add to the Navigation. This function
      *  defaults to returning null, which adds nothing to the Symphony navigation

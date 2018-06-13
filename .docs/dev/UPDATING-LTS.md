@@ -38,7 +38,7 @@ Version `2.0.5` introduced multiple includable elements in the Data Source Edito
 
 ## Updating via Git
 
-1. Pull from the `lts` branch at `git://github.com/symphonycms/symphony-2.git`
+1. Pull from the `lts` branch at `git://github.com/symphonycms/symphonycms.git`
 
 1. Use the following two commands to bring extensions up to date:
 

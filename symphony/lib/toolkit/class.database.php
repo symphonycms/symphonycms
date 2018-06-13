@@ -390,7 +390,7 @@ class Database
      *
      * @throws DatabaseException
      * @link https://dev.mysql.com/doc/refman/5.6/en/time-zone-support.html
-     * @link https://github.com/symphonycms/symphony-2/issues/1726
+     * @link https://github.com/symphonycms/symphonycms/issues/1726
      * @since Symphony 2.3.3
      * @param string $timezone
      *  PHP's Human readable timezone, such as Australia/Brisbane.
