@@ -206,7 +206,7 @@ abstract class ResourcesPage extends AdministrationPage
                 foreach ($pages as $p) {
                     ++$i;
                     $pagelinks[] = Widget::Anchor(
-                        $p['title'],
+                        General::sanitize($p['title']),
                         SYMPHONY_URL . '/blueprints/pages/edit/' . $p['id'] . '/'
                     )->generate() . (count($pages) > $i ? (($i % 10) == 0 ? '<br />' : ', ') : '');
                 }
@@ -269,8 +269,8 @@ abstract class ResourcesPage extends AdministrationPage
         $group_detach['options'][] = array('detach-all-pages', false, __('All'));
 
         foreach ($pages as $p) {
-            $group_attach['options'][] = array('attach-to-page-' . $p['id'], false, $p['title']);
-            $group_detach['options'][] = array('detach-from-page-' . $p['id'], false, $p['title']);
+            $group_attach['options'][] = array('attach-to-page-' . $p['id'], false, General::sanitize($p['title']));
+            $group_detach['options'][] = array('detach-from-page-' . $p['id'], false, General::sanitize($p['title']));
         }
 
         $options[] = $group_attach;
