@@ -2141,4 +2141,18 @@ class Field implements ArrayAccess
 
         return $ids;
     }
+
+    /**
+     * Converts all $values into proper ones to use with prepopulate and filtering.
+     * The default implementation simply returns the $values array.
+     *
+     * @param array $values
+     *  The original filter values
+     * @return array
+     *  The proper filter values to use in query strings
+     */
+    public function convertValuesToFilters(array $values)
+    {
+        return $values;
+    }
 }
