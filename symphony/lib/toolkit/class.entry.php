@@ -319,13 +319,13 @@ class Entry implements ArrayAccess
              */
             Symphony::ExtensionManager()->notifyMembers(
                 'EntryPreCheckPostFieldData',
-                class_exists('Administration', false) ? '/backend/' : '/frontend/',
-                array(
+                Symphony::Engine() instanceof Administration ? '/backend/' : '/frontend/',
+                [
                     'section' => $section,
                     'field' => &$field,
                     'post_data' => &$data,
-                    'errors' => &$errors
-                )
+                    'errors' => &$errors,
+                ]
             );
 
             if ($ignore_missing_fields && !isset($data[$field->get('element_name')])) {
