@@ -1038,7 +1038,7 @@ class Database
         if (Symphony::ExtensionManager() instanceof ExtensionManager) {
             Symphony::ExtensionManager()->notifyMembers(
                 'QueryExecutionError',
-                Symphony::Engine() instanceof Administration ? '/backend/' : '/frontend/',
+                Symphony::getEngineNamespace(),
                 [
                     'query' => $this->lastQuery,
                     'query_hash' => $this->lastQueryHash,
@@ -1102,7 +1102,7 @@ class Database
             // TODO: Log unlogged queries
             Symphony::ExtensionManager()->notifyMembers(
                 'PostQueryExecution',
-                Symphony::Engine() instanceof Administration ? '/backend/' : '/frontend/',
+                Symphony::getEngineNamespace(),
                 [
                     'query' => $this->lastQuery, // TODO: Format
                     'query_hash' => $this->lastQueryHash,

@@ -319,7 +319,7 @@ class Entry implements ArrayAccess
              */
             Symphony::ExtensionManager()->notifyMembers(
                 'EntryPreCheckPostFieldData',
-                Symphony::Engine() instanceof Administration ? '/backend/' : '/frontend/',
+                Symphony::getEngineNamespace(),
                 [
                     'section' => $section,
                     'field' => &$field,
