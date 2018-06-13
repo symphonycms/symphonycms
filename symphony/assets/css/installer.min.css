@@ -1,6 +1,6 @@
 /*!
- * symphonycms v2.7.6
- * commit 8d218d7 - 2018-04-18
+ * symphonycms v2.7.7
+ * commit 1ace6b3 - 2018-06-11
  * https://www.getsymphony.com
  * Copyright (c) 2018
  * License MIT
