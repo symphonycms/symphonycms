@@ -136,7 +136,7 @@ trait DatabaseColumnDefinition
         $unsigned = !isset($options['signed']) || $options['signed'] === false;
         $stringOptions = $charset . $collate . $null . $default;
 
-        if (strpos($type, 'varchar') === 0 || strpos($type, 'text') === 0) {
+        if (strpos($type, 'varchar') === 0 || strpos($type, 'char') === 0 || strpos($type, 'text') === 0) {
             $type .= $stringOptions;
         } elseif (strpos($type, 'enum') === 0) {
             if (isset($options['values']) && is_array($options['values'])) {
