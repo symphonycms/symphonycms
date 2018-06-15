@@ -304,19 +304,19 @@ $stm = Symphony::Database()->select(['col'])->from('table');
 $stm->where(['x' => 'y']);
 
 // The value can be also be a [operator => value] pair
-$stm->where(['x', ['<' => 1]]);
+$stm->where(['x' => ['<' => 1]]);
 
 // It supports many many operators
-$stm->where(['or', [
-    ['x', ['<' => 1]],
+$stm->where(['or' => [
+    ['x' => ['<' => 1]],
     ['y' => 'x']
 ]]);
-$stm->where(['or', [
+$stm->where(['or' => [
     'in' => ['x' => ['y', 'z']]
 ]]);
 
 // Even dates!
-$stm->where(['or', [
+$stm->where(['or' => [
     'date' => [
         'start' => 'today',
         'end' => 'tomorrow',
