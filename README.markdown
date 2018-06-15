@@ -1,6 +1,7 @@
 # Symphony 2
 
 [![Join the chat at https://gitter.im/symphonycms/symphony-2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/symphonycms/symphony-2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsymphonycms%2Fsymphony-2.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsymphonycms%2Fsymphony-2?ref=badge_shield)
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
 
@@ -213,3 +214,7 @@ More information: [Contributing to Symphony](https://github.com/symphonycms/symp
 ## Responsible Security Disclosure
 
 Please follow [the guideline for security bug disclosure](https://github.com/symphonycms/symphony-2/wiki/Security-Bug-Disclosure).
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsymphonycms%2Fsymphony-2.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsymphonycms%2Fsymphony-2?ref=badge_large)
