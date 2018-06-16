@@ -7,6 +7,8 @@
 ![Build status](https://ci.appveyor.com/api/projects/status/1mx5r9befuode1e9?svg=true)
 [![Maintainability](https://api.codeclimate.com/v1/badges/97c662e3526c6dbce239/maintainability)](https://codeclimate.com/github/symphonycms/symphony-2/maintainability)
 [![Code coverage](https://codecov.io/gh/symphonycms/symphony-2/branch/master/graph/badge.svg)](https://codecov.io/gh/symphonycms/symphony-2)
+[![Licence](https://img.shields.io/badge/licence-MIT-brightgreen.svg?style=flat)](https://symphonycms.mit-license.org/)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsymphonycms%2Fsymphony-2.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsymphonycms%2Fsymphony-2)
 
 - Version: 2.7.10
 - Date: 8th April 2019
