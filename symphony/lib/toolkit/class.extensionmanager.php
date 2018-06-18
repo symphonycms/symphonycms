@@ -132,7 +132,7 @@ class ExtensionManager implements FileResource
      *  populated, defaults to false.
      * @throws DatabaseException
      */
-    private static function __buildExtensionList($update = false)
+    protected static function buildExtensionList($update = false)
     {
         if (empty(self::$_extensions) || $update) {
             self::$_extensions = (new ExtensionManager)
@@ -161,7 +161,7 @@ class ExtensionManager implements FileResource
     public static function fetchStatus($about)
     {
         $return = array();
-        self::__buildExtensionList();
+        static::buildExtensionList();
 
         if (isset($about['handle']) && array_key_exists($about['handle'], self::$_extensions)) {
             if (self::$_extensions[$about['handle']]['status'] == 'enabled') {
@@ -173,7 +173,7 @@ class ExtensionManager implements FileResource
             $return[] = Extension::EXTENSION_NOT_INSTALLED;
         }
 
-        if (isset($about['handle'], $about['version']) && self::__requiresUpdate($about['handle'], $about['version'])) {
+        if (isset($about['handle'], $about['version']) && static::requiresUpdate($about['handle'], $about['version'])) {
             $return[] = Extension::EXTENSION_REQUIRES_UPDATE;
         }
 
@@ -189,7 +189,7 @@ class ExtensionManager implements FileResource
      */
     public static function fetchInstalledVersion($name)
     {
-        self::__buildExtensionList();
+        static::buildExtensionList();
 
         return (isset(self::$_extensions[$name]) ? self::$_extensions[$name]['version'] : null);
     }
@@ -203,7 +203,7 @@ class ExtensionManager implements FileResource
      */
     public static function fetchExtensionID($name)
     {
-        self::__buildExtensionList();
+        static::buildExtensionList();
 
         return self::$_extensions[$name]['id'];
     }
@@ -301,9 +301,9 @@ class ExtensionManager implements FileResource
      *  The name of the Extension Class minus the extension prefix.
      * @return boolean
      */
-    private static function __requiresInstallation($name)
+    protected static function requiresInstallation($name)
     {
-        self::__buildExtensionList();
+        static::buildExtensionList();
         $id = self::$_extensions[$name]['id'];
 
         return (is_numeric($id) ? false : true);
@@ -324,9 +324,9 @@ class ExtensionManager implements FileResource
      *  version is returned, otherwise, if the extension doesn't require
      *  updating, false.
      */
-    private static function __requiresUpdate($name, $file_version)
+    protected static function requiresUpdate($name, $file_version)
     {
-        $installed_version = self::fetchInstalledVersion($name);
+        $installed_version = static::fetchInstalledVersion($name);
 
         if (!$installed_version) {
             return false;
@@ -343,7 +343,7 @@ class ExtensionManager implements FileResource
      * of the extension object is finally called.
      *
      * @see toolkit.ExtensionManager#registerDelegates()
-     * @see toolkit.ExtensionManager#__canUninstallOrDisable()
+     * @see toolkit.ExtensionManager#canUninstallOrDisable()
      * @param string $name
      *  The name of the Extension Class minus the extension prefix.
      * @throws SymphonyException
@@ -355,14 +355,14 @@ class ExtensionManager implements FileResource
         $obj = self::getInstance($name);
 
         // If not installed, install it
-        if (self::__requiresInstallation($name) && $obj->install() === false) {
+        if (static::requiresInstallation($name) && $obj->install() === false) {
             // If the installation failed, run the uninstall method which
             // should rollback the install method. #1326
             $obj->uninstall();
             return false;
 
             // If the extension requires updating before enabling, then update it
-        } elseif (($about = self::about($name)) && ($previousVersion = self::__requiresUpdate($name, $about['version'])) !== false) {
+        } elseif (($about = self::about($name)) && ($previousVersion = static::requiresUpdate($name, $about['version'])) !== false) {
             $obj->update($previousVersion);
         }
 
@@ -384,7 +384,7 @@ class ExtensionManager implements FileResource
                 ->insert('tbl_extensions')
                 ->values($fields)
                 ->execute();
-            self::__buildExtensionList(true);
+            static::buildExtensionList(true);
 
         // Extension is installed, so update!
         } else {
@@ -411,7 +411,7 @@ class ExtensionManager implements FileResource
      * `disable()` function.
      *
      * @see toolkit.ExtensionManager#removeDelegates()
-     * @see toolkit.ExtensionManager#__canUninstallOrDisable()
+     * @see toolkit.ExtensionManager#canUninstallOrDisable()
      * @param string $name
      *  The name of the Extension Class minus the extension prefix.
      * @throws DatabaseException
@@ -423,7 +423,7 @@ class ExtensionManager implements FileResource
     {
         $obj = self::getInstance($name);
 
-        self::__canUninstallOrDisable($obj);
+        static::canUninstallOrDisable($obj);
 
         $info = self::about($name);
         $id = self::fetchExtensionID($name);
@@ -456,7 +456,7 @@ class ExtensionManager implements FileResource
      * database.
      *
      * @see toolkit.ExtensionManager#removeDelegates()
-     * @see toolkit.ExtensionManager#__canUninstallOrDisable()
+     * @see toolkit.ExtensionManager#canUninstallOrDisable()
      * @param string $name
      *  The name of the Extension Class minus the extension prefix.
      * @throws Exception
@@ -473,7 +473,7 @@ class ExtensionManager implements FileResource
         // which may be a blessing in disguise as no entry data will be removed
         try {
             $obj = self::getInstance($name);
-            self::__canUninstallOrDisable($obj);
+            static::canUninstallOrDisable($obj);
             $obj->uninstall();
         } catch (SymphonyException $ex) {
             // Create a consistant key
@@ -623,7 +623,7 @@ class ExtensionManager implements FileResource
      * @throws SymphonyException
      * @throws Exception
      */
-    private static function __canUninstallOrDisable(Extension $obj)
+    protected static function canUninstallOrDisable(Extension $obj)
     {
         $extension_handle = strtolower(preg_replace('/^extension_/i', null, get_class($obj)));
         $about = self::about($extension_handle);
