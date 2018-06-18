@@ -319,10 +319,9 @@ class ExtensionManager implements FileResource
      *  The name of the Extension Class minus the extension prefix.
      * @param string $file_version
      *  The version of the extension from the **file**, not the Database.
-     * @return string|boolean
-     *  If the given extension (by $name) requires updating, the installed
-     *  version is returned, otherwise, if the extension doesn't require
-     *  updating, false.
+     * @return boolean
+     *  true if the given extension (by $name) requires updating.
+     *  If the extension doesn't require updating, false.
      */
     protected static function requiresUpdate($name, $file_version)
     {
@@ -362,8 +361,8 @@ class ExtensionManager implements FileResource
             return false;
 
             // If the extension requires updating before enabling, then update it
-        } elseif (($about = self::about($name)) && ($previousVersion = static::requiresUpdate($name, $about['version'])) !== false) {
-            $obj->update($previousVersion);
+        } elseif (($about = self::about($name)) && static::requiresUpdate($name, $about['version'])) {
+            $obj->update(static::fetchInstalledVersion($name));
         }
 
         if (!isset($about)) {
