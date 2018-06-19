@@ -130,8 +130,8 @@ module.exports = function (grunt) {
                         'symphony/assets/js/lib/moment.min.js',
                         'symphony/assets/js/lib/clndr.min.js',
                         'symphony/assets/js/src/symphony.js',
-                        'symphony/assets/js/src/symphony.*.js',
                         'symphony/assets/js/src/backend.js',
+                        'symphony/assets/js/src/symphony.*.js',
                         'symphony/assets/js/src/backend.*.js',
                     ]
                 }
