@@ -1,14 +1,14 @@
-# Symphony 2
+# Symphony CMS
 
-[![Join the chat at https://gitter.im/symphonycms/symphony-2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/symphonycms/symphony-2)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg?style=flat-square)](https://php.net/)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
 [![Build Status](https://travis-ci.org/symphonycms/symphony-2.svg?branch=master)](https://travis-ci.org/symphonycms/symphony-2)
-![Build status](https://ci.appveyor.com/api/projects/status/1mx5r9befuode1e9?svg=true)
-[![Maintainability](https://api.codeclimate.com/v1/badges/97c662e3526c6dbce239/maintainability)](https://codeclimate.com/github/symphonycms/symphony-2/maintainability)
+![Build status](https://ci.appveyor.com/api/projects/status/1mx5r9befuode1e9?svg=true)    
 [![Code coverage](https://codecov.io/gh/symphonycms/symphony-2/branch/master/graph/badge.svg)](https://codecov.io/gh/symphonycms/symphony-2)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/97c662e3526c6dbce239/maintainability)](https://codeclimate.com/github/symphonycms/symphony-2/maintainability)    
 [![Licence](https://img.shields.io/badge/licence-MIT-brightgreen.svg?style=flat)](https://symphonycms.mit-license.org/)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsymphonycms%2Fsymphony-2.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsymphonycms%2Fsymphony-2)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsymphonycms%2Fsymphony-2.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsymphonycms%2Fsymphony-2)    
+[![Join the chat at https://gitter.im/symphonycms/symphony-2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/symphonycms/symphony-2)
 
 - Version: 2.7.10
 - Date: 8th April 2019
