@@ -715,35 +715,44 @@ class General
     }
 
     /**
+     * Merge `$file` with `$post` to produce a flat array of the contents
+     * of both, for the key specified by $type
+     *
+     * @param string $type
+     *  The key to merge
+     * @param array $file
+     *  The file array
+     * @param array $post
+     *  The post array
+     * @return void
+     */
+    protected static function mergeFilePostData($type, array $file, array &$post)
+    {
+        foreach ($file as $key => $value) {
+            if (!isset($post[$key])) {
+                $post[$key] = array();
+            }
+
+            if (is_array($value)) {
+                static::mergeFilePostData($type, $value, $post[$key]);
+            } else {
+                $post[$key][$type] = $value;
+            }
+        }
+    }
+
+    /**
      * Merge `$_POST` with `$_FILES` to produce a flat array of the contents
-     * of both. If there is no merge_file_post_data function defined then
-     * such a function is created. This is necessary to overcome PHP's ability
-     * to handle forms. This overcomes PHP's convoluted `$_FILES` structure
+     * of both. This overcomes PHP's convoluted `$_FILES` structure
      * to make it simpler to access `multi-part/formdata`.
      *
+     * @uses mergeFilePostData()
      * @return array
      *  a flat array containing the flattened contents of both `$_POST` and
      *  `$_FILES`.
      */
     public static function getPostData()
     {
-        if (!function_exists('merge_file_post_data')) {
-            function merge_file_post_data($type, array $file, &$post)
-            {
-                foreach ($file as $key => $value) {
-                    if (!isset($post[$key])) {
-                        $post[$key] = array();
-                    }
-
-                    if (is_array($value)) {
-                        merge_file_post_data($type, $value, $post[$key]);
-                    } else {
-                        $post[$key][$type] = $value;
-                    }
-                }
-            }
-        }
-
         $files = array(
             'name'      => array(),
             'type'      => array(),
@@ -766,7 +775,7 @@ class General
         }
 
         foreach ($files as $type => $data) {
-            merge_file_post_data($type, $data, $post);
+            static::mergeFilePostData($type, $data, $post);
         }
 
         return $post;
