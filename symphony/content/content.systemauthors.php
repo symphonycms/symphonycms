@@ -565,7 +565,7 @@ class contentSystemAuthors extends AdministrationPage
             $group->setAttribute('class', 'settings');
             $group->setAttribute('id', 'confirmation');
             $group->appendChild(new XMLElement('legend', __('Confirmation')));
-            $group->appendChild(new XMLELement('p', __('Please confirm changes to this author with your password.'), array('class' => 'help')));
+            $group->appendChild(new XMLElement('p', __('Please confirm changes to this author with your password.'), array('class' => 'help')));
 
             $label = Widget::Label(__('Password'));
             $label->appendChild(Widget::Input('fields[confirm-change-password]', null, 'password', array(
