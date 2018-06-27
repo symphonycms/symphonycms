@@ -4,13 +4,13 @@
  * @package toolkit
  */
 /**
- * The `XsltProcess` class is responsible for taking a chunk of XML
+ * The `XSLTProcess` class is responsible for taking a chunk of XML
  * and applying an XSLT stylesheet to it. Custom error handlers are
  * used to capture any errors that occurred during this process, and
  * are exposed to the `ExceptionHandler`'s for display to the user.
  */
 
-class XsltProcess
+class XSLTProcess
 {
     /**
      * An array of all the parameters to be made available during the XSLT
@@ -102,7 +102,7 @@ class XsltProcess
     public function process($xml, $xsl)
     {
         // dont let process continue if no xsl functionality exists
-        if (!XsltProcess::isXSLTProcessorAvailable()) {
+        if (!XSLTProcess::isXSLTProcessorAvailable()) {
             return false;
         }
 

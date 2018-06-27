@@ -212,11 +212,11 @@ class FieldInput extends Field implements ExportableField, ImportableField
         if ($encode === true) {
             $value = General::sanitize($value);
         } else {
-            if (!General::validateXML($data['value'], $errors, false, new XsltProcess)) {
+            if (!General::validateXML($data['value'], $errors, false, new XSLTProcess)) {
                 $value = html_entity_decode($data['value'], ENT_QUOTES, 'UTF-8');
                 $value = $this->__replaceAmpersands($value);
 
-                if (!General::validateXML($value, $errors, false, new XsltProcess)) {
+                if (!General::validateXML($value, $errors, false, new XSLTProcess)) {
                     $value = General::sanitize($data['value']);
                 }
             }

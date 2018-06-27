@@ -11,8 +11,8 @@
 class XSLTPage extends Page
 {
     /**
-     * An instance of the XsltProcess class
-     * @var XsltProcess
+     * An instance of the XSLTProcess class
+     * @var XSLTProcess
      */
     public $Proc;
 
@@ -37,11 +37,11 @@ class XSLTPage extends Page
     public function __construct()
     {
         parent::__construct();
-        if (!XsltProcess::isXSLTProcessorAvailable()) {
+        if (!XSLTProcess::isXSLTProcessorAvailable()) {
             Symphony::Engine()->throwCustomError(__('No suitable XSLT processor was found.'));
         }
 
-        $this->Proc = new XsltProcess;
+        $this->Proc = new XSLTProcess;
     }
 
     /**
@@ -91,7 +91,7 @@ class XSLTPage extends Page
     }
 
     /**
-     * Returns an iterator of errors from the `XsltProcess`. Use this function
+     * Returns an iterator of errors from the `XSLTProcess`. Use this function
      * inside a loop to get all the errors that occurring when transforming
      * `$this->_xml` with `$this->_xsl`.
      *
@@ -105,7 +105,7 @@ class XSLTPage extends Page
     }
 
     /**
-     * The generate function calls on the `XsltProcess` to transform the
+     * The generate function calls on the `XSLTProcess` to transform the
      * XML with the given XSLT passing any parameters or functions
      * If no errors occur, the parent generate function is called to add
      * the page headers and a string containing the transformed result

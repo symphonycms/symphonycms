@@ -1199,7 +1199,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             } else {
                 $xml_errors = null;
 
-                General::validateXML($fields['static_xml'], $xml_errors, false, new XsltProcess());
+                General::validateXML($fields['static_xml'], $xml_errors, false, new XSLTProcess());
 
                 if (!empty($xml_errors)) {
                     $this->_errors['static_xml'] = __('XML is invalid.');
