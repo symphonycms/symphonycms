@@ -19,7 +19,8 @@ class EntryQueryTextareaAdapter extends EntryQueryFieldAdapter
      * @param array $columns
      *  The array of columns that needed to implement the given `$filter`.
      *  The conditions for each column will be added using `OR`.
-     * @return void
+     * @return array
+     *  The filter array
      */
     public function createFilterFulltextMatch($filter, array $columns)
     {
