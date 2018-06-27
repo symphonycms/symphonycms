@@ -350,9 +350,9 @@ class AdministrationPage extends HTMLPage
      * @throws InvalidArgumentException
      * @throws SymphonyException
      */
-    public function build(array $context = array())
+    public function build(array $context = [])
     {
-        $this->_context = $context;
+        parent::build($context);
 
         if (!$this->canAccessPage()) {
             Administration::instance()->throwCustomError(

@@ -72,11 +72,9 @@ class contentLogin extends HTMLPage
         }
     }
 
-    public function build($context = null)
+    public function build(array $context = [])
     {
-        if ($context) {
-            $this->_context = $context;
-        }
+        parent::build($context);
 
         if (isset($_REQUEST['action'])) {
             $this->action();

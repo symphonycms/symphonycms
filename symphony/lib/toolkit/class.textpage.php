@@ -53,12 +53,9 @@ abstract class TextPage extends Page
      * @param array $context
      *  The context of the page as an array. Defaults to null
      */
-    public function build($context = null)
+    public function build(array $context = [])
     {
-        if ($context) {
-            $this->_context = $context;
-        }
-
+        parent::build($context);
         $this->view();
     }
 

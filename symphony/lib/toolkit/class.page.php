@@ -119,7 +119,7 @@ abstract class Page
      *  off the current context or add new keys.
      * @var array
      */
-    protected $_context = null;
+    protected $_context = [];
 
     /**
      * Initialises the Page object by setting the headers to empty
@@ -265,6 +265,20 @@ abstract class Page
     public function headers()
     {
         return $this->_headers;
+    }
+
+    /**
+     * This function prepares any data needed for generation.
+     * The default implementation simply captures the $context variable.
+     * into the object's $_context property.
+     *
+     * @param array $context
+     *  An associative array describing this pages context.
+     * @return void
+     */
+    public function build(array $context = [])
+    {
+        $this->_context = $context;
     }
 
     /**

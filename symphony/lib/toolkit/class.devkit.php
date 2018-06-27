@@ -270,8 +270,9 @@ class DevKit extends HTMLPage
      * @throws InvalidArgumentException
      * @return string
      */
-    public function build()
+    public function build(array $context = [])
     {
+        parent::build($context);
         $this->buildIncludes();
         $this->_view = General::sanitize($this->_view);
 

@@ -8,7 +8,7 @@
  */
 class contentLogout extends HTMLPage
 {
-    public function build()
+    public function build(array $context = [])
     {
         $this->view();
     }

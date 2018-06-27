@@ -34,7 +34,7 @@ class contentBlueprintsSections extends AdministrationPage
         $context = array_filter($params);
     }
 
-    public function build(array $context = array())
+    public function build(array $context = [])
     {
         if (isset($context[1])) {
             $section_id = $context[1];
