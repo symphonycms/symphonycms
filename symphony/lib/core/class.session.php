@@ -145,7 +145,7 @@ class Session
      *  Null if on localhost, or HTTP_HOST is not set, a string of the domain name sans
      *  www otherwise
      */
-    protected function getDomain()
+    public function getDomain()
     {
         if (HTTP_HOST) {
             if (preg_match('/(localhost|127\.0\.0\.1)/', HTTP_HOST)) {
