@@ -112,6 +112,16 @@ abstract class Page
     protected $_headers = array();
 
     /**
+     *  An associative array describing this pages context. This
+     *  can include the section handle, the current entry_id, the page
+     *  name and any flags such as 'saved' or 'created'. This variable
+     *  often provided in delegates so extensions can manipulate based
+     *  off the current context or add new keys.
+     * @var array
+     */
+    protected $_context = null;
+
+    /**
      * Initialises the Page object by setting the headers to empty
      */
     public function __construct()
