@@ -444,7 +444,6 @@ class SMTP
      */
     protected function _expect($code, $timeout = null)
     {
-        $this->_response = array();
         $cmd  = '';
         $more = '';
         $msg  = '';
