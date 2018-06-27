@@ -36,6 +36,7 @@ class XSLTPage extends Page
      */
     public function __construct()
     {
+        parent::__construct();
         if (!XsltProcess::isXSLTProcessorAvailable()) {
             Symphony::Engine()->throwCustomError(__('No suitable XSLT processor was found.'));
         }

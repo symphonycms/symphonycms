@@ -25,6 +25,7 @@ abstract class TextPage extends Page
      */
     public function __construct()
     {
+        parent::__construct();
         $this->_Result = "";
 
         $this->setHttpStatus(self::HTTP_STATUS_OK);

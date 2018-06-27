@@ -25,6 +25,7 @@ abstract class XMLPage extends TextPage
      */
     public function __construct()
     {
+        parent::__construct();
         $this->_Result = new XMLDocument('result');
         $this->_Result->renderHeader();
 
