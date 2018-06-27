@@ -558,7 +558,7 @@ class EntryQuery extends DatabaseQuery
      *  The field to sort with
      * @param string $direction
      *  The sort direction
-     * @return void
+     * @return string
      */
     public function buildLegacySortingForField(Field $f, $direction)
     {

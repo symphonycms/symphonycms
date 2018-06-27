@@ -91,7 +91,8 @@ class EntryQueryFieldAdapter
      *  The array of columns that need the given `$filter` applied to. The conditions
      *  will be added using `OR` when using `regexp:` but they will be added using `AND`
      *  when using `not-regexp:`
-     * @return void
+     * @return array
+     *  The filter array
      * @throws DatabaseStatementException
      */
     public function createFilterRegexp($filter, array $columns)
@@ -153,7 +154,8 @@ class EntryQueryFieldAdapter
      * @param array $columns
      *  The array of columns that need the given `$filter` applied to.
      *  The conditions will be added using `OR`.
-     * @return void
+     * @return array
+     *  The filter array
      * @throws DatabaseStatementException
      */
     public function createFilterSQL($filter, array $columns)
@@ -189,7 +191,8 @@ class EntryQueryFieldAdapter
      * @param array $columns
      *  The array of columns that needed to implement the given `$filter`.
      *  The conditions for each column will be added using `OR`.
-     * @return void
+     * @return array
+     *  The filter array
      */
     public function createFilterEquality($filter, array $columns)
     {
@@ -216,7 +219,8 @@ class EntryQueryFieldAdapter
      * @param array $columns
      *  The array of columns that needed to implement the given `$filter`.
      *  The conditions for each column will be added using `OR`.
-     * @return void
+     * @return array
+     *  The filter array
      */
     public function createFilterEqualityOrNull($filter, array $columns)
     {
@@ -262,7 +266,8 @@ class EntryQueryFieldAdapter
      * @param array $columns
      *  The array of columns that need the given `$filter` applied to.
      *  The conditions will be added using `AND`.
-     * @return void
+     * @return array
+     *  The filter array
      */
     public function createFilterNotEqual($filter, array $columns)
     {

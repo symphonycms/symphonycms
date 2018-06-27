@@ -68,7 +68,8 @@ class EntryQueryAuthorAdapter extends EntryQueryFieldAdapter
      * @param array $columns
      *  The array of columns that need the given `$filter` applied to.
      *  The conditions will be added using `AND`.
-     * @return void
+     * @return array
+     *  The filter array
      */
     public function createFilterAuthorId($filter, array $columns)
     {

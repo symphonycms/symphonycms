@@ -587,7 +587,7 @@ class DatabaseStatement
      * @see asPlaceholderString()
      * @see LIST_DELIMITER
      * @param array $values
-     * @return void
+     * @return string
      */
     final public function asPlaceholdersList(array $values)
     {
