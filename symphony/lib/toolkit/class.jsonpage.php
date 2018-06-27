@@ -25,6 +25,7 @@ abstract class JSONPage extends TextPage
      */
     public function __construct()
     {
+        parent::__construct();
         $this->_Result = array();
 
         $this->setHttpStatus(self::HTTP_STATUS_OK);
