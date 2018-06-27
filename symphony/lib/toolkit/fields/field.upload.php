@@ -162,7 +162,7 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
         $meta['creation'] = DateTimeObj::get('c', filemtime($file));
 
-        if (General::in_iarray($type, fieldUpload::$imageMimeTypes) && $array = @getimagesize($file)) {
+        if (General::in_iarray($type, FieldUpload::$imageMimeTypes) && $array = @getimagesize($file)) {
             $meta['width'] = $array[0];
             $meta['height'] = $array[1];
         }
