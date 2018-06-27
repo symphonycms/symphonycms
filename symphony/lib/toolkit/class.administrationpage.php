@@ -80,16 +80,6 @@ class AdministrationPage extends HTMLPage
     public $_navigation = array();
 
     /**
-     *  An associative array describing this pages context. This
-     *  can include the section handle, the current entry_id, the page
-     *  name and any flags such as 'saved' or 'created'. This variable
-     *  often provided in delegates so extensions can manipulate based
-     *  off the current context or add new keys.
-     * @var array
-     */
-    public $_context = null;
-
-    /**
      * The class attribute of the `<body>` element for this page. Defaults
      * to an empty string
      * @var string
