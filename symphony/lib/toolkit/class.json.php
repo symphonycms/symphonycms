@@ -31,7 +31,7 @@ class JSON
      */
     public static function convertToXML($json, $standalone = true)
     {
-        self::$dom = new DomDocument('1.0', 'utf-8');
+        self::$dom = new DOMDocument('1.0', 'utf-8');
         self::$dom->formatOutput = true;
 
         // remove callback functions from JSONP

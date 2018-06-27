@@ -96,7 +96,7 @@ class XSLTPage extends Page
      *
      * @return array
      *  An associative array containing the errors details from the
-     *  `XsltProcessor`
+     *  `XSLTProcessor`
      */
     public function getError()
     {

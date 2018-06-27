@@ -78,11 +78,11 @@ class XsltProcess
      * Checks if there is an available `XSLTProcessor`
      *
      * @return boolean
-     *  true if there is an existing `XsltProcessor` class, false otherwise
+     *  true if there is an existing `XSLTProcessor` class, false otherwise
      */
     public static function isXSLTProcessorAvailable()
     {
-        return (class_exists('XsltProcessor') || function_exists('xslt_process'));
+        return (class_exists('XSLTProcessor') || function_exists('xslt_process'));
     }
 
     /**
@@ -106,7 +106,7 @@ class XsltProcess
             return false;
         }
 
-        $XSLProc = new XsltProcessor;
+        $XSLProc = new XSLTProcessor;
 
         if (!empty($this->_registered_php_functions)) {
             $XSLProc->registerPHPFunctions($this->_registered_php_functions);
@@ -125,12 +125,12 @@ class XsltProcess
     }
 
     /**
-     * Uses `DomDocument` to transform the document. Any errors that
+     * Uses `DOMDocument` to transform the document. Any errors that
      * occur are trapped by custom error handlers, `trapXMLError` or
      * `trapXSLError`.
      *
-     * @param XsltProcessor $XSLProc
-     *  An instance of `XsltProcessor`
+     * @param XSLTProcessor $XSLProc
+     *  An instance of `XSLTProcessor`
      * @param string $xml
      *  The XML for the transformation to be applied to
      * @param string $xsl
@@ -139,11 +139,11 @@ class XsltProcess
      *  An array of available parameters the XSL will have access to
      * @return string
      */
-    private function __process(XsltProcessor $XSLProc, $xml, $xsl, array $parameters = array())
+    private function __process(XSLTProcessor $XSLProc, $xml, $xsl, array $parameters = array())
     {
-        // Create instances of the DomDocument class
-        $xmlDoc = new DomDocument;
-        $xslDoc = new DomDocument;
+        // Create instances of the DOMDocument class
+        $xmlDoc = new DOMDocument;
+        $xslDoc = new DOMDocument;
 
         // Set up error handling
         if (function_exists('ini_set')) {
@@ -220,8 +220,8 @@ class XsltProcess
             return false;
         }
 
-        // Create instances of the DomDocument class
-        $xmlDoc = new DomDocument;
+        // Create instances of the DOMDocument class
+        $xmlDoc = new DOMDocument;
 
         // Set up error handling
         if (function_exists('ini_set')) {
