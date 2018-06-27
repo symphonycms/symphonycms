@@ -37,6 +37,7 @@ class EntryQueryListAdapter extends EntryQueryFieldAdapter
      *  The array of columns that need the given `$filter` applied to.
      *  The conditions will be added using `AND`.
      * @return array
+     *  The filter array
      */
     public function createFilterNotEqualOrNull($filter, array $columns)
     {
