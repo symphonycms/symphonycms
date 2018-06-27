@@ -17,7 +17,7 @@ class StaticXMLDatasource extends Datasource
         $result = new XMLElement($this->dsParamROOTELEMENT);
         $this->dsParamSTATIC = stripslashes($this->dsParamSTATIC);
 
-        if (!General::validateXML($this->dsParamSTATIC, $errors, false, new XsltProcess)) {
+        if (!General::validateXML($this->dsParamSTATIC, $errors, false, new XSLTProcess)) {
             $result->appendChild(
                 new XMLElement('error', __('XML is invalid.'))
             );

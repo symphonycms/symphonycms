@@ -82,11 +82,11 @@ class fieldTextarea extends Field implements ExportableField, ImportableField
         }
 
         if ($validate === true) {
-            if (!General::validateXML($result, $errors, false, new XsltProcess)) {
+            if (!General::validateXML($result, $errors, false, new XSLTProcess)) {
                 $result = html_entity_decode($result, ENT_QUOTES, 'UTF-8');
                 $result = $this->__replaceAmpersands($result);
 
-                if (!General::validateXML($result, $errors, false, new XsltProcess)) {
+                if (!General::validateXML($result, $errors, false, new XSLTProcess)) {
                     return false;
                 }
             }

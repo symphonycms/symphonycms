@@ -123,7 +123,7 @@ class General
      * @param boolean $isFile (optional)
      *  if this is true, the method will attempt to read from a file, `$data`
      *  instead.
-     * @param XsltProcess $xsltProcessor (optional)
+     * @param XSLTProcess $xsltProcessor (optional)
      *  if set, the validation will be done using this XSLT processor rather
      *  than the built in XML parser. the default is null.
      * @param string $encoding (optional)
