@@ -396,9 +396,9 @@ class ResourceManager
                 array_splice($values, $idx, 1);
                 $result = implode(',', $values);
 
-                return PageManager::edit($page_id, array(
-                    $col => MySQL::cleanValue($result)
-                ));
+                return PageManager::edit($page_id, [
+                    $col => $result,
+                ]);
             }
         }
 
