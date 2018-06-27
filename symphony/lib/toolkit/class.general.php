@@ -1144,7 +1144,7 @@ class General
      * @return string|boolean
      *  the mime type of the file, or false is none found
      */
-    public function getMimeType($file)
+    public static function getMimeType($file)
     {
         if (!empty($file)) {
             // in PHP 5.3 we can use 'finfo'
