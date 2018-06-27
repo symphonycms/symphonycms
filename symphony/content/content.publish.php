@@ -336,7 +336,7 @@ class contentPublish extends AdministrationPage
         return (string)$query;
     }
 
-    public function build(array $context = array())
+    public function build(array $context = [])
     {
         $section_id = SectionManager::fetchIDFromHandle($context['section_handle']);
 

@@ -8,9 +8,9 @@
  * in, or the log file is unreadable, they will be directed
  * to a 404 page
  */
-class contentSystemLog
+class contentSystemLog extends Page
 {
-    public function build()
+    public function build(array $context = [])
     {
         if (!is_file(ACTIVITY_LOG) || !$log = @file_get_contents(ACTIVITY_LOG)) {
             Administration::instance()->errorPageNotFound();
