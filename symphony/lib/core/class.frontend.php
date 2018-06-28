@@ -41,8 +41,6 @@ class Frontend extends Symphony
     protected function __construct()
     {
         parent::__construct();
-
-        $this->_env = array();
     }
 
     /**
