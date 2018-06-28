@@ -141,7 +141,6 @@ class Section implements ArrayAccess
     public function getSortingField()
     {
         $result = null;
-        
         /**
          * Just prior to getting the configured sorting field.
          *
@@ -175,6 +174,7 @@ class Section implements ArrayAccess
      */
     public function getSortingOrder()
     {
+        $result = null;
         /**
          * Just prior to getting the configured sorting order.
          *
@@ -211,6 +211,7 @@ class Section implements ArrayAccess
      */
     public function setSortingField($sort, $write = true)
     {
+        $updated = false;
         /**
          * Just prior to setting the configured sorting field.
          *
@@ -253,6 +254,7 @@ class Section implements ArrayAccess
      */
     public function setSortingOrder($order, $write = true)
     {
+        $updated = false;
         /**
          * Just prior to setting the configured sorting order.
          *
