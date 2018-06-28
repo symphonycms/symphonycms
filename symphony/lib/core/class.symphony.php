@@ -732,5 +732,15 @@ abstract class Symphony implements Singleton
 
         return self::$namespace;
     }
+
+    /**
+     * Called by `symphony_launcher()`, this function is responsible for rendering the current
+     * page. Engines are required to implement it.
+     *
+     * @param string $page
+     * @return string
+     *  The http response body
+     */
+    abstract public function display($page);
 }
 
