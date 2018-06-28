@@ -28,6 +28,6 @@ class EmailGatewayException extends Exception
 
         // CDATA the $message: Do not trust input from others
         $message = General::wrapInCDATA(trim($message));
-        parent::__construct($message);
+        parent::__construct($message, $code, $previous);
     }
 }
