@@ -13,6 +13,12 @@
 class contentPublish extends AdministrationPage
 {
     /**
+     * Holds a reference to the filter form XMLElement
+     * @var XMLElement
+     */
+    private $filteringForm;
+
+    /**
      * The Pages page has /action/id/flag/ context.
      * eg. /edit/1/saved/
      *
@@ -100,7 +106,8 @@ class contentPublish extends AdministrationPage
         $count = (new EntryManager)->select()->count()->section($section_id)->execute()->integer(0);
 
         if ($filter !== 'no' && $count > 1) {
-            $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), $this->createFilteringDrawer($section));
+            $this->createFilteringDrawer($section);
+            $drawer = Widget::Drawer('filtering-' . $section_id, __('Filter Entries'), $this->filteringForm);
             $drawer->addClass('drawer-filtering');
             $this->insertDrawer($drawer);
         }
@@ -113,8 +120,6 @@ class contentPublish extends AdministrationPage
     {
         $this->filteringForm = Widget::Form(null, 'get', 'filtering');
         $this->createFilteringDuplicator($section);
-
-        return $this->filteringForm;
     }
 
     public function createFilteringDuplicator($section)
