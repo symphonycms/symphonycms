@@ -244,7 +244,7 @@ class Author implements ArrayAccess
         include TOOLKIT . '/util.validators.php';
 
         // Check that Email is provided
-        if (is_null($this->get('email'))) {
+        if (empty($this->get('email'))) {
             $errors['email'] = __('E-mail address is required');
 
             // Check Email is valid
