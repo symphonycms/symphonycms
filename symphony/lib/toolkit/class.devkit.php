@@ -280,7 +280,6 @@ class DevKit extends HTMLPage
     {
         parent::build($context);
         $this->buildIncludes();
-        $this->_view = General::sanitize($this->_view);
 
         $header = new XMLElement('div');
         $header->setAttribute('id', 'header');
