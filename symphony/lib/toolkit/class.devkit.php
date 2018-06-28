@@ -54,6 +54,12 @@ class DevKit extends HTMLPage
     protected $_output = '';
 
     /**
+     * The title of the page
+     * @var string
+     */
+    protected $_title;
+
+    /**
      * Builds the Includes for a Devkit and sets the Content Type
      * to be text/html. The default Symphony devkit stylesheet
      * is the only include. The default doctype is enables HTML5
