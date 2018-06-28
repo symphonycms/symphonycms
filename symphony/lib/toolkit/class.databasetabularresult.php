@@ -100,10 +100,10 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
         General::ensureType([
             'orientation' => ['var' => $orientation, 'type' => 'int'],
         ]);
-        if ($type !== PDO::FETCH_ORI_NEXT && $type !== PDO::FETCH_ORI_ABS) {
+        if ($orientation !== PDO::FETCH_ORI_NEXT && $orientation !== PDO::FETCH_ORI_ABS) {
             throw new DatabaseStatementException('Invalid orientation type');
         }
-        $this->type = $type;
+        $this->orientation = $orientation;
         return $this;
     }
 
