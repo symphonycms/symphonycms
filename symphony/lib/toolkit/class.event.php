@@ -154,6 +154,10 @@ abstract class Event
      */
     protected function __trigger()
     {
+        // this is a hack, due to lack of missing iEvent implementations
+        if (!is_callable([$this, 'execute'])) {
+            throw new Exception('Can not trigger event, missing execute() function');
+        }
         return $this->execute();
     }
 }
