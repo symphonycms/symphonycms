@@ -1148,6 +1148,7 @@ class contentPublish extends AdministrationPage
                 $field = (new FieldManager)->select()->field($field_id);
                 if (!isset($_POST['fields']) && ($field = $field->execute()->next()) && $field->canPrePopulate()) {
                     $status = null;
+                    $message = null;
                     $entry->setData(
                         $field->get('id'),
                         $field->processRawFieldData($value, $status, $message, true)
