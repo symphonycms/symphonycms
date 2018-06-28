@@ -485,12 +485,5 @@ class Section implements ArrayAccess
         } else {
             $section_id = SectionManager::add($settings);
         }
-
-        if (is_numeric($section_id) && $section_id !== false) {
-            for ($ii = 0, $length = count($this->_fields); $ii < $length; $ii++) {
-                $this->_fields[$ii]->set('parent_section', $section_id);
-                $this->_fields[$ii]->commit();
-            }
-        }
     }
 }
