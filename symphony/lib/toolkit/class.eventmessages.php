@@ -19,6 +19,7 @@ class EventMessages
     const ENTRY_ERRORS = 102;
     const ENTRY_MISSING = 103;
     const ENTRY_NOT_UNIQUE = 104;
+    const ENTRY_UNKNOWN = 105;
 
     const SECTION_MISSING = 200;
 
