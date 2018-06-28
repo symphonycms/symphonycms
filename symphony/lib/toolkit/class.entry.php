@@ -357,7 +357,8 @@ class Entry implements ArrayAccess
             if (empty($field_id) || isset($this->_data[$field_id])) {
                 continue;
             }
-
+            $status = null;
+            $message = null;
             $result = $field->processRawFieldData(null, $status, $message, false, $this->get('id'));
             $this->setData($field_id, $result);
         }
