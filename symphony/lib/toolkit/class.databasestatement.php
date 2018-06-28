@@ -339,7 +339,7 @@ class DatabaseStatement
             'type' => ['var' => $type, 'type' => 'string'],
             'part' => ['var' => $part, 'type' => 'string'],
         ]);
-        if (!General::in_array_multi($type, $this->getStatementStructure(), true)) {
+        if (!General::in_array_multi($type, $this->getStatementStructure())) {
             $class = get_class($this);
             throw new DatabaseStatementException("SQL Part type `$type` is not valid for class `$class`");
         }
