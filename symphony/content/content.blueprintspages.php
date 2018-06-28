@@ -12,7 +12,6 @@
 
 class contentBlueprintsPages extends AdministrationPage
 {
-    public $_errors = array();
     protected $_hilights = array();
 
     /**
@@ -520,11 +519,11 @@ class contentBlueprintsPages extends AdministrationPage
         Symphony::ExtensionManager()->notifyMembers(
             'AppendPageContent',
             '/blueprints/pages/',
-            array(
-                'form'        => &$this->Form,
+            [
+                'form'      => &$this->Form,
                 'fields'    => &$fields,
-                'errors'    => $this->_errors
-            )
+                'errors'    => $this->_errors,
+            ]
         );
 
         $div = new XMLElement('div');
@@ -651,7 +650,11 @@ class contentBlueprintsPages extends AdministrationPage
              *  `$fields` array, and the value being the string of the error. `$errors`
              *  is passed by reference.
              */
-            Symphony::ExtensionManager()->notifyMembers('PagePostValidate', '/blueprints/pages/', array('fields' => $fields, 'errors' => &$errors));
+            Symphony::ExtensionManager()->notifyMembers(
+                'PagePostValidate',
+                '/blueprints/pages/',
+                ['fields' => $fields, 'errors' => &$this->_errors]
+            );
 
             if (empty($this->_errors)) {
 

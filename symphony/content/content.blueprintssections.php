@@ -10,8 +10,6 @@
 
 class contentBlueprintsSections extends AdministrationPage
 {
-    public $_errors = array();
-
     /**
      * The Sections page has /action/id/flag/ context.
      * eg. /edit/1/saved/

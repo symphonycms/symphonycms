@@ -13,7 +13,6 @@
 class contentSystemAuthors extends AdministrationPage
 {
     public $_Author;
-    public $_errors = array();
 
     /**
      * The Authors page has /action/id/flag/ context.

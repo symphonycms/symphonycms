@@ -10,8 +10,6 @@
 
 class contentBlueprintsEvents extends ResourcesPage
 {
-    public $_errors = array();
-
     public function __viewIndex($resource_type)
     {
         parent::__viewIndex(ResourceManager::RESOURCE_TYPE_EVENT);

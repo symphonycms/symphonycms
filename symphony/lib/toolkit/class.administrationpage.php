@@ -87,6 +87,12 @@ class AdministrationPage extends HTMLPage
     private $_body_class = '';
 
     /**
+     * An array containing all errors that occured during the render of this page.
+     * @var array
+     */
+    protected $_errors = [];
+
+    /**
      * Constructor calls the parent constructor to set up
      * the basic HTML, Head and Body `XMLElement`'s. This function
      * also sets the `XMLElement` element style to be HTML, instead of XML
