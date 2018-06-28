@@ -216,6 +216,7 @@ function is_session_empty()
 /**
  * Responsible for picking the launcher function and starting it.
  *
+ * @return void
  */
 function symphony()
 {
@@ -227,7 +228,7 @@ function symphony()
  * Responsible for launching a standard symphony instance and
  * sending output to the browser.
  *
- *  @return integer
+ * @return void
  */
 function symphony_launcher()
 {
@@ -246,8 +247,6 @@ function symphony_launcher()
     cleanup_session_cookies();
 
     echo $output;
-
-    return $renderer;
 }
 
 /**
