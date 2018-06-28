@@ -12,8 +12,6 @@
 
 class contentPublish extends AdministrationPage
 {
-    public $_errors = array();
-
     /**
      * The Pages page has /action/id/flag/ context.
      * eg. /edit/1/saved/
@@ -1126,7 +1124,7 @@ class contentPublish extends AdministrationPage
         if (isset($_POST['fields'])) {
             $entry = EntryManager::create();
             $entry->set('section_id', $section_id);
-            $entry->setDataFromPost($_POST['fields'], $error, true);
+            $entry->setDataFromPost($_POST['fields'], $this->_errors, true);
 
             // Brand new entry, so need to create some various objects
         } else {
@@ -1147,9 +1145,10 @@ class contentPublish extends AdministrationPage
                 // and if the field allows it
                 $field = (new FieldManager)->select()->field($field_id);
                 if (!isset($_POST['fields']) && ($field = $field->execute()->next()) && $field->canPrePopulate()) {
+                    $status = null;
                     $entry->setData(
                         $field->get('id'),
-                        $field->processRawFieldData($value, $error, $message, true)
+                        $field->processRawFieldData($value, $status, $message, true)
                     );
                     unset($field);
                 }
@@ -1246,12 +1245,12 @@ class contentPublish extends AdministrationPage
             }
 
             // Initial checks to see if the Entry is ok
-            if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
+            if (Entry::__ENTRY_FIELD_ERROR__ === $entry->checkPostData($fields, $this->_errors)) {
                 $this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
                 // Secondary checks, this will actually process the data and attempt to save
-            } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
-                foreach ($errors as $field_id => $message) {
+            } elseif (Entry::__ENTRY_OK__ !== $entry->setDataFromPost($fields, $this->_errors)) {
+                foreach ($this->_errors as $field_id => $message) {
                     $this->pageAlert($message, Alert::ERROR);
                 }
 
@@ -1361,7 +1360,7 @@ class contentPublish extends AdministrationPage
             $entry->set('section_id', $existingEntry->get('section_id'));
             $entry->set('creation_date', $existingEntry->get('creation_date'));
             $entry->set('modification_date', $existingEntry->get('modification_date'));
-            $entry->setDataFromPost($fields, $errors, true);
+            $entry->setDataFromPost($fields, $this->_errors, true);
 
             $timestamp = isset($_POST['action']['timestamp'])
                 ? $_POST['action']['timestamp']
@@ -1580,12 +1579,12 @@ class contentPublish extends AdministrationPage
                 $this->addTimestampValidationPageAlert($this->_errors['timestamp'], $entry, 'save');
 
                 // Initial checks to see if the Entry is ok
-            } elseif (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $this->_errors)) {
+            } elseif (Entry::__ENTRY_FIELD_ERROR__ === $entry->checkPostData($fields, $this->_errors)) {
                 $this->pageAlert(__('Some errors were encountered while attempting to save.'), Alert::ERROR);
 
                 // Secondary checks, this will actually process the data and attempt to save
-            } elseif (Entry::__ENTRY_OK__ != $entry->setDataFromPost($fields, $errors)) {
-                foreach ($errors as $field_id => $message) {
+            } elseif (Entry::__ENTRY_OK__ !== $entry->setDataFromPost($fields, $this->_errors)) {
+                foreach ($this->_errors as $field_id => $message) {
                     $this->pageAlert($message, Alert::ERROR);
                 }
 
