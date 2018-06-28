@@ -10,7 +10,6 @@
  * @since Symphony 2.3.1
  * @link http://getsymphony.com/learn/concepts/view/events/
  */
-
 abstract class SectionEvent extends Event
 {
     /**
@@ -365,6 +364,7 @@ abstract class SectionEvent extends Event
         // their `checkPostFieldData` function. If the return of the function is
         // `Entry::__ENTRY_FIELD_ERROR__` then abort the event and add the error
         // messages to the `$result`.
+        $errors = null;
         if (Entry::__ENTRY_FIELD_ERROR__ == $entry->checkPostData($fields, $errors, ($entry->get('id') ? true : false))) {
             $result = self::appendErrors($result, $fields, $errors, $post_values);
             return false;
