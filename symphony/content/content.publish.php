@@ -113,9 +113,6 @@ class contentPublish extends AdministrationPage
         }
     }
 
-    /**
-     * Create filtering drawer
-     */
     public function createFilteringDrawer($section)
     {
         $this->filteringForm = Widget::Form(null, 'get', 'filtering');
