@@ -32,6 +32,8 @@ install:
   - travis_retry composer install -o --no-interaction
   # install node dependancies
   - npm install
+  # install phpstan
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.1" ]]; then travis_retry composer require --dev phpstan/phpstan; fi;
 
 before_script:
   # create database
@@ -48,6 +50,8 @@ script:
   - ./tests/ci/travis-install-symphony.sh
   # run integration tests
   - npm run integration
+  # run phpstan
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.1" ]]; then phpstan analyse -c tests/phpstan.neon symphony; fi;
 
 after_success:
   # merge code coverage reports

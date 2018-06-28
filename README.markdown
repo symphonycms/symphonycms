@@ -4,6 +4,7 @@
 [![Build Status](https://travis-ci.org/symphonycms/symphony-2.svg?branch=master)](https://travis-ci.org/symphonycms/symphony-2)
 ![Build status](https://ci.appveyor.com/api/projects/status/1mx5r9befuode1e9?svg=true)
 [![Code coverage](https://codecov.io/gh/symphonycms/symphony-2/branch/master/graph/badge.svg)](https://codecov.io/gh/symphonycms/symphony-2)
+[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/97c662e3526c6dbce239/maintainability)](https://codeclimate.com/github/symphonycms/symphony-2/maintainability)    
 [![Join the chat at https://gitter.im/symphonycms/symphony-2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/symphonycms/symphony-2)
