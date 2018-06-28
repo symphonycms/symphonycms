@@ -1,0 +1,15 @@
+parameters:
+	bootstrap: %rootDir%/../../../tests/phpstan_boot.php
+	excludes_analyse:
+		- %rootDir%/../../../symphony/template
+		- %rootDir%/../../../symphony/lib/toolkit/data-sources
+	earlyTerminatingMethodCalls:
+		- redirect
+	level: 0
+	ignoreErrors:
+		- '#Undefined variable: \$(settings|validators|upload|about)#'
+		- '#Function gzopen64 not found\.#'
+		- '#Call to an undefined method Event::execute\(\)#'
+		- '#Access to an undefined property Datasource::\$dsParam[A-z0-9_]+#'
+		- '#Access to an undefined property SectionEvent::\$(eParam[A-z0-9_]+|ROOTELEMENT)#'
+		- '#Return typehint of method [A-z]+::[a-z]+\(\) has invalid type DatabaseColumnDefinition#'
