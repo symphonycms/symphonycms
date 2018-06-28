@@ -160,6 +160,7 @@ class Database
         $this->lastQueryHash = null;
         $this->lastQueryValues = null;
         $this->lastQuerySafe = null;
+        $this->_lastResult = null; // deprecated
         return $this;
     }
 
@@ -1234,6 +1235,13 @@ class Database
             $query
         ) === 1 ? self::__WRITE_OPERATION__ : self::__READ_OPERATION__;
     }
+
+    /**
+     * Hold the last result of the last time query() was called.
+     * @deprecated @since Symphony 3.0.0
+     * @var mixed
+     */
+    private $_lastResult = null;
 
     /**
      * Takes an SQL string and executes it. This function will apply query
