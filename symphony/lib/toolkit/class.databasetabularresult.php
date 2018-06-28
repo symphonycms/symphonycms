@@ -43,7 +43,7 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
      */
     public function getIterator()
     {
-        return $this->stm;
+        return $this->statement();
     }
 
     /**
