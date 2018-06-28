@@ -252,7 +252,7 @@ class Author implements ArrayAccess
             $errors['email'] = __('E-mail address entered is invalid');
 
             // Check Email is valid, fallback when no validator found
-        } elseif (!isset($validators['email']) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        } elseif (!isset($validators['email']) && !filter_var($this->get('email'), FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = __('E-mail address entered is invalid');
 
             // Check that if an existing Author changes their email address that
