@@ -1961,7 +1961,7 @@ class contentPublish extends AdministrationPage
                     $prepopulate = '';
                     $entry = (new EntryManager)
                         ->select($schema)
-                        ->section($section_id)
+                        ->section($section->get('id'))
                         ->entry($entry_id)
                         ->execute()
                         ->next();
