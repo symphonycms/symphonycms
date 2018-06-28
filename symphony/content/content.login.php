@@ -12,6 +12,9 @@
 class contentLogin extends HTMLPage
 {
     public $failedLoginAttempt = false;
+    private $_email_sent = false;
+    private $_email_error;
+    private $_email_sent_to;
 
     public function __construct()
     {
@@ -112,9 +115,9 @@ class contentLogin extends HTMLPage
             $this->Form->setAttribute('action', SYMPHONY_URL.'/login/retrieve-password/');
 
             // Successful reset
-            if (isset($this->_email_sent) && $this->_email_sent) {
+            if ($this->_email_sent) {
                 $fieldset->appendChild(new XMLElement('p', __('An email containing a customised login link has been sent to %s. It will expire in 2 hours.', array(
-                    '<code>' . $this->_email_sent_to . '</code>')
+                    '<code>' . General::sanitize($this->_email_sent_to) . '</code>')
                 )));
                 $fieldset->appendChild(new XMLElement('p', Widget::Anchor(__('Login'), SYMPHONY_URL.'/login/', null)));
                 $this->Form->appendChild($fieldset);
@@ -126,11 +129,11 @@ class contentLogin extends HTMLPage
                 $label = Widget::Label(__('Email Address or Username'));
                 $label->appendChild(Widget::Input('email', General::sanitize($_POST['email']), 'text', array('autofocus' => 'autofocus')));
 
-                if (isset($this->_email_sent) && !$this->_email_sent) {
+                if (!$this->_email_sent) {
                     $label = Widget::Error($label, __('Unfortunately no account was found using this information.'));
                 } else {
                     // Email exception
-                    if (isset($this->_email_error) && $this->_email_error) {
+                    if ($this->_email_error) {
                         $label = Widget::Error($label, __('This Symphony instance has not been set up for emailing, %s', array('<code>' . General::sanitize($this->_email_error) . '</code>')));
                     }
                 }
