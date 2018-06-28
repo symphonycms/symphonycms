@@ -511,9 +511,7 @@ abstract class ResourcesPage extends AdministrationPage
                         }
                     }
 
-                    if ($canProceed) {
-                        redirect(Administration::instance()->getCurrentPageURL());
-                    }
+                    redirect(Administration::instance()->getCurrentPageURL());
                 } elseif (preg_match('/^(at|de)?tach-all-pages$/', $_POST['with-selected'])) {
                     $pages = (new PageManager)->select(['id'])->execute()->rows();
 
