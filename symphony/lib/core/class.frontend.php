@@ -75,7 +75,7 @@ class Frontend extends Symphony
     }
 
     /**
-     * Called by index.php, this function is responsible for rendering the current
+     * Called by `symphony_launcher()`, this function is responsible for rendering the current
      * page on the Frontend. One delegate is fired, `FrontendInitialised`
      *
      * @uses FrontendInitialised
@@ -85,7 +85,7 @@ class Frontend extends Symphony
      * @throws FrontendPageNotFoundException
      * @throws SymphonyException
      * @return string
-     *  The HTML of the page to return
+     *  The content of the page to echo to the client
      */
     public function display($page)
     {

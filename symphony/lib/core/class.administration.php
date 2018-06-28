@@ -451,7 +451,7 @@ class Administration extends Symphony
     }
 
     /**
-     * Called by index.php, this function is responsible for rendering the current
+     * Called by `symphony_launcher()`, this function is responsible for rendering the current
      * page on the Frontend. Two delegates are fired, AdminPagePreGenerate and
      * AdminPagePostGenerate. This function runs the Profiler for the page build
      * process.
@@ -467,7 +467,7 @@ class Administration extends Symphony
      * @throws Exception
      * @throws SymphonyException
      * @return string
-     *  The HTML of the page to return
+     *  The content of the page to echo to the client
      */
     public function display($page)
     {
