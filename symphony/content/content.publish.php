@@ -1052,23 +1052,23 @@ class contentPublish extends AdministrationPage
                                 'fields' => $fields
                             ));
 
-                            $entry->commit();
-
-                            /**
-                             * Editing an entry. Entry object is provided.
-                             *
-                             * @delegate EntryPostEdit
-                             * @param string $context
-                             * '/publish/edit/'
-                             * @param Section $section
-                             * @param Entry $entry
-                             * @param array $fields
-                             */
-                            Symphony::ExtensionManager()->notifyMembers('EntryPostEdit', '/publish/edit/', array(
-                                'section' => $section,
-                                'entry' => $entry,
-                                'fields' => $fields
-                            ));
+                            if ($entry->commit()) {
+                                /**
+                                 * Editing an entry. Entry object is provided.
+                                 *
+                                 * @delegate EntryPostEdit
+                                 * @param string $context
+                                 * '/publish/edit/'
+                                 * @param Section $section
+                                 * @param Entry $entry
+                                 * @param array $fields
+                                 */
+                                Symphony::ExtensionManager()->notifyMembers('EntryPostEdit', '/publish/edit/', array(
+                                    'section' => $section,
+                                    'entry' => $entry,
+                                    'fields' => $fields
+                                ));
+                            }
                         }
 
                         unset($field);
