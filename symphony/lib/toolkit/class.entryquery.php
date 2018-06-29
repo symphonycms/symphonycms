@@ -460,7 +460,7 @@ class EntryQuery extends DatabaseQuery
         } elseif (!$f->canFilter()) {
             throw new DatabaseStatementException("Field `$field` does not allow filtering");
         } elseif (!$f->getEntryQueryFieldAdapter()) {
-            throw new DatabaseStatementException("Field `$field` does not have an EntryQueryFieldOperation");
+            throw new DatabaseStatementException("Field `$field` does not have an EntryQueryFieldAdapter");
         }
 
         if ($f->requiresSQLGrouping() && !$this->containsSQLParts('optimizer')) {
