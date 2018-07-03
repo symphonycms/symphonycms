@@ -139,7 +139,10 @@ final class ExceptionHandler
 
         // If an exception was raised trying to render the exception, fall back
         // to the generic exception handler
-        } catch (Exception $e) {
+        } catch (Exception $ex) {
+            if (!$this->logDisabled && $this->log instanceof Log) {
+                $this->log->pushExceptionToLog($ex, true);
+            }
             try {
                 if ($class != 'ExceptionRenderer') {
                     $output = ExceptionRenderer::render($e);
@@ -149,7 +152,10 @@ final class ExceptionHandler
 
             // If the generic exception handler couldn't do it, well we're in bad
             // shape, just output a plaintext response!
-            } catch (Exception $e) {
+            } catch (Exception $exx) {
+                if (!$this->logDisabled && $this->log instanceof Log) {
+                    $this->log->pushExceptionToLog($exx, true);
+                }
                 $this->echoRendererError($e);
                 exit;
             }
