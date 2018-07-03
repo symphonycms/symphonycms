@@ -144,8 +144,13 @@ final class ExceptionHandler
                 $this->log->pushExceptionToLog($ex, true);
             }
             try {
-                if ($class != 'ExceptionRenderer') {
+                // Handle errors while generating the custom 404 (recursive 404)
+                if ($e instanceof FrontendPageNotFoundException) {
+                    $output = FrontendPageNotFoundExceptionRenderer::render($e);
+                // Render using default renderer if custom renderer did not worked
+                } if ($class != 'ExceptionRenderer') {
                     $output = ExceptionRenderer::render($e);
+                // Throw if the default renderer did not worked
                 } else {
                     throw $e;
                 }
