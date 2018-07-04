@@ -1814,7 +1814,11 @@ class contentPublish extends AdministrationPage
                     if (empty($as['parent_section_field_id'])) {
                         continue;
                     }
-                    $field = (new FieldManager)->select()->field($as['parent_section_field_id'])->execute()->next();
+                    $field = (new FieldManager)
+                        ->select()
+                        ->field($as['parent_section_field_id'])
+                        ->execute()
+                        ->next();
                     if ($field) {
                         // Get the related section
                         $parent_section = (new SectionManager)
@@ -1851,8 +1855,8 @@ class contentPublish extends AdministrationPage
                         $schema = [$field->get('element_name')];
                         $entries = [];
                         $pagination = null;
-                        if ((!empty($entry_ids) || isset($_GET['prepopulate'])) &&
-                            $field->get('id') === $prepopulate_field) {
+                        if ((!empty($entry_ids) || (isset($_GET['prepopulate']) &&
+                            $field->get('id') === $prepopulate_field))) {
                             $pagination = (new EntryManager)
                                 ->select($schema)
                                 ->distinct()
