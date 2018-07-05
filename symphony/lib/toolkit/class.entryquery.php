@@ -516,9 +516,22 @@ class EntryQuery extends DatabaseQuery
         } elseif ($field === 'system:id') {
             $sort = ['e.id' => $direction];
 
-        // Handle when the sort field is an actual Field
-        } elseif (General::intval($field) > 0) {
-            $f = (new FieldManager)->select()->field($field)->execute()->next();
+        // Handle either by id or by handle when the sort field is an actual Field
+        } elseif (!empty($field)) {
+            if (is_string($field)) {
+                $f = (new FieldManager)
+                    ->select()
+                    ->name($field)
+                    ->execute()
+                    ->next();
+            } elseif (General::intval($field) > 0) {
+                $f = (new FieldManager)
+                    ->select()
+                    ->field($field)
+                    ->execute()
+                    ->next();
+            }
+
             if ($f && $f->isSortable()) {
                 if ($f->getEntryQueryFieldAdapter()) {
                     $f->getEntryQueryFieldAdapter()->sort($this, $direction);

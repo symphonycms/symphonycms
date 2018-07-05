@@ -412,15 +412,15 @@ final class EntryQueryTest extends TestCase
     }
 
     /**
-     * @expectedException DatabaseStatementException
+     * @expectedException InvalidArgumentException
      */
     public function testSortInvalid()
     {
-        $q = (new \EntryQuery($this->db))->sort('<invalid>');
+        $q = (new \EntryQuery($this->db))->sort(new \stdClass);
         $this->assertEquals(
             "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
-            'new EntryQuery with ->sort(system:id)'
+            'new EntryQuery with ->sort(<invalid>)'
         );
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');
