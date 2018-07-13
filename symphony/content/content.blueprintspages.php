@@ -344,7 +344,7 @@ class contentBlueprintsPages extends AdministrationPage
 
         $page_id = isset($page_id) ? $page_id : null;
 
-        if (!empty($title)) {
+        if (!empty($title) && !is_null($page_id)) {
             $page_url = URL . '/' . PageManager::resolvePagePath($page_id) . '/';
 
             $this->appendSubheading(
