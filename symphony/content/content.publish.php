@@ -1446,14 +1446,14 @@ class contentPublish extends AdministrationPage
             ->execute()
             ->integer('id');
 
-        if (!$field_id) {
-            $field = (new FieldManager)->select()->field($field_id)->execute()->next();
-        }
+        if ($field_id) {
+            $field = (new FieldManager)
+                ->select()
+                ->field($field_id)
+                ->execute()
+                ->next();
 
-        if ($field) {
             $title = $field->prepareReadableValue($existingEntry->getData($field->get('id')), $entry_id, true);
-        } else {
-            $title = '';
         }
 
         if (!trim($title)) {
