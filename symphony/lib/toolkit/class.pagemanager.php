@@ -263,7 +263,7 @@ class PageManager
         }
 
         // Force parent to be null if empty
-        if (empty($fields['parent'])) {
+        if (isset($fields['parent']) && empty($fields['parent'])) {
             $fields['parent'] = null;
         }
 
