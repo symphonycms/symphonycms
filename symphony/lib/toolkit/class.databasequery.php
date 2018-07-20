@@ -496,7 +496,7 @@ class DatabaseQuery extends DatabaseStatement
         $page = max(1, General::intval($page));
         $size = max(1, General::intval($size));
         $this->offset(($page - 1) * $size);
-        $this->limit($page * $size);
+        $this->limit($size);
         $this->page = [
             'page' => $page,
             'size' => $size,
