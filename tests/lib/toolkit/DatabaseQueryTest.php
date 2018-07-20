@@ -786,7 +786,7 @@ final class DatabaseQueryTest extends TestCase
             ->from('tbl_test_table')
             ->paginate(2, 10);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` LIMIT 20 OFFSET 10",
+            "SELECT SQL_NO_CACHE FROM `test_table` LIMIT 10 OFFSET 10",
             $sql->generateSQL(),
             'Paginate clause'
         );
