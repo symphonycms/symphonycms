@@ -23,6 +23,12 @@ class EntryQueryResult extends DatabaseQueryResult
     private $sectionsSchemas = [];
 
     /**
+     * The table lookup cache
+     * @var array
+     */
+    private $tablesLookup = [];
+
+    /**
      * Creates a new EntryQueryResult object, containing its $success parameter,
      * the resulting $stm statement and the schema to use to build entries
      *
@@ -85,9 +91,19 @@ class EntryQueryResult extends DatabaseQueryResult
         foreach ($schema as $field_id) {
             try {
                 $field_id = General::intval($field_id);
-                if ($field_id < 1 || !Symphony::Database()->tableExists("tbl_entries_data_$field_id")) {
+                $isInTableLookup = isset($this->tablesLookup[$field_id]);
+                if ($field_id < 1) {
+                    // Ignore invalid field id
+                    continue;
+                } elseif ($isInTableLookup && !$this->tablesLookup[$field_id]) {
+                    // Table does not exist, from cache
+                    continue;
+                } elseif (!$isInTableLookup && !Symphony::Database()->tableExists("tbl_entries_data_$field_id")) {
+                    // Table does not exists
+                    $this->tablesLookup[$field_id] = false;
                     continue;
                 }
+                $this->tablesLookup[$field_id] = true;
                 $row = Symphony::Database()
                     ->select()
                     ->from("tbl_entries_data_$field_id")
