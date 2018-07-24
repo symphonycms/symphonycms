@@ -76,7 +76,7 @@ class EntryQueryResult extends DatabaseQueryResult
      */
     public function buildEntry(array $entry)
     {
-        if (!isset($entry['id'], $entry['creation_date'], $entry['modification_date'])) {
+        if (!isset($entry['id'], $entry['section_id'], $entry['creation_date'], $entry['modification_date'])) {
             return $entry;
         }
 
