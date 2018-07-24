@@ -89,6 +89,7 @@ class EntryQueryResult extends DatabaseQueryResult
 
         $raw = [];
         foreach ($schema as $field_id) {
+            $row = null;
             try {
                 $field_id = General::intval($field_id);
                 $isInTableLookup = isset($this->tablesLookup[$field_id]);
