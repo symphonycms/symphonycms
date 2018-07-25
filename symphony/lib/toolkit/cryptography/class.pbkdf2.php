@@ -80,7 +80,7 @@ class PBKDF2 extends Cryptography
         }
 
         $hashlength = strlen(hash($algorithm, null, true));
-        $blocks = ceil(self::KEY_LENGTH / $hashlength);
+        $blocks = ceil($keylength / $hashlength);
         $key = '';
 
         for ($block = 1; $block <= $blocks; $block++) {
