@@ -43,15 +43,17 @@ class PBKDF2 extends Cryptography
      * http://www.itnewb.com/tutorial/Encrypting-Passwords-with-PHP-for-Storage-Using-the-RSA-PBKDF2-Standard
      *
      * @param string $input
-     * the string to be hashed
-     * @param string $salt
-     * an optional salt
-     * @param integer $iterations
-     * an optional number of iterations to be used
-     * @param string $keylength
-     * an optional length the key will be cropped to fit
+     *  the string to be hashed
+     * @param array $options
+     *  the options array
+     * @param string $options.salt
+     *  an optional salt
+     * @param integer $options.iterations
+     *  an optional number of iterations to be used
+     * @param string $options.keylength
+     *  an optional length the key will be cropped to fit
      * @return string
-     * the hashed string
+     *  the hashed string
      */
     public static function hash($input, array $options = [])
     {

@@ -15,14 +15,13 @@
 class Cryptography
 {
     /**
-     * Uses an instance of `PBKDF2` to create a hash. If you require other
-     * hashes, see the related functions of the `MD5` or `SHA1` classes
+     * Uses an instance of `PBKDF2` to create a hash.
      *
      * @uses PBKDF2::hash()
      * @param string $input
-     * the string to be hashed
+     *  the string to be hashed
      * @return string
-     * the hashed string
+     *  the hashed string
      */
     public static function hash($input)
     {
