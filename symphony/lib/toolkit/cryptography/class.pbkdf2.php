@@ -114,6 +114,9 @@ class PBKDF2 extends Cryptography
      */
     public static function compare($input, $hash, $isHash = false)
     {
+        if ($isHash) {
+            return hash_equals($hash, $input);
+        }
         $salt = self::extractSalt($hash);
         $iterations = self::extractIterations($hash);
         $keylength = strlen(base64_decode(self::extractHash($hash)));
