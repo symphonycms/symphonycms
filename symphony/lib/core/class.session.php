@@ -185,7 +185,7 @@ class Session
         $session_data = Session::read($id);
         if (!$session_data) {
             $empty = true;
-            if (session_status() === PHP_SESSION_ACTIVE) {
+            if (function_exists('session_status') && session_status() === PHP_SESSION_ACTIVE) {
                 $unserialized_data = Session::unserialize($data);
 
                 foreach ($unserialized_data as $d) {
