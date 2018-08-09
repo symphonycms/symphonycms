@@ -64,6 +64,11 @@ abstract class EmailHelper
             return $input;
         }
 
+        // Don't encode if all code points are in ASCII range 0-127
+        if (!preg_match('/[\\x80-\\xff]+/', $input)) {
+            return $input;
+        }
+
         $qpHexDigits  = '0123456789ABCDEF';
         $input_length = strlen($input);
         // Substract delimiters, character set and encoding
