@@ -104,7 +104,6 @@ class SendmailGateway extends EmailGateway
                     'Message-ID'   => sprintf('<%s@%s>', md5(uniqid()), HTTP_HOST),
                     'Date'         => date('r'),
                     'From'         => $from,
-                    'X-Mailer'     => 'Symphony Email Module',
                     'MIME-Version' => '1.0',
                 )
             );
