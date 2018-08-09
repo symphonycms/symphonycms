@@ -123,7 +123,6 @@ class SMTPGateway extends EmailGateway
                     'From'         => $from,
                     'Subject'      => $subject,
                     'To'           => $recipient_list,
-                    'X-Mailer'     => 'Symphony Email Module',
                     'MIME-Version' => '1.0'
                 )
             );
