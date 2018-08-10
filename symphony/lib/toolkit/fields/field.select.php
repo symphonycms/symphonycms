@@ -323,9 +323,10 @@ class FieldSelect extends FieldTagList implements ExportableField, ImportableFie
             $value = array($value);
         }
 
-        $options = array(
-            array(null, false, null)
-        );
+        $options = array();
+        if ($this->get('required') !== 'yes') {
+            $options[] = array(null, false, null);
+        }
 
         foreach ($states as $handle => $v) {
             $options[] = array(General::sanitize($v), in_array($v, $value), General::sanitize($v));
