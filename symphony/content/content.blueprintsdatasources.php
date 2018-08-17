@@ -1218,7 +1218,10 @@ class contentBlueprintsDatasources extends ResourcesPage
         }
 
         $classname = Lang::createHandle($fields['name'], 255, '_', false, true, array('@^[^a-z\d]+@i' => '', '/[^\w-\.]/i' => ''));
+        // XML wants dashes
         $rootelement = str_replace('_', '-', $classname);
+        // PHP wants underscores
+        $classname = str_replace('-', '_', $classname);
 
         // Check to make sure the classname is not empty after handlisation.
         if (empty($classname) && !isset($this->_errors['name'])) {
