@@ -394,7 +394,7 @@ class Section implements ArrayAccess
         if ($location) {
             $fieldQuery->location($location);
         }
-        return $fieldQuery->execute()->rows();
+        return $fieldQuery->execute()->rowsIndexedByColumn('id');
     }
 
     /**
