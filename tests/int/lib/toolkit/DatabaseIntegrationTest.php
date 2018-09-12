@@ -11,6 +11,7 @@ final class DatabaseIntegrationTest extends DatabaseTest
 {
     public function __construct($name = null, array $data = [], $dataName = '')
     {
+        parent::__construct($name, $data, $dataName);
         $this->db = Symphony::Database();
     }
 
