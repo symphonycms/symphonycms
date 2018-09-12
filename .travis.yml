@@ -12,6 +12,10 @@ matrix:
     - php: 7.4
     - php: nightly
 
+env:
+  global:
+    - DEFAULT_COMPOSER_FLAGS="--no-interaction --no-ansi --no-progress --no-suggest"
+
 # we need sudo to install apache
 sudo: required
 
