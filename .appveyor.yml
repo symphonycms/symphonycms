@@ -40,6 +40,7 @@ install:
   - echo extension=php_fileinfo.dll >> php.ini
   - echo extension=php_curl.dll >> php.ini
   - echo extension=php_xsl.dll >> php.ini
+  - echo memory_limit=512M >> php.ini
   - SET PATH=c:\tools\php72;%PATH%
   - cd C:\projects\symphonycms
   # install composer

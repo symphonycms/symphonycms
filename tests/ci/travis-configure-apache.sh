@@ -20,6 +20,8 @@ echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php
 # enable asserts
 echo 'zend.assertions=1' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 echo 'assert.exception=On' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+# allow more ram
+echo 'echo memory_limit=512M' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 # fix user/group config
 sudo sed -i -e "s,www-data,travis,g" /etc/apache2/envvars
 sudo chown -R travis:travis /var/lib/apache2/fastcgi
