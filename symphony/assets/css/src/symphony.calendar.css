@@ -248,6 +248,7 @@
 	border: 0.1rem solid transparent;
 	border-radius: 50%;
 	cursor: pointer;
+	color: #222;
 }
 
 .calendar .day:hover {
