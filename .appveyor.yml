@@ -40,6 +40,9 @@ install:
   - echo extension=php_fileinfo.dll >> php.ini
   - echo extension=php_curl.dll >> php.ini
   - echo extension=php_xsl.dll >> php.ini
+  - echo zend_extension=php_opcache.dll >> php.ini
+  - echo opcache.enable=1 >> php.ini
+  - echo opcache.enable_cli=1 >> php.ini
   - echo memory_limit=512M >> php.ini
   - SET PATH=c:\tools\php72;%PATH%
   - cd C:\projects\symphonycms
