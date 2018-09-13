@@ -45,7 +45,7 @@ install:
   # install composer
   - php -r "readfile('https://getcomposer.org/installer');" | php
   # install packages
-  - php composer.phar install --prefer-source --no-interaction -o --no-ansi --no-progress --no-suggests
+  - php composer.phar install --prefer-source --no-interaction -o --no-ansi --no-progress --no-suggest
 
 # Post-install test scripts.
 test_script:
