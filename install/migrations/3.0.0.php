@@ -224,6 +224,17 @@ final class migration_300 extends Migration
             unset($activeTokenAuthors);
         }
 
+        // Update the default value for last_seen
+        // This change was made in 2.7.0, but the update process never took care of it
+        // Re: #2594
+        Symphony::Database()
+            ->alter('tbl_authors')
+            ->modify('last_seen', [
+                'type' => 'datetime',
+                'default' => '1000-01-01 00:00:00',
+            ])
+            ->execute();
+
         // Re-save all data sources
         foreach (DatasourceManager::listAll() as $ds) {
             if (!$ds['can_parse']) {
