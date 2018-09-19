@@ -134,7 +134,7 @@ final class migration_300 extends Migration
         // Make parent_section unsigned and sortorder signed
         Symphony::Database()
             ->alter('tbl_fields')
-            ->modify( ['parent_section' => [
+            ->modify(['parent_section' => [
                 'type' => 'int(11)',
                 'signed' => false,
             ]])
@@ -229,10 +229,10 @@ final class migration_300 extends Migration
         // Re: #2594
         Symphony::Database()
             ->alter('tbl_authors')
-            ->modify('last_seen', [
+            ->modify(['last_seen' => [
                 'type' => 'datetime',
                 'default' => '1000-01-01 00:00:00',
-            ])
+            ]])
             ->execute();
 
         // Re-save all data sources
