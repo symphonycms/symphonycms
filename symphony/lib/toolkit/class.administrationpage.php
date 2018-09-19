@@ -399,7 +399,7 @@ class AdministrationPage extends HTMLPage
         );
 
         $this->addElementToHead(
-            new XMLElement('script', json_encode($environment), array(
+            new XMLElement('script', json_encode($environment, JSON_UNESCAPED_SLASHES), array(
                 'type' => 'application/json',
                 'id' => 'environment'
             )),
