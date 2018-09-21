@@ -232,6 +232,7 @@ final class migration_300 extends Migration
             ->modify(['last_seen' => [
                 'type' => 'datetime',
                 'default' => '1000-01-01 00:00:00',
+                'null' => true,
             ]])
             ->execute();
 
