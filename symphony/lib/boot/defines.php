@@ -211,11 +211,32 @@ define_safe('TWO_WEEKS', (60*60*24*14));
 define_safe('HTTPS', server_safe('HTTPS'));
 
 /**
- * Returns the current host, ie. google.com
+ * Returns the current host, e.g. google.com
  * @var string
  */
 $http_host = server_safe('HTTP_HOST');
-define_safe('HTTP_HOST', function_exists('idn_to_utf8') ? idn_to_utf8($http_host) : $http_host);
+if (function_exists('idn_to_utf8')) {
+    // In PHP 7.2, `idn_to_utf8` should not be called with default parameters,
+    // because the default for `variant` has been deprecated. However, the
+    // alternative variant `INTL_IDNA_VARIANT_UTS46` was not introduced before
+    // PHP 5.4, so we must be careful.
+    // https://wiki.php.net/rfc/deprecate-and-remove-intl_idna_variant_2003
+    // https://bugs.php.net/bug.php?id=75609
+    // @deprecated: This 'hack' can be removed later; when dropping PHP < 5.4,
+    // `idn_to_utf8($http_host, 0, INTL_IDNA_VARIANT_UTS46)` can be used
+    // exclusively.
+    if (defined('INTL_IDNA_VARIANT_UTS46')) {
+        $host_utf8 = idn_to_utf8($http_host, 0, INTL_IDNA_VARIANT_UTS46);
+    } else {
+        $host_utf8 = idn_to_utf8($http_host);
+    }
+
+    if ($host_utf8 !== false) {
+        $http_host = $host_utf8;
+    }
+    unset($host_utf8);
+}
+define_safe('HTTP_HOST', $http_host);
 unset($http_host);
 
 /**
