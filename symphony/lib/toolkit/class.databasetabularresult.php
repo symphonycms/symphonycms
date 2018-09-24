@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * @package toolkit
  */
@@ -197,7 +198,7 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
             if (!isset($row[$col])) {
                 throw new DatabaseStatementException("Row does not have column `$col`");
             }
-            $index[$row[$col]] = $row;
+            $index[$row[$col]][] = $row;
         }
         return $index;
     }
