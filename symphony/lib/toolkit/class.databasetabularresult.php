@@ -177,14 +177,45 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
 
     /**
      * Retrieves all available rows, indexed with the values of the
+     * specified column. The value of the column must be unique.
+     *
+     * @param string|int $col
+     * @throws DatabaseStatementException
+     * @return array
+     *  An array of rows containing all the values indexed by the specified column
+     */
+    public function rowsIndexedByColumn($col)
+    {
+        if (!is_string($col) && !is_int($col)) {
+            throw new DatabaseStatementException('`$col must be a string or an integer');
+        }
+        $rows = $this->rows();
+        $index = [];
+        foreach ($rows as &$row) {
+            if (is_int($col)) {
+                $row = array_values($row);
+            }
+            if (!isset($row[$col])) {
+                throw new DatabaseStatementException("Row does not have column `$col`");
+            }
+            if (isset($index[$row[$col]])) {
+                throw new DatabaseStatementException("Index `$col` is not unique, can not continue");
+            }
+            $index[$row[$col]] = $row;
+        }
+        return $index;
+    }
+
+    /**
+     * Retrieves all available rows, grouped with the values of the
      * specified column.
      *
      * @param string|int $col
      * @throws DatabaseStatementException
      * @return array
-     *  An array containing all the values indexed by the specified column
+     *  An array of arrays containing all the values grouped by the specified column
      */
-    public function rowsIndexedByColumn($col)
+    public function rowsGroupedByColumn($col)
     {
         if (!is_string($col) && !is_int($col)) {
             throw new DatabaseStatementException('`$col must be a string or an integer');
