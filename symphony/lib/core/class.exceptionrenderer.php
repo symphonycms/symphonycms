@@ -250,7 +250,7 @@ class ExceptionRenderer
             if (!empty($debug)) {
                 foreach ($debug as $query) {
                     $queries .= sprintf(
-                        '[%01.4f] %s;',
+                        '[%01.4f] %s;' . PHP_EOL,
                         (isset($query['execution_time']) ? $query['execution_time'] : null),
                         $query['query']
                     );
