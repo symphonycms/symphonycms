@@ -444,7 +444,11 @@ class EntryQuery extends DatabaseQuery
 
         // Handle when the filter field is a field name
         } elseif (is_string($field)) {
-            $f = (new FieldManager)->select()->name($field)->execute()->next();
+            if (!$this->sectionId) {
+                throw new DatabaseStatementException('Can not filter with a field name without a section');
+            }
+
+            $f = (new FieldManager)->select()->name($field)->section($this->sectionId)->execute()->next();
             if ($f) {
                 $field = $f->name();
             }
@@ -519,9 +523,13 @@ class EntryQuery extends DatabaseQuery
         // Handle either by id or by handle when the sort field is an actual Field
         } elseif (!empty($field)) {
             if (is_string($field)) {
+                if (!$this->sectionId) {
+                    throw new DatabaseStatementException('Can not sort with a field name without a section');
+                }
                 $f = (new FieldManager)
                     ->select()
                     ->name($field)
+                    ->section($this->sectionId)
                     ->execute()
                     ->next();
             } elseif (General::intval($field) > 0) {
