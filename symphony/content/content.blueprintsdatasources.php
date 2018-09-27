@@ -194,6 +194,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             $fields['order'] = 'desc';
         }
 
+        $name = null;
         // Handle name on edited changes, or from reading an edited datasource
         if (isset($about['name'])) {
             $name = $about['name'];
