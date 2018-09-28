@@ -70,7 +70,7 @@ final class EntryQueryAuthorAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->sort($q, 'asc');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `as`.`first_name`, `as`.`last_name` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` INNER JOIN `authors` AS `as` ON `f1`.`author_id` = `as`.`id` ORDER BY `as`.`first_name` ASC , `as`.`last_name` ASC",
+            "SELECT SQL_NO_CACHE `as`.`first_name`, `as`.`last_name` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` INNER JOIN `authors` AS `as` ON `f1`.`author_id` = `as`.`id` ORDER BY `as`.`first_name` ASC , `as`.`last_name` ASC , `e`.`id` ASC",
             $q->generateSQL(),
             'Simple asc sort ->sort(asc)'
         );

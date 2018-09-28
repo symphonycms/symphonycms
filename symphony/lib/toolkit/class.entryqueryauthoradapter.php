@@ -192,5 +192,6 @@ class EntryQueryAuthorAdapter extends EntryQueryFieldAdapter
         foreach ($this->getSortColumns() as $column) {
             $query->orderBy($column, $direction);
         }
+        $query->orderBy('e.id', $direction);
     }
 }

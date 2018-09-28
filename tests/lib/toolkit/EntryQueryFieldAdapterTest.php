@@ -128,7 +128,7 @@ final class EntryQueryFieldAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->sort($q, 'asc');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f1`.`value` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` ORDER BY `f1`.`value` ASC",
+            "SELECT SQL_NO_CACHE `f1`.`value` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` ORDER BY `f1`.`value` ASC , `e`.`id` ASC",
             $q->generateSQL(),
             'Simple asc sort ->sort(asc)'
         );
@@ -157,7 +157,7 @@ final class EntryQueryFieldAdapterTest extends TestCase
         $o->filter($q, ['test']);
         $o->sort($q, 'asc');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f1`.`value` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` = :f1_value ORDER BY `f1`.`value` ASC",
+            "SELECT SQL_NO_CACHE `f1`.`value` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` = :f1_value ORDER BY `f1`.`value` ASC , `e`.`id` ASC",
             $q->generateSQL(),
             'Exact match ->filter([test]) and asc sort ->sort(asc)'
         );
