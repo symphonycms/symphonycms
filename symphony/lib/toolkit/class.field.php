@@ -1588,7 +1588,7 @@ class Field
             $sort = 'ORDER BY RAND()';
         } else {
             $joins .= "LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`) ";
-            $sort = sprintf('ORDER BY `ed`.`value` %s', $order);
+            $sort = sprintf('ORDER BY `ed`.`value` %1$s, `e`.`id` %1$s', $order);
         }
     }
 

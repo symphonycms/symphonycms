@@ -548,7 +548,7 @@ class FieldAuthor extends Field implements ExportableField
                 LEFT OUTER JOIN `tbl_entries_data_".$this->get('id')."` AS `ed` ON (`e`.`id` = `ed`.`entry_id`)
                 LEFT OUTER JOIN `tbl_authors` AS `a` ON (ed.author_id = a.id)
             ";
-            $sort = sprintf('ORDER BY `a`.`first_name` %1$s, `a`.`last_name` %1$s', $order);
+            $sort = sprintf('ORDER BY `a`.`first_name` %1$s, `a`.`last_name` %1$s, `e`.`id` %1$s', $order);
         }
     }
 
