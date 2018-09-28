@@ -444,5 +444,6 @@ class EntryQueryFieldAdapter
         foreach ($this->getSortColumns() as $col) {
             $query->orderBy($this->formatColumn($col, $field_id), $direction);
         }
+        $query->orderBy('e.id', $direction);
     }
 }
