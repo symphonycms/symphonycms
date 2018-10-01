@@ -800,9 +800,10 @@ class FieldUpload extends Field implements ExportableField, ImportableField
                     SELECT %s
                     FROM tbl_entries_data_%d AS `ed`
                     WHERE entry_id = e.id
-                ) %s',
+                ) %s, `e`.`id` %s',
                 '`ed`.file',
                 $this->get('id'),
+                $order,
                 $order
             );
         }
