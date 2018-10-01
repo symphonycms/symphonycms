@@ -31,8 +31,13 @@ final class migration_300 extends Migration
         if (!empty($this->failedTables)) {
             return [
                 'The updater completed but was not able to update all tables. ' .
-                'The following tables must be manually updated to InnoDB: ',
+                    'The following tables must be manually updated to InnoDB: ',
                 implode(', ', $this->failedTables),
+                'If none were defined, Symphony did set the default log filter value while updating. ' .
+                    'By default, it will log everything except deprecation notices, ' .
+                    'i.e. <code>E_ALL ^ E_DEPRECATED.</code>',
+                'Make sure to manually adjust your config.php file for your use case.' .
+                    'Symphony uses the same values as PHP\'s <code>error_reporting()</code> function.',
             ];
         }
         return [];
@@ -248,6 +253,16 @@ final class migration_300 extends Migration
             if ($ds) {
                 @file_put_contents($path, $ds . "\n}\n");
             }
+        }
+
+        // Add the log filter value
+        // This was added in 2.7.1, but the update process never took care of it
+        // Re: #2762
+        // This was fixed by updating to 2.7.8, but since it is not required to,
+        // we must take care of it.
+        $filter = Symphony::Configuration()->get('filter', 'log');
+        if ($filter === null) {
+            Symphony::Configuration()->set('filter', E_ALL ^ E_DEPRECATED, 'log');
         }
 
         // Update the version information
