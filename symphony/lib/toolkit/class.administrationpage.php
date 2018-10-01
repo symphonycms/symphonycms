@@ -398,8 +398,14 @@ class AdministrationPage extends HTMLPage
             )
         );
 
+        $envJsonOptions = 0;
+        // Those are PHP 5.4+
+        if (defined('JSON_UNESCAPED_SLASHES') && defined('JSON_UNESCAPED_UNICODE')) {
+            $envJsonOptions = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+        }
+
         $this->addElementToHead(
-            new XMLElement('script', json_encode($environment), array(
+            new XMLElement('script', json_encode($environment, $envJsonOptions), array(
                 'type' => 'application/json',
                 'id' => 'environment'
             )),
