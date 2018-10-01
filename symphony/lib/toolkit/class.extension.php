@@ -380,7 +380,7 @@ abstract class Extension implements ArrayAccess
      *  One of the `iProvider` constants
      * @return array
      */
-    public static function providerOf($type = null)
+    public function providerOf($type = null)
     {
         static::registerProviders();
 

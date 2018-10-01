@@ -30,6 +30,8 @@ interface iProvider
      * Providable objects this extension provides.
      *
      * @since Symphony 2.3
+     * @since Symphony 3.0.0
+     *  The function is not static anymore, since it is always called on an object
      * @param string $type
      *  The type of provider object to return, which is one of the `iProvider`
      *  constants. If `$type` is given, this function should
@@ -40,5 +42,5 @@ interface iProvider
      *  an associative array of classname => human name will be returned.
      *  eg. `array('RemoteDatasource' => 'Remote Datasource')`
      */
-    public static function providerOf($type = null);
+    public function providerOf($type = null);
 }
