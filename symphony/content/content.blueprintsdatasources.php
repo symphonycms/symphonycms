@@ -339,21 +339,21 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $label = Widget::Checkbox(
             'fields[redirect_on_required]',
-            isset($fields['redirect_on_required']) ? $fields['redirect_on_required'] : null,
+            array_key_exists($fields['redirect_on_required']) ? $fields['redirect_on_required'] : null,
             __('The required parameter is missing')
         );
         $group->appendChild($label);
 
         $label = Widget::Checkbox(
             'fields[redirect_on_forbidden]',
-            isset($fields['redirect_on_forbidden']) ? $fields['redirect_on_forbidden'] : null,
+            array_key_exists($fields['redirect_on_forbidden']) ? $fields['redirect_on_forbidden'] : null,
             __('The forbidden parameter is present')
         );
         $group->appendChild($label);
 
         $label = Widget::Checkbox(
             'fields[redirect_on_empty]',
-            isset($fields['redirect_on_empty']) ? $fields['redirect_on_empty'] : null,
+            array_key_exists($fields['redirect_on_empty']) ? $fields['redirect_on_empty'] : null,
             __('No results are found')
         );
         $group->appendChild($label);
@@ -527,42 +527,42 @@ class contentBlueprintsDatasources extends ResourcesPage
             $ol,
             __('ID'),
             'id',
-            isset($fields['filter']['author']['id']) ? $fields['filter']['author']['id'] : null,
+            array_key_exists($fields['filter']['author']['id']) ? $fields['filter']['author']['id'] : null,
             !isset($fields['filter']['author']['id'])
         );
         $this->__appendAuthorFilter(
             $ol,
             __('Username'),
             'username',
-            isset($fields['filter']['author']['username']) ? $fields['filter']['author']['username'] : null,
+            array_key_exists($fields['filter']['author']['username']) ? $fields['filter']['author']['username'] : null,
             !isset($fields['filter']['author']['username'])
         );
         $this->__appendAuthorFilter(
             $ol,
             __('First Name'),
             'first_name',
-            isset($fields['filter']['author']['first_name']) ? $fields['filter']['author']['first_name'] : null,
+            array_key_exists($fields['filter']['author']['first_name']) ? $fields['filter']['author']['first_name'] : null,
             !isset($fields['filter']['author']['first_name'])
         );
         $this->__appendAuthorFilter(
             $ol,
             __('Last Name'),
             'last_name',
-            isset($fields['filter']['author']['last_name']) ? $fields['filter']['author']['last_name'] : null,
+            array_key_exists($fields['filter']['author']['last_name']) ? $fields['filter']['author']['last_name'] : null,
             !isset($fields['filter']['author']['last_name'])
         );
         $this->__appendAuthorFilter(
             $ol,
             __('Email'),
             'email',
-            isset($fields['filter']['author']['email']) ? $fields['filter']['author']['email'] : null,
+            array_key_exists($fields['filter']['author']['email']) ? $fields['filter']['author']['email'] : null,
             !isset($fields['filter']['author']['email'])
         );
         $this->__appendAuthorFilter(
             $ol,
             __('User Type'),
             'user_type',
-            isset($fields['filter']['author']['user_type']) ? $fields['filter']['author']['user_type'] : null,
+            array_key_exists($fields['filter']['author']['user_type']) ? $fields['filter']['author']['user_type'] : null,
             !isset($fields['filter']['author']['user_type'])
         );
 
@@ -814,7 +814,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $label = Widget::Checkbox(
             'fields[paginate_results]',
-            isset($fields['paginate_results']) ? $fields['paginate_results'] : null,
+            array_key_exists($fields['paginate_results']) ? $fields['paginate_results'] : null,
             __('Enable pagination')
         );
         $fieldset->appendChild($label);
@@ -966,7 +966,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         // Associations
         $label = Widget::Checkbox(
             'fields[associated_entry_counts]',
-            isset($fields['associated_entry_counts']) ? $fields['associated_entry_counts'] : null,
+            array_key_exists($fields['associated_entry_counts']) ? $fields['associated_entry_counts'] : null,
             __('Include a count of entries in associated sections')
         );
         $this->setContext($label, array('sections'));
@@ -975,7 +975,7 @@ class contentBlueprintsDatasources extends ResourcesPage
         // Encoding
         $label = Widget::Checkbox(
             'fields[html_encode]',
-            isset($fields['html_encode']) ? $fields['html_encode'] : null,
+            array_key_exists($fields['html_encode']) ? $fields['html_encode'] : null,
             __('HTML-encode text')
         );
         $this->setContext($label, array('sections'));
