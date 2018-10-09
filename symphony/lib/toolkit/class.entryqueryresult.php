@@ -99,10 +99,6 @@ class EntryQueryResult extends DatabaseQueryResult
                 } elseif ($isInTableLookup && !$this->tablesLookup[$field_id]) {
                     // Table does not exist, from cache
                     continue;
-                } elseif (!$isInTableLookup && !Symphony::Database()->tableExists("tbl_entries_data_$field_id")) {
-                    // Table does not exists
-                    $this->tablesLookup[$field_id] = false;
-                    continue;
                 }
                 $this->tablesLookup[$field_id] = true;
                 $row = Symphony::Database()
@@ -114,7 +110,8 @@ class EntryQueryResult extends DatabaseQueryResult
                     ->rows();
 
             } catch (DatabaseException $e) {
-                // No data due to error
+                // Table does not exist, prevent causing errors again
+                $this->tablesLookup[$field_id] = false;
                 continue;
             }
 
