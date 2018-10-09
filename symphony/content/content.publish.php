@@ -1667,9 +1667,8 @@ class contentPublish extends AdministrationPage
 
                 redirect(SYMPHONY_URL . '/publish/'.$this->_context['section_handle'].'/');
             } else {
-                $ret = (new EntryManager)->select()->entry($entry_id)->execute()->next();
-                if (!empty($ret)) {
-                    $entry = $ret[0];
+                $entry = (new EntryManager)->select()->entry($entry_id)->execute()->next();
+                if (!empty($entry)) {
                     $this->addTimestampValidationPageAlert($this->_errors['timestamp'], $entry, 'delete');
                 }
             }
