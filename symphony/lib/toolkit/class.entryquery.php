@@ -522,7 +522,7 @@ class EntryQuery extends DatabaseQuery
 
         // Handle either by id or by handle when the sort field is an actual Field
         } elseif (!empty($field)) {
-            if (is_string($field)) {
+            if (is_string($field) && General::intval($field) === -1) {
                 if (!$this->sectionId) {
                     throw new DatabaseStatementException('Can not sort with a field name without a section');
                 }
