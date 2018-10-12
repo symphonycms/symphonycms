@@ -227,13 +227,18 @@ trait DatabaseWhereDefinition
 
     /**
      * @internal
-     * This method maps all $conditions [$k => $c] pairs on `buildSingleWhereClauseFromArray()`
+     * This method maps all $conditions [$k => $c] pairs on `buildSingleWhereClauseFromArray()`.
+     * It also makes sure $conditions is not empty, which would create invalid SQL.
      *
      * @param array $conditions
+     * @throws DatabaseStatementException
      * @return string
      */
     final public function buildWhereClauseFromArray(array $conditions)
     {
+        if (empty($conditions)) {
+            throw new DatabaseStatementException('Can not build where clause with an empty array');
+        }
         return implode(
             self::STATEMENTS_DELIMITER,
             General::array_map(
