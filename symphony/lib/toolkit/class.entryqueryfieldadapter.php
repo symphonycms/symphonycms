@@ -345,7 +345,7 @@ class EntryQueryFieldAdapter
 
         foreach ($filters as $filter) {
             $fc = $this->filterSingle($query, $filter);
-            if (is_array($fc)) {
+            if (is_array($fc) && !empty($fc)) {
                 $conditions[] = $fc;
             }
         }
