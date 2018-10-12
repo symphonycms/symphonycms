@@ -296,6 +296,17 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(1, count($values), '1 value');
     }
 
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSELECTwithWHEREEMPTY()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+            ->from('tbl_test_table')
+            ->where([]);
+    }
+
     public function testSELECTwithJOIN()
     {
         $db = new Database([]);

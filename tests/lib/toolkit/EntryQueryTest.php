@@ -303,6 +303,18 @@ final class EntryQueryTest extends TestCase
         $this->assertEquals(2, count($values), '2 values');
     }
 
+    public function testFilterSystemIdEmpty()
+    {
+        $q = (new \EntryQuery($this->db))->filter('system:id', ['sss', null], 'and');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e`",
+            $q->generateSQL(),
+            'new EntryQuery with ->filter(system:id, [ssss, null])'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
     public function testFilterSystemCreationDate()
     {
         $q = (new \EntryQuery($this->db))->filter('system:creation-date', ['2018-03-16']);

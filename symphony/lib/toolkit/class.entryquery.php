@@ -424,6 +424,12 @@ class EntryQuery extends DatabaseQuery
                     return $val;
                 }, $v)));
             }, []);
+
+            // Check if reduce produced values
+            if (empty($values)) {
+                return $this;
+            }
+
             // Create conditions from values
             $conditions = array_map(function ($v) use ($op) {
                 return ['e.id' => [$op => $v]];
