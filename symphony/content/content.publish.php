@@ -1200,6 +1200,15 @@ class contentPublish extends AdministrationPage
         }
         $existingEntry = $existingEntry[0];
 
+        // If the entry does not belong in the context's section
+        if ($section_id != $existingEntry->get('section_id')) {
+            Administration::instance()->throwCustomError(
+                __('Wrong section'),
+                __('The Entry, %s, does not belong in section %s', array($entry_id, $section_id)),
+                Page::HTTP_STATUS_BAD_REQUEST
+            );
+        }
+
         // If there is post data floating around, due to errors, create an entry object
         if (isset($_POST['fields'])) {
             $fields = $_POST['fields'];
