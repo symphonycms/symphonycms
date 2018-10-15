@@ -452,7 +452,7 @@ class contentPublish extends AdministrationPage
                     $entryQuery->filter($handle, $value, $op);
                 // Handle normal fields
                 } else {
-                    $field = (new FieldManager)->select()->name($handle)->execute()->next();
+                    $field = (new FieldManager)->select()->section($section_id)->name($handle)->execute()->next();
                     // Use EQFA
                     if ($field && $field->getEntryQueryFieldAdapter()) {
                         $op = $filter_type === Datasource::FILTER_AND ? 'and' : 'or';
