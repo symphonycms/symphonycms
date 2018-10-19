@@ -414,11 +414,11 @@ class EntryManager
 
         // Handle Creation Date or the old Date sorting
         } elseif (self::$_fetchSortField === 'system:creation-date' || self::$_fetchSortField === 'date') {
-            $sort = sprintf('ORDER BY `e`.`creation_date_gmt` %s', self::$_fetchSortDirection);
+            $sort = sprintf('ORDER BY `e`.`creation_date` %s', self::$_fetchSortDirection);
 
         // Handle Modification Date sorting
         } elseif (self::$_fetchSortField === 'system:modification-date') {
-            $sort = sprintf('ORDER BY `e`.`modification_date_gmt` %s', self::$_fetchSortDirection);
+            $sort = sprintf('ORDER BY `e`.`modification_date` %s', self::$_fetchSortDirection);
 
         // Handle sorting for System ID
         } elseif (self::$_fetchSortField == 'system:id' || self::$_fetchSortField == 'id') {
