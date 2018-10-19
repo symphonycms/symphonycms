@@ -7,9 +7,6 @@
     // Set appropriate error reporting:
     error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT);
 
-    // Turn off old-style magic:
-    ini_set('magic_quotes_runtime', false);
-
     // Redirect to installer if it exists
     if (!file_exists(CONFIG)) {
         $bInsideInstaller = (bool)preg_match('%(/|\\\\)install(/|\\\\)index.php$%', server_safe('SCRIPT_FILENAME'));
