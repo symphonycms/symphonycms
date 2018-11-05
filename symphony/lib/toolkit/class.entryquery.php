@@ -607,6 +607,20 @@ class EntryQuery extends DatabaseQuery
     }
 
     /**
+     * This implementation only changes the default $col value for pagination.
+     * This fixes problem when sorting by fields which includes multiple rows per entry.
+     *
+     * @see EntryQuery::countProjection()
+     * @param string $col
+     *  The column to count on. Defaults to DISTINCT(e.id)
+     * @return DatabaseQuery
+     */
+    public function countProjection($col = 'DISTINCT(e.id)')
+    {
+        return parent::countProjection($col);
+    }
+
+    /**
      * @internal This method is not meant to be called directly. Use execute().
      * Appends any remaining part of the statement.
      * If the default sort is not disabled and their are not custom sort added,
