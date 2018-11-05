@@ -558,7 +558,8 @@ class DatabaseQuery extends DatabaseStatement
 
     /**
      * Creates and returns a new DatabaseQuery, identical to its creator,
-     * excepted that the projection is replaced with a count
+     * excepted that the projection is replaced with a count.
+     * Optimizer, cache, order by, limit and offset are also removed.
      *
      * @param string $col
      *  The column to count on. Defaults to `*`
@@ -566,7 +567,7 @@ class DatabaseQuery extends DatabaseStatement
      */
     public function countProjection($col = '*')
     {
-        $ignoredParts = ['statement', 'cache', 'projection', 'order by', 'limit', 'offset'];
+        $ignoredParts = ['statement', 'optimizer', 'cache', 'projection', 'order by', 'limit', 'offset'];
         $cp = new DatabaseQuery($this->getDB(), ["COUNT($col)"]);
         foreach ($this->getSQL() as $part) {
             $type = current(array_keys($part));
