@@ -625,6 +625,8 @@ class EntryQuery extends DatabaseQuery
      * Appends any remaining part of the statement.
      * If the default sort is not disabled and their are not custom sort added,
      * it will add the default sort.
+     * If the default and minimal projection are not present, it will add the
+     * default projection.
      *
      * @see DatabaseStatement::execute()
      * @return EntryQuery
@@ -632,6 +634,9 @@ class EntryQuery extends DatabaseQuery
      */
     public function finalize()
     {
+        $projection = $this->getSQLParts('projection');
+        $hasDefault = in_array($this->getDefaultProjection(), $projection);
+        $hasCols = in_array(['e.id', 'e.creation_date', 'e.modification_date'], $projection);
         if ($this->addDefaultSort && !$this->containsSQLParts('order by')) {
             // Handle if the section has a default sorting field
             if ($this->sectionId) {
@@ -645,16 +650,9 @@ class EntryQuery extends DatabaseQuery
                 $this->sort('system:id');
             }
         }
-        // Add default projection to make sure we are able to build Entry objects when a schema is restricted
-        if (!empty($this->schema)) {
-            $projection = $this->getSQLParts('projection');
-            $hasDefault = in_array($this->getDefaultProjection(), $projection);
-            $hasCols = in_array(['e.id', 'e.creation_date', 'e.modification_date'], $projection);
-            if (!$hasDefault && !$hasCols) {
-                $this->projection($this->getDefaultProjection());
-            }
-        } else {
-            return parent::finalize();
+        // Add default projection to make sure we are able to build Entry objects
+        if (!$hasDefault && !$hasCols) {
+            $this->projection($this->getDefaultProjection());
         }
         return $this;
     }
