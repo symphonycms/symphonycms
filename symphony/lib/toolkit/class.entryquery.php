@@ -78,6 +78,17 @@ class EntryQuery extends DatabaseQuery
     }
 
     /**
+     * Gets the minimal projection. Those are the absolute minimum we need to
+     * be able to create Entry objects.
+     *
+     * @return array
+     */
+    public function getMinimalProjection()
+    {
+        return ['e.id', 'e.creation_date', 'e.modification_date'];
+    }
+
+    /**
      * Appends COUNT($col) to the projection.
      * Prevents the default ORDER BY clause to be added.
      *
@@ -628,6 +639,8 @@ class EntryQuery extends DatabaseQuery
      * If the default and minimal projection are not present, it will add the
      * default projection.
      *
+     * @see getDefaultProjection()
+     * @see getMinimalProjection()
      * @see DatabaseStatement::execute()
      * @return EntryQuery
      *  The current instance
@@ -636,7 +649,7 @@ class EntryQuery extends DatabaseQuery
     {
         $projection = $this->getSQLParts('projection');
         $hasDefault = in_array($this->getDefaultProjection(), $projection);
-        $hasCols = in_array(['e.id', 'e.creation_date', 'e.modification_date'], $projection);
+        $hasCols = in_array($this->getMinimalProjection(), $projection);
         if ($this->addDefaultSort && !$this->containsSQLParts('order by')) {
             // Handle if the section has a default sorting field
             if ($this->sectionId) {
