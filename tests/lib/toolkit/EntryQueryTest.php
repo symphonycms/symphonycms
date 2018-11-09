@@ -438,30 +438,86 @@ final class EntryQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
-    public function testDefaultProjectionNotAddedWithoutSchema()
+    public function testSystemSortStillAddsTheDefaultProjection()
     {
-        $q = (new \EntryQuery($this->db));
-        $q->projection(['f.test']);
-        $q->finalize();
+        $q = (new \EntryQuery($this->db))->sort('system:creation-date')->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f`.`test` FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e` ORDER BY `e`.`creation_date_gmt` ASC",
             $q->generateSQL(),
-            'new EntryQuery with ->sort(system:id)'
+            'new EntryQuery with ->sort("created-date")->finalize()'
         );
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');
     }
 
-    public function testDefaultProjectionNotAddedWithoutSchemaNorDefaultSort()
+    public function testDefaultSortStillAddsTheDefaultProjection()
+    {
+        $q = (new \EntryQuery($this->db))->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            $q->generateSQL(),
+            'new EntryQuery with default sort from ->finalize()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testFieldSortStillAddsTheDefaultProjection()
+    {
+        $q = (new \EntryQuery($this->db));
+        $f = new \FieldInput();
+        $f->set('id', 1);
+        $f->getEntryQueryFieldAdapter()->sort($q);
+        $q->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `f1`.`value` , `e`.* FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` ORDER BY `f1`.`value` ASC , `e`.`id` ASC",
+            $q->generateSQL(),
+            'new EntryQuery with field sort and ->finalize()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testFieldSortStillAddsTheDefaultProjectionWithASchema()
+    {
+        $q = (new \EntryQuery($this->db))->schema(['field']);
+        $f = new \FieldInput();
+        $f->set('id', 1);
+        $f->getEntryQueryFieldAdapter()->sort($q);
+        $q->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `f1`.`value` , `e`.* FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` ORDER BY `f1`.`value` ASC , `e`.`id` ASC",
+            $q->generateSQL(),
+            'new EntryQuery with schema, field sort and ->finalize()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testCustomProjectionStillAddsTheDefaultProjection()
+    {
+        $q = (new \EntryQuery($this->db));
+        $q->projection(['f.test']);
+        $q->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `f`.`test` , `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            $q->generateSQL(),
+            'new EntryQuery with projection and ->finalize()'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testCustomProjectionStillAddsTheDefaultProjectionWithoutSort()
     {
         $q = (new \EntryQuery($this->db));
         $q->projection(['f.test']);
         $q->disableDefaultSort();
         $q->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f`.`test` FROM `entries` AS `e`",
+            "SELECT SQL_NO_CACHE `f`.`test` , `e`.* FROM `entries` AS `e`",
             $q->generateSQL(),
-            'new EntryQuery with ->sort(system:id)'
+            'new EntryQuery with projection, disableDefaultSort() and ->finalize()'
         );
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');
