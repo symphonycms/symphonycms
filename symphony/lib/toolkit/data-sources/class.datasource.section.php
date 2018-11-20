@@ -392,12 +392,15 @@ class SectionDatasource extends Datasource
             return;
         }
 
-        $pool = (new FieldManager)
-            ->select()
-            ->fields(array_filter(array_keys($this->dsParamFILTERS), 'is_numeric'))
-            ->execute()
-            ->rowsIndexedByColumn('id');
-        self::$_fieldPool += $pool;
+        $numericFilters = array_filter(array_keys($this->dsParamFILTERS), 'is_numeric');
+        if (!empty($numericFilters)) {
+            $pool = (new FieldManager)
+                ->select()
+                ->fields($numericFilters)
+                ->execute()
+                ->rowsIndexedByColumn('id');
+            self::$_fieldPool += $pool;
+        }
 
         foreach ($this->dsParamFILTERS as $field_id => $filter) {
             if ((is_array($filter) && empty($filter)) || trim($filter) == '') {
