@@ -22,6 +22,12 @@ class EntryQuery extends DatabaseQuery
     private $addDefaultSort = true;
 
     /**
+     * Flag to indicate if the statement needs to add the default projection
+     * @var boolean
+     */
+    private $addDefaultProjection = true;
+
+    /**
      * The requested section id. Needed to fetch the default sort.
      * @var integer
      */
@@ -57,6 +63,7 @@ class EntryQuery extends DatabaseQuery
 
     /**
      * Disables the default sort
+     * @see finalize()
      * @return EntryQuery
      *  The current instance
      */
@@ -78,6 +85,18 @@ class EntryQuery extends DatabaseQuery
     }
 
     /**
+     * Disables the default projection
+     * @see finalize()
+     * @return EntryQuery
+     *  The current instance
+     */
+    public function disableDefaultProjection()
+    {
+        $this->addDefaultProjection = false;
+        return $this;
+    }
+
+    /**
      * Gets the minimal projection. Those are the absolute minimum we need to
      * be able to create Entry objects.
      *
@@ -90,9 +109,10 @@ class EntryQuery extends DatabaseQuery
 
     /**
      * Appends COUNT($col) to the projection.
-     * Prevents the default ORDER BY clause to be added.
+     * Prevents the default sort and projection to be added.
      *
      * @uses disableDefaultSort();
+     * @uses disableDefaultProjection();
      * @see DatabaseQuery::count()
      * @param string $col
      *  The column to count on.
@@ -100,7 +120,7 @@ class EntryQuery extends DatabaseQuery
      */
     public function count($col = null)
     {
-        $this->disableDefaultSort();
+        $this->disableDefaultSort()->disableDefaultProjection();
         return parent::count($col);
     }
 
@@ -647,9 +667,14 @@ class EntryQuery extends DatabaseQuery
      */
     public function finalize()
     {
+        // Get a flatten projection
         $projection = $this->getSQLParts('projection');
-        $hasDefault = in_array($this->getDefaultProjection(), $projection);
-        $hasCols = in_array($this->getMinimalProjection(), $projection);
+        General::flattenArray($projection);
+        $projection = array_values($projection);
+        // Try to find default projections
+        $hasDefault = !empty($projection) && in_array($this->asProjectionList($this->getDefaultProjection()), $projection);
+        $hasCols = !empty($projection) && in_array($this->asProjectionList($this->getMinimalProjection()), $projection);
+        // Add sort, if needed
         if ($this->addDefaultSort && !$this->containsSQLParts('order by')) {
             // Handle if the section has a default sorting field
             if ($this->sectionId) {
@@ -663,8 +688,8 @@ class EntryQuery extends DatabaseQuery
                 $this->sort('system:id');
             }
         }
-        // Add default projection to make sure we are able to build Entry objects
-        if (!$hasDefault && !$hasCols) {
+        // Add default projection to make sure we are able to build Entry objects, if required
+        if ($this->addDefaultProjection && !$hasDefault && !$hasCols) {
             $this->projection($this->getDefaultProjection());
         }
         return $this;
