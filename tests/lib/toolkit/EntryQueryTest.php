@@ -41,6 +41,31 @@ final class EntryQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
+    public function testDefaultSchemaNoDefaultProjection()
+    {
+        $q = (new \EntryQuery($this->db))->disableDefaultProjection()->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            $q->generateSQL(),
+            'new EntryQuery with Default schema without Default projection'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testCustomProjectionNoDefaultProjection()
+    {
+        $q = (new \EntryQuery($this->db));
+        $q->projection($q->getMinimalProjection())->finalize();
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE `e`.`id`, `e`.`creation_date`, `e`.`modification_date` FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            $q->generateSQL(),
+            'new EntryQuery with Minimal Projection without Default projection'
+        );
+        $values = $q->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
     public function testDefaultSchemaDefaultProjectionDefaultSort()
     {
         $q = (new \EntryQuery($this->db))->finalize();
