@@ -136,7 +136,7 @@ final class migration_300 extends Migration
         $edStm->execute();
         unset($edStm);
 
-        // Make parent_section unsigned and sortorder signed
+        // Make parent_section unsigned, sortorder signed and element_name varchar(255)
         Symphony::Database()
             ->alter('tbl_fields')
             ->modify(['parent_section' => [
@@ -147,6 +147,7 @@ final class migration_300 extends Migration
                 'type' => 'int(11)',
                 'signed' => true,
             ]])
+            ->modify(['element_name' => 'varchar(255)'])
             ->execute();
 
         // Make author id unsigned
