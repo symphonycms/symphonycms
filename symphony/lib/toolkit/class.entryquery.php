@@ -542,7 +542,7 @@ class EntryQuery extends DatabaseQuery
             return $this;
         }
 
-        if ($direction === 'RAND') {
+        if (strtoupper($direction) === 'RAND' || strtoupper($direction) === 'RANDOM') {
             $sort = ['e.id' => 'RAND()'];
 
         // Handle Creation Date
