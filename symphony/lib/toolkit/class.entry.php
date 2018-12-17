@@ -225,7 +225,9 @@ class Entry implements ArrayAccess
 
             if ($s !== Field::__OK__) {
                 $status = Entry::__ENTRY_FIELD_ERROR__;
-                $errors[$info['id']] = $message;
+                if (!isset($errors[$info['id']])) {
+                    $errors[$info['id']] = $message;
+                }
             }
 
             $this->setData($info['id'], $result);
