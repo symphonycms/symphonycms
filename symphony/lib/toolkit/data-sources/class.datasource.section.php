@@ -252,7 +252,7 @@ class SectionDatasource extends Datasource
         if (!empty($associated_entry_counts)) {
             foreach ($associated_entry_counts as $section_id => $fields) {
                 foreach ($this->_associated_sections as $section) {
-                    if ($section['id'] != $section_id) {
+                    if (General::intval($section['id']) !== General::intval($section_id)) {
                         continue;
                     }
 
