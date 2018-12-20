@@ -17,6 +17,9 @@ matrix:
 
 # Install scripts. (runs after repo cloning)
 install:
+  # start windows update
+  - sc config wuauserv start=auto
+  - net start wuauserv
   # Get the latest stable version of Node.js
   - ps: Install-Product node $env:nodejs_version
   # install modules
@@ -24,9 +27,7 @@ install:
   # install openssl
   - cinst -y OpenSSL.Light
   - SET PATH=C:\Program Files\OpenSSL;%PATH%
-  # start windows update
-  - sc config wuauserv start=auto
-  - net start wuauserv
+  - refreshenv
   # install php
   - cinst -y php --version %php_version%
   - cd c:\tools\php71
