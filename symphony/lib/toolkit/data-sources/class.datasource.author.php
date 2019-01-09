@@ -148,7 +148,7 @@ class AuthorDatasource extends Datasource
                     // Author Token
                     if (in_array('author-token', $this->dsParamINCLUDEDELEMENTS) && $author->isTokenActive()) {
                         $xAuthor->appendChild(
-                            new XMLElement('author-token', $author->createAuthToken())
+                            new XMLElement('author-token', $author->getAuthToken())
                         );
                     }
 
