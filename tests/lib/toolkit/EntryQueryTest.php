@@ -344,13 +344,13 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->filter('system:creation-date', ['2018-03-16']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE ((`e`.`creation_date_gmt` >= :e_creation_date_gmt AND `e`.`creation_date_gmt` <= :e_creation_date_gmt2))",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE ((`e`.`creation_date` >= :e_creation_date AND `e`.`creation_date` <= :e_creation_date2))",
             $q->generateSQL(),
             'new EntryQuery with ->filter(system:creation-date, [])'
         );
         $values = $q->getValues();
-        $this->assertEquals('2018-03-16 00:00:00', $values['e_creation_date_gmt'], 'e_creation_date_gmt is 2018-03-16 00:00:00');
-        $this->assertEquals('2018-03-16 23:59:59', $values['e_creation_date_gmt2'], 'e_creation_date_gmt2 is 2018-03-16 23:59:59');
+        $this->assertEquals('2018-03-16 00:00:00', $values['e_creation_date'], 'e_creation_date is 2018-03-16 00:00:00');
+        $this->assertEquals('2018-03-16 23:59:59', $values['e_creation_date2'], 'e_creation_date2 is 2018-03-16 23:59:59');
         $this->assertEquals(2, count($values), '2 values');
     }
 
@@ -358,13 +358,13 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->filter('system:modification-date', ['2018-03-16']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE ((`e`.`modification_date_gmt` >= :e_modification_date_gmt AND `e`.`modification_date_gmt` <= :e_modification_date_gmt2))",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE ((`e`.`modification_date` >= :e_modification_date AND `e`.`modification_date` <= :e_modification_date2))",
             $q->generateSQL(),
             'new EntryQuery with ->filter(system:modification-date, [])'
         );
         $values = $q->getValues();
-        $this->assertEquals('2018-03-16 00:00:00', $values['e_modification_date_gmt'], 'e_modification_date_gmt is 2018-03-16 00:00:00');
-        $this->assertEquals('2018-03-16 23:59:59', $values['e_modification_date_gmt2'], 'e_modification_date_gmt2 is 2018-03-16 23:59:59');
+        $this->assertEquals('2018-03-16 00:00:00', $values['e_modification_date'], 'e_modification_date is 2018-03-16 00:00:00');
+        $this->assertEquals('2018-03-16 23:59:59', $values['e_modification_date2'], 'e_modification_date2 is 2018-03-16 23:59:59');
         $this->assertEquals(2, count($values), '2 values');
     }
 
@@ -392,7 +392,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->sort('system:creation-date', 'DESC');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`creation_date_gmt` DESC",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`creation_date` DESC",
             $q->generateSQL(),
             'new EntryQuery with ->sort(system:creation-date, DESC)'
         );
@@ -404,7 +404,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->sort('system:modification-date');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`modification_date_gmt` ASC",
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`modification_date` ASC",
             $q->generateSQL(),
             'new EntryQuery with ->sort(system:modification-date)'
         );
@@ -467,7 +467,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->sort('system:creation-date')->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e` ORDER BY `e`.`creation_date_gmt` ASC",
+            "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e` ORDER BY `e`.`creation_date` ASC",
             $q->generateSQL(),
             'new EntryQuery with ->sort("created-date")->finalize()'
         );

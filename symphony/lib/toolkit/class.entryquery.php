@@ -420,14 +420,14 @@ class EntryQuery extends DatabaseQuery
         if ($field === 'system:creation-date') {
             return $this->where([$operator => array_map(function ($v) {
                 $date = (new DateRangeParser($v))->parse();
-                return ['e.creation_date_gmt' => ['date' => $date]];
+                return ['e.creation_date' => ['date' => $date]];
             }, $values)]);
 
         // Handle filter on Modification Date sorting
         } elseif ($field === 'system:modification-date') {
             return $this->where([$operator => array_map(function ($v) {
                 $date = (new DateRangeParser($v))->parse();
-                return ['e.modification_date_gmt' => ['date' => $date]];
+                return ['e.modification_date' => ['date' => $date]];
             }, $values)]);
 
         // Handle filter for System ID
@@ -547,11 +547,11 @@ class EntryQuery extends DatabaseQuery
 
         // Handle Creation Date
         } elseif ($field === 'system:creation-date') {
-            $sort = ['e.creation_date_gmt' => $direction];
+            $sort = ['e.creation_date' => $direction];
 
         // Handle Modification Date sorting
         } elseif ($field === 'system:modification-date') {
-            $sort = ['e.modification_date_gmt' => $direction];
+            $sort = ['e.modification_date' => $direction];
 
         // Handle sorting for System ID
         } elseif ($field === 'system:id') {
