@@ -1321,11 +1321,12 @@ class Database
         }
 
         try {
-            $resultPdo = $this->conn->query($query);
             // Execute it
             if ($fetchType) {
+                $resultPdo = $this->conn->query($query);
                 $result = $resultPdo->fetchAll($fetchType);
             } else {
+                $resultPdo = $this->conn->prepare($query);
                 $result = $resultPdo->execute();
             }
             $resultPdo->closeCursor();
