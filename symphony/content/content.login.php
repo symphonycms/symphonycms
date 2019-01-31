@@ -77,6 +77,10 @@ class contentLogin extends HTMLPage
 
     public function build(array $context = [])
     {
+        if (Symphony::isLoggedIn()) {
+            redirect(APPLICATION_URL);
+        }
+
         parent::build($context);
 
         if (isset($_REQUEST['action'])) {
