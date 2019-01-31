@@ -372,7 +372,9 @@ class EntryQuery extends DatabaseQuery
      * @param int $field_id
      *  The field id to filter with
      * @param array $conditions
-     *  The where conditions to apply on the field table
+     *  The where conditions to apply on the field table. In order to work with
+     *  the generated join, keys needs to be prefixed with `f{$field_id}.` to make
+     *  them unambiguous.
      * @return EntryQuery
      *  The current instance
      */
