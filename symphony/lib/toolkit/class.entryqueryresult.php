@@ -184,6 +184,8 @@ class EntryQueryResult extends DatabaseQueryResult
     {
         if (empty($this->schema)) {
             return [];
+        } elseif (General::intval(current($this->schema)) > 0) {
+            return $this->schema;
         }
         $schemaId = md5($section_id . serialize($this->schema));
         if (empty($this->sectionsSchemas[$schemaId])) {

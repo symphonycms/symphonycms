@@ -196,7 +196,7 @@ class EntryQuery extends DatabaseQuery
             throw new DatabaseStatementException('Cannot include all fields before calling section()');
         }
         return $this->schema(array_map(function ($field) {
-            return $field['element_name'];
+            return General::intval($field['id']);
         }, FieldManager::fetchFieldsSchema($this->sectionId)));
     }
 
