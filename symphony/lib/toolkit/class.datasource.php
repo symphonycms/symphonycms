@@ -366,8 +366,12 @@ class Datasource
             && $this->processParametersInString(trim($this->dsParamREQUIREDPARAM), $this->_env, false) === ''
         ) {
             $this->_force_empty_result = true; // don't output any XML
-            $this->dsParamPARAMOUTPUT = null; // don't output any parameters
-            $this->dsParamINCLUDEDELEMENTS = null; // don't query any fields in this section
+            if (isset($this->dsParamPARAMOUTPUT)) {
+                $this->dsParamPARAMOUTPUT = null; // don't output any parameters
+            }
+            if (isset($this->dsParamINCLUDEDELEMENTS)) {
+                $this->dsParamINCLUDEDELEMENTS = null; // don't query any fields in this section
+            }
             return;
         }
 
@@ -377,8 +381,12 @@ class Datasource
             && $this->processParametersInString(trim($this->dsParamNEGATEPARAM), $this->_env, false) !== ''
         ) {
             $this->_negate_result = true; // don't output any XML
-            $this->dsParamPARAMOUTPUT = null; // don't output any parameters
-            $this->dsParamINCLUDEDELEMENTS = null; // don't query any fields in this section
+            if (isset($this->dsParamPARAMOUTPUT)) {
+                $this->dsParamPARAMOUTPUT = null; // don't output any parameters
+            }
+            if (isset($this->dsParamINCLUDEDELEMENTS)) {
+                $this->dsParamINCLUDEDELEMENTS = null; // don't query any fields in this section
+            }
             return;
         }
 
