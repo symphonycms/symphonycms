@@ -13,6 +13,14 @@
 abstract class SectionEvent extends FilterableEvent
 {
     /**
+     * Return's the Section ID that this event is using as it's source
+     *
+     * @since Symphony 3.0.0
+     * @return string|integer
+     */
+    abstract public function getSource();
+
+    /**
      * Appends errors generated from fields during the execution of an Event
      *
      * @param XMLElement $result
