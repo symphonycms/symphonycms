@@ -10,11 +10,12 @@
  * entries can be grouped, sorted and allows pagination. Results can be chained
  * from other `SectionDatasource`'s using output parameters.
  *
+ * @since Symphony 3.0.0, it is abstract
  * @since Symphony 2.3
  * @link http://getsymphony.com/learn/concepts/view/data-sources/
  */
 
-class SectionDatasource extends Datasource
+abstract class SectionDatasource extends Datasource
 {
     /**
      * An array of Field objects that this Datasource has created to display
@@ -34,24 +35,12 @@ class SectionDatasource extends Datasource
     );
 
     /**
-     * Set's the Section ID that this Datasource will use as it's source
-     *
-     * @param integer $source
-     */
-    public function setSource($source)
-    {
-        $this->_source = (int)$source;
-    }
-
-    /**
      * Return's the Section ID that this datasource is using as it's source
      *
-     * @return integer
+     * @since Symphony 3.0.0
+     * @return string|integer
      */
-    public function getSource()
-    {
-        return $this->_source;
-    }
+    abstract public function getSource();
 
     /**
      * If this Datasource requires System Parameters to be output, this function
