@@ -223,7 +223,7 @@ class contentSystemPreferences extends AdministrationPage
 
                 if (Symphony::Configuration()->write()) {
                     if (function_exists('opcache_invalidate')) {
-                        opcache_invalidate(CONFIG, true);
+                        @opcache_invalidate(CONFIG, true);
                     }
 
                     redirect(SYMPHONY_URL . '/system/preferences/success/');
