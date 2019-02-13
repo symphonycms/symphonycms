@@ -64,7 +64,7 @@ abstract class Extension
      * @since Symphony 2.5.0
      * @var array
      */
-    private static $provides = array();
+    protected static $provides = array();
 
     /**
      * Default constructor for an Extension, at this time it does nothing
