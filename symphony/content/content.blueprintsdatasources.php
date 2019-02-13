@@ -1305,6 +1305,7 @@ class contentBlueprintsDatasources extends ResourcesPage
                         $params['redirectonrequired'] = $fields['redirect_on_required'];
                         $params['requiredparam'] = trim($fields['required_url_param']);
                         $params['negateparam'] = trim($fields['negate_url_param']);
+                        $params['sort'] = $fields['sort'];
 
                         break;
                     case 'static_xml':
