@@ -1578,7 +1578,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             }
             if (is_array($val)) {
                 $val = array_map('addslashes', $val);
-                $val = "array(" . PHP_EOL . "        '" . implode("'," . PHP_EOL . "        '", $val) . "'" . PHP_EOL . '        );';
+                $val = "array(" . PHP_EOL . "        '" . implode("'," . PHP_EOL . "        '", $val) . "'" . PHP_EOL . '    );';
                 $var_list .= '    public $dsParam' . strtoupper(addslashes($key)) . ' = ' . $val . PHP_EOL;
             } elseif (trim($val) !== '') {
                 $var_list .= '    public $dsParam' . strtoupper(addslashes($key)) . " = '" . addslashes($val) . "';" . PHP_EOL;
