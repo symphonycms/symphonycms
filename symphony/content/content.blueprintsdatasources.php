@@ -194,6 +194,7 @@ class contentBlueprintsDatasources extends ResourcesPage
             $fields['order'] = 'desc';
         }
 
+        $name = null;
         // Handle name on edited changes, or from reading an edited datasource
         if (isset($about['name'])) {
             $name = $about['name'];
@@ -336,13 +337,13 @@ class contentBlueprintsDatasources extends ResourcesPage
         $fieldset->appendChild($p);
         $group = new XMLElement('div');
 
-        $label = Widget::Checkbox('fields[redirect_on_required]', $fields['redirect_on_required'], __('The required parameter is missing'));
+        $label = Widget::Checkbox('fields[redirect_on_required]', array_key_exists($fields['redirect_on_required']) ? $fields['redirect_on_required'] : null, __('The required parameter is missing'));
         $group->appendChild($label);
 
-        $label = Widget::Checkbox('fields[redirect_on_forbidden]', $fields['redirect_on_forbidden'], __('The forbidden parameter is present'));
+        $label = Widget::Checkbox('fields[redirect_on_forbidden]', array_key_exists($fields['redirect_on_forbidden']) ? $fields['redirect_on_forbidden'] : null, __('The forbidden parameter is present'));
         $group->appendChild($label);
 
-        $label = Widget::Checkbox('fields[redirect_on_empty]', $fields['redirect_on_empty'], __('No results are found'));
+        $label = Widget::Checkbox('fields[redirect_on_empty]', array_key_exists($fields['redirect_on_empty']) ? $fields['redirect_on_empty'] : null, __('No results are found'));
         $group->appendChild($label);
 
         $fieldset->appendChild($group);
@@ -510,23 +511,12 @@ class contentBlueprintsDatasources extends ResourcesPage
         $ol->setAttribute('data-add', __('Add filter'));
         $ol->setAttribute('data-remove', __('Remove filter'));
 
-        if (!isset($fields['filter']['author'])) {
-            $fields['filter']['author'] = array(
-                'id' => null,
-                'username' => null,
-                'first_name' => null,
-                'last_name' => null,
-                'email' => null,
-                'user_type' => null
-            );
-        }
-
-        $this->__appendAuthorFilter($ol, __('ID'), 'id', $fields['filter']['author']['id'], (!isset($fields['filter']['author']['id'])));
-        $this->__appendAuthorFilter($ol, __('Username'), 'username', $fields['filter']['author']['username'], (!isset($fields['filter']['author']['username'])));
-        $this->__appendAuthorFilter($ol, __('First Name'), 'first_name', $fields['filter']['author']['first_name'], (!isset($fields['filter']['author']['first_name'])));
-        $this->__appendAuthorFilter($ol, __('Last Name'), 'last_name', $fields['filter']['author']['last_name'], (!isset($fields['filter']['author']['last_name'])));
-        $this->__appendAuthorFilter($ol, __('Email'), 'email', $fields['filter']['author']['email'], (!isset($fields['filter']['author']['email'])));
-        $this->__appendAuthorFilter($ol, __('User Type'), 'user_type', $fields['filter']['author']['user_type'], (!isset($fields['filter']['author']['user_type'])));
+        $this->__appendAuthorFilter($ol, __('ID'), 'id', array_key_exists($fields['filter']['author']['id']) ? $fields['filter']['author']['id'] : null, !isset($fields['filter']['author']['id']));
+        $this->__appendAuthorFilter($ol, __('Username'), 'username', array_key_exists($fields['filter']['author']['username']) ? $fields['filter']['author']['username'] : null, !isset($fields['filter']['author']['username']));
+        $this->__appendAuthorFilter($ol, __('First Name'), 'first_name', array_key_exists($fields['filter']['author']['first_name']) ? $fields['filter']['author']['first_name'] : null, !isset($fields['filter']['author']['first_name']));
+        $this->__appendAuthorFilter($ol, __('Last Name'), 'last_name', array_key_exists($fields['filter']['author']['last_name']) ? $fields['filter']['author']['last_name'] : null, !isset($fields['filter']['author']['last_name']));
+        $this->__appendAuthorFilter($ol, __('Email'), 'email', array_key_exists($fields['filter']['author']['email']) ? $fields['filter']['author']['email'] : null, !isset($fields['filter']['author']['email']));
+        $this->__appendAuthorFilter($ol, __('User Type'), 'user_type', array_key_exists($fields['filter']['author']['user_type']) ? $fields['filter']['author']['user_type'] : null, !isset($fields['filter']['author']['user_type']));
 
         $div->appendChild($ol);
 
@@ -774,7 +764,7 @@ class contentBlueprintsDatasources extends ResourcesPage
 
         $fieldset->appendChild($group);
 
-        $label = Widget::Checkbox('fields[paginate_results]', $fields['paginate_results'], __('Enable pagination'));
+        $label = Widget::Checkbox('fields[paginate_results]', array_key_exists($fields['paginate_results']) ? $fields['paginate_results'] : null, __('Enable pagination'));
         $fieldset->appendChild($label);
         $this->Form->appendChild($fieldset);
 
@@ -922,12 +912,12 @@ class contentBlueprintsDatasources extends ResourcesPage
         $fieldset->appendChild($group);
 
         // Associations
-        $label = Widget::Checkbox('fields[associated_entry_counts]', $fields['associated_entry_counts'], __('Include a count of entries in associated sections'));
+        $label = Widget::Checkbox('fields[associated_entry_counts]', array_key_exists($fields['associated_entry_counts']) ? $fields['associated_entry_counts'] : null, __('Include a count of entries in associated sections'));
         $this->setContext($label, array('sections'));
         $fieldset->appendChild($label);
 
         // Encoding
-        $label = Widget::Checkbox('fields[html_encode]', $fields['html_encode'], __('HTML-encode text'));
+        $label = Widget::Checkbox('fields[html_encode]', array_key_exists($fields['html_encode']) ? $fields['html_encode'] : null, __('HTML-encode text'));
         $this->setContext($label, array('sections'));
         $fieldset->appendChild($label);
 

@@ -560,7 +560,7 @@ class contentSystemAuthors extends AdministrationPage
         Symphony::ExtensionManager()->notifyMembers('AddElementstoAuthorForm', '/system/authors/', array(
             'form' => &$this->Form,
             'author' => $author,
-            'fields' => $_POST['fields'],
+            'fields' => isset($_POST['fields']) ? $_POST['fields'] : null,
             'errors' => $this->_errors,
         ));
     }

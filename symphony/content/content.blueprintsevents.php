@@ -113,6 +113,7 @@ class contentBlueprintsEvents extends ResourcesPage
             $canonical_link = '/blueprints/events/' . $this->_context[0] . '/' . $handle . '/';
         }
 
+        $name = null;
         // Handle name on edited changes, or from reading an edited datasource
         if (isset($about['name'])) {
             $name = $about['name'];
