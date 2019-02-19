@@ -127,7 +127,7 @@ class DatabaseTest extends TestCase
         $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(0));
         $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(1));
         $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(-1));
-        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(1.00001));
+        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType(1.00001));
         $this->assertEquals(\PDO::PARAM_NULL, $this->db->deducePDOParamType(null));
         $this->assertEquals(\PDO::PARAM_BOOL, $this->db->deducePDOParamType(true));
         $this->assertEquals(\PDO::PARAM_BOOL, $this->db->deducePDOParamType(false));
