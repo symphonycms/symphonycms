@@ -149,4 +149,21 @@ final class GeneralTest extends TestCase
             '/this/i' => 'That',
         ]));
     }
+
+    public function testFlattenArray()
+    {
+        $flat = ['url-test' => [['test' => 1]]];
+        \General::flattenArray($flat);
+        $this->assertEquals(1, $flat['url-test.1.test']);
+
+        $flat = array_merge($flat, [
+            'another-test' => ['hi!'],
+            'other-simple-key' => ['key' => 'value1'],
+            'other-multi-key' => ['key' => ['key' => 'value2']],
+        ]);
+        \General::flattenArray($flat);
+        $this->assertEquals('hi!', $flat['another-test.1']);
+        $this->assertEquals('value1', $flat['other-simple-key.key']);
+        $this->assertEquals('value2', $flat['other-multi-key.key.key']);
+    }
 }
