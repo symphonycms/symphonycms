@@ -12,7 +12,7 @@
 class contentLogin extends HTMLPage
 {
     public $failedLoginAttempt = false;
-    private $_email_sent = false;
+    private $_email_sent;
     private $_email_error;
     private $_email_sent_to;
 
@@ -50,8 +50,11 @@ class contentLogin extends HTMLPage
     }
 
     /**
-     * The Sections page has /action/id/flag/ context.
-     * eg. /edit/1/saved/
+     * The Login page has /action/sub-action/token/ context.
+     * /login/
+     * /login/retrieve-password/
+     * /login/{$token}/
+     * /login/{$token}/reset-password/
      *
      * @param array $context
      * @param array $parts
@@ -67,10 +70,10 @@ class contentLogin extends HTMLPage
             }
         }
         if (empty($context['action'])) {
-            if (isset($parts[0])) {
-                $context['action'] = $parts[0];
+            if (isset($parts[2])) {
+                $context['action'] = $parts[2];
             } else {
-                $context['action'] = 'login';
+                $context['action'] = $parts[0]; // should always be login
             }
         }
     }
@@ -99,6 +102,8 @@ class contentLogin extends HTMLPage
                     redirect(SYMPHONY_URL . '/system/authors/edit/' . Symphony::Author()->get('id') . '/reset-password/');
                 }
             }
+            // Somehow, the login failed...
+            redirect(SYMPHONY_URL . '/login/');
         } elseif (isset($this->_context['token']) && $this->_context['action'] === 'login') {
             if (Administration::instance()->loginFromToken($this->_context['token'])) {
                 if (Administration::instance()->isLoggedIn()) {
@@ -106,6 +111,9 @@ class contentLogin extends HTMLPage
                     redirect(SYMPHONY_URL . '/');
                 }
             }
+        } elseif (isset($this->_context['token'])) {
+            // Token with invalid action
+            redirect(SYMPHONY_URL . '/login/');
         }
 
         $this->Form = Widget::Form(SYMPHONY_URL . '/login/', 'post');
@@ -133,7 +141,7 @@ class contentLogin extends HTMLPage
                 $label = Widget::Label(__('Email Address or Username'));
                 $label->appendChild(Widget::Input('email', General::sanitize($_POST['email']), 'text', array('autofocus' => 'autofocus')));
 
-                if (!$this->_email_sent) {
+                if ($this->_email_sent === false) {
                     $label = Widget::Error($label, __('Unfortunately no account was found using this information.'));
                 } else {
                     // Email exception
@@ -314,7 +322,7 @@ class contentLogin extends HTMLPage
                         $email->subject = __('New Symphony Account Password');
                         $email->text_plain = __('Hi %s,', array($author['first_name'])) . PHP_EOL .
                                 __('A new password has been requested for your account. Login using the following link, and change your password via the Authors area:') . PHP_EOL .
-                                PHP_EOL . '    ' . SYMPHONY_URL . "/login/reset-password/{$token}/" . PHP_EOL . PHP_EOL .
+                                PHP_EOL . '    ' . SYMPHONY_URL . "/login/{$token}/reset-password/" . PHP_EOL . PHP_EOL .
                                 __('It will expire in 2 hours. If you did not ask for a new password, please disregard this email.') . PHP_EOL . PHP_EOL .
                                 __('Best Regards,') . PHP_EOL .
                                 __('The Symphony Team');
