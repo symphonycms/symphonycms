@@ -7,10 +7,10 @@
  * data entered on the frontend.
  * It is also responsible to notify the proper extension delegates.
  *
- * @since Symphony 2.3.1
+ * @since Symphony 3.0.0
  * @link http://getsymphony.com/learn/concepts/view/events/
  */
-abstract class FilterableEvent
+abstract class FilterableEvent extends Event
 {
     /**
      * An associative array of results from the filters that have run
