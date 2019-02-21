@@ -14,6 +14,8 @@
  * with the same priority, in alphabetical order. An event class is saved through the
  * Symphony backend, which uses an event template defined in `TEMPLATE . /event.tpl`
  * Events implement the iEvent interface, which defines the load and about functions.
+ *
+ * @link http://getsymphony.com/learn/concepts/view/events/
  */
 abstract class Event
 {
@@ -73,7 +75,7 @@ abstract class Event
      * is used in the event editor. It must remain intact. Do not overload this function in
      * custom events.
      *
-     * @return integer
+     * @return string|integer|null
      */
     public static function getSource()
     {

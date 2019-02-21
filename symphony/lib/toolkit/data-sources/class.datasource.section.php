@@ -14,7 +14,6 @@
  * @since Symphony 2.3
  * @link http://getsymphony.com/learn/concepts/view/data-sources/
  */
-
 abstract class SectionDatasource extends Datasource
 {
     /**
@@ -33,14 +32,6 @@ abstract class SectionDatasource extends Datasource
         'system:modification-date',
         'system:date' // deprecated
     );
-
-    /**
-     * Return's the Section ID that this datasource is using as it's source
-     *
-     * @since Symphony 3.0.0
-     * @return string|integer
-     */
-    abstract public function getSource();
 
     /**
      * If this Datasource requires System Parameters to be output, this function

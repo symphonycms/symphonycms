@@ -24,9 +24,10 @@
  * Datasources are saved through the
  * Symphony backend, which uses a Datasource template defined in
  * `TEMPLATE . /datasource.tpl`.
+ *
+ * @link http://www.getsymphony.com/learn/concepts/view/data-sources/
  */
-
-class Datasource
+abstract class Datasource
 {
     /**
      * A constant that represents if this filter is an AND filter in which
@@ -134,7 +135,7 @@ class Datasource
      * custom events. Other datasources may return a string here defining their datasource
      * type when they do not query a section.
      *
-     * @return mixed
+     * @return string|integer|null
      */
     public function getSource()
     {
