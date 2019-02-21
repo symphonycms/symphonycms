@@ -140,6 +140,18 @@ class AdministrationPage extends HTMLPage
     }
 
     /**
+     * Accessor for `$this->_errors` which contains the list of errors that occurred
+     * during the life cycle of this page.
+     *
+     * @since Symphony 3.0.0
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->_errors;
+    }
+
+    /**
      * Given the current page `$context` and the URL path parts, parse the context for
      * the current page. This happens prior to the AdminPagePostCallback delegate
      * being fired. The `$context` is passed by reference
