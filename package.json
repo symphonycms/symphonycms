@@ -11,7 +11,8 @@
     "build": "grunt",
     "test": "grunt unit",
     "integration": "grunt integration",
-    "watch": "grunt watch"
+    "watch": "grunt watch",
+    "stan": "sh ./vendor/bin/phpstan analyse --memory-limit 512M -c tests/phpstan.neon symphony"
   },
   "devDependencies": {
     "grunt": "~1.0.3",
