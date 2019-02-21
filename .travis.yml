@@ -54,7 +54,7 @@ script:
   # run integration tests
   - npm run integration
   # run phpstan
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.1" ]] || [[ ${TRAVIS_PHP_VERSION:0:3} == "7.2" ]]; then phpstan analyse --memory-limit 512M -c tests/phpstan.neon symphony; fi;
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.1" ]] || [[ ${TRAVIS_PHP_VERSION:0:3} == "7.2" ]]; then npm run stan; fi;
 
 after_success:
   # merge code coverage reports
