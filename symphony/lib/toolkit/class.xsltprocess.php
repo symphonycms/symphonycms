@@ -40,6 +40,13 @@ class XSLTProcess
     private $_lastContext = null;
 
     /**
+     * A path where the XSLTProc will write its profiling information.
+     *
+     * @var string
+     */
+    private $profiling = null;
+
+    /**
      * Sets the parameters that will output with the resulting page
      * and be accessible in the XSLT. This function translates all ' into
      * `&apos;`, with the tradeoff being that a <xsl:value-of select='$param' />
@@ -110,6 +117,10 @@ class XSLTProcess
 
         if (!empty($this->_registered_php_functions)) {
             $XSLProc->registerPHPFunctions($this->_registered_php_functions);
+        }
+
+        if (!empty($this->profiling)) {
+            $XSLProc->setProfiling($this->profiling);
         }
 
         $result = @$this->__process(
@@ -352,5 +363,26 @@ class XSLTProcess
         }
 
         return ($all ? $this->_errors : each($this->_errors));
+    }
+
+    /**
+     * Gets the current profiling file path
+     *
+     * @return string
+     */
+    public function getProfiling()
+    {
+        return $this->profiling;
+    }
+
+    /**
+     * Sets the current profiling file path
+     *
+     * @param $profiling string
+     *  The file path
+     */
+    public function setProfiling($profiling)
+    {
+        $this->profiling = $profiling;
     }
 }
