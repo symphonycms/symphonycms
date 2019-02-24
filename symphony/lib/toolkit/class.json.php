@@ -167,7 +167,7 @@ class JSON
         if (Lang::isUnicodeCompiled()) {
             $valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $name);
         } else {
-            $valid_name = preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $name);
+            $valid_name = preg_match('/^[A-z]([\w\d\-_\.]+)?$/i', $name);
         }
 
         if ($valid_name) {
