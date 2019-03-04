@@ -55,6 +55,7 @@ $straight = array(
     '™' => 'TM',    '®'  => 'r',    '|' => '-',
     '.' => '-',     '='  => '-',    ' ' => '-',
     '―' => '-',     '‑' => '-',     '#' => null,
+    '{' => null,    '}' => null,    '*' => null,
 
     // Special characters
     'Nº' => 'number',
