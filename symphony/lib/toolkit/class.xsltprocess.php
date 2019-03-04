@@ -138,6 +138,8 @@ class XsltProcess
         set_error_handler(array($this, 'trapXMLError'));
         // Prevent remote entities from being loaded, RE: #1939
         $elOLD = libxml_disable_entity_loader(true);
+        // Remove null bytes from XML
+        $xml = str_replace(chr(0), '', $xml);
         $xmlDoc->loadXML($xml, LIBXML_NONET | LIBXML_DTDLOAD | LIBXML_DTDATTR | defined('LIBXML_COMPACT') ? LIBXML_COMPACT : 0);
         libxml_disable_entity_loader($elOLD);
 
