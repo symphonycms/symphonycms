@@ -1,5 +1,7 @@
 <?php
-
+if (class_exists('JSONException')) {
+    return;
+}
 /**
  * @package toolkit
  */
