@@ -11,6 +11,7 @@
  *
  * @since Symphony 2.3
  */
+if (!class_exists('JSONException')) {
 class JSONException extends Exception
 {
     /**
@@ -53,6 +54,7 @@ class JSONException extends Exception
 
         parent::__construct($message, $code, $ex);
     }
+}
 }
 
 /**
