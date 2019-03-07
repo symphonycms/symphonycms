@@ -1,5 +1,8 @@
 <?php
-
+// This class exists in PHP7.3
+if (class_exists('JSONException', false)) {
+    return;
+}
 /**
  * @package toolkit
  */
@@ -11,7 +14,6 @@
  *
  * @since Symphony 2.3
  */
-if (!class_exists('JSONException', false)) {
 class JSONException extends Exception
 {
     /**
@@ -54,5 +56,4 @@ class JSONException extends Exception
 
         parent::__construct($message, $code, $ex);
     }
-}
 }
