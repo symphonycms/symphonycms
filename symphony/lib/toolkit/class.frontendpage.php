@@ -500,7 +500,7 @@ class FrontendPage extends XSLTPage
             // will strip '.' as it's technically punctuation.
             if (strpos($key, '.') !== false) {
                 $parts = explode('.', $key);
-                $field_handle = '.' . array_pop($parts);
+                $field_handle = '.' . Lang::createHandle(array_pop($parts));
                 $key = implode('', $parts);
             } else {
                 $field_handle = '';
