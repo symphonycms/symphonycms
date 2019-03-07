@@ -5,13 +5,13 @@
  */
 
 /**
- * The `SymJSONException` class extends the base `Exception` class. It's only
+ * The `JSONException` class extends the base `Exception` class. It's only
  * difference is that it will translate the `$code` to a human readable
  * error.
  *
  * @since Symphony 2.3
  */
-class SymJSONException extends Exception
+class JSONException extends Exception
 {
     /**
      * Constructor takes a `$message`, `$code` and the original Exception, `$ex`.
@@ -71,7 +71,7 @@ class JSON
      * equivalent XML version (either standalone or as a fragment). The JSON
      * will be added under a root node of `<data>`.
      *
-     * @throws SymJSONException
+     * @throws JSONException
      * @param string $json
      *  The JSON formatted class
      * @param boolean $standalone
@@ -90,16 +90,16 @@ class JSON
         if (preg_match('/(\{|\[).*(\}|\])/s', $json, $matches)) {
             $json = $matches[0];
         } else {
-            throw new SymJSONException(__("JSON not formatted correctly"));
+            throw new JSONException(__("JSON not formatted correctly"));
         }
 
         $data = json_decode($json);
         if (function_exists('json_last_error')) {
             if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new SymJSONException(__("JSON not formatted correctly"), json_last_error());
+                throw new JSONException(__("JSON not formatted correctly"), json_last_error());
             }
         } elseif (!$data) {
-            throw new SymJSONException(__("JSON not formatted correctly"));
+            throw new JSONException(__("JSON not formatted correctly"));
         }
 
         $data_element = self::_process($data, self::$dom->createElement('data'));
