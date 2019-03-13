@@ -90,4 +90,14 @@ final class DatabaseInsertTest extends TestCase
             ->updateOnDuplicateKey()
             ->updateOnDuplicateKey();
     }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testDUPLICATEBEFOREINSERT()
+    {
+        $db = new Database([]);
+        $sql = $db->insert('tbl_insert')
+            ->updateOnDuplicateKey();
+    }
 }
