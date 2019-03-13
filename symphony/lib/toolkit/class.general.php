@@ -344,7 +344,7 @@ class General
         $string = preg_replace('/[\s]+/', $delim, $string);
 
         // Find all legal characters
-        preg_match_all('/[^<>?@:!-\/\[-`;‘’…]+/u', $string, $matches);
+        preg_match_all('/[^<>?@:!\-\/\[-`;‘’…]+/u', $string, $matches);
 
         // Join only legal character with the $delim
         $string = implode($delim, $matches[0]);

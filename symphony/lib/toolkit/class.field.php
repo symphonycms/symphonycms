@@ -912,7 +912,7 @@ class Field
         if (Lang::isUnicodeCompiled()) {
             $valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $element_name);
         } else {
-            $valid_name = preg_match('/^[A-z]([\w\d-_\.]+)?$/i', $element_name);
+            $valid_name = preg_match('/^[A-z]([\w\d\-_\.]+)?$/i', $element_name);
         }
 
         if ($label === '') {

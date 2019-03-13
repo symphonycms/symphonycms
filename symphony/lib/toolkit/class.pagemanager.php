@@ -706,7 +706,7 @@ class PageManager
     {
         return Lang::createHandle($name, 255, '-', false, true, array(
             '@^[^a-z\d]+@i' => '',
-            '/[^\w-\.]/i' => ''
+            '/[^\w\-\.]/i' => ''
         ));
     }
 
