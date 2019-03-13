@@ -101,6 +101,8 @@ final class DatabaseInsert extends DatabaseStatement
     {
         if ($this->containsSQLParts('on duplicate')) {
             throw new DatabaseStatementException('DatabaseInsert can not hold more than one on duplicate clause');
+        } elseif (empty($this->getValues())) {
+            throw new DatabaseStatementException('updateOnDuplicateKey() needs values() to be called first');
         }
         $update = implode(self::LIST_DELIMITER, General::array_map(function ($key, $value) {
             $key = $this->asTickedString($key);
