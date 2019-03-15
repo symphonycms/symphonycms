@@ -89,13 +89,13 @@ class Mutex
      * @param string $path
      *  The path the lock should be written, defaults to the current
      *  working directory.
-     * @param string $sleepTime
-     *  The time in secondes between each try. Defaults to 1.
      * @param string $maxRetry
      *  The number of try before give up. Defaults to 1.
+     * @param string $sleepTime
+     *  The time in secondes between each try. Defaults to 1.
      * @return boolean
      */
-    public static function acquireOrWait($id, $ttl = 5, $path = '.', $sleepTime = 1, $maxRetry = 1) {
+    public static function acquireOrWait($id, $ttl = 5, $path = '.', $maxRetry = 1, $sleepTime = 1) {
         $result = false;
         $continueFlag = false;
         do {
