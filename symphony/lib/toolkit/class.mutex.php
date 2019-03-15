@@ -74,6 +74,43 @@ class Mutex
     }
 
     /**
+     * Creates a lock file if one does not already exist with a certain
+     * time to live (TTL) at a specific path. If a lock already exists,
+     * we will sleep for the $sleepTime and try again after. If $maxRetry equal 0,
+     * false will be returned otherwise boolean depending if a lock
+     * file was created successfully or not will be returned.
+     *
+     * @param string $id
+     *  The name of the lock file, which gets obfuscated using
+     *  generateLockFileName.
+     * @param integer $ttl
+     *  The length, in seconds, that the lock should exist for. Defaults
+     *  to 5.
+     * @param string $path
+     *  The path the lock should be written, defaults to the current
+     *  working directory.
+     * @param string $sleepTime
+     *  The time in secondes between each try. Defaults to 1.
+     * @param string $maxRetry
+     *  The number of try before give up. Defaults to 1.
+     * @return boolean
+     */
+    public static function acquireOrWait($id, $ttl = 5, $path = '.', $sleepTime = 1, $maxRetry = 1) {
+        $result = false;
+        $continueFlag = false;
+        do {
+            $result = self::acquire($id, $ttl, $path);
+            $continueFlag = ($maxRetry > 0 && $result == false);
+            $maxRetry--;
+            //Sleep only if we dont have a result and we will loop again
+            if ($continueFlag) {
+                sleep($sleepTime);
+            }
+        } while($continueFlag);
+        return $result;
+    }
+
+    /**
      * Removes a lock file. This is the only way a lock file can be removed
      *
      * @param string $id
