@@ -179,7 +179,7 @@ trait DatabaseWhereDefinition
                 $c = $c[$vk];
             }
             if (!$op) {
-                throw new DatabaseStatementException("Operation `$k` not valid");
+                throw new DatabaseStatementException("Operation `$vk` not valid");
             }
         }
         if (!is_string($k)) {
