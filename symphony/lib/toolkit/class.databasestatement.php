@@ -635,7 +635,8 @@ class DatabaseStatement
         $args = [];
         $openParenthesisCount = 0;
         foreach ($arguments as $char) {
-            if (!trim($char)) {
+            // Ignore whitespace
+            if (General::strlen(trim($char)) === 0) {
                 continue;
             } elseif ($openParenthesisCount === 0 && $char === self::FCT_ARGS_DELIMITER) {
                 if (!empty($current)) {

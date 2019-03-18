@@ -518,6 +518,24 @@ final class DatabaseStatementTest extends TestCase
         $this->assertEquals(4, count($args));
     }
 
+    public function testSplitFunctionArgumentsFullyQualifiedWithTrailingZero()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $args = $sql->splitFunctionArguments('XYZ(a130.super0,  test.b,c)');
+        $this->assertEquals('XYZ(a130.super0,test.b,c)', $args[0]);
+        $this->assertEquals(1, count($args));
+    }
+
+    public function testSplitFunctionArgumentsFullyQualifiedWithWhitespaces()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $args = $sql->splitFunctionArguments("XYZ(\ra130\t .super, \r\n \0test . b,\0c\x0B)");
+        $this->assertEquals('XYZ(a130.super,test.b,c)', $args[0]);
+        $this->assertEquals(1, count($args));
+    }
+
     /**
      * @expectedException DatabaseStatementException
      */
