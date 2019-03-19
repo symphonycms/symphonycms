@@ -5,6 +5,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers DatabaseQuery
  * @covers DatabaseQueryJoin
+ * @covers DatabaseWhereDefinition
  */
 final class DatabaseQueryTest extends TestCase
 {
@@ -507,6 +508,17 @@ final class DatabaseQueryTest extends TestCase
         $values = $sql->getValues();
         $this->assertEquals('[[:<:]]handle[[:>:]]', $values['x'], 'x is [[:<:]]handle[[:>:]]');
         $this->assertEquals(1, count($values), '1 value');
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSELECTInvalidOperation()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+                  ->from('tbl_test_table')
+                  ->where(['x' => ['operation' => 'value']]);
     }
 
     public function testSELECTINWithPlaceholders()
