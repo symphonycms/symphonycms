@@ -448,7 +448,14 @@ class EntryManager
         }
 
         if ($entry_id && !is_array($entry_id)) {
-            $entry_id = array($entry_id);
+            // The entry ID may be a comma-separated string, so explode it to make it
+            // a proper array
+            $entry_id = explode(',', $entry_id);
+        }
+
+        // An existing entry ID will be an array now, and we can force integer values
+        if ($entry_id) {
+            $entry_id = array_map(array('General', 'intval'), $entry_id);
         }
 
         $sql = sprintf("
