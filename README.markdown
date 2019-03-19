@@ -4,10 +4,10 @@
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
 
-- Version: 2.7.7
-- Date: 13th June 2018
-- [Release notes](https://www.getsymphony.com/download/releases/version/2.7.7/)
-- [Github repository](https://github.com/symphonycms/symphony-2/tree/2.7.7)
+- Version: 2.7.8
+- Date: 19th March 2019
+- [Release notes](https://www.getsymphony.com/download/releases/version/2.7.8/)
+- [Github repository](https://github.com/symphonycms/symphony-2/tree/2.7.8)
 - [MIT Licence](https://github.com/symphonycms/symphony-2/blob/master/LICENCE)
 
 ## Contents
@@ -26,7 +26,7 @@
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.7.7` and is considered stable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.7.8` and is considered stable.
 
 Useful places:
 
