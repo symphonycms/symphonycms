@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers DatabaseDelete
+ * @covers DatabaseWhereDefinition
  */
 final class DatabaseDeleteTest extends TestCase
 {

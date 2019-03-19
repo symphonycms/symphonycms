@@ -4,6 +4,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers DatabaseAlter
+ * @covers DatabaseKeyDefinition
+ * @covers DatabaseColumnDefinition
  */
 final class DatabaseAlterTest extends TestCase
 {

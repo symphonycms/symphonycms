@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers DatabaseShow
+ * @covers DatabaseWhereDefinition
  */
 final class DatabaseShowTest extends TestCase
 {

@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers DatabaseUpdate
+ * @covers DatabaseWhereDefinition
  */
 final class DatabaseUpdateTest extends TestCase
 {
