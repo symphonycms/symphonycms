@@ -37,9 +37,9 @@ Useful places:
 
 ## Server requirements
 
-- PHP 5.3-5.6 or 7.0-7.3
+- PHP 5.6 or 7.0-7.3
 - PHP’s LibXML module, with the XSLT extension enabled (`--with-xsl`)
-- MySQL 5.5 or above is recommended
+- MySQL 5.7 or above is recommended
 - A webserver (known to be used with Apache, Litespeed, Nginx and Hiawatha)
 - Apache’s `mod_rewrite` module or equivalent
 - PHP’s built in `json` functions, which are enabled by default in PHP 5.2 and above; if they are missing, ensure PHP wasn’t compiled with `--disable-json`
