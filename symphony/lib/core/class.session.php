@@ -210,7 +210,12 @@ class Session
             'session_data' => $data
         );
 
-        return Symphony::Database()->insert($fields, 'tbl_sessions', true);
+        return Symphony::Database()
+            ->insert('tbl_sessions')
+            ->values($fields)
+            ->updateOnDuplicateKey()
+            ->execute()
+            ->success();
     }
 
     /**
@@ -249,17 +254,17 @@ class Session
      */
     public static function read($id)
     {
-        return (string)Symphony::Database()->fetchVar(
-            'session_data',
-            0,
-            sprintf(
-                "SELECT `session_data`
-                FROM `tbl_sessions`
-                WHERE `session` = '%s'
-                LIMIT 1",
-                Symphony::Database()->cleanValue($id)
-            )
-        );
+        if (!$id) {
+            return null;
+        }
+
+        return (string)Symphony::Database()
+            ->select(['session_data'])
+            ->from('tbl_sessions')
+            ->where(['session' => $id])
+            ->limit(1)
+            ->execute()
+            ->variable('session_data');
     }
 
     /**
@@ -273,14 +278,15 @@ class Session
      */
     public static function destroy($id)
     {
-        return Symphony::Database()->query(
-            sprintf(
-                "DELETE
-                FROM `tbl_sessions`
-                WHERE `session` = '%s'",
-                Symphony::Database()->cleanValue($id)
-            )
-        );
+        if (!$id) {
+            return true;
+        }
+
+        return Symphony::Database()
+            ->delete('tbl_sessions')
+            ->where(['session' => $id])
+            ->execute()
+            ->success();
     }
 
     /**
@@ -296,13 +302,10 @@ class Session
      */
     public static function gc($max)
     {
-        return Symphony::Database()->query(
-            sprintf(
-                "DELETE
-                FROM `tbl_sessions`
-                WHERE `session_expires` <= %d",
-                Symphony::Database()->cleanValue(time() - $max)
-            )
-        );
+        return Symphony::Database()
+            ->delete('tbl_sessions')
+            ->where(['session_expires' => ['<=' => time() - $max]])
+            ->execute()
+            ->success();
     }
 }

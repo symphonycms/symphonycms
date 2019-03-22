@@ -390,6 +390,7 @@ class Database
      * This function should not be used. Instead, pass your data in the proper
      * function that will delegate to SQL parameters.
      *
+     * @deprecated @since Symphony 3.0.0
      * @see DatabaseStatement::appendValues()
      * @param string $value
      *  The string to be encoded into an escaped SQL string
@@ -413,6 +414,7 @@ class Database
      * This function should not be used. Instead, pass your data in the proper
      * function that will delegate to SQL parameters.
      *
+     * @deprecated @since Symphony 3.0.0
      * @see quote
      * @param array $array
      *  The associative array of data to encode, this parameter is manipulated
@@ -501,18 +503,6 @@ class Database
     }
 
     /**
-     * Factory method that creates a new `SELECT DISTINCT ...` statement.
-     *
-     * @param array $values
-     *  The columns to select. By default, it's `*`.
-     * @return DatabaseQuery
-     */
-    public function selectDistinct(array $values = ['*'])
-    {
-        return new DatabaseQuery($this, $values, 'DISTINCT');
-    }
-
-    /**
      * Factory method that creates a new `SELECT COUNT(...)` statement.
      *
      * @see select()
@@ -533,6 +523,16 @@ class Database
     public function show()
     {
         return new DatabaseShow($this);
+    }
+
+    /**
+     * Factory method that creates a new `SHOW COLUMNS` statement.
+     *
+     * @return DatabaseShow
+     */
+    public function showColumns()
+    {
+        return new DatabaseShow($this, 'COLUMNS');
     }
 
     /**
@@ -580,7 +580,7 @@ class Database
      */
     public function getInsertID()
     {
-        return General::intval($this->conn->lastInsertId);
+        return General::intval($this->conn->lastInsertId());
     }
 
     /**
@@ -626,7 +626,8 @@ class Database
         $stm = new DatabaseDelete($this, $table);
         // Compat layer
         if ($where) {
-            $stm->unsafeAppendSQLPart('unsafe-where', "WHERE $where");
+            $where = $stm->replaceTablePrefix($where);
+            $stm->unsafe()->unsafeAppendSQLPart('where', "WHERE $where");
             return $stm->execute()->success();
         }
         return $stm;
@@ -846,7 +847,7 @@ class Database
 
         try {
             // Validate the query
-            $this->validateSQLQuery($query);
+            $this->validateSQLQuery($query, $stm->isSafe());
             // Prepare the query
             $pstm = $this->conn->prepare($query);
             $this->lastQuery = $pstm->queryString;
@@ -887,17 +888,22 @@ class Database
      *
      * @see execute()
      * @param string $query
+     *  The query to test.
+     * @param boolean $strict
+     *  Perform extra validation. True by default.
      * @return void
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      */
-    final public function validateSQLQuery($query)
+    final public function validateSQLQuery($query, $strict = true)
     {
-        if (strpos('--', $query) !== false) {
-            throw new DatabaseException('Query contains illegal characters: `--`');
-        } elseif (strpos('\'', $query) !== false) {
-            throw new DatabaseException('Query contains illegal character: `\'`');
-        } elseif (strpos(';', $query) !== false) {
-            throw new DatabaseException('Query contains illegal character: `;`');
+        if (strpos($query, '\'--;') !== false) {
+            throw new DatabaseSatementException('Query contains SQL injection');
+        } elseif ($strict && strpos($query, '--') !== false) {
+            throw new DatabaseSatementException('Query contains illegal characters: `--`');
+        } elseif ($strict && strpos($query, '\'') !== false) {
+            throw new DatabaseSatementException('Query contains illegal character: `\'`');
+        } elseif ($strict && strpos($query, ';') !== false) {
+            throw new DatabaseSatementException('Query contains illegal character: `;`');
         }
     }
 
@@ -1047,9 +1053,9 @@ class Database
             // TODO: Log unlogged queries
             Symphony::ExtensionManager()->notifyMembers(
                 'PostQueryExecution',
-                class_exists('Administration') ? '/backend/' : '/frontend/',
+                class_exists('Administration', false) ? '/backend/' : '/frontend/',
                 [
-                    'query' => $this->lastQuery,
+                    'query' => $this->lastQuery, // TODO: Format
                     'query_hash' => $this->lastQueryHash,
                     'execution_time' => $stop
                 ]
@@ -1058,7 +1064,7 @@ class Database
 
         // Keep internal log for easy debugging
         $this->log[] = [
-            'query' => $this->lastQuery,
+            'query' => $this->lastQuery, // TODO: Format
             'query_hash' => $this->lastQueryHash,
             'execution_time' => $stop
         ];
@@ -1134,6 +1140,9 @@ class Database
      */
     public function cleanValue($value)
     {
+        if (Symphony::Log()) {
+            Symphony::Log()->pushDeprecateWarningToLog('Database::cleanValue()', 'The new API');
+        }
         return trim($this->quote($value), "'");
     }
 
@@ -1237,7 +1246,7 @@ class Database
         if ($query_type == self::__WRITE_OPERATION__) {
             $query = preg_replace('/TYPE=(MyISAM|InnoDB)/i', 'ENGINE=$1', $query);
         } elseif ($query_type == self::__READ_OPERATION__) {
-            if (preg_match('/^SELECT\s+SQL(_NO)?_CACHE/i', $query) === false) {
+            if (!preg_match('/^\s*SELECT\s+SQL(_NO)?_CACHE/i', $query)) {
                 if ($this->isCachingEnabled()) {
                     $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
                 } else {
@@ -1248,14 +1257,14 @@ class Database
         }
 
         try {
+            $resultPdo = $this->conn->query($query);
             // Execute it
             if ($fetchType) {
-                $resultPdo = $this->conn->query($query);
                 $result = $resultPdo->fetchAll($fetchType);
-                $resultPdo->closeCursor();
             } else {
-                $result = $this->conn->exec($query);
+                $result = $resultPdo->execute();
             }
+            $resultPdo->closeCursor();
             $this->queryCount++;
             $this->_lastResult = $result;
         } catch (PDOException $ex) {
@@ -1339,7 +1348,7 @@ class Database
     {
         $stm = $this->update($table)->set($fields);
         if ($where) {
-            $stm->unsafeAppendSQLPart('unsafe-where', "WHERE $where");
+            $stm->unsafeAppendSQLPart('where', "WHERE $where");
         }
         return $stm->execute()->success();
     }
@@ -1467,5 +1476,16 @@ class Database
     {
         $result = $this->fetch($query);
         return (empty($result) ? null : $result[$offset][$column]);
+    }
+}
+
+/**
+ * Compat layer: Recreate the old MySQL class by extending our new Database class
+ */
+class MySQL extends Database
+{
+    public function cleanValue($value)
+    {
+        return (new Database())->cleanValue($value);
     }
 }

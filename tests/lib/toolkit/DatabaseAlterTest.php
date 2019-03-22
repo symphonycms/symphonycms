@@ -36,10 +36,14 @@ final class DatabaseAlterTest extends TestCase
                         ],
                     ]);
         $this->assertEquals(
-            "ALTER TABLE `alter` ADD COLUMN `x` varchar(100) NOT NULL DEFAULT 'TATA', ADD COLUMN `y` datetime NOT NULL DEFAULT '2012-01-01 12:12:12'",
+            "ALTER TABLE `alter` ADD COLUMN `x` varchar(100) NOT NULL DEFAULT :x_default, ADD COLUMN `y` datetime NOT NULL DEFAULT :y_default",
             $sql->generateSQL(),
             'ALTER ADD COLUMN multiple clause'
         );
+        $values = $sql->getValues();
+        $this->assertEquals('TATA', $values['x_default'], 'x_default is "TATA"');
+        $this->assertEquals('2012-01-01 12:12:12', $values['y_default'], 'y_default is "2012-01-01 12:12:12"');
+        $this->assertEquals(2, count($values), '2 values');
     }
 
     public function testALTERADDCOLAFTER()

@@ -14,20 +14,18 @@ class AuthorDatasource extends Datasource
     public function __processAuthorFilter($field, $filter)
     {
         if (!is_array($filter)) {
-            $bits = preg_split('/,\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
-            $bits = array_map('trim', $bits);
-        } else {
-            $bits = $filter;
+            $filter = preg_split('/,\s*/', $filter, -1, PREG_SPLIT_NO_EMPTY);
+            $filter = array_map('trim', $filter);
         }
 
-        $authors = Symphony::Database()->fetchCol('id', sprintf("
-                SELECT `id` FROM `tbl_authors`
-                WHERE `%s` IN ('%s')",
-                $field,
-                implode("', '", $bits)
-        ));
+        $authors = Symphony::Database()
+            ->select(['id'])
+            ->from('tbl_authors')
+            ->where([$field => ['in' => $filter]])
+            ->execute()
+            ->column('id');
 
-        return (is_array($authors) && !empty($authors) ? $authors : null);
+        return is_array($authors) && !empty($authors) ? $authors : null;
     }
 
     public function execute(array &$param_pool = null)

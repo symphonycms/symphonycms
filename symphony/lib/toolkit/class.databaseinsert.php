@@ -47,7 +47,7 @@ final class DatabaseInsert extends DatabaseStatement
      * Appends one or multiple values into the insert statements.
      * Can only be called once in the lifetime of the object.
      *
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      * @param array $values
      *  The values to append. Keys are columns names and values will be added
      *  to the value array and be substituted with SQL parameters.
@@ -57,7 +57,7 @@ final class DatabaseInsert extends DatabaseStatement
     public function values(array $values)
     {
         if ($this->containsSQLParts('values')) {
-            throw new DatabaseException('DatabaseInsert can not hold more than one values clause');
+            throw new DatabaseSatementException('DatabaseInsert can not hold more than one values clause');
         }
         $cols = '(' . $this->asTickedList(array_keys($values)) . ')';
         $this->unsafeAppendSQLPart('cols', $cols);
@@ -71,14 +71,14 @@ final class DatabaseInsert extends DatabaseStatement
      * Creates a ON DUPLICATE KEY UPDATE statement, based on values already appended.
      * Can only be called once in the lifetime of the object.
      *
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      * @return DatabaseInsert
      *  The current instance
      */
     public function updateOnDuplicateKey()
     {
         if ($this->containsSQLParts('on duplicate')) {
-            throw new DatabaseException('DatabaseInsert can not hold more than one on duplicate clause');
+            throw new DatabaseSatementException('DatabaseInsert can not hold more than one on duplicate clause');
         }
         $update = implode(self::LIST_DELIMITER, General::array_map(function ($key, $value) {
             $key = $this->asTickedString($key);

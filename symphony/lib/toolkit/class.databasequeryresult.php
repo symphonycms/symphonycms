@@ -67,6 +67,7 @@ final class DatabaseQueryResult extends DatabaseStatementResult implements Itera
      * @param int $type
      *  The type to use
      *  Either PDO::FETCH_ASSOC or PDO::FETCH_OBJ
+     * @throws DatabaseSatementException
      * @return DatabaseQueryResult
      *  The current instance
      */
@@ -76,7 +77,7 @@ final class DatabaseQueryResult extends DatabaseStatementResult implements Itera
             'type' => ['var' => $type, 'type' => 'int'],
         ]);
         if ($type !== PDO::FETCH_ASSOC && $type !== PDO::FETCH_OBJ) {
-            throw new DatabaseException('Invalid fetch type');
+            throw new DatabaseSatementException('Invalid fetch type');
         }
         $this->type = $type;
         return $this;
@@ -88,6 +89,7 @@ final class DatabaseQueryResult extends DatabaseStatementResult implements Itera
      * @param int $orientation
      *  The orientation value to use.
      *  Either PDO::FETCH_ORI_NEXT or PDO::FETCH_ORI_ABS
+     * @throws DatabaseSatementException
      * @return DatabaseQueryResult
      *  The current instance
      */
@@ -96,15 +98,15 @@ final class DatabaseQueryResult extends DatabaseStatementResult implements Itera
         General::ensureType([
             'orientation' => ['var' => $orientation, 'type' => 'int'],
         ]);
-        if ($type !== PDO::FETCH_ORI_NEXT && $type !== PDO::FETCH_OBJ) {
-            throw new DatabaseException('Invalid fetch type');
+        if ($type !== PDO::FETCH_ORI_NEXT && $type !== PDO::FETCH_ORI_ABS) {
+            throw new DatabaseSatementException('Invalid orientation type');
         }
         $this->type = $type;
         return $this;
     }
 
     /**
-     * Retrieve the the next available record.
+     * Retrieves the the next available record.
      *
      * @see type()
      * @see orientation()
@@ -123,7 +125,7 @@ final class DatabaseQueryResult extends DatabaseStatementResult implements Itera
     }
 
     /**
-     * Retrieve all available rows.
+     * Retrieves all available rows.
      *
      * @see type()
      * @see orientation()
@@ -155,24 +157,55 @@ final class DatabaseQueryResult extends DatabaseStatementResult implements Itera
      * Retrieves all values for the specified column.
      *
      * @param string|int $col
+     * @throws DatabaseSatementException
      * @return array
      *  An array containing all the values for the specified column
-     * @throws DatabaseException
      */
     public function column($col)
     {
         if (!is_string($col) && !is_int($col)) {
-            throw new DatabaseException('`$col must be a string or an integer');
+            throw new DatabaseSatementException('`$col must be a string or an integer');
         }
         $rows = [];
         while ($row = $this->next()) {
             if ($this->type === PDO::FETCH_OBJ) {
                 $rows[] = $row->{$col};
             } else {
+                if (is_int($col)) {
+                    $row = array_values($row);
+                }
                 $rows[] = $row[$col];
             }
         }
         return $rows;
+    }
+
+    /**
+     * Retrieves all available rows, indexed with the values of the
+     * specified column.
+     *
+     * @param string|int $col
+     * @throws DatabaseSatementException
+     * @return array
+     *  An array containing all the values indexed by the specified column
+     */
+    public function rowsIndexedByColumn($col)
+    {
+        if (!is_string($col) && !is_int($col)) {
+            throw new DatabaseSatementException('`$col must be a string or an integer');
+        }
+        $rows = $this->rows();
+        $index = [];
+        foreach ($rows as &$row) {
+            if (is_int($col)) {
+                $row = array_values($row);
+            }
+            if (!isset($row[$col])) {
+                throw new DatabaseSatementException("Row does not have column `$col`");
+            }
+            $index[$row[$col]] = $row;
+        }
+        return $index;
     }
 
     /**
@@ -193,16 +226,23 @@ final class DatabaseQueryResult extends DatabaseStatementResult implements Itera
      * @see type()
      * @see orientation()
      * @see offset()
-     * @param string $col
+     * @param string|int $col
+     * @throws DatabaseSatementException
      * @return mixed
      *  The value of the column
      */
     public function variable($col)
     {
+        if (!is_string($col) && !is_int($col)) {
+            throw new DatabaseSatementException('`$col must be a string or an integer');
+        }
         if ($row = $this->next()) {
             if ($this->type === PDO::FETCH_OBJ) {
                 return $row->{$col};
             } else {
+                if (is_int($col)) {
+                    $row = array_values($row);
+                }
                 return $row[$col];
             }
         }

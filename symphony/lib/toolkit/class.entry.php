@@ -105,10 +105,14 @@ class Entry
         $fields['author_id'] = is_null($this->get('author_id')) ? 1 : (int)$this->get('author_id'); // Author_id cannot be null
         $fields['modification_author_id'] = is_null($this->get('modification_author_id')) ? $fields['author_id'] : (int)$this->get('modification_author_id');
 
-        Symphony::Database()->insert($fields, 'tbl_entries');
+        $inserted = Symphony::Database()
+            ->insert('tbl_entries')
+            ->values($fields)
+            ->execute()
+            ->success();
 
-        if (!$entry_id = Symphony::Database()->getInsertID()) {
-            return null;
+        if ($inserted && !$entry_id = Symphony::Database()->getInsertID()) {
+            return 0;
         }
 
         $this->set('id', $entry_id);
@@ -192,7 +196,10 @@ class Entry
 
         // Failed to create entry, cleanup
         if ($status !== Entry::__ENTRY_OK__ && !is_null($entry_id)) {
-            Symphony::Database()->delete('tbl_entries', sprintf(" `id` = %d ", $entry_id));
+            Symphony::Database()
+                ->delete('tbl_entries')
+                ->where(['id' => $entry_id])
+                ->execute();
         }
 
         return $status;

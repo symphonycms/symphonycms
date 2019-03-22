@@ -408,7 +408,6 @@ class contentPublish extends AdministrationPage
                 }
 
                 // Handle date meta data #2003
-                $handle = Symphony::Database()->cleanValue($handle);
                 if (in_array($handle, array('system:creation-date', 'system:modification-date'))) {
                     $date_joins = '';
                     $date_where = '';
@@ -1290,13 +1289,15 @@ class contentPublish extends AdministrationPage
         }
 
         // Determine the page title
-        $field_id = Symphony::Database()->fetchVar('id', 0, sprintf("
-            SELECT `id`
-            FROM `tbl_fields`
-            WHERE `parent_section` = %d
-            ORDER BY `sortorder` LIMIT 1",
-            $section->get('id')
-        ));
+        $field_id = Symphony::Database()
+            ->select(['id'])
+            ->from('tbl_fields')
+            ->where(['parent_section' => $section->get('id')])
+            ->orderBy('sortorder')
+            ->limit(1)
+            ->execute()
+            ->variable('id');
+
         if (!is_null($field_id)) {
             $field = FieldManager::fetch($field_id);
         }
@@ -1307,7 +1308,7 @@ class contentPublish extends AdministrationPage
             $title = '';
         }
 
-        if (trim($title) == '') {
+        if (!trim($title)) {
             $title = __('Untitled');
         }
 

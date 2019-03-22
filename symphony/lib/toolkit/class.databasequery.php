@@ -18,24 +18,19 @@ class DatabaseQuery extends DatabaseStatement
      * and an optional optimizer value.
      *
      * @see Database::select()
-     * @see Database::selectDistinct()
+     * @see Database::selectCount()
      * @param Database $db
      *  The underlying database connection
-     * @param string $values
-     *  The columns names for include in the projection
-     * @param string $optimizer
-     *  An optional optimizer hint.
-     *  Currently, only DISTINCT is supported
+     * @param string $projection
+     *  The columns names for include in the projection.
+     *  Default to an empty projection
      */
-    public function __construct(Database $db, array $values = [], $optimizer = null)
+    public function __construct(Database $db, array $projection = [])
     {
         parent::__construct($db, 'SELECT');
         $this->unsafeAppendSQLPart('cache', $db->isCachingEnabled() ? 'SQL_CACHE' : 'SQL_NO_CACHE');
-        if ($optimizer === 'DISTINCT') {
-            $this->unsafeAppendSQLPart('optimizer', 'DISTINCT');
-        }
-        if (!empty($values)) {
-            $this->unsafeAppendSQLPart('projection', $this->asTickedList($values));
+        if (!empty($projection)) {
+            $this->unsafeAppendSQLPart('projection', $this->asProjectionList($projection));
         }
     }
 
@@ -61,22 +56,50 @@ class DatabaseQuery extends DatabaseStatement
                 'outer join',
             ],
             'where',
-            'order by',
             'group by',
             'having',
+            'order by',
             'limit',
             'offset',
         ];
     }
 
     /**
-     * Appends a FROM `table` clause
+     * Add the DISTINCT optimizer to the query.
+     *
+     * @return DatabaseQuery
+     *  The current instance
+     */
+    public function distinct()
+    {
+        if ($this->containsSQLParts('optimizer')) {
+            throw new DatabaseSatementException('Cannot add multiple optimizer clauses');
+        }
+        return $this->unsafeAppendSQLPart('optimizer', 'DISTINCT');
+    }
+
+    /**
+     * Appends values to the projection.
+     *
+     * @param string $projection
+     *  The columns names for include in the projection
+     * @return DatabaseQuery
+     *  The current instance
+     */
+    public function projection(array $projection = [])
+    {
+        $op = $this->containsSQLParts('projection') ? ', ' : '';
+        return $this->unsafeAppendSQLPart('projection', $op . $this->asProjectionList($projection));
+    }
+
+    /**
+     * Appends a FROM `table` clause.
      * Can only be called once in the lifetime of the object.
      *
      * @see alias()
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      * @param string $table
-     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  The name of the table to act on, including the tbl_ prefix, which will be changed
      *  to the Database table prefix.
      * @param string $alias
      *  An optional alias for the table. Defaults to null, i.e. no alias.
@@ -86,7 +109,7 @@ class DatabaseQuery extends DatabaseStatement
     public function from($table, $alias = null)
     {
         if ($this->containsSQLParts('table')) {
-            throw new DatabaseException('DatabaseQuery can not hold more than one table clause');
+            throw new DatabaseSatementException('DatabaseQuery can not hold more than one table clause');
         }
         $table = $this->replaceTablePrefix($table);
         $table = $this->asTickedString($table);
@@ -101,7 +124,7 @@ class DatabaseQuery extends DatabaseStatement
      * Appends a AS `alias` clause.
      * Can only be called once in the lifetime of the object.
      *
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      * @param string $alias
      *  The name of the alias
      * @return DatabaseQuery
@@ -110,7 +133,7 @@ class DatabaseQuery extends DatabaseStatement
     public function alias($alias)
     {
         if ($this->containsSQLParts('as')) {
-            throw new DatabaseException('DatabaseQuery can not hold more than one as clause');
+            throw new DatabaseSatementException('DatabaseQuery can not hold more than one as clause');
         }
         General::ensureType([
             'alias' => ['var' => $alias, 'type' => 'string'],
@@ -280,7 +303,7 @@ class DatabaseQuery extends DatabaseStatement
         if (!is_array($columns)) {
             $columns = [$columns];
         }
-        $group =  $this->asTickedList($columns);
+        $group = $this->asTickedList($columns);
         $op = $this->containsSQLParts('group by') ? ',' : 'GROUP BY';
         $this->unsafeAppendSQLPart('group by', "$op $group");
         return $this;
@@ -307,7 +330,7 @@ class DatabaseQuery extends DatabaseStatement
      * Appends one and only one LIMIT clause.
      * Can only be called once in the lifetime of the object.
      *
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      * @param int $limit
      *  The maximum number of records to return
      * @return DatabaseQuery
@@ -316,11 +339,11 @@ class DatabaseQuery extends DatabaseStatement
     public function limit($limit)
     {
         if ($this->containsSQLParts('limit')) {
-            throw new DatabaseException('DatabaseQuery can not hold more than one limit clause');
+            throw new DatabaseSatementException('DatabaseQuery can not hold more than one limit clause');
         }
         $limit = General::intval($limit);
         if ($limit === -1) {
-            throw new DatabaseException("Invalid limit value: `$limit`");
+            throw new DatabaseSatementException("Invalid limit value: `$limit`");
         }
         $this->unsafeAppendSQLPart('limit', "LIMIT $limit");
         return $this;
@@ -330,7 +353,7 @@ class DatabaseQuery extends DatabaseStatement
      * Appends one and only one OFFSET clause.
      * Can only be called once in the lifetime of the object.
      *
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      * @param int $offset
      *  The number at which to start returning results
      * @return DatabaseQuery
@@ -339,11 +362,11 @@ class DatabaseQuery extends DatabaseStatement
     public function offset($offset)
     {
         if ($this->containsSQLParts('offset')) {
-            throw new DatabaseException('DatabaseQuery can not hold more than one offset clause');
+            throw new DatabaseSatementException('DatabaseQuery can not hold more than one offset clause');
         }
         $offset = General::intval($offset);
         if ($offset === -1) {
-            throw new DatabaseException("Invalid offset value: `$offset`");
+            throw new DatabaseSatementException("Invalid offset value: `$offset`");
         }
         $this->unsafeAppendSQLPart('offset', "OFFSET $offset");
         return $this;
@@ -418,7 +441,7 @@ class DatabaseQueryJoin
      * Appends a AS `alias` clause.
      * Can only be called once in the lifetime of the object.
      *
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      * @param string $alias
      *  The name of the alias
      * @return DatabaseQueryJoin
@@ -427,7 +450,7 @@ class DatabaseQueryJoin
     public function alias($alias)
     {
         if ($this->alias) {
-            throw new DatabaseException('DatabaseQueryJoin can not hold more than one as clause');
+            throw new DatabaseSatementException('DatabaseQueryJoin can not hold more than one as clause');
         }
         General::ensureType([
             'alias' => ['var' => $alias, 'type' => 'string'],

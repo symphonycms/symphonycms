@@ -5,7 +5,7 @@
  */
 
 /**
- * This DatabaseStatement specialization class allows creation of SHOW TABLES statements.
+ * This DatabaseStatement specialization class allows creation of SHOW TABLES/COLUMNS statements.
  */
 final class DatabaseShow extends DatabaseStatement
 {
@@ -16,11 +16,16 @@ final class DatabaseShow extends DatabaseStatement
      *
      * @see Database::show()
      * @param Database $db
-     *  The underlying database connection
+     *  The underlying database connection.
+     * @param string $show
+     *  Configure what to show, either TABLES or COLUMNS. Defaults to TABLES.
      */
-    public function __construct(Database $db)
+    public function __construct(Database $db, $show = 'TABLES')
     {
-        parent::__construct($db, 'SHOW TABLES');
+        if ($show !== 'COLUMNS' && $show !== 'TABLES') {
+            throw new DatabaseSatementException('Can only show TABLES or COLUMNS');
+        }
+        parent::__construct($db, "SHOW $show");
     }
 
     /**
@@ -32,9 +37,33 @@ final class DatabaseShow extends DatabaseStatement
     {
         return [
             'statement',
+            'table',
             'like',
             'where',
         ];
+    }
+
+    /**
+     * Appends a FROM `table` clause.
+     * Can only be called once in the lifetime of the object.
+     *
+     * @see alias()
+     * @throws DatabaseSatementException
+     * @param string $table
+     *  The name of the table to act on, including the tbl prefix which will be changed
+     *  to the Database table prefix.
+     * @return DatabaseShow
+     *  The current instance
+     */
+    public function from($table)
+    {
+        if ($this->containsSQLParts('table')) {
+            throw new DatabaseSatementException('DatabaseShow can not hold more than one table clause');
+        }
+        $table = $this->replaceTablePrefix($table);
+        $table = $this->asTickedString($table);
+        $this->unsafeAppendSQLPart('table', "FROM $table");
+        return $this;
     }
 
     /**
@@ -43,7 +72,7 @@ final class DatabaseShow extends DatabaseStatement
      * Can only be called once in the lifetime of the object.
      *
      * @see replaceTablePrefix()
-     * @throws DatabaseException
+     * @throws DatabaseSatementException
      * @param string $value
      *  The LIKE search pattern to look for
      * @return DatabaseShow
@@ -52,7 +81,7 @@ final class DatabaseShow extends DatabaseStatement
     public function like($value)
     {
         if ($this->containsSQLParts('like')) {
-            throw new DatabaseException('DatabaseShow can not hold more than one like clause');
+            throw new DatabaseSatementException('DatabaseShow can not hold more than one like clause');
         }
         $value = $this->replaceTablePrefix($value);
         $this->usePlaceholders();

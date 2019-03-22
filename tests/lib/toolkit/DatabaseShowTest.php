@@ -36,4 +36,20 @@ final class DatabaseShowTest extends TestCase
         $this->assertEquals(1, $values['x'], 'x is 1');
         $this->assertEquals(1, count($values), '1 value');
     }
+
+    public function testSHOWCOLUMNSLIKE()
+    {
+        $db = new Database([]);
+        $sql = $db->showColumns()
+                  ->from('tbl')
+                  ->like('%show%s');
+        $this->assertEquals(
+            "SHOW COLUMNS FROM `tbl` LIKE ?",
+            $sql->generateSQL(),
+            'SHOW COLUMNS LIKE clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals('%show%s', $values[0], '0 is %show%s');
+        $this->assertEquals(1, count($values), '1 value');
+    }
 }

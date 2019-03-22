@@ -54,6 +54,7 @@ trait DatabaseWhereDefinition
      * @param string|array|DatabaseSubQuery $c
      *  Can be a single value, a list of values or nested list of valid ($k, $c) pairs.
      *  Can also be a DatabaseSubQuery object to use as a sub-query.
+     * @throws DatabaseSatementException
      * @return string
      *  The SQL part containing logical comparison
      */
@@ -63,9 +64,10 @@ trait DatabaseWhereDefinition
         if (is_object($c)) {
             if (!($c instanceof DatabaseSubQuery)) {
                 $type = get_class($c);
-                throw new DatabaseException("Object of type `$type` can not be used in a where clause.");
+                throw new DatabaseSatementException("Object of type `$type` can not be used in a where clause");
             }
         } elseif (is_array($c)) {
+            $vk = current(array_keys($c));
             // key is a logical operator
             if ($k === 'or' || $k === 'and') {
                 $K = strtoupper($k);
@@ -77,10 +79,14 @@ trait DatabaseWhereDefinition
                 return implode(self::LIST_DELIMITER, General::array_map(function ($k, $c) {
                     return $this->buildWhereClauseFromArray([$k => $c]);
                 }, $c));
-            // key is the IN() function
-            } elseif ($k === 'in') {
+            // first value key is the IN() function
+            } elseif ($vk === 'in' || $vk === 'notin') {
+                $op = $vk === 'notin' ? 'NOT IN' : 'IN';
                 $values = current(array_values($c));
                 if (is_array($values)) {
+                    if (empty($values)) {
+                        throw new DatabaseSatementException("Values passed to `$op` must not be empty");
+                    }
                     $this->appendValues($values);
                     $this->usePlaceholders();
                     $pc = $this->asPlaceholdersList($values);
@@ -90,15 +96,16 @@ trait DatabaseWhereDefinition
                     }
                     $pc = $values->finalize()->generateSQL();
                 } else {
-                    throw new DatabaseException("The IN() function accepts array of scalars or a DatabaseSubQuery");
+                    throw new DatabaseSatementException("The IN() function accepts array of scalars or a DatabaseSubQuery");
                 }
-                $tk = $this->replaceTablePrefix(current(array_keys($c)));
+                $tk = $this->replaceTablePrefix($k);
                 $tk = $this->asTickedString($tk);
-                return "$tk IN ($pc)";
-            // key is the BETWEEN expression
-            } elseif ($k === 'between') {
+                return "$tk $op ($pc)";
+            // first value key is the BETWEEN expression
+            } elseif ($vk === 'between') {
                 $this->appendValues(current(array_values($c)));
-                $tk = $this->replaceTablePrefix(current(array_keys($c)));
+                $this->usePlaceholders();
+                $tk = $this->replaceTablePrefix($k);
                 $tk = $this->asTickedString($tk);
                 return "($tk BETWEEN ? AND ?)";
             // key is numeric
@@ -107,24 +114,24 @@ trait DatabaseWhereDefinition
             }
             // key is an [op => value] structure
             list($op, $c) = array_reduce(
-                ['<', '>', '=', '<=', '>=', 'like'],
+                ['<', '>', '=', '<=', '>=', '!=', 'like', 'regexp'],
                 function ($memo, $k) use ($c) {
                     if ($memo) {
                         return $memo;
                     }
                     if (!empty($c[$k])) {
-                        return [$k, $c[$k]];
+                        return [strtoupper($k), $c[$k]];
                     }
                     return null;
                 },
                 null
             );
             if (!$op) {
-                throw new DatabaseException("Operation `$k` not valid");
+                throw new DatabaseSatementException("Operation `$k` not valid");
             }
         }
         if (!is_string($k)) {
-            throw new DatabaseException('Cannot use a number as a column name');
+            throw new DatabaseSatementException('Cannot use a number as a column name');
         }
         // When we get here:
         //  $op is a valid SQL operator
@@ -140,7 +147,7 @@ trait DatabaseWhereDefinition
         if (is_string($c) && preg_match(self::FCT_PATTERN, $c) === 1) {
             $k = $this->asTickedString($c);
         // 3. Sub query
-        } elseif (is_object($c)) {
+        } elseif ($c instanceof DatabaseSubQuery) {
             foreach ($c->getValues() as $ck => $cv) {
                 $this->appendValues([$ck => $cv]);
             }
@@ -153,7 +160,7 @@ trait DatabaseWhereDefinition
         // 1. Use the scalar value
         } else {
             $this->appendValues([$k => $c]);
-            $k = $this->asPlaceholderString($k);
+            $k = $this->asPlaceholderString($k, $c);
         }
         return "$tk $op $k";
     }

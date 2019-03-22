@@ -99,20 +99,39 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
     public function createTable()
     {
-        return Symphony::Database()->query(
-            "CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
-              `id` int(11) unsigned NOT null auto_increment,
-              `entry_id` int(11) unsigned NOT null,
-              `file` varchar(255) default null,
-              `size` int(11) unsigned null,
-              `mimetype` varchar(100) default null,
-              `meta` varchar(255) default null,
-              PRIMARY KEY  (`id`),
-              UNIQUE KEY `entry_id` (`entry_id`),
-              KEY `file` (`file`),
-              KEY `mimetype` (`mimetype`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
-        );
+        return Symphony::Database()
+            ->createIfNotExists('tbl_entries_data_' . General::intval($this->get('id')))
+            ->fields([
+                'id' => [
+                    'type' => 'int(11)',
+                    'auto' => true,
+                ],
+                'entry_id' => 'int(11)',
+                'file' => [
+                    'type' => 'varchar(255)',
+                    'null' => true,
+                ],
+                'size' => [
+                    'type' => 'int(11)',
+                    'null' => true,
+                ],
+                'mimetype' => [
+                    'type' => 'varchar(100)',
+                    'null' => true,
+                ],
+                'meta' => [
+                    'type' => 'varchar(255)',
+                    'null' => true,
+                ],
+            ])
+            ->keys([
+                'id' => 'primary',
+                'entry_id' => 'unique',
+                'file' => 'key',
+                'mimetype' => 'key',
+            ])
+            ->execute()
+            ->success();
     }
 
     /*-------------------------------------------------------------------------
@@ -562,15 +581,13 @@ class FieldUpload extends Field implements ExportableField, ImportableField
 
     protected function getCurrentValues($entry_id)
     {
-        return Symphony::Database()->fetchRow(0, sprintf(
-            "SELECT `file`, `mimetype`, `size`, `meta`
-                FROM `tbl_entries_data_%d`
-                WHERE `entry_id` = %d
-                LIMIT 1
-            ",
-            $this->get('id'),
-            $entry_id
-        ));
+        return Symphony::Database()
+            ->select(['file', 'mimetype', 'size', 'meta'])
+            ->from('tbl_entries_data_' . $this->get('id'))
+            ->where(['entry_id' => $entry_id])
+            ->limit(1)
+            ->execute()
+            ->next();
     }
 
     /*-------------------------------------------------------------------------

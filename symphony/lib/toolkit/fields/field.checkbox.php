@@ -84,16 +84,27 @@ class FieldCheckbox extends Field implements ExportableField, ImportableField
 
     public function createTable()
     {
-        return Symphony::Database()->query(
-            "CREATE TABLE IF NOT EXISTS `tbl_entries_data_" . $this->get('id') . "` (
-              `id` int(11) unsigned NOT null auto_increment,
-              `entry_id` int(11) unsigned NOT null,
-              `value` enum('yes','no') NOT null default '".($this->get('default_state') == 'on' ? 'yes' : 'no')."',
-              PRIMARY KEY  (`id`),
-              UNIQUE KEY `entry_id` (`entry_id`),
-              KEY `value` (`value`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
-        );
+        return Symphony::Database()
+            ->createIfNotExists('tbl_entries_data_' . General::intval($this->get('id')))
+            ->fields([
+                'id' => [
+                    'type' => 'int(11)',
+                    'auto' => true,
+                ],
+                'entry_id' => 'int(11)',
+                'value' => [
+                    'type' => 'enum',
+                    'values' => ['yes', 'no'],
+                    'default' => $this->get('default_state') == 'on' ? 'yes' : 'no',
+                ]
+            ])
+            ->keys([
+                'id' => 'primary',
+                'entry_id' => 'unique',
+                'value' => 'key',
+            ])
+            ->execute()
+            ->success();
     }
 
     /*-------------------------------------------------------------------------
