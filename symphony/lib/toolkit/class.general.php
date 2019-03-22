@@ -332,28 +332,28 @@ class General
         // Strip out any tag
         $string = strip_tags($string);
 
-        // Remove punctuation
-        $string = preg_replace('/[\\.\'"]+/', null, $string);
+        // Replace existing delimiters in the string with a space
+        $string = str_replace($delim, ' ', $string);
 
-        // Trim it
-        if ($max_length > 0) {
-            $string = General::limitWords($string, $max_length);
-        }
+        // Remove punctuation
+        $string = preg_replace('/[\\.\'",!?]+/u', null, $string);
+
+        // Remove weird characters
+        $string = preg_replace('/[^\w-\s]+/u', null, $string);
 
         // Replace spaces (tab, newline etc) with the delimiter
-        $string = preg_replace('/[\s]+/', $delim, $string);
-
-        // Find all legal characters
-        preg_match_all('/[^<>?@:!\-\/\[-`;‘’…]+/u', $string, $matches);
-
-        // Join only legal character with the $delim
-        $string = implode($delim, $matches[0]);
+        $string = preg_replace('/[\s]+/u', $delim, $string);
 
         // Allow for custom rules
         if (is_array($additional_rule_set) && !empty($additional_rule_set)) {
             foreach ($additional_rule_set as $rule => $replacement) {
                 $string = preg_replace($rule, $replacement, $string);
             }
+        }
+
+        // Trim it
+        if ($max_length > 0) {
+            $string = General::limitWords($string, $max_length);
         }
 
         // Remove leading or trailing delim characters
@@ -1447,9 +1447,18 @@ class General
         // Compute the negative offset
         $offset = $maxChars - $original_length;
         // Find the first word break char before the maxChars limit is hit.
-        $last_word_break = max(array_filter(array_map(function ($wb) use ($string, $offset) {
+        $word_break = array_filter(array_map(function ($wb) use ($string, $offset) {
             return strrpos($string, $wb, $offset);
-        }, array(' ', '-', ',', '.', '!', '?', PHP_EOL))));
+        }, array(' ', '-', ',', '.', '!', '?', PHP_EOL)));
+
+        // If no word break is found
+        if (empty($word_break)) {
+            $last_word_break = $maxChars;
+        } else {
+            $last_word_break = max($word_break);
+        }
+
+        // Create the sub string
         $result = substr($string, 0, $last_word_break);
 
         if ($appendHellip) {
