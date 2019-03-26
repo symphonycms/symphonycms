@@ -11,7 +11,7 @@
  *
  * @since Symphony 2.3
  */
-if (!class_exists('JSONException')) {
+if (!class_exists('JSONException', false)) {
 class JSONException extends Exception
 {
     /**
