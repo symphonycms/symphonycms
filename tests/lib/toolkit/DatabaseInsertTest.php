@@ -67,6 +67,24 @@ final class DatabaseInsertTest extends TestCase
         );
     }
 
+    public function testINSERTWithLeadingZero()
+    {
+        $db = new Database([]);
+        $sql = $db->insert('tbl_insert')
+            ->values([
+                'x' => '0004543',
+            ]);
+        $this->assertEquals(
+            "INSERT INTO `insert` (`x`) VALUES (:x)",
+            $sql->generateSQL(),
+            'INSERT INTO clause with leading zero'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals('0004543', $values['x'], 'x is 0004543');
+        $this->assertTrue(is_string($values['x']));
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
     /**
      * @expectedException DatabaseStatementException
      */

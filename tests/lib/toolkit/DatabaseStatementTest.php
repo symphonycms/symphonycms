@@ -527,6 +527,15 @@ final class DatabaseStatementTest extends TestCase
         $this->assertEquals(1, count($args));
     }
 
+    public function testSplitFunctionArgumentsFullyQualifiedWithLeadingZero()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('');
+        $args = $sql->splitFunctionArguments('XYZ(0130a.0super11,  test.b,c)');
+        $this->assertEquals('XYZ(0130a.0super11,test.b,c)', $args[0]);
+        $this->assertEquals(1, count($args));
+    }
+
     public function testSplitFunctionArgumentsFullyQualifiedWithWhitespaces()
     {
         $db = new Database([]);
