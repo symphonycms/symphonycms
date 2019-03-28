@@ -121,16 +121,26 @@ class DatabaseTest extends TestCase
 
     public function testDeducePDOParamType()
     {
-        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType(''));
-        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType([]));
-        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType($this));
-        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(0));
-        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(1));
-        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(-1));
-        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType(1.00001));
-        $this->assertEquals(\PDO::PARAM_NULL, $this->db->deducePDOParamType(null));
-        $this->assertEquals(\PDO::PARAM_BOOL, $this->db->deducePDOParamType(true));
-        $this->assertEquals(\PDO::PARAM_BOOL, $this->db->deducePDOParamType(false));
+        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType(''), "''");
+        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType('test'), "'test'");
+        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType('0004543'), "'0004543'");
+        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(0004543), '0004543');
+        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(0004543.000), '0004543.000');
+        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType(0004543.001), '0004543.001');
+        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType([]), '[]');
+        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType($this), '$this');
+        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(0), '0');
+        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(1), '1');
+        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(2 ** 31), '2 ** 31');
+        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(2 ** 32), '2 ** 32');
+        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(2 ** 52), '2 ** 52');
+        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(2 ** 62), '2 ** 62');
+        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType(2 ** 63), '2 ** 63 int overflow');
+        $this->assertEquals(\PDO::PARAM_INT, $this->db->deducePDOParamType(-1), '-1');
+        $this->assertEquals(\PDO::PARAM_STR, $this->db->deducePDOParamType(1.00001), '1.00001');
+        $this->assertEquals(\PDO::PARAM_NULL, $this->db->deducePDOParamType(null), 'null');
+        $this->assertEquals(\PDO::PARAM_BOOL, $this->db->deducePDOParamType(true), 'true');
+        $this->assertEquals(\PDO::PARAM_BOOL, $this->db->deducePDOParamType(false), 'false');
     }
 
     /**

@@ -854,6 +854,8 @@ class Database
     {
         if ($value === null) {
             return PDO::PARAM_NULL;
+        } elseif (is_string($value)) {
+            return PDO::PARAM_STR;
         } elseif (is_numeric($value) && floatval(intval($value)) === floatval($value)) {
             return PDO::PARAM_INT;
         } elseif (is_bool($value)) {
