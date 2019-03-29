@@ -495,18 +495,18 @@ class FrontendPage extends XSLTPage
         $params = new XMLElement('params');
         foreach ($this->_param as $key => $value) {
             // To support multiple parameters using the 'datasource.field'
-            // we will pop off the field handle prior to sanitizing the
-            // key. This is because of a limitation where General::createHandle
+            // we explode the string and create handles from it parts.
+            // This is because of a limitation where Lang::createHandle()
             // will strip '.' as it's technically punctuation.
             if (strpos($key, '.') !== false) {
                 $parts = explode('.', $key);
-                $field_handle = '.' . Lang::createHandle(array_pop($parts));
-                $key = implode('', $parts);
+                $key = implode('.', array_map(function ($part) {
+                    return Lang::createHandle($part);
+                }, $parts));
             } else {
-                $field_handle = '';
+                $key = Lang::createHandle($key);
             }
 
-            $key = Lang::createHandle($key) . $field_handle;
             $param = new XMLElement($key);
 
             // DS output params get flattened to a string, so get the original pre-flattened array
