@@ -261,6 +261,7 @@ class SectionDatasource extends Datasource
                         $field_handle = FieldManager::fetchHandleFromID($field_id);
                         $section_handle = $section['handle'];
                         // Make sure attribute does not begin with a digit
+                        // @deprecated This needs to be removed in Symphony 4.0.0
                         if (preg_match('/^[0-9]/', $section_handle)) {
                             $section_handle = 'x-' . $section_handle;
                         }
