@@ -142,6 +142,20 @@ class AdministrationPage extends HTMLPage
     }
 
     /**
+     * Given the current page `$context` and the URL path parts, parse the context for
+     * the current page. This happens prior to the AdminPagePostCallback delegate
+     * being fired. The `$context` is passed by reference
+     *
+     * @since Symphony 3.0.0
+     * @param array $context
+     * @param array $parts
+     * @return void
+     */
+    public function parseContext(array &$context, array $parts)
+    {
+    }
+
+    /**
      * Accessor for `$this->_context` which includes contextual information
      * about the current page such as the class, file location or page root.
      * This information varies depending on if the page is provided by an
@@ -779,13 +793,13 @@ class AdministrationPage extends HTMLPage
      */
     public function __switchboard($type = 'view')
     {
-        if (!isset($this->_context[0]) || trim($this->_context[0]) === '') {
-            $context = 'index';
+        if (!isset($this->_context['action']) || trim($this->_context['action']) === '') {
+            $action = 'index';
         } else {
-            $context = $this->_context[0];
+            $action = $this->_context['action'];
         }
 
-        $function = ($type == 'action' ? '__action' : '__view') . ucfirst($context);
+        $function = ($type == 'action' ? '__action' : '__view') . ucfirst($action);
 
         if (!method_exists($this, $function)) {
             // If there is no action function, just return without doing anything
