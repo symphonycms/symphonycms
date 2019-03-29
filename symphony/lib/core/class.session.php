@@ -26,6 +26,13 @@ class Session
     private static $_initialized = false;
 
     /**
+     * Disallow public construction
+     */
+    private function __construct()
+    {
+    }
+
+    /**
      * Starts a Session object, only if one doesn't already exist. This function maps
      * the Session Handler functions to this classes methods by reading the default
      * information from the PHP ini file.
@@ -62,19 +69,20 @@ class Session
                 ini_set('session.gc_divisor', Symphony::Configuration()->get('session_gc_divisor', 'symphony'));
             }
 
+            $handler = new Session;
             session_set_save_handler(
-                array('Session', 'open'),
-                array('Session', 'close'),
-                array('Session', 'read'),
-                array('Session', 'write'),
-                array('Session', 'destroy'),
-                array('Session', 'gc')
+                [$handler ,'open'],
+                [$handler ,'close'],
+                [$handler ,'read'],
+                [$handler ,'write'],
+                [$handler ,'destroy'],
+                [$handler ,'gc']
             );
 
             session_set_cookie_params(
                 $lifetime,
-                static::createCookieSafePath($path),
-                ($domain ? $domain : self::getDomain()),
+                $handler->createCookieSafePath($path),
+                ($domain ? $domain : $handler->getDomain()),
                 defined('__SECURE__') && __SECURE__,
                 $httpOnly
             );
@@ -103,7 +111,7 @@ class Session
      *
      * @since Symphony 2.7.0
      **/
-    protected static function createCookieSafePath($path)
+    protected function createCookieSafePath($path)
     {
         $path = array_filter(explode('/', $path));
         if (empty($path)) {
@@ -123,9 +131,9 @@ class Session
      *  Null if on localhost, or HTTP_HOST is not set, a string of the domain name sans
      *  www otherwise
      */
-    public static function getDomain()
+    protected function getDomain()
     {
-        if (HTTP_HOST != null) {
+        if (HTTP_HOST) {
             if (preg_match('/(localhost|127\.0\.0\.1)/', HTTP_HOST)) {
                 return null; // prevent problems on local setups
             }
@@ -143,7 +151,7 @@ class Session
      * @return boolean
      *  Always returns true
      */
-    public static function open()
+    public function open()
     {
         return true;
     }
@@ -155,7 +163,7 @@ class Session
      * @return boolean
      *  Always returns true
      */
-    public static function close()
+    public function close()
     {
         return true;
     }
@@ -175,16 +183,16 @@ class Session
      * @return boolean
      *  true if the Session information was saved successfully, false otherwise
      */
-    public static function write($id, $data)
+    public function write($id, $data)
     {
         // Only prevent this record from saving if there isn't already a record
         // in the database. This prevents empty Sessions from being created, but
         // allows them to be nulled.
-        $session_data = Session::read($id);
+        $session_data = $this->read($id);
         if (!$session_data) {
             $empty = true;
             if (function_exists('session_status') && session_status() === PHP_SESSION_ACTIVE) {
-                $unserialized_data = Session::unserialize($data);
+                $unserialized_data = $this->unserialize($data);
 
                 foreach ($unserialized_data as $d) {
                     if (!empty($d)) {
@@ -226,7 +234,7 @@ class Session
      * @return array
      *  The unserialised session data
      */
-    private static function unserialize($data)
+    private function unserialize($data)
     {
         $hasBuffer = isset($_SESSION);
         $buffer = $_SESSION;
@@ -250,7 +258,7 @@ class Session
      * @return string
      *  The serialised session data
      */
-    public static function read($id)
+    public function read($id)
     {
         if (!$id) {
             return null;
@@ -274,7 +282,7 @@ class Session
      * @return boolean
      *  true if the Session was deleted successfully, false otherwise
      */
-    public static function destroy($id)
+    public function destroy($id)
     {
         if (!$id) {
             return true;
@@ -298,7 +306,7 @@ class Session
      * @return boolean
      *  true on Session deletion, false if an error occurs
      */
-    public static function gc($max)
+    public function gc($max)
     {
         return Symphony::Database()
             ->delete('tbl_sessions')
