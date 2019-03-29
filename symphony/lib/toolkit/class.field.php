@@ -989,12 +989,7 @@ class Field implements ArrayAccess
         $parent_section = $this->get('parent_section');
         $label = $this->get('label');
         $element_name = $this->get('element_name');
-
-        if (Lang::isUnicodeCompiled()) {
-            $valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $element_name);
-        } else {
-            $valid_name = preg_match('/^[A-z]([\w\d\-_\.]+)?$/i', $element_name);
-        }
+        $valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $element_name);
 
         if ($label === '') {
             $errors['label'] = __('This is a required field.');

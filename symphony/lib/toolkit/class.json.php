@@ -168,11 +168,7 @@ class JSON
      */
     private static function _valid_element_name($name)
     {
-        if (Lang::isUnicodeCompiled()) {
-            $valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $name);
-        } else {
-            $valid_name = preg_match('/^[A-z]([\w\d\-_\.]+)?$/i', $name);
-        }
+        $valid_name = preg_match('/^[\p{L}]([0-9\p{L}\.\-\_]+)?$/u', $name);
 
         if ($valid_name) {
             $xKey = self::$dom->createElement(Lang::createHandle($name));

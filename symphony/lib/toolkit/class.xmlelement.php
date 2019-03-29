@@ -708,31 +708,7 @@ class XMLElement implements IteratorAggregate
      */
     public static function stripInvalidXMLCharacters($value)
     {
-        if (Lang::isUnicodeCompiled()) {
-            return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $value);
-        } else {
-            $ret = '';
-
-            if (empty($value)) {
-                return $ret;
-            }
-
-            $length = strlen($value);
-
-            for ($i=0; $i < $length; $i++) {
-                $current = ord($value{$i});
-                if (($current == 0x9) ||
-                    ($current == 0xA) ||
-                    ($current == 0xD) ||
-                    (($current >= 0x20) && ($current <= 0xD7FF)) ||
-                    (($current >= 0xE000) && ($current <= 0xFFFD)) ||
-                    (($current >= 0x10000) && ($current <= 0x10FFFF))) {
-                    $ret .= chr($current);
-                }
-            }
-
-            return $ret;
-        }
+        return preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $value);
     }
 
     /**

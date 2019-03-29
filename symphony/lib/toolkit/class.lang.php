@@ -459,7 +459,7 @@ class Lang
 
             // Translate names to English
             foreach (self::$_datetime_dictionary as $values) {
-                $string = preg_replace('/\b' . self::translate($values) . '\b/i' . (self::isUnicodeCompiled() === true ? 'u' : null), $values, $string);
+                $string = preg_replace('/\b' . self::translate($values) . '\b/iu', $values, $string);
             }
 
             // Replace custom date and time separator with space:
@@ -548,18 +548,5 @@ class Lang
             array_values(self::$_transliterations['regexp']),
             $string
         );
-    }
-
-    /**
-     * Returns boolean if PHP has been compiled with unicode support. This is
-     * useful to determine if unicode modifier's can be used in regular expression's
-     *
-     * @link http://stackoverflow.com/questions/4509576/detect-if-pcre-was-built-without-the-enable-unicode-properties-or-enable-utf8
-     * @since Symphony 2.2.2
-     * @return boolean
-     */
-    public static function isUnicodeCompiled()
-    {
-        return (@preg_match('/\pL/u', 'a') == 1 ? true : false);
     }
 }
