@@ -80,7 +80,7 @@ class contentBlueprintsPages extends AdministrationPage
                 __('Create a new page'),
                 'create button',
                 null,
-                ['accesskey' => 'c']
+                array('accesskey' => 'c')
             )
         );
 
@@ -316,7 +316,7 @@ class contentBlueprintsPages extends AdministrationPage
                 $title
                     ? '%1$s &ndash; %2$s &ndash; %3$s'
                     : '%2$s &ndash; %3$s',
-                [General::sanitize($title), __('Pages'), __('Symphony')]
+                array(General::sanitize($title), __('Pages'), __('Symphony'))
             )
         );
         $this->addElementToHead(new XMLElement('link', null, array(
@@ -337,7 +337,7 @@ class contentBlueprintsPages extends AdministrationPage
                     __('View Page on Frontend'),
                     'button',
                     null,
-                    ['target' => '_blank', 'accesskey' => 'v']
+                    array('target' => '_blank', 'accesskey' => 'v')
                 )
             );
         } else {
@@ -537,7 +537,7 @@ class contentBlueprintsPages extends AdministrationPage
             'action[save]',
             ($this->_context[0] == 'edit' ? __('Save Changes') : __('Create Page')),
             'submit',
-            ['accesskey' => 's']
+            array('accesskey' => 's')
         ));
 
         if ($this->_context[0] == 'edit') {
