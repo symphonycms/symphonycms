@@ -9,7 +9,7 @@
  * the field export API proposal.
  *
  * @since Symphony 2.3.1
- * @link https://github.com/symphonycms/symphony-2/issues/1394
+ * @link https://github.com/symphonycms/symphonycms/issues/1394
  */
 interface ExportableField
 {

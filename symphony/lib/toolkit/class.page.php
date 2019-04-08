@@ -275,7 +275,7 @@ abstract class Page
      * This method calls php's `header()` function
      * in order to set the HTTP status code properly on all platforms.
      *
-     * @see https://github.com/symphonycms/symphony-2/issues/1558#issuecomment-10663716
+     * @see https://github.com/symphonycms/symphonycms/issues/1558#issuecomment-10663716
      *
      * @param integer $status_code
      */
@@ -324,7 +324,7 @@ abstract class Page
      * This function will check to ensure that this post request is not larger than
      * what the server is set to handle. If it is, a notice is shown.
      *
-     * @link https://github.com/symphonycms/symphony-2/issues/1187
+     * @link https://github.com/symphonycms/symphonycms/issues/1187
      * @since Symphony 2.5.2
      */
     public function isRequestValid()

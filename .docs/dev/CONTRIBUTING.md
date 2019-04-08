@@ -12,8 +12,8 @@ Before you start, there's a couple of things you might like to know.
 
 ## Our Issue Tracker
 
-All Symphony's issues are tracked on our [issue tracker](https://github.com/symphonycms/symphony-2/issues).
-For a better understanding of the tags used on the tracker, [check out our handy reference guide](https://github.com/symphonycms/symphony-2/wiki/Issue-Tracker-Tag-Reference).
+All Symphony's issues are tracked on our [issue tracker](https://github.com/symphonycms/symphonycms/issues).
+For a better understanding of the tags used on the tracker, [check out our handy reference guide](https://github.com/symphonycms/symphonycms/wiki/Issue-Tracker-Tag-Reference).
 All issues are open for contribution, but if there is already a user assigned it's probably best to check in with them first to see if they'd like a hand.
 
 ## Roadmap
@@ -48,7 +48,7 @@ The `lts` branch contains the latest Long Term Support version, which may or may
 
 ### Commenting
 
-We use PHPDoc and JSDoc to comment the Symphony core, so please comment all new functions and classes accordingly. We use a fork of PHPDoctor to [generate](https://github.com/symphonycms/symphony-2/wiki/Creating-API-Documentation) the [API Docs](https://www.getsymphony.com/learn/api/).
+We use PHPDoc and JSDoc to comment the Symphony core, so please comment all new functions and classes accordingly. We use a fork of PHPDoctor to [generate](https://github.com/symphonycms/symphonycms/wiki/Creating-API-Documentation) the [API Docs](https://www.getsymphony.com/learn/api/).
 This is an example PHPDoc comment:
 
 	/**

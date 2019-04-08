@@ -51,7 +51,7 @@ class UpdaterPage extends InstallerPage
         $h2 = new XMLElement('h2', __('Symphony can not be updated'));
         $p = new XMLElement('p', __('The version of Symphony you are not running is not a %s.', [
             __('%s2.7.x LTS version%s', [
-                '<a href="https://github.com/symphonycms/symphony-2/tree/lts" target="_blank">', '</a>'
+                '<a href="https://github.com/symphonycms/symphonycms/tree/lts" target="_blank">', '</a>'
             ])
         ]));
         $p2 = new XMLElement('p', __('You need to %s before updating to a newer version.', [

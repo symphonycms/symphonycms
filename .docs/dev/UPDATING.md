@@ -19,7 +19,7 @@ Before updating, be sure to consult the [extension compatibility table](https://
 
 ## Updating via Git
 
-1. Pull from the `master` branch at `git://github.com/symphonycms/symphony-2.git`
+1. Pull from the `master` branch at `git://github.com/symphonycms/symphonycms.git`
 
 1. Update all extensions to their latest versions.
 
@@ -40,7 +40,7 @@ Before updating, be sure to consult the [extension compatibility table](https://
 
 Follow the instructions below if you are updating not from git.
 
-1. Download the [latest release tar ball](https://github.com/symphonycms/symphony-2/releases).
+1. Download the [latest release tar ball](https://github.com/symphonycms/symphonycms/releases).
 
 1. Unzip it and copy the content in your current project.
 

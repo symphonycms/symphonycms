@@ -1,6 +1,6 @@
 # Symphony 2
 
-[![Join the chat at https://gitter.im/symphonycms/symphony-2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/symphonycms/symphony-2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/symphonycms/symphony-2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/symphonycms/symphony-2)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg?style=flat-square)](https://php.net/)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
 [![Build Status](https://travis-ci.org/symphonycms/symphony-2.svg?branch=master)](https://travis-ci.org/symphonycms/symphony-2)
@@ -11,8 +11,8 @@
 - Version: 2.7.10
 - Date: 8th April 2019
 - [Release notes](https://www.getsymphony.com/download/releases/version/2.7.10/)
-- [Github repository](https://github.com/symphonycms/symphony-2/tree/2.7.10)
-- [MIT Licence](https://github.com/symphonycms/symphony-2/blob/master/LICENCE)
+- [Github repository](https://github.com/symphonycms/symphonycms/tree/2.7.10)
+- [MIT Licence](https://github.com/symphonycms/symphonycms/blob/master/LICENCE)
 
 ## Contents
 
@@ -36,7 +36,8 @@ Useful places:
 - [The Symphony website](https://www.getsymphony.com/)
 - [The Symphony forum](https://www.getsymphony.com/discuss/)
 - [Symphony Extensions](http://symphonyextensions.com/)
-- [Contributing to Symphony](https://github.com/symphonycms/symphony-2/wiki/Contributing-to-Symphony)
+- [DEV chat room](https://gitter.im/symphonycms/symphony-2)
+- [HELP chat room](https://gitter.im/symphonycms/symphony-2/help)
 
 ## Server requirements
 
@@ -51,4 +52,4 @@ Useful places:
 
 ## Responsible Security Disclosure
 
-Please follow [the guideline for security bug disclosure](https://github.com/symphonycms/symphony-2/wiki/Security-Bug-Disclosure).
+Please follow [the guideline for security bug disclosure](https://github.com/symphonycms/symphonycms/wiki/Security-Bug-Disclosure).

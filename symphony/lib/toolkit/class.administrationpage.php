@@ -526,7 +526,7 @@ class AdministrationPage extends HTMLPage
      *
      * @uses CanAccessPage
      *
-     * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
+     * @link http://github.com/symphonycms/symphonycms/blob/master/symphony/assets/xml/navigation.xml
      * @return boolean
      *  true if the Author can access the current page, false otherwise
      */
@@ -979,7 +979,7 @@ class AdministrationPage extends HTMLPage
      * This method fills the `$nav` array with value
      * from the `ASSETS/xml/navigation.xml` file
      *
-     * @link http://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
+     * @link http://github.com/symphonycms/symphonycms/blob/master/symphony/assets/xml/navigation.xml
      *
      * @since Symphony 2.3.2
      *
@@ -1249,8 +1249,8 @@ class AdministrationPage extends HTMLPage
      * the navigation.
      *
      * @uses NavigationPostBuild
-     * @link https://github.com/symphonycms/symphony-2/blob/master/symphony/assets/xml/navigation.xml
-     * @link https://github.com/symphonycms/symphony-2/blob/master/symphony/lib/toolkit/class.extension.php
+     * @link https://github.com/symphonycms/symphonycms/blob/master/symphony/assets/xml/navigation.xml
+     * @link https://github.com/symphonycms/symphonycms/blob/master/symphony/lib/toolkit/class.extension.php
      */
     public function __buildNavigation()
     {
