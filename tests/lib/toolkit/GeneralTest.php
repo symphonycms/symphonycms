@@ -139,7 +139,7 @@ final class GeneralTest extends TestCase
     {
         $this->assertEquals('this_is_a', \General::createHandle('This is a test', 10, '_', true));
         $this->assertEquals('this+is+a', \General::createHandle('This is a test', 10, ' ', true));
-        $this->assertEquals('this%2bis%2ba', \General::createHandle('This is a test', 10, '+', true));
+        $this->assertEquals('this%2Bis%2Ba', \General::createHandle('This is a test', 10, '+', true));
     }
 
     public function testCreateHandleCustomRules()

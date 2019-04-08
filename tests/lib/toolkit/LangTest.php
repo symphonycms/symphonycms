@@ -57,7 +57,7 @@ final class LangTest extends TestCase
     {
         $this->assertEquals('this_is_a', \Lang::createHandle('This is a test', 10, '_', true));
         $this->assertEquals('this+is+a', \Lang::createHandle('This is a test', 10, ' ', true));
-        $this->assertEquals('this%2bis%2ba', \Lang::createHandle('This is a test', 10, '+', true));
+        $this->assertEquals('this%2Bis%2Ba', \Lang::createHandle('This is a test', 10, '+', true));
     }
 
     public function testCreateHandleCustomRules()

@@ -359,13 +359,13 @@ class General
         // Remove leading or trailing delim characters
         $string = trim($string, $delim);
 
+        // Make it lowercase
+        $string = strtolower($string);
+
         // Encode it for URI use
         if ($uriencode) {
             $string = urlencode($string);
         }
-
-        // Make it lowercase
-        $string = strtolower($string);
 
         return $string;
     }
