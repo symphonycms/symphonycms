@@ -358,7 +358,7 @@ class AdministrationPage extends HTMLPage
      *  name and any flags such as 'saved' or 'created'. This list is not exhaustive
      *  and extensions can add their own keys to the array.
      * @throws InvalidArgumentException
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      */
     public function build(array $context = array())
     {
@@ -782,7 +782,7 @@ class AdministrationPage extends HTMLPage
      *
      * @param string $type
      *  Either 'view' or 'action', by default this will be 'view'
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      */
     public function __switchboard($type = 'view')
     {
@@ -1124,7 +1124,7 @@ class AdministrationPage extends HTMLPage
      * @param array $nav
      *  The navigation array that will receive nav nodes
      * @throws Exception
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      */
     private function buildExtensionsNavigation(&$nav)
     {

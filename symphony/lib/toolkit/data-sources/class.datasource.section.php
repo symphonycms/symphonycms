@@ -637,7 +637,7 @@ class SectionDatasource extends Datasource
                         ->next();
                 }
                 if (self::$_fieldPool[$this->dsParamGROUP] == null) {
-                    throw new SymphonyErrorPage(vsprintf("The field used for grouping '%s' cannot be found.", $this->dsParamGROUP));
+                    throw new SymphonyException(vsprintf("The field used for grouping '%s' cannot be found.", $this->dsParamGROUP));
                 }
 
                 $groups = self::$_fieldPool[$this->dsParamGROUP]->groupRecords($entries);

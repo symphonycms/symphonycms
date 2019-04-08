@@ -159,7 +159,7 @@ class FrontendPage extends XSLTPage
      * The URL of the current page that is being Rendered as returned by getCurrentPage
      * @throws Exception
      * @throws FrontendPageNotFoundException
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @return string
      * The page source after the XSLT has transformed this page's XML. This would be
      * exactly the same as the 'view-source' from your browser
@@ -570,7 +570,7 @@ class FrontendPage extends XSLTPage
      * The URL of the current page that is being Rendered as returned by `getCurrentPage()`.
      * If no URL is provided, Symphony assumes the Page with the type 'index' is being
      * requested.
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @return array
      *  An associative array of page details
      */

@@ -107,7 +107,7 @@ class Administration extends Symphony
      * @param string $page
      *  The URL path after the root of the Symphony installation, including a starting
      *  slash, such as '/login/'
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @throws Exception
      * @return HTMLPage
      */
@@ -456,7 +456,7 @@ class Administration extends Symphony
      *  The result of getCurrentPage, which returns the $_GET['symphony-page']
      *  variable.
      * @throws Exception
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @return string
      *  The HTML of the page to return
      */

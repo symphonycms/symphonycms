@@ -54,7 +54,7 @@ abstract class ResourcesPage extends AdministrationPage
      *  An associative array of params (usually populated from the URL) that this
      *  function uses. The current implementation will use `type` and `unsort` keys
      * @throws Exception
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @return array
      *  An associative of the resource as determined by `ResourceManager::fetch`
      */

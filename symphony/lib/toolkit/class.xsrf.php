@@ -173,7 +173,7 @@ class XSRF
     /**
      * This will validate a request has a good token.
      *
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      * @param boolean $silent
      *  If true, this function will return false if the request fails,
      *  otherwise it will throw an Exception. By default this function
@@ -198,7 +198,7 @@ class XSRF
     /**
      * The error function that's thrown if the token is invalid.
      *
-     * @throws SymphonyErrorPage
+     * @throws SymphonyException
      */
     public static function throwXSRFException()
     {
@@ -206,6 +206,6 @@ class XSRF
             __('Request was rejected for having an invalid cross-site request forgery token.')
             . '<br/><br/>' .
             __('Please go back and try again.');
-        throw new SymphonyErrorPage($msg, __('Access Denied'), 'generic', array(), Page::HTTP_STATUS_FORBIDDEN);
+        throw new SymphonyException($msg, __('Access Denied'), 'generic', array(), Page::HTTP_STATUS_FORBIDDEN);
     }
 }
