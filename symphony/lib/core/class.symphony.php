@@ -557,18 +557,20 @@ abstract class Symphony implements Singleton
     /**
      * Returns the most recent version found in the `/install/migrations` folder.
      * Returns a version string to be used in `version_compare()` if an updater
-     * has been found. Returns `FALSE` otherwise.
+     * has been found. Returns `false` otherwise.
      *
      * @since Symphony 2.3.1
      * @return string|boolean
      */
     public static function getMigrationVersion()
     {
-        if (self::isInstallerAvailable()) {
-            $migrations = scandir(DOCROOT . '/install/migrations');
-            $migration_file = end($migrations);
-            $migration_class = 'migration_' . str_replace('.', '', substr($migration_file, 0, -4));
-            return call_user_func(array($migration_class, 'getVersion'));
+        if (self::isInstallerAvailable() && class_exists('Updater')) {
+            $migrations = Updater::getAvailableMigrations();
+            $m = end($migrations);
+            if (!$m) {
+                return false;
+            }
+            return $m->getVersion();
         }
 
         return false;
@@ -593,7 +595,7 @@ abstract class Symphony implements Singleton
     }
 
     /**
-     * Checks if the installer/upgrader is available.
+     * Checks if the installer/updater is available.
      *
      * @since Symphony 2.3.1
      * @return boolean

@@ -27,7 +27,7 @@
     define('DOCROOT', $clean_path);
 
     // Required boot components
-    define('VERSION', '2.7.10');
+    define('VERSION', '3.0.0');
     define('INSTALL', DOCROOT . '/install');
 
     // Include autoloader:
@@ -50,9 +50,9 @@
     if (file_exists(CONFIG)) {
         // System updater
         $script = Updater::instance();
-    }
+
     // If there's no config file, run the installer
-    else {
+    } else {
         // System installer
         $script = Installer::instance();
     }
