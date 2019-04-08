@@ -338,11 +338,14 @@ class General
         // Remove punctuation
         $string = preg_replace('/[\\.\'",!?]+/u', null, $string);
 
-        // Remove weird characters
-        $string = preg_replace('/[^\w-\s]+/u', null, $string);
+        // Make sure our delimiter is properly escaped
+        $quotedDelim = preg_quote($delim, '/');
+
+        // Remove weird characters (not a word character, nor a space, nor the delimiter)
+        $string = preg_replace('/([^\w\s' . $quotedDelim . ']+)/us', null, $string);
 
         // Replace spaces (tab, newline etc) with the delimiter
-        $string = preg_replace('/[\s]+/u', $delim, $string);
+        $string = preg_replace('/[\s]+/us', $delim, $string);
 
         // Allow for custom rules
         if (is_array($additional_rule_set) && !empty($additional_rule_set)) {
