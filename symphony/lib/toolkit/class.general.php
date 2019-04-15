@@ -332,6 +332,7 @@ class General
             return '';
         }
 
+        $original = $string;
         $max_length = intval($max_length);
 
         // Make sure we have utf-8 data
