@@ -19,11 +19,20 @@ final class DatabaseShow extends DatabaseStatement
      *  The underlying database connection.
      * @param string $show
      *  Configure what to show, either TABLES, COLUMNS or INDEX. Defaults to TABLES.
+     * @param string $modifier
+     *  Configure the statement to output wither FULL or EXTENTED information.
      */
-    public function __construct(Database $db, $show = 'TABLES')
+    public function __construct(Database $db, $show = 'TABLES', $modifier = null)
     {
         if ($show !== 'TABLES' && $show !== 'COLUMNS' && $show !== 'INDEX') {
             throw new DatabaseStatementException('Can only show TABLES, COLUMNS or INDEX');
+        }
+        if ($modifier) {
+            if ($modifier !== 'FULL' && $modifier !== 'EXTENTED') {
+                throw new DatabaseStatementException('Can modify with FULL or EXTENTED');
+            } else {
+                $show = "$modifier $show";
+            }
         }
         parent::__construct($db, "SHOW $show");
     }

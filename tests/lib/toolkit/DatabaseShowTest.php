@@ -55,6 +55,20 @@ final class DatabaseShowTest extends TestCase
         $this->assertEquals(1, count($values), '1 value');
     }
 
+    public function testSHOWFULLCOLUMNS()
+    {
+        $db = new Database([]);
+        $sql = $db->showFullColumns()
+                  ->from('tbl');
+        $this->assertEquals(
+            "SHOW FULL COLUMNS FROM `tbl`",
+            $sql->generateSQL(),
+            'SHOW FULL COLUMNS clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(0, count($values), '0 value');
+    }
+
     public function testSHOWTABLESWHERELIKEFormatted()
     {
         $db = new Database([]);

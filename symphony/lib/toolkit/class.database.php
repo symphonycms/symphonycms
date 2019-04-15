@@ -565,6 +565,16 @@ class Database
     }
 
     /**
+     * Factory method that creates a new `SHOW FULL COLUMNS` statement.
+     *
+     * @return DatabaseShow
+     */
+    public function showFullColumns()
+    {
+        return new DatabaseShow($this, 'COLUMNS', 'FULL');
+    }
+
+    /**
      * Factory method that creates a new `SHOW INDEX` statement.
      *
      * @return DatabaseShow
