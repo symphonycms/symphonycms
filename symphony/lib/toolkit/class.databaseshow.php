@@ -20,7 +20,7 @@ final class DatabaseShow extends DatabaseStatement
      * @param string $show
      *  Configure what to show, either TABLES, COLUMNS or INDEX. Defaults to TABLES.
      * @param string $modifier
-     *  Configure the statement to output wither FULL or EXTENTED information.
+     *  Configure the statement to output wither FULL or EXTENDED information.
      */
     public function __construct(Database $db, $show = 'TABLES', $modifier = null)
     {
@@ -28,8 +28,8 @@ final class DatabaseShow extends DatabaseStatement
             throw new DatabaseStatementException('Can only show TABLES, COLUMNS or INDEX');
         }
         if ($modifier) {
-            if ($modifier !== 'FULL' && $modifier !== 'EXTENTED') {
-                throw new DatabaseStatementException('Can modify with FULL or EXTENTED');
+            if ($modifier !== 'FULL' && $modifier !== 'EXTENDED') {
+                throw new DatabaseStatementException('Can modify with FULL or EXTENDED');
             } else {
                 $show = "$modifier $show";
             }
