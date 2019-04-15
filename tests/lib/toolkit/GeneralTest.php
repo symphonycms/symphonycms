@@ -105,6 +105,7 @@ final class GeneralTest extends TestCase
         $this->assertEquals('this-is-a-test', \General::createHandle('This    is---a    test'));
         $this->assertEquals('this-is-a-pooh-emoji', \General::createHandle('This is a 	💩 pooh emoji'));
         $this->assertEquals('this-is-a-test-test', \General::createHandle('- This ,   is-,-a. ! test   test '));
+        $this->assertEquals('4255b30b30c7002fc7dacb74523f9516182142ed', \General::createHandle('💩💩💩'));
     }
 
     public function testCreateLoooooooongHandleDefaultValues()

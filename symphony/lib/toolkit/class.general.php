@@ -372,6 +372,11 @@ class General
         // Remove leading or trailing delim characters
         $string = trim($string, $delim);
 
+        // Make sure we have a result
+        if (empty($string)) {
+            $string = sha1($original);
+        }
+
         // Make it lowercase
         $string = strtolower($string);
 
