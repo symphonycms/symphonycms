@@ -327,6 +327,11 @@ class General
      */
     public static function createHandle($string, $max_length = 255, $delim = '-', $uriencode = false, $additional_rule_set = null)
     {
+        // If empty, bail out quick
+        if (empty(trim($string))) {
+            return '';
+        }
+
         $max_length = intval($max_length);
 
         // Strip out any tag

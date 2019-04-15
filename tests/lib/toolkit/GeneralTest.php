@@ -96,6 +96,9 @@ final class GeneralTest extends TestCase
      */
     public function testCreateHandleDefaultValues()
     {
+        $this->assertEquals('', \General::createHandle(''));
+        $this->assertEquals('', \General::createHandle(null));
+        $this->assertEquals('', \General::createHandle('      '));
         $this->assertEquals('test', \General::createHandle('test'));
         $this->assertEquals('this-is-a-test', \General::createHandle('This is a test'));
         $this->assertEquals('this-is-a-test', \General::createHandle('This    is---a    test'));
