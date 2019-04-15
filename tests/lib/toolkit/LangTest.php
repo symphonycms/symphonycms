@@ -17,7 +17,7 @@ final class LangTest extends TestCase
         $this->assertEquals('test', \Lang::createHandle('test'));
         $this->assertEquals('this-is-a-test', \Lang::createHandle('This is a test'));
         $this->assertEquals('this-is-a-test', \Lang::createHandle('This    is---a    test'));
-        //$this->assertEquals('this-is-a-pooh-emoji', \Lang::createHandle("This is a 	\xd8\x3d\xdc\xa9 pooh emoji"));
+        $this->assertEquals('this-is-a-pooh-emoji', \Lang::createHandle('This is a 	💩 pooh emoji'));
         $this->assertEquals('this-is-a-test-test', \Lang::createHandle('- This ,   is-,-a. ! test   test '));
     }
 

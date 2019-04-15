@@ -334,6 +334,11 @@ class General
 
         $max_length = intval($max_length);
 
+        // Make sure we have utf-8 data
+        if (function_exists('mb_convert_encoding')) {
+            $string = mb_convert_encoding($string, 'utf-8');
+        }
+
         // Strip out any tag
         $string = strip_tags($string);
 
