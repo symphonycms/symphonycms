@@ -251,7 +251,20 @@ final class DatabaseAlterTest extends TestCase
         $this->assertEquals(
             "ALTER TABLE `alter` ADD KEY `x` (`x`), ADD KEY `y` (`y`)",
             $sql->generateSQL(),
-            'ALTER ADD KEY  multiple clause'
+            'ALTER ADD KEY multiple clause'
+        );
+    }
+
+    public function testALTERADDCOLADDKEY()
+    {
+        $db = new Database([]);
+        $sql = $db->alter('alter')
+                  ->add(['x' => 'varchar(250)'])
+                  ->addKey(['x' => 'key', 'y' => 'key']);
+        $this->assertEquals(
+            "ALTER TABLE `alter` ADD COLUMN `x` varchar(250) NOT NULL , ADD KEY `x` (`x`), ADD KEY `y` (`y`)",
+            $sql->generateSQL(),
+            'ALTER ADD COLUMN ADD KEY clause'
         );
     }
 
