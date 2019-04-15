@@ -74,14 +74,14 @@ trait DatabaseColumnDefinition
      * This method is mostly used for CREATE and ALTER statements.
      *
      * @see validateFieldName()
-     * @see getOptions()
+     * @see getOption()
      * @see DatabaseCreate
      * @see DatabaseAlter
      * @param string $k
      *  The name of the field
      * @param string|array $options
      *  All the options needed to properly create the column.
-     *  The method `getOptions()` is used to get the value of the field.
+     *  The method `getOption()` is used to get the value of the field.
      *  When the value is a string, it is considered as the column's type.
      * @param string $options.type
      *  The SQL type of the column.

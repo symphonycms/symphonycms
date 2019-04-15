@@ -42,6 +42,7 @@ final class DatabaseAlter extends DatabaseStatement
         return [
             'statement',
             'table',
+            'convert',
             'engine',
             [
                 'add columns',
@@ -57,6 +58,7 @@ final class DatabaseAlter extends DatabaseStatement
                 'add primary key',
                 'drop primary key',
             ],
+            'default',
         ];
     }
 
@@ -89,7 +91,7 @@ final class DatabaseAlter extends DatabaseStatement
      */
     public function containsAddDropOrChange()
     {
-        return $this->containsSQLParts($this->getStatementStructure()[3]);
+        return $this->containsSQLParts($this->getStatementStructure()[4]);
     }
 
     /**
@@ -136,6 +138,54 @@ final class DatabaseAlter extends DatabaseStatement
         ]);
         $column = $this->asTickedString($column);
         $this->unsafeAppendSQLPart('after', "AFTER $column");
+        return $this;
+    }
+
+    /**
+     * Appends a default character set and collate at the end of the ALTER statement.
+     * Uses previously set collate and character set.
+     *
+     * @see charset()
+     * @see collate()
+     * @return DatabaseAlter
+     *  The current instance
+     */
+    public function defaults()
+    {
+        if (!$this->charset && !$this->collate) {
+            throw new DatabaseStatementException('Cannot use defaults() without values');
+        }
+        if ($this->charset) {
+            $this->unsafeAppendSQLPart('default', "DEFAULT CHARACTER SET $this->charset");
+        }
+        if ($this->collate) {
+            $this->unsafeAppendSQLPart('default', "DEFAULT COLLATE $this->collate");
+        }
+        return $this;
+    }
+
+    /**
+     * Appends a convert to clause in the ALTER statement.
+     * Uses previously set collate and character set.
+     *
+     * @see charset()
+     * @see collate()
+     * @return DatabaseAlter
+     *  The current instance
+     */
+    public function convertTo()
+    {
+        if (!$this->charset && !$this->collate) {
+            throw new DatabaseStatementException('Cannot use convertTo() without values');
+        }
+        $sql = 'CONVERT TO';
+        if ($this->charset) {
+            $sql .= " CHARACTER SET $this->charset";
+        }
+        if ($this->collate) {
+            $sql .= " COLLATE $this->collate";
+        }
+        $this->unsafeAppendSQLPart('convert', $sql);
         return $this;
     }
 

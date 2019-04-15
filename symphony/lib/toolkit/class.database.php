@@ -743,6 +743,7 @@ class Database
     public function alter($table)
     {
         return (new DatabaseAlter($this, $table))
+            ->charset($this->config['charset'])
             ->collate($this->config['collate']);
     }
 

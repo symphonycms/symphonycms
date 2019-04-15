@@ -354,4 +354,54 @@ final class DatabaseAlterTest extends TestCase
         $this->assertEquals('TATA', $values['x_default'], 'x_default is "TATA"');
         $this->assertEquals(1, count($values), '1 value');
     }
+
+    public function testALTERCONVERTO()
+    {
+        $db = new Database([
+            'collate' => 'test'
+        ]);
+        $sql = $db->alter('alter')
+                  ->charset('test')
+                  ->convertTo();
+        $this->assertEquals(
+            "ALTER TABLE `alter` CONVERT TO CHARACTER SET test COLLATE test",
+            $sql->generateSQL(),
+            'ALTER convert to'
+        );
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testALTERCONVERTO_NoValues()
+    {
+        $db = new Database([]);
+        $sql = $db->alter('alter')
+                  ->convertTo();
+    }
+
+    public function testALTERDEFAULTS()
+    {
+        $db = new Database([
+            'charset' => 'test'
+        ]);
+        $sql = $db->alter('alter')
+                  ->collate('test')
+                  ->defaults();
+        $this->assertEquals(
+            "ALTER TABLE `alter` DEFAULT CHARACTER SET test DEFAULT COLLATE test",
+            $sql->generateSQL(),
+            'ALTER defaults'
+        );
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testALTERDEFAULTS_NoValues()
+    {
+        $db = new Database([]);
+        $sql = $db->alter('alter')
+                  ->defaults();
+    }
 }
