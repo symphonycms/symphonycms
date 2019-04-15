@@ -25,11 +25,6 @@
         // Load configuration file:
         include CONFIG;
         Symphony::initialiseConfiguration($settings);
-        Symphony::initialiseErrorHandler();
-        if (!defined('SYMPHONY_LAUNCHER_NO_DB')) {
-            Symphony::initialiseDatabase();
-            Symphony::initialiseExtensionManager();
-        }
 
         // Report all errors
         if (Symphony::Configuration()->get('error_reporting_all', 'symphony') === 'yes') {
@@ -70,7 +65,14 @@
                 : 'frontend'
         ));
 
+        // Set up error handler
+        Symphony::initialiseErrorHandler();
+
+        // Set up database and extensions
         if (!defined('SYMPHONY_LAUNCHER_NO_DB')) {
+            Symphony::initialiseDatabase();
+            Symphony::initialiseExtensionManager();
+
             /**
              * Overload the default Symphony launcher logic.
              * @delegate ModifySymphonyLauncher
