@@ -936,7 +936,7 @@ class Database
 
     /**
      * @internal
-     * This method checks for common pattern of SQL injection, like `--`, `'` and `;`.
+     * This method checks for common pattern of SQL injection, like `--`, `'`, `"`, and `;`.
      *
      * @see execute()
      * @param string $query
@@ -954,6 +954,8 @@ class Database
             throw (new DatabaseStatementException('Query contains illegal characters: `--`.'))->sql($query);
         } elseif ($strict && strpos($query, '\'') !== false) {
             throw (new DatabaseStatementException('Query contains illegal character: `\'`.'))->sql($query);
+        } elseif ($strict && strpos($query, '"') !== false) {
+            throw (new DatabaseStatementException('Query contains illegal character: `"`.'))->sql($query);
         } elseif ($strict && strpos($query, ';') !== false) {
             throw (new DatabaseStatementException('Query contains illegal character: `;`.'))->sql($query);
         }
