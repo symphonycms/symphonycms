@@ -282,11 +282,11 @@ class DatabaseStatement
 
     /**
      * Creates the ordered SQL parts array.
-     * The order in which the part sorted are given by getStatementStructure().
+     * The order in which the parts are sorted is given by getStatementStructure().
      *
      * @see getStatementStructure()
-     * @return string
-     *  The resulting SQL string
+     * @return array
+     *  The sorted SQL parts array
      */
     final public function generateOrderedSQLParts()
     {
@@ -630,6 +630,9 @@ class DatabaseStatement
      */
     final public function splitFunctionArguments($arguments)
     {
+        General::ensureType([
+            'arguments' => ['var' => $arguments, 'type' => 'string'],
+        ]);
         $arguments = str_split($arguments);
         $current = [];
         $args = [];
