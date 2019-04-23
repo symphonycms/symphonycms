@@ -942,13 +942,17 @@ class Database
      * @param string $query
      *  The query to test.
      * @param boolean $strict
-     *  Perform extra validation. True by default.
+     *  Perform extra validation, true by default.
+     *  When false, only common patterns like `';--` are checked
      * @return void
      * @throws DatabaseStatementException
      */
     final public function validateSQLQuery($query, $strict = true)
     {
-        if (strpos($query, '\'--;') !== false) {
+        if (
+            strpos($query, '\'--') !== false || strpos($query, '\';--') !== false ||
+            strpos($query, '\' --') !== false || strpos($query, '\'/*') !== false
+        ) {
             throw (new DatabaseStatementException('Query contains SQL injection.'))->sql($query);
         } elseif ($strict && strpos($query, '--') !== false) {
             throw (new DatabaseStatementException('Query contains illegal characters: `--`.'))->sql($query);
@@ -956,6 +960,12 @@ class Database
             throw (new DatabaseStatementException('Query contains illegal character: `\'`.'))->sql($query);
         } elseif ($strict && strpos($query, '"') !== false) {
             throw (new DatabaseStatementException('Query contains illegal character: `"`.'))->sql($query);
+        } elseif ($strict && strpos($query, '#') !== false) {
+            throw (new DatabaseStatementException('Query contains illegal character: `#`.'))->sql($query);
+        } elseif ($strict && strpos($query, '/*') !== false) {
+            throw (new DatabaseStatementException('Query contains illegal character: `/*`.'))->sql($query);
+        } elseif ($strict && strpos($query, '*/') !== false) {
+            throw (new DatabaseStatementException('Query contains illegal character: `*/`.'))->sql($query);
         } elseif ($strict && strpos($query, ';') !== false) {
             throw (new DatabaseStatementException('Query contains illegal character: `;`.'))->sql($query);
         }

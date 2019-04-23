@@ -559,10 +559,76 @@ final class DatabaseStatementTest extends TestCase
     /**
      * @expectedException DatabaseStatementException
      */
-    public function testSQLInjection()
+    public function testSQLInjectionSimpleComment()
     {
         $db = new Database([]);
-        $sql = $db->statement("INSERT INTO `tbl` VALUES('test');--,'test')");
+        $sql = $db->statement("INSERT INTO `tbl` VALUES('test')--,'test')");
+        $sql = $sql->generateSQL();
+        $db->validateSQLQuery($sql);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSQLInjectionSharp()
+    {
+        $db = new Database([]);
+        $sql = $db->statement("INSERT INTO `tbl` VALUES(:test)#,:test)");
+        $sql = $sql->generateSQL();
+        $db->validateSQLQuery($sql);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSQLInjectionDoubleQuote()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('INSERT INTO `tbl` VALUES("test","test")');
+        $sql = $sql->generateSQL();
+        $db->validateSQLQuery($sql);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSQLInjectionSingleQuote()
+    {
+        $db = new Database([]);
+        $sql = $db->statement("INSERT INTO `tbl` VALUES('test','test')");
+        $sql = $sql->generateSQL();
+        $db->validateSQLQuery($sql);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSQLInjectionSemiColon()
+    {
+        $db = new Database([]);
+        $sql = $db->statement("INSERT INTO `tbl` VALUES(:test,:est);");
+        $sql = $sql->generateSQL();
+        $db->validateSQLQuery($sql);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSQLInjectionMultilineCommentStart()
+    {
+        $db = new Database([]);
+        $sql = $db->statement("INSERT INTO `tbl` VALUES(/*:test,:est);");
+        $sql = $sql->generateSQL();
+        $db->validateSQLQuery($sql);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSQLInjectionMultilineCommentEnd()
+    {
+        $db = new Database([]);
+        $sql = $db->statement("INSERT INTO `tbl` VALUES(*/:test,:est);");
         $sql = $sql->generateSQL();
         $db->validateSQLQuery($sql);
     }
@@ -575,5 +641,65 @@ final class DatabaseStatementTest extends TestCase
         $sql = $sql->generateSQL();
         $db->validateSQLQuery($sql, false);
         $this->assertEquals($injectedSql, $sql);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSQLUnsafeInjectionFirstVariant()
+    {
+        $db = new Database([]);
+        $injectedSql = "INSERT INTO `tbl` VALUES(:test'--)";
+        $sql = $db->statement($injectedSql);
+        $sql = $sql->generateSQL();
+        $db->validateSQLQuery($sql, false);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSQLUnsafeInjectionSecondVariant()
+    {
+        $db = new Database([]);
+        $injectedSql = "INSERT INTO `tbl` VALUES(:test';--)";
+        $sql = $db->statement($injectedSql);
+        $sql = $sql->generateSQL();
+        $db->validateSQLQuery($sql, false);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSQLUnsafeInjectionThirdVariant()
+    {
+        $db = new Database([]);
+        $injectedSql = "INSERT INTO `tbl` VALUES(:test' --)";
+        $sql = $db->statement($injectedSql);
+        $sql = $sql->generateSQL();
+        $db->validateSQLQuery($sql, false);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSQLUnsafeInjectionFourthVariant()
+    {
+        $db = new Database([]);
+        $injectedSql = "INSERT INTO `tbl` VALUES(:test'/*)";
+        $sql = $db->statement($injectedSql);
+        $sql = $sql->generateSQL();
+        $db->validateSQLQuery($sql, false);
+    }
+
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSQLStrictUnsafeInjection()
+    {
+        $db = new Database([]);
+        $injectedSql = "INSERT INTO `tbl` VALUES('test')";
+        $sql = $db->statement($injectedSql);
+        $sql = $sql->generateSQL();
+        $db->validateSQLQuery($sql, true);
     }
 }
