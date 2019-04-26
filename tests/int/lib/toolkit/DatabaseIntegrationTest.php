@@ -2,8 +2,6 @@
 
 require './tests/lib/toolkit/DatabaseTest.php';
 
-use PHPUnit\Framework\TestCase;
-
 /**
  * @covers Database
  */

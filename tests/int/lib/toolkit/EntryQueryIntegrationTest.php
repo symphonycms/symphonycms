@@ -1,13 +1,11 @@
 <?php
 
-require './tests/lib/toolkit/EntryQueryTest.php';
-
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers EntryQuery
  */
-final class EntryQueryIntegrationTest extends EntryQuery
+final class EntryQueryIntegrationTest extends TestCase
 {
     private $db;
 
