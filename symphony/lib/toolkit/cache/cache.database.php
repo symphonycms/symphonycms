@@ -78,40 +78,50 @@ class CacheDatabase implements iNamespacedCache
     public function read($hash, $namespace = null)
     {
         $data = false;
+        $query = $this->Database
+            ->select()
+            ->from('tbl_cache')
+            ->where(['or' => [
+                ['expiry' => 'null'],
+                ['expiry' => ['>=' => 'UNIX_TIMESTAMP()']],
+            ]]);
+
+        if (!$hash && !$namespace) {
+            return false;
+        }
 
         // Check namespace first
         if (!is_null($namespace) && is_null($hash)) {
-            $data = $this->Database->fetch("
-                SELECT SQL_NO_CACHE *
-                FROM `tbl_cache`
-                WHERE `namespace` = '$namespace'
-                AND (`expiry` IS NULL OR UNIX_TIMESTAMP() <= `expiry`)
-            ");
+            $query->where(['namespace' => $namespace]);
         }
 
         // Then check hash
         if (!is_null($hash)) {
-            $data = $this->Database->fetchRow(0, "
-                SELECT SQL_NO_CACHE *
-                FROM `tbl_cache`
-                WHERE `hash` = '$hash'
-                AND (`expiry` IS NULL OR UNIX_TIMESTAMP() <= `expiry`)
-                LIMIT 1
-            ");
+            $query->where(['hash' => $hash])->limit(1);
         }
 
-        // If the data exists, see if it's still valid
-        if ($data) {
-            if (!$data['data'] = Cacheable::decompressData($data['data'])) {
-                $this->delete($hash, $namespace);
+        $data = $query->execute()->rows();
 
+        // If the data exists, see if it's still valid
+        if (!empty($data)) {
+            $data = array_map(function ($data) {
+                $data['data'] = Cacheable::decompressData($data['data']);
+                return $data;
+            }, $data);
+            $data = array_filter($data, function ($data) {
+                return $data['data'];
+            });
+            if (empty($data)) {
+                $this->delete($hash, $namespace);
                 return false;
+            }
+
+            if ($hash) {
+                return $data[0];
             }
 
             return $data;
         }
-
-        $this->delete(null, $namespace);
 
         return false;
     }
@@ -158,13 +168,13 @@ class CacheDatabase implements iNamespacedCache
         }
 
         $this->delete($hash, $namespace);
-        $this->Database->insert(array(
+        $this->Database->insert('tbl_cache')->values([
             'hash' => $hash,
             'creation' => $creation,
             'expiry' => $expiry,
             'data' => $data,
             'namespace' => $namespace
-        ), 'tbl_cache');
+        ])->execute();
 
         Mutex::release($hash, TMP);
 
@@ -186,15 +196,15 @@ class CacheDatabase implements iNamespacedCache
      */
     public function delete($hash = null, $namespace = null)
     {
+        $stm = $this->Database->delete('tbl_cache');
         if (!is_null($hash)) {
-            $this->Database->delete('tbl_cache', sprintf("`hash` = '%s'", $hash));
+            $stm->where(['hash' => $hash])->execute();
         } elseif (!is_null($namespace)) {
-            $this->Database->delete('tbl_cache', sprintf("`namespace` = '%s'", $namespace));
+            $stm->where(['namespace' => $namespace])->execute();
         } else {
-            $this->Database->delete('tbl_cache', "UNIX_TIMESTAMP() > `expiry`");
+            $stm->where(['expiry' => ['<' => 'UNIX_TIMESTAMP()']])->execute();
+            $this->__optimise();
         }
-
-        $this->__optimise();
     }
 
     /**
@@ -202,6 +212,6 @@ class CacheDatabase implements iNamespacedCache
      */
     private function __optimise()
     {
-        $this->Database->query('OPTIMIZE TABLE `tbl_cache`');
+        $this->Database->optimize('tbl_cache')->execute();
     }
 }
