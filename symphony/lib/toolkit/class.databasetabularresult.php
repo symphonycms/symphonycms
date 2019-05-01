@@ -31,12 +31,6 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
     private $orientation = PDO::FETCH_ORI_NEXT;
 
     /**
-     * The requested pagination.
-     * @var array
-     */
-    private $page;
-
-    /**
      * Implements the IteratorAggregate getIterator function by delegating it to
      * the PDOStatement.
      *
