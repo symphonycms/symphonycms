@@ -31,6 +31,12 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
     private $orientation = PDO::FETCH_ORI_NEXT;
 
     /**
+     * If the cursor reached the end
+     * @var boolean
+     */
+    private $eof = false;
+
+    /**
      * Implements the IteratorAggregate getIterator function by delegating it to
      * the PDOStatement.
      *
@@ -110,18 +116,28 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
      * @see type()
      * @see orientation()
      * @see offset()
+     * @throws DatabaseStatementException
      * @return array|object
      *  The next available record.
      *  null if there are no more available record or an error happened.
+     *  After the first null return, the cursor is marked as EOF.
+     *  Subsequent calls will throw an exception.
      */
     public function next()
     {
+        if ($this->eof) {
+            throw new DatabaseStatementException('Can not call next() after the cursor reached the end');
+        }
         $next = $this->statement()->fetch(
             $this->type,
             $this->orientation,
             $this->offset
         );
-        return $next === false ? null : $next;
+        if ($next === false) {
+            $this->eof = true;
+            return null;
+        }
+        return $next;
     }
 
     /**
