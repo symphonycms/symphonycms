@@ -92,6 +92,13 @@ trait DatabaseWhereDefinition
                     if (empty($values)) {
                         throw new DatabaseStatementException("Values passed to `$op` must not be empty");
                     }
+                    foreach ($values as $v) {
+                        if (is_array($v)) {
+                            throw new DatabaseStatementException(
+                                "Too many nested arrays: `$vk` operator can not use an array as a parameter value"
+                            );
+                        }
+                    }
                     if (!$this->isUsingPlaceholders()) {
                         $pc = [];
                         foreach ($values as $v) {

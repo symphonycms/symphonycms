@@ -664,6 +664,17 @@ final class DatabaseQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
     }
 
+    /**
+     * @expectedException DatabaseStatementException
+     */
+    public function testSELECTINTooManyArrays()
+    {
+        $db = new Database([]);
+        $sql = $db->select()
+                  ->from('tbl_test_table')
+                  ->where(['x' => ['in' => [[1]]]]);
+    }
+
     public function testSELECTTableAS()
     {
         $db = new Database([]);
