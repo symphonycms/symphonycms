@@ -37,6 +37,12 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
     private $eof = false;
 
     /**
+     * The current cursor position
+     * @var integer
+     */
+    private $position = -1;
+
+    /**
      * Implements the IteratorAggregate getIterator function by delegating it to
      * the PDOStatement.
      *
@@ -133,6 +139,7 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
             $this->orientation,
             $this->offset
         );
+        $this->position++;
         if ($next === false) {
             $this->eof = true;
             return null;
@@ -141,21 +148,42 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
     }
 
     /**
-     * Retrieves all available rows.
+     * Retrieves all remaining rows.
      *
+     * @see rows()
      * @see type()
      * @see orientation()
      * @see offset()
      * @return array
      *  An array of objects or arrays
      */
-    public function rows()
+    public function remainingRows()
     {
         $rows = [];
         while ($row = $this->next()) {
             $rows[] = $row;
         }
         return $rows;
+    }
+
+    /**
+     * Retrieves all rows, by making sure no records were read prior to this call.
+     *
+     * @see remainingRows()
+     * @see type()
+     * @see orientation()
+     * @see offset()
+     * @throws DatabaseStatementException
+     * @return array
+     *  An array of objects or arrays
+     */
+    public function rows()
+    {
+        if ($this->position !== -1) {
+            $consumed = $this->position + 1;
+            throw new DatabaseStatementException("Can not retrieve all rows, $consumed were already consumed");
+        }
+        return $this->remainingRows();
     }
 
     /**
