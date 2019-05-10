@@ -1,7 +1,10 @@
 #!/bin/bash
 
+HOST='localhost';
+PORT='80';
+
 # test for redirect on install
-INDEX="$(curl --retry 0 -sI http://localhost:80/ | grep '302 Found')"
+INDEX="$(curl --retry 0 -sI http://$HOST:$PORT/ | grep '302 Found')"
 if [ -z "$INDEX" ]; then
     echo 'Failed to get redirected on index';
     exit 100;
@@ -12,7 +15,7 @@ fi;
 mkdir -p manifest
 cp tests/ci/unattend.php manifest/
 # test for install http status
-INSTALL="$(curl --retry 0 -sI http://localhost:80/install/ | grep '200 OK')"
+INSTALL="$(curl --retry 0 -sI http://$HOST:$PORT/install/ | grep '200 OK')"
 if [ -z "$INSTALL" ]; then
     echo 'Failed to load installer page';
     exit 200;
@@ -28,7 +31,7 @@ else
     echo 'INSTALLATION COMPLETED';
 fi;
 # test index now returns a 404
-INDEXNOTFOUND="$(curl --retry 0 -sI http://localhost:80/ | grep '404 Not Found')"
+INDEXNOTFOUND="$(curl --retry 0 -sI http://$HOST:$PORT/ | grep '404 Not Found')"
 if [ -z "$INDEXNOTFOUND" ]; then
     echo 'Failed to get a 404 on index';
     exit 404;
@@ -36,8 +39,8 @@ else
     echo 'Index returned 404';
 fi;
 # test admin login returns a 200
-ADMIN="$(curl --retry 0 -sI http://localhost:80/symphony/ | grep '200 OK')"
-if [ -z "$INDEXNOTFOUND" ]; then
+ADMIN="$(curl --retry 0 -sI http://$HOST:$PORT/symphony/ | grep '200 OK')"
+if [ -z "$ADMIN" ]; then
     echo 'Failed to load login page';
     exit 500;
 else
