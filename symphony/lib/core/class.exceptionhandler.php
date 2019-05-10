@@ -128,7 +128,7 @@ final class ExceptionHandler
             }
 
             // Exceptions should be logged if they are not caught.
-            if (!$this->logDisabled && $this->log instanceof Log) {
+            if (!self::$logDisabled && $this->log instanceof Log) {
                 $this->log->pushExceptionToLog($e, true);
             }
 
@@ -140,7 +140,7 @@ final class ExceptionHandler
         // If an exception was raised trying to render the exception, fall back
         // to the generic exception handler
         } catch (Exception $ex) {
-            if (!$this->logDisabled && $this->log instanceof Log) {
+            if (!self::$logDisabled && $this->log instanceof Log) {
                 $this->log->pushExceptionToLog($ex, true);
             }
             try {
@@ -158,7 +158,7 @@ final class ExceptionHandler
             // If the generic exception handler couldn't do it, well we're in bad
             // shape, just output a plaintext response!
             } catch (Exception $exx) {
-                if (!$this->logDisabled && $this->log instanceof Log) {
+                if (!self::$logDisabled && $this->log instanceof Log) {
                     $this->log->pushExceptionToLog($exx, true);
                 }
                 $this->echoRendererError($e);
