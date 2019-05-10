@@ -193,7 +193,7 @@ class FieldInput extends Field implements ExportableField, ImportableField
         }
 
         $result = array(
-            'value' => $data
+            'value' => General::substr($data, 0, 255)
         );
 
         $result['handle'] = Lang::createHandle($result['value']);
