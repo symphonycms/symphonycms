@@ -468,17 +468,9 @@ class FrontendPage extends XSLTPage
                     continue;
                 }
 
-                foreach ($p as $key => $value) {
-                    if (is_array($value) && !empty($value)) {
-                        foreach ($value as $kk => $vv) {
-                            $this->_param[$handle] .= @implode(', ', $vv) . ',';
-                        }
-                    } else {
-                        $this->_param[$handle] = @implode(', ', $p);
-                    }
-                }
-
-                $this->_param[$handle] = trim($this->_param[$handle], ',');
+                // Flatten and add all values
+                General::flattenArray($p);
+                $this->_param[$handle] = implode(', ', $p);
             }
         }
 
@@ -963,12 +955,12 @@ class FrontendPage extends XSLTPage
         }
 
         $orderedList = array();
-        $dsKeyArray = $this->__buildDatasourcePooledParamList(array_keys($dependenciesList));
+        $dsKeyArray = $this->buildDatasourcePooledParamList(array_keys($dependenciesList));
 
         // 1. First do a cleanup of each dependency list, removing non-existant DS's and find
         //    the ones that have no dependencies, removing them from the list
         foreach ($dependenciesList as $handle => $dependencies) {
-            $dependenciesList[$handle] = @array_intersect($dsKeyArray, $dependencies);
+            $dependenciesList[$handle] = array_intersect($dsKeyArray, $dependencies);
 
             if (empty($dependenciesList[$handle])) {
                 unset($dependenciesList[$handle]);
@@ -1007,7 +999,7 @@ class FrontendPage extends XSLTPage
      * @return array
      *  An array of the handlised datasources
      */
-    private function __buildDatasourcePooledParamList($datasources)
+    private function buildDatasourcePooledParamList($datasources)
     {
         if (!is_array($datasources) || empty($datasources)) {
             return array();

@@ -655,7 +655,7 @@ class contentBlueprintsEvents extends ResourcesPage
                 // Write successful
             } else {
                 if (function_exists('opcache_invalidate')) {
-                    @opcache_invalidate($file, true);
+                    opcache_invalidate($file, true);
                 }
 
                 // Attach this event to pages

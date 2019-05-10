@@ -123,7 +123,7 @@ class XSLTProcess
             $XSLProc->setProfiling($this->profiling);
         }
 
-        $result = @$this->__process(
+        $result = $this->__process(
             $XSLProc,
             $xml,
             $xsl,

@@ -13,13 +13,14 @@ if (@file_exists(EXTENSIONS)) {
         }
 
         // See if we can find an extension in any of the folders that has the id we are looking for in `extension.meta.xml`
-        if (@file_exists($extension->getPathname() . "/extension.meta.xml")) {
-            $xsl = @file_get_contents($extension->getPathname() . "/extension.meta.xml");
-            $xsl = @new SimpleXMLElement($xsl);
+        $metaFile = $extension->getPathname() . '/extension.meta.xml';
+        if (General::checkFileReadable($metaFile )) {
+            $xsl = file_get_contents($metaFile);
+            $xsl = new SimpleXMLElement($xsl);
             if (!$xsl) {
                 continue;
             }
-            $xsl->registerXPathNamespace("ext", "http://getsymphony.com/schemas/extension/1.0");
+            $xsl->registerXPathNamespace('ext', 'http://getsymphony.com/schemas/extension/1.0');
             $result = $xsl->xpath("//ext:extension[@id = '" . $e->getAdditional()->name . "']");
 
             if (!empty($result)) {

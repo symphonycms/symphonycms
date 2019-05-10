@@ -88,9 +88,9 @@ class XSRF
 
         // Fallback to /dev/urandom
         if (!$random && is_readable('/dev/urandom')) {
-            if (($handle = @fopen('/dev/urandom', 'rb')) !== false) {
-                $random = @fread($handle, $length);
-                @fclose($handle);
+            if (($handle = fopen('/dev/urandom', 'rb')) !== false) {
+                $random = fread($handle, $length);
+                fclose($handle);
             }
         }
 

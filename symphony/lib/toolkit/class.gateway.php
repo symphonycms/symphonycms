@@ -352,7 +352,7 @@ class Gateway
         }
 
         // No CURL is available, use attempt to use normal sockets
-        $handle = @fsockopen($this->_host, $this->_port, $errno, $errstr, $this->_timeout);
+        $handle = fsockopen($this->_host, $this->_port, $errno, $errstr, $this->_timeout);
 
         if ($handle === false) {
             return false;
@@ -362,7 +362,7 @@ class Gateway
         $query .= 'Host: '.$this->_host . PHP_EOL;
         $query .= 'Content-type: '.$this->_content_type . PHP_EOL;
         $query .= 'User-Agent: '.$this->_agent . PHP_EOL;
-        $query .= @implode(PHP_EOL, $this->_headers);
+        $query .= implode(PHP_EOL, $this->_headers);
         $query .= 'Content-length: ' . strlen($this->_postfields) . PHP_EOL;
         $query .= 'Connection: close' . PHP_EOL . PHP_EOL;
 
@@ -383,7 +383,7 @@ class Gateway
 
         // get header
         while (!preg_match('/\\r\\n\\r\\n$/', $header) && !$status['timed_out']) {
-            $header .= @fread($handle, 1);
+            $header .= fread($handle, 1);
             $status = stream_get_meta_data($handle);
         }
 
@@ -395,7 +395,7 @@ class Gateway
             $status = stream_get_meta_data($handle);
         }
 
-        @fclose($handle);
+        fclose($handle);
 
         $end = precision_timer('stop', $start);
 

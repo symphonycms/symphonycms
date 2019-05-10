@@ -582,7 +582,7 @@ class General
 
         try {
             $current_umask = umask(0);
-            $success = @mkdir($path, intval($mode, 8), true);
+            $success = mkdir($path, intval($mode, 8), true);
             umask($current_umask);
 
             return $success;
@@ -1030,7 +1030,7 @@ class General
                 $perm = 0644;
             }
 
-            @chmod($file, intval($perm, 8));
+            chmod($file, intval($perm, 8));
         } catch (Exception $ex) {
             // If we can't chmod the file, this is probably because our host is
             // running PHP with a different user to that of the file. Although we
@@ -1278,7 +1278,7 @@ class General
             $files[] = rtrim(str_replace($strip_root, '', $dir), '/') ."/$file/";
 
             if ($recurse) {
-                $files = @array_merge($files, self::listDirStructure("$dir/$file", $filter, $recurse, $strip_root, $exclude, $ignore_hidden));
+                $files = array_merge($files, self::listDirStructure("$dir/$file", $filter, $recurse, $strip_root, $exclude, $ignore_hidden));
             }
         }
 
@@ -1505,7 +1505,7 @@ class General
                 if (is_null($perm)) {
                     $perm = 0644;
                 }
-                @chmod($dest, intval($perm, 8));
+                chmod($dest, intval($perm, 8));
                 return true;
             }
         }

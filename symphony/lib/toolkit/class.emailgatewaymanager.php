@@ -166,7 +166,7 @@ class EmailGatewayManager implements FileResource
         $classname = self::__getClassName($name);
         $path = self::__getDriverPath($name);
 
-        if (!@file_exists($path)) {
+        if (!General::checkFileReadable($path)) {
             return false;
         }
 

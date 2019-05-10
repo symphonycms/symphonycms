@@ -491,7 +491,7 @@ class SMTP
         $remoteAddr = $this->_transport . '://' . $host . ':' . $port;
 
         if (!is_resource($this->_connection)) {
-            $this->_connection = @stream_socket_client($remoteAddr, $errorNum, $errorStr, self::TIMEOUT);
+            $this->_connection = stream_socket_client($remoteAddr, $errorNum, $errorStr, self::TIMEOUT);
 
             if ($this->_connection === false) {
                 if ($errorNum == 0) {

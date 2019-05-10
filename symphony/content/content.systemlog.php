@@ -12,7 +12,11 @@ class contentSystemLog extends Page
 {
     public function build(array $context = [])
     {
-        if (!is_file(ACTIVITY_LOG) || !$log = @file_get_contents(ACTIVITY_LOG)) {
+        if (
+            !is_file(ACTIVITY_LOG) ||
+            !General::checkFileReadable(ACTIVITY_LOG) ||
+            !$log = file_get_contents(ACTIVITY_LOG)
+        ) {
             Administration::instance()->errorPageNotFound();
         }
 

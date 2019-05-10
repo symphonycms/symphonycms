@@ -689,7 +689,7 @@ class contentBlueprintsPages extends AdministrationPage
 
                 // Clean up type list
                 $types = preg_split('/\s*,\s*/', $fields['type'], -1, PREG_SPLIT_NO_EMPTY);
-                $types = @array_map('trim', $types);
+                $types = array_map('trim', $types);
                 unset($fields['type']);
 
                 $fields['parent'] = ($fields['parent'] != __('None') ? $fields['parent'] : null);

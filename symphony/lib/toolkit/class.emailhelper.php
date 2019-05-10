@@ -21,7 +21,7 @@ abstract class EmailHelper
      */
     public static function fold($input, $max_length = 75)
     {
-        return @wordwrap($input, $max_length, "\r\n ");
+        return wordwrap($input, $max_length, "\r\n ");
     }
 
     /**

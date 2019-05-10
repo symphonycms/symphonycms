@@ -426,7 +426,7 @@ class Log
             $this->writeToLog('Log Created: ' . DateTimeObj::get('c'), true);
             $this->writeToLog('============================================', true);
 
-            @chmod($this->_log_path, intval($mode, 8));
+            chmod($this->_log_path, intval($mode, 8));
 
             return 1;
         }

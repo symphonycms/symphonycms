@@ -576,7 +576,7 @@ abstract class EmailGateway
                 $gateway = new Gateway();
                 $gateway->init($file['file']);
                 $gateway->setopt('TIMEOUT', 30);
-                $file_content = @$gateway->exec();
+                $file_content = $gateway->exec();
 
                 $tmp_file = tempnam(TMP, 'attachment');
                 General::writeFile($tmp_file, $file_content, Symphony::Configuration()->get('write_mode', 'file'));
@@ -589,7 +589,7 @@ abstract class EmailGateway
                     $file['filename'] = basename($original_filename);
                 }
             } else {
-                $file_content = @file_get_contents($file['file']);
+                $file_content = file_get_contents($file['file']);
             }
 
             if ($file_content !== false && !empty($file_content)) {
