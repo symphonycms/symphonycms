@@ -39,7 +39,7 @@ install:
 
 before_script:
   # create database
-  - mysql -e "CREATE DATABASE symphony_test CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_unicode_ci';"
+  - travis_retry mysql -e "CREATE DATABASE symphony_test CHARACTER SET = 'utf8mb4' COLLATE = 'utf8mb4_unicode_ci';"
   # install and configure apache
   - ./tests/ci/travis-configure-apache.sh
 
