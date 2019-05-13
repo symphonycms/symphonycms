@@ -745,6 +745,20 @@ class FrontendPage extends XSLTPage
 
             foreach ($events as $handle) {
                 $pool[$handle] = EventManager::create($handle, array('env' => $this->_env, 'param' => $this->_param));
+                // Make sure that filters requiring XSRF token to work are getting a valid XSRF token.
+                // We do not always create it, because that would create useless sessions
+                if (
+                    Symphony::isXSRFEnabled() && !XSRF::getSessionToken() &&
+                    isset($pool[$handle]->eParamFILTERS) &&
+                    is_array($pool[$handle]->eParamFILTERS)
+                ) {
+                    $xsrfFilters = array_filter($pool[$handle]->eParamFILTERS, function ($filter) {
+                        return strpos($filter, 'xsrf') !== false;
+                    });
+                    if (!empty($xsrfFilters)) {
+                        $this->_param['cookie-xsrf-token'] = XSRF::getToken();
+                    }
+                }
             }
 
             uasort($pool, array($this, '__findEventOrder'));
