@@ -63,3 +63,8 @@ build: off
 
 # Fetch all
 shallow_clone: false
+
+# Cache deps
+cache:
+  - vendor -> composer.lock
+  - npm_modules -> package-lock.json

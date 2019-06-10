@@ -62,6 +62,9 @@ after_success:
   - bash <(curl -s https://codecov.io/bash)
 
 cache:
+  npm: true
+  composer: true
   directories:
     - $HOME/.composer/cache
     - node_modules
+    - vendor
