@@ -22,6 +22,7 @@ class SMTPGateway extends EmailGateway
     protected $_user;
     protected $_pass;
     protected $_envelope_from;
+    protected $_context_options;
 
     /**
      * Returns the name, used in the dropdown menu in the preferences pane.
@@ -132,8 +133,15 @@ class SMTPGateway extends EmailGateway
                 $this->_SMTP->setHeader($name, EmailHelper::fold($body));
             }
 
-            // Send the email command. If the envelope from variable is set, use that for the MAIL command. This improves bounce handling.
-            $this->_SMTP->sendMail(is_null($this->_envelope_from)?$this->_sender_email_address:$this->_envelope_from, $this->_recipients, $this->_body);
+            // Send the email command.
+            // If the envelope from variable is set, use that for the MAIL command.
+            // This improves bounce handling.
+            $this->_SMTP->sendMail(
+                is_null($this->_envelope_from) ? $this->_sender_email_address : $this->_envelope_from,
+                $this->_recipients,
+                $this->_body,
+                $this->_context_options
+            );
 
             if ($this->_keepalive === false) {
                 $this->closeConnection();
@@ -319,6 +327,9 @@ class SMTPGateway extends EmailGateway
         $this->setAuth((int)$config['auth'] === 1);
         $this->setUser($config['username']);
         $this->setPass($config['password']);
+        if (isset($config['options'])) {
+            $this->_context_options = $config['options'];
+        }
     }
 
     /**
