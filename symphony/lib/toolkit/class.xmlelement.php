@@ -99,7 +99,7 @@ class XMLElement implements IteratorAggregate
         $this->setName($name, $createHandle);
         $this->setValue($value);
 
-        if (is_array($attributes) && !empty($attributes)) {
+        if (!empty($attributes)) {
             $this->setAttributeArray($attributes);
         }
     }
@@ -340,7 +340,7 @@ class XMLElement implements IteratorAggregate
      */
     public function setName($name, $createHandle = false)
     {
-        $this->name = ($createHandle) ? Lang::createHandle($name) : $name;
+        $this->name = $createHandle ? Lang::createHandle($name) : $name;
         return $this;
     }
 
@@ -401,6 +401,9 @@ class XMLElement implements IteratorAggregate
      */
     public function setAttribute($name, $value)
     {
+        if (is_array($value)) {
+            $value = implode(' ', $value);
+        }
         $this->attributes[$name] = $value;
         return $this;
     }
@@ -726,9 +729,15 @@ class XMLElement implements IteratorAggregate
     {
         $result = null;
         foreach ($this->attributes as $attribute => $value) {
-            if (!empty($value) || $this->allowEmptyAttributes) {
+            $hasValue = $value !== null && (is_bool($value) || strlen($value) > 0);
+            if ($hasValue || $this->allowEmptyAttributes) {
                 $attrFormat = ' %s="%s"';
-                if (!empty($value)) {
+                if ($hasValue) {
+                    if ($value === true) {
+                        $value = 'true';
+                    } elseif ($value === false) {
+                        $value = 'false';
+                    }
                     $hasSingleQuotes = strpos($value, "'")  !== false;
                     $hasDoubleQuotes = strpos($value, '"') !== false;
                     if (!$hasSingleQuotes && $hasDoubleQuotes) {

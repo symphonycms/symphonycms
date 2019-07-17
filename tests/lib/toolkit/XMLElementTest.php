@@ -79,6 +79,42 @@ final class XMLElementTest extends TestCase
         $this->assertEquals('<xml null not-empty="1" empty></xml>', $x->generate());
     }
 
+    public function testValueIsZero()
+    {
+        $x = (new \XMLElement('xml', 0));
+        $this->assertEquals('<xml>0</xml>', $x->generate());
+        $x->setValue('0'); // It appends...
+        $this->assertEquals('<xml>00</xml>', $x->generate());
+    }
+
+    public function testAttributeIsZero()
+    {
+        $x = (new \XMLElement('xml'))
+            ->setAttribute('val', 0)
+            ->setAttribute('value', '0');
+        $this->assertEquals('<xml val="0" value="0" />', $x->generate());
+        $x = (new \XMLElement('xml'))
+            ->setAllowEmptyAttributes(false)
+            ->setAttribute('val', 0)
+            ->setAttribute('value', '');
+        $this->assertEquals('<xml val="0" />', $x->generate());
+    }
+
+    public function testAttributeIsArray()
+    {
+        $x = (new \XMLElement('xml'))
+            ->setAttribute('val', [0, 1]);
+        $this->assertEquals('<xml val="0 1" />', $x->generate());
+    }
+
+    public function testAttributeIsBoolean()
+    {
+        $x = (new \XMLElement('xml'))
+            ->setAttribute('yes', true)
+            ->setAttribute('no', false);
+        $this->assertEquals('<xml yes="true" no="false" />', $x->generate());
+    }
+
     public function testAddClass()
     {
         $x = (new \XMLElement('xml'))->addClass('test');
