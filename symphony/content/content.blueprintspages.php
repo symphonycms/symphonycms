@@ -29,7 +29,7 @@ class contentBlueprintsPages extends AdministrationPage
 
         if (isset($parts[2])) {
             $extras = preg_split('/\//', $parts[2], -1, PREG_SPLIT_NO_EMPTY);
-            list($params['action'], $params['id'], $params['flag']) = $extras;
+            list($params['action'], $params['id'], $params['flag']) = array_replace([null,null,null], $extras);
             $params['id'] = (int)$params['id'];
         }
 
