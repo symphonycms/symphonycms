@@ -1,0 +1,32 @@
+name: Continuous Integration
+on: [push]
+jobs:
+  run:
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      max-parallel: 3
+      matrix:
+        operating-system: [ubuntu-latest, windows-latest, macOS-latest]
+        php-versions: ['7.2', '7.3']
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+    - name: Install PHP
+      uses: shivammathur/setup-php@master
+      with:
+        php-version: ${{ matrix.php-versions }}
+        extension-csv: "mbstring, curl, mysqli, json, xml, xdebug, pcov, phpdbg"
+        ini-values-csv: "post_max_size=256M"
+    - name: Check PHP Version
+      run: php -v
+    - name: Set Node.js 10.x
+      uses: actions/setup-node@master
+      with:
+        version: 10.x
+    - name: Install node deps
+      run: npm install
+    - name: Install PHP deps
+      run: composer install --prefer-source --no-interaction --no-progress --no-suggest -o
+    - name: Run tests
+      run: npm test
