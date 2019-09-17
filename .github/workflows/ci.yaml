@@ -1,0 +1,40 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  run:
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      max-parallel: 9
+      matrix:
+        operating-system: [ubuntu-latest, windows-latest, macOS-latest]
+        php-versions: ['7.1', '7.2', '7.3']
+    name: ${{ matrix.operating-system }} php ${{ matrix.php-versions }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+    - name: Install PHP
+      uses: shivammathur/setup-php@master
+      with:
+        php-version: ${{ matrix.php-versions }}
+        extensions: "mbstring, curl, mysqli, json, xml, xdebug, pcov, phpdbg"
+        ini-values: "post_max_size=80M, memory_limit=256M"
+        tools: phpstan
+        coverage: xdebug
+    - name: Check PHP Version
+      run: php -v
+    - name: Install Node.js
+      uses: actions/setup-node@master
+      with:
+        node-version: 10.x
+    - name: Check Node.js Version
+      run: node -v
+    - name: Check npm Version
+      run: npm -v
+    - name: Install Node.js deps
+      run: npm install
+    - name: Testing Composer version
+      run: composer -V
+    - name: Install PHP deps
+      run: composer install --prefer-source --no-interaction --no-progress --no-suggest -o
+    - name: Run tests
+      run: npm test
