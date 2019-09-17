@@ -368,6 +368,7 @@ class FrontendPage extends XSLTPage
             'this-month' => $date->format('m'),
             'this-day' => $date->format('d'),
             'timezone' => $date->format('P'),
+            'timestamp' => $date->format('U'),
             'website-name' => Symphony::Configuration()->get('sitename', 'general'),
             'page-title' => $page['title'],
             'root' => URL,

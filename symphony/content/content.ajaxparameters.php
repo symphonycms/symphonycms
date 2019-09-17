@@ -53,7 +53,7 @@ class contentAjaxParameters extends JSONPage
     private function __getEnvParams()
     {
         $params = array();
-        $env = array('today', 'current-time', 'this-year', 'this-month', 'this-day', 'timezone', 'website-name', 'page-title', 'root', 'workspace', 'root-page', 'current-page', 'current-page-id', 'current-path', 'current-query-string', 'current-url', 'cookie-username', 'cookie-pass', 'page-types', 'upload-limit');
+        $env = array('today', 'current-time', 'this-year', 'this-month', 'this-day', 'timezone', 'timestamp', 'website-name', 'page-title', 'root', 'workspace', 'root-page', 'current-page', 'current-page-id', 'current-path', 'current-query-string', 'current-url', 'cookie-username', 'cookie-pass', 'page-types', 'upload-limit');
 
         foreach ($env as $param) {
             $params[] = sprintf($this->template, $param);
