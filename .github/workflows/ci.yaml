@@ -36,3 +36,5 @@ jobs:
       run: composer install --prefer-source --no-interaction --no-progress --no-suggest -o
     - name: Run tests
       run: npm test
+      env:
+        SYM_DISABLE_INT_OVERFLOW_TEST: true
