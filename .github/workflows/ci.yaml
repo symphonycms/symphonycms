@@ -24,8 +24,14 @@ jobs:
       uses: actions/setup-node@master
       with:
         version: 10.x
+    - name: Check node Version
+      run: node -v
+    - name: Check npm Version
+      run: npm -v
     - name: Install node deps
       run: npm install
+    - name: Testing Composer version
+      run: composer -V
     - name: Install PHP deps
       run: composer install --prefer-source --no-interaction --no-progress --no-suggest -o
     - name: Run tests
