@@ -25,7 +25,9 @@ final class GeneralTest extends TestCase
             $this->assertEquals(PHP_INT_MAX, \General::intval(PHP_INT_MAX));
         }
         if (defined('PHP_INT_MAX') && defined('PHP_INT_MIN')) {
-            $this->assertEquals(-1, \General::intval(PHP_INT_MAX + 1));
+            if (!defined('SYM_DISABLE_INT_OVERFLOW_TEST') && !getenv('SYM_DISABLE_INT_OVERFLOW_TEST')) {
+                $this->assertEquals(-1, \General::intval(PHP_INT_MAX + 1));
+            }
         }
         $this->assertEquals(1, \General::intval('1'));
         $this->assertEquals(-1, \General::intval(-1));
