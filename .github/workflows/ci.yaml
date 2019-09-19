@@ -4,10 +4,10 @@ jobs:
   run:
     runs-on: ${{ matrix.operating-system }}
     strategy:
-      max-parallel: 3
+      max-parallel: 9
       matrix:
         operating-system: [ubuntu-latest, windows-latest, macOS-latest]
-        php-versions: ['7.2', '7.3']
+        php-versions: ['7.1', '7.2', '7.3']
     name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
     steps:
     - name: Checkout
@@ -17,18 +17,18 @@ jobs:
       with:
         php-version: ${{ matrix.php-versions }}
         extension-csv: "mbstring, curl, mysqli, json, xml, xdebug, pcov, phpdbg"
-        ini-values-csv: "post_max_size=256M"
+        ini-values-csv: "post_max_size=80M, memory_limit=256M"
     - name: Check PHP Version
       run: php -v
-    - name: Set Node.js 10.x
+    - name: Install Node.js
       uses: actions/setup-node@master
       with:
         version: 10.x
-    - name: Check node Version
+    - name: Check Node.js Version
       run: node -v
     - name: Check npm Version
       run: npm -v
-    - name: Install node deps
+    - name: Install Node.js deps
       run: npm install
     - name: Testing Composer version
       run: composer -V
