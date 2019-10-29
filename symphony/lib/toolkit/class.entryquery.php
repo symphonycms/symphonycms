@@ -414,7 +414,10 @@ class EntryQuery extends DatabaseQuery
 
         if (!$field) {
             return $this;
+        } elseif (empty($values)) {
+            return $this;
         }
+
 
         $f = null;
 
@@ -444,7 +447,7 @@ class EntryQuery extends DatabaseQuery
             $values = array_reduce($values, function ($memo, $v) {
                 $v = array_map('trim', explode(',', $v));
                 // Cast all ID's to integers. (RE: #2191)
-                return array_merge($memo, array_filter(array_map(function ($val) {
+                return array_merge($memo, array_map(function ($val) {
                     $val = General::intval($val);
 
                     // General::intval can return -1, so reset that to 0
@@ -455,8 +458,19 @@ class EntryQuery extends DatabaseQuery
                     }
 
                     return $val;
-                }, $v)));
+                }, $v));
             }, []);
+            
+            $sum = array_sum($values);
+            $values = array_filter($values);
+            
+            // If the ID was cast to 0, then we need to filter on 'id' = 0,
+            // which will of course return no results, but without it the
+            // Datasource will return ALL results, which is not the
+            // desired behaviour. RE: #1619
+            if ($sum === 0) {
+                $values[] = 0;
+            }
 
             // Check if reduce produced values
             if (empty($values)) {

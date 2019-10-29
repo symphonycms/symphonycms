@@ -330,14 +330,42 @@ final class EntryQueryTest extends TestCase
 
     public function testFilterSystemIdEmpty()
     {
-        $q = (new \EntryQuery($this->db))->filter('system:id', ['sss', null], 'and');
+        $q = (new \EntryQuery($this->db))->filter('system:id', [], 'and');
         $this->assertEquals(
             "SELECT SQL_NO_CACHE FROM `entries` AS `e`",
             $q->generateSQL(),
-            'new EntryQuery with ->filter(system:id, [ssss, null])'
+            'new EntryQuery with ->filter(system:id, [])'
         );
         $values = $q->getValues();
         $this->assertEquals(0, count($values), '0 value');
+    }
+
+    public function testFilterSystemIdInvalid()
+    {
+        $q = (new \EntryQuery($this->db))->filter('system:id', ['sss'], 'and');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE `e`.`id` = :e_id",
+            $q->generateSQL(),
+            'new EntryQuery with ->filter(system:id, [ssss])'
+        );
+        $values = $q->getValues();
+        // Invalid filters create a ` = 0` filter to make sure it returns nothing
+        $this->assertEquals(1, count($values), '1 value');
+        $this->assertEquals(0, $values['e_id'], 'e_id is 0');
+    }
+
+    public function testFilterSystemIdNull()
+    {
+        $q = (new \EntryQuery($this->db))->filter('system:id', [null], 'and');
+        $this->assertEquals(
+            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE `e`.`id` = :e_id",
+            $q->generateSQL(),
+            'new EntryQuery with ->filter(system:id, [null])'
+        );
+        $values = $q->getValues();
+        // Invalid filters create a ` = 0` filter to make sure it returns nothing
+        $this->assertEquals(1, count($values), '1 value');
+        $this->assertEquals(0, $values['e_id'], 'e_id is 0');
     }
 
     public function testFilterSystemCreationDate()
@@ -373,7 +401,7 @@ final class EntryQueryTest extends TestCase
      */
     public function testFilterFieldObject()
     {
-        $q = (new \EntryQuery($this->db))->filter(new \Field(), []);
+        $q = (new \EntryQuery($this->db))->filter(new \Field(), [1]);
     }
 
     public function testSortRand()
