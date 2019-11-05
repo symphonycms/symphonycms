@@ -11,20 +11,12 @@
 class AuthorQueryResult extends DatabaseQueryResult
 {
     /**
-     * Retrieves the the next available record and builds a Author object with it.
-     *
      * @see buildAuthor()
      * @return Author
-     *  The next available Author object.
-     *  null if there are not more available records.
      */
-    public function next()
+    protected function process($next)
     {
-        $next = parent::next();
-        if ($next) {
-            $next = $this->buildAuthor($next);
-        }
-        return $next;
+        return $this->buildAuthor($next);
     }
 
     /**

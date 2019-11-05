@@ -122,6 +122,7 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
      * @see type()
      * @see orientation()
      * @see offset()
+     * @see process()
      * @throws DatabaseStatementException
      * @return array|object
      *  The next available record.
@@ -144,7 +145,22 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
             $this->eof = true;
             return null;
         }
+        $next = $this->process($next);
         return $next;
+    }
+
+    /**
+     * Processes the value coming from the database and allows sub-classes
+     * to return a different value for each row coming out of the database.
+     * The default implementation simply returns the $entry without any modification.
+     *
+     * @param object|array $entry
+     *  The array or object returned from the database
+     * @return object|array
+     */
+    protected function process($entry)
+    {
+        return $entry;
     }
 
     /**

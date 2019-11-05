@@ -50,20 +50,12 @@ class EntryQueryResult extends DatabaseQueryResult
     }
 
     /**
-     * Retrieves the the next available record and builds a Entry object with it.
-     *
      * @see buildEntry()
      * @return Entry
-     *  The next available Entry object.
-     *  null if there are not more available records.
      */
-    public function next()
+    protected function process($next)
     {
-        $next = parent::next();
-        if ($next) {
-            $next = $this->buildEntry($next);
-        }
-        return $next;
+        return $this->buildEntry($next);
     }
 
     /**

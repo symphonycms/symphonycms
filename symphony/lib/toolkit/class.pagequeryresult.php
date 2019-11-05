@@ -37,21 +37,12 @@ class PageQueryResult extends DatabaseQueryResult
     }
 
     /**
-     * Retrieves the the next available record and adds additional informations if needed.
-     *
      * @see buildPage()
-     * @see tree()
      * @return array
-     *  The next available page array.
-     *  null if there are not more available records.
      */
-    public function next()
+    protected function process($next)
     {
-        $next = parent::next();
-        if ($next) {
-            $next = $this->buildPage($next);
-        }
-        return $next;
+        return $this->buildPage($next);
     }
 
     /**
