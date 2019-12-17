@@ -166,10 +166,12 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
     /**
      * Retrieves all remaining rows.
      *
+     * @uses next()
      * @see rows()
      * @see type()
      * @see orientation()
      * @see offset()
+     * @throws DatabaseStatementException
      * @return array
      *  An array of objects or arrays
      */
@@ -203,92 +205,6 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
     }
 
     /**
-     * Retrieves all values for the specified column.
-     *
-     * @param string|int $col
-     * @throws DatabaseStatementException
-     * @return array
-     *  An array containing all the values for the specified column
-     */
-    public function column($col)
-    {
-        if (!is_string($col) && !is_int($col)) {
-            throw new DatabaseStatementException('`$col must be a string or an integer');
-        }
-        $rows = [];
-        while ($row = $this->next()) {
-            if ($this->type === PDO::FETCH_OBJ) {
-                $rows[] = $row->{$col};
-            } else {
-                if (is_int($col)) {
-                    $row = array_values($row);
-                }
-                $rows[] = $row[$col];
-            }
-        }
-        return $rows;
-    }
-
-    /**
-     * Retrieves all available rows, indexed with the values of the
-     * specified column. The value of the column must be unique.
-     *
-     * @param string|int $col
-     * @throws DatabaseStatementException
-     * @return array
-     *  An array of rows containing all the values indexed by the specified column
-     */
-    public function rowsIndexedByColumn($col)
-    {
-        if (!is_string($col) && !is_int($col)) {
-            throw new DatabaseStatementException('`$col must be a string or an integer');
-        }
-        $rows = $this->rows();
-        $index = [];
-        foreach ($rows as &$row) {
-            if (is_int($col)) {
-                $row = array_values($row);
-            }
-            if (!isset($row[$col])) {
-                throw new DatabaseStatementException("Row does not have column `$col`");
-            }
-            if (isset($index[$row[$col]])) {
-                throw new DatabaseStatementException("Index `$col` is not unique, can not continue");
-            }
-            $index[$row[$col]] = $row;
-        }
-        return $index;
-    }
-
-    /**
-     * Retrieves all available rows, grouped with the values of the
-     * specified column.
-     *
-     * @param string|int $col
-     * @throws DatabaseStatementException
-     * @return array
-     *  An array of arrays containing all the values grouped by the specified column
-     */
-    public function rowsGroupedByColumn($col)
-    {
-        if (!is_string($col) && !is_int($col)) {
-            throw new DatabaseStatementException('`$col must be a string or an integer');
-        }
-        $rows = $this->rows();
-        $index = [];
-        foreach ($rows as &$row) {
-            if (is_int($col)) {
-                $row = array_values($row);
-            }
-            if (!isset($row[$col])) {
-                throw new DatabaseStatementException("Row does not have column `$col`");
-            }
-            $index[$row[$col]][] = $row;
-        }
-        return $index;
-    }
-
-    /**
      * Retrieves the number of available columns in each record.
      *
      * @return int
@@ -300,67 +216,112 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
     }
 
     /**
+     * Creates a new reducer for all remaining rows.
+     *
+     * @uses remainingRows()
+     * @throws DatabaseStatementException
+     * @return ArrayReducer
+     *  A newly created ArrayReducer object
+     */
+    public function reducer()
+    {
+        return new ArrayReducer(
+            $this->remainingRows(),
+            $this->type === PDO::FETCH_ASSOC
+        );
+    }
+
+    /**
+     * Retrieves all values for all rows for the specified column.
+     *
+     * @uses ArrayReducer::column
+     * @param string|int $col
+     * @throws DatabaseStatementException
+     * @throws Exception
+     * @return array
+     *  An array containing all the values for the specified column
+     */
+    public function column($col)
+    {
+        return $this->reducer()->column($col);
+    }
+
+    /**
+     * Retrieves all available rows, indexed with the values of the
+     * specified column. The value of the column must be unique.
+     *
+     * @uses ArrayReducer::rowsIndexedByColumn
+     * @param string|int $col
+     * @throws DatabaseStatementException
+     * @throws Exception
+     * @return array
+     *  An array of rows containing all the values indexed by the specified column
+     */
+    public function rowsIndexedByColumn($col)
+    {
+        return $this->reducer()->rowsIndexedByColumn($col);
+    }
+
+    /**
+     * Retrieves all available rows, grouped with the values of the
+     * specified column.
+     *
+     * @uses ArrayReducer::rowsGroupedByColumn
+     * @param string|int $col
+     * @throws DatabaseStatementException
+     * @throws Exception
+     * @return array
+     *  An array of arrays containing all the values grouped by the specified column
+     */
+    public function rowsGroupedByColumn($col)
+    {
+        return $this->reducer()->rowsGroupedByColumn($col);
+    }
+
+    /**
      * Retrieve the value of the specified column in the next available record.
      * Note: this method can return null even if there are more records.
      *
-     * @see type()
-     * @see orientation()
-     * @see offset()
+     * @uses ArrayReducer::variable
      * @param string|int $col
      * @throws DatabaseStatementException
+     * @throws Exception
      * @return mixed
      *  The value of the column
      */
     public function variable($col)
     {
-        if (!is_string($col) && !is_int($col)) {
-            throw new DatabaseStatementException('`$col must be a string or an integer');
-        }
-        if ($row = $this->next()) {
-            if ($this->type === PDO::FETCH_OBJ) {
-                if (is_int($col)) {
-                    throw new DatabaseStatementException('`$col must be a string when using objects');
-                }
-                return $row->{$col};
-            } else {
-                if (is_int($col)) {
-                    if (!is_array($row)) {
-                        $row = $row->get();
-                    }
-                    $row = array_values($row);
-                }
-                return $row[$col];
-            }
-        }
-        return null;
+        return $this->reducer()->variable($col);
     }
 
     /**
      * int returning version of variable()
      *
-     * @see variable()
+     * @uses ArrayReducer::integer
      * @param string|int $col
      * @throws DatabaseStatementException
+     * @throws Exception
      * @return int
      *  The value of the column
      */
     public function integer($col)
     {
-        return (int)$this->variable($col);
+        return $this->reducer()->integer($col);
     }
 
     /**
      * float returning version of variable()
      *
-     * @see variable()
+     * @uses ArrayReducer::float
      * @param string|int $col
      * @throws DatabaseStatementException
+     * @throws Exception
      * @return float
      *  The value of the column
      */
     public function float($col)
     {
-        return (float)$this->variable($col);
+        return $this->reducer()->float($col);
     }
 
     /**
@@ -370,37 +331,32 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
      * If it is an int, returns true is it is not equal to 0.
      * Otherwise, returns false.
      *
+     * @uses ArrayReducer::boolean
      * @see variable()
      * @param string|int $col
      * @throws DatabaseStatementException
+     * @throws Exception
      * @return bool
      *  The value of the column
      */
     public function boolean($col)
     {
-        $v = $this->variable($col);
-        if (is_bool($v)) {
-            return $v;
-        } elseif (is_string($v)) {
-            $v = strtolower($v);
-            return in_array($v, ['yes', 'true', '1']);
-        } elseif (is_int($v)) {
-            return $v !== 0;
-        }
-        return false;
+        return $this->reducer()->boolean($col);
     }
 
     /**
      * string returning version of variable()
      *
+     * @uses ArrayReducer::string
      * @see variable()
      * @param string|int $col
      * @throws DatabaseStatementException
+     * @throws Exception
      * @return string
      *  The value of the column
      */
     public function string($col)
     {
-        return (string)$this->variable($col);
+        return $this->reducer()->string($col);
     }
 }
