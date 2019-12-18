@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * @package toolkit
  */
@@ -145,8 +144,7 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
             $this->eof = true;
             return null;
         }
-        $next = $this->process($next);
-        return $next;
+        return $this->process($next);
     }
 
     /**
