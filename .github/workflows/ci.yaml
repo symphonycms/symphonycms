@@ -16,14 +16,16 @@ jobs:
       uses: shivammathur/setup-php@master
       with:
         php-version: ${{ matrix.php-versions }}
-        extension-csv: "mbstring, curl, mysqli, json, xml, xdebug, pcov, phpdbg"
-        ini-values-csv: "post_max_size=80M, memory_limit=256M"
+        extensions: "mbstring, curl, mysqli, json, xml, xdebug, pcov, phpdbg"
+        ini-values: "post_max_size=80M, memory_limit=256M"
+        tools: phpstan
+        coverage: xdebug
     - name: Check PHP Version
       run: php -v
     - name: Install Node.js
       uses: actions/setup-node@master
       with:
-        version: 12.x
+        node-version: 12.x
     - name: Check Node.js Version
       run: node -v
     - name: Check npm Version
