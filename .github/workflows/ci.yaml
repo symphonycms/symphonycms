@@ -23,7 +23,7 @@ jobs:
     - name: Install Node.js
       uses: actions/setup-node@master
       with:
-        version: 10.x
+        version: 12.x
     - name: Check Node.js Version
       run: node -v
     - name: Check npm Version
