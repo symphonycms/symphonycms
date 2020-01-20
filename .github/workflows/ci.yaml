@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: CI
 on: [push]
 jobs:
   run:
@@ -8,7 +8,7 @@ jobs:
       matrix:
         operating-system: [ubuntu-latest, windows-latest, macOS-latest]
         php-versions: ['7.1', '7.2', '7.3']
-    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+    name: ${{ matrix.operating-system }} - ${{ matrix.php-versions }} 
     steps:
     - name: Checkout
       uses: actions/checkout@master
