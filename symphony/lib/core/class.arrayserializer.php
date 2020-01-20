@@ -44,9 +44,9 @@ class ArraySerializer
     }
 
     /**
-     * Wraps the 
-     *
+     * Wraps the serialize() call with proper php tag an variable name.
      * @param string $variableName
+     *  The name of the variable that will hold the serialized array
      * @return string
      */
     public function asPHPFile($variableName = 'settings')
@@ -59,9 +59,8 @@ class ArraySerializer
     }
 
     /**
-     * Undocumented function
-     *
-     * @return void
+     * Serializes the array as a string of valid php code
+     * @return string
      */
     public function serialize()
     {

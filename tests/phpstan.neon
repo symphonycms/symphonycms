@@ -3,7 +3,7 @@ parameters:
 	excludes_analyse:
 		- %rootDir%/../../../symphony/template
 		- %rootDir%/../../../symphony/lib/toolkit/data-sources
-	earlyTerminatingMethodCalls:
+	earlyTerminatingFunctionCalls:
 		- redirect
 	level: 0
 	ignoreErrors:
@@ -11,4 +11,3 @@ parameters:
 		- '#Function gzopen64 not found\.#'
 		- '#Access to an undefined property Datasource::\$dsParam[A-z0-9_]+#'
 		- '#Access to an undefined property SectionEvent::\$(eParam[A-z0-9_]+|ROOTELEMENT)#'
-		- '#Return typehint of method [A-z]+::[a-z]+\(\) has invalid type DatabaseColumnDefinition#'
