@@ -28,8 +28,9 @@ services:
 before_install:
   # update apt
   - travis_retry sudo apt-get update
-  # use node 8
-  - nvm use 8
+  # use node 12
+  - nvm install 12
+  - nvm use 12
 
 install:
   # install apache
