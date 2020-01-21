@@ -10,6 +10,7 @@
 final class DatabaseShow extends DatabaseStatement
 {
     use DatabaseWhereDefinition;
+    use DatabaseCacheableExecutionDefinition;
 
     /**
      * Creates a new DatabaseSet statement on table $table.

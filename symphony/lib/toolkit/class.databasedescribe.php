@@ -9,6 +9,8 @@
  */
 final class DatabaseDescribe extends DatabaseStatement
 {
+    use DatabaseCacheableExecutionDefinition;
+
     /**
      * Creates a new DatabaseDescribe statement on table $table.
      *
