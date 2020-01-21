@@ -4,6 +4,9 @@
  * @package toolkit
  */
 
+/**
+ * @since Symphony 3.0.0
+ */
 trait DatabaseWhereDefinition
 {
     /**
