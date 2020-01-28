@@ -57,11 +57,11 @@ class Log
     private $_filter = -1;
 
     /**
-     * The date format that this Log entries will be written as. Defaults to
-     * Y/m/d H:i:s.
+     * The date format that this Log entries will be written as.
+     * @since Symphony 3.0.0, it defaults to ISO 8601.
      * @var string
      */
-    private $_datetime_format = 'Y/m/d H:i:s';
+    private $_datetime_format = 'c';
 
     /**
      * A random value used to identify which Log instance created the data.
