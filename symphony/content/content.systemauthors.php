@@ -636,10 +636,6 @@ class contentSystemAuthors extends AdministrationPage
                 );
             }
 
-            if (Symphony::Author()->isManager() && $fields['user_type'] !== 'author') {
-                $this->_errors['user_type'] = __('The user type is invalid. You can only create Authors.');
-            }
-
             $this->_Author = new Author();
             $this->_Author->set('user_type', $fields['user_type']);
             $this->_Author->set('primary', 'no');
@@ -679,6 +675,11 @@ class contentSystemAuthors extends AdministrationPage
                 'fields' => $fields,
                 'errors' => &$this->_errors,
             ));
+
+            // Make sure managers only create authors
+            if (Symphony::Author()->isManager() && $this->_Author->get('user_type') !== 'author') {
+                $this->_errors['user_type'] = __('The user type is invalid. You can only create Authors.');
+            }
 
             if (empty($this->_errors) && $this->_Author->validate($this->_errors)) {
                 if ($fields['password'] != $fields['password-confirmation']) {
@@ -741,6 +742,7 @@ class contentSystemAuthors extends AdministrationPage
         $isOwner = ($author_id == Symphony::Author()->get('id'));
         $fields = $_POST['fields'];
         $this->_Author = AuthorManager::fetchByID($author_id);
+        $oldData = $this->_Author->get();
 
         $canEdit = // Managers can edit all Authors, and their own.
                 (Symphony::Author()->isManager() && $this->_Author->isAuthor())
@@ -779,27 +781,24 @@ class contentSystemAuthors extends AdministrationPage
                 $authenticated = true;
             }
 
-            $this->_Author->set('id', $author_id);
-
-            if ($this->_Author->isPrimaryAccount() || ($isOwner && Symphony::Author()->isDeveloper())) {
-                $this->_Author->set('user_type', 'developer'); // Primary accounts are always developer, Developers can't lower their level
-            } elseif (Symphony::Author()->isManager() && isset($fields['user_type'])) { // Manager can only change user type for author and managers
-                if ($fields['user_type'] !== 'author' && $fields['user_type'] !== 'manager') {
-                    $this->_errors['user_type'] = __('The user type is invalid. You can only create Authors.');
-                } else {
-                    $this->_Author->set('user_type', $fields['user_type']);
-                }
-            } elseif (Symphony::Author()->isDeveloper() && isset($fields['user_type'])) {
-                $this->_Author->set('user_type', $fields['user_type']); // Only developer can change user type
+            if (!empty($fields['user_type'])) {
+                $this->_Author->set('user_type', $fields['user_type']);
             }
-
-            $this->_Author->set('email', $fields['email']);
-            $this->_Author->set('username', General::sanitize($fields['username']));
-            $this->_Author->set('first_name', General::sanitize($fields['first_name']));
-            $this->_Author->set('last_name', General::sanitize($fields['last_name']));
+            if (!empty($fields['email'])) {
+                $this->_Author->set('email', $fields['email']);
+            }
+            if (!empty($fields['username'])) {
+                $this->_Author->set('username', General::sanitize($fields['username']));
+            }
+            if (!empty($fields['first_name'])) {
+                $this->_Author->set('first_name', General::sanitize($fields['first_name']));
+            }
+            if (!empty($fields['last_name'])) {
+                $this->_Author->set('last_name', General::sanitize($fields['last_name']));
+            }
             $this->_Author->set('language', isset($fields['language']) ? $fields['language'] : null);
 
-            if (trim($fields['password']) != '') {
+            if (!empty($fields['password']) && trim($fields['password']) != '') {
                 $this->_Author->set('password', Cryptography::hash($fields['password']));
                 $changing_password = true;
             }
@@ -833,6 +832,9 @@ class contentSystemAuthors extends AdministrationPage
              * An Author object not yet committed, nor validated
              * @param array $fields
              *  The POST fields
+             * @param array $data
+             *  @since Symphony 3.0.0
+             *  The values as they are in the database
              * @param array $errors
              *  The error array used to validate the Author, passed by reference.
              *  Extension should append to this array if they detect validation problems.
@@ -847,10 +849,31 @@ class contentSystemAuthors extends AdministrationPage
                 'author' => $this->_Author,
                 'field' => $fields, // @deprecated
                 'fields' => $fields,
+                'data' => $oldData,
                 'errors' => &$this->_errors,
                 'changing_email' => $changing_email,
                 'changing_password' => $changing_password,
             ));
+
+            // Make sure this did not change
+            $this->_Author->set('id', $author_id);
+
+            // Primary accounts are always developer, Developers can't lower their level
+            if ($this->_Author->isPrimaryAccount() || ($isOwner && Symphony::Author()->isDeveloper())) {
+                $this->_Author->set('user_type', 'developer');
+            // Manager can only change user type for author or keep existing managers
+            } elseif (Symphony::Author()->isManager()) {
+                $validUserTypes = ['author'];
+                if ($oldData['user_type'] === 'manager') {
+                    $validUserTypes[] = 'manager';
+                }
+                if (!in_array($this->_Author->get('user_type'), $validUserTypes)) {
+                    $this->_errors['user_type'] = __('The user type is invalid. You can only edit Authors.');
+                }
+            // Only developer can change user type
+            } elseif (!Symphony::Author()->isDeveloper() && $this->_Author->get('user_type') !== $oldData['user_type']) {
+                $this->_errors['user_type'] = __('The user type is invalid. You can only edit Authors.');
+            }
 
             if (empty($this->_errors) && $this->_Author->validate($this->_errors)) {
                 // Admin changing another profile
