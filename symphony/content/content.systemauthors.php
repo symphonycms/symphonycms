@@ -675,7 +675,8 @@ class contentSystemAuthors extends AdministrationPage
              */
             Symphony::ExtensionManager()->notifyMembers('AuthorPreCreate', '/system/authors/', array(
                 'author' => $this->_Author,
-                'field' => $fields,
+                'field' => $fields, // @deprecated
+                'fields' => $fields,
                 'errors' => &$this->_errors,
             ));
 
@@ -706,7 +707,8 @@ class contentSystemAuthors extends AdministrationPage
                     Symphony::ExtensionManager()->notifyMembers('AuthorPostCreate', '/system/authors/', array(
                         'author' => $this->_Author,
                         'author_id' => $author_id,
-                        'field' => $fields,
+                        'field' => $fields, // @deprecated
+                        'fields' => $fields,
                         'errors' => &$this->_errors,
                     ));
 
@@ -843,7 +845,8 @@ class contentSystemAuthors extends AdministrationPage
              */
             Symphony::ExtensionManager()->notifyMembers('AuthorPreEdit', '/system/authors/', array(
                 'author' => $this->_Author,
-                'field' => $fields,
+                'field' => $fields, // @deprecated
+                'fields' => $fields,
                 'errors' => &$this->_errors,
                 'changing_email' => $changing_email,
                 'changing_password' => $changing_password,
@@ -913,7 +916,8 @@ class contentSystemAuthors extends AdministrationPage
                      */
                     Symphony::ExtensionManager()->notifyMembers('AuthorPostEdit', '/system/authors/', array(
                         'author' => $this->_Author,
-                        'field' => $fields,
+                        'field' => $fields, // @deprecated
+                        'fields' => $fields,
                         'errors' => &$this->_errors,
                         'changing_email' => $changing_email,
                         'changing_password' => $changing_password,
