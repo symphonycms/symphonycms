@@ -65,7 +65,7 @@ class Session
             $strictDomain = Symphony::Configuration()->get('session_strict_domain', 'symphony') === 'yes';
 
             // Set php parameters
-            if (session_id() == '') {
+            if (session_id() == '' && !headers_sent()) {
                 ini_set('session.use_trans_sid', '0');
                 ini_set('session.use_strict_mode', '1');
                 ini_set('session.use_only_cookies', '1');
