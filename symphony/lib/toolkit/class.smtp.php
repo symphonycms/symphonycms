@@ -376,7 +376,7 @@ class SMTP
         if ($this->_secure == 'tls') {
             $this->_send('STARTTLS');
             $this->_expect(220, 180);
-            if (!stream_socket_enable_crypto($this->_connection, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+            if (!stream_socket_enable_crypto($this->_connection, true, STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT)) {
                 throw new SMTPException(__('Unable to connect via TLS'));
             }
             $this->_ehlo();
