@@ -1,39 +1,34 @@
 <?php
-
 /**
  * @package toolkit
  */
 /**
- * This class hold the data created by the execution of a specialized DatabaseStatement classes
- * that returns tabular data.
- * It implements the IteratorAggregate interface but also provide its own API with more control
- * built in.
+ * The DatabaseStatementCachedResult class is a wrapper for DatabaseStatementResult
+ * that will cached data if they are available or forwards the call to the underlying
+ * result object.
+ * It currently offers almost the same API as the DatabaseTabularResult class.
+ *
+ * @since Symphony 3.0.0
  */
-class DatabaseTabularResult extends DatabaseStatementResult implements IteratorAggregate
+class DatabaseStatementCachedResult
 {
     /**
-     * The read offset.
-     * @var int
+     * The underlying DatabaseStatementResult, if any
+     * @var DatabaseStatementResult
      */
-    private $offset = 0;
+    private $result;
 
     /**
-     * The type of variable that should be returned.
-     * @var int
+     * The underlying DatabaseCache instance
+     * @var DatabaseCache
      */
-    private $type = PDO::FETCH_ASSOC;
+    private $cache;
 
     /**
-     * The orientation of the offset.
-     * @var int
+     * The DatabaseStatement's hash key
+     * @var string
      */
-    private $orientation = PDO::FETCH_ORI_NEXT;
-
-    /**
-     * If the cursor reached the end
-     * @var boolean
-     */
-    private $eof = false;
+    private $stmKey;
 
     /**
      * The current cursor position
@@ -42,75 +37,21 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
     private $position = -1;
 
     /**
-     * Implements the IteratorAggregate getIterator function by delegating it to
-     * the PDOStatement.
+     * Creates a new instance of a DatabaseStatementCachedResult that contains either
+     * a fresh DatabaseStatementResult or values from a DatabaseCache instance.
      *
-     * @return Traversable
+     * @param DatabaseStatementResult $result
+     * @param DatabaseCache $cache
+     * @param string $stmKey
      */
-    public function getIterator()
-    {
-        return $this->statement();
-    }
-
-    /**
-     * Sets the offset value
-     *
-     * @param int $offset
-     *  A positive number by which to limit the number of results
-     * @return DatabaseTabularResult
-     *  The current instance
-     */
-    public function offset($offset)
+    public function __construct($result, $cache, $stmKey)
     {
         General::ensureType([
-            'offset' => ['var' => $offset, 'type' => 'int'],
+            'stmKey' => ['var' => $stmKey, 'type' => 'string'],
         ]);
-        $this->offset = $offset;
-        return $this;
-    }
-
-    /**
-     * Sets the type of the returned structure value.
-     *
-     * @param int $type
-     *  The type to use
-     *  Either PDO::FETCH_ASSOC or PDO::FETCH_OBJ
-     * @throws DatabaseStatementException
-     * @return DatabaseTabularResult
-     *  The current instance
-     */
-    public function type($type)
-    {
-        General::ensureType([
-            'type' => ['var' => $type, 'type' => 'int'],
-        ]);
-        if ($type !== PDO::FETCH_ASSOC && $type !== PDO::FETCH_OBJ) {
-            throw new DatabaseStatementException('Invalid fetch type');
-        }
-        $this->type = $type;
-        return $this;
-    }
-
-    /**
-     * Sets the orientation value, which controls the way the offset is applied.
-     *
-     * @param int $orientation
-     *  The orientation value to use.
-     *  Either PDO::FETCH_ORI_NEXT or PDO::FETCH_ORI_ABS
-     * @throws DatabaseStatementException
-     * @return DatabaseTabularResult
-     *  The current instance
-     */
-    public function orientation($orientation)
-    {
-        General::ensureType([
-            'orientation' => ['var' => $orientation, 'type' => 'int'],
-        ]);
-        if ($orientation !== PDO::FETCH_ORI_NEXT && $orientation !== PDO::FETCH_ORI_ABS) {
-            throw new DatabaseStatementException('Invalid orientation type');
-        }
-        $this->orientation = $orientation;
-        return $this;
+        $this->result = $result;
+        $this->cache = $cache;
+        $this->stmKey = $stmKey;
     }
 
     /**
@@ -118,10 +59,7 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
      * It also advances the current offset in the specified orientation.
      * The record will be either an array or an object depending on the specified type.
      *
-     * @see type()
-     * @see orientation()
-     * @see offset()
-     * @see process()
+     * @uses DatabaseTabularResult::next()
      * @throws DatabaseStatementException
      * @return array|object
      *  The next available record.
@@ -131,64 +69,45 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
      */
     public function next()
     {
-        if ($this->eof) {
-            throw new DatabaseStatementException('Can not call next() after the cursor reached the end');
+        if ($this->result) {
+            $next = $this->result->next();
+            if ($next) {
+                $this->cache->append($this->stmKey, $next);
+            }
+            return $next;
         }
-        $next = $this->statement()->fetch(
-            $this->type,
-            $this->orientation,
-            $this->offset
-        );
-        $this->position++;
-        if ($next === false) {
-            $this->eof = true;
-            return null;
-        }
-        return $this->process($next);
-    }
-
-    /**
-     * Processes the value coming from the database and allows sub-classes
-     * to return a different value for each row coming out of the database.
-     * The default implementation simply returns the $entry without any modification.
-     *
-     * @param object|array $entry
-     *  The array or object returned from the database
-     * @return object|array
-     */
-    protected function process($entry)
-    {
-        return $entry;
+        $rows = $this->cache->get($this->stmKey);
+        return $rows[++$this->position];
     }
 
     /**
      * Retrieves all remaining rows.
      *
      * @uses next()
-     * @see rows()
-     * @see type()
-     * @see orientation()
-     * @see offset()
+     * @uses DatabaseTabularResult::remainingRows()
      * @throws DatabaseStatementException
      * @return array
      *  An array of objects or arrays
      */
     public function remainingRows()
     {
-        $rows = [];
-        while ($row = $this->next()) {
-            $rows[] = $row;
+        if ($this->result) {
+            $remainingRows = $this->result->remainingRows();
+            $this->cache->appendAll($this->stmKey, $remainingRows);
+            return $remainingRows;
         }
-        return $rows;
+        $rows = $this->cache->get($this->stmKey);
+        $remain = [];
+        while (isset($rows[++$this->position]) && $next = $rows[$this->position]) {
+            $remain[] = $next;
+        }
+        return $remain;
     }
 
     /**
      * Retrieves all rows, by making sure no records were read prior to this call.
      *
-     * @see remainingRows()
-     * @see type()
-     * @see orientation()
-     * @see offset()
+     * @uses remainingRows()
      * @throws DatabaseStatementException
      * @return array
      *  An array of objects or arrays
@@ -204,13 +123,28 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
 
     /**
      * Retrieves the number of available columns in each record.
+     * If the cache is being used, results may not be accurate in the case
+     * the result if empty or if data are already consumed.
      *
+     * @throws DatabaseStatementException
      * @return int
      *  The number of available columns
      */
     public function columnCount()
     {
-        $this->statement()->columnCount();
+        if ($this->result) {
+            if (!is_callable([$this->result, 'columnCount'])) {
+                throw new DatabaseStatementException(
+                    'columnCount is not implemented for this underlying DatabaseStatementResult'
+                );
+            }
+            return $this->result->columnCount();
+        }
+        $rows = $this->cache->get($this->stmKey);
+        if (empty($rows)) {
+            return 0;
+        }
+        return count(array_values(current($rows)));
     }
 
     /**
@@ -224,8 +158,7 @@ class DatabaseTabularResult extends DatabaseStatementResult implements IteratorA
     public function reducer()
     {
         return new ArrayReducer(
-            $this->remainingRows(),
-            $this->type === PDO::FETCH_ASSOC
+            $this->remainingRows()
         );
     }
 

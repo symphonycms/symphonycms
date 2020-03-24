@@ -28,12 +28,6 @@ class Configuration
     private $_forceLowerCase = false;
 
     /**
-     * The string representing the tab characters used to serialize the configuration
-     * @var string
-     */
-    const TAB = '    ';
-
-    /**
      * The constructor for the Configuration class takes one parameter,
      * `$forceLowerCase` which will make all property and
      * group names lowercase or not. By default they are left to the case
@@ -173,75 +167,14 @@ class Configuration
      * This magic `__toString` function converts the internal `$this->_properties`
      * array into a string representation. Symphony generates the `MANIFEST/config.php`
      * file in this manner.
-     * @see Configuration::serializeArray()
+     * @see ArraySerializer::asPHPFile()
      * @return string
      *  A string that contains a array representation of `$this->_properties`.
      *  This is used by Symphony to write the `config.php` file.
      */
     public function __toString()
     {
-        $string = 'array(';
-
-        $tab = static::TAB;
-
-        foreach ($this->_properties as $group => $data) {
-            $string .= str_repeat(PHP_EOL, 3) . "$tab$tab###### ".strtoupper($group)." ######";
-            $group = addslashes($group);
-            $string .= PHP_EOL . "$tab$tab'$group' => ";
-
-            $string .= $this->serializeArray($data, 3, $tab);
-
-            $string .= ",";
-            $string .= PHP_EOL . "$tab$tab########";
-        }
-        $string .= PHP_EOL . "$tab)";
-
-        return $string;
-    }
-
-    /**
-     * The `serializeArray` function will properly format and indent multidimensional
-     * arrays using recursivity.
-     *
-     * `__toString()` call `serializeArray` to use the recursive condition.
-     * The keys (int) in array won't have apostrophe.
-     * Array without multidimensional array will be output with normal indentation.
-     * @return string
-     *  A string that contains a array representation of the '$data parameter'.
-     * @param array $arr
-     *  A array of properties to serialize.
-     * @param integer $indentation
-     *  The current level of indentation.
-     * @param string $tab
-     *  A horizontal tab
-     */
-    protected function serializeArray(array $arr, $indentation = 0, $tab = self::TAB)
-    {
-        $tabs = '';
-        $closeTabs = '';
-        for ($i = 0; $i < $indentation; $i++) {
-            $tabs .= $tab;
-            if ($i < $indentation - 1) {
-                $closeTabs .= $tab;
-            }
-        }
-        $string = 'array(';
-        foreach ($arr as $key => $value) {
-            $key = addslashes($key);
-            $string .= (is_numeric($key) ? PHP_EOL . "$tabs $key => " : PHP_EOL . "$tabs'$key' => ");
-            if (is_array($value)) {
-                if (empty($value)) {
-                    $string .= 'array()';
-                } else {
-                    $string .= $this->serializeArray($value, $indentation + 1, $tab);
-                }
-            } else {
-                $string .= (General::strlen($value) > 0 ? var_export($value, true) : 'null');
-            }
-            $string .= ",";
-        }
-        $string .=  PHP_EOL . "$closeTabs)";
-        return $string;
+        return (new ArraySerializer($this->_properties))->asPHPFile();
     }
 
     /**
@@ -265,10 +198,7 @@ class Configuration
             $file = CONFIG;
         }
 
-        $tab = static::TAB;
-        $eol = PHP_EOL;
-
-        $string = "<?php$eol$tab\$settings = " . (string)$this . ";$eol";
+        $string = (string)$this;
 
         if (function_exists('opcache_invalidate')) {
             opcache_invalidate($file, true);

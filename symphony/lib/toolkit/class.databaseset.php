@@ -48,7 +48,7 @@ final class DatabaseSet extends DatabaseStatement
      * Can only be called once in the lifetime of the object.
      *
      * @throws DatabaseStatementException
-     * @param string $value
+     * @param string|integer $value
      *  The new value of the variable
      * @return DatabaseSet
      *  The current instance
@@ -58,9 +58,6 @@ final class DatabaseSet extends DatabaseStatement
         if ($this->containsSQLParts('value')) {
             throw new DatabaseStatementException('DatabaseSet can not hold more than one value clause');
         }
-        General::ensureType([
-            'value' => ['var' => $value, 'type' => 'string'],
-        ]);
         $this->unsafeAppendSQLPart('value', "= :value");
         $this->appendValues(['value' => $value]);
         return $this;

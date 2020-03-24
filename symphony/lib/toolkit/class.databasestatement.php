@@ -416,11 +416,11 @@ class DatabaseStatement
             $key = General::intval($key);
             if ($key === -1) {
                 throw new DatabaseStatementException(
-                    'Can not use numeric index when using named parameters'
+                    'Can not use string index when using placeholders. Please use a numeric index.'
                 );
             }
         } elseif (!is_string($key)) {
-            throw new DatabaseStatementException('Key for parameter must be a string');
+            throw new DatabaseStatementException('Key parameter must be a string');
         }
         if (isset($this->values[$key])) {
             throw new DatabaseStatementException("Value for parameter `$key` is already defined");
@@ -483,6 +483,23 @@ class DatabaseStatement
     }
 
     /**
+     * Computes a md5 hash of the current statement object, using only minimal
+     * information. The goal is to be able to compare two instances of the class
+     * and see if they are the same.
+     *
+     * @return string
+     */
+    final public function computeHash()
+    {
+        return md5(serialize([
+            $this->sql,
+            $this->values,
+            $this->safe,
+            $this->usePlaceholders,
+        ]));
+    }
+
+    /**
      * @internal This method is not meant to be called directly. Use execute().
      * Appends any remaining part of the statement.
      * Called just before validation and the actual sending of the statement to
@@ -501,6 +518,7 @@ class DatabaseStatement
      * Send the query and all associated values to the server for execution.
      * Calls finalize before sending creating and sending the query to the server.
      *
+     * @uses finalize()
      * @see Database::execute()
      * @return DatabaseStatementResult
      * @throws DatabaseException

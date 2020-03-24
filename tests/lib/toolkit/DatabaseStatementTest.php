@@ -260,6 +260,20 @@ final class DatabaseStatementTest extends TestCase
         $this->assertFalse($sql->isSafe());
     }
 
+    public function testComputeHash()
+    {
+        $db = new Database([]);
+        $sql = $db->statement('TEST');
+        $hash = $sql->computeHash();
+        $this->assertEquals('ef31f4b846ebb16ee1074ee4808f22b3', $hash);
+        $hash = $sql->unsafeAppendSQLPart('statement', 'test')->computeHash();
+        $this->assertEquals('cef614ec23649e2f63942c8a65e7dca5', $hash);
+        $hash = $sql->usePlaceholders()->computeHash();
+        $this->assertEquals('efdab66e5a15b1349571827625e81de5', $hash);
+        $hash = $sql->setValue(0, 'test')->computeHash();
+        $this->assertEquals('d758c817957aa56d8f51c6faacca3829', $hash);
+    }
+
     public function testFinalize()
     {
         $db = new Database([]);

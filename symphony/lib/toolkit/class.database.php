@@ -82,6 +82,13 @@ class Database
     ];
 
     /**
+     * The DatabaseCache instance
+     *
+     * @var DatabaseCache
+     */
+    private $cache;
+
+    /**
      * The last executed query
      * @var string;
      */
@@ -122,6 +129,7 @@ class Database
     public function __construct(array $config = [])
     {
         $this->config = array_merge($this->config, $config);
+        $this->cache = new DatabaseCache;
     }
 
     /**
@@ -321,6 +329,16 @@ class Database
     public function isCachingEnabled()
     {
         return in_array($this->config['query_caching'], ['on', true], true);
+    }
+
+    /**
+     * @internal Returns the DatabaseCache instance tied to this Database instance.
+     *
+     * @return DatabaseCache
+     */
+    public function getCache()
+    {
+        return $this->cache;
     }
 
     /**
@@ -894,7 +912,7 @@ class Database
         // Cleanup from last time, set some logging parameters
         $this->flush();
         $this->lastQuery = $stm->generateFormattedSQL();
-        $this->lastQueryHash = md5($query . $start);
+        $this->lastQueryHash = $stm->computeHash();
         $this->lastQueryValues = $values;
         $this->lastQuerySafe = $stm->isSafe();
 

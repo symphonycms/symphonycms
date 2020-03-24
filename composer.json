@@ -15,6 +15,9 @@
         "issues": "https://github.com/symphonycms/symphonycms/issues",
         "wiki": "https://github.com/symphonycms/symphonycms/wiki"
     },
+    "require": {
+        "composer/semver": "^1.4"
+    },
     "require-dev": {
         "squizlabs/php_codesniffer": "2.*",
         "phpunit/phpunit": "5.7.*",
@@ -34,7 +37,7 @@
             "symphony/lib/toolkit/util.validators.php"
         ]
     },
-    "require": {
-        "composer/semver": "^1.4"
+    "config": {
+        "sort-packages": true
     }
 }

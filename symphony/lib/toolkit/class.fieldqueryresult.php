@@ -30,7 +30,6 @@ class FieldQueryResult extends DatabaseQueryResult
     {
         $next = parent::next();
         if ($next) {
-            $next = $this->buildField($next);
             // If this fields does not match the restriction, fetch the next one.
             if ($this->restriction && !($this->restriction === Field::__FIELD_ALL__
                 || ($this->restriction === Field::__TOGGLEABLE_ONLY__ && $next->canToggle())
@@ -41,6 +40,15 @@ class FieldQueryResult extends DatabaseQueryResult
             }
         }
         return $next;
+    }
+
+    /**
+     * @see buildField()
+     * @return Extension
+     */
+    protected function process($next)
+    {
+        return $this->buildField($next);
     }
 
     /**

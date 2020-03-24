@@ -11,20 +11,12 @@
 class SectionQueryResult extends DatabaseQueryResult
 {
     /**
-     * Retrieves the the next available record and builds a Section object with it.
-     *
      * @see buildSection()
      * @return Section
-     *  The next available Section object.
-     *  null if there are not more available records.
      */
-    public function next()
+    protected function process($next)
     {
-        $next = parent::next();
-        if ($next) {
-            $next = $this->buildSection($next);
-        }
-        return $next;
+        return $this->buildSection($next);
     }
 
     /**

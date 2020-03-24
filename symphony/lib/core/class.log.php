@@ -57,11 +57,18 @@ class Log
     private $_filter = -1;
 
     /**
-     * The date format that this Log entries will be written as. Defaults to
-     * Y/m/d H:i:s.
+     * The date format that this Log entries will be written as.
+     * @since Symphony 3.0.0, it defaults to ISO 8601.
      * @var string
      */
-    private $_datetime_format = 'Y/m/d H:i:s';
+    private $_datetime_format = 'c';
+
+    /**
+     * A random value used to identify which Log instance created the data.
+     * @since Symphony 3.0.0
+     * @var string
+     */
+    private $id;
 
     /**
      * The log constructor takes a path to the folder where the Log should be
@@ -73,6 +80,7 @@ class Log
     public function __construct($path)
     {
         $this->setLogPath($path);
+        $this->id = substr(uniqid(), 0, 6);
     }
 
     /**
@@ -104,6 +112,16 @@ class Log
     public function getLog()
     {
         return $this->_log;
+    }
+
+    /**
+     * Accessor for the `$id` variable.
+     * @since Symphony 3.0.0
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
@@ -230,7 +248,10 @@ class Log
             $this->_log[count($this->_log) - 1]['message'] =  $this->_log[count($this->_log) - 1]['message'] . $message;
         } else {
             array_push($this->_log, array('type' => $type, 'time' => time(), 'message' => $message));
-            $message = DateTimeObj::get($this->_datetime_format) . ' > ' . $this->__defineNameString($type) . ': ' . $message;
+            $message = DateTimeObj::get($this->_datetime_format) .
+                ' ' . $this->id .
+                ' > ' . $this->__defineNameString($type) .
+                ': ' . $message;
         }
 
         if (!is_numeric($type)) {

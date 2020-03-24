@@ -11,20 +11,12 @@
 class ExtensionQueryResult extends DatabaseQueryResult
 {
     /**
-     * Retrieves the the next available record and builds Extension object with it.
-     *
      * @see buildExtension()
      * @return Extension
-     *  The next available Entry object.
-     *  null if there are not more available records.
      */
-    public function next()
+    protected function process($next)
     {
-        $next = parent::next();
-        if ($next) {
-            $next = $this->buildExtension($next);
-        }
-        return $next;
+        return $this->buildExtension($next);
     }
 
     /**

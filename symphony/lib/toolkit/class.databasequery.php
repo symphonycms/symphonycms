@@ -10,6 +10,7 @@
 class DatabaseQuery extends DatabaseStatement
 {
     use DatabaseWhereDefinition;
+    use DatabaseCacheableExecutionDefinition;
 
     /**
      * Enable DatabaseWhereDefinition's ability to transform == null syntax

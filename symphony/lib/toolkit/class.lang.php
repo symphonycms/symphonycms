@@ -277,6 +277,9 @@ class Lang
         } else {
             self::$_lang = 'en';
 
+            // Clear previously loaded dictionary
+            self::$_dictionary = array();
+
             // Log error, if possible
             if ($code !== 'en' && Symphony::Log() instanceof Log) {
                 Symphony::Log()->pushToLog(

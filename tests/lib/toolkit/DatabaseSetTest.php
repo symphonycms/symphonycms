@@ -26,8 +26,21 @@ final class DatabaseSetTest extends TestCase
     public function testSETDOUBLEVALUE()
     {
         $db = new Database([]);
-        $sql = $db->set('t')
+        $db->set('t')
             ->value('v')
             ->value('other');
+    }
+
+    public function testSETWithInteger()
+    {
+        $db = new Database([]);
+        $sql = $db->set('x')->value(1);
+        $this->assertEquals(
+            "SET x = :value",
+            $sql->generateSQL(),
+            'SET clause with integer'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(1, $values['value'], 'value is 1');
     }
 }

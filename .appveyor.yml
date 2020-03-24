@@ -6,7 +6,7 @@ branches:
 
 # Test against the latest version of this Node.js version
 environment:
-  nodejs_version: "8"
+  nodejs_version: "12"
   php_version: "7.1.16"
   matrix:
     - platform: 'x86'
@@ -67,4 +67,4 @@ shallow_clone: false
 # Cache deps
 cache:
   - vendor -> composer.lock
-  - npm_modules -> package-lock.json
+  - node_modules -> package-lock.json
