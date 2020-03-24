@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
  */
 final class DatabaseStatementCachedResultTest extends TestCase
 {
-    protected function createResult()
+    protected function createResultTestObject()
     {
         $dc = new DatabaseCache;
         $testKey = 'testkey';
@@ -20,7 +20,7 @@ final class DatabaseStatementCachedResultTest extends TestCase
 
     public function testCachedNext()
     {
-        $dscr = $this->createResult();
+        $dscr = $this->createResultTestObject();
         $this->assertEquals([1, 2, 3], $dscr->next());
         $this->assertEquals([4, 5, 6], $dscr->next());
         $this->assertEquals([7, 8, 9], $dscr->next());
@@ -28,7 +28,7 @@ final class DatabaseStatementCachedResultTest extends TestCase
 
     public function testCachedRows()
     {
-        $dscr = $this->createResult();
+        $dscr = $this->createResultTestObject();
         $this->assertEquals([[1, 2, 3], [4, 5, 6], [7, 8, 9]], $dscr->rows());
     }
 
@@ -37,7 +37,7 @@ final class DatabaseStatementCachedResultTest extends TestCase
      */
     public function testCachedConsumedRows()
     {
-        $dscr = $this->createResult();
+        $dscr = $this->createResultTestObject();
         // Increment position
         $dscr->next();
         // This throws, a rows as been consumed
@@ -46,7 +46,7 @@ final class DatabaseStatementCachedResultTest extends TestCase
 
     public function testCachedRemainingRows()
     {
-        $dscr = $this->createResult();
+        $dscr = $this->createResultTestObject();
         // Increment position
         $dscr->next();
         // Safe to get "the rest"
@@ -55,7 +55,7 @@ final class DatabaseStatementCachedResultTest extends TestCase
 
     public function testColumnCount()
     {
-        $dscr = $this->createResult();
+        $dscr = $this->createResultTestObject();
         $this->assertEquals(3, $dscr->columnCount());
     }
 }
