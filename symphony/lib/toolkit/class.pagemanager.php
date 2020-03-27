@@ -441,7 +441,7 @@ class PageManager
      * Optionally, `$where` and `$order_by` parameters allow a developer to
      * further refine their query.
      *
-     * @deprecated Symphony 3.0.0
+     * @deprecated @since Symphony 3.0.0
      *  Use select() instead
      * @param boolean $include_types
      *  Whether to include the resulting Page's Page Types in the return array,

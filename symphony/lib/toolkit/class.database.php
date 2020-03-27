@@ -621,19 +621,19 @@ class Database
      * @param string $table
      *  The name of the table to act on, including the tbl prefix which will be changed
      *  to the Database table prefix.
-     *  @deprecated Symphony 3.0.0
+     *  @deprecated @since Symphony 3.0.0
      *  If $table is an array, it is treated as the fields values
      *  Use DatabaseInsert::values()
      * @param string $table
      *  The name of the table to act on, including the tbl prefix which will be changed
      *  to the Database table prefix.
-     *  @deprecated Symphony 3.0.0
+     *  @deprecated @since Symphony 3.0.0
      *  This parameter is deprecated and will be removed.
      *  Use the first parameter and DatabaseInsert::values()
      * @param bool $updateOnDuplicate
      *  If set to true, data will updated if any key constraints are found that cause
      *  conflicts. Defaults to false
-     *  @deprecated Symphony 3.0.0
+     *  @deprecated @since Symphony 3.0.0
      *  This parameter is deprecated and will be removed.
      *  Use DatabaseInsert::updateOnDuplicateKey()
      * @return DatabaseInsert
@@ -671,7 +671,7 @@ class Database
      *  to the Database table prefix.
      * @param string $where
      *  An unsanitized WHERE condition.
-     *  @deprecated Symphony 3.0.0
+     *  @deprecated @since Symphony 3.0.0
      *  This parameter is deprecated and will be removed.
      *  Use DatabaseUpdate::where()
      * @return DatabaseUpdate
@@ -696,7 +696,7 @@ class Database
      *  to the Database table prefix.
      * @param string $where
      *  An unsanitized WHERE condition.
-     *  @deprecated Symphony 3.0.0
+     *  @deprecated @since Symphony 3.0.0
      *  This parameter is deprecated and will be removed.
      *  Use DatabaseDelete::where()
      * @return DatabaseDelete

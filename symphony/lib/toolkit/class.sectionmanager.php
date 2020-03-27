@@ -152,7 +152,7 @@ class SectionManager
      * field. By default, Sections will be order in ascending order by
      * their name
      *
-     * @deprecated Symphony 3.0.0
+     * @deprecated @since Symphony 3.0.0
      *  Use select() instead
      * @param integer|array $section_id
      *    The ID of the section to return, or an array of ID's. Defaults to null

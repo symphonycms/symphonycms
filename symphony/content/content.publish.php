@@ -544,9 +544,9 @@ class contentPublish extends AdministrationPage
          *  @since Symphony 3.0.0
          * @param string $where
          *  The current where statement, or null if not set.
-         *  @deprecated Symphony 3.0.0 use $query instead
+         *  @deprecated @since Symphony 3.0.0 use $query instead
          * @param string $joins
-         *  @deprecated Symphony 3.0.0 use $query instead
+         *  @deprecated @since Symphony 3.0.0 use $query instead
          */
         Symphony::ExtensionManager()->notifyMembers(
             'AdjustPublishFiltering',

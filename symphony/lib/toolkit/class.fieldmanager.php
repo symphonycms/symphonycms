@@ -282,7 +282,7 @@ class FieldManager implements FileResource
      * Fields from a Section also. There are several parameters that can be used to fetch
      * fields by their Type, Location, by a Field Constant or with a custom WHERE query.
      *
-     * @deprecated Symphony 3.0.0
+     * @deprecated @since Symphony 3.0.0
      *  Use select() instead
      * @throws DatabaseException
      * @throws Exception

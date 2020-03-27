@@ -67,7 +67,7 @@ class FrontendPageNotFoundExceptionRenderer extends ExceptionRenderer
 /**
  * Compat Layer
  *
- * @deprecated Symphony 3.0.0
+ * @deprecated @since Symphony 3.0.0
  *  Use FrontendPageNotFoundExceptionRenderer instead
  */
 class FrontendPageNotFoundExceptionHandler extends FrontendPageNotFoundExceptionRenderer
