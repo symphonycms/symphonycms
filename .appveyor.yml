@@ -7,9 +7,8 @@ branches:
 # Test against the latest version of this Node.js version
 environment:
   nodejs_version: "12"
-  php_version: "7.1.16"
+  php_version: "7.2.29"
   matrix:
-    - platform: 'x86'
     - platform: 'x64'
 
 matrix:
@@ -30,7 +29,7 @@ install:
   - refreshenv
   # install php
   - cinst -y php --version %php_version%
-  - cd c:\tools\php71
+  - cd c:\tools\php72
   - copy php.ini-production php.ini
   - echo date.timezone="UTC" >> php.ini
   - echo extension_dir=ext >> php.ini
@@ -41,7 +40,7 @@ install:
   - echo extension=php_fileinfo.dll >> php.ini
   - echo extension=php_curl.dll >> php.ini
   - echo extension=php_xsl.dll >> php.ini
-  - SET PATH=c:\tools\php71;%PATH%
+  - SET PATH=c:\tools\php72;%PATH%
   - cd C:\projects\symphonycms
   # install composer
   - php -r "readfile('https://getcomposer.org/installer');" | php
@@ -57,6 +56,10 @@ test_script:
   # run tests
   - cd C:\projects\symphonycms
   - npm test
+  # run phpstan
+  - vendor\bin\phpstan analyse -c tests/phpstan.neon symphony
+  # run bcc
+  - vendor\bin\roave-backward-compatibility-check
 
 # Don't actually build.
 build: off
