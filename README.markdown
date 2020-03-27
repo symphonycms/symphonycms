@@ -12,10 +12,11 @@
 [![Licence](https://img.shields.io/badge/licence-MIT-brightgreen.svg?style=flat)](https://symphonycms.mit-license.org/)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fsymphonycms%2Fsymphony-2.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fsymphonycms%2Fsymphony-2)
 
-- Version: 2.7.10
-- Date: 8th April 2019
-- [Release notes](https://www.getsymphony.com/download/releases/version/2.7.10/)
-- [Github repository](https://github.com/symphonycms/symphonycms/tree/2.7.10)
+- Version: 3.0.0
+- Date: 27th March 2020
+- [Release notes](https://www.getsymphony.com/download/releases/version/3.0.0/)
+- [Changelog](https://github.com/symphonycms/symphonycms/blob/3.0.0/CHANGELOG.md)
+- [Github repository](https://github.com/symphonycms/symphonycms/tree/3.0.0)
 - [MIT Licence](https://github.com/symphonycms/symphonycms/blob/master/LICENCE)
 
 ## Contents
@@ -33,7 +34,7 @@
 
 ## Overview
 
-Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `2.7.10` and is considered stable.
+Symphony is a `PHP` & `MySQL` based CMS that utilises `XML` and `XSLT` as its core technologies. This repository represents version `3.0.0` and is considered stable.
 
 Useful places:
 

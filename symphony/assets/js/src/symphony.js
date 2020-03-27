@@ -1,5 +1,5 @@
 /*!
- * Symphony 2.7.x, https://www.getsymphony.com, MIT license
+ * Symphony CMS, https://www.getsymphony.com, MIT license
  */
 
 /**
