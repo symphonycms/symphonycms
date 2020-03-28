@@ -61,7 +61,7 @@ test_script:
   - cd C:\projects\symphonycms
   - npm test
   # run phpstan
-  - vendor\bin\phpstan analyse -c tests/phpstan.neon symphony
+  - npm run stan
   # run bcc
   - vendor\bin\roave-backward-compatibility-check
 
