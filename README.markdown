@@ -1,6 +1,6 @@
 # Symphony CMS
 
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg?style=flat)](https://php.net/)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-8892BF.svg?style=flat)](https://php.net/)
 [![Build Status](https://travis-ci.com/symphonycms/symphony-2.svg?branch=master)](https://travis-ci.com/symphonycms/symphony-2)
 ![Build status](https://ci.appveyor.com/api/projects/status/1mx5r9befuode1e9?svg=true)
 ![Build status](https://github.com/symphonycms/symphony-2/workflows/CI/badge.svg)    
@@ -23,6 +23,7 @@
 
 * [Overview](#overview)
 * [Server requirements](#server-requirements)
+* [Optional requirements](#optional-requirements)
 * [Responsible Security Disclosure](#responsible-security-disclosure)
 
 ## Quick links
@@ -46,14 +47,19 @@ Useful places:
 
 ## Server requirements
 
-- PHP 5.6 or 7.0-7.3
+- PHP 7.2-7.3
 - PHP’s LibXML module, with the XSLT extension enabled (`--with-xsl`)
 - MySQL 5.7 or above is recommended
 - A webserver (known to be used with Apache, Litespeed, Nginx and Hiawatha)
 - Apache’s `mod_rewrite` module or equivalent
-- PHP’s built in `json` functions, which are enabled by default in PHP 5.2 and above; if they are missing, ensure PHP wasn’t compiled with `--disable-json`
+- PHP’s built in `json` functions; if they are missing, ensure PHP wasn’t compiled with `--disable-json`
 - PHP’s `zlib` module
 - PHP’s `pdo_mysql` module
+
+## Optional requirements
+- PHP’s `openssl` module
+- PHP’s `curl` module
+- PHP’s `mbstring` module
 
 ## Responsible Security Disclosure
 
