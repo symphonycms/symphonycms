@@ -28,7 +28,7 @@ trait DatabaseColumnDefinition
      *
      * @param string $charset
      *  The charset to use
-     * @return DatabaseColumnDefinition
+     * @return self
      *  The current instance
      */
     public function charset($charset)
@@ -42,7 +42,7 @@ trait DatabaseColumnDefinition
      *
      * @param string $collate
      *  The collate to use by default
-     * @return DatabaseColumnDefinition
+     * @return self
      *  The current instance
      */
     public function collate($collate)

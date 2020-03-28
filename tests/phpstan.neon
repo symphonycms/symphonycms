@@ -11,3 +11,4 @@ parameters:
 		- '#Function gzopen64 not found\.#'
 		- '#Access to an undefined property Datasource::\$dsParam[A-z0-9_]+#'
 		- '#Access to an undefined property SectionEvent::\$(eParam[A-z0-9_]+|ROOTELEMENT)#'
+		- '#Call to an undefined method Event::execute()#'
