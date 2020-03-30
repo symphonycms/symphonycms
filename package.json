@@ -12,7 +12,8 @@
     "test": "grunt unit",
     "integration": "grunt integration",
     "watch": "grunt watch",
-    "stan": "php vendor/phpstan/phpstan/bin/phpstan analyse --memory-limit 512M -c tests/phpstan.neon symphony"
+    "stan": "php vendor/bin/phpstan analyse --memory-limit 512M -c tests/phpstan.neon symphony",
+    "bcc": "php vendor/bin/roave-backward-compatibility-check"
   },
   "devDependencies": {
     "grunt": "~1.1.0",

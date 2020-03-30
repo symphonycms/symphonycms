@@ -60,7 +60,7 @@ script:
   # run phpstan
   - npm run stan
   # run bcc
-  - roave-backward-compatibility-check
+  - npm run bcc
 
 after_success:
   # merge code coverage reports

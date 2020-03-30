@@ -63,7 +63,7 @@ test_script:
   # run phpstan
   - npm run stan
   # run bcc
-  - vendor\bin\roave-backward-compatibility-check
+  - npm run bcc
 
 # Don't actually build.
 build: off
