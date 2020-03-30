@@ -141,6 +141,14 @@ final class GeneralTest extends TestCase
         $this->assertEquals('this&is', \General::createHandle('This    is---a    test', 7, '&'));
     }
 
+    public function testCreateHandleWwithApostropheAndAccents()
+    {
+        $this->assertEquals('rt', \General::createHandle('r^t'));
+        $this->assertEquals(
+            'du-chien-berger-a-petinfluencer-rasta-conquit-linternet',
+            \General::createHandle('Du chien Berger `a Petinfluencer - Rasta conquit l´internet')
+        );
+    }
 
     public function testCreateHandleUriEncode()
     {
