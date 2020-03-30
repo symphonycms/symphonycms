@@ -1261,7 +1261,7 @@ class General
         foreach (scandir($dir) as $file) {
             if (
                 ($file == '.' || $file == '..')
-                || ($ignore_hidden && $file{0} == '.')
+                || ($ignore_hidden && $file[0] == '.')
                 || !is_dir("$dir/$file")
                 || in_array($file, $exclude)
                 || in_array("$dir/$file", $exclude)
@@ -1342,7 +1342,7 @@ class General
         foreach (scandir($dir) as $file) {
             if (
                 ($file == '.' || $file === '..')
-                || ($ignore_hidden && $file{0} === '.')
+                || ($ignore_hidden && $file[0] === '.')
                 || in_array($file, $exclude)
                 || in_array("$dir/$file", $exclude)
             ) {

@@ -480,7 +480,7 @@ abstract class Datasource
                 $bits = preg_split('/:/', $cleaned, -1, PREG_SPLIT_NO_EMPTY);
 
                 foreach ($bits as $param) {
-                    if ($param{0} !== '$') {
+                    if ($param[0] !== '$') {
                         $replacement = $param;
                         break;
                     }
