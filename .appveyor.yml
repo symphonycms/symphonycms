@@ -63,7 +63,7 @@ test_script:
   # run phpstan
   - npm run stan
   # run bcc
-  - npm run bcc
+  #- npm run bcc
 
 # Don't actually build.
 build: off
