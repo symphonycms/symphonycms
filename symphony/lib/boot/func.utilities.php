@@ -21,11 +21,14 @@ function redirect($url)
     }
 
     // convert idn back to ascii for redirect
-
     if (function_exists('idn_to_ascii')) {
         $root = parse_url(URL);
         $host = $root['host'];
-        $url  = str_replace($host, idn_to_ascii($host), $url);
+        $url = str_replace(
+            $host,
+            idn_to_ascii($host, 0, INTL_IDNA_VARIANT_UTS46),
+            $url
+        );
     }
 
     cleanup_session_cookies();
