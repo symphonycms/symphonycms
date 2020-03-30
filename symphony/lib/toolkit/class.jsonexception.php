@@ -1,20 +1,20 @@
 <?php
 // This class exists in PHP7.3
-if (class_exists('JSONException', false)) {
+if (class_exists('JsonException', false)) {
     return;
 }
 /**
  * @package toolkit
  */
 /**
- * The `JSONException` class extends the base `Exception` class. It's only
+ * The `JsonException` class extends the base `Exception` class. It's only
  * difference is that it will translate the `$code` to a human readable
  * error.
  * The class won't be loaded on PHP7.3+, which provides its own.
  *
  * @since Symphony 2.3
  */
-class JSONException extends Exception
+class JsonException extends Exception
 {
     /**
      * Constructor takes a `$message`, `$code` and the original Exception, `$ex`.

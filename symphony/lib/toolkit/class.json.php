@@ -19,7 +19,7 @@ class JSON
      * equivalent XML version (either standalone or as a fragment). The JSON
      * will be added under a root node of `<data>`.
      *
-     * @throws JSONException
+     * @throws JsonException
      * @param string $json
      *  The JSON formatted class
      * @param boolean $standalone
@@ -38,16 +38,16 @@ class JSON
         if (preg_match('/(\{|\[).*(\}|\])/s', $json, $matches)) {
             $json = $matches[0];
         } else {
-            throw new JSONException(__("JSON not formatted correctly"));
+            throw new JsonException(__("JSON not formatted correctly"));
         }
 
         $data = json_decode($json);
         if (function_exists('json_last_error')) {
             if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new JSONException(__("JSON not formatted correctly"), json_last_error());
+                throw new JsonException(__("JSON not formatted correctly"), json_last_error());
             }
         } elseif (!$data) {
-            throw new JSONException(__("JSON not formatted correctly"));
+            throw new JsonException(__("JSON not formatted correctly"));
         }
 
         $data_element = self::_process($data, self::$dom->createElement('data'));
