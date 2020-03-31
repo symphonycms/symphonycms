@@ -20,6 +20,11 @@
     },
     "require": {
         "php": ">=7.2",
+        "ext-json": "*",
+        "ext-xml": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-zlib": "*",
         "composer/semver": "^1.4"
     },
     "require-dev": {
