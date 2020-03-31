@@ -20,6 +20,7 @@ INSTALL="$(curl --retry 0 -sI http://$HOST:$PORT/install/ | grep '200 OK')"
 if [ -z "$INSTALL" ]; then
     echo 'Failed to load installer page';
     curl --retry 0 -si http://$HOST:$PORT/install/
+    cat manifest/logs/install
     exit 200;
 else
     echo 'Install returned 200';
@@ -28,6 +29,7 @@ fi;
 COMPLETED="$(grep 'INSTALLATION COMPLETED' manifest/logs/install)"
 if [ -z "$COMPLETED" ]; then
     echo 'Installation failed';
+    cat manifest/logs/install
     exit 300;
 else
     echo 'INSTALLATION COMPLETED';
@@ -37,6 +39,7 @@ INDEXNOTFOUND="$(curl --retry 0 -sI http://$HOST:$PORT/ | grep '404 Not Found')"
 if [ -z "$INDEXNOTFOUND" ]; then
     echo 'Failed to get a 404 on index';
     curl --retry 0 -si http://$HOST:$PORT/
+    cat manifest/logs/main
     exit 404;
 else
     echo 'Index returned 404';
@@ -46,6 +49,7 @@ ADMIN="$(curl --retry 0 -sI http://$HOST:$PORT/symphony/ | grep '200 OK')"
 if [ -z "$ADMIN" ]; then
     echo 'Failed to load login page';
     curl --retry 0 -si http://$HOST:$PORT/symphony/
+    cat manifest/logs/main
     exit 500;
 else
     echo 'Admin returns 200';
