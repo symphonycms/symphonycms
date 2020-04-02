@@ -1,9 +1,9 @@
 # Symphony CMS
 
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg?style=flat)](https://php.net/)
-[![Build Status](https://travis-ci.com/symphonycms/symphony-2.svg?branch=master)](https://travis-ci.com/symphonycms/symphony-2)
+[![Build Status](https://travis-ci.com/symphonycms/symphonycms.svg?branch=master)](https://travis-ci.com/symphonycms/symphonycms)
 ![Build status](https://ci.appveyor.com/api/projects/status/1mx5r9befuode1e9?svg=true)
-![Build status](https://github.com/symphonycms/symphony-2/workflows/CI/badge.svg)    
+![Build status](https://github.com/symphonycms/symphonycms/workflows/CI/badge.svg)    
 [![Code coverage](https://codecov.io/gh/symphonycms/symphony-2/branch/master/graph/badge.svg)](https://codecov.io/gh/symphonycms/symphony-2)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/symphonycms/symphony-2/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/symphonycms/symphony-2/?branch=master)
