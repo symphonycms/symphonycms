@@ -95,7 +95,7 @@ class UpdaterPage extends InstallerPage
         }
 
         $submit = new XMLElement('div', null, array('class' => 'submit'));
-        $submit->appendChild(Widget::input('action[update]', __('Update Symphony'), 'submit'));
+        $submit->appendChild(Widget::Input('action[update]', __('Update Symphony'), 'submit'));
 
         $this->Form->appendChild($submit);
     }
@@ -165,7 +165,7 @@ class UpdaterPage extends InstallerPage
         );
 
         $submit = new XMLElement('div', null, array('class' => 'submit'));
-        $submit->appendChild(Widget::input('submit', __('Complete'), 'submit'));
+        $submit->appendChild(Widget::Input('submit', __('Complete'), 'submit'));
 
         $this->Form->appendChild($submit);
     }

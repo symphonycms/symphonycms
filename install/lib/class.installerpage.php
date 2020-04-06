@@ -259,12 +259,12 @@ class InstallerPage extends HTMLPage
         $Environment = new XMLElement('fieldset');
         $Environment->appendChild(new XMLElement('legend', __('Website Preferences')));
 
-        $label = Widget::Label(__('Name'), Widget::Input('fields[general][sitename]', $fields['general']['sitename']));
+        $label = Widget::Label(__('Name'), Widget::Input('fields[general][sitename]', isset($fields['general']['sitename']) ? $fields['general']['sitename'] : null));
 
         $this->__appendError(array('general-no-sitename'), $label);
         $Environment->appendChild($label);
 
-        $label = Widget::Label(__('Admin Path'), Widget::Input('fields[symphony][admin-path]', $fields['symphony']['admin-path']));
+        $label = Widget::Label(__('Admin Path'), Widget::Input('fields[symphony][admin-path]', isset($fields['symphony']['admin-path']) ? $fields['symphony']['admin-path'] : null));
 
         $this->__appendError(array('no-symphony-path'), $label);
         $Environment->appendChild($label);
@@ -298,15 +298,15 @@ class InstallerPage extends HTMLPage
         $Database->appendChild(new XMLElement('p', __('Please provide Symphony with access to a database.')));
 
         // Database name
-        $label = Widget::Label(__('Database'), Widget::Input('fields[database][db]', $fields['database']['db']));
+        $label = Widget::Label(__('Database'), Widget::Input('fields[database][db]', isset($fields['database']['db']) ? $fields['database']['db'] : null));
 
         $this->__appendError(array('database-incorrect-version', 'unknown-database'), $label);
         $Database->appendChild($label);
 
         // Database credentials
         $Div = new XMLElement('div', null, array('class' => 'two columns'));
-        $Div->appendChild(Widget::Label(__('Username'), Widget::Input('fields[database][user]', $fields['database']['user']), 'column'));
-        $Div->appendChild(Widget::Label(__('Password'), Widget::Input('fields[database][password]', $fields['database']['password'], 'password'), 'column'));
+        $Div->appendChild(Widget::Label(__('Username'), Widget::Input('fields[database][user]', isset($fields['database']['user']) ? $fields['database']['user'] : null), 'column'));
+        $Div->appendChild(Widget::Label(__('Password'), Widget::Input('fields[database][password]', isset($fields['database']['password']) ? $fields['database']['password'] : null, 'password'), 'column'));
 
         $this->__appendError(array('database-invalid-credentials'), $Div);
         $Database->appendChild($Div);
@@ -318,15 +318,15 @@ class InstallerPage extends HTMLPage
 
         // Advanced configuration: Host, Port
         $Div = new XMLElement('div', null, array('class' => 'two columns'));
-        $Div->appendChild(Widget::Label(__('Host'), Widget::Input('fields[database][host]', $fields['database']['host']), 'column'));
-        $Div->appendChild(Widget::Label(__('Port'), Widget::Input('fields[database][port]', $fields['database']['port']), 'column'));
+        $Div->appendChild(Widget::Label(__('Host'), Widget::Input('fields[database][host]', isset($fields['database']['host']) ? $fields['database']['host'] : null), 'column'));
+        $Div->appendChild(Widget::Label(__('Port'), Widget::Input('fields[database][port]', isset($fields['database']['port']) ? $fields['database']['port'] : null), 'column'));
 
         $this->__appendError(array('no-database-connection'), $Div);
         $Fieldset->appendChild($Div);
         $Fieldset->appendChild(new XMLElement('p', __('It is recommend to use <code>localhost</code> or <code>unix_socket</code> over <code>127.0.0.1</code> as the host on production servers.') . ' ' . __('The port field can be used to specify the UNIX socket path.')));
 
         // Advanced configuration: Table Prefix
-        $label = Widget::Label(__('Table Prefix'), Widget::Input('fields[database][tbl_prefix]', $fields['database']['tbl_prefix']));
+        $label = Widget::Label(__('Table Prefix'), Widget::Input('fields[database][tbl_prefix]', isset($fields['database']['tbl_prefix']) ? $fields['database']['tbl_prefix'] : null));
 
         $this->__appendError(array('database-table-prefix'), $label);
         $Fieldset->appendChild($label);
@@ -340,8 +340,8 @@ class InstallerPage extends HTMLPage
         $Permissions->appendChild(new XMLElement('p', __('Set the permissions Symphony uses when saving files/directories.')));
 
         $Div = new XMLElement('div', null, array('class' => 'two columns'));
-        $Div->appendChild(Widget::Label(__('Files'), Widget::Input('fields[file][write_mode]', $fields['file']['write_mode']), 'column'));
-        $Div->appendChild(Widget::Label(__('Directories'), Widget::Input('fields[directory][write_mode]', $fields['directory']['write_mode']), 'column'));
+        $Div->appendChild(Widget::Label(__('Files'), Widget::Input('fields[file][write_mode]', isset($fields['file']['write_mode']) ? $fields['file']['write_mode'] : null), 'column'));
+        $Div->appendChild(Widget::Label(__('Directories'), Widget::Input('fields[directory][write_mode]', isset($fields['directory']['write_mode']) ? $fields['directory']['write_mode'] : null), 'column'));
 
         $Permissions->appendChild($Div);
         $this->Form->appendChild($Permissions);
@@ -352,15 +352,15 @@ class InstallerPage extends HTMLPage
         $User->appendChild(new XMLElement('p', __('Once installation is complete, you will be able to log in to the Symphony admin area with these user details.')));
 
         // Username
-        $label = Widget::Label(__('Username'), Widget::Input('fields[user][username]', $fields['user']['username']));
+        $label = Widget::Label(__('Username'), Widget::Input('fields[user][username]', isset($fields['user']['username']) ? $fields['user']['username'] : null));
 
         $this->__appendError(array('user-no-username'), $label);
         $User->appendChild($label);
 
         // Password
         $Div = new XMLElement('div', null, array('class' => 'two columns'));
-        $Div->appendChild(Widget::Label(__('Password'), Widget::Input('fields[user][password]', $fields['user']['password'], 'password'), 'column'));
-        $Div->appendChild(Widget::Label(__('Confirm Password'), Widget::Input('fields[user][confirm-password]', $fields['user']['confirm-password'], 'password'), 'column'));
+        $Div->appendChild(Widget::Label(__('Password'), Widget::Input('fields[user][password]', isset($fields['user']['password']) ? $fields['user']['password'] : null, 'password'), 'column'));
+        $Div->appendChild(Widget::Label(__('Confirm Password'), Widget::Input('fields[user][confirm-password]', isset($fields['user']['confirm-password']) ? $fields['user']['confirm-password'] : null, 'password'), 'column'));
 
         $this->__appendError(array('user-no-password', 'user-password-mismatch'), $Div);
         $User->appendChild($Div);
@@ -372,14 +372,14 @@ class InstallerPage extends HTMLPage
 
         // Personal information: First Name, Last Name
         $Div = new XMLElement('div', null, array('class' => 'two columns'));
-        $Div->appendChild(Widget::Label(__('First Name'), Widget::Input('fields[user][firstname]', $fields['user']['firstname']), 'column'));
-        $Div->appendChild(Widget::Label(__('Last Name'), Widget::Input('fields[user][lastname]', $fields['user']['lastname']), 'column'));
+        $Div->appendChild(Widget::Label(__('First Name'), Widget::Input('fields[user][firstname]', isset($fields['user']['firstname']) ? $fields['user']['firstname'] : null), 'column'));
+        $Div->appendChild(Widget::Label(__('Last Name'), Widget::Input('fields[user][lastname]', isset($fields['user']['lastname']) ? $fields['user']['lastname'] : null), 'column'));
 
         $this->__appendError(array('user-no-name'), $Div);
         $Fieldset->appendChild($Div);
 
         // Personal information: Email Address
-        $label = Widget::Label(__('Email Address'), Widget::Input('fields[user][email]', $fields['user']['email']));
+        $label = Widget::Label(__('Email Address'), Widget::Input('fields[user][email]', isset($fields['user']['email']) ? $fields['user']['email'] : null));
 
         $this->__appendError(array('user-invalid-email'), $label);
         $Fieldset->appendChild($label);
