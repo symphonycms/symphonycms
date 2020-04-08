@@ -12,6 +12,13 @@ final class DatabaseDelete extends DatabaseStatement
     use DatabaseWhereDefinition;
 
     /**
+     * Enable DatabaseWhereDefinition's ability to transform => null syntax
+     *
+     * @var boolean
+     */
+    private $enableIsNullSyntax = true;
+
+    /**
      * Flag to prevent Delete query without a where clause.
      *
      * @var boolean

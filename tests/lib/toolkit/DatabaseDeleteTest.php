@@ -36,6 +36,21 @@ final class DatabaseDeleteTest extends TestCase
         $this->assertEquals(1, count($values), '1 value');
     }
 
+    public function testDELETEWHEREISNULL()
+    {
+        $db = new Database([]);
+        $sql = $db->delete('delete')
+            ->where(['x' => null]);
+        $this->assertEquals(
+            "DELETE FROM `delete` WHERE `x` IS :_null_",
+            $sql->generateSQL(),
+            'DELETE WHERE IS NULL clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(null, $values['_null_'], '_null_ is null');
+        $this->assertEquals(1, count($values), '1 value');
+    }
+
     public function testDELETELIMIT()
     {
         $db = new Database([]);
