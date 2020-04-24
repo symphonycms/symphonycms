@@ -229,7 +229,11 @@ define_safe('HTTPS', server_safe('HTTPS'));
  */
 $http_host = server_safe('HTTP_HOST');
 if (function_exists('idn_to_utf8')) {
-    $host_utf8 = idn_to_utf8($http_host, 0, INTL_IDNA_VARIANT_UTS46);
+    $host_utf8 = idn_to_utf8(
+        $http_host,
+        0,
+        defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : 0
+    );
 
     if ($host_utf8 !== false) {
         $http_host = $host_utf8;

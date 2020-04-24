@@ -26,7 +26,11 @@ function redirect($url)
         $host = $root['host'];
         $url = str_replace(
             $host,
-            idn_to_ascii($host, 0, INTL_IDNA_VARIANT_UTS46),
+            idn_to_ascii(
+                $host,
+                0,
+                defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : 0
+            ),
             $url
         );
     }
