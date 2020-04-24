@@ -116,7 +116,7 @@ class Database
      * The version of the SQL server
      * @var string
      */
-    private $version;
+    private $version = '0.0.0';
 
     /**
      * Creates a new Database object given an associative array of configuration
@@ -324,9 +324,13 @@ class Database
      * and is removed in MySQL 8.0.
      * @link https://dev.mysql.com/doc/refman/5.7/en/query-cache-in-select.html
      * @return boolean
+     *  The configured boolean value, or false if running mysql 8.0
      */
     public function isCachingEnabled()
     {
+        if ((new VersionComparator($this->version))->greaterThan('7.0.0')) {
+            return false;
+        }
         return in_array($this->config['query_caching'], ['on', true], true);
     }
 
