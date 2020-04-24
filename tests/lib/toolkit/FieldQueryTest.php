@@ -21,7 +21,7 @@ final class FieldQueryTest extends TestCase
     {
         $q = new \FieldQuery($this->db);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `fields` AS `f`",
+            "SELECT FROM `fields` AS `f`",
             $q->generateSQL(),
             'Simple new FieldQuery test'
         );
@@ -33,7 +33,7 @@ final class FieldQueryTest extends TestCase
     {
         $q = (new \FieldQuery($this->db))->disableDefaultSort()->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f`.* FROM `fields` AS `f`",
+            "SELECT `f`.* FROM `fields` AS `f`",
             $q->generateSQL(),
             'new FieldQuery with Default schema and Default projection'
         );
@@ -45,7 +45,7 @@ final class FieldQueryTest extends TestCase
     {
         $q = (new \FieldQuery($this->db))->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f`.* FROM `fields` AS `f` ORDER BY `f`.`sortorder` ASC",
+            "SELECT `f`.* FROM `fields` AS `f` ORDER BY `f`.`sortorder` ASC",
             $q->generateSQL(),
             'new FieldQuery with Default schema, Default projection and Default Sort'
         );
@@ -57,7 +57,7 @@ final class FieldQueryTest extends TestCase
     {
         $q = new \FieldQuery($this->db, ['COUNT(*)']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE COUNT(*) FROM `fields` AS `f`",
+            "SELECT COUNT(*) FROM `fields` AS `f`",
             $q->generateSQL(),
             'new FieldQuery test with COUNT(*) projection'
         );
@@ -69,7 +69,7 @@ final class FieldQueryTest extends TestCase
     {
         $q = (new \FieldQuery($this->db))->section(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `fields` AS `f` WHERE `f`.`parent_section` = :f_parent_section",
+            "SELECT FROM `fields` AS `f` WHERE `f`.`parent_section` = :f_parent_section",
             $q->generateSQL(),
             'new FieldQuery with ->section()'
         );
@@ -82,7 +82,7 @@ final class FieldQueryTest extends TestCase
     {
         $q = (new \FieldQuery($this->db))->field(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `fields` AS `f` WHERE `f`.`id` = :f_id",
+            "SELECT FROM `fields` AS `f` WHERE `f`.`id` = :f_id",
             $q->generateSQL(),
             'new FieldQuery test ->field()'
         );
@@ -95,7 +95,7 @@ final class FieldQueryTest extends TestCase
     {
         $q = (new \FieldQuery($this->db))->fields([4, 5, 6]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `fields` AS `f` WHERE `f`.`id` IN (:f_id, :f_id2, :f_id3)",
+            "SELECT FROM `fields` AS `f` WHERE `f`.`id` IN (:f_id, :f_id2, :f_id3)",
             $q->generateSQL(),
             'new FieldQuery test ->fields()'
         );
@@ -110,7 +110,7 @@ final class FieldQueryTest extends TestCase
     {
         $q = (new \FieldQuery($this->db))->type('textbox');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `fields` AS `f` WHERE `f`.`type` = :f_type",
+            "SELECT FROM `fields` AS `f` WHERE `f`.`type` = :f_type",
             $q->generateSQL(),
             'new FieldQuery test ->type()'
         );
@@ -123,7 +123,7 @@ final class FieldQueryTest extends TestCase
     {
         $q = (new \FieldQuery($this->db))->location('main');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `fields` AS `f` WHERE `f`.`location` = :f_location",
+            "SELECT FROM `fields` AS `f` WHERE `f`.`location` = :f_location",
             $q->generateSQL(),
             'new FieldQuery test ->location()'
         );
@@ -136,7 +136,7 @@ final class FieldQueryTest extends TestCase
     {
         $q = (new \FieldQuery($this->db))->name('field');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `fields` AS `f` WHERE `f`.`element_name` = :f_element_name",
+            "SELECT FROM `fields` AS `f` WHERE `f`.`element_name` = :f_element_name",
             $q->generateSQL(),
             'new FieldQuery test ->name()'
         );
@@ -149,7 +149,7 @@ final class FieldQueryTest extends TestCase
     {
         $q = (new \FieldQuery($this->db))->sort('x', 'DESC');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `fields` AS `f` ORDER BY `f`.`x` DESC",
+            "SELECT FROM `fields` AS `f` ORDER BY `f`.`x` DESC",
             $q->generateSQL(),
             'new FieldQuery with ->sort(x, DESC)'
         );

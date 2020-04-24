@@ -21,7 +21,7 @@ final class ExtensionQueryTest extends TestCase
     {
         $q = new \ExtensionQuery($this->db);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `extensions` AS `ex`",
+            "SELECT FROM `extensions` AS `ex`",
             $q->generateSQL(),
             'Simple new ExtensionQuery test'
         );
@@ -33,7 +33,7 @@ final class ExtensionQueryTest extends TestCase
     {
         $q = (new \ExtensionQuery($this->db))->disableDefaultSort()->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `ex`.* FROM `extensions` AS `ex`",
+            "SELECT `ex`.* FROM `extensions` AS `ex`",
             $q->generateSQL(),
             'new ExtensionQuery with Default schema and Default projection'
         );
@@ -45,7 +45,7 @@ final class ExtensionQueryTest extends TestCase
     {
         $q = (new \ExtensionQuery($this->db))->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `ex`.* FROM `extensions` AS `ex` ORDER BY `ex`.`name` ASC",
+            "SELECT `ex`.* FROM `extensions` AS `ex` ORDER BY `ex`.`name` ASC",
             $q->generateSQL(),
             'new ExtensionQuery with Default schema, Default projection and Default Sort'
         );
@@ -57,7 +57,7 @@ final class ExtensionQueryTest extends TestCase
     {
         $q = new \ExtensionQuery($this->db, ['COUNT(*)']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE COUNT(*) FROM `extensions` AS `ex`",
+            "SELECT COUNT(*) FROM `extensions` AS `ex`",
             $q->generateSQL(),
             'new ExtensionQuery test with COUNT(*) projection'
         );
@@ -69,7 +69,7 @@ final class ExtensionQueryTest extends TestCase
     {
         $q = (new \ExtensionQuery($this->db))->extension(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `extensions` AS `ex` WHERE `ex`.`id` = :ex_id",
+            "SELECT FROM `extensions` AS `ex` WHERE `ex`.`id` = :ex_id",
             $q->generateSQL(),
             'new ExtensionQuery test ->extension()'
         );
@@ -82,7 +82,7 @@ final class ExtensionQueryTest extends TestCase
     {
         $q = (new \ExtensionQuery($this->db))->status('x');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `extensions` AS `ex` WHERE `ex`.`status` = :ex_status",
+            "SELECT FROM `extensions` AS `ex` WHERE `ex`.`status` = :ex_status",
             $q->generateSQL(),
             'new ExtensionQuery test ->status()'
         );
@@ -95,7 +95,7 @@ final class ExtensionQueryTest extends TestCase
     {
         $q = (new \ExtensionQuery($this->db))->enabled();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `extensions` AS `ex` WHERE `ex`.`status` = :ex_status",
+            "SELECT FROM `extensions` AS `ex` WHERE `ex`.`status` = :ex_status",
             $q->generateSQL(),
             'new ExtensionQuery test ->enabled()'
         );
@@ -108,7 +108,7 @@ final class ExtensionQueryTest extends TestCase
     {
         $q = (new \ExtensionQuery($this->db))->disabled();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `extensions` AS `ex` WHERE `ex`.`status` = :ex_status",
+            "SELECT FROM `extensions` AS `ex` WHERE `ex`.`status` = :ex_status",
             $q->generateSQL(),
             'new ExtensionQuery test ->disabled()'
         );
@@ -121,7 +121,7 @@ final class ExtensionQueryTest extends TestCase
     {
         $q = (new \ExtensionQuery($this->db))->sort('x', 'DESC');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `extensions` AS `ex` ORDER BY `ex`.`x` DESC",
+            "SELECT FROM `extensions` AS `ex` ORDER BY `ex`.`x` DESC",
             $q->generateSQL(),
             'new ExtensionQuery with ->sort(x, DESC)'
         );

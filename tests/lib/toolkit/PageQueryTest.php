@@ -21,7 +21,7 @@ final class PageQueryTest extends TestCase
     {
         $q = new \PageQuery($this->db);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `pages` AS `p`",
+            "SELECT FROM `pages` AS `p`",
             $q->generateSQL(),
             'Simple new PageQuery test'
         );
@@ -33,7 +33,7 @@ final class PageQueryTest extends TestCase
     {
         $q = (new \PageQuery($this->db))->disableDefaultSort()->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `p`.* FROM `pages` AS `p`",
+            "SELECT `p`.* FROM `pages` AS `p`",
             $q->generateSQL(),
             'new PageQuery with Default schema and Default projection'
         );
@@ -45,7 +45,7 @@ final class PageQueryTest extends TestCase
     {
         $q = (new \PageQuery($this->db))->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `p`.* FROM `pages` AS `p` ORDER BY `p`.`sortorder` ASC",
+            "SELECT `p`.* FROM `pages` AS `p` ORDER BY `p`.`sortorder` ASC",
             $q->generateSQL(),
             'new PageQuery with Default schema, Default projection and Default Sort'
         );
@@ -57,7 +57,7 @@ final class PageQueryTest extends TestCase
     {
         $q = new \PageQuery($this->db, ['COUNT(*)']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE COUNT(*) FROM `pages` AS `p`",
+            "SELECT COUNT(*) FROM `pages` AS `p`",
             $q->generateSQL(),
             'new PageQuery test with COUNT(*) projection'
         );
@@ -69,7 +69,7 @@ final class PageQueryTest extends TestCase
     {
         $q = (new \PageQuery($this->db))->page(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `pages` AS `p` WHERE `p`.`id` = :p_id",
+            "SELECT FROM `pages` AS `p` WHERE `p`.`id` = :p_id",
             $q->generateSQL(),
             'new PageQuery test ->page()'
         );
@@ -82,7 +82,7 @@ final class PageQueryTest extends TestCase
     {
         $q = (new \PageQuery($this->db))->pages([4, 5, 6]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `pages` AS `p` WHERE `p`.`id` IN (:p_id, :p_id2, :p_id3)",
+            "SELECT FROM `pages` AS `p` WHERE `p`.`id` IN (:p_id, :p_id2, :p_id3)",
             $q->generateSQL(),
             'new PageQuery test ->pages()'
         );
@@ -97,7 +97,7 @@ final class PageQueryTest extends TestCase
     {
         $q = (new \PageQuery($this->db))->handle('x');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `pages` AS `p` WHERE `p`.`handle` = :p_handle",
+            "SELECT FROM `pages` AS `p` WHERE `p`.`handle` = :p_handle",
             $q->generateSQL(),
             'new PageQuery test ->handle()'
         );
@@ -110,7 +110,7 @@ final class PageQueryTest extends TestCase
     {
         $q = (new \PageQuery($this->db))->path('x');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `pages` AS `p` WHERE `p`.`path` = :p_path",
+            "SELECT FROM `pages` AS `p` WHERE `p`.`path` = :p_path",
             $q->generateSQL(),
             'new PageQuery test ->path()'
         );
@@ -123,7 +123,7 @@ final class PageQueryTest extends TestCase
     {
         $q = (new \PageQuery($this->db))->parent('x');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `pages` AS `p` WHERE `p`.`parent` = :p_parent",
+            "SELECT FROM `pages` AS `p` WHERE `p`.`parent` = :p_parent",
             $q->generateSQL(),
             'new PageQuery test ->parent()'
         );
@@ -136,7 +136,7 @@ final class PageQueryTest extends TestCase
     {
         $q = (new \PageQuery($this->db))->sort('x', 'DESC');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `pages` AS `p` ORDER BY `p`.`x` DESC",
+            "SELECT FROM `pages` AS `p` ORDER BY `p`.`x` DESC",
             $q->generateSQL(),
             'new PageQuery with ->sort(x, DESC)'
         );

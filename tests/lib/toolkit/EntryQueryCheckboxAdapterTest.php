@@ -41,7 +41,7 @@ final class EntryQueryCheckboxAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['yes']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` = :f1_value",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` = :f1_value",
             $q->generateSQL(),
             'Simple exact match ->filter([yes])'
         );
@@ -57,7 +57,7 @@ final class EntryQueryCheckboxAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['yes']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` = :f1_value",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` = :f1_value",
             $q->generateSQL(),
             'Exact match ->filter([yes]) with default value off (no)'
         );
@@ -73,7 +73,7 @@ final class EntryQueryCheckboxAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['yes']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` = :f1_value OR `f1`.`value` IS :_null_)",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` = :f1_value OR `f1`.`value` IS :_null_)",
             $q->generateSQL(),
             'Exact match ->filter([yes]) with default value on (yes)'
         );
@@ -89,7 +89,7 @@ final class EntryQueryCheckboxAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['not: test', 'tata']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` != :f1_value AND `f1`.`value` != :f1_value2)",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` != :f1_value AND `f1`.`value` != :f1_value2)",
             $q->generateSQL(),
             'Not filter ->filter([not: test, tata])'
         );
@@ -105,7 +105,7 @@ final class EntryQueryCheckboxAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['sql: null']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` IS :_null_",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` IS :_null_",
             $q->generateSQL(),
             'SQL null match ->filter([sql: null])'
         );

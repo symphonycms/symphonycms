@@ -303,8 +303,7 @@ class Database
     }
 
     /**
-     * Sets query caching to false. This will prepend all SELECT
-     * queries will SQL_NO_CACHE.
+     * Sets query caching to false.
      *
      * @deprecated The query cache is deprecated as of MySQL 5.7.20,
      * and is removed in MySQL 8.0.
@@ -1357,7 +1356,7 @@ class Database
                 if ($this->isCachingEnabled()) {
                     $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_CACHE ', $query);
                 } else {
-                    $query = preg_replace('/^SELECT\s+/i', 'SELECT SQL_NO_CACHE ', $query);
+                    $query = preg_replace('/^SELECT\s+/i', 'SELECT ', $query);
                 }
             }
             $fetchType = $type == "OBJECT" ? PDO::FETCH_OBJ : PDO::FETCH_ASSOC;

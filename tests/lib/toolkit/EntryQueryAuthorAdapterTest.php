@@ -36,7 +36,7 @@ final class EntryQueryAuthorAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['test']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE CONCAT_WS(:af_space_char, `af`.`first_name`, `af`.`last_name`) AS `af`.`full_name` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`af`.`username` = :af_username OR `af`.`first_name` = :af_first_name OR `af`.`last_name` = :af_last_name OR `af`.`full_name` = :af_full_name)",
+            "SELECT CONCAT_WS(:af_space_char, `af`.`first_name`, `af`.`last_name`) AS `af`.`full_name` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`af`.`username` = :af_username OR `af`.`first_name` = :af_first_name OR `af`.`last_name` = :af_last_name OR `af`.`full_name` = :af_full_name)",
             $q->generateSQL(),
             'Simple exact match ->filter([test])'
         );
@@ -55,7 +55,7 @@ final class EntryQueryAuthorAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['author-id: 4']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`author_id` = :f1_author_id",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`author_id` = :f1_author_id",
             $q->generateSQL(),
             'Simple exact match ->filter([test])'
         );
@@ -70,7 +70,7 @@ final class EntryQueryAuthorAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->sort($q, 'asc');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `as`.`first_name`, `as`.`last_name` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` INNER JOIN `authors` AS `as` ON `f1`.`author_id` = `as`.`id` ORDER BY `as`.`first_name` ASC , `as`.`last_name` ASC , `e`.`id` ASC",
+            "SELECT `as`.`first_name`, `as`.`last_name` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` INNER JOIN `authors` AS `as` ON `f1`.`author_id` = `as`.`id` ORDER BY `as`.`first_name` ASC , `as`.`last_name` ASC , `e`.`id` ASC",
             $q->generateSQL(),
             'Simple asc sort ->sort(asc)'
         );
@@ -84,7 +84,7 @@ final class EntryQueryAuthorAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->sort($q, 'random');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY RAND()",
+            "SELECT FROM `entries` AS `e` ORDER BY RAND()",
             $q->generateSQL(),
             'Simple asc sort ->sort(random)'
         );

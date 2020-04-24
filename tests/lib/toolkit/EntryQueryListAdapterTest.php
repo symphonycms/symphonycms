@@ -36,7 +36,7 @@ final class EntryQueryListAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['test']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` = :f1_value OR `f1`.`handle` = :f1_handle)",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` = :f1_value OR `f1`.`handle` = :f1_handle)",
             $q->generateSQL(),
             'Simple exact match ->filter([test])'
         );
@@ -52,7 +52,7 @@ final class EntryQueryListAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['not: test', 'tata']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE ((`f1`.`value` != :f1_value AND `f1`.`handle` != :f1_handle) AND (`f1`.`value` != :f1_value2 AND `f1`.`handle` != :f1_handle2))",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE ((`f1`.`value` != :f1_value AND `f1`.`handle` != :f1_handle) AND (`f1`.`value` != :f1_value2 AND `f1`.`handle` != :f1_handle2))",
             $q->generateSQL(),
             'Not filter ->filter([not: test, tata])'
         );
@@ -70,7 +70,7 @@ final class EntryQueryListAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['sql-null-or-not: test', 'tata']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (((`f1`.`value` != :f1_value OR `f1`.`value` IS :_null_) OR (`f1`.`handle` != :f1_handle OR `f1`.`handle` IS :_null_) OR `f1`.`relation_id` IS :_null_) AND ((`f1`.`value` != :f1_value2 OR `f1`.`value` IS :_null_) OR (`f1`.`handle` != :f1_handle2 OR `f1`.`handle` IS :_null_) OR `f1`.`relation_id` IS :_null_))",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (((`f1`.`value` != :f1_value OR `f1`.`value` IS :_null_) OR (`f1`.`handle` != :f1_handle OR `f1`.`handle` IS :_null_) OR `f1`.`relation_id` IS :_null_) AND ((`f1`.`value` != :f1_value2 OR `f1`.`value` IS :_null_) OR (`f1`.`handle` != :f1_handle2 OR `f1`.`handle` IS :_null_) OR `f1`.`relation_id` IS :_null_))",
             $q->generateSQL(),
             'Not filter ->filter([sql-null-or-not: test, tata])'
         );
@@ -89,7 +89,7 @@ final class EntryQueryListAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['regexp: ^test[\d]']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` REGEXP :f1_value OR `f1`.`handle` REGEXP :f1_handle)",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` REGEXP :f1_value OR `f1`.`handle` REGEXP :f1_handle)",
             $q->generateSQL(),
             'RegExp match ->filter([regexp: test])'
         );
@@ -105,7 +105,7 @@ final class EntryQueryListAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['sql: null']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` IS :_null_ OR `f1`.`handle` IS :_null_)",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` IS :_null_ OR `f1`.`handle` IS :_null_)",
             $q->generateSQL(),
             'SQL null match ->filter([sql: null])'
         );

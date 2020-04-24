@@ -21,7 +21,7 @@ final class SectionQueryTest extends TestCase
     {
         $q = new \SectionQuery($this->db);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `sections` AS `s`",
+            "SELECT FROM `sections` AS `s`",
             $q->generateSQL(),
             'Simple new SectionQuery test'
         );
@@ -33,7 +33,7 @@ final class SectionQueryTest extends TestCase
     {
         $q = (new \SectionQuery($this->db))->disableDefaultSort()->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `s`.* FROM `sections` AS `s`",
+            "SELECT `s`.* FROM `sections` AS `s`",
             $q->generateSQL(),
             'new SectionQuery with Default schema and Default projection'
         );
@@ -45,7 +45,7 @@ final class SectionQueryTest extends TestCase
     {
         $q = (new \SectionQuery($this->db))->disableDefaultSort()->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `s`.* FROM `sections` AS `s`",
+            "SELECT `s`.* FROM `sections` AS `s`",
             $q->generateSQL(),
             'new SectionQuery with Default schema, Default projection and Default Sort'
         );
@@ -57,7 +57,7 @@ final class SectionQueryTest extends TestCase
     {
         $q = new \SectionQuery($this->db, ['COUNT(*)']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE COUNT(*) FROM `sections` AS `s`",
+            "SELECT COUNT(*) FROM `sections` AS `s`",
             $q->generateSQL(),
             'new SectionQuery test with COUNT(*) projection'
         );
@@ -69,7 +69,7 @@ final class SectionQueryTest extends TestCase
     {
         $q = (new \SectionQuery($this->db))->section(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `sections` AS `s` WHERE `s`.`id` = :s_id",
+            "SELECT FROM `sections` AS `s` WHERE `s`.`id` = :s_id",
             $q->generateSQL(),
             'new SectionQuery test ->section()'
         );
@@ -82,7 +82,7 @@ final class SectionQueryTest extends TestCase
     {
         $q = (new \SectionQuery($this->db))->sections([4, 5, 6]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `sections` AS `s` WHERE `s`.`id` IN (:s_id, :s_id2, :s_id3)",
+            "SELECT FROM `sections` AS `s` WHERE `s`.`id` IN (:s_id, :s_id2, :s_id3)",
             $q->generateSQL(),
             'new SectionQuery test ->sections()'
         );
@@ -97,7 +97,7 @@ final class SectionQueryTest extends TestCase
     {
         $q = (new \SectionQuery($this->db))->sort('x', 'DESC');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `sections` AS `s` ORDER BY `s`.`x` DESC",
+            "SELECT FROM `sections` AS `s` ORDER BY `s`.`x` DESC",
             $q->generateSQL(),
             'new SectionQuery with ->sort(x, DESC)'
         );

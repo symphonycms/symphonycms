@@ -21,7 +21,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db));
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e`",
+            "SELECT FROM `entries` AS `e`",
             $q->generateSQL(),
             'Simple new EntryQuery test'
         );
@@ -33,7 +33,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->disableDefaultSort()->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e`",
+            "SELECT `e`.* FROM `entries` AS `e`",
             $q->generateSQL(),
             'new EntryQuery with Default schema and Default projection'
         );
@@ -45,7 +45,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->disableDefaultProjection()->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            "SELECT FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with Default schema without Default projection'
         );
@@ -58,7 +58,7 @@ final class EntryQueryTest extends TestCase
         $q = (new \EntryQuery($this->db));
         $q->projection($q->getMinimalProjection())->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `e`.`id`, `e`.`creation_date`, `e`.`modification_date` FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            "SELECT `e`.`id`, `e`.`creation_date`, `e`.`modification_date` FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with Minimal Projection without Default projection'
         );
@@ -70,7 +70,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            "SELECT `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with Default schema Default projection and Default sort'
         );
@@ -82,7 +82,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->projection(['COUNT(*)']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE COUNT(*) FROM `entries` AS `e`",
+            "SELECT COUNT(*) FROM `entries` AS `e`",
             $q->generateSQL(),
             'new EntryQuery test with COUNT(*) projection'
         );
@@ -94,7 +94,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->count();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE COUNT(*) FROM `entries` AS `e`",
+            "SELECT COUNT(*) FROM `entries` AS `e`",
             $q->generateSQL(),
             'new EntryQuery test with ->count()'
         );
@@ -106,7 +106,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->section(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE `e`.`section_id` = :e_section_id",
+            "SELECT FROM `entries` AS `e` WHERE `e`.`section_id` = :e_section_id",
             $q->generateSQL(),
             'new EntryQuery with ->section()'
         );
@@ -120,7 +120,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->entry(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE `e`.`id` = :e_id",
+            "SELECT FROM `entries` AS `e` WHERE `e`.`id` = :e_id",
             $q->generateSQL(),
             'new EntryQuery test ->entry()'
         );
@@ -133,7 +133,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->entries([4, 5, 6]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE `e`.`id` IN (:e_id, :e_id2, :e_id3)",
+            "SELECT FROM `entries` AS `e` WHERE `e`.`id` IN (:e_id, :e_id2, :e_id3)",
             $q->generateSQL(),
             'new EntryQuery test ->entries()'
         );
@@ -148,7 +148,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->innerJoinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` INNER JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            "SELECT FROM `entries` AS `e` INNER JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with ->innerJoinField()'
         );
@@ -156,7 +156,7 @@ final class EntryQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
         $q->innerJoinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` INNER JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            "SELECT FROM `entries` AS `e` INNER JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with DOUBLE ->innerJoinField()'
         );
@@ -168,7 +168,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->joinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            "SELECT FROM `entries` AS `e` JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with ->joinField()'
         );
@@ -176,7 +176,7 @@ final class EntryQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
         $q->joinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            "SELECT FROM `entries` AS `e` JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with DOUBLE ->joinField()'
         );
@@ -188,7 +188,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->leftJoinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with ->leftJoinField()'
         );
@@ -196,7 +196,7 @@ final class EntryQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
         $q->leftJoinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with DOUBLE ->leftJoinField()'
         );
@@ -208,7 +208,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->outerJoinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` OUTER JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            "SELECT FROM `entries` AS `e` OUTER JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with ->outerJoinField()'
         );
@@ -216,7 +216,7 @@ final class EntryQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
         $q->outerJoinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` OUTER JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            "SELECT FROM `entries` AS `e` OUTER JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with DOUBLE ->outerJoinField()'
         );
@@ -228,7 +228,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->rightJoinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` RIGHT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            "SELECT FROM `entries` AS `e` RIGHT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with ->rightJoinField()'
         );
@@ -236,7 +236,7 @@ final class EntryQueryTest extends TestCase
         $this->assertEquals(0, count($values), '0 value');
         $q->rightJoinField(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` RIGHT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
+            "SELECT FROM `entries` AS `e` RIGHT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id`",
             $q->generateSQL(),
             'new EntryQuery test with DOUBLE ->rightJoinField()'
         );
@@ -248,7 +248,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->whereField(4, ['f4.value' => 4]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id` WHERE `f4`.`value` = :f4_value",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id` WHERE `f4`.`value` = :f4_value",
             $q->generateSQL(),
             'new EntryQuery with ->whereField() with a single filter'
         );
@@ -265,7 +265,7 @@ final class EntryQueryTest extends TestCase
             ]
         ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id` WHERE (`f4`.`value` != :f4_value)",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_4` AS `f4` ON `e`.`id` = `f4`.`entry_id` WHERE (`f4`.`value` != :f4_value)",
             $q->generateSQL(),
             'new EntryQuery with ->whereField() with a complex filter'
         );
@@ -278,7 +278,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->filter('', []);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e`",
+            "SELECT FROM `entries` AS `e`",
             $q->generateSQL(),
             'new EntryQuery with ->filter("", [])'
         );
@@ -290,7 +290,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->filter('system:id', [1,2], 'or');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE (`e`.`id` = :e_id OR `e`.`id` = :e_id2)",
+            "SELECT FROM `entries` AS `e` WHERE (`e`.`id` = :e_id OR `e`.`id` = :e_id2)",
             $q->generateSQL(),
             'new EntryQuery with ->filter(system:id, or, [])'
         );
@@ -304,7 +304,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->filter('system:id', [1, 2], 'and');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE (`e`.`id` = :e_id AND `e`.`id` = :e_id2)",
+            "SELECT FROM `entries` AS `e` WHERE (`e`.`id` = :e_id AND `e`.`id` = :e_id2)",
             $q->generateSQL(),
             'new EntryQuery with ->filter(system:id, or, [])'
         );
@@ -318,7 +318,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->filter('system:id', ['not: 1', 2, 0, ''], 'and');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE (`e`.`id` != :e_id AND `e`.`id` != :e_id2)",
+            "SELECT FROM `entries` AS `e` WHERE (`e`.`id` != :e_id AND `e`.`id` != :e_id2)",
             $q->generateSQL(),
             'new EntryQuery with ->filter(system:id, or, [])'
         );
@@ -332,7 +332,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->filter('system:id', [], 'and');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e`",
+            "SELECT FROM `entries` AS `e`",
             $q->generateSQL(),
             'new EntryQuery with ->filter(system:id, [])'
         );
@@ -344,7 +344,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->filter('system:id', ['sss'], 'and');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE `e`.`id` = :e_id",
+            "SELECT FROM `entries` AS `e` WHERE `e`.`id` = :e_id",
             $q->generateSQL(),
             'new EntryQuery with ->filter(system:id, [ssss])'
         );
@@ -358,7 +358,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->filter('system:id', [null], 'and');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE `e`.`id` = :e_id",
+            "SELECT FROM `entries` AS `e` WHERE `e`.`id` = :e_id",
             $q->generateSQL(),
             'new EntryQuery with ->filter(system:id, [null])'
         );
@@ -372,7 +372,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->filter('system:creation-date', ['2018-03-16']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE ((`e`.`creation_date` >= :e_creation_date AND `e`.`creation_date` <= :e_creation_date2))",
+            "SELECT FROM `entries` AS `e` WHERE ((`e`.`creation_date` >= :e_creation_date AND `e`.`creation_date` <= :e_creation_date2))",
             $q->generateSQL(),
             'new EntryQuery with ->filter(system:creation-date, [])'
         );
@@ -386,7 +386,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->filter('system:modification-date', ['2018-03-16']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` WHERE ((`e`.`modification_date` >= :e_modification_date AND `e`.`modification_date` <= :e_modification_date2))",
+            "SELECT FROM `entries` AS `e` WHERE ((`e`.`modification_date` >= :e_modification_date AND `e`.`modification_date` <= :e_modification_date2))",
             $q->generateSQL(),
             'new EntryQuery with ->filter(system:modification-date, [])'
         );
@@ -408,7 +408,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->sort('system:id', 'RAND');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY RAND()",
+            "SELECT FROM `entries` AS `e` ORDER BY RAND()",
             $q->generateSQL(),
             'new EntryQuery with ->sort(system:id, RAND)'
         );
@@ -420,7 +420,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->sort('system:creation-date', 'DESC');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`creation_date` DESC",
+            "SELECT FROM `entries` AS `e` ORDER BY `e`.`creation_date` DESC",
             $q->generateSQL(),
             'new EntryQuery with ->sort(system:creation-date, DESC)'
         );
@@ -432,7 +432,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->sort('system:modification-date');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`modification_date` ASC",
+            "SELECT FROM `entries` AS `e` ORDER BY `e`.`modification_date` ASC",
             $q->generateSQL(),
             'new EntryQuery with ->sort(system:modification-date)'
         );
@@ -444,7 +444,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->sort('system:id');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            "SELECT FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with ->sort(system:id)'
         );
@@ -456,7 +456,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            "SELECT `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with ->sort(system:id)'
         );
@@ -468,7 +468,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->sort('');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e`",
+            "SELECT FROM `entries` AS `e`",
             $q->generateSQL(),
             'new EntryQuery with ->sort("")'
         );
@@ -483,7 +483,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->sort(new \stdClass);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            "SELECT FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with ->sort(<invalid>)'
         );
@@ -495,7 +495,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->sort('system:creation-date')->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e` ORDER BY `e`.`creation_date` ASC",
+            "SELECT `e`.* FROM `entries` AS `e` ORDER BY `e`.`creation_date` ASC",
             $q->generateSQL(),
             'new EntryQuery with ->sort("created-date")->finalize()'
         );
@@ -507,7 +507,7 @@ final class EntryQueryTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            "SELECT `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with default sort from ->finalize()'
         );
@@ -523,7 +523,7 @@ final class EntryQueryTest extends TestCase
         $f->getEntryQueryFieldAdapter()->sort($q);
         $q->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f1`.`value` , `e`.* FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` ORDER BY `f1`.`value` ASC , `e`.`id` ASC",
+            "SELECT `f1`.`value` , `e`.* FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` ORDER BY `f1`.`value` ASC , `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with field sort and ->finalize()'
         );
@@ -539,7 +539,7 @@ final class EntryQueryTest extends TestCase
         $f->getEntryQueryFieldAdapter()->sort($q);
         $q->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f1`.`value` , `e`.* FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` ORDER BY `f1`.`value` ASC , `e`.`id` ASC",
+            "SELECT `f1`.`value` , `e`.* FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` ORDER BY `f1`.`value` ASC , `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with schema, field sort and ->finalize()'
         );
@@ -553,7 +553,7 @@ final class EntryQueryTest extends TestCase
         $q->projection(['f.test']);
         $q->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f`.`test` , `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            "SELECT `f`.`test` , `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with projection and ->finalize()'
         );
@@ -568,7 +568,7 @@ final class EntryQueryTest extends TestCase
         $q->disableDefaultSort();
         $q->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f`.`test` , `e`.* FROM `entries` AS `e`",
+            "SELECT `f`.`test` , `e`.* FROM `entries` AS `e`",
             $q->generateSQL(),
             'new EntryQuery with projection, disableDefaultSort() and ->finalize()'
         );
@@ -581,7 +581,7 @@ final class EntryQueryTest extends TestCase
         $q = (new \EntryQuery($this->db, ['schema'], ['f.test']));
         $q->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f`.`test` , `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            "SELECT `f`.`test` , `e`.* FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with ->sort(system:id)'
         );
@@ -595,7 +595,7 @@ final class EntryQueryTest extends TestCase
         $q->disableDefaultSort();
         $q->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f`.`test` , `e`.* FROM `entries` AS `e`",
+            "SELECT `f`.`test` , `e`.* FROM `entries` AS `e`",
             $q->generateSQL(),
             'new EntryQuery with ->sort(system:id)'
         );

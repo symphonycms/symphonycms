@@ -36,7 +36,7 @@ final class EntryQueryTextareaAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['test']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE MATCH (`f1`.`value`) AGAINST (:f1_value IN BOOLEAN MODE)",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE MATCH (`f1`.`value`) AGAINST (:f1_value IN BOOLEAN MODE)",
             $q->generateSQL(),
             'Simple exact match ->filter([test])'
         );
@@ -51,7 +51,7 @@ final class EntryQueryTextareaAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['regexp: ^test[\d]']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` REGEXP :f1_value",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` REGEXP :f1_value",
             $q->generateSQL(),
             'RegExp match ->filter([regexp: test])'
         );
@@ -66,7 +66,7 @@ final class EntryQueryTextareaAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['sql: null']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` IS :_null_",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` IS :_null_",
             $q->generateSQL(),
             'SQL null match ->filter([sql: null])'
         );

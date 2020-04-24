@@ -36,7 +36,7 @@ final class EntryQueryInputAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['test']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` = :f1_value OR `f1`.`handle` = :f1_handle)",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` = :f1_value OR `f1`.`handle` = :f1_handle)",
             $q->generateSQL(),
             'Simple exact match ->filter([test])'
         );
@@ -52,7 +52,7 @@ final class EntryQueryInputAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['not: test', 'tata']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE ((`f1`.`value` != :f1_value AND `f1`.`handle` != :f1_handle) AND (`f1`.`value` != :f1_value2 AND `f1`.`handle` != :f1_handle2))",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE ((`f1`.`value` != :f1_value AND `f1`.`handle` != :f1_handle) AND (`f1`.`value` != :f1_value2 AND `f1`.`handle` != :f1_handle2))",
             $q->generateSQL(),
             'Not filter ->filter([not: test, tata])'
         );

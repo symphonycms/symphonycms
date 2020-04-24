@@ -38,7 +38,7 @@ final class EntryQueryDateAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['2018-03-28']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` >= :f1_value AND `f1`.`value` <= :f1_value2)",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` >= :f1_value AND `f1`.`value` <= :f1_value2)",
             $q->generateSQL(),
             'Simple exact match ->filter([2018-03-28])'
         );
@@ -54,7 +54,7 @@ final class EntryQueryDateAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['2018/02']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` >= :f1_value AND `f1`.`value` <= :f1_value2)",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` >= :f1_value AND `f1`.`value` <= :f1_value2)",
             $q->generateSQL(),
             'Simple exact match ->filter([2018/02])'
         );
@@ -70,7 +70,7 @@ final class EntryQueryDateAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['earlier than 2018-03-28']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` < :f1_value",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` < :f1_value",
             $q->generateSQL(),
             'Simple exact match ->filter([earlier than 2018-03-28])'
         );
@@ -85,7 +85,7 @@ final class EntryQueryDateAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['equal to or later than 2018-03-28']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` >= :f1_value",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` >= :f1_value",
             $q->generateSQL(),
             'Simple exact match ->filter([earlier than 2018-03-28])'
         );
@@ -100,7 +100,7 @@ final class EntryQueryDateAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['not: 2018-03-28', 'tata']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` != :f1_value AND `f1`.`value` != :f1_value2)",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE (`f1`.`value` != :f1_value AND `f1`.`value` != :f1_value2)",
             $q->generateSQL(),
             'Not filter ->filter([not: 2018-03-28, tata])'
         );
@@ -116,7 +116,7 @@ final class EntryQueryDateAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['2017-03-28 to 2018-03', 'from 2017 to 2018']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE ((`f1`.`value` >= :f1_value AND `f1`.`value` <= :f1_value2) OR (`f1`.`value` >= :f1_value3 AND `f1`.`value` <= :f1_value4))",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE ((`f1`.`value` >= :f1_value AND `f1`.`value` <= :f1_value2) OR (`f1`.`value` >= :f1_value3 AND `f1`.`value` <= :f1_value4))",
             $q->generateSQL(),
             'Simple exact match ->filter([2017-03-28 to 2018-03-28, from 2017 to 2018])'
         );
@@ -134,7 +134,7 @@ final class EntryQueryDateAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['regexp: ^test[\d]']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` REGEXP :f1_value",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` REGEXP :f1_value",
             $q->generateSQL(),
             'RegExp match ->filter([regexp: test])'
         );
@@ -149,7 +149,7 @@ final class EntryQueryDateAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['sql: null']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` IS :_null_",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`value` IS :_null_",
             $q->generateSQL(),
             'SQL null match ->filter([sql: null])'
         );

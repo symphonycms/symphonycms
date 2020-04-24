@@ -21,7 +21,7 @@ final class AuthorQueryTest extends TestCase
     {
         $q = new \AuthorQuery($this->db);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `authors` AS `a`",
+            "SELECT FROM `authors` AS `a`",
             $q->generateSQL(),
             'Simple new AuthorQuery test'
         );
@@ -33,7 +33,7 @@ final class AuthorQueryTest extends TestCase
     {
         $q = (new \AuthorQuery($this->db))->disableDefaultSort()->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `a`.* FROM `authors` AS `a`",
+            "SELECT `a`.* FROM `authors` AS `a`",
             $q->generateSQL(),
             'new AuthorQuery with Default schema and Default projection'
         );
@@ -45,7 +45,7 @@ final class AuthorQueryTest extends TestCase
     {
         $q = (new \AuthorQuery($this->db))->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `a`.* FROM `authors` AS `a` ORDER BY `a`.`id` ASC",
+            "SELECT `a`.* FROM `authors` AS `a` ORDER BY `a`.`id` ASC",
             $q->generateSQL(),
             'new AuthorQuery with Default schema, Default projection and default sort'
         );
@@ -57,7 +57,7 @@ final class AuthorQueryTest extends TestCase
     {
         $q = new \AuthorQuery($this->db, ['COUNT(*)']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE COUNT(*) FROM `authors` AS `a`",
+            "SELECT COUNT(*) FROM `authors` AS `a`",
             $q->generateSQL(),
             'new AuthorQuery test with COUNT(*) projection'
         );
@@ -69,7 +69,7 @@ final class AuthorQueryTest extends TestCase
     {
         $q = (new \AuthorQuery($this->db))->author(4);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `authors` AS `a` WHERE `a`.`id` = :a_id",
+            "SELECT FROM `authors` AS `a` WHERE `a`.`id` = :a_id",
             $q->generateSQL(),
             'new AuthorQuery with ->author()'
         );
@@ -82,7 +82,7 @@ final class AuthorQueryTest extends TestCase
     {
         $q = (new \AuthorQuery($this->db))->authors([4, 5, 6]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `authors` AS `a` WHERE `a`.`id` IN (:a_id, :a_id2, :a_id3)",
+            "SELECT FROM `authors` AS `a` WHERE `a`.`id` IN (:a_id, :a_id2, :a_id3)",
             $q->generateSQL(),
             'new AuthorQuery with ->authors()'
         );
@@ -97,7 +97,7 @@ final class AuthorQueryTest extends TestCase
     {
         $q = (new \AuthorQuery($this->db))->username('user');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `authors` AS `a` WHERE `a`.`username` = :a_username",
+            "SELECT FROM `authors` AS `a` WHERE `a`.`username` = :a_username",
             $q->generateSQL(),
             'new AuthorQuery with ->username()'
         );
@@ -110,7 +110,7 @@ final class AuthorQueryTest extends TestCase
     {
         $q = (new \AuthorQuery($this->db))->email('email');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `authors` AS `a` WHERE `a`.`email` = :a_email",
+            "SELECT FROM `authors` AS `a` WHERE `a`.`email` = :a_email",
             $q->generateSQL(),
             'new AuthorQuery with ->email()'
         );
@@ -123,7 +123,7 @@ final class AuthorQueryTest extends TestCase
     {
         $q = (new \AuthorQuery($this->db))->sort('email');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `authors` AS `a` ORDER BY `a`.`email` ASC",
+            "SELECT FROM `authors` AS `a` ORDER BY `a`.`email` ASC",
             $q->generateSQL(),
             'new AuthorQuery with ->sort()'
         );
@@ -135,7 +135,7 @@ final class AuthorQueryTest extends TestCase
     {
         $q = (new \AuthorQuery($this->db))->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `a`.* FROM `authors` AS `a` ORDER BY `a`.`id` ASC",
+            "SELECT `a`.* FROM `authors` AS `a` ORDER BY `a`.`id` ASC",
             $q->generateSQL(),
             'new AuthorQuery with ->finalize()'
         );

@@ -22,7 +22,7 @@ final class EntryQueryIntegrationTest extends TestCase
     {
         $q = (new \EntryQuery($this->db))->sort('<invalid>');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
+            "SELECT FROM `entries` AS `e` ORDER BY `e`.`id` ASC",
             $q->generateSQL(),
             'new EntryQuery with ->sort(<invalid>)'
         );

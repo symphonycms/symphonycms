@@ -16,7 +16,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => 1]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = :x",
+            "SELECT FROM `test_table` WHERE `x` = :x",
             $sql->generateSQL(),
             'Simple SQL clause with WHERE filter'
         );
@@ -32,7 +32,7 @@ final class DatabaseQueryTest extends TestCase
                   ->projection(['y'])
                   ->from('tbl_test_table');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `x` , `y` FROM `test_table`",
+            "SELECT `x` , `y` FROM `test_table`",
             $sql->generateSQL(),
             'Simple SQL clause with multiple projection'
         );
@@ -47,7 +47,7 @@ final class DatabaseQueryTest extends TestCase
             ->from('tbl_test_table')
             ->finalize();
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE * FROM `test_table`",
+            "SELECT * FROM `test_table`",
             $sql->generateSQL(),
             'Simple SQL clause with default projection'
         );
@@ -74,7 +74,7 @@ final class DatabaseQueryTest extends TestCase
                   ->usePlaceholders()
                   ->where(['x' => 1]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = ?",
+            "SELECT FROM `test_table` WHERE `x` = ?",
             $sql->generateSQL(),
             'Simple SQL clause with WHERE filter'
         );
@@ -90,7 +90,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => 1]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `x` AS `y`, `z` FROM `test_table` WHERE `x` = :x",
+            "SELECT `x` AS `y`, `z` FROM `test_table` WHERE `x` = :x",
             $sql->generateSQL(),
             'Simple SQL clause with WHERE filter'
         );
@@ -106,7 +106,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => '$y - 1']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = `y` - 1",
+            "SELECT FROM `test_table` WHERE `x` = `y` - 1",
             $sql->generateSQL(),
             'Simple SQL clause with WHERE filter with minus operator'
         );
@@ -120,7 +120,7 @@ final class DatabaseQueryTest extends TestCase
         $sql = $db->select(['y + 1' => 'result'])
             ->from('tbl_test_table');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE (`y` + 1) AS `result` FROM `test_table`",
+            "SELECT (`y` + 1) AS `result` FROM `test_table`",
             $sql->generateSQL(),
             'SQL clause with aliased operator in projection'
         );
@@ -147,7 +147,7 @@ final class DatabaseQueryTest extends TestCase
             ->from('tbl_test_table')
             ->where(['x' => ['<=' => '$x * 8']]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE (`z` + 1) AS `t` FROM `test_table` WHERE `x` <= `x` * 8",
+            "SELECT (`z` + 1) AS `t` FROM `test_table` WHERE `x` <= `x` * 8",
             $sql->generateSQL(),
             'SQL clause with self reference WHERE filter'
         );
@@ -163,7 +163,7 @@ final class DatabaseQueryTest extends TestCase
                   ->where(['x' => 1])
                   ->where(['y' => 1]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = :x AND `y` = :y",
+            "SELECT FROM `test_table` WHERE `x` = :x AND `y` = :y",
             $sql->generateSQL(),
             'Simple SQL clause with WHERE filter'
         );
@@ -181,7 +181,7 @@ final class DatabaseQueryTest extends TestCase
                   ->where(['x' => 1])
                   ->where(['x' => 2]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = :x AND `x` = :x2",
+            "SELECT FROM `test_table` WHERE `x` = :x AND `x` = :x2",
             $sql->generateSQL(),
             'Simple SQL clause with WHERE filter on the same column'
         );
@@ -203,7 +203,7 @@ final class DatabaseQueryTest extends TestCase
                         ]
                     ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE (`x` = :x OR `y` < :y)",
+            "SELECT FROM `test_table` WHERE (`x` = :x OR `y` < :y)",
             $sql->generateSQL(),
             "SQL clause with WHERE OR filter"
         );
@@ -225,7 +225,7 @@ final class DatabaseQueryTest extends TestCase
                 ]
             ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE (`x` = :x OR `x` < :x2)",
+            "SELECT FROM `test_table` WHERE (`x` = :x OR `x` < :x2)",
             $sql->generateSQL(),
             "SQL clause with WHERE OR filter"
         );
@@ -250,7 +250,7 @@ final class DatabaseQueryTest extends TestCase
                         ]
                     ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE ((`x` = :x AND `y` < :y) OR `w` >= :w)",
+            "SELECT FROM `test_table` WHERE ((`x` = :x AND `y` < :y) OR `w` >= :w)",
             $sql->generateSQL(),
             "SQL clause with NESTED ANDs"
         );
@@ -270,7 +270,7 @@ final class DatabaseQueryTest extends TestCase
                         'x' => null
                     ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` IS :_null_",
+            "SELECT FROM `test_table` WHERE `x` IS :_null_",
             $sql->generateSQL(),
             "SQL clause with WHERE IS NULL"
         );
@@ -288,7 +288,7 @@ final class DatabaseQueryTest extends TestCase
                 'x' => ['!=' => null]
             ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` IS NOT :_null_",
+            "SELECT FROM `test_table` WHERE `x` IS NOT :_null_",
             $sql->generateSQL(),
             "SQL clause with WHERE IS NOT NULL"
         );
@@ -316,7 +316,7 @@ final class DatabaseQueryTest extends TestCase
             ->join('sym.tbl_test1')
             ->on(['tbl_test_table.id' => '$sym.tbl_test1.other-id']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `a` FROM `test_table` JOIN `sym`.`test1` ON `test_table`.`id` = `sym`.`test1`.`other-id`",
+            "SELECT `a` FROM `test_table` JOIN `sym`.`test1` ON `test_table`.`id` = `sym`.`test1`.`other-id`",
             $sql->generateSQL(),
             "SQL clause with JOIN"
         );
@@ -335,7 +335,7 @@ final class DatabaseQueryTest extends TestCase
                         'sym.tbl_test1.x' => 1,
                     ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `a` FROM `test_table` LEFT JOIN `sym`.`test1` ON `test_table`.`id` = `sym`.`test1`.`other-id` WHERE `sym`.`test1`.`x` = :sym_tbl_test1_x",
+            "SELECT `a` FROM `test_table` LEFT JOIN `sym`.`test1` ON `test_table`.`id` = `sym`.`test1`.`other-id` WHERE `sym`.`test1`.`x` = :sym_tbl_test1_x",
             $sql->generateSQL(),
             "SQL clause with WHERE LEFT JOIN"
         );
@@ -354,7 +354,7 @@ final class DatabaseQueryTest extends TestCase
                   ->rightJoin('sym.tbl_test2')
                   ->on(['tbl_test_table.x' => ['>' => '4']]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `a` FROM `test_table` OUTER JOIN `sym`.`test1` ON `test_table`.`id` = `sym`.`test1`.`other-id` RIGHT JOIN `sym`.`test2` ON `test_table`.`x` > :tbl_test_table_x",
+            "SELECT `a` FROM `test_table` OUTER JOIN `sym`.`test1` ON `test_table`.`id` = `sym`.`test1`.`other-id` RIGHT JOIN `sym`.`test2` ON `test_table`.`x` > :tbl_test_table_x",
             $sql->generateSQL(),
             "SQL clause with WHERE LEFT JOIN"
         );
@@ -385,7 +385,7 @@ final class DatabaseQueryTest extends TestCase
                   ->where(['x' => 1])
                   ->orderBy('tbl1.tbl_test');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = :x ORDER BY `tbl1`.`test` ASC",
+            "SELECT FROM `test_table` WHERE `x` = :x ORDER BY `tbl1`.`test` ASC",
             $sql->generateSQL(),
             'SQL clause with ORDER BY'
         );
@@ -403,7 +403,7 @@ final class DatabaseQueryTest extends TestCase
                   ->orderBy('tbl1.tbl_test', 'RANDOM()')
                   ->orderBy('tbl1.x', 'RAND()');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = :x ORDER BY RAND() , RAND()",
+            "SELECT FROM `test_table` WHERE `x` = :x ORDER BY RAND() , RAND()",
             $sql->generateSQL(),
             'SQL clause with ORDER BY'
         );
@@ -419,7 +419,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->orderBy([0 => 'tbl1.tbl_test', 'tbl2' => 'ASC'], 'DESC');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` ORDER BY `tbl1`.`test` DESC, `tbl2` ASC",
+            "SELECT FROM `test_table` ORDER BY `tbl1`.`test` DESC, `tbl2` ASC",
             $sql->generateSQL(),
             'SQL clause with multiple ORDER BY'
         );
@@ -435,7 +435,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => ['between' => [1, 10]]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE (`x` BETWEEN ? AND ?)",
+            "SELECT FROM `test_table` WHERE (`x` BETWEEN ? AND ?)",
             $sql->generateSQL(),
             'BETWEEN clause with placeholders'
         );
@@ -452,7 +452,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => ['between' => [1, 10]]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE (`x` BETWEEN :xl AND :xu)",
+            "SELECT FROM `test_table` WHERE (`x` BETWEEN :xl AND :xu)",
             $sql->generateSQL(),
             'BETWEEN clause'
         );
@@ -469,7 +469,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => ['like' => '%test%']]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` LIKE :x",
+            "SELECT FROM `test_table` WHERE `x` LIKE :x",
             $sql->generateSQL(),
             'LIKE clause'
         );
@@ -485,7 +485,7 @@ final class DatabaseQueryTest extends TestCase
             ->from('tbl_test_table')
             ->where(['x' => ['not like' => '%test%']]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` NOT LIKE :x",
+            "SELECT FROM `test_table` WHERE `x` NOT LIKE :x",
             $sql->generateSQL(),
             'NOT LIKE clause'
         );
@@ -501,7 +501,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => ['regexp' => '[[:<:]]handle[[:>:]]']]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` REGEXP :x",
+            "SELECT FROM `test_table` WHERE `x` REGEXP :x",
             $sql->generateSQL(),
             'REGEXP clause'
         );
@@ -529,7 +529,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => ['in' => [1, 2, 5]]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` IN (?, ?, ?)",
+            "SELECT FROM `test_table` WHERE `x` IN (?, ?, ?)",
             $sql->generateSQL(),
             'IN clause'
         );
@@ -547,7 +547,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => ['in' => [1, 2, 5]]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` IN (:x, :x2, :x3)",
+            "SELECT FROM `test_table` WHERE `x` IN (:x, :x2, :x3)",
             $sql->generateSQL(),
             'IN clause'
         );
@@ -566,7 +566,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => ['not in' => [1, 2, 5]]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` NOT IN (?, ?, ?)",
+            "SELECT FROM `test_table` WHERE `x` NOT IN (?, ?, ?)",
             $sql->generateSQL(),
             'IN clause'
         );
@@ -584,7 +584,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => ['not in' => [1, 2, 5]]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` NOT IN (:x, :x2, :x3)",
+            "SELECT FROM `test_table` WHERE `x` NOT IN (:x, :x2, :x3)",
             $sql->generateSQL(),
             'IN clause'
         );
@@ -602,7 +602,7 @@ final class DatabaseQueryTest extends TestCase
             ->from('tbl_test_table')
             ->where(['x' => ['boolean' => 'value']]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE MATCH (`x`) AGAINST (:x IN BOOLEAN MODE)",
+            "SELECT FROM `test_table` WHERE MATCH (`x`) AGAINST (:x IN BOOLEAN MODE)",
             $sql->generateSQL(),
             'MATCH clause'
         );
@@ -618,7 +618,7 @@ final class DatabaseQueryTest extends TestCase
             ->from('tbl_test_table')
             ->where(['x' => ['date' => ['start' => '2018-03-28']]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` >= :x",
+            "SELECT FROM `test_table` WHERE `x` >= :x",
             $sql->generateSQL(),
             'day clause'
         );
@@ -637,7 +637,7 @@ final class DatabaseQueryTest extends TestCase
                 'strict' => false,
             ]]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` <= :x",
+            "SELECT FROM `test_table` WHERE `x` <= :x",
             $sql->generateSQL(),
             'day clause with time'
         );
@@ -656,7 +656,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->where(['x' => ['in' => []]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` IN ()",
+            "SELECT FROM `test_table` WHERE `x` IN ()",
             $sql->generateSQL(),
             'Empty IN clause'
         );
@@ -682,7 +682,7 @@ final class DatabaseQueryTest extends TestCase
                   ->from('tbl_test_table')
                   ->alias('tbl_');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` AS `tbl_`",
+            "SELECT FROM `test_table` AS `tbl_`",
             $sql->generateSQL(),
             'AS clause'
         );
@@ -699,7 +699,7 @@ final class DatabaseQueryTest extends TestCase
                   ->innerJoin('innertable', 'inner')
                   ->on(['z' => '$z']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` AS `tbl_` INNER JOIN `innertable` AS `inner` ON `z` = `z`",
+            "SELECT FROM `test_table` AS `tbl_` INNER JOIN `innertable` AS `inner` ON `z` = `z`",
             $sql->generateSQL(),
             'AS clause'
         );
@@ -715,7 +715,7 @@ final class DatabaseQueryTest extends TestCase
                   ->groupBy(['a', 'b', 'c'])
                   ->having(['a' => 1]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `group` GROUP BY `a`, `b`, `c` HAVING `a` = :a",
+            "SELECT FROM `group` GROUP BY `a`, `b`, `c` HAVING `a` = :a",
             $sql->generateSQL(),
             'GROUP BY HAVING clause'
         );
@@ -731,7 +731,7 @@ final class DatabaseQueryTest extends TestCase
                   ->distinct()
                   ->from('group');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE DISTINCT FROM `group`",
+            "SELECT DISTINCT FROM `group`",
             $sql->generateSQL(),
             'DISTINCT clause'
         );
@@ -759,7 +759,7 @@ final class DatabaseQueryTest extends TestCase
                   ->limit(1)
                   ->offset(10);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` LIMIT 1 OFFSET 10",
+            "SELECT FROM `test_table` LIMIT 1 OFFSET 10",
             $sql->generateSQL(),
             'LIMIT OFFSET clause'
         );
@@ -820,7 +820,7 @@ final class DatabaseQueryTest extends TestCase
             ->from('tbl_test_table')
             ->paginate(2, 10);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` LIMIT 10 OFFSET 10",
+            "SELECT FROM `test_table` LIMIT 10 OFFSET 10",
             $sql->generateSQL(),
             'Paginate clause'
         );
@@ -835,7 +835,7 @@ final class DatabaseQueryTest extends TestCase
                   ->count()
                   ->from('tbl_test_table');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE COUNT(*) FROM `test_table`",
+            "SELECT COUNT(*) FROM `test_table`",
             $sql->generateSQL(),
             'SELECT COUNT(*) clause'
         );
@@ -850,7 +850,7 @@ final class DatabaseQueryTest extends TestCase
                   ->count('x')
                   ->from('tbl_test_table');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE COUNT(`x`) FROM `test_table`",
+            "SELECT COUNT(`x`) FROM `test_table`",
             $sql->generateSQL(),
             'SELECT COUNT(...) clause'
         );
@@ -865,7 +865,7 @@ final class DatabaseQueryTest extends TestCase
                   ->count('t.*')
                   ->from('tbl_test_table');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE COUNT(*) FROM `test_table`",
+            "SELECT COUNT(*) FROM `test_table`",
             $sql->generateSQL(),
             'SELECT COUNT(t.*) clause'
         );
@@ -881,7 +881,7 @@ final class DatabaseQueryTest extends TestCase
                   ->groupBy('x')
                   ->having(['x' => ['<' => 'COUNT(y)']]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` GROUP BY `x` HAVING `x` < COUNT(`y`)",
+            "SELECT FROM `test_table` GROUP BY `x` HAVING `x` < COUNT(`y`)",
             $sql->generateSQL(),
             'SELECT COUNT(*) clause'
         );
@@ -894,7 +894,7 @@ final class DatabaseQueryTest extends TestCase
         $db = new Database([]);
         $sql = $db->select(['X()']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE X()",
+            "SELECT X()",
             $sql->generateSQL(),
             'SELECT X() (function projection)'
         );
@@ -907,7 +907,7 @@ final class DatabaseQueryTest extends TestCase
         $db = new Database([]);
         $sql = $db->select(['X()' => 'x']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE X() AS `x`",
+            "SELECT X() AS `x`",
             $sql->generateSQL(),
             'SELECT X() as `x` (function projection aliased)'
         );
@@ -922,7 +922,7 @@ final class DatabaseQueryTest extends TestCase
             'X(a,b,c)' => 'x'
         ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE X(`a`, `b`, `c`) AS `x`",
+            "SELECT X(`a`, `b`, `c`) AS `x`",
             $sql->generateSQL(),
             'SELECT X(a,b,c) as `x` (function projection aliased)'
         );
@@ -937,7 +937,7 @@ final class DatabaseQueryTest extends TestCase
             'X(Y(a), Z(b,c), d)' => 'x'
         ]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE X(Y(`a`), Z(`b`, `c`), `d`) AS `x`",
+            "SELECT X(Y(`a`), Z(`b`, `c`), `d`) AS `x`",
             $sql->generateSQL(),
             'SELECT X(Y(a), Z(b,c), d) as `x` (nested function projection aliased)'
         );
@@ -955,7 +955,7 @@ final class DatabaseQueryTest extends TestCase
                   ->where(['y' => 2]);
         $sql->where(['x' => $sub]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = (SELECT `y` FROM `sub` WHERE `y` = :i1_y)",
+            "SELECT FROM `test_table` WHERE `x` = (SELECT `y` FROM `sub` WHERE `y` = :i1_y)",
             $sql->generateSQL(),
             'Simple SQL clause with WHERE sub-query'
         );
@@ -978,7 +978,7 @@ final class DatabaseQueryTest extends TestCase
         $sql->where(['x' => $sub1]);
         $sql->where(['y' => ['in' => $sub2]]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `test_table` WHERE `x` = (SELECT `y` FROM `sub` WHERE `y` = :i1_y) AND `y` IN (SELECT `y` FROM `sub` WHERE `y` = :i2_y)",
+            "SELECT FROM `test_table` WHERE `x` = (SELECT `y` FROM `sub` WHERE `y` = :i1_y) AND `y` IN (SELECT `y` FROM `sub` WHERE `y` = :i2_y)",
             $sql->generateSQL(),
             'Simple SQL clause with WHERE two sub-queries'
         );
@@ -998,7 +998,7 @@ final class DatabaseQueryTest extends TestCase
                   ->where(['y' => '$x']);
         $sql->projection(['inner' => $sub, 'x']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE (SELECT `y` FROM `sub` WHERE `y` = `x`) AS `inner`, `x` FROM `test_table`",
+            "SELECT (SELECT `y` FROM `sub` WHERE `y` = `x`) AS `inner`, `x` FROM `test_table`",
             $sql->generateSQL(),
             'Simple SQL with sub-query in the projection'
         );
@@ -1014,7 +1014,7 @@ final class DatabaseQueryTest extends TestCase
             ->where(['x' => 1])
             ->where(['y' => 1]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE\n\tFROM `test_table`\n\tWHERE `x` = :x\n\tAND `y` = :y",
+            "SELECT\n\tFROM `test_table`\n\tWHERE `x` = :x\n\tAND `y` = :y",
             $sql->generateFormattedSQL(),
             'Formatted SQL query test'
         );
@@ -1030,7 +1030,7 @@ final class DatabaseQueryTest extends TestCase
             ->where(['y' => 2]);
         $sql->where(['x' => $sub]);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE\n\tFROM `test_table`\n\tWHERE `x` = (SELECT `y` FROM `sub` WHERE `y` = :i1_y)",
+            "SELECT\n\tFROM `test_table`\n\tWHERE `x` = (SELECT `y` FROM `sub` WHERE `y` = :i1_y)",
             $sql->generateFormattedSQL(),
             'Formatted SQL sub-query test'
         );
@@ -1052,7 +1052,7 @@ final class DatabaseQueryTest extends TestCase
         $sql = $original->countProjection();
         $this->assertNotEquals($original, $sql);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE COUNT(*) FROM `test_table` WHERE (`x` = :x OR `x` < :x2) AND `z` = :z",
+            "SELECT COUNT(*) FROM `test_table` WHERE (`x` = :x OR `x` < :x2) AND `z` = :z",
             $sql->generateSQL(),
             "SQL count clause clause from projection"
         );

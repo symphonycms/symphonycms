@@ -37,7 +37,7 @@ final class EntryQueryUploadAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['yes']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`file` = :f1_file",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`file` = :f1_file",
             $q->generateSQL(),
             'Simple exact match ->filter([yes])'
         );
@@ -53,7 +53,7 @@ final class EntryQueryUploadAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['size: 1']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`size` = :f1_size",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`size` = :f1_size",
             $q->generateSQL(),
             'Simple exact match ->filter([size: 1])'
         );
@@ -69,7 +69,7 @@ final class EntryQueryUploadAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->filter($q, ['mimetype: regexp: jpe?g']);
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`mimetype` REGEXP :f1_mimetype",
+            "SELECT FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` WHERE `f1`.`mimetype` REGEXP :f1_mimetype",
             $q->generateSQL(),
             'Simple exact match ->filter([mimetype: regexp: jpe?g])'
         );
@@ -84,7 +84,7 @@ final class EntryQueryUploadAdapterTest extends TestCase
         $o = $this->createAdapter();
         $o->sort($q, 'asc');
         $this->assertEquals(
-            "SELECT SQL_NO_CACHE `f1`.`file` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` ORDER BY `f1`.`file` ASC , `e`.`id` ASC",
+            "SELECT `f1`.`file` FROM `entries` AS `e` LEFT JOIN `entries_data_1` AS `f1` ON `e`.`id` = `f1`.`entry_id` ORDER BY `f1`.`file` ASC , `e`.`id` ASC",
             $q->generateSQL(),
             'Simple asc sort ->sort(asc)'
         );

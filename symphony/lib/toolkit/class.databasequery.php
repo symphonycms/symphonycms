@@ -51,13 +51,16 @@ class DatabaseQuery extends DatabaseStatement
     }
 
     /**
-     * Appends the SQL_CACHE or SQL_NO_CACHE in the query
+     * Appends the SQL_CACHE, if required, in the query
      *
+     * @deprecated @since Symphony 3.1.0
      * @return void
      */
     protected function appendCacheModifier()
     {
-        $this->unsafeAppendSQLPart('cache', $this->getDB()->isCachingEnabled() ? 'SQL_CACHE' : 'SQL_NO_CACHE');
+        if ($this->getDB()->isCachingEnabled()) {
+            $this->unsafeAppendSQLPart('cache', 'SQL_CACHE');
+        }
     }
 
     /**
