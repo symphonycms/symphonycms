@@ -26,11 +26,7 @@ function redirect($url)
         $host = $root['host'];
         $url = str_replace(
             $host,
-            idn_to_ascii(
-                $host,
-                0,
-                defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : 0
-            ),
+            idn_to_ascii_safe($host),
             $url
         );
     }
@@ -81,6 +77,54 @@ function server_safe($name)
         return $_SERVER[$name];
     }
     return null;
+}
+
+/**
+ * Attempt to convert the $host string into a valid utf8 string.
+ * Since php 7.2, this API as been plagued with countless bug because of the
+ * depreciation of the default value, while the new one may not be available.
+ *
+ * @param string $host
+ * @return string
+ *  The properly convert host string or the original one, if conversion failed.
+ */
+function idn_to_utf8_safe($host)
+{
+    if (!function_exists('idn_to_utf8')) {
+        return $host;
+    }
+    if (!defined('INTL_IDNA_VARIANT_UTS46')) {
+        return $host;
+    }
+    $host_safe = idn_to_utf8($host, 0, INTL_IDNA_VARIANT_UTS46);
+    if (!$host_safe) {
+        return $host;
+    }
+    return $host_safe;
+}
+
+/**
+ * Attempt to convert the $host string into a valid IDNA ASCII string.
+ * Since php 7.2, this API as been plagued with countless bug because of the
+ * depreciation of the default value, while the new one may not be available.
+ *
+ * @param string $host
+ * @return string
+ *  The properly convert host string or the original one, if conversion failed.
+ */
+function idn_to_ascii_safe($host)
+{
+    if (!function_exists('idn_to_ascii')) {
+        return $host;
+    }
+    if (!defined('INTL_IDNA_VARIANT_UTS46')) {
+        return $host;
+    }
+    $host_safe = idn_to_ascii($host, 0, INTL_IDNA_VARIANT_UTS46);
+    if (!$host_safe) {
+        return $host;
+    }
+    return $host_safe;
 }
 
 /**
