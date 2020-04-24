@@ -15,9 +15,10 @@ final class UtilitiesTest extends TestCase
         $idn = 'xn--accent-aigu--meb.com';
         $test = idn_to_utf8_safe($idn);
         //$this->assertContains($test, [$utf8, $idn], 'test is either result or the original');
+        var_dump($test);
         $this->assertTrue(
-            in_array($test, [$utf8, $idn]),
-            'test is either result or the original'
+            $test === $utf8 || $test === $idn,
+            'test is either utf8 or the original'
         );
     }
 
@@ -27,9 +28,10 @@ final class UtilitiesTest extends TestCase
         $idn = 'xn--accent-aigu--meb.com';
         $test = idn_to_ascii_safe($utf8);
         //$this->assertContains($test, [$utf8, $idn], 'test is either result or the original');
+        var_dump($test);
         $this->assertTrue(
-            in_array($test, [$utf8, $idn]),
-            'test is either result or the original'
+            $test === $utf8 || $test === $idn,
+            'test is either idn or the original'
         );
     }
 }
