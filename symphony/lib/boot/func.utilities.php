@@ -90,6 +90,9 @@ function server_safe($name)
  */
 function idn_to_utf8_safe($host)
 {
+    if (!$host) {
+        return $host;
+    }
     if (!function_exists('idn_to_utf8')) {
         return $host;
     }
@@ -114,6 +117,9 @@ function idn_to_utf8_safe($host)
  */
 function idn_to_ascii_safe($host)
 {
+    if (!$host)  {
+        return $host;
+    }
     if (!function_exists('idn_to_ascii')) {
         return $host;
     }
