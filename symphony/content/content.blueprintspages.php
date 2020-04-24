@@ -12,7 +12,7 @@
 
 class contentBlueprintsPages extends AdministrationPage
 {
-    protected $_hilights = array();
+    private $highlights = array();
 
     /**
      * The Pages page has /action/id/flag/ context.
@@ -171,7 +171,7 @@ class contentBlueprintsPages extends AdministrationPage
                     $col_types = Widget::TableData(__('None'), 'inactive');
                 }
 
-                if (in_array($page['id'], $this->_hilights)) {
+                if (in_array($page['id'], $this->highlights)) {
                     $class[] = 'failed';
                 }
 
@@ -925,7 +925,7 @@ class contentBlueprintsPages extends AdministrationPage
             }
 
             if (PageManager::hasChildPages($page_id)) {
-                $this->_hilights[] = $page['id'];
+                $this->highlights[] = $page['id'];
                 $success = false;
                 $this->pageAlert(
                     __('Page could not be deleted because it has children.'),
@@ -936,7 +936,7 @@ class contentBlueprintsPages extends AdministrationPage
             }
 
             if (!PageManager::deletePageFiles($page['path'], $page['handle'])) {
-                $this->_hilights[] = $page['id'];
+                $this->highlights[] = $page['id'];
                 $success = false;
                 $this->pageAlert(
                     __('One or more pages could not be deleted.')
