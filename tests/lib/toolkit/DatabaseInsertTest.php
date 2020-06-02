@@ -50,6 +50,54 @@ final class DatabaseInsertTest extends TestCase
         $this->assertEquals(3, count($values), '6 values');
     }
 
+    public function testINSERTUPDATECUSTOM()
+    {
+        $db = new Database([]);
+        $sql = $db->insert('tbl_insert')
+        ->values([
+            'x' => 1,
+            'y' => 'TEST',
+        ])
+        ->updateOnDuplicateKey(['z' => 1]);
+        $this->assertEquals(
+            "INSERT INTO `insert` (`x`, `y`) VALUES (:x, :y) ON DUPLICATE KEY UPDATE `z` = VALUES(`z`)",
+            $sql->generateSQL(),
+            'INSERT ... UPDATE ON DUPLICATE KEY custom clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(1, $values['x'], 'x is 1');
+        $this->assertEquals('TEST', $values['y'], 'y is TEST');
+        $this->assertEquals(2, count($values), '6 values');
+    }
+
+    public function testINSERTExtended()
+    {
+        $db = new Database([]);
+        $sql = $db->insert('tbl_insert')
+        ->extended([[
+            'x' => 1,
+            'y' => 'TEST',
+            'z' => true
+        ], [
+            'x' => 2,
+            'y' => 'TEST2',
+            'z' => false
+        ]]);
+        $this->assertEquals(
+            "INSERT INTO `insert` (`x`, `y`, `z`) VALUES (:x, :y, :z), (:x2, :y2, :z2)",
+            $sql->generateSQL(),
+            'INSERT INTO extended clause'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(1, $values['x'], 'x is 1');
+        $this->assertEquals('TEST', $values['y'], 'y is TEST');
+        $this->assertEquals(true, $values['z'], 'z is true');
+        $this->assertEquals(2, $values['x2'], 'x2 is 2');
+        $this->assertEquals('TEST2', $values['y2'], 'y2 is TEST2');
+        $this->assertEquals(false, $values['z2'], 'z2 is false');
+        $this->assertEquals(6, count($values), '6 values');
+    }
+
     public function testINSERTUPDATEFormatted()
     {
         $db = new Database([]);

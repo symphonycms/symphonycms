@@ -69,6 +69,7 @@ final class DatabaseInsert extends DatabaseStatement
      * Appends one or multiple values into the insert statements.
      * Can only be called once in the lifetime of the object.
      *
+     * @see extended()
      * @throws DatabaseStatementException
      * @param array $values
      *  The values to append. Keys are columns names and values will be added
@@ -90,24 +91,62 @@ final class DatabaseInsert extends DatabaseStatement
     }
 
     /**
+     * Appends one or multiple rows of values into the insert statements.
+     * Can only be called once in the lifetime of the object.
+     *
+     * @see values()
+     * @throws DatabaseStatementException
+     * @param array $rows
+     *  An array of rows to append. Keys of the first row are columns names and values will be added
+     *  to the value array and be substituted with SQL parameters.
+     * @return DatabaseInsert
+     *  The current instance
+     */
+    public function extended(array $rows)
+    {
+        if ($this->containsSQLParts('values')) {
+            throw new DatabaseStatementException('DatabaseInsert can not hold more than one values clause');
+        }
+        if (empty($rows)) {
+            throw new DatabaseStatementException('No rows to insert found');
+        }
+        $cols = '(' . $this->asTickedList(array_keys($rows[0])) . ')';
+        $this->unsafeAppendSQLPart('cols', $cols);
+        $v = [];
+        foreach ($rows as $values) {
+            $v[] = '(' . $this->asPlaceholdersList($values) . ')';
+            $this->appendValues($values);
+        }
+        $this->unsafeAppendSQLPart('values', 'VALUES '. implode(', ', $v));
+        return $this;
+    }
+
+    /**
      * Creates a ON DUPLICATE KEY UPDATE statement, based on values already appended.
      * Can only be called once in the lifetime of the object.
      *
+     * @param array $values
+     *  The values to use for the statement. Note that the array keys are used, not the values.
+     *  If left empty, it will use all the available values in this statement.
+     *  This is especially useful when using `extended()` inserts.
      * @throws DatabaseStatementException
      * @return DatabaseInsert
      *  The current instance
      */
-    public function updateOnDuplicateKey()
+    public function updateOnDuplicateKey(array $values = [])
     {
         if ($this->containsSQLParts('on duplicate')) {
             throw new DatabaseStatementException('DatabaseInsert can not hold more than one on duplicate clause');
         } elseif (empty($this->getValues())) {
             throw new DatabaseStatementException('updateOnDuplicateKey() needs values() to be called first');
         }
+        if (empty($values)) {
+            $values = $this->getValues();
+        }
         $update = implode(self::LIST_DELIMITER, General::array_map(function ($key, $value) {
             $key = $this->asTickedString($key);
             return "$key = VALUES($key)";
-        }, $this->getValues()));
+        }, $values));
         $this->unsafeAppendSQLPart('on duplicate', "ON DUPLICATE KEY UPDATE $update");
         return $this;
     }
