@@ -25,7 +25,7 @@ trait DatabaseCacheableExecutionDefinition
     {
         $stmKey = $this->computeHash();
         $this->finalize();
-        if ($this->getDB()->cache()->has($stmKey)) {
+        if ($this->getDB()->getCache()->has($stmKey)) {
             return $this->cachedResults($stmKey, null);
         }
         $result = $this->getDB()->execute($this);
@@ -47,7 +47,7 @@ trait DatabaseCacheableExecutionDefinition
     {
         return new DatabaseStatementCachedResult(
             $result,
-            $this->getDB()->cache(),
+            $this->getDB()->getCache(),
             $stmKey
         );
     }
