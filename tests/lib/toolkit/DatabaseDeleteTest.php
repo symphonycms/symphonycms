@@ -5,6 +5,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers DatabaseDelete
  * @covers DatabaseWhereDefinition
+ * @covers DatabaseSubQueryDefinition
  */
 final class DatabaseDeleteTest extends TestCase
 {
@@ -104,5 +105,23 @@ final class DatabaseDeleteTest extends TestCase
             $sql->generateFormattedSQL(),
             'DELETE WHERE formatted'
         );
+    }
+
+    public function testDELETEWithSubQuery()
+    {
+        $db = new Database([]);
+        $sql = $db->delete('tbl_test_table');
+        $sub = $sql->select(['y'])
+            ->from('sub')
+            ->where(['y' => 2]);
+        $sql->where(['x' => $sub]);
+        $this->assertEquals(
+            "DELETE FROM `test_table` WHERE `x` = (SELECT `y` FROM `sub` WHERE `y` = :i1_y)",
+            $sql->generateSQL(),
+            'DELETE SQL clause with WHERE sub-query'
+        );
+        $values = $sql->getValues();
+        $this->assertEquals(2, $values['i1_y'], 'i1_y is 2');
+        $this->assertEquals(1, count($values), '1 value');
     }
 }

@@ -10,6 +10,7 @@
 class DatabaseQuery extends DatabaseStatement
 {
     use DatabaseWhereDefinition;
+    use DatabaseSubQueryDefinition;
     use DatabaseCacheableExecutionDefinition;
 
     /**
@@ -18,12 +19,6 @@ class DatabaseQuery extends DatabaseStatement
      * @var boolean
      */
     private $enableIsNullSyntax = true;
-
-    /**
-     * Internal sub query counter
-     * @var integer
-     */
-    private $selectQueryCount = 0;
 
     /**
      * The requested pagination.
@@ -544,20 +539,6 @@ class DatabaseQuery extends DatabaseStatement
             'success' => ['var' => $success, 'type' => 'bool'],
         ]);
         return new DatabaseQueryResult($success, $stm, $this, $this->page);
-    }
-
-    /**
-     * Factory method that creates a new `SELECT ...` statement to be
-     * safely used inside the current instance of DatabaseQuery.
-     *
-     * @param array $values
-     *  The columns to select. By default, it's `*` if no projection gets added.
-     * @return DatabaseSubQuery
-     */
-    public function select(array $values = [])
-    {
-        $this->selectQueryCount++;
-        return new DatabaseSubQuery($this->getDB(), $this->selectQueryCount, $values);
     }
 
     /**

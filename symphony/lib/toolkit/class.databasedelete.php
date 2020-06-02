@@ -10,6 +10,7 @@
 final class DatabaseDelete extends DatabaseStatement
 {
     use DatabaseWhereDefinition;
+    use DatabaseSubQueryDefinition;
 
     /**
      * Flag to prevent Delete query without a where clause.

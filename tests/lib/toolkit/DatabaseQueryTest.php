@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
  * @covers DatabaseQuery
  * @covers DatabaseQueryJoin
  * @covers DatabaseWhereDefinition
+ * @covers DatabaseSubQueryDefinition
  */
 final class DatabaseQueryTest extends TestCase
 {
