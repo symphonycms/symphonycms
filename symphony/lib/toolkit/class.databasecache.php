@@ -44,7 +44,7 @@ class DatabaseCache
         General::ensureType([
             'key' => ['var' => $key, 'type' => 'string'],
         ]);
-        $this->storage[$key] = array_merge($this->storage[$key], $values);
+        $this->storage[$key] = array_merge($this->storage[$key] ?? [], $values);
     }
 
     /**
