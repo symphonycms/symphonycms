@@ -489,7 +489,7 @@ class DatabaseStatement
      *
      * @return string
      */
-    final public function computeHash()
+    public function computeHash()
     {
         return md5(serialize([
             $this->sql,

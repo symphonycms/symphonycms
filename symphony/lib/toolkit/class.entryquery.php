@@ -201,6 +201,24 @@ class EntryQuery extends DatabaseQuery
     }
 
     /**
+     * Computes a md5 hash of the current statement object, using only minimal
+     * information. The goal is to be able to compare two instances of the class
+     * and see if they are the same.
+     *
+     * @return string
+     */
+    public function computeHash()
+    {
+        return md5(
+            parent::computeHash() .
+            serialize([
+                $this->schema,
+                $this->fieldIds
+            ])
+        );
+    }
+
+    /**
      * Adds a WHERE clause on the section id.
      *
      * @param int $section_id
